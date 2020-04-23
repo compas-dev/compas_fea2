@@ -39,18 +39,6 @@ class Nodes(object):
 
     def write_nodes(self):
 
-        header = {
-            'abaqus':   '**\n*NODE, NSET=nset_all\n**',
-            'opensees': '#',
-            'ansys':    '!',
-        }
-
-        self.prefix = {
-            'abaqus':   '',
-            'opensees': 'node ',
-            'ansys':    '',
-        }
-
         self.write_section('Nodes')
         self.write_line('**\n*NODE, NSET=nset_all\n**')
 
@@ -64,8 +52,8 @@ class Nodes(object):
 
     def write_node(self, key):
 
-        prefix  = self.prefix[self.software]
-        spacer  = self.spacer[self.software]
+        prefix  = ''
+        spacer  = ', '
         x, y, z = self.structure.node_xyz(key)
 
         line    = '{0}{1}{2}{3:.3f}{2}{4:.3f}{2}{5:.3f}'.format(prefix, key + 1, spacer, x, y, z)

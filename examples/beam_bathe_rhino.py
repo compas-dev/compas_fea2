@@ -70,10 +70,11 @@ mdl.steps_order = ['step_bc', 'step_load']
 
 mdl.summary()
 
+
 # Run
 
 mdl.analyse_and_extract(software='abaqus', fields=['u', 'sf', 'sm'])
 
 rhino.plot_data(mdl, step='step_load', field='uz', radius=1)
-
-print(mdl.get_nodal_results(step='step_load', field='uz', nodes='nset_load'))
+#
+#print(mdl.get_nodal_results(step='step_load', field='uz', nodes='nset_load'))

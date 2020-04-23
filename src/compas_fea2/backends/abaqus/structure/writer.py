@@ -5,6 +5,7 @@ from __future__ import print_function
 
 from compas_fea2.backends.abaqus.structure import Heading
 from compas_fea2.backends.abaqus.structure.elements import Elements
+from compas_fea2.backends.abaqus.structure.elements import Nodes
 from compas_fea2.backends.abaqus.structure.sets import Sets
 from compas_fea2.backends.abaqus.structure.bcs import BCs
 from compas_fea2.backends.abaqus.structure.materials import Materials
@@ -20,7 +21,7 @@ __all__ = [
 
 
 
-class Writer(Steps, Materials, BCs, Sets, Elements, Heading):
+class Writer(Steps, Materials, BCs, Sets, Elements, Nodes, Heading):
 
     """ Initialises base file writer.
 
@@ -39,7 +40,6 @@ class Writer(Steps, Materials, BCs, Sets, Elements, Heading):
         self.comment   = '**'
         self.filename  = filename
         self.ndof      = ndof
-        self.software  = 'abaqus'
         self.structure = structure
         self.fields    = fields
         self.spacer    = ', '

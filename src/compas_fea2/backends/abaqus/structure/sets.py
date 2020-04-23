@@ -44,7 +44,7 @@ class Sets(object):
         nodes = [i + 1 for i in node_set.selection]
 
         for i in range(0, len(nodes), 8):
-            self.write_line(self.spacer[self.software].join([str(j) for j in nodes[i:i + 8]]))
+            self.write_line(self.spacer.join([str(j) for j in nodes[i:i + 8]]))
 
 
     def write_element_sets(self):
@@ -81,7 +81,7 @@ class Sets(object):
             selection = [i + 1 for i in element_set.selection]
 
             for i in range(0, len(selection), 8):
-                self.write_line(self.spacer[self.software].join([str(j) for j in selection[i:i + 8]]))
+                self.write_line(self.spacer.join([str(j) for j in selection[i:i + 8]]))
 
         if stype == 'surface_element':
 

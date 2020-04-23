@@ -4,7 +4,7 @@ from compas_fea2._core.assembly import CoreStructure
 from compas_fea2.backends.abaqus.core import Set
 from compas_fea2.backends.abaqus.job.send_job import input_generate
 from compas_fea2.backends.abaqus.job.send_job import launch_process
-#from compas_fea2.backends.abaqus.job.read_results import extract_data
+from compas_fea2.backends.abaqus.job.read_results import extract_data
 
 class Structure(CoreStructure):
 

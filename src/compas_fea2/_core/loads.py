@@ -4,10 +4,10 @@ from __future__ import division
 from __future__ import print_function
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez), 
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
 
-#TODO: make units independent
+#TODO: make units independent using the utilities function
 
 
 __all__ = [
@@ -191,7 +191,7 @@ class LineLoad(Load):
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
-class AreaLoad(Load): 
+class AreaLoad(Load):
 
     """ Distributed area force [units:N/m2] applied to element(s).
 

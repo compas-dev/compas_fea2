@@ -4,7 +4,7 @@ import subprocess
 import re
 from compas.geometry import length_vector
 
-from compas_fea2.backends.ansys.job.launch_job import ansys_launch_process_extract
+from compas_fea2.backends.ansys.job.launch_job import launch_process_extract
 
 from compas_fea2.backends.ansys.writer import write_modal_results_from_ansys_rst
 from compas_fea2.backends.ansys.writer import write_static_results_from_ansys_rst
@@ -15,7 +15,6 @@ from compas_fea2.backends.ansys.writer import set_current_step
 
 # Author(s): Tomas Mendez Echenagucia (github.com/tmsmendez)
 __all__ = [
-    'delete_result_files',
     'extract_rst_data',
     'write_results_from_rst',
     'load_to_results',
@@ -33,19 +32,6 @@ __all__ = [
     'get_acoustic_radiation_from_results_files'
 
 ]
-
-def delete_result_files(path, name):
-    """ Deletes Ansys result files.
-
-    Parameters:
-        path (str): Path to the Ansys input file.
-        name (str): Name of the structure.
-
-    Returns:
-        None
-    """
-    out_path = os.path.join(path, name + '_output')
-    shutil.rmtree(out_path)
 
 
 def extract_rst_data(structure, fields='all', steps='all', sets=None, license='teaching'):
@@ -106,7 +92,7 @@ def write_results_from_rst(structure, fields, steps, license='teaching', sets=No
         elif stype == 'acoustic':
             pass
 
-    ansys_launch_process_extract(path, name, license=license)
+    launch_process_extract(path, name, license=license)
     # os.remove(path + '/' + filename)
 
 

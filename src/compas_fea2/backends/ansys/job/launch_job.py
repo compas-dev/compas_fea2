@@ -2,17 +2,31 @@ import os
 import shutil
 import subprocess
 
-from compas_fea2.backends.ansys.job import delete_result_files
-
 # Author(s): Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 
 __all__ = [
-    'ansys_launch_process',
-    'ansys_launch_process_extract'
+    'delete_result_files',
+    'launch_process',
+    'launch_process_extract'
 ]
 
-def ansys_launch_process(path, name, cpus=2, license='teaching', delete=True):
+
+def delete_result_files(path, name):
+    """ Deletes Ansys result files.
+
+    Parameters:
+        path (str): Path to the Ansys input file.
+        name (str): Name of the structure.
+
+    Returns:
+        None
+    """
+    out_path = os.path.join(path, name + '_output')
+    shutil.rmtree(out_path)
+
+
+def launch_process(path, name, cpus=2, license='teaching', delete=True):
     """ Launches an analysis using Ansys.
 
     Parameters:
@@ -55,7 +69,7 @@ def ansys_launch_process(path, name, cpus=2, license='teaching', delete=True):
     subprocess.call(launch_string)
 
 
-def ansys_launch_process_extract(path, name, cpus=2, license='teaching'):
+def launch_process_extract(path, name, cpus=2, license='teaching'):
     """ Calls an extraction of results from Ansys.
 
     Parameters:

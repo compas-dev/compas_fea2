@@ -1,7 +1,3 @@
-import os
-import shutil
-import subprocess
-
 from compas_fea2.backends.ansys.writer import write_static_analysis_request
 from compas_fea2.backends.ansys.writer import write_modal_analysis_request
 from compas_fea2.backends.ansys.writer import write_harmonic_analysis_request

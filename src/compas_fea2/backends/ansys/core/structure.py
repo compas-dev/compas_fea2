@@ -3,25 +3,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from compas_fea.utilities import combine_all_sets
-from compas_fea2.utilities import group_keys_by_attribute
-from compas_fea2.utilities import group_keys_by_attributes
-
-#TODO rmove useless imports
-from compas_fea2._core.mixins.nodemixins import NodeMixins
-from compas_fea2._core.mixins.elementmixins import ElementMixins
-from compas_fea2._core.mixins.objectmixins import ObjectMixins
+# # from compas_fea.utilities import combine_all_sets
+# from compas_fea2.utilities import group_keys_by_attribute
+# from compas_fea2.utilities import group_keys_by_attributes
+#
+# #TODO rmove useless imports
+# from compas_fea2._core.mixins.nodemixins import NodeMixins
+# from compas_fea2._core.mixins.elementmixins import ElementMixins
+# from compas_fea2._core.mixins.objectmixins import ObjectMixins
 from compas_fea2._core import cStructure
 
 # from compas_fea2._core.bcs import *
 from compas_fea2.backends.abaqus.core import Set
 
-from compas_fea2.backends.ansys.job.send_job import input_generate
-from compas_fea2.backends.ansys.job.send_job import launch_process
-from compas_fea2.backends.ansys.job.read_results import extract_rst_data
+from compas_fea2.backends.ansys.job import input_generate
+from compas_fea2.backends.ansys.job import launch_process
+from compas_fea2.backends.ansys.job import extract_rst_data
 
-import pickle
-import os
+# import pickle
+# import os
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
@@ -36,7 +36,6 @@ class Structure(cStructure):
 
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
-
 
     # ==============================================================================
     # Sets
@@ -66,7 +65,6 @@ class Structure(cStructure):
 
         self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
 
-
     def write_input_file(self, fields='u', output=True, save=False, ndof=6):
 
         """ Writes abaqus input file.
@@ -91,8 +89,7 @@ class Structure(cStructure):
 
         input_generate(self) #TODO add fields
 
-
-    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True):
+    def analyse(self, exe=None, cpus=2, license='teaching', delete=True, output=True):
 
         """ Runs the analysis through abaqus.
 
@@ -117,7 +114,6 @@ class Structure(cStructure):
         """
 
         launch_process(self.path, self.name, cpus, license, delete=delete)
-
 
     def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
                      return_data=True, components=None):

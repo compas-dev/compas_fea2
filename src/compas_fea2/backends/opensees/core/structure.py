@@ -4,12 +4,12 @@ from __future__ import division
 from __future__ import print_function
 
 # from compas_fea.utilities import combine_all_sets
-from compas_fea2.utilities import group_keys_by_attribute
-from compas_fea2.utilities import group_keys_by_attributes
+# from compas_fea2.utilities import group_keys_by_attribute
+# from compas_fea2.utilities import group_keys_by_attributes
 
-from compas_fea2._core.mixins.nodemixins import NodeMixins
-from compas_fea2._core.mixins.elementmixins import ElementMixins
-from compas_fea2._core.mixins.objectmixins import ObjectMixins
+# from compas_fea2._core.mixins.nodemixins import NodeMixins
+# from compas_fea2._core.mixins.elementmixins import ElementMixins
+# from compas_fea2._core.mixins.objectmixins import ObjectMixins
 from compas_fea2._core import cStructure
 
 # from compas_fea2._core.bcs import *
@@ -19,8 +19,8 @@ from compas_fea2.backends.opensees.job import input_generate
 from compas_fea2.backends.opensees.job import launch_process
 from compas_fea2.backends.opensees.job import extract_data
 
-import pickle
-import os
+# import pickle
+# import os
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)

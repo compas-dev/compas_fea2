@@ -168,7 +168,7 @@ from __future__ import print_function
 
 # additional software-based classes
 from .bcs import *
-from .set import *
+from .set import * #TODO remove
 from .structure import *
 from .constraints import *
 from .elements import *

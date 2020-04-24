@@ -5,14 +5,14 @@ from __future__ import print_function
 
 # from compas_fea2.backends.opensees.writer import Writer
 
-from subprocess import Popen
-from subprocess import PIPE
+# from subprocess import Popen
+# from subprocess import PIPE
 
 from time import time
 from math import sqrt
 
 import json
-import os
+# import os
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

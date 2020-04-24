@@ -36,6 +36,30 @@ class Structure(cStructure):
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
 
+    #TODO remove
+    def add_set(self, name, type, selection):
+
+        """ Adds a node, element or surface set to structure.sets.
+
+        Parameters
+        ----------
+        name : str
+            Name of the Set.
+        type : str
+            'node', 'element', 'surface_node', surface_element'.
+        selection : list, dict
+            The integer keys of the nodes, elements or the element numbers and sides.
+
+        Returns
+        -------
+        None
+
+        """
+
+        if isinstance(selection, int):
+            selection = [selection]
+
+        self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
 
     # TODO check if all the variables are needed in all the following definitions
     def write_input_file(self, fields='u', output=True, save=False, ndof=6):

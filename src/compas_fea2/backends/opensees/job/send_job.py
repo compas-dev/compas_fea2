@@ -47,7 +47,7 @@ def input_generate(structure, fields, output, ndof):
 
     filename = '{0}{1}.tcl'.format(structure.path, structure.name)
 
-    with Writer(structure=structure, software='opensees', filename=filename, fields=fields, ndof=ndof) as writer:
+    with Writer(structure=structure, filename=filename, fields=fields, ndof=ndof) as writer:
 
         writer.write_heading()
         writer.write_nodes()

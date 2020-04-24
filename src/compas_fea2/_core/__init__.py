@@ -6,8 +6,8 @@ structure
 .. currentmodule:: compas_fea._core
 
 
-assembly
-========
+structure
+=========
 
 .. autosummary::
     :toctree: generated/
@@ -163,7 +163,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .assembly import *
+from .structure import *
 from .bcs import *
 from .constraints import *
 from .elements import *

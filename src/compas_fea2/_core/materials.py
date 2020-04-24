@@ -12,20 +12,20 @@ from math import log
 #TODO: make units independent
 
 __all__ = [
-    'Material',
-    'Concrete',
-    'ConcreteSmearedCrack',
-    'ConcreteDamagedPlasticity',
-    'ElasticIsotropic',
-    'Stiff',
-    'ElasticOrthotropic',
-    'ElasticPlastic',
-    # 'ThermalMaterial',
-    'Steel'
+    'cMaterial',
+    'cConcrete',
+    'cConcreteSmearedCrack',
+    'cConcreteDamagedPlasticity',
+    'cElasticIsotropic',
+    'cStiff',
+    'cElasticOrthotropic',
+    'cElasticPlastic',
+    'cThermalMaterial',
+    'cSteel'
 ]
 
 
-class Material(object):
+class cMaterial(object):
 
     """ Initialises base Material object.
 
@@ -69,7 +69,7 @@ class Material(object):
 # linear elastic
 # ==============================================================================
 
-class ElasticIsotropic(Material):
+class cElasticIsotropic(cMaterial):
 
     """ Elastic, isotropic and homogeneous material.
 
@@ -91,7 +91,7 @@ class ElasticIsotropic(Material):
     """
 
     def __init__(self, name, E, v, p, tension=True, compression=True):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         self.__name__    = 'ElasticIsotropic'
         self.name        = name
@@ -104,7 +104,7 @@ class ElasticIsotropic(Material):
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
-class Stiff(ElasticIsotropic):
+class cStiff(cElasticIsotropic):
 
     """ Elastic, very stiff and massless material.
 
@@ -123,7 +123,7 @@ class Stiff(ElasticIsotropic):
         self.__name__ = 'Stiff'
 
 
-class ElasticOrthotropic(Material):
+class cElasticOrthotropic(cMaterial):
 
     """ Elastic, orthotropic and homogeneous material.
 
@@ -163,7 +163,7 @@ class ElasticOrthotropic(Material):
     """
 
     def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension=True, compression=True):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         self.__name__    = 'ElasticOrthotropic'
         self.name        = name
@@ -180,7 +180,7 @@ class ElasticOrthotropic(Material):
 # non-linear general
 # ==============================================================================
 
-class ElasticPlastic(Material):
+class cElasticPlastic(cMaterial):
 
     """ Elastic and plastic, isotropic and homogeneous material.
 
@@ -206,7 +206,7 @@ class ElasticPlastic(Material):
     """
 
     def __init__(self, name, E, v, p, f, e):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         fc = [-i for i in f]
         ec = [-i for i in e]
@@ -226,7 +226,7 @@ class ElasticPlastic(Material):
 # non-linear metal
 # ==============================================================================
 
-class Steel(Material):
+class cSteel(cMaterial):
 
     """ Bi-linear steel with given yield stress.
 
@@ -250,7 +250,7 @@ class Steel(Material):
     """
 
     def __init__(self, name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         E  *= 10.**9
         fy *= 10.**6
@@ -296,7 +296,7 @@ class Steel(Material):
 # non-linear concrete
 # ==============================================================================
 
-class Concrete(Material):
+class cConcrete(cMaterial):
 
     """ Elastic and plastic-cracking Eurocode based concrete material.
 
@@ -320,7 +320,7 @@ class Concrete(Material):
     """
 
     def __init__(self, name, fck, v=0.2, p=2400, fr=None):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         de   = 0.0001
         fcm  = fck + 8
@@ -354,7 +354,7 @@ class Concrete(Material):
         self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
-class ConcreteSmearedCrack(Material):
+class cConcreteSmearedCrack(cMaterial):
 
     """ Elastic and plastic, cracking concrete material.
 
@@ -382,7 +382,7 @@ class ConcreteSmearedCrack(Material):
     """
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         self.__name__    = 'ConcreteSmearedCrack'
         self.name        = name
@@ -396,7 +396,7 @@ class ConcreteSmearedCrack(Material):
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression', 'fratios'])
 
 
-class ConcreteDamagedPlasticity(Material):
+class cConcreteDamagedPlasticity(cMaterial):
 
     """ Damaged plasticity isotropic and homogeneous material.
 
@@ -420,7 +420,7 @@ class ConcreteDamagedPlasticity(Material):
     """
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         self.__name__   = 'ConcreteDamagedPlasticity'
         self.name       = name
@@ -438,7 +438,7 @@ class ConcreteDamagedPlasticity(Material):
 # thermal
 # ==============================================================================
 
-class ThermalMaterial(Material):
+class cThermalMaterial(cMaterial):
 
     """ Class for thermal material properties.
 
@@ -456,7 +456,7 @@ class ThermalMaterial(Material):
     """
 
     def __init__(self, name, conductivity, p, sheat):
-        Material.__init__(self, name=name)
+        cMaterial.__init__(self, name=name)
 
         self.__name__     = 'ThermalMaterial'
         self.name         = name

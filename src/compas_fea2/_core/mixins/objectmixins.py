@@ -3,13 +3,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._core.properties import ElementProperties
-from compas_fea2._core.loads import Load
-from compas_fea2._core.loads import ThermalLoad
-from compas_fea2._core.bcs import GeneralDisplacement
-from compas_fea2._core.materials import Material
-from compas_fea2._core.sections import Section
-from compas_fea2._core.load_cases import Step
+from compas_fea2._core.properties import cElementProperties
+from compas_fea2._core.loads import cLoad
+from compas_fea2._core.loads import cThermalLoad
+from compas_fea2._core.bcs import cGeneralDisplacement
+from compas_fea2._core.materials import cMaterial
+from compas_fea2._core.sections import cSection
+from compas_fea2._core.load_cases import cStep
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
@@ -43,22 +43,22 @@ class ObjectMixins(object):
         for i in objects:
             cl = i.__class__
 
-            if issubclass(cl, Material):
+            if issubclass(cl, cMaterial):
                 self.add_material(i)
 
-            elif issubclass(cl, Section):
+            elif issubclass(cl, cSection):
                 self.add_section(i)
 
-            elif isinstance(i, ElementProperties):
+            elif isinstance(i, cElementProperties):
                 self.add_element_properties(i)
 
-            elif issubclass(cl, GeneralDisplacement) or isinstance(i, GeneralDisplacement):
+            elif issubclass(cl, cGeneralDisplacement) or isinstance(i, cGeneralDisplacement):
                 self.add_displacement(i)
 
-            elif issubclass(cl, Load) or isinstance(i, ThermalLoad):
+            elif issubclass(cl, cLoad) or isinstance(i, cThermalLoad):
                 self.add_load(i)
 
-            elif issubclass(cl, Step):
+            elif issubclass(cl, cStep):
                 self.add_step(i)
 
             else:

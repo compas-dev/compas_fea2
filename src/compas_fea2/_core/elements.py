@@ -8,21 +8,21 @@ from __future__ import print_function
 # TODO add the property class here
 
 __all__ = [
-    'Node',
-    'Element',
-    'MassElement',
-    'BeamElement',
-    'SpringElement',
-    'TrussElement',
-    'StrutElement',
-    'TieElement',
-    'ShellElement',
-    'MembraneElement',
-    'FaceElement',
-    'SolidElement',
-    'PentahedronElement',
-    'TetrahedronElement',
-    'HexahedronElement',
+    'cNode',
+    'cElement',
+    'cMassElement',
+    'cBeamElement',
+    'cSpringElement',
+    'cTrussElement',
+    'cStrutElement',
+    'cTieElement',
+    'cShellElement',
+    'cMembraneElement',
+    'cFaceElement',
+    'cSolidElement',
+    'cPentahedronElement',
+    'cTetrahedronElement',
+    'cHexahedronElement',
 ]
 
 
@@ -30,7 +30,7 @@ __all__ = [
 # General
 # ==============================================================================
 
-class Node(object):
+class cNode(object):
 
     """ Initialises base Node object.
 
@@ -100,7 +100,7 @@ class Node(object):
         return '{0}({1})'.format(self.__name__, self.key)
 
 
-class Element(object):
+class cElement(object):
 
     """ Initialises base Element object.
 
@@ -161,7 +161,7 @@ class Element(object):
 # 0D elements
 # ==============================================================================
 
-class MassElement(Element):
+class cMassElement(cElement):
 
     """ A 0D element for concentrated point mass.
 
@@ -172,7 +172,7 @@ class MassElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'MassElement'
 
@@ -181,7 +181,7 @@ class MassElement(Element):
 # 1D elements
 # ==============================================================================
 
-class BeamElement(Element):
+class cBeamElement(cElement):
 
     """ A 1D element that resists axial, shear, bending and torsion.
 
@@ -192,12 +192,12 @@ class BeamElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'BeamElement'
 
 
-class SpringElement(Element):
+class cSpringElement(cElement):
 
     """ A 1D spring element.
 
@@ -208,12 +208,12 @@ class SpringElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'SpringElement'
 
 
-class TrussElement(Element):
+class cTrussElement(cElement):
 
     """ A 1D element that resists axial loads.
 
@@ -224,12 +224,12 @@ class TrussElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'TrussElement'
 
 
-class StrutElement(TrussElement):
+class cStrutElement(cTrussElement):
 
     """ A truss element that resists axial compressive loads.
 
@@ -240,12 +240,12 @@ class StrutElement(TrussElement):
     """
 
     def __init__(self):
-        TrussElement.__init__(self)
+        cTrussElement.__init__(self)
 
         self.__name__ = 'StrutElement'
 
 
-class TieElement(TrussElement):
+class cTieElement(cTrussElement):
 
     """ A truss element that resists axial tensile loads.
 
@@ -256,7 +256,7 @@ class TieElement(TrussElement):
     """
 
     def __init__(self):
-        TrussElement.__init__(self)
+        cTrussElement.__init__(self)
 
         self.__name__ = 'TieElement'
 
@@ -265,7 +265,7 @@ class TieElement(TrussElement):
 # 2D elements
 # ==============================================================================
 
-class ShellElement(Element):
+class cShellElement(cElement):
 
     """ A 2D element that resists axial, shear, bending and torsion.
 
@@ -276,12 +276,12 @@ class ShellElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'ShellElement'
 
 
-class FaceElement(Element):
+class cFaceElement(cElement):
 
     """ A 2D Face element used for special loading cases.
 
@@ -292,12 +292,12 @@ class FaceElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'FaceElement'
 
 
-class MembraneElement(ShellElement):
+class cMembraneElement(cShellElement):
 
     """ A shell element that resists only axial loads.
 
@@ -308,7 +308,7 @@ class MembraneElement(ShellElement):
     """
 
     def __init__(self):
-        ShellElement.__init__(self)
+        cShellElement.__init__(self)
 
         self.__name__ = 'MembraneElement'
 
@@ -317,7 +317,7 @@ class MembraneElement(ShellElement):
 # 3D elements
 # ==============================================================================
 
-class SolidElement(Element):
+class cSolidElement(cElement):
 
     """ A 3D element that resists axial, shear, bending and torsion.
 
@@ -328,12 +328,12 @@ class SolidElement(Element):
     """
 
     def __init__(self):
-        Element.__init__(self)
+        cElement.__init__(self)
 
         self.__name__ = 'SolidElement'
 
 
-class PentahedronElement(SolidElement):
+class cPentahedronElement(cSolidElement):
 
     """ A Solid element with 5 faces (extruded triangle).
 
@@ -344,12 +344,12 @@ class PentahedronElement(SolidElement):
     """
 
     def __init__(self):
-        SolidElement.__init__(self)
+        cSolidElement.__init__(self)
 
         self.__name__ = 'PentahedronElement'
 
 
-class TetrahedronElement(SolidElement):
+class cTetrahedronElement(cSolidElement):
 
     """ A Solid element with 4 faces.
 
@@ -360,12 +360,12 @@ class TetrahedronElement(SolidElement):
     """
 
     def __init__(self):
-        SolidElement.__init__(self)
+        cSolidElement.__init__(self)
 
         self.__name__ = 'TetrahedronElement'
 
 
-class HexahedronElement(SolidElement):
+class cHexahedronElement(cSolidElement):
 
     """ A Solid cuboid element with 6 faces (extruded rectangle).
 
@@ -376,6 +376,6 @@ class HexahedronElement(SolidElement):
     """
 
     def __init__(self):
-        SolidElement.__init__(self)
+        cSolidElement.__init__(self)
 
         self.__name__ = 'HexahedronElement'

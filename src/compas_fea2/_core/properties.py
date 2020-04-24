@@ -8,11 +8,11 @@ from __future__ import print_function
 
 
 __all__ = [
-    'ElementProperties'
+    'cElementProperties'
 ]
 
 
-class ElementProperties(object):
+class cElementProperties(object):
 
     """ Initialises an ElementProperties object.
 

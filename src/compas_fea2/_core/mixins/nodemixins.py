@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._core.elements import Node
+from compas_fea2._core.elements import cNode
 
 from compas.utilities import geometric_key
 
@@ -54,7 +54,7 @@ class NodeMixins(object):
         if key is None:
 
             key = self.node_count()
-            self.nodes[key] = Node(key=key, xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass)
+            self.nodes[key] = cNode(key=key, xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass)
 
             if virtual:
                 self.add_node_to_node_index(key=key, xyz=xyz, virtual=True)

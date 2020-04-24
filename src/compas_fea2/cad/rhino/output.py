@@ -23,7 +23,7 @@ from compas_fea2.preprocess import extrude_mesh
 from compas_fea2.utilities import network_order
 
 # NOTE this can be tricky!!
-from compas_fea2._core import CoreStructure
+from compas_fea2._core import cStructure
 # from compas_fea2.backends.abaqus.structure import Structure
 
 

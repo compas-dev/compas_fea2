@@ -9,17 +9,17 @@ from __future__ import print_function
 # TODO: change 'Step' to 'Case' to make it less abaqus-dependent
 
 __all__ = [
-    'Step',
-    'GeneralStep',
-    # 'HeatStep',
-    'ModalStep',
-    'HarmonicStep',
-    'BucklingStep',
-    'AcousticStep'
+    'cStep',
+    'cGeneralStep',
+    'cHeatStep',
+    'cModalStep',
+    'cHarmonicStep',
+    'cBucklingStep',
+    'cAcousticStep'
 ]
 
 
-class Step(object):
+class cStep(object):
 
     """ Initialises base Step object.
 
@@ -59,7 +59,7 @@ class Step(object):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class GeneralStep(Step):
+class cGeneralStep(cStep):
 
     """ Initialises GeneralStep object for use in a static analysis.
 
@@ -91,7 +91,7 @@ class GeneralStep(Step):
     """
 
     def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=True, nlmat=True, displacements=None, loads=None, type='static', modify=True):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         if not displacements:
             displacements = []
@@ -115,7 +115,7 @@ class GeneralStep(Step):
                                'type', 'tolerance', 'modify'])
 
 
-class HeatStep(Step):
+class cHeatStep(cStep):
 
     """ Initialises HeatStep object for use in a thermal analysis.
 
@@ -139,7 +139,7 @@ class HeatStep(Step):
     """
 
     def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, type='heat transfer', duration=1):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         self.__name__    = 'HeatStep'
         self.name        = name
@@ -152,7 +152,7 @@ class HeatStep(Step):
         self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'type', 'duration'])
 
 
-class ModalStep(Step):
+class cModalStep(cStep):
 
     """ Initialises ModalStep object for use in a modal analysis.
 
@@ -172,7 +172,7 @@ class ModalStep(Step):
     """
 
     def __init__(self, name, modes=10, increments=100, displacements=None, type='modal'):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         if not displacements:
             displacements = []
@@ -186,7 +186,7 @@ class ModalStep(Step):
         self.attr_list.extend(['modes', 'increments', 'displacements', 'type'])
 
 
-class HarmonicStep(Step):
+class cHarmonicStep(cStep):
 
     """ Initialises HarmonicStep object for use in a harmonic analysis.
 
@@ -210,7 +210,7 @@ class HarmonicStep(Step):
     """
 
     def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None, type='harmonic'):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         if not displacements:
             displacements = []
@@ -229,7 +229,7 @@ class HarmonicStep(Step):
         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'type'])
 
 
-class BucklingStep(Step):
+class cBucklingStep(cStep):
 
     """ Initialises BucklingStep object for use in a buckling analysis.
 
@@ -256,7 +256,7 @@ class BucklingStep(Step):
 
     def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, type='buckle',
                  step=None):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         if not displacements:
             displacements = []
@@ -276,7 +276,7 @@ class BucklingStep(Step):
         self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'type', 'step'])
 
 
-class AcousticStep(Step):
+class cAcousticStep(cStep):
 
     """ Initialises AcousticStep object for use in a acoustic analysis.
 
@@ -307,7 +307,7 @@ class AcousticStep(Step):
 
     def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,
                  factor=1.0, damping=None, type='acoustic'):
-        Step.__init__(self, name=name)
+        cStep.__init__(self, name=name)
 
         if not displacements:
             displacements = []

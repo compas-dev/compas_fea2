@@ -8,13 +8,13 @@ from __future__ import print_function
 
 
 __all__ = [
-    'Misc',
-    'Amplitude',
-    'Temperatures'
+    'cMisc',
+    'cAmplitude',
+    'cTemperatures'
 ]
 
 
-class Misc(object):
+class cMisc(object):
 
     """ Initialises base Misc object.
 
@@ -47,7 +47,7 @@ class Misc(object):
         return ''
 
 
-class Amplitude(Misc):
+class cAmplitude(cMisc):
 
     """ Initialises an Amplitude object to act as a discretised function f(x).
 
@@ -65,7 +65,7 @@ class Amplitude(Misc):
     """
 
     def __init__(self, name, values=[[0, 0], [1, 1]]):
-        Misc.__init__(self, name=name)
+        cMisc.__init__(self, name=name)
 
         self.__name__ = 'Amplitude'
         self.name     = name
@@ -73,7 +73,7 @@ class Amplitude(Misc):
         self.attr_list.extend(['values'])
 
 
-class Temperatures(Misc):
+class cTemperatures(cMisc):
 
     """ Define nodal temperatures data.
 
@@ -95,7 +95,7 @@ class Temperatures(Misc):
     """
 
     def __init__(self, name, file=None, values=[], tend=None):
-        Misc.__init__(self, name=name)
+        cMisc.__init__(self, name=name)
 
         self.__name__ = 'Temperatures'
         self.name     = name

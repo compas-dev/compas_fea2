@@ -10,7 +10,7 @@ except:
 
 import sys
 
-from compas_fea2.backends.abaqus.structure import Writer
+from compas_fea2.backends.abaqus.writer import Writer
 
 from compas_fea2.backends.abaqus.job import launch_job
 from compas_fea2.backends.abaqus.job  import odb_extract

@@ -19,19 +19,19 @@ __all__ = [
 
 
 func_dict = {
-    'BeamElement':        BeamElement,
-    'SpringElement':      SpringElement,
-    'TrussElement':       TrussElement,
-    'StrutElement':       StrutElement,
-    'TieElement':         TieElement,
-    'ShellElement':       ShellElement,
-    'MembraneElement':    MembraneElement,
-    'FaceElement':        FaceElement,
-    'SolidElement':       SolidElement,
-    'TetrahedronElement': TetrahedronElement,
-    'PentahedronElement': PentahedronElement,
-    'HexahedronElement':  HexahedronElement,
-    'MassElement':        MassElement
+    'BeamElement':        cBeamElement,
+    'SpringElement':      cSpringElement,
+    'TrussElement':       cTrussElement,
+    'StrutElement':       cStrutElement,
+    'TieElement':         cTieElement,
+    'ShellElement':       cShellElement,
+    'MembraneElement':    cMembraneElement,
+    'FaceElement':        cFaceElement,
+    'SolidElement':       cSolidElement,
+    'TetrahedronElement': cTetrahedronElement,
+    'PentahedronElement': cPentahedronElement,
+    'HexahedronElement':  cHexahedronElement,
+    'MassElement':        cMassElement
 }
 
 

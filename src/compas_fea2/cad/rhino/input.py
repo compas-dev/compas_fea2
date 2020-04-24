@@ -17,13 +17,8 @@ from compas.geometry import subtract_vectors
 from compas.rpc import Proxy
 
 from compas_fea2 import utilities
-from compas_fea2.utilities import colorbar
 from compas_fea2.preprocess import extrude_mesh
 from compas_fea2.utilities import network_order
-
-# NOTE this can be tricky!!
-from compas_fea2._core import CoreStructure
-# from compas_fea2.backends.abaqus.structure import Structure
 
 
 try:
@@ -338,12 +333,16 @@ def add_sets_from_layers(structure, layers):
             name = layer.split('::')[-1] if '::' in layer else layer
             check_points = [rs.IsPoint(guid) for guid in guids]
 
-            if all(check_points):
-                add_node_set(structure=structure, guids=guids, name=name)
-            elif not any(check_points):
-                add_element_set(structure=structure, guids=guids, name=name)
-            else:
-                print('***** Layer {0} contained a mixture of points and elements, set not created *****'.format(name))
+            try:
+                if all(check_points):
+                    add_node_set(structure=structure, guids=guids, name=name)
+                elif not any(check_points):
+                    add_element_set(structure=structure, guids=guids, name=name)
+                else:
+                    print('***** Layer {0} contained a mixture of points and elements, set not created *****'.format(name))
+            except:
+                print('Sets are only valid in Abaqus')
+                exit(NotImplementedType)
 
 
 def add_tets_from_mesh(structure, name, mesh, draw_tets=False, volume=None, thermal=False):
@@ -619,43 +618,43 @@ def ordered_network(structure, network, layer):
 
 
 
-def weld_meshes_from_layer(layer_input, layer_output):
-    """
-    Grab meshes on an input layer and weld them onto an output layer.
+# def weld_meshes_from_layer(layer_input, layer_output):
+#     """
+#     Grab meshes on an input layer and weld them onto an output layer.
 
-    Parameters
-    ----------
-    layer_input : str
-        Layer containing the Rhino meshes to weld.
-    layer_output : str
-        Layer to plot single welded mesh.
+#     Parameters
+#     ----------
+#     layer_input : str
+#         Layer containing the Rhino meshes to weld.
+#     layer_output : str
+#         Layer to plot single welded mesh.
 
-    Returns
-    -------
-    None
+#     Returns
+#     -------
+#     None
 
-    """
+#     """
 
-    print('Welding meshes on layer:{0}'.format(layer_input))
+#     print('Welding meshes on layer:{0}'.format(layer_input))
 
-    mdl = CoreStructure(path=' ')
+#     mdl = CoreStructure(path=' ')
 
-    add_nodes_elements_from_layers(mdl, mesh_type='ShellElement', layers=layer_input)
+#     add_nodes_elements_from_layers(mdl, mesh_type='ShellElement', layers=layer_input)
 
-    faces = []
+#     faces = []
 
-    for element in mdl.elements.values():
-        enodes = element.nodes
+#     for element in mdl.elements.values():
+#         enodes = element.nodes
 
-        if len(enodes) == 3:
-            enodes.append(enodes[-1])
+#         if len(enodes) == 3:
+#             enodes.append(enodes[-1])
 
-        if len(enodes) == 4:
-            faces.append(enodes)
+#         if len(enodes) == 4:
+#             faces.append(enodes)
 
-    rs.DeleteObjects(rs.ObjectsByLayer(layer_output))
-    rs.CurrentLayer(layer_output)
-    rs.AddMesh(mdl.nodes_xyz(), faces)
+#     rs.DeleteObjects(rs.ObjectsByLayer(layer_output))
+#     rs.CurrentLayer(layer_output)
+#     rs.AddMesh(mdl.nodes_xyz(), faces)
 
 
 # ==============================================================================

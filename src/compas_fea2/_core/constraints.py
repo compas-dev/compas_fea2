@@ -8,12 +8,12 @@ from __future__ import print_function
 
 
 __all__ = [
-    'Constraint',
-    'TieConstraint',
+    'cConstraint',
+    'cTieConstraint',
 ]
 
 
-class Constraint(object):
+class cConstraint(object):
 
     """ Initialises base Constraint object.
 
@@ -46,7 +46,7 @@ class Constraint(object):
         return ''
 
 
-class TieConstraint(Constraint):
+class cTieConstraint(cConstraint):
 
     """ Tie constraint between two sets of nodes, elements or surfaces.
 
@@ -68,7 +68,7 @@ class TieConstraint(Constraint):
     """
 
     def __init__(self, name, master, slave, tol):
-        Constraint.__init__(self, name=name)
+        cConstraint.__init__(self, name=name)
 
         self.__name__ = 'TieConstraint'
         self.master = master

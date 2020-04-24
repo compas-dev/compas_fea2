@@ -13,14 +13,14 @@ import sys
 from compas_fea2.backends.abaqus.writer import Writer
 
 from compas_fea2.backends.abaqus.job import launch_job
-from compas_fea2.backends.abaqus.job  import odb_extract
+# from compas_fea2.backends.abaqus.job  import odb_extract
 
 from subprocess import Popen
 from subprocess import PIPE
 
 from time import time
 
-import json
+# import json
 import os
 
 

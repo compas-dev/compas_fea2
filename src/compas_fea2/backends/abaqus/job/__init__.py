@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-structure
+job
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.structure
+.. currentmodule:: compas_fea.backends.abaqus.job
 
 
 send_job
@@ -14,7 +14,7 @@ send_job
 
     send_job
     input_generate
-    launch_process
+    launch_job
 
 
 

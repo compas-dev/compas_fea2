@@ -112,6 +112,7 @@ class PinnedDisplacement(cPinnedDisplacement):
     #         super(PinnedDisplacement, self).__init__(name, nodes, axes)
 
 
+
 class FixedDisplacementXX(cFixedDisplacementXX):
 
     """ A pinned nodal displacement boundary condition clamped in XX.
@@ -205,7 +206,6 @@ class RollerDisplacementY(cRollerDisplacementY):
     pass
     # def __init__(self, name, nodes, axes):
     #     super(RollerDisplacementY, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementZ(cRollerDisplacementZ):
 

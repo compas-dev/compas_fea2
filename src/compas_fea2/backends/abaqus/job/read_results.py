@@ -2,9 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends.abaqus.writer import Writer
-
-from compas_fea2.backends.abaqus.job import launch_job
+# from compas_fea2.backends.abaqus.writer import Writer
+#
+# from compas_fea2.backends.abaqus.job import launch_job
 from compas_fea2.backends.abaqus.job import odb_extract
 
 from subprocess import Popen
@@ -34,7 +34,6 @@ __all__ = [
 
 node_fields    = ['rf', 'rm', 'u', 'ur', 'cf', 'cm']
 element_fields = ['sf', 'sm', 'sk', 'se', 's', 'e', 'pe', 'rbfor', 'ctf']
-
 
 
 def extract_data(structure, fields, exe, output, return_data, components):
@@ -155,10 +154,4 @@ def extract_data(structure, fields, exe, output, return_data, components):
 
 
 if __name__ == "__main__":
-
-    temp       = sys.argv[-1]
-    name       = sys.argv[-2]
-    fields     = sys.argv[-3].split(',')
-    components = None if sys.argv[-4] == 'None' else sys.argv[-4].split(',')
-
-    extract_odb_data(temp=temp, name=name, fields=fields, components=components)
+    pass

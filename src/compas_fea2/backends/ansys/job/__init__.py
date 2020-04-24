@@ -3,27 +3,23 @@
 job
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.ansys.structure
+.. currentmodule:: compas_fea.backends.ansys.job
 
-ansys
-=====
 
-.. currentmodule:: compas_fea.fea.ansys
+send_job
+========
 
 .. autosummary::
     :toctree: generated/
 
+    send_job
     input_generate
-    make_command_file_static
-    make_command_file_modal
-    make_command_file_harmonic
-    ansys_launch_process
-    ansys_launch_process_extract
-    delete_result_files
-    extract_rst_data
-    write_results_from_rst
-    load_to_results
+    launch_process
+
+
 
 """
 
-from .ansys import *
+from .launch_job import *
+from .read_results import *
+from .send_job import *

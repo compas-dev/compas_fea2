@@ -3,7 +3,7 @@
 core
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.core
+.. currentmodule:: compas_fea2.backends.ansys.core
 
 
 structure

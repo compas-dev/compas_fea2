@@ -1,12 +1,12 @@
 import os
-from .ansys_nodes_elements import write_constraint_nodes
-from .ansys_nodes_elements import write_nodes
-from .ansys_nodes_elements import write_elements
-from .ansys_materials import write_all_materials
-from .ansys_loads import write_loads
-from compas_fea.fea.ansys.writing.ansys_process import *
-from compas_fea.fea.ansys.writing.ansys_steps import *
-from compas_fea.fea.ansys.writing.ansys_nodes_elements import *
+from .nodes_elements import write_constraint_nodes
+from .nodes_elements import write_nodes
+from .nodes_elements import write_elements
+from .materials import write_all_materials
+from .loads import write_loads
+from .process import *
+from .steps import *
+from .nodes_elements import *
 
 
 # Author(s): Tomas Mendez Echenagucia (github.com/tmsmendez)

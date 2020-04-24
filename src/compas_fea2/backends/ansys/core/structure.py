@@ -7,6 +7,7 @@ from __future__ import print_function
 from compas_fea2.utilities import group_keys_by_attribute
 from compas_fea2.utilities import group_keys_by_attributes
 
+#TODO rmove useless imports
 from compas_fea2._core.mixins.nodemixins import NodeMixins
 from compas_fea2._core.mixins.elementmixins import ElementMixins
 from compas_fea2._core.mixins.objectmixins import ObjectMixins
@@ -15,9 +16,9 @@ from compas_fea2._core import cStructure
 # from compas_fea2._core.bcs import *
 from compas_fea2.backends.abaqus.core import Set
 
-from compas_fea2.backends.abaqus.job.send_job import input_generate
-from compas_fea2.backends.abaqus.job.send_job import launch_process
-from compas_fea2.backends.abaqus.job.read_results import extract_data
+from compas_fea2.backends.ansys.job.send_job import input_generate
+from compas_fea2.backends.ansys.job.send_job import launch_process
+from compas_fea2.backends.ansys.job.read_results import extract_rst_data
 
 import pickle
 import os
@@ -88,7 +89,7 @@ class Structure(cStructure):
         if save:
             self.save_to_obj()
 
-        input_generate(self, fields=fields, output=output)
+        input_generate(self) #TODO add fields
 
 
     def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True):
@@ -115,8 +116,7 @@ class Structure(cStructure):
 
         """
 
-        cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output)
+        launch_process(self.path, self.name, cpus, license, delete=delete)
 
 
     def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
@@ -151,19 +151,16 @@ class Structure(cStructure):
 
         """
 
-        extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-                            components=components)
+        extract_rst_data(self, fields=fields, steps=steps, sets=sets, license=license)
 
-    #TODO remove software (also in the examples)
-    def analyse_and_extract(self, software='abaqus', fields='u', exe=None, cpus=4, license='research', output=True, save=False,
+
+    def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
                             return_data=True, components=None, ndof=6):
 
         """ Runs the analysis through the chosen FEA software / library and extracts data.
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
             Data field requests.
         exe : str

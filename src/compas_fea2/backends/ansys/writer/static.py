@@ -1,10 +1,10 @@
-from compas_fea.fea.ansys.writing.ansys_nodes_elements import *
-from compas_fea.fea.ansys.writing.ansys_stresses import *
-from compas_fea.fea.ansys.writing.ansys_materials import *
-from compas_fea.fea.ansys.writing.ansys_loads import *
-from compas_fea.fea.ansys.writing.ansys_process import *
-from compas_fea.fea.ansys.writing.ansys_steps import *
-from compas_fea.fea.ansys.writing.ansys_forces import *
+from .nodes_elements import *
+from .stresses import *
+from .materials import *
+from .loads import *
+from .process import *
+from .steps import *
+from .forces import *
 
 
 # Author(s): Tomas Mendez Echenagucia (github.com/tmsmendez)
@@ -60,7 +60,7 @@ def write_static_results_from_ansys_rst(structure, fields, step_index=0):
     if 'rf' in fields or 'all' in fields:
         write_request_reactions(structure, step_index)
 
-    # these are quite old, will not work 
+    # these are quite old, will not work
     # if 'sp' in fields or 'all' in fields:
     #     write_request_pricipal_stresses(path, name, step_name)
     # if 'ss' in fields or 'all' in fields:

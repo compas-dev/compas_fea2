@@ -8,22 +8,22 @@ from __future__ import print_function
 
 
 __all__ = [
-    'GeneralDisplacement',
-    'FixedDisplacement',
-    'PinnedDisplacement',
-    'FixedDisplacementXX',
-    'FixedDisplacementYY',
-    'FixedDisplacementZZ',
-    'RollerDisplacementX',
-    'RollerDisplacementY',
-    'RollerDisplacementZ',
-    'RollerDisplacementXY',
-    'RollerDisplacementYZ',
-    'RollerDisplacementXZ'
+    'cGeneralDisplacement',
+    'cFixedDisplacement',
+    'cPinnedDisplacement',
+    'cFixedDisplacementXX',
+    'cFixedDisplacementYY',
+    'cFixedDisplacementZZ',
+    'cRollerDisplacementX',
+    'cRollerDisplacementY',
+    'cRollerDisplacementZ',
+    'cRollerDisplacementXY',
+    'cRollerDisplacementYZ',
+    'cRollerDisplacementXZ'
 ]
 
 
-class GeneralDisplacement(object):
+class cGeneralDisplacement(object):
 
     """ Initialises the base GeneralDisplacement object.
 
@@ -87,7 +87,7 @@ class GeneralDisplacement(object):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class FixedDisplacement(GeneralDisplacement):
+class cFixedDisplacement(cGeneralDisplacement):
 
     """ A fixed nodal displacement boundary condition.
 
@@ -101,13 +101,13 @@ class FixedDisplacement(GeneralDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cGeneralDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__   = 'FixedDisplacement'
         self.components = {'x': 0, 'y': 0, 'z': 0, 'xx': 0, 'yy': 0, 'zz': 0}
 
 
-class PinnedDisplacement(GeneralDisplacement):
+class cPinnedDisplacement(cGeneralDisplacement):
 
     """ A pinned nodal displacement boundary condition.
 
@@ -121,12 +121,12 @@ class PinnedDisplacement(GeneralDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacement.__init__(self, name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
+        cGeneralDisplacement.__init__(self, name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
 
         self.__name__ = 'PinnedDisplacement'
 
 
-class FixedDisplacementXX(PinnedDisplacement):
+class cFixedDisplacementXX(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition clamped in XX.
 
@@ -142,13 +142,13 @@ class FixedDisplacementXX(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementXX'
         self.components['xx'] = 0
 
 
-class FixedDisplacementYY(PinnedDisplacement):
+class cFixedDisplacementYY(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition clamped in YY.
 
@@ -164,13 +164,13 @@ class FixedDisplacementYY(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementYY'
         self.components['yy'] = 0
 
 
-class FixedDisplacementZZ(PinnedDisplacement):
+class cFixedDisplacementZZ(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition clamped in ZZ.
 
@@ -186,13 +186,13 @@ class FixedDisplacementZZ(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementZZ'
         self.components['zz'] = 0
 
 
-class RollerDisplacementX(PinnedDisplacement):
+class cRollerDisplacementX(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in X.
 
@@ -208,13 +208,13 @@ class RollerDisplacementX(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementX'
         self.components['x'] = None
 
 
-class RollerDisplacementY(PinnedDisplacement):
+class cRollerDisplacementY(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in Y.
 
@@ -230,13 +230,13 @@ class RollerDisplacementY(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementY'
         self.components['y'] = None
 
 
-class RollerDisplacementZ(PinnedDisplacement):
+class cRollerDisplacementZ(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in Z.
 
@@ -252,13 +252,13 @@ class RollerDisplacementZ(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementZ'
         self.components['z'] = None
 
 
-class RollerDisplacementXY(PinnedDisplacement):
+class cRollerDisplacementXY(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in X and Y.
 
@@ -274,14 +274,14 @@ class RollerDisplacementXY(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementXY'
         self.components['x'] = None
         self.components['y'] = None
 
 
-class RollerDisplacementYZ(PinnedDisplacement):
+class cRollerDisplacementYZ(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in Y and Z.
 
@@ -297,14 +297,14 @@ class RollerDisplacementYZ(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementYZ'
         self.components['y'] = None
         self.components['z'] = None
 
 
-class RollerDisplacementXZ(PinnedDisplacement):
+class cRollerDisplacementXZ(cPinnedDisplacement):
 
     """ A pinned nodal displacement boundary condition released in X and Z.
 
@@ -320,7 +320,7 @@ class RollerDisplacementXZ(PinnedDisplacement):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
+        cPinnedDisplacement.__init__(self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementXZ'
         self.components['x'] = None

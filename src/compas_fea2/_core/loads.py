@@ -4,29 +4,29 @@ from __future__ import division
 from __future__ import print_function
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez), 
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
 
-#TODO: make units independent
+#TODO: make units independent using the utilities function
 
 
 __all__ = [
-    'Load',
-    'PrestressLoad',
-    'PointLoad',
-    'PointLoads',
-    'LineLoad',
-    'AreaLoad',
-    'GravityLoad',
-    'ThermalLoad',
-    'TributaryLoad',
-    'HarmonicPointLoad',
-    'HarmonicPressureLoad',
-    'AcousticDiffuseFieldLoad'
+    'cLoad',
+    'cPrestressLoad',
+    'cPointLoad',
+    'cPointLoads',
+    'cLineLoad',
+    'cAreaLoad',
+    'cGravityLoad',
+    'cThermalLoad',
+    'cTributaryLoad',
+    'cHarmonicPointLoad',
+    'cHarmonicPressureLoad',
+    'cAcousticDiffuseFieldLoad'
 ]
 
 
-class Load(object):
+class cLoad(object):
 
     """ Initialises base Load object.
 
@@ -86,7 +86,7 @@ class Load(object):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class PrestressLoad(Load):
+class cPrestressLoad(cLoad):
 
     """ Pre-stress [units: N/m2] applied to element(s).
 
@@ -108,7 +108,7 @@ class PrestressLoad(Load):
         self.components = {'sxx': sxx}
 
 
-class PointLoad(Load):
+class cPointLoad(cLoad):
 
     """ Concentrated forces and moments [units:N, Nm] applied to node(s).
 
@@ -134,13 +134,13 @@ class PointLoad(Load):
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
-        Load.__init__(self, name=name, nodes=nodes, axes='global')
+        cLoad.__init__(self, name=name, nodes=nodes, axes='global')
 
         self.__name__   = 'PointLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
-class PointLoads(Load):
+class cPointLoads(cLoad):
 
     """ Concentrated forces and moments [units:N, Nm] applied to different nodes.
 
@@ -154,12 +154,12 @@ class PointLoads(Load):
     """
 
     def __init__(self, name, components):
-        Load.__init__(self, name=name, components=components, axes='global')
+        cLoad.__init__(self, name=name, components=components, axes='global')
 
         self.__name__ = 'PointLoads'
 
 
-class LineLoad(Load):
+class cLineLoad(cLoad):
 
     """ Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
 
@@ -185,13 +185,13 @@ class LineLoad(Load):
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='local'):
-        Load.__init__(self, name=name, elements=elements, axes=axes)
+        cLoad.__init__(self, name=name, elements=elements, axes=axes)
 
         self.__name__   = 'LineLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
-class AreaLoad(Load): 
+class cAreaLoad(cLoad):
 
     """ Distributed area force [units:N/m2] applied to element(s).
 
@@ -211,13 +211,13 @@ class AreaLoad(Load):
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, axes='local'):
-        Load.__init__(self, name=name, elements=elements, axes=axes)
+        cLoad.__init__(self, name=name, elements=elements, axes=axes)
 
         self.__name__   = 'AreaLoad'
         self.components = {'x': x, 'y': y, 'z': z}
 
 
-class GravityLoad(Load):
+class cGravityLoad(cLoad):
 
     """ Gravity load [units:N/m3] applied to element(s).
 
@@ -239,7 +239,7 @@ class GravityLoad(Load):
     """
 
     def __init__(self, name, elements, g=-9.81, x=0., y=0., z=1.):
-        Load.__init__(self, name=name, elements=elements, axes='global')
+        cLoad.__init__(self, name=name, elements=elements, axes='global')
 
         self.__name__   = 'GravityLoad'
         self.g          = g
@@ -247,7 +247,7 @@ class GravityLoad(Load):
         self.attr_list.append('g')
 
 
-class ThermalLoad(object):
+class cThermalLoad(object):
 
     """ Thermal load.
 
@@ -270,7 +270,7 @@ class ThermalLoad(object):
         self.temperature = temperature
 
 
-class TributaryLoad(Load):
+class cTributaryLoad(cLoad):
 
     """ Tributary area loads applied to nodes.
 
@@ -299,7 +299,7 @@ class TributaryLoad(Load):
     """
 
     def __init__(self, structure, name, mesh, x=0, y=0, z=0, axes='global'):
-        Load.__init__(self, name=name, axes=axes)
+        cLoad.__init__(self, name=name, axes=axes)
 
         self.__name__ = 'TributaryLoad'
         self.attr_list.append('mesh')
@@ -320,7 +320,7 @@ class TributaryLoad(Load):
         self.nodes      = nodes
 
 
-class HarmonicPointLoad(Load):
+class cHarmonicPointLoad(cLoad):
 
     """ Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
 
@@ -346,13 +346,13 @@ class HarmonicPointLoad(Load):
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
-        Load.__init__(self, name=name, nodes=nodes, axes='global')
+        cLoad.__init__(self, name=name, nodes=nodes, axes='global')
 
         self.__name__   = 'HarmonicPointLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
-class HarmonicPressureLoad(Load):
+class cHarmonicPressureLoad(cLoad):
 
     """ Harmonic pressure loads [units:N/m2] applied to element(s).
 
@@ -370,13 +370,13 @@ class HarmonicPressureLoad(Load):
     """
 
     def __init__(self, name, elements, pressure=0, phase=None):
-        Load.__init__(self, name=name, elements=elements, axes='global')
+        cLoad.__init__(self, name=name, elements=elements, axes='global')
 
         self.__name__   = 'HarmonicPressureLoad'
         self.components = {'pressure': pressure, 'phase': phase}
 
 
-class AcousticDiffuseFieldLoad(Load):
+class cAcousticDiffuseFieldLoad(cLoad):
 
     """ Acoustic Diffuse field loads applied to elements.
 
@@ -396,7 +396,7 @@ class AcousticDiffuseFieldLoad(Load):
     """
 
     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
-        Load.__init__(self, name=name, elements=elements, axes='global')
+        cLoad.__init__(self, name=name, elements=elements, axes='global')
 
         self.__name__   = 'AcousticDiffuseFieldLoad'
         self.components = {'air_density':   air_density,

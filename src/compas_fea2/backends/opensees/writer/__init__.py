@@ -3,7 +3,7 @@
 writer
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.writer
+.. currentmodule:: compas_fea.backends.opensees.writer
 
 
 """
@@ -20,7 +20,6 @@ from .elements import *
 from .materials import *
 
 from .steps import *
-from .sets import *
 
 from .writer import *
 

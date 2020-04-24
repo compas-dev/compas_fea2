@@ -53,7 +53,7 @@ class Nodes(object):
     def write_node(self, key):
 
         prefix  = ''
-        spacer  = ', '
+        spacer  = self.spacer
         x, y, z = self.structure.node_xyz(key)
 
         line    = '{0}{1}{2}{3:.3f}{2}{4:.3f}{2}{5:.3f}'.format(prefix, key + 1, spacer, x, y, z)

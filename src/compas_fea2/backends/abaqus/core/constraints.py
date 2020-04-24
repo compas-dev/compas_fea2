@@ -30,9 +30,9 @@ class Constraint(cConstraint):
     None
 
     """
-
-    def __init__(self, name):
-        super(Constraint, self).__init__(name)
+    pass
+    # def __init__(self, name):
+    #     super(Constraint, self).__init__(name)
 
 
 class TieConstraint(cTieConstraint):
@@ -56,5 +56,6 @@ class TieConstraint(cTieConstraint):
 
     """
 
-    def __init__(self, name, master, slave, tol):
-        super(TieConstraint, self).__init__(name, master, slave, tol)
+    pass
+    # def __init__(self, name, master, slave, tol):
+    #     super(TieConstraint, self).__init__(name, master, slave, tol)

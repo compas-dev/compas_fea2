@@ -31,9 +31,9 @@ class Misc(cMisc):
     None
 
     """
-
-    def __init__(self, name):
-        super(Misc, self).__init__(name)
+    pass
+    # def __init__(self, name):
+    #     super(Misc, self).__init__(name)
 
 
 class Amplitude(cAmplitude):
@@ -52,9 +52,9 @@ class Amplitude(cAmplitude):
     None
 
     """
-
-    def __init__(self, name, values):
-        super(Amplitude, self).__init__(name, values)
+    pass
+    # def __init__(self, name, values):
+    #     super(Amplitude, self).__init__(name, values)
 
 
 class Temperatures(cTemperatures):
@@ -77,6 +77,6 @@ class Temperatures(cTemperatures):
     None
 
     """
-
-    def __init__(self, name, file, values, tend):
-        super(Temperatures, self).__init__(name, file, values, tend)
+    pass
+    # def __init__(self, name, file, values, tend):
+    #     super(Temperatures, self).__init__(name, file, values, tend)

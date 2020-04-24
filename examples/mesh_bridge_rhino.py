@@ -1,21 +1,21 @@
 
 from compas.datastructures import Mesh
 from compas.geometry import distance_point_point
-from compas_rhino.helpers import mesh_from_guid
+from compas_rhino.helpers import mesh_from_guid #TODO fix compas import
 
-from compas_fea.cad import rhino
-from compas_fea.structure import BucklingStep
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PointLoads
-from compas_fea.structure import RectangularSection
-from compas_fea.structure import RollerDisplacementY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
-from compas_fea.structure import TrussSection
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import BucklingStep
+from compas_fea2.backends.abaqus.core import Concrete
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PointLoads
+from compas_fea2.backends.abaqus.core import RectangularSection
+from compas_fea2.backends.abaqus.core import RollerDisplacementY
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.abaqus.core import TrussSection
 
 from math import pi
 

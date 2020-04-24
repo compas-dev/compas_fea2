@@ -1,5 +1,5 @@
 
-from compas_fea.cad import rhino
+from compas_fea2.cad import rhino
 
 import rhinoscriptsyntax as rs
 

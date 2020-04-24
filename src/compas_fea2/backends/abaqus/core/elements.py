@@ -120,9 +120,9 @@ class Element(cElement):
         Element property name
 
     """
-
-    def __init__(self, nodes, number, thermal, axes):
-        super(Element, self).__init__(nodes, number, thermal, axes)
+    pass
+    # def __init__(self, nodes, number, thermal, axes):
+    #     super(Element, self).__init__(nodes, number, thermal, axes)
 
 
 # ==============================================================================
@@ -138,9 +138,9 @@ class MassElement(cMassElement):
     None
 
     """
-
-    def __init__(self):
-        super(MassElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(MassElement, self).__init__()
 
 
 # ==============================================================================
@@ -156,9 +156,9 @@ class BeamElement(cBeamElement):
     None
 
     """
-
-    def __init__(self):
-        super(BeamElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(BeamElement, self).__init__()
 
 
 class SpringElement(cSpringElement):
@@ -170,9 +170,9 @@ class SpringElement(cSpringElement):
     None
 
     """
-
-    def __init__(self):
-        super(SpringElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(SpringElement, self).__init__()
 
 
 class TrussElement(cTrussElement):
@@ -184,9 +184,9 @@ class TrussElement(cTrussElement):
     None
 
     """
-
-    def __init__(self):
-        super(TrussElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(TrussElement, self).__init__()
 
 
 class StrutElement(cStrutElement):
@@ -198,9 +198,9 @@ class StrutElement(cStrutElement):
     None
 
     """
-
-    def __init__(self):
-        super(StrutElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(StrutElement, self).__init__()
 
 
 class TieElement(cTieElement):
@@ -212,9 +212,9 @@ class TieElement(cTieElement):
     None
 
     """
-
-    def __init__(self):
-        super(TieElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(TieElement, self).__init__()
 
 
 # ==============================================================================
@@ -230,9 +230,9 @@ class ShellElement(cShellElement):
     None
 
     """
-
-    def __init__(self):
-        super(ShellElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(ShellElement, self).__init__()
 
 
 class FaceElement(cFaceElement):
@@ -244,9 +244,9 @@ class FaceElement(cFaceElement):
     None
 
     """
-
-    def __init__(self):
-        super(FaceElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(FaceElement, self).__init__()
 
 
 class MembraneElement(cMembraneElement):
@@ -258,9 +258,9 @@ class MembraneElement(cMembraneElement):
     None
 
     """
-
-    def __init__(self):
-        super(MembraneElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(MembraneElement, self).__init__()
 
 
 # ==============================================================================
@@ -276,9 +276,9 @@ class SolidElement(cSolidElement):
     None
 
     """
-
-    def __init__(self):
-        super(SolidElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(SolidElement, self).__init__()
 
 
 class PentahedronElement(cPentahedronElement):
@@ -290,9 +290,9 @@ class PentahedronElement(cPentahedronElement):
     None
 
     """
-
-    def __init__(self):
-        super(PentahedronElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(PentahedronElement, self).__init__()
 
 
 class TetrahedronElement(cTetrahedronElement):
@@ -304,9 +304,9 @@ class TetrahedronElement(cTetrahedronElement):
     None
 
     """
-
-    def __init__(self):
-        super(TetrahedronElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(TetrahedronElement, self).__init__()
 
 
 class HexahedronElement(cHexahedronElement):
@@ -318,6 +318,6 @@ class HexahedronElement(cHexahedronElement):
     None
 
     """
-
-    def __init__(self):
-        super(HexahedronElement, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(HexahedronElement, self).__init__()

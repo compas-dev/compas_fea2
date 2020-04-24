@@ -72,8 +72,9 @@ class GeneralDisplacement(cGeneralDisplacement):
         'local' or 'global' coordinate axes.
 
     """
-    def __init__(self, name, nodes, x, y, z, xx, yy, zz, axes):
-        super(GeneralDisplacement, self).__init__(name, nodes, x, y, z, xx, yy, zz, axes)
+    pass
+    # def __init__(self, name, nodes, x, y, z, xx, yy, zz, axes):
+    #     super(GeneralDisplacement, self).__init__(name, nodes, x, y, z, xx, yy, zz, axes)
 
 
 

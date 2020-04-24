@@ -138,9 +138,9 @@ class ElasticOrthotropic(cElasticOrthotropic):
     - Can be created but is currently not implemented.
 
     """
-
-    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension, compression):
-        super(ElasticOrthotropic, self).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension, compression)
+    pass
+    # def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension, compression):
+    #     super(ElasticOrthotropic, self).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension, compression)
 
 
 # ==============================================================================
@@ -171,9 +171,9 @@ class ElasticPlastic(cElasticPlastic):
     - Plastic stress--strain pairs applies to both compression and tension.
 
     """
-
-    def __init__(self, name, E, v, p, f, e):
-        super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
+    pass
+    # def __init__(self, name, E, v, p, f, e):
+    #     super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
 
 
 # ==============================================================================
@@ -202,9 +202,9 @@ class Steel(cSteel):
         Density [kg/m3].
 
     """
-
-    def __init__(self, name, fy, fu, eu, E, v, p):
-        super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
+    pass
+    # def __init__(self, name, fy, fu, eu, E, v, p):
+    #     super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
 
 
 # ==============================================================================
@@ -243,9 +243,9 @@ class Concrete(cConcrete):
     - The concrete model is based on Eurocode 2 up to fck=90 MPa.
 
     """
-
-    def __init__(self, name, fck, v, p, fr):
-        super(Concrete, self).__init__(name, fck, v, p, fr)
+    pass
+    # def __init__(self, name, fck, v, p, fr):
+    #     super(Concrete, self).__init__(name, fck, v, p, fr)
 
 
 class ConcreteSmearedCrack(cConcreteSmearedCrack):
@@ -274,9 +274,9 @@ class ConcreteSmearedCrack(cConcreteSmearedCrack):
         Failure ratios.
 
     """
-
-    def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
-        super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
+    pass
+    # def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
+    #     super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
 
 
 class ConcreteDamagedPlasticity(cConcreteDamagedPlasticity):
@@ -301,9 +301,9 @@ class ConcreteDamagedPlasticity(cConcreteDamagedPlasticity):
         Tension stiffening parameters.
 
     """
-
-    def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
+    pass
+    # def __init__(self, name, E, v, p, damage, hardening, stiffening):
+    #     super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
 
 
 # ==============================================================================
@@ -326,6 +326,6 @@ class ThermalMaterial(cThermalMaterial):
         Pairs of specific heat and temperature values.
 
     """
-
-    def __init__(self, name, conductivity, p, sheat):
-        super(ThermalMaterial, self).__init__(name, conductivity, p, sheat)
+    pass
+    # def __init__(self, name, conductivity, p, sheat):
+    #     super(ThermalMaterial, self).__init__(name, conductivity, p, sheat)

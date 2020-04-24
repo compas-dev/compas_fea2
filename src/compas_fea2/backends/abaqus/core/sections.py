@@ -367,9 +367,9 @@ class ShellSection(cShellSection):
         Thickness.
 
     """
-
-    def __init__(self, name, t):
-        super(ShellSection, self).__init__(name, t)
+    pass
+    # def __init__(self, name, t):
+    #     super(ShellSection, self).__init__(name, t)
 
 
 class MembraneSection(cMembraneSection):
@@ -384,9 +384,9 @@ class MembraneSection(cMembraneSection):
         Thickness.
 
     """
-
-    def __init__(self, name, t):
-        super(MembraneSection, self).__init__(name, t)
+    pass
+    # def __init__(self, name, t):
+    #     super(MembraneSection, self).__init__(name, t)
 
 
 # ==============================================================================
@@ -403,9 +403,9 @@ class SolidSection(cSolidSection):
         Section name.
 
     """
-
-    def __init__(self, name):
-        super(SolidSection, self).__init__(name)
+    pass
+    # def __init__(self, name):
+    #     super(SolidSection, self).__init__(name)
 
 
 

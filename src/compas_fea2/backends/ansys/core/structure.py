@@ -85,7 +85,7 @@ class Structure(cStructure):
         """
 
         if save:
-            self.save_to_obj()
+            self.save_to_cfea()
 
         input_generate(self) #TODO add fields
 

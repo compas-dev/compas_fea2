@@ -86,7 +86,7 @@ class Structure(cStructure):
         """
 
         if save:
-            self.save_to_obj()
+            self.save_to_cfea()
 
         input_generate(self, fields=fields, output=output)
 
@@ -155,7 +155,7 @@ class Structure(cStructure):
                             components=components)
 
     #TODO remove software (also in the examples)
-    def analyse_and_extract(self, software='abaqus', fields='u', exe=None, cpus=4, license='research', output=True, save=False,
+    def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
                             return_data=True, components=None, ndof=6):
 
         """ Runs the analysis through the chosen FEA software / library and extracts data.

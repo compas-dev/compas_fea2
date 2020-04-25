@@ -14,9 +14,6 @@ from math import pi
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
-# OpenSees executable location (check getting started page to learn more about opensees)
-os_exe='C:/OpenSees3.2.0/bin/OpenSees.exe'
-
 # Structure
 
 mdl = Structure(name='beam_simple', path='C:/Temp/')
@@ -70,8 +67,7 @@ mdl.steps_order = ['step_bc', 'step_load']
 mdl.summary()
 
 # Run
-# mdl.analyse_and_extract(software='opensees', exe=os_exe, fields=['u', 'ur', 'sf', 'sm'])
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'ur', 'sf', 'sm'])
+mdl.analyse_and_extract(fields=['u', 'ur', 'sf', 'sm'], save=True)
 
 rhino.plot_data(mdl, step='step_load', field='um', radius=0.01, cbar_size=0.3)
 rhino.plot_data(mdl, step='step_load', field='sf1', radius=0.01, cbar_size=0.3)

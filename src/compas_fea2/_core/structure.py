@@ -706,7 +706,7 @@ Steps
     # Save
     # ==============================================================================
 
-    def save_to_obj(self, output=True):
+    def save_to_cfea(self, output=True):
 
         """ Exports the Structure object to an .obj file through Pickle.
 
@@ -721,7 +721,7 @@ Steps
 
         """
 
-        filename = os.path.join(self.path, self.name + '.obj')
+        filename = os.path.join(self.path, self.name + '.cfea')
 
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
@@ -735,7 +735,7 @@ Steps
     # ==============================================================================
 
     @staticmethod
-    def load_from_obj(filename, output=True):
+    def load_from_cfea(filename, output=True):
 
         """ Imports a Structure object from an .obj file through Pickle.
 
@@ -752,6 +752,7 @@ Steps
             Imported Structure object.
 
         """
+        #TODO add check on file extension
 
         with open(filename, 'rb') as f:
             structure = pickle.load(f)

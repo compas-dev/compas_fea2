@@ -13,8 +13,7 @@ from compas_fea2.backends.opensees.writer.materials import Materials
 from compas_fea2.backends.opensees.writer.steps import Steps
 
 
-# Author(s): Andrew Liew (github.com/andrewliew)
-
+# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'Writer',

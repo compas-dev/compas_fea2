@@ -9,7 +9,7 @@ from compas_fea2._core.loads import cThermalLoad
 from compas_fea2._core.bcs import cGeneralDisplacement
 from compas_fea2._core.materials import cMaterial
 from compas_fea2._core.sections import cSection
-from compas_fea2._core.load_cases import cStep
+from compas_fea2._core.steps import cStep
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)

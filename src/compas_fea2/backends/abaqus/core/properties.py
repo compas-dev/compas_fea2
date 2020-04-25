@@ -52,6 +52,11 @@ class ElementProperties(cElementProperties):
     - Either ``elements`` or ``elset`` should be given, not both.
 
     """
-    pass
-    # def __init__(self, name, material, section, elset, elements, rebar):
-    #     super(ElementProperties, self).__init__(name, material, section, elset, elements, rebar)
+
+    def __init__(self, name, material=None, section=None, elset=None, elements=None, rebar=None):
+        super(ElementProperties, self).__init__(name, material, section, elements)
+        self.elset    = elset
+        self.rebar    = rebar
+
+        if (not elset) and (not elements):
+            raise NameError('***** ElementProperties objects require elements or element sets *****')

@@ -5,7 +5,6 @@ from __future__ import print_function
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
-# TODO add the property class here
 
 __all__ = [
     'cNode',

@@ -172,7 +172,8 @@ from .set import *
 from .structure import *
 from .constraints import *
 from .elements import *
-from .load_cases import *
+from .steps import *
+#from .load_cases import *
 #from .load_combos import *
 from .loads import *
 from .materials import *

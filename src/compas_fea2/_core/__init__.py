@@ -170,6 +170,7 @@ from .elements import *
 from .load_cases import *
 from .load_combos import *
 from .loads import *
+from .steps import *
 from .materials import *
 from .properties import *
 from .sections import *

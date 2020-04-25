@@ -34,6 +34,7 @@ class Writer(cWriter, Steps, Materials, BCs, Elements, Nodes, Heading):
     """
 
     def __init__(self, structure, filename, fields, ndof=6):
-        super(Writer, self).__init__(structure, filename, fields, ndof)
+        super(Writer, self).__init__(structure, filename, fields)
         self.comment   = '#'
         self.spacer    = ' '
+        self.ndof      =  6

@@ -25,10 +25,9 @@ class cWriter():
 
     """
 
-    def __init__(self, structure, filename, fields, ndof=6):
+    def __init__(self, structure, filename, fields):
 
         self.filename  = filename
-        self.ndof      = ndof
         self.structure = structure
         self.fields    = fields
 

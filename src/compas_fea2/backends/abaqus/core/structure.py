@@ -7,10 +7,11 @@ from __future__ import print_function
 from compas_fea2.utilities import group_keys_by_attribute
 from compas_fea2.utilities import group_keys_by_attributes
 
-from compas_fea2._core.mixins.nodemixins import NodeMixins
-from compas_fea2._core.mixins.elementmixins import ElementMixins
-from compas_fea2._core.mixins.objectmixins import ObjectMixins
 from compas_fea2._core import cStructure
+
+from compas_fea2.backends.abaqus.core.mixins.nodemixins import NodeMixins
+from compas_fea2.backends.abaqus.core.mixins.elementmixins import ElementMixins
+from compas_fea2.backends.abaqus.core.mixins.objectmixins import ObjectMixins
 
 # from compas_fea2._core.bcs import *
 from compas_fea2.backends.abaqus.core import Set
@@ -31,11 +32,128 @@ __all__ = [
         ]
 
 
-class Structure(cStructure):
+class Structure(cStructure, ObjectMixins, ElementMixins, NodeMixins):
 
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
+        self.sets = {}
 
+
+    #TODO try to reduce duplicate code
+    def add_nodes_elements_from_mesh(self, mesh, element_type, thermal=False, elset=None):
+
+        """ Adds the nodes and faces of a Mesh to the Structure object.
+
+        Parameters
+        ----------
+        mesh : obj
+            Mesh datastructure object.
+        element_type : str
+            Element type: 'ShellElement', 'MembraneElement' etc.
+        thermal : bool
+            Thermal properties on or off.
+        elset : str
+            Name of element set to create.
+
+        Returns
+        -------
+        list
+            Keys of the created elements.
+
+        """
+
+        for key in sorted(list(mesh.vertices()), key=int):
+            self.add_node(mesh.vertex_coordinates(key))
+
+        ekeys = []
+
+        for fkey in list(mesh.faces()):
+            face = [self.check_node_exists(mesh.vertex_coordinates(i)) for i in mesh.face[fkey]]
+            ekeys.append(self.add_element(nodes=face, type=element_type, thermal=thermal))
+
+        if elset:
+            self.add_set(name=elset, type='element', selection=ekeys)
+
+        return ekeys
+
+
+    def add_nodes_elements_from_network(self, network, element_type, thermal=False, elset=None, axes={}):
+
+        """ Adds the nodes and edges of a Network to the Structure object.
+
+        Parameters
+        ----------
+        network : obj
+            Network datastructure object.
+        element_type : str
+            Element type: 'BeamElement', 'TrussElement' etc.
+        thermal : bool
+            Thermal properties on or off.
+        elset : str
+            Name of element set to create.
+        axes : dict
+            The local element axes 'ex', 'ey' and 'ez' for all elements.
+
+        Returns
+        -------
+        list
+            Keys of the created elements.
+
+        """
+
+        for key in sorted(list(network.nodes()), key=int):
+            self.add_node(network.node_coordinates(key))
+
+        ekeys = []
+
+        for u, v in list(network.edges()):
+            sp = self.check_node_exists(network.node_coordinates(u))
+            ep = self.check_node_exists(network.node_coordinates(v))
+            ekeys.append(self.add_element(nodes=[sp, ep], type=element_type, thermal=thermal, axes=axes))
+
+        if elset:
+            self.add_set(name=elset, type='element', selection=ekeys)
+
+        return ekeys
+
+
+    def add_nodes_elements_from_volmesh(self, volmesh, element_type='SolidElement', thermal=False, elset=None, axes={}):
+
+        """ Adds the nodes and cells of a VolMesh to the Structure object.
+
+        Parameters
+        ----------
+        volmesh : obj
+            VolMesh datastructure object.
+        element_type : str
+            Element type: 'SolidElement' or ....
+        thermal : bool
+            Thermal properties on or off.
+        elset : str
+            Name of element set to create.
+        axes : dict
+            The local element axes 'ex', 'ey' and 'ez' for all elements.
+
+        Returns
+        -------
+        list
+            Keys of the created elements.
+
+        """
+
+        for key in sorted(list(volmesh.vertices()), key=int):
+            self.add_node(volmesh.vertex_coordinates(key))
+
+        ekeys = []
+
+        for ckey in volmesh.cell:
+            cell_vertices = volmesh.cell_vertices(ckey)
+            nkeys = [self.check_node_exists(volmesh.vertex_coordinates(nk)) for nk in cell_vertices]
+            ekeys.append(self.add_element(nodes=nkeys, type=element_type, acoustic=acoustic, thermal=thermal, axes=axes))
+        if elset:
+            self.add_set(name=elset, type='element', selection=ekeys)
+
+        return ekeys
 
     # ==============================================================================
     # Sets
@@ -66,7 +184,86 @@ class Structure(cStructure):
         self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
 
 
-    def write_input_file(self, fields='u', output=True, save=False, ndof=6):
+    # ==============================================================================
+    # Results
+    # ==============================================================================
+
+    def get_nodal_results(self, step, field, nodes='all'):
+
+        """ Extract nodal results from self.results.
+
+        Parameters
+        ----------
+        step : str
+            Step to extract from.
+        field : str
+            Data field request.
+        nodes : str, list
+            Extract 'all' or a node set/list.
+
+        Returns
+        -------
+        dict
+            The nodal results for the requested field.
+
+        """
+
+        data  = {}
+        rdict = self.results[step]['nodal']
+
+        if nodes == 'all':
+            keys = list(self.nodes.keys())
+
+        elif isinstance(nodes, str):
+            keys = self.sets[nodes].selection
+
+        else:
+            keys = nodes
+
+        for key in keys:
+            data[key] = rdict[field][key]
+
+        return data
+
+
+    def get_element_results(self, step, field, elements='all'):
+
+        """ Extract element results from self.results.
+
+        Parameters
+        ----------
+        step : str
+            Step to extract from.
+        field : str
+            Data field request.
+        elements : str, list
+            Extract 'all' or an element set/list.
+
+        Returns
+        -------
+        dict
+            The element results for the requested field.
+
+        """
+
+        data  = {}
+        rdict = self.results[step]['element']
+
+        if elements == 'all':
+            keys = list(self.elements.keys())
+
+        elif isinstance(elements, str):
+            keys = self.sets[elements].selection
+
+        else:
+            keys = elements
+
+        for key in keys:
+            data[key] = rdict[field][key]
+
+        return data
+
+    def write_input_file(self, fields='u', output=True, save=False):
 
         """ Writes abaqus input file.
 
@@ -154,9 +351,9 @@ class Structure(cStructure):
         extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
                             components=components)
 
-    #TODO remove software (also in the examples)
+
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, ndof=6):
+                            return_data=True, components=None):
 
         """ Runs the analysis through the chosen FEA software / library and extracts data.
 
@@ -187,7 +384,7 @@ class Structure(cStructure):
 
         """
 
-        self.write_input_file(fields=fields, output=output, save=save, ndof=ndof)
+        self.write_input_file(fields=fields, output=output, save=save)
 
         self.analyse(exe=exe, cpus=cpus, license=license, output=output)
 

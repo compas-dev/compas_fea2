@@ -14,7 +14,7 @@ from compas_fea2._core.elements import *
 
 
 __all__ = [
-    'ElementMixins',
+    'cElementMixins',
 ]
 
 
@@ -35,7 +35,7 @@ func_dict = {
 }
 
 
-class ElementMixins(object):
+class cElementMixins(object):
 
     def add_element(self, nodes, type, thermal=False, axes={}, mass=None):
 
@@ -254,10 +254,10 @@ class ElementMixins(object):
             key = self.virtual_nodes.setdefault(node, self.node_count())
             self.nodes[key] = {'x': xyz[0], 'y': xyz[1], 'z': xyz[2],
                                'ex': [1, 0, 0], 'ey': [0, 1, 0], 'ez': [0, 0, 1], 'virtual': True}
-            if 'virtual_nodes' in self.sets:
-                self.sets['virtual_nodes']['selection'].append(key)
+            if 'virtual_nodes' in self.collections:
+                self.collections['virtual_nodes']['selection'].append(key)
             else:
-                self.sets['virtual_nodes'] = {'type': 'node', 'selection': [key], 'explode': False}
+                self.collections['virtual_nodes'] = {'type': 'node', 'selection': [key], 'explode': False}
             nodes = [node, key]
         else:
             nodes = [node]
@@ -315,9 +315,9 @@ class ElementMixins(object):
             self.add_element_to_element_index(ekey, nodes, virtual=True)
 
             if 'virtual_elements' in self.sets:
-                self.sets['virtual_elements']['selection'].append(ekey)
+                self.collections['virtual_elements']['selection'].append(ekey)
             else:
-                self.sets['virtual_elements'] = {'type': 'virtual_element', 'selection': [ekey],
+                self.collections['virtual_elements'] = {'type': 'virtual_element', 'selection': [ekey],
                                                  'index': len(self.sets)}
 
         return ekey
@@ -338,8 +338,8 @@ class ElementMixins(object):
 
         """
 
-        if element_property.elset:
-            elements = self.sets[element_property.elset].selection
+        if element_property.collection:
+            elements = self.collections[element_property.collection].selection
         else:
             elements = element_property.elements
 

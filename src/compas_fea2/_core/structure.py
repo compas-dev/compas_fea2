@@ -7,10 +7,10 @@ from __future__ import print_function
 from compas_fea2.utilities import group_keys_by_attribute
 from compas_fea2.utilities import group_keys_by_attributes
 
-from compas_fea2._core.mixins.nodemixins import NodeMixins
-from compas_fea2._core.mixins.elementmixins import ElementMixins
-from compas_fea2._core.mixins.objectmixins import ObjectMixins
-from compas_fea2._core.bcs import *
+from compas_fea2._core.mixins.nodemixins import cNodeMixins
+from compas_fea2._core.mixins.elementmixins import cElementMixins
+from compas_fea2._core.mixins.objectmixins import cObjectMixins
+# from compas_fea2._core.bcs import *
 
 import pickle
 import os
@@ -24,7 +24,7 @@ __all__ = [
         ]
 
 
-class cStructure(ObjectMixins, ElementMixins, NodeMixins):
+class cStructure(cObjectMixins, cElementMixins, cNodeMixins):
 
     """ Initialises Structure object for use in finite element analysis.
 
@@ -92,7 +92,7 @@ class cStructure(ObjectMixins, ElementMixins, NodeMixins):
         self.element_index         = {}
         self.element_properties    = {}
         self.interactions          = {}
-        self.loads                 = {}
+        self.loads                 = {} #TODO add cases and combos (change numbering)
         self.materials             = {}
         self.misc                  = {}
         self.name                  = name
@@ -101,7 +101,7 @@ class cStructure(ObjectMixins, ElementMixins, NodeMixins):
         self.path                  = path
         self.results               = {}
         self.sections              = {}
-        self.sets                  = {}
+        # self.collections           = {} #TODO maybe add 'collections'
         self.steps                 = {}
         self.steps_order           = []
         self.tol                   = '3'
@@ -116,7 +116,7 @@ class cStructure(ObjectMixins, ElementMixins, NodeMixins):
         n = self.node_count()
         m = self.element_count()
         data = [
-            self.sets,
+            # self.collections,
             self.materials,
             self.sections,
             self.loads,
@@ -150,9 +150,6 @@ Elements
 --------
 {}
 
-Sets
-----
-{}
 
 Materials
 ---------
@@ -186,105 +183,7 @@ Steps
 -----
 {}
 
-""".format(self.name, n, m, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8])
-
-
-    # ==============================================================================
-    # Constructors    EXPERIMENTAL
-    # ==============================================================================
-
-    # @classmethod
-    # def from_mesh(cls, mesh, path):
-
-    #     """ Creates a Structure object based on data contained in a compas Mesh datastructure.
-
-    #     Parameters
-    #     ----------
-    #     mesh : obj
-    #         Mesh datastructure object.
-
-    #     Returns
-    #     -------
-    #     obj
-    #         The resulting Structure object.
-
-    #     Notes
-    #     -----
-    #     - The Mesh object must contain displacements, materials, sections and loads.
-
-    #     """
-
-    #     structure = cls(path=path)
-
-    #     # Add nodes and elements from Mesh
-
-    #     structure.add_nodes_elements_from_mesh(mesh=mesh, element_type='ShellElement')
-
-    #     # Add displacements
-
-    #     disp_groups = group_keys_by_attributes(mesh.vertex, ['ux', 'uy', 'uz', 'urx', 'ury', 'urz'])
-    #     disp_names  = []
-
-    #     for dk in disp_groups:
-    #         if dk != '-_-_-_-_-_-':
-    #             disp_names.append(dk + '_nodes')
-    #             structure.add_set(name=dk, type='node', selection=disp_groups[dk])
-    #             d = [float(x) if x != '-' else None for x in dk.split('_')]
-    #             supports = GeneralDisplacement(name=dk + '_nodes', nodes=dk, x=d[0], y=d[1], z=d[2],
-    #                                            xx=d[3], yy=d[4], zz=d[5])
-    #             structure.add_displacement(supports)
-
-    #     # Add materials and sections
-
-    #     mat_groups = group_keys_by_attributes(mesh.facedata, ['E', 'v', 'p'])
-
-    #     for mk in mat_groups:
-    #         m = [float(x) if x != '-' else None for x in mk.split('_')]
-    #         material = ElasticIsotropic(name=mk + '_material', E=m[0], v=m[1], p=m[2])
-    #         structure.add_material(material)
-
-    #     thick_groups = group_keys_by_attribute(mesh.facedata, 'thick')
-
-    #     for tk in thick_groups:
-    #         t = float(tk)
-    #         section = ShellSection(name=tk + '_section', t=t)
-    #         structure.add_section(section)
-
-    #     prop_comb = combine_all_sets(mat_groups, thick_groups)
-
-    #     for pk in prop_comb:
-    #         mat, sec = pk.split(',')
-    #         prop = ElementProperties(material=mat + '_material', section=sec + '_section', elements=prop_comb[pk])
-    #         structure.add_element_properties(prop)
-
-    #     # Add loads
-
-    #     load_groups = group_keys_by_attribute(mesh.vertex, 'l')
-    #     load_names  = []
-
-    #     for lk in load_groups:
-    #         if lk != '-':
-    #             load_names.append(str(lk) + '_load')
-    #             nkeys = load_groups[lk]
-    #             load = PointLoad(name=str(lk) + '_load', nodes=nkeys, x=lk[0], y=lk[1], z=lk[2])
-    #             structure.add_load(load)
-
-    #     gstep = GeneralStep(name='Structure from Mesh', displacements=disp_names, loads=load_names)
-    #     structure.add_step(gstep)
-
-    #     return structure
-
-
-    # @classmethod
-    # def from_network(cls, network):
-
-    #     pass
-
-
-    # @classmethod
-    # def from_volmesh(cls, network):
-
-    #     pass
+""".format(self.name, n, m, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7])
 
 
     def add_nodes_elements_from_mesh(self, mesh, element_type, thermal=False, elset=None):
@@ -299,8 +198,6 @@ Steps
             Element type: 'ShellElement', 'MembraneElement' etc.
         thermal : bool
             Thermal properties on or off.
-        elset : str
-            Name of element set to create.
 
         Returns
         -------
@@ -318,9 +215,6 @@ Steps
             face = [self.check_node_exists(mesh.vertex_coordinates(i)) for i in mesh.face[fkey]]
             ekeys.append(self.add_element(nodes=face, type=element_type, thermal=thermal))
 
-        if elset:
-            self.add_set(name=elset, type='element', selection=ekeys)
-
         return ekeys
 
 
@@ -336,8 +230,6 @@ Steps
             Element type: 'BeamElement', 'TrussElement' etc.
         thermal : bool
             Thermal properties on or off.
-        elset : str
-            Name of element set to create.
         axes : dict
             The local element axes 'ex', 'ey' and 'ez' for all elements.
 
@@ -358,9 +250,6 @@ Steps
             ep = self.check_node_exists(network.node_coordinates(v))
             ekeys.append(self.add_element(nodes=[sp, ep], type=element_type, thermal=thermal, axes=axes))
 
-        if elset:
-            self.add_set(name=elset, type='element', selection=ekeys)
-
         return ekeys
 
 
@@ -376,8 +265,6 @@ Steps
             Element type: 'SolidElement' or ....
         thermal : bool
             Thermal properties on or off.
-        elset : str
-            Name of element set to create.
         axes : dict
             The local element axes 'ex', 'ey' and 'ez' for all elements.
 
@@ -396,10 +283,7 @@ Steps
         for ckey in volmesh.cell:
             cell_vertices = volmesh.cell_vertices(ckey)
             nkeys = [self.check_node_exists(volmesh.vertex_coordinates(nk)) for nk in cell_vertices]
-            ekeys.append(self.add_element(nodes=nkeys, type=element_type, acoustic=acoustic, thermal=thermal,
-                                          axes=axes))
-        if elset:
-            self.add_set(name=elset, type='element', selection=ekeys)
+            ekeys.append(self.add_element(nodes=nkeys, type=element_type, acoustic=acoustic, thermal=thermal,axes=axes))
 
         return ekeys
 
@@ -488,120 +372,6 @@ Steps
 
 
     # ==============================================================================
-    # Analysis
-    # ==============================================================================
-
-    # def write_input_file(self, software, fields='u', output=True, save=False, ndof=6):
-
-    #     """ Writes the FE software's input file.
-
-    #     Parameters
-    #     ----------
-    #     software : str
-    #         Analysis software / library to use, 'abaqus', 'opensees', or 'ansys'.
-    #     fields : list, str
-    #         Data field requests.
-    #     output : bool
-    #         Print terminal output.
-    #     save : bool
-    #         Save structure to .obj before file writing.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-
-    #     if save:
-    #         self.save_to_obj()
-
-    #     elif software == 'ansys':
-    #         ansys.input_generate(self)
-
-    #     elif software == 'opensees':
-    #         opensees.input_generate(self, fields=fields, output=output, ndof=ndof)
-
-
-    # def analyse(self, software, exe=None, cpus=4, license='research', delete=True, output=True):
-
-    #     """ Runs the analysis through the chosen FEA software / library.
-
-    #     Parameters
-    #     ----------
-    #     software : str
-    #         Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     cpus : int
-    #         Number of CPU cores to use.
-    #     license : str
-    #         Software license type: 'research', 'student'.
-    #     delete : bool
-    #         -
-    #     output : bool
-    #         Print terminal output.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-
-    #     if software == 'abaqus':
-    #         pass
-
-    #     elif software == 'ansys':
-    #         ansys.ansys_launch_process(self.path, self.name, cpus, license, delete=delete)
-
-    #     elif software == 'opensees':
-    #         opensees.launch_process(self, exe=exe, output=output)
-
-
-    # def extract_data(self, software, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-    #                 return_data=True, components=None):
-
-    #     """ Extracts data from the analysis output files.
-
-    #     Parameters
-    #     ----------
-    #     software : str
-    #         Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
-    #     fields : list, str
-    #         Data field requests.
-    #     steps : list
-    #         Loads steps to extract from.
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     sets : list
-    #         -
-    #     license : str
-    #         Software license type: 'research', 'student'.
-    #     output : bool
-    #         Print terminal output.
-    #     return_data : bool
-    #         Return data back into structure.results.
-    #     components : list
-    #         Specific components to extract from the fields data.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-    #     if software == 'abaqus':
-    #         pass
-
-    #     elif software == 'ansys':
-    #         ansys.extract_rst_data(self, fields=fields, steps=steps, sets=sets, license=license)
-
-    #     elif software == 'opensees':
-    #         opensees.extract_data(self, fields=fields)
-
-
-
-
-
-    # ==============================================================================
     # Results
     # ==============================================================================
 
@@ -616,7 +386,7 @@ Steps
         field : str
             Data field request.
         nodes : str, list
-            Extract 'all' or a node set/list.
+            Extract 'all' or a node collection/list.
 
         Returns
         -------
@@ -631,8 +401,8 @@ Steps
         if nodes == 'all':
             keys = list(self.nodes.keys())
 
-        elif isinstance(nodes, str):
-            keys = self.sets[nodes].selection
+        # elif isinstance(nodes, str):              TODO: transfor to 'collection'
+        #     keys = self.sets[nodes].selection
 
         else:
             keys = nodes
@@ -654,7 +424,7 @@ Steps
         field : str
             Data field request.
         elements : str, list
-            Extract 'all' or an element set/list.
+            Extract 'all' or an element collection/list.
 
         Returns
         -------
@@ -669,8 +439,8 @@ Steps
         if elements == 'all':
             keys = list(self.elements.keys())
 
-        elif isinstance(elements, str):
-            keys = self.sets[elements].selection
+        # elif isinstance(elements, str):              TODO: transfor to 'collection'
+        #     keys = self.sets[elements].selection
 
         else:
             keys = elements
@@ -752,7 +522,6 @@ Steps
             Imported Structure object.
 
         """
-        #TODO add check on file extension
 
         with open(filename, 'rb') as f:
             structure = pickle.load(f)

@@ -53,10 +53,22 @@ class ElementProperties(cElementProperties):
 
     """
 
-    def __init__(self, name, material=None, section=None, elset=None, elements=None, rebar=None):
-        super(ElementProperties, self).__init__(name, material, section, elements)
+    def __init__(self, name, material=None, section=None, elset=None, elements=None, rebar=None, collection=None):
+        super(ElementProperties, self).__init__(name, material, section, elements, collection)
         self.elset    = elset
         self.rebar    = rebar
 
         if (not elset) and (not elements):
             raise NameError('***** ElementProperties objects require elements or element sets *****')
+
+
+    def __str__(self):
+
+        print('\n')
+        print('compas_fea {0} object'.format(self.__name__))
+        print('-' * (len(self.__name__) + 18))
+
+        for attr in ['name', 'material', 'section', 'elset', 'elements', 'rebar']:
+            print('{0:<13} : {1}'.format(attr, getattr(self, attr)))
+
+        return ''

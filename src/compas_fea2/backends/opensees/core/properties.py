@@ -25,12 +25,8 @@ class ElementProperties(cElementProperties):
         Name of the Material object to assign.
     section : str
         Name of the Section object to assign.
-    elset : str
-        Element set name.
     elements : list
         Element keys assignment.
-    rebar : dict
-        Reinforcement layer data.
 
     Attributes
     ----------
@@ -40,16 +36,9 @@ class ElementProperties(cElementProperties):
         Name of the Material object to assign.
     section : str
         Name of the Section object to assign.
-    elset : str
-        Element set name.
     elements : list
         Element keys assignment.
-    rebar : dict
-        Reinforcement layer data.
 
-    Notes
-    -----
-    - Either ``elements`` or ``elset`` should be given, not both.
 
     """
     pass

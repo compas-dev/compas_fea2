@@ -24,12 +24,8 @@ class cElementProperties(object):
         Name of the Material object to assign.
     section : str
         Name of the Section object to assign.
-    elset : str
-        Element set name.
     elements : list
         Element keys assignment.
-    rebar : dict
-        Reinforcement layer data.
 
     Attributes
     ----------
@@ -39,31 +35,18 @@ class cElementProperties(object):
         Name of the Material object to assign.
     section : str
         Name of the Section object to assign.
-    elset : str
-        Element set name.
     elements : list
         Element keys assignment.
-    rebar : dict
-        Reinforcement layer data.
-
-    Notes
-    -----
-    - Either ``elements`` or ``elset`` should be given, not both.
-
     """
 
-    def __init__(self, name, material=None, section=None, elements=None):
+    def __init__(self, name, material=None, section=None, elements=None, collection=None):
 
         self.__name__ = 'ElementProperties'
         self.name     = name
         self.material = material
         self.section  = section
-        # self.elset    = elset #TODO move to abaqus only
         self.elements = elements
-        # self.rebar    = rebar
-
-        # if (not elset) and (not elements):
-        #     raise NameError('***** ElementProperties objects require elements or element sets *****') #TODO move to abaqus only
+        self.collection = collection
 
 
     def __str__(self):
@@ -72,7 +55,7 @@ class cElementProperties(object):
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
 
-        for attr in ['name', 'material', 'section', 'elset', 'elements', 'rebar']:
+        for attr in ['name', 'material', 'section', 'collection', 'elements']:
             print('{0:<13} : {1}'.format(attr, getattr(self, attr)))
 
         return ''

@@ -3,24 +3,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from compas_fea.utilities import combine_all_sets
-# from compas_fea2.utilities import group_keys_by_attribute
-# from compas_fea2.utilities import group_keys_by_attributes
-
-# from compas_fea2._core.mixins.nodemixins import NodeMixins
-# from compas_fea2._core.mixins.elementmixins import ElementMixins
-# from compas_fea2._core.mixins.objectmixins import ObjectMixins
 from compas_fea2._core import cStructure
 
-# from compas_fea2._core.bcs import *
-from compas_fea2.backends.abaqus.core import Set
+from compas_fea2.backends.abaqus.core.mixins.nodemixins import NodeMixins
+from compas_fea2.backends.abaqus.core.mixins.elementmixins import ElementMixins
+from compas_fea2.backends.abaqus.core.mixins.objectmixins import ObjectMixins
+
+# from compas_fea2.backends.abaqus.core import Set #TODO remove!
 
 from compas_fea2.backends.opensees.job import input_generate
 from compas_fea2.backends.opensees.job import launch_process
-from compas_fea2.backends.opensees.job import extract_data
+from compas_fea2.backends.opensees.job import get_data
 
-# import pickle
-# import os
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
@@ -31,40 +25,39 @@ __all__ = [
         ]
 
 
-class Structure(cStructure):
+class Structure(cStructure, ObjectMixins, ElementMixins, NodeMixins):
 
-    def __init__(self, path, name='abaqus-Structure'):
+    def __init__(self, path, name='opensees-Structure'):
         super(Structure, self).__init__(path, name)
 
-    #TODO remove
-    def add_set(self, name, type, selection):
+    # #TODO remove
+    # def add_set(self, name, type, selection):
 
-        """ Adds a node, element or surface set to structure.sets.
+    #     """ Adds a node, element or surface set to structure.sets.
 
-        Parameters
-        ----------
-        name : str
-            Name of the Set.
-        type : str
-            'node', 'element', 'surface_node', surface_element'.
-        selection : list, dict
-            The integer keys of the nodes, elements or the element numbers and sides.
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         Name of the Set.
+    #     type : str
+    #         'node', 'element', 'surface_node', surface_element'.
+    #     selection : list, dict
+    #         The integer keys of the nodes, elements or the element numbers and sides.
 
-        Returns
-        -------
-        None
+    #     Returns
+    #     -------
+    #     None
 
-        """
+    #     """
 
-        if isinstance(selection, int):
-            selection = [selection]
+    #     if isinstance(selection, int):
+    #         selection = [selection]
 
-        self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
+    #     self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
 
-    # TODO check if all the variables are needed in all the following definitions
     def write_input_file(self, fields='u', output=True, save=False, ndof=6):
 
-        """ Writes abaqus input file.
+        """ Writes opensees input file.
 
         Parameters
         ----------
@@ -87,21 +80,16 @@ class Structure(cStructure):
         input_generate(self, fields=fields, output=output, ndof=ndof)
 
 
-    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True):
+    def analyse(self, exe=None, output=True):
 
-        """ Runs the analysis through abaqus.
+        """ Runs the analysis through opensees.
 
         Parameters
         ----------
 
         exe : str
             Full terminal command to bypass subprocess defaults.
-        cpus : int
-            Number of CPU cores to use.
-        license : str
-            Software license type: 'research', 'student'.
-        delete : bool
-            -
+
         output : bool
             Print terminal output.
 
@@ -114,31 +102,14 @@ class Structure(cStructure):
         launch_process(self, exe=exe, output=output)
 
 
-    def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-                     return_data=True, components=None):
+    def extract_data(self, fields='u'):
 
         """ Extracts data from the analysis output files.
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
             Data field requests.
-        steps : list
-            Loads steps to extract from.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        sets : list
-            -
-        license : str
-            Software license type: 'research', 'student'.
-        output : bool
-            Print terminal output.
-        return_data : bool
-            Return data back into structure.results.
-        components : list
-            Specific components to extract from the fields data.
 
         Returns
         -------
@@ -146,34 +117,22 @@ class Structure(cStructure):
 
         """
 
-        extract_data(self, fields=fields)
+        get_data(self, fields=fields)
 
-    #TODO remove software (also in the examples)
-    def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, ndof=6):
+    def analyse_and_extract(self, fields='u', exe=None, output=True, save=False, ndof=6):
 
-        """ Runs the analysis through the chosen FEA software / library and extracts data.
+        """ Runs the analysis through opensees and extracts data.
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
-            Data field requests.
+            Data field requests
         exe : str
             Full terminal command to bypass subprocess defaults.
-        cpus : int
-            Number of CPU cores to use.
-        license : str
-            Software license type: 'research', 'student'.
         output : bool
             Print terminal output.
         save : bool
-            Save the structure to .obj before writing.
-        return_data : bool
-            Return data back into structure.results.
-        components : list
-            Specific components to extract from the fields data.
+            Save the structure to .cfea before writing.
 
         Returns
         -------
@@ -183,8 +142,7 @@ class Structure(cStructure):
 
         self.write_input_file(fields=fields, output=output, save=save, ndof=ndof)
 
-        self.analyse(exe=exe, cpus=cpus, license=license, output=output)
+        self.analyse(exe=exe, output=output)
 
-        self.extract_data(fields=fields, exe=exe, license=license, output=output,
-                          return_data=return_data, components=components)
+        self.extract_data(fields=fields, exe=exe, output=output)
 

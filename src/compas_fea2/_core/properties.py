@@ -4,7 +4,8 @@ from __future__ import division
 from __future__ import print_function
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
+#            Francesco Ranaudo (github.com/franaudo)
 
 
 __all__ = [
@@ -39,14 +40,20 @@ class cElementProperties(object):
         Element keys assignment.
     """
 
-    def __init__(self, name, material=None, section=None, elements=None, collection=None):
+    def __init__(self, name, material=None, section=None, elset=None, elements=None, rebar=None):
+
 
         self.__name__ = 'ElementProperties'
         self.name     = name
         self.material = material
         self.section  = section
+        self.elset    = elset #TODO move to abaqus only
         self.elements = elements
-        self.collection = collection
+        self.rebar    = rebar
+
+        # if (not elset) and (not elements):
+        #     raise NameError('***** ElementProperties objects require elements or element sets *****') #TODO move to abaqus only
+
 
 
     def __str__(self):

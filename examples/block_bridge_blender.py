@@ -1,16 +1,16 @@
 
-from compas_fea.cad import blender
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PointLoad
-from compas_fea.structure import RollerDisplacementY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import SolidSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
-from compas_fea.structure import TrussSection
+from compas_fea2.cad import blender
+from compas_fea2.backends.abaqus.core import Concrete
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PointLoad
+from compas_fea2.backends.abaqus.core import RollerDisplacementY
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import SolidSection
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.abaqus.core import TrussSection
 
 from compas_blender.utilities import get_object_by_name
 
@@ -84,7 +84,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's'])
+mdl.analyse_and_extract(fields=['u', 's'])
 
 # blender.plot_data(mdl, step='step_loads', field='um', radius=0.01)
 # blender.plot_data(mdl, step='step_loads', field='smaxp', radius=0.01, cbar=[0, 3*10**6])

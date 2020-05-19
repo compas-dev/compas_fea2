@@ -1,15 +1,15 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import ElasticPlastic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import RectangularSection
-from compas_fea.structure import RollerDisplacementY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import SolidSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import ElasticPlastic
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralDisplacement
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import RectangularSection
+from compas_fea2.backends.abaqus.core import RollerDisplacementY
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import SolidSection
+from compas_fea2.backends.abaqus.core import Structure
 
 import rhinoscriptsyntax as rs
 
@@ -97,6 +97,6 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
 
 rhino.plot_data(mdl, step='step_move', field='smises', radius=0.002)

@@ -1,13 +1,13 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
-from compas_fea.structure import TrussSection
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import PointLoad
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.abaqus.core import TrussSection
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -78,7 +78,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's', 'sf', 'cf', 'rf'], ndof=3)
+mdl.analyse_and_extract(fields=['u', 's', 'sf', 'cf', 'rf'], ndof=3)
 
 rhino.plot_data(mdl, step='step_loads', field='um', radius=0.1, scale=10, cbar_size=0.3)
 rhino.plot_data(mdl, step='step_loads', field='sxx', radius=0.1, cbar_size=0.3)  # abaqus:sxx opensees:sf1

@@ -1,13 +1,13 @@
 
-from compas_fea.structure import CircularSection
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Structure
+from compas_fea2.backends.abaqus.core import CircularSection
+from compas_fea2.backends.abaqus.core import ElasticIsotropic
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import PointLoad
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -102,7 +102,7 @@ mdl.summary()
 
 # Generate input files
 
-mdl.write_input_file(software='abaqus', fields=['s', 'u'])
+mdl.write_input_file(fields=['s', 'u'])
 
 # Launch App
 

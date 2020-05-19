@@ -370,7 +370,6 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
 
     result = functions.postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, 255, iptype, nodal)
 
-    print("worked here: 1")
 
     try:
         toc, U, cnodes, fabs, fscaled, celements, eabs = result

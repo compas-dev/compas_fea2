@@ -1,14 +1,14 @@
 import json
-from compas_fea import structure
-from compas_fea.fea import ansys
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import ModalStep
-from compas_fea.structure import HarmonicStep
-from compas_fea.structure import PointLoad
+from compas_fea2 import structure
+from compas_fea2.fea import ansys
+from compas_fea2.structure import FixedDisplacement
+from compas_fea2.structure import ElasticIsotropic
+from compas_fea2.structure import ShellSection
+from compas_fea2.structure import ElementProperties
+from compas_fea2.structure import GeneralStep
+from compas_fea2.structure import ModalStep
+from compas_fea2.structure import HarmonicStep
+from compas_fea2.structure import PointLoad
 from compas.datastructures import Mesh
 
 
@@ -142,7 +142,7 @@ def modal(geom_file, num_modes, path):
 if __name__ == '__main__':
     # path = 'C:/Users/user/Documents/ansys_test/'
     path = '/Users/mtomas/Desktop/ansys_test/'
-    # geom_path = '//Mac/Home/Documents/compas/packages/compas_fea/_data/'
+    # geom_path = '//Mac/Home/Documents/compas/packages/compas_fea2/_data/'
     geom_path = '../_data/'
     freq_range = (10, 200)
     freq_steps = 190

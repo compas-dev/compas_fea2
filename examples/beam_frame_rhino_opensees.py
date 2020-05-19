@@ -1,17 +1,19 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PipeSection
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.opensees.core import ElementProperties as Properties
+from compas_fea2.backends.opensees.core import GeneralStep
+from compas_fea2.backends.opensees.core import PinnedDisplacement
+from compas_fea2.backends.opensees.core import PipeSection
+from compas_fea2.backends.opensees.core import PointLoad
+from compas_fea2.backends.opensees.core import RollerDisplacementXZ
+from compas_fea2.backends.opensees.core import Steel
+from compas_fea2.backends.opensees.core import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
+# OpenSees executable location (check getting started page to learn more about opensees)
+os_exe='C:/OpenSees3.2.0/bin/OpenSees.exe'
 
 # Structure
 
@@ -65,7 +67,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'rf', 'sf', 'sm'])
+mdl.analyse_and_extract(exe=os_exe, fields=['u', 'rf', 'sf', 'sm'])
 
 rhino.plot_data(mdl, step='step_loads', field='um', scale=50)
 rhino.plot_data(mdl, step='step_loads', field='sf1')

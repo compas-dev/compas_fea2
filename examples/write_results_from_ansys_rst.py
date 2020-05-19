@@ -1,5 +1,5 @@
 import os
-from compas_fea.fea.ansys import write_static_results_from_ansys_rst
+from compas_fea2.fea.ansys import write_static_results_from_ansys_rst
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)

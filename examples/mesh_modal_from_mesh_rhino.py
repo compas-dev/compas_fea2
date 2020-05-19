@@ -1,16 +1,16 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import ModalStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import ShellSection
-from compas_fea.structure import MassSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import ElasticIsotropic
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import ModalStep
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import MassSection
+from compas_fea2.backends.abaqus.core import Structure
 
 
-# Author(s): 
+# Author(s):
 # Francesco Ranaudo (github.com/nefelogeta)
 # Andrew Liew (github.com/andrewliew)
 
@@ -60,7 +60,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u'])
+mdl.analyse_and_extract(fields=['u'])
 
 rhino.plot_mode_shapes(mdl, step='step_modal', layer='mode-')
 

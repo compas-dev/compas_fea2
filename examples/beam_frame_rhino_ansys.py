@@ -1,13 +1,13 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PipeSection
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.ansys.core import ElementProperties as Properties
+from compas_fea2.backends.ansys.core import GeneralStep
+from compas_fea2.backends.ansys.core import PinnedDisplacement
+from compas_fea2.backends.ansys.core import PipeSection
+from compas_fea2.backends.ansys.core import PointLoad
+from compas_fea2.backends.ansys.core import RollerDisplacementXZ
+from compas_fea2.backends.ansys.core import Steel
+from compas_fea2.backends.ansys.core import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -65,7 +65,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'rf', 'sf', 'sm'])
+mdl.analyse_and_extract(fields=['u', 'rf', 'sf', 'sm'], license='teaching')
 
 rhino.plot_data(mdl, step='step_loads', field='um', scale=50)
 rhino.plot_data(mdl, step='step_loads', field='sf1')

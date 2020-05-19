@@ -12,7 +12,9 @@ from compas_fea2._core.sections import cSection
 from compas_fea2._core.steps import cStep
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
+#            Francesco Ranaudo (github.com/franaudo)
+
 
 
 __all__ = [

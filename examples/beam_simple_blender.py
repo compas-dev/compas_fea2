@@ -1,13 +1,13 @@
 
-from compas_fea.cad import blender
-from compas_fea.structure import CircularSection
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import Structure
+from compas_fea2.cad import blender
+from compas_fea2.structure import CircularSection
+from compas_fea2.structure import ElasticIsotropic
+from compas_fea2.structure import ElementProperties as Properties
+from compas_fea2.structure import GeneralDisplacement
+from compas_fea2.structure import GeneralStep
+from compas_fea2.structure import PinnedDisplacement
+from compas_fea2.structure import PointLoad
+from compas_fea2.structure import Structure
 
 from math import pi
 deg = pi / 180
@@ -66,7 +66,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'ur', 'sf', 'sm'])
+mdl.analyse_and_extract(fields=['u', 'ur', 'sf', 'sm'])
 
 # blender.plot_data(mdl, step='step_load', field='um', radius=0.01, cbar_size=0.3)
 # blender.plot_data(mdl, step='step_load', field='urx', radius=0.01, cbar_size=0.3)

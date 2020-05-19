@@ -1,12 +1,12 @@
 
-from compas_fea.cad import blender
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import Structure
-from compas_fea.structure import TrussSection
+from compas_fea2.cad import blender
+from compas_fea2.backends.abaqus.core import ElasticIsotropic
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import PointLoad
+from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.abaqus.core import TrussSection
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -58,7 +58,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'cf', 'rf', 'sf', 's'])
+mdl.analyse_and_extract(fields=['u', 'cf', 'rf', 'sf', 's'])
 
 # blender.plot_data(mdl, step='step_load', field='um')
 # blender.plot_data(mdl, step='step_load', field='smises')

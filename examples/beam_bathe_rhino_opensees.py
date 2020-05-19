@@ -4,14 +4,14 @@ from compas.geometry import normalize_vector
 from compas.geometry import subtract_vectors
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import FixedDisplacement
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import FixedDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.opensees.core import FixedDisplacement
+from compas_fea2.backends.opensees.core import ElasticIsotropic
+from compas_fea2.backends.opensees.core import ElementProperties as Properties
+from compas_fea2.backends.opensees.core import FixedDisplacement
+from compas_fea2.backends.opensees.core import GeneralStep
+from compas_fea2.backends.opensees.core import PointLoad
+from compas_fea2.backends.opensees.core import RectangularSection
+from compas_fea2.backends.opensees.core import Structure
 
 import rhinoscriptsyntax as rs
 import json
@@ -19,6 +19,8 @@ import json
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
+# OpenSees executable location (check getting started page to learn more about opensees)
+os_exe='C:/OpenSees3.2.0/bin/OpenSees.exe'
 
 # Local ex
 
@@ -74,7 +76,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'sf', 'sm'])
+mdl.analyse_and_extract(exe=os_exe, fields=['u', 'sf', 'sm'])
 
 rhino.plot_data(mdl, step='step_load', field='uz', radius=1)
 #

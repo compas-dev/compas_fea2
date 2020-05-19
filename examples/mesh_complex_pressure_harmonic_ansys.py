@@ -1,11 +1,11 @@
 import json
-from compas_fea import structure
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import HarmonicStep
-from compas_fea.structure import HarmonicPressureLoad
+from compas_fea2 import structure
+from compas_fea2.structure import FixedDisplacement
+from compas_fea2.structure import ElasticIsotropic
+from compas_fea2.structure import ShellSection
+from compas_fea2.structure import ElementProperties
+from compas_fea2.structure import HarmonicStep
+from compas_fea2.structure import HarmonicPressureLoad
 from compas.datastructures.mesh.mesh import Mesh
 import math
 
@@ -65,9 +65,9 @@ def harmonic_pressure(mesh, pts, freq_list, path, name, damping):
 
 if __name__ == '__main__':
 
-    import compas_fea
+    import compas_fea2
 
-    with open(compas_fea.get('flat20x20.json'), 'r') as fp:
+    with open(compas_fea2.get('flat20x20.json'), 'r') as fp:
         data = json.load(fp)
     mesh = Mesh.from_data(data['mesh'])
     pts = data['pts']
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     thick = 0.02
     damping = 0.003
 
-    path = compas_fea.TEMP
+    path = compas_fea2.TEMP
     name = 'harmonic_pressure'
 
     harmonic_pressure(mesh, pts, freq_list, path, name, damping=damping)

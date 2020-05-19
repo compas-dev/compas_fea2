@@ -10,7 +10,8 @@ from compas.utilities import geometric_key
 from compas_fea2._core.elements import *
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
+#            Francesco Ranaudo (github.com/franaudo)
 
 
 __all__ = [

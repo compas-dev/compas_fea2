@@ -17,6 +17,7 @@ import os
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+#            Francesco Ranaudo (github.com/franaudo)
 
 
 __all__ = [

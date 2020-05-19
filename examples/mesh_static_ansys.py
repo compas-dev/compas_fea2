@@ -1,15 +1,15 @@
 
-import compas_fea
+import compas_fea2
 
 from compas.datastructures import Mesh
 
-from compas_fea.structure import Structure
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import GeneralStep
+from compas_fea2.backends.ansys.core import Structure
+from compas_fea2.backends.ansys.core import FixedDisplacement
+from compas_fea2.backends.ansys.core import ElasticIsotropic
+from compas_fea2.backends.ansys.core import ShellSection
+from compas_fea2.backends.ansys.core import ElementProperties
+from compas_fea2.backends.ansys.core import GravityLoad
+from compas_fea2.backends.ansys.core import GeneralStep
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)
@@ -17,12 +17,12 @@ from compas_fea.structure import GeneralStep
 
 # get mesh from json file ------------------------------------------------------
 
-mesh = Mesh.from_json(compas_fea.get('flat20x20.json'))
+mesh = Mesh.from_json(compas_fea2.get('flat20x20.json'))
 
 # add shell elements from mesh -------------------------------------------------
 
 name = 'shell_example'
-s = Structure(name=name, path=compas_fea.TEMP)
+s = Structure(name=name, path=compas_fea2.TEMP)
 shell_keys = s.add_nodes_elements_from_mesh(mesh, element_type='ShellElement')
 s.add_set('shell', 'element', shell_keys)
 

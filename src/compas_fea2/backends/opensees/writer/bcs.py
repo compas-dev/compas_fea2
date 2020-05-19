@@ -13,7 +13,7 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-
+# TODO remove this collection business
 class BCs(object):
 
     def __init__(self):
@@ -26,7 +26,7 @@ class BCs(object):
         self.write_section('Boundary conditions')
         self.blank_line()
 
-        sets          = self.structure.sets
+        collections   = self.structure.collections
         steps         = self.structure.steps
         displacements = self.structure.displacements
 
@@ -41,8 +41,8 @@ class BCs(object):
 
                 nodes      = displacements[key].nodes
                 components = displacements[key].components
-                nset       = nodes if isinstance(nodes, str) else None
-                selection  = sets[nset].selection if isinstance(nodes, str) else nodes
+                collection       = nodes if isinstance(nodes, str) else None
+                selection  = collections[collection].selection if isinstance(nodes, str) else nodes
 
                 self.write_subsection(key)
 

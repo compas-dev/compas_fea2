@@ -7,6 +7,8 @@ try:
 except:
     pass
 
+import sys
+
 from compas.datastructures.mesh import Mesh
 from compas.datastructures import Network
 from compas.geometry import add_vectors
@@ -342,7 +344,7 @@ def add_sets_from_layers(structure, layers):
                     print('***** Layer {0} contained a mixture of points and elements, set not created *****'.format(name))
             except:
                 print('Sets are only valid in Abaqus')
-                exit(NotImplementedType)
+                # sys.exit(NotImplementedType)
 
 
 def add_tets_from_mesh(structure, name, mesh, draw_tets=False, volume=None, thermal=False):

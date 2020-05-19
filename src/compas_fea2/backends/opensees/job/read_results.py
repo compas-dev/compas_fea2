@@ -19,9 +19,9 @@ import json
 
 
 __all__ = [
-    'extract_data',
+    'get_data',
 ]
-def extract_data(structure, fields):
+def get_data(structure, fields):
 
     """ Extract data from the OpenSees .out files.
 

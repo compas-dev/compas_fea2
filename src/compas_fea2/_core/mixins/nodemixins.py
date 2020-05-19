@@ -13,11 +13,11 @@ from compas.utilities import geometric_key
 
 
 __all__ = [
-    'NodeMixins',
+    'cNodeMixins',
 ]
 
 
-class NodeMixins(object):
+class cNodeMixins(object):
 
     def add_node(self, xyz, ex=[1, 0, 0], ey=[0, 1, 0], ez=[0, 0, 1], mass=0, virtual=False):
 

@@ -18,11 +18,11 @@ from compas_fea2._core.steps import cStep
 
 
 __all__ = [
-    'ObjectMixins',
+    'cObjectMixins',
 ]
 
 
-class ObjectMixins(object):
+class cObjectMixins(object):
 
     def add(self, objects):
 

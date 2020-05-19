@@ -8,10 +8,9 @@ from __future__ import print_function
 
 
 __all__ = [
-    'Set',
+    'Collection',
 ]
 
-# TODO remove!
 
 class Set(object):
 
@@ -41,11 +40,10 @@ class Set(object):
 
     """
 
-    def __init__(self, name, type, selection, index):
+    def __init__(self, name, selection, index):
 
-        self.__name__  = 'Set'
+        self.__name__  = 'Collection'
         self.name      = name
-        self.type      = type
         self.selection = selection
         self.index     = index
 
@@ -56,7 +54,7 @@ class Set(object):
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
 
-        for attr in ['name', 'type', 'selection', 'index']:
+        for attr in ['name', 'selection', 'index']:
             print('{0:<9} : {1}'.format(attr, getattr(self, attr)))
 
         return ''

@@ -4,7 +4,8 @@ from __future__ import division
 from __future__ import print_function
 
 
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
+#            Francesco Ranaudo (github.com/franaudo)
 
 # TODO: change 'Step' to 'Case' to make it less abaqus-dependent
 

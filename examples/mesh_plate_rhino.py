@@ -1,13 +1,13 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PointLoad
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import RollerDisplacementX
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.ansys.core import ElasticIsotropic
+from compas_fea2.backends.ansys.core import ElementProperties as Properties
+from compas_fea2.backends.ansys.core import GeneralStep
+from compas_fea2.backends.ansys.core import PointLoad
+from compas_fea2.backends.ansys.core import PinnedDisplacement
+from compas_fea2.backends.ansys.core import RollerDisplacementX
+from compas_fea2.backends.ansys.core import ShellSection
+from compas_fea2.backends.ansys.core import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -62,7 +62,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='ansys', fields=['u'])
+mdl.analyse_and_extract(fields=['u'])
 
 rhino.plot_data(mdl, step='step_load', field='um')
 

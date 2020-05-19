@@ -1,14 +1,14 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PointLoad
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import Concrete
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import FixedDisplacement
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PointLoad
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import Structure
 
 import rhinoscriptsyntax as rs
 
@@ -87,7 +87,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's', 'sf', 'rbfor'])
+mdl.analyse_and_extract(fields=['u', 's', 'sf', 'rbfor'])
 
 rhino.plot_data(mdl, step='step_loads', field='um', cbar_size=0.5)
 rhino.plot_data(mdl, step='step_loads', field='sf1', cbar_size=0.5)

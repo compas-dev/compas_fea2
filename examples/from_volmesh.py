@@ -1,13 +1,13 @@
-import compas_fea
+import compas_fea2
 from compas.datastructures import VolMesh
 
-from compas_fea.structure import Structure
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import SolidSection
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import GeneralStep
+from compas_fea2.structure import Structure
+from compas_fea2.structure import FixedDisplacement
+from compas_fea2.structure import SolidSection
+from compas_fea2.structure import ElasticIsotropic
+from compas_fea2.structure import ElementProperties
+from compas_fea2.structure import GravityLoad
+from compas_fea2.structure import GeneralStep
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)
@@ -15,11 +15,11 @@ from compas_fea.structure import GeneralStep
 
 # get mesh from json file ------------------------------------------------------
 
-filepath = compas_fea.get('volmesh_torus.json')
+filepath = compas_fea2.get('volmesh_torus.json')
 volmesh = VolMesh.from_json(filepath)
 
 # add shell elements from mesh -------------------------------------------------
-s = Structure(path=compas_fea.TEMP, name='torus')
+s = Structure(path=compas_fea2.TEMP, name='torus')
 s.add_nodes_elements_from_volmesh(volmesh, elset='solids')
 
 # add supports --------------------------------------------------------------

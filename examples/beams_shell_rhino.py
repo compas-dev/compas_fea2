@@ -1,14 +1,14 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import RectangularSection
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import RectangularSection
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import ElasticIsotropic
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralDisplacement
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import FixedDisplacement
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import Structure
 
 from math import pi
 
@@ -60,6 +60,6 @@ mdl.steps_order = ['step_bc', 'step_load']
 # Summary
 
 
-mdl.analyse_and_extract(software='ansys', fields=['s'])
+mdl.analyse_and_extract(fields=['s'])
 
 # rhino.plot_data(mdl, step='step_load', field='um', radius=0.1, colorbar_size=0.3)

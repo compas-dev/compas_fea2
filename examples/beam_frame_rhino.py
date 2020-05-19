@@ -65,7 +65,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'rf', 'sf', 'sm'])
+mdl.analyse_and_extract(fields=['u', 'rf', 'sf', 'sm'])
 
 rhino.plot_data(mdl, step='step_loads', field='um', scale=50)
 rhino.plot_data(mdl, step='step_loads', field='sf1')

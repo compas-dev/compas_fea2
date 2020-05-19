@@ -2,20 +2,20 @@
 from compas_blender.utilities import mesh_from_bmesh
 from compas_blender.utilities import get_object_by_name
 
-from compas_fea.cad import blender
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PrestressLoad
-from compas_fea.structure import RollerDisplacementXY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
-from compas_fea.structure import TributaryLoad
-from compas_fea.structure import TrussSection
+from compas_fea2.cad import blender
+from compas_fea2.backends.abaqus.core import Concrete
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralDisplacement
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import GravityLoad
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import PrestressLoad
+from compas_fea2.backends.abaqus.core import RollerDisplacementXY
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import Structure
+from compas_fea2.backends.abaqus.core import TributaryLoad
+from compas_fea2.backends.abaqus.core import TrussSection
 
 from math import pi
 
@@ -89,7 +89,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's', 'cf'], components=['ux', 'uy', 'uz', 'smises', 'cfx', 'cfy', 'cfz'])
+mdl.analyse_and_extract(fields=['u', 's', 'cf'], components=['ux', 'uy', 'uz', 'smises', 'cfx', 'cfy', 'cfz'])
 
 # blender.plot_data(mdl, step='step_loads', field='uz', radius=0.02, cbar_size=0.5)
 # blender.plot_data(mdl, step='step_loads', field='smises', radius=0.02, cbar_size=0.5, cbar=[0, 5*10**6])

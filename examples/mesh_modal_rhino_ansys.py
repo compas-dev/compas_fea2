@@ -1,14 +1,14 @@
 import rhinoscriptsyntax as rs
 import os
 from compas_rhino.helpers.mesh import mesh_from_guid
-from compas_fea import structure
-from compas_fea.fea import ansys
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import ModalStep
-from compas_fea.cad.rhino import plot_mode_shapes
+from compas_fea2 import structure
+from compas_fea2.fea import ansys
+from compas_fea2.structure import PinnedDisplacement
+from compas_fea2.structure import ElasticIsotropic
+from compas_fea2.structure import ShellSection
+from compas_fea2.structure import ElementProperties
+from compas_fea2.structure import ModalStep
+from compas_fea2.cad.rhino import plot_mode_shapes
 from compas.datastructures.mesh.mesh import Mesh
 from math import sqrt
 

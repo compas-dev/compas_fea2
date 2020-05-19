@@ -58,7 +58,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'cf', 'rf', 'sf', 's'], ndof=3)
+mdl.analyse_and_extract(fields=['u', 'cf', 'rf', 'sf', 's'], ndof=3)
 
 rhino.plot_data(mdl, step='step_load', field='um')
 rhino.plot_data(mdl, step='step_load', field='sxx')  # abaqus:sxx opensees:sf1

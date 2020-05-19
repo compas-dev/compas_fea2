@@ -1,8 +1,8 @@
 import os
 from compas.datastructures import Mesh
 from compas.geometry import closest_point_in_cloud
-from compas_fea.structure import Structure
-from compas_fea.fea import ansys
+from compas_fea2.structure import Structure
+from compas_fea2.fea import ansys
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)

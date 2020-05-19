@@ -1,16 +1,16 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PointLoads
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PrestressLoad
-from compas_fea.structure import RollerDisplacementX
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import TrussSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+from compas_fea2.backends.abaqus.core import Concrete
+from compas_fea2.backends.abaqus.core import ElementProperties as Properties
+from compas_fea2.backends.abaqus.core import GeneralStep
+from compas_fea2.backends.abaqus.core import PointLoads
+from compas_fea2.backends.abaqus.core import PinnedDisplacement
+from compas_fea2.backends.abaqus.core import PrestressLoad
+from compas_fea2.backends.abaqus.core import RollerDisplacementX
+from compas_fea2.backends.abaqus.core import ShellSection
+from compas_fea2.backends.abaqus.core import Steel
+from compas_fea2.backends.abaqus.core import TrussSection
+from compas_fea2.backends.abaqus.core import Structure
 
 import rhinoscriptsyntax as rs
 
@@ -86,7 +86,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'cf', 's', 'rf'])
+mdl.analyse_and_extract(fields=['u', 'cf', 's', 'rf'])
 
 cbar1 = [-4*10**6, 0]
 cbar2 = [0, 2*10**6]

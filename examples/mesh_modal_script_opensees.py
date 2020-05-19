@@ -1,13 +1,13 @@
 
 from compas.datastructures import Mesh
 
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import ModalStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Structure
+from compas_fea2.backends.opensees.core import ElasticIsotropic
+from compas_fea2.backends.opensees.core import ElementProperties as Properties
+from compas_fea2.backends.opensees.core import GeneralStep
+from compas_fea2.backends.opensees.core import ModalStep
+from compas_fea2.backends.opensees.core import PinnedDisplacement
+from compas_fea2.backends.opensees.core import ShellSection
+from compas_fea2.backends.opensees.core import Structure
 
 import compas
 

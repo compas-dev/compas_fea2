@@ -1,21 +1,21 @@
-
 from compas_blender.utilities import mesh_from_bmesh
 from compas_blender.utilities import get_object_by_name
 
 from compas_fea2.cad import blender
-from compas_fea2.backends.abaqus.core import Concrete
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import GravityLoad
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PrestressLoad
-from compas_fea2.backends.abaqus.core import RollerDisplacementXY
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import Structure
-from compas_fea2.backends.abaqus.core import TributaryLoad
-from compas_fea2.backends.abaqus.core import TrussSection
+
+from compas_fea2.backends.abaqus import Concrete
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import GravityLoad
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PrestressLoad
+from compas_fea2.backends.abaqus import RollerDisplacementXY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import Steel
+from compas_fea2.backends.abaqus import Structure
+from compas_fea2.backends.abaqus import TributaryLoad
+from compas_fea2.backends.abaqus import TrussSection
 
 from math import pi
 

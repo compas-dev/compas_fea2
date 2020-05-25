@@ -8,10 +8,10 @@ from __future__ import print_function
 
 
 __all__ = [
-    'cWriter',
+    'WriterBase',
 ]
 
-class cWriter():
+class WriterBase(object):
 
     """ Initialises base file writer.
 

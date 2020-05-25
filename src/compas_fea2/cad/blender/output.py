@@ -243,7 +243,7 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
     result = postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, 1, iptype, nodal)
 
     try:
-        toc, U, cnodes, fabs, fscaled, celements, eabs = result
+        toc, U, NodeBases, fabs, fscaled, ElementBases, eabs = result
         U = array(U)
         print('\n***** Data processed : {0} s *****'.format(toc))
 
@@ -270,11 +270,11 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
             pipes.append(pipe)
 
             if dtype == 'element':
-                col1 = col2 = celements[element]
+                col1 = col2 = ElementBases[element]
 
             elif dtype == 'nodal':
-                col1 = cnodes[u]
-                col2 = cnodes[v]
+                col1 = NodeBases[u]
+                col2 = NodeBases[v]
 
             try:
                 blendermesh = BlenderMesh(object=pipe)
@@ -300,7 +300,7 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
 
         bmesh = xdraw_mesh(name='bmesh', vertices=U, faces=mesh_faces, layer=layer)
         blendermesh = BlenderMesh(bmesh)
-        blendermesh.set_vertices_colors({i: col for i, col in enumerate(cnodes)})
+        blendermesh.set_vertices_colors({i: col for i, col in enumerate(NodeBases)})
         mesh_add = [bmesh]
 
     # Plot colourbar
@@ -447,7 +447,7 @@ def plot_voxels(structure, step, field='smises', cbar=[None, None], iptype='mean
     result = postprocess(xyz, elements, ux, uy, uz, data, dtype, 1, cbar, 1, iptype, nodal)
 
     try:
-        toc, U, cnodes, fabs, fscaled, celements, eabs = result
+        toc, U, NodeBases, fabs, fscaled, ElementBases, eabs = result
         U = array(U)
         print('\n***** Data processed : {0:.3f} s *****'.format(toc))
 

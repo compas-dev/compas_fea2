@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-job
+ANSYS Analysis Job
 ********************************************************************************
 
 .. currentmodule:: compas_fea.backends.ansys.job
@@ -17,9 +17,11 @@ send_job
     launch_process
 
 
-
 """
 
 from .launch_job import *
 from .read_results import *
 from .send_job import *
+
+
+__all__ = [name for name in dir() if not name.startswith('_')]

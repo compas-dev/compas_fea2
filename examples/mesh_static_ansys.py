@@ -1,15 +1,14 @@
-
 import compas_fea2
 
 from compas.datastructures import Mesh
 
-from compas_fea2.backends.ansys.core import Structure
-from compas_fea2.backends.ansys.core import FixedDisplacement
-from compas_fea2.backends.ansys.core import ElasticIsotropic
-from compas_fea2.backends.ansys.core import ShellSection
-from compas_fea2.backends.ansys.core import ElementProperties
-from compas_fea2.backends.ansys.core import GravityLoad
-from compas_fea2.backends.ansys.core import GeneralStep
+from compas_fea2.backends.ansys import Structure
+from compas_fea2.backends.ansys import FixedDisplacement
+from compas_fea2.backends.ansys import ElasticIsotropic
+from compas_fea2.backends.ansys import ShellSection
+from compas_fea2.backends.ansys import ElementProperties
+from compas_fea2.backends.ansys import GravityLoad
+from compas_fea2.backends.ansys import GeneralStep
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)

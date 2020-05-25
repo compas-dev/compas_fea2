@@ -1,15 +1,16 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElasticPlastic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import RollerDisplacementY
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import SolidSection
-from compas_fea2.backends.abaqus.core import Structure
+
+from compas_fea2.backends.abaqus import ElasticPlastic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 import rhinoscriptsyntax as rs
 

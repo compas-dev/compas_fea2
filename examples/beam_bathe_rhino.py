@@ -4,14 +4,15 @@ from compas.geometry import normalize_vector
 from compas.geometry import subtract_vectors
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import FixedDisplacement
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import FixedDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import Structure
+
+from compas_fea2.backends.abaqus import FixedDisplacement
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import FixedDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import Structure
 
 import rhinoscriptsyntax as rs
 import json

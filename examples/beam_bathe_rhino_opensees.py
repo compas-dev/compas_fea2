@@ -4,14 +4,15 @@ from compas.geometry import normalize_vector
 from compas.geometry import subtract_vectors
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.opensees.core import FixedDisplacement
-from compas_fea2.backends.opensees.core import ElasticIsotropic
-from compas_fea2.backends.opensees.core import ElementProperties as Properties
-from compas_fea2.backends.opensees.core import FixedDisplacement
-from compas_fea2.backends.opensees.core import GeneralStep
-from compas_fea2.backends.opensees.core import PointLoad
-from compas_fea2.backends.opensees.core import RectangularSection
-from compas_fea2.backends.opensees.core import Structure
+
+from compas_fea2.backends.opensees import FixedDisplacement
+from compas_fea2.backends.opensees import ElasticIsotropic
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import FixedDisplacement
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import RectangularSection
+from compas_fea2.backends.opensees import Structure
 
 import rhinoscriptsyntax as rs
 import json

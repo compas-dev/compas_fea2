@@ -1,8 +1,7 @@
+from compas_blender.utilities import get_object_by_name
 
 from compas_fea2.cad import blender
-from compas_fea2.backends.abaqus.core import Structure
-
-from compas_blender.utilities import get_object_by_name
+from compas_fea2.backends.abaqus import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

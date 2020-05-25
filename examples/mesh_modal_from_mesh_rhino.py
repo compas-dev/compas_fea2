@@ -1,13 +1,13 @@
-
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import ModalStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import MassSection
-from compas_fea2.backends.abaqus.core import Structure
+
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import ModalStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import MassSection
+from compas_fea2.backends.abaqus import Structure
 
 
 # Author(s):

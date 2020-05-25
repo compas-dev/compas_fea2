@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-job
+Abaqus Analysis Job
 ********************************************************************************
 
 .. currentmodule:: compas_fea.backends.abaqus.job
@@ -15,8 +15,6 @@ send_job
     send_job
     input_generate
     launch_job
-
-
 
 """
 

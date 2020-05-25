@@ -1,12 +1,12 @@
-
 from compas_fea2.cad import rhino
-from compas_fea2.backends.opensees.core import ElasticIsotropic
-from compas_fea2.backends.opensees.core import ElementProperties as Properties
-from compas_fea2.backends.opensees.core import GeneralStep
-from compas_fea2.backends.opensees.core import ModalStep
-from compas_fea2.backends.opensees.core import PinnedDisplacement
-from compas_fea2.backends.opensees.core import ShellSection
-from compas_fea2.backends.opensees.core import Structure
+
+from compas_fea2.backends.opensees import ElasticIsotropic
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import ModalStep
+from compas_fea2.backends.opensees import PinnedDisplacement
+from compas_fea2.backends.opensees import ShellSection
+from compas_fea2.backends.opensees import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

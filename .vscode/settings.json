@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Miniconda3\\envs\\fea2\\python.exe"
+    "python.pythonPath": "/Users/vanmelet/anaconda3/envs/fea/bin/python",
+    "restructuredtext.confPath": "${workspaceFolder}/docsource/conf.py"
 }

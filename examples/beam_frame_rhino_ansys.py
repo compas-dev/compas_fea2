@@ -1,13 +1,14 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.ansys.core import ElementProperties as Properties
-from compas_fea2.backends.ansys.core import GeneralStep
-from compas_fea2.backends.ansys.core import PinnedDisplacement
-from compas_fea2.backends.ansys.core import PipeSection
-from compas_fea2.backends.ansys.core import PointLoad
-from compas_fea2.backends.ansys.core import RollerDisplacementXZ
-from compas_fea2.backends.ansys.core import Steel
-from compas_fea2.backends.ansys.core import Structure
+
+from compas_fea2.backends.ansys import ElementProperties as Properties
+from compas_fea2.backends.ansys import GeneralStep
+from compas_fea2.backends.ansys import PinnedDisplacement
+from compas_fea2.backends.ansys import PipeSection
+from compas_fea2.backends.ansys import PointLoad
+from compas_fea2.backends.ansys import RollerDisplacementXZ
+from compas_fea2.backends.ansys import Steel
+from compas_fea2.backends.ansys import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

@@ -22,6 +22,7 @@ from compas_fea2._core import cThermalMaterial
 
 __all__ = [
     'Material',
+    'Umat_iso',
     'Concrete',
     'ConcreteSmearedCrack',
     'ConcreteDamagedPlasticity',
@@ -57,6 +58,23 @@ class Material(cMaterial):
 # ==============================================================================
 # linear elastic
 # ==============================================================================
+
+class Umat_iso(Material):
+
+    """ Elastic, isotropic and homogeneous material.
+
+
+    """
+    def __init__(self, name, E, v, p):
+        cMaterial.__init__(self, name=name)
+
+        self.__name__    = 'Umat_iso'
+        self.name        = name
+        self.E           = {'E': E}
+        self.v           = {'v': v}
+        self.p           = p
+        self.G           = {'G': 0} #TODO remove!
+        self.attr_list.extend(['E', 'v', 'G', 'p'])
 
 class ElasticIsotropic(cElasticIsotropic):
 

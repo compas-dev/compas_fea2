@@ -118,7 +118,7 @@ class cStiff(cElasticIsotropic):
     """
 
     def __init__(self, name, E=10**13):  #NOTE: depending on the unit used, this might not be correct.
-        ElasticIsotropic.__init__(self, name=name, E=E, v=0.3, p=10**(-1))
+        cElasticIsotropic.__init__(self, name=name, E=E, v=0.3, p=10**(-1))
 
         self.__name__ = 'Stiff'
 

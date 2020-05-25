@@ -8,7 +8,7 @@ ANSYS
 
 """
 
-from .core import *
+from .components import *
 from .job import *
 from .writer import *
 

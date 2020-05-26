@@ -136,7 +136,7 @@ class Steps(object):
 
                     if ltype == 'PointLoad':
 
-                        self.write_line('*LoadBase, OP={0}'.format(op))
+                        self.write_line('*CLOAD, OP={0}'.format(op))
                         self.blank_line()
 
                         for node in nodes:
@@ -164,7 +164,7 @@ class Steps(object):
                     # ----------
 
                     elif ltype == 'PointLoads':
-                        self.write_line('*LoadBase, OP={0}'.format(op))
+                        self.write_line('*CLOAD, OP={0}'.format(op))
                         self.blank_line()
 
                         for node, coms in com.items():
@@ -189,7 +189,7 @@ class Steps(object):
 
                     elif ltype == 'TributaryLoad':
 
-                        self.write_line('*LoadBase, OP={0}'.format(op))
+                        self.write_line('*CLOAD, OP={0}'.format(op))
                         self.blank_line()
 
                         for node in sorted(com, key=int):

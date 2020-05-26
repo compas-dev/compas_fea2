@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-Abaqus Analysis Components
+abaqus.components
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.components
+.. currentmodule:: compas_fea2.backends.abaqus.components
 
 
 Structure

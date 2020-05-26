@@ -1,12 +1,13 @@
 """
 ********************************************************************************
-OpenSEES Analysis Job
+opensees.job
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.opensees.job
+.. currentmodule:: compas_fea2.backends.opensees.job
 
 
 """
+
 
 from __future__ import absolute_import
 from __future__ import division

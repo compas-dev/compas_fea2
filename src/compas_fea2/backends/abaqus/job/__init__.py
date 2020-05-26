@@ -1,20 +1,10 @@
 """
 ********************************************************************************
-Abaqus Analysis Job
+abaqus.job
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.job
+.. currentmodule:: compas_fea2.backends.abaqus.job
 
-
-send_job
-========
-
-.. autosummary::
-    :toctree: generated/
-
-    send_job
-    input_generate
-    launch_job
 
 """
 

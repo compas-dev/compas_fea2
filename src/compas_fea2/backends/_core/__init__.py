@@ -1,21 +1,17 @@
 """
 ********************************************************************************
-Core
+_core
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.backends._core
+.. code-block:: python
 
+    # example
 
-Analysis Components
-===================
+.. automodule:: compas_fea2.backends._core.components
 
+.. automodule:: compas_fea2.backends._core.job
 
-Analysis Job
-============
-
-
-Analysis Writer
-===============
+.. automodule:: compas_fea2.backends._core.writer
 
 
 """

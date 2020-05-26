@@ -48,8 +48,7 @@ __all__ = [
 # ==============================================================================
 
 class Node(NodeBase):
-
-    """ Initialises base Node object.
+    """Initialises base Node object.
 
     Parameters
     ----------
@@ -86,14 +85,12 @@ class Node(NodeBase):
         Mass in kg associated with the node.
 
     """
-
     def __init__(self, key, xyz, ex, ey, ez, mass):
         super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
 
 
 class Element(ElementBase):
-
-    """ Initialises base Element object.
+    """Initialises base Element object.
 
     Parameters
     ----------
@@ -130,8 +127,7 @@ class Element(ElementBase):
 # ==============================================================================
 
 class MassElement(MassElementBase):
-
-    """ A 0D element for concentrated point mass.
+    """A 0D element for concentrated point mass.
 
     Parameters
     ----------
@@ -148,8 +144,7 @@ class MassElement(MassElementBase):
 # ==============================================================================
 
 class BeamElement(BeamElementBase):
-
-    """ A 1D element that resists axial, shear, bending and torsion.
+    """A 1D element that resists axial, shear, bending and torsion.
 
     Parameters
     ----------
@@ -162,8 +157,7 @@ class BeamElement(BeamElementBase):
 
 
 class SpringElement(SpringElementBase):
-
-    """ A 1D spring element.
+    """A 1D spring element.
 
     Parameters
     ----------
@@ -176,8 +170,7 @@ class SpringElement(SpringElementBase):
 
 
 class TrussElement(TrussElementBase):
-
-    """ A 1D element that resists axial loads.
+    """A 1D element that resists axial loads.
 
     Parameters
     ----------
@@ -190,8 +183,7 @@ class TrussElement(TrussElementBase):
 
 
 class StrutElement(StrutElementBase):
-
-    """ A truss element that resists axial compressive loads.
+    """A truss element that resists axial compressive loads.
 
     Parameters
     ----------
@@ -204,8 +196,7 @@ class StrutElement(StrutElementBase):
 
 
 class TieElement(TieElementBase):
-
-    """ A truss element that resists axial tensile loads.
+    """A truss element that resists axial tensile loads.
 
     Parameters
     ----------

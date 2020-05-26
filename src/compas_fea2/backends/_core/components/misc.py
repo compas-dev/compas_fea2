@@ -15,8 +15,7 @@ __all__ = [
 
 
 class MiscBase(object):
-
-    """ Initialises base Misc object.
+    """Initialises base Misc object.
 
     Parameters
     ----------
@@ -36,20 +35,16 @@ class MiscBase(object):
         self.attr_list = ['name']
 
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
-
         for attr in self.attr_list:
             print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
 
 class AmplitudeBase(MiscBase):
-
-    """ Initialises an Amplitude object to act as a discretised function f(x).
+    """Initialises an Amplitude object to act as a discretised function f(x).
 
     Parameters
     ----------
@@ -74,8 +69,7 @@ class AmplitudeBase(MiscBase):
 
 
 class TemperaturesBase(MiscBase):
-
-    """ Define nodal temperatures data.
+    """Define nodal temperatures data.
 
     Parameters
     ----------

@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-OpenSEES Analysis Writer
+opensees.writer
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.opensees.writer
+.. currentmodule:: compas_fea2.backends.opensees.writer
 
 
 """

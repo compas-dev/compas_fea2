@@ -31,8 +31,7 @@ __all__ = [
 
 
 class SectionBase(object):
-
-    """ Initialises base Section object.
+    """Initialises base Section object.
 
     Parameters
     ----------
@@ -54,22 +53,16 @@ class SectionBase(object):
         self.name     = name
         self.geometry = {}
 
-
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
         print('name  : {0}'.format(self.name))
-
         for i, j in self.geometry.items():
             print('{0:<5} : {1}'.format(i, j))
-
         return ''
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
 
@@ -78,8 +71,7 @@ class SectionBase(object):
 # ==============================================================================
 
 class MassSectionBase(SectionBase):
-
-    """ Section for mass elements.
+    """Section for mass elements.
 
     Parameters
     ----------
@@ -101,8 +93,7 @@ class MassSectionBase(SectionBase):
 # ==============================================================================
 
 class AngleSectionBase(SectionBase):
-
-    """ Uniform thickness angle cross-section for beam elements.
+    """Uniform thickness angle cross-section for beam elements.
 
     Parameters
     ----------
@@ -138,8 +129,7 @@ class AngleSectionBase(SectionBase):
 
 
 class BoxSectionBase(SectionBase):
-
-    """ Hollow rectangular box cross-section for beam elements.
+    """Hollow rectangular box cross-section for beam elements.
 
     Parameters
     ----------
@@ -172,8 +162,7 @@ class BoxSectionBase(SectionBase):
 
 
 class CircularSectionBase(SectionBase):
-
-    """ Solid circular cross-section for beam elements.
+    """Solid circular cross-section for beam elements.
 
     Parameters
     ----------
@@ -198,8 +187,7 @@ class CircularSectionBase(SectionBase):
 
 
 class GeneralSectionBase(SectionBase):
-
-    """ General cross-section for beam elements.
+    """General cross-section for beam elements.
 
     Parameters
     ----------
@@ -231,8 +219,7 @@ class GeneralSectionBase(SectionBase):
 
 
 class ISectionBase(SectionBase):
-
-    """ Equal flanged I-section for beam elements.
+    """Equal flanged I-section for beam elements.
 
     Parameters
     ----------
@@ -263,8 +250,7 @@ class ISectionBase(SectionBase):
 
 
 class PipeSectionBase(SectionBase):
-
-    """ Hollow circular cross-section for beam elements.
+    """Hollow circular cross-section for beam elements.
 
     Parameters
     ----------
@@ -291,8 +277,7 @@ class PipeSectionBase(SectionBase):
 
 
 class RectangularSectionBase(SectionBase):
-
-    """ Solid rectangular cross-section for beam elements.
+    """Solid rectangular cross-section for beam elements.
 
     Parameters
     ----------
@@ -323,8 +308,7 @@ class RectangularSectionBase(SectionBase):
 
 
 class TrapezoidalSectionBase(SectionBase):
-
-    """ Solid trapezoidal cross-section for beam elements.
+    """Solid trapezoidal cross-section for beam elements.
 
     Parameters
     ----------
@@ -357,8 +341,7 @@ class TrapezoidalSectionBase(SectionBase):
 
 
 class TrussSectionBase(SectionBase):
-
-    """ For use with truss elements.
+    """For use with truss elements.
 
     Parameters
     ----------
@@ -378,8 +361,7 @@ class TrussSectionBase(SectionBase):
 
 
 class StrutSectionBase(TrussSectionBase):
-
-    """ For use with strut elements.
+    """For use with strut elements.
 
     Parameters
     ----------
@@ -397,8 +379,7 @@ class StrutSectionBase(TrussSectionBase):
 
 
 class TieSectionBase(TrussSectionBase):
-
-    """ For use with tie elements.
+    """For use with tie elements.
 
     Parameters
     ----------
@@ -416,8 +397,7 @@ class TieSectionBase(TrussSectionBase):
 
 
 class SpringSectionBase(SectionBase):
-
-    """ For use with spring elements.
+    """For use with spring elements.
 
     Parameters
     ----------
@@ -454,8 +434,7 @@ class SpringSectionBase(SectionBase):
 # ==============================================================================
 
 class ShellSectionBase(SectionBase):
-
-    """ Section for shell elements.
+    """Section for shell elements.
 
     Parameters
     ----------
@@ -475,8 +454,7 @@ class ShellSectionBase(SectionBase):
 
 
 class MembraneSectionBase(SectionBase):
-
-    """ Section for membrane elements.
+    """Section for membrane elements.
 
     Parameters
     ----------
@@ -500,8 +478,7 @@ class MembraneSectionBase(SectionBase):
 # ==============================================================================
 
 class SolidSectionBase(SectionBase):
-
-    """ Section for solid elements.
+    """Section for solid elements.
 
     Parameters
     ----------

@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-Abaqus Analysis Writer
+abaqus.writer
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.writer
+.. currentmodule:: compas_fea2.backends.abaqus.writer
 
 
 """

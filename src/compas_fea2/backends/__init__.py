@@ -6,20 +6,18 @@ FEA Backends
 .. currentmodule:: compas_fea.backends
 
 
-Abaqus
-======
+.. toctree::
+    :maxdepth: 1
+
+    compas_fea2.backends.abaqus
+    compas_fea2.backends.ansys
+    compas_fea2.backends.opensees
 
 
-Ansys
-=====
-
-
-OpenSEES
-========
 
 
 """
 
-from .abaqus import *
-from .ansys import *
-from .opensees import *
+# from .abaqus import *
+# from .ansys import *
+# from .opensees import *

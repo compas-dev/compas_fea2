@@ -1,4 +1,3 @@
-
 try:
     from abaqus import *
     from abaqusConstants import *

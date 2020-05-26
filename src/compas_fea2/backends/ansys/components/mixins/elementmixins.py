@@ -5,7 +5,7 @@ from __future__ import print_function
 
 from compas_fea2.backends._core.components.mixins import ElementMixinsBase
 
-from compas_fea2.backends.opensees.components.elements import *
+from compas_fea2.backends.ansys.components.elements import *
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
@@ -161,4 +161,3 @@ class ElementMixins(ElementMixinsBase):
 
         for element in elements:
             self.elements[element].element_property = element_property.name
-

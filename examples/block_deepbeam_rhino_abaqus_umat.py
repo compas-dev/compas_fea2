@@ -1,4 +1,6 @@
-
+"""
+Author(s): Francesco Ranaudo (github.com/franaudo), Andrew Liew (github.com/andrewliew)
+"""
 from compas_fea2.cad import rhino
 
 from compas_fea2.backends.abaqus import UserMaterial
@@ -62,8 +64,8 @@ mdl.steps_order = ['step_bc', 'step_load']
 mdl.summary()
 
 # Run
-
-mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
+mdl.analyse(umat=True)
+# mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
 
 rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)

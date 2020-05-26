@@ -8,9 +8,9 @@ from __future__ import print_function
 # from compas_fea2.utilities import group_keys_by_attributes
 #
 # #TODO rmove useless imports
-# from compas_fea2.backends._core.mixins.nodemixins import NodeMixins
-# from compas_fea2.backends._core.mixins.elementmixins import ElementMixins
-# from compas_fea2.backends._core.mixins.objectmixins import ObjectMixins
+from compas_fea2.backends.ansys.components.mixins import NodeMixins
+from compas_fea2.backends.ansys.components.mixins import ElementMixins
+from compas_fea2.backends.ansys.components.mixins import ObjectMixins
 from compas_fea2.backends._core import StructureBase
 
 # from compas_fea2.backends._core.bcs import *
@@ -32,11 +32,11 @@ __all__ = [
         ]
 
 
-class Structure(StructureBase):
+class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
 
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
-
+        self.sets = {}
     # ==============================================================================
     # Sets
     # ==============================================================================

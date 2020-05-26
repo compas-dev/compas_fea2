@@ -5,11 +5,13 @@ from __future__ import print_function
 
 from compas_fea2.backends._core import StructureBase
 
-from compas_fea2.backends.abaqus.components.mixins.nodemixins import NodeMixins
-from compas_fea2.backends.abaqus.components.mixins.elementmixins import ElementMixins
-from compas_fea2.backends.abaqus.components.mixins.objectmixins import ObjectMixins
+from compas_fea2.backends.opensees.components.mixins import NodeMixins
+from compas_fea2.backends.opensees.components.mixins import ElementMixins
+from compas_fea2.backends.opensees.components.mixins import ObjectMixins
 
-# from compas_fea2.backends.abaqus.components import Set #TODO remove!
+
+
+from compas_fea2.backends.opensees.components import Set #TODO remove!
 
 from compas_fea2.backends.opensees.job import input_generate
 from compas_fea2.backends.opensees.job import launch_process
@@ -29,31 +31,32 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
 
     def __init__(self, path, name='opensees-Structure'):
         super(Structure, self).__init__(path, name)
+        self.sets = {}
 
-    # #TODO remove
-    # def add_set(self, name, type, selection):
+    #TODO remove
+    def add_set(self, name, type, selection):
 
-    #     """ Adds a node, element or surface set to structure.sets.
+        """ Adds a node, element or surface set to structure.sets.
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         Name of the Set.
-    #     type : str
-    #         'node', 'element', 'surface_node', surface_element'.
-    #     selection : list, dict
-    #         The integer keys of the nodes, elements or the element numbers and sides.
+        Parameters
+        ----------
+        name : str
+            Name of the Set.
+        type : str
+            'node', 'element', 'surface_node', surface_element'.
+        selection : list, dict
+            The integer keys of the nodes, elements or the element numbers and sides.
 
-    #     Returns
-    #     -------
-    #     None
+        Returns
+        -------
+        None
 
-    #     """
+        """
 
-    #     if isinstance(selection, int):
-    #         selection = [selection]
+        if isinstance(selection, int):
+            selection = [selection]
 
-    #     self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
+        self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
 
     def write_input_file(self, fields='u', output=True, save=False, ndof=6):
 
@@ -144,5 +147,5 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
 
         self.analyse(exe=exe, output=output)
 
-        self.extract_data(fields=fields, exe=exe, output=output)
+        self.extract_data(fields=fields)
 

@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -18,12 +17,9 @@ GPa = 10**(-9)
 class Materials(object):
 
     def __init__(self):
-
         pass
 
-
     def write_materials(self):
-
         self.write_section('Materials')
         self.blank_line()
 
@@ -41,8 +37,6 @@ class Materials(object):
             G           = material.G
             v           = material.v
             p           = material.p
-
-
 
             self.write_line('*MATERIAL, NAME={0}'.format(key))
             self.blank_line()

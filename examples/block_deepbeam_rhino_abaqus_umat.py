@@ -1,7 +1,7 @@
 
 from compas_fea2.cad import rhino
 
-from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import UserMaterial
 from compas_fea2.backends.abaqus import ElementProperties as Properties
 from compas_fea2.backends.abaqus import GeneralStep
 from compas_fea2.backends.abaqus import PinnedDisplacement
@@ -17,7 +17,7 @@ import rhinoscriptsyntax as rs
 
 # Structure
 
-mdl = Structure(name='block_deepbeam', path='C:/Temp/')
+mdl = Structure(name='block_deepbeam_rhino_umat', path='C:/Users/franaudo/abaqus_test/')
 
 # Extrude
 
@@ -31,7 +31,7 @@ rhino.add_sets_from_layers(mdl, layers=['nset_load', 'nset_supports'])
 
 # Materials
 
-mdl.add(ElasticIsotropic(name='mat_elastic', E=10**(10), v=0.3, p=1))
+mdl.add(UserMaterial(name='umat', E=10**(10), v=0.3, p=1))
 
 # Sections
 
@@ -39,7 +39,7 @@ mdl.add(SolidSection(name='sec_solid'))
 
 # Properties
 
-mdl.add(Properties(name='ep_solid', material='mat_elastic', section='sec_solid', elset='elset_blocks'))
+mdl.add(Properties(name='ep_solid', material='umat', section='sec_solid', elset='elset_blocks'))
 
 # Displacements
 
@@ -63,7 +63,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
 
 rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)

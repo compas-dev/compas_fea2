@@ -79,7 +79,7 @@ def input_generate(structure, fields, output):
         print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
 
-def launch_process(structure, exe, cpus, output):
+def launch_process(structure, exe, cpus, output, umat):
 
     """ Runs the analysis through Abaqus.
 
@@ -113,28 +113,57 @@ def launch_process(structure, exe, cpus, output):
 
     if not exe:
 
-        args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
-        p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+        if not umat:
+            args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
+            p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
-        while True:
+            while True:
 
-            line = p.stdout.readline()
-            if not line:
-                break
-            line = str(line.strip())
+                line = p.stdout.readline()
+                if not line:
+                    break
+                line = str(line.strip())
+
+                if output:
+                    print(line)
+
+                if 'COMPLETED' in line:
+                    success = True
+
+            stdout, stderr = p.communicate()
 
             if output:
-                print(line)
+                print(stdout)
+                print(stderr)
+        else:
+            # os.chdir(temp)
+            # umat_job=os.path.join(path, name)
+            umat_job=name
+            path ='C:/Users/franaudo/abaqus_test/'
+            cmd='cd {} && abaqus user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat/umat-hooke-iso.f job={}.inp interactive'.format(path, umat_job)
+            print(cmd)
+            os.system(cmd) #TODO easy fix. change!
+            # args = ['abaqus', 'user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat/umat-hooke-iso.f', str(cpus), 'job='+path, name]
+            # p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
-            if 'COMPLETED' in line:
-                success = True
+            # while True:
 
-        stdout, stderr = p.communicate()
+            #     line = p.stdout.readline()
+            #     if not line:
+            #         break
+            #     line = str(line.strip())
 
-        if output:
-            print(stdout)
-            print(stderr)
+            #     if output:
+            #         print(line)
 
+            #     if 'COMPLETED' in line:
+            #         success = True
+
+            # stdout, stderr = p.communicate()
+
+            # if output:
+            #     print(stdout)
+            #     print(stderr)
     else:
 
         os.chdir(temp)

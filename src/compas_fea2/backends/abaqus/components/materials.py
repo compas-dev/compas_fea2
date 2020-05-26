@@ -30,7 +30,8 @@ __all__ = [
     'ElasticOrthotropic',
     'ElasticPlastic',
     # 'ThermalMaterial',
-    'Steel'
+    'Steel',
+    'UserMaterial'
 ]
 
 
@@ -329,3 +330,32 @@ class ThermalMaterial(ThermalMaterialBase):
     pass
     # def __init__(self, name, conductivity, p, sheat):
     #     super(ThermalMaterial, self).__init__(name, conductivity, p, sheat)
+
+
+class UserMaterial(MaterialBase):
+
+    """ User Defined Material Example. This particular material requires the
+    definition of two mechanical constants (E, v)
+
+    Parameters
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    """
+
+    def __init__(self, name, E, v, p):
+        MaterialBase.__init__(self, name=name)
+
+        self.__name__    = 'UserMaterial'
+        self.name        = name
+        self.E           = {'E': E}
+        self.v           = {'v': v}
+        self.G           = {'G': 0.5 * E / (1 + v)}
+        self.p           = p
+        self.attr_list.extend(['E', 'v', 'G', 'p'])

@@ -288,7 +288,7 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
         input_generate(self, fields=fields, output=output)
 
 
-    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True):
+    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True, umat=False):
 
         """ Runs the analysis through abaqus.
 
@@ -313,7 +313,7 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
         """
 
         cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output)
+        launch_process(self, exe=exe, cpus=cpus, output=output, umat=umat)
 
 
     def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
@@ -353,7 +353,7 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
 
 
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None):
+                            return_data=True, components=None, umat=False):
 
         """ Runs the analysis through the chosen FEA software / library and extracts data.
 
@@ -386,7 +386,7 @@ class Structure(StructureBase, ObjectMixins, ElementMixins, NodeMixins):
 
         self.write_input_file(fields=fields, output=output, save=save)
 
-        self.analyse(exe=exe, cpus=cpus, license=license, output=output)
+        self.analyse(exe=exe, cpus=cpus, license=license, output=output, umat=umat)
 
         self.extract_data(fields=fields, exe=exe, license=license, output=output,
                           return_data=return_data, components=components)

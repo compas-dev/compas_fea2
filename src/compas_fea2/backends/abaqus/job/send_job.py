@@ -79,7 +79,7 @@ def input_generate(structure, fields, output):
         print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
 
-def launch_process(structure, exe, cpus, output):
+def launch_process(structure, exe, cpus, output, umat):
 
     """ Runs the analysis through Abaqus.
 
@@ -111,29 +111,45 @@ def launch_process(structure, exe, cpus, output):
     subprocess = 'noGUI={0}'.format(launch_job.__file__.replace('\\', '/'))
     success    = False
 
+    user_path = '{0}{1}.inp'.format('C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/', 'umat-hooke-iso.f')
+
     if not exe:
 
-        args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
-        p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+        if not umat:
+            os.chdir(temp)
+            # os.system('{0} {1} -- {2} {3} {4}'.format('abaqus', 'user='+user_path, cpus, path, name))
+            # os.environ['myEnv'] = 'C:/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/bin'
+            os.system('abaqus job=' + path + name + ' interactive')
 
-        while True:
+            success = True
+            # args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
+            # p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
-            line = p.stdout.readline()
-            if not line:
-                break
-            line = str(line.strip())
+            # while True:
 
-            if output:
-                print(line)
+            #     line = p.stdout.readline()
+            #     if not line:
+            #         break
+            #     line = str(line.strip())
 
-            if 'COMPLETED' in line:
-                success = True
+            #     if output:
+            #         print(line)
 
-        stdout, stderr = p.communicate()
+            #     if 'COMPLETED' in line:
+            #         success = True
 
-        if output:
-            print(stdout)
-            print(stderr)
+            # stdout, stderr = p.communicate()
+
+            # if output:
+            #     print(stdout)
+            #     print(stderr)
+
+        else:
+            os.chdir(temp)
+            # os.system('{0} {1} -- {2} {3} {4}'.format('abaqus', 'user='+user_path, cpus, path, name))
+            # os.environ['myEnv'] = 'C:/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/bin'
+            os.system('abaqus user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/umat-hooke-iso.f job=' + path + name + ' interactive')
+            success = True
 
     else:
 

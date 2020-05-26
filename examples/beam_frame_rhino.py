@@ -1,7 +1,10 @@
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 
 from compas_fea2.cad import rhino
 
-from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import ElementProperties
 from compas_fea2.backends.abaqus import GeneralStep
 from compas_fea2.backends.abaqus import PinnedDisplacement
 from compas_fea2.backends.abaqus import PipeSection
@@ -9,9 +12,6 @@ from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import RollerDisplacementXZ
 from compas_fea2.backends.abaqus import Steel
 from compas_fea2.backends.abaqus import Structure
-
-
-# Author(s): Andrew Liew (github.com/andrewliew)
 
 
 # Structure
@@ -36,7 +36,7 @@ mdl.add(PipeSection(name='sec_pipe', r=0.100, t=0.005))
 
 # Properties
 
-mdl.add(Properties(name='ep_beam', material='mat_steel', section='sec_pipe', elset='elset_beams'))
+mdl.add(ElementProperties(name='ep_beam', material='mat_steel', section='sec_pipe', elset='elset_beams'))
 
 # Displacements
 

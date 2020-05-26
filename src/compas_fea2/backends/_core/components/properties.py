@@ -40,14 +40,11 @@ class ElementPropertiesBase(object):
         Element keys assignment.
     """
 
-    def __init__(self, name, material=None, section=None, elset=None, elements=None, rebar=None):
-
-
+    def __init__(self, name, material=None, section=None, elements=None, rebar=None):
         self.__name__ = 'ElementProperties'
         self.name     = name
         self.material = material
         self.section  = section
-        self.elset    = elset #TODO move to abaqus only
         self.elements = elements
         self.rebar    = rebar
 

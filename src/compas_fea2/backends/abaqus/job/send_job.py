@@ -148,7 +148,7 @@ def launch_process(structure, exe, cpus, output, umat):
             os.chdir(temp)
             # os.system('{0} {1} -- {2} {3} {4}'.format('abaqus', 'user='+user_path, cpus, path, name))
             # os.environ['myEnv'] = 'C:/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/bin'
-            os.system('abaqus user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/umat-hooke-iso.f job=' + path + name + ' interactive')
+            os.system('abaqus user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/umat-hooke-iso.f job=' + path + name + ' interactive') #TODO change!
             success = True
 
     else:

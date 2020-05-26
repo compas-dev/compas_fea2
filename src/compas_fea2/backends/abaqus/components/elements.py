@@ -48,8 +48,7 @@ __all__ = [
 # ==============================================================================
 
 class Node(NodeBase):
-
-    """ Initialises base Node object.
+    """Initialises base Node object.
 
     Parameters
     ----------
@@ -92,8 +91,7 @@ class Node(NodeBase):
 
 
 class Element(ElementBase):
-
-    """ Initialises base Element object.
+    """Initialises base Element object.
 
     Parameters
     ----------
@@ -130,8 +128,7 @@ class Element(ElementBase):
 # ==============================================================================
 
 class MassElement(MassElementBase):
-
-    """ A 0D element for concentrated point mass.
+    """A 0D element for concentrated point mass.
 
     Parameters
     ----------
@@ -148,8 +145,7 @@ class MassElement(MassElementBase):
 # ==============================================================================
 
 class BeamElement(BeamElementBase):
-
-    """ A 1D element that resists axial, shear, bending and torsion.
+    """A 1D element that resists axial, shear, bending and torsion.
 
     Parameters
     ----------
@@ -162,8 +158,7 @@ class BeamElement(BeamElementBase):
 
 
 class SpringElement(SpringElementBase):
-
-    """ A 1D spring element.
+    """A 1D spring element.
 
     Parameters
     ----------
@@ -176,8 +171,7 @@ class SpringElement(SpringElementBase):
 
 
 class TrussElement(TrussElementBase):
-
-    """ A 1D element that resists axial loads.
+    """A 1D element that resists axial loads.
 
     Parameters
     ----------
@@ -190,8 +184,7 @@ class TrussElement(TrussElementBase):
 
 
 class StrutElement(StrutElementBase):
-
-    """ A truss element that resists axial compressive loads.
+    """A truss element that resists axial compressive loads.
 
     Parameters
     ----------
@@ -204,8 +197,7 @@ class StrutElement(StrutElementBase):
 
 
 class TieElement(TieElementBase):
-
-    """ A truss element that resists axial tensile loads.
+    """A truss element that resists axial tensile loads.
 
     Parameters
     ----------
@@ -222,8 +214,7 @@ class TieElement(TieElementBase):
 # ==============================================================================
 
 class ShellElement(ShellElementBase):
-
-    """ A 2D element that resists axial, shear, bending and torsion.
+    """A 2D element that resists axial, shear, bending and torsion.
 
     Parameters
     ----------
@@ -236,8 +227,7 @@ class ShellElement(ShellElementBase):
 
 
 class FaceElement(FaceElementBase):
-
-    """ A 2D Face element used for special loading cases.
+    """A 2D Face element used for special loading cases.
 
     Parameters
     ----------
@@ -250,8 +240,7 @@ class FaceElement(FaceElementBase):
 
 
 class MembraneElement(MembraneElementBase):
-
-    """ A shell element that resists only axial loads.
+    """A shell element that resists only axial loads.
 
     Parameters
     ----------
@@ -268,8 +257,7 @@ class MembraneElement(MembraneElementBase):
 # ==============================================================================
 
 class SolidElement(SolidElementBase):
-
-    """ A 3D element that resists axial, shear, bending and torsion.
+    """A 3D element that resists axial, shear, bending and torsion.
 
     Parameters
     ----------
@@ -282,8 +270,7 @@ class SolidElement(SolidElementBase):
 
 
 class PentahedronElement(PentahedronElementBase):
-
-    """ A Solid element with 5 faces (extruded triangle).
+    """A Solid element with 5 faces (extruded triangle).
 
     Parameters
     ----------
@@ -296,8 +283,7 @@ class PentahedronElement(PentahedronElementBase):
 
 
 class TetrahedronElement(TetrahedronElementBase):
-
-    """ A Solid element with 4 faces.
+    """A Solid element with 4 faces.
 
     Parameters
     ----------
@@ -310,8 +296,7 @@ class TetrahedronElement(TetrahedronElementBase):
 
 
 class HexahedronElement(HexahedronElementBase):
-
-    """ A Solid cuboid element with 6 faces (extruded rectangle).
+    """A Solid cuboid element with 6 faces (extruded rectangle).
 
     Parameters
     ----------

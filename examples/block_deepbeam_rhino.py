@@ -1,3 +1,7 @@
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
+import rhinoscriptsyntax as rs
 
 from compas_fea2.cad import rhino
 
@@ -8,11 +12,6 @@ from compas_fea2.backends.abaqus import PinnedDisplacement
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import SolidSection
 from compas_fea2.backends.abaqus import Structure
-
-import rhinoscriptsyntax as rs
-
-
-# Author(s): Andrew Liew (github.com/andrewliew)
 
 
 # Structure
@@ -69,3 +68,4 @@ rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)
 
 mdl.save_to_cfea()
+

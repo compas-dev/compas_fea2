@@ -1,10 +1,8 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from compas.geometry import centroid_points
-
 from compas.utilities import geometric_key
 
 from compas_fea2.backends._core.components.elements import *
@@ -39,8 +37,7 @@ func_dict = {
 class ElementMixinsBase(object):
 
     def add_element(self, nodes, type, thermal=False, axes={}, mass=None):
-
-        """ Adds an element to structure.elements with centroid geometric key.
+        """Adds an element to structure.elements with centroid geometric key.
 
         Parameters
         ----------
@@ -62,10 +59,8 @@ class ElementMixinsBase(object):
 
         Notes
         -----
-        - Elements are numbered sequentially starting from 0.
-
+        Elements are numbered sequentially starting from 0.
         """
-
         if len(nodes) == len(set(nodes)):
 
             ekey = self.check_element_exists(nodes)
@@ -86,13 +81,10 @@ class ElementMixinsBase(object):
             return ekey
 
         else:
-
             return None
 
-
     def add_elements(self, elements, type, thermal=False, axes={}):
-
-        """ Adds multiple elements of the same type to structure.elements.
+        """Adds multiple elements of the same type to structure.elements.
 
         Parameters
         ----------
@@ -112,16 +104,12 @@ class ElementMixinsBase(object):
 
         Notes
         -----
-        - Elements are numbered sequentially starting from 0.
-
+        Elements are numbered sequentially starting from 0.
         """
-
         return [self.add_element(nodes=nodes, type=type, thermal=thermal, axes=axes) for nodes in elements]
 
-
     def add_element_to_element_index(self, key, nodes, virtual=False):
-
-        """ Adds the element to the element_index dictionary.
+        """Adds the element to the element_index dictionary.
 
         Parameters
         ----------
@@ -135,9 +123,7 @@ class ElementMixinsBase(object):
         Returns
         -------
         None
-
         """
-
         centroid = centroid_points([self.node_xyz(node) for node in nodes])
         gkey     = geometric_key(centroid, '{0}f'.format(self.tol))
 
@@ -146,10 +132,8 @@ class ElementMixinsBase(object):
         else:
             self.element_index[gkey] = key
 
-
     def check_element_exists(self, nodes=None, xyz=None, virtual=False):
-
-        """ Check if an element already exists based on nodes or centroid.
+        """Check if an element already exists based on nodes or centroid.
 
         Parameters
         ----------
@@ -167,10 +151,8 @@ class ElementMixinsBase(object):
 
         Notes
         -----
-        - Geometric key check is made according to self.tol [m] tolerance.
-
+        Geometric key check is made according to self.tol [m] tolerance.
         """
-
         if not xyz:
             xyz = centroid_points([self.node_xyz(node) for node in nodes])
 
@@ -181,15 +163,11 @@ class ElementMixinsBase(object):
         else:
             return self.element_index.get(gkey, None)
 
-
     def edit_element(self):
-
         raise NotImplementedError
 
-
     def element_count(self):
-
-        """ Return the number of elements in the Structure.
+        """Return the number of elements in the Structure.
 
         Parameters
         ----------
@@ -199,15 +177,11 @@ class ElementMixinsBase(object):
         -------
         int
             Number of elements stored in the Structure object.
-
         """
-
         return len(self.elements) + len(self.virtual_elements)
 
-
     def element_centroid(self, element):
-
-        """ Return the centroid of an element.
+        """Return the centroid of an element.
 
         Parameters
         ----------
@@ -218,15 +192,11 @@ class ElementMixinsBase(object):
         -------
         list
             Co-ordinates of the element centroid.
-
         """
-
         return centroid_points(self.nodes_xyz(nodes=self.elements[element].nodes))
 
-
     def add_nodal_element(self, node, type, virtual_node=False):
-
-        """ Adds a nodal element to structure.elements with the possibility of
+        """Adds a nodal element to structure.elements with the possibility of
         adding a coincident virtual node. Virtual nodes are added to a node
         set called 'virtual_nodes'.
 
@@ -246,10 +216,8 @@ class ElementMixinsBase(object):
 
         Notes
         -----
-        - Elements are numbered sequentially starting from 0.
-
+        Elements are numbered sequentially starting from 0.
         """
-
         if virtual_node:
             xyz = self.node_xyz(node)
             key = self.virtual_nodes.setdefault(node, self.node_count())
@@ -274,10 +242,8 @@ class ElementMixinsBase(object):
         self.elements[ekey] = element
         return ekey
 
-
     def add_virtual_element(self, nodes, type, thermal=False, axes={}):
-
-        """ Adds a virtual element to structure.elements and to element set 'virtual_elements'.
+        """Adds a virtual element to structure.elements and to element set 'virtual_elements'.
 
         Parameters
         ----------
@@ -297,10 +263,8 @@ class ElementMixinsBase(object):
 
         Notes
         -----
-        - Virtual elements are numbered sequentially starting from 0.
-
+        Virtual elements are numbered sequentially starting from 0.
         """
-
         ekey = self.check_element_exists(nodes, virtual=True)
 
         if ekey is None:
@@ -323,10 +287,8 @@ class ElementMixinsBase(object):
 
         return ekey
 
-
     def assign_element_property(self, element_property):
-
-        """ Assign the ElementProperties object name to associated Elements.
+        """Assign the ElementProperties object name to associated Elements.
 
         Parameters
         ----------
@@ -336,9 +298,7 @@ class ElementMixinsBase(object):
         Returns
         -------
         None
-
         """
-
         if element_property.collection:
             elements = self.collections[element_property.collection].selection
         else:

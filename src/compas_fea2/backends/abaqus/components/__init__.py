@@ -3,7 +3,7 @@
 Abaqus Analysis Components
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.abaqus.core
+.. currentmodule:: compas_fea.backends.abaqus.components
 
 
 Structure

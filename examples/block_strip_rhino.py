@@ -1,3 +1,7 @@
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
+import rhinoscriptsyntax as rs
 
 from compas_fea2.cad import rhino
 
@@ -12,11 +16,6 @@ from compas_fea2.backends.abaqus import ShellSection
 from compas_fea2.backends.abaqus import SolidSection
 from compas_fea2.backends.abaqus import Structure
 
-import rhinoscriptsyntax as rs
-
-
-# Author(s): Andrew Liew (github.com/andrewliew)
-
 
 # Structure
 
@@ -24,7 +23,7 @@ mdl = Structure(name='block_strip', path='C:/Temp/')
 
 # Extrude
 
-rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh'), layers=5, thickness=0.010,
+rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh')[0], layers=5, thickness=0.010,
                    blocks_name='elset_blocks', plot_blocks=0)
 
 # Elements

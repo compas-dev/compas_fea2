@@ -51,7 +51,7 @@ class Materials(object):
 
             if mtype in ['UserMaterial']:
 
-                self.write_line('*User Material, constants=2')
+                self.write_line('*User Material, constants=2') #TODO change to the varaible number of constants
                 self.write_line('{0}, {1}'.format(E['E'], v['v']))
 
             # Elastic

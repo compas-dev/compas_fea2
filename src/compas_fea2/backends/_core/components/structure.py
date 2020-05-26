@@ -23,8 +23,7 @@ __all__ = [
 
 
 class StructureBase(ObjectMixinsBase, ElementMixinsBase, NodeMixinsBase):
-
-    """ Initialises Structure object for use in finite element analysis.
+    """Initialises Structure object for use in finite element analysis.
 
     Parameters
     ----------
@@ -79,18 +78,16 @@ class StructureBase(ObjectMixinsBase, ElementMixinsBase, NodeMixinsBase):
         Element objects for virtual elements.
     virtual_element_index : dict
         Index of virtual elements (element centroid geometric keys).
-
     """
-    # TODO move sets from here to abaqus
-    def __init__(self, path, name='compas_fea-Structure'):
 
+    def __init__(self, path, name='compas_fea-Structure'):
         self.constraints           = {}
         self.displacements         = {}
         self.elements              = {}
         self.element_index         = {}
         self.element_properties    = {}
         self.interactions          = {}
-        self.loads                 = {} #TODO add cases and combos (change numbering)
+        self.loads                 = {}
         self.materials             = {}
         self.misc                  = {}
         self.name                  = name
@@ -99,7 +96,6 @@ class StructureBase(ObjectMixinsBase, ElementMixinsBase, NodeMixinsBase):
         self.path                  = path
         self.results               = {}
         self.sections              = {}
-        # self.collections           = {} #TODO maybe add 'collections'
         self.steps                 = {}
         self.steps_order           = []
         self.tol                   = '3'
@@ -108,13 +104,10 @@ class StructureBase(ObjectMixinsBase, ElementMixinsBase, NodeMixinsBase):
         self.virtual_elements      = {}
         self.virtual_element_index = {}
 
-    # TODO move sets from here to abaqus
     def __str__(self):
-
         n = self.node_count()
         m = self.element_count()
         data = [
-            # self.collections,
             self.materials,
             self.sections,
             self.loads,
@@ -122,20 +115,14 @@ class StructureBase(ObjectMixinsBase, ElementMixinsBase, NodeMixinsBase):
             self.constraints,
             self.interactions,
             self.misc,
-            self.steps,
-        ]
-
+            self.steps]
         d = []
-
         for entry in data:
-
             if entry:
                 d.append('\n'.join(['  {0} : {1}'.format(i, j.__name__) for i, j in entry.items()]))
             else:
                 d.append('n/a')
-
         return """
-
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 compas_fea Structure: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -147,7 +134,6 @@ Nodes
 Elements
 --------
 {}
-
 
 Materials
 ---------
@@ -183,10 +169,8 @@ Steps
 
 """.format(self.name, n, m, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7])
 
-
     def add_nodes_elements_from_mesh(self, mesh, element_type, thermal=False, elset=None):
-
-        """ Adds the nodes and faces of a Mesh to the Structure object.
+        """Adds the nodes and faces of a Mesh to the Structure object.
 
         Parameters
         ----------
@@ -201,9 +185,7 @@ Steps
         -------
         list
             Keys of the created elements.
-
         """
-
         for key in sorted(list(mesh.vertices()), key=int):
             self.add_node(mesh.vertex_coordinates(key))
 
@@ -215,10 +197,8 @@ Steps
 
         return ekeys
 
-
     def add_nodes_elements_from_network(self, network, element_type, thermal=False, elset=None, axes={}):
-
-        """ Adds the nodes and edges of a Network to the Structure object.
+        """Adds the nodes and edges of a Network to the Structure object.
 
         Parameters
         ----------
@@ -235,9 +215,7 @@ Steps
         -------
         list
             Keys of the created elements.
-
         """
-
         for key in sorted(list(network.nodes()), key=int):
             self.add_node(network.node_coordinates(key))
 
@@ -250,10 +228,8 @@ Steps
 
         return ekeys
 
-
     def add_nodes_elements_from_volmesh(self, volmesh, element_type='SolidElement', thermal=False, elset=None, axes={}):
-
-        """ Adds the nodes and cells of a VolMesh to the Structure object.
+        """Adds the nodes and cells of a VolMesh to the Structure object.
 
         Parameters
         ----------
@@ -270,9 +246,7 @@ Steps
         -------
         list
             Keys of the created elements.
-
         """
-
         for key in sorted(list(volmesh.vertices()), key=int):
             self.add_node(volmesh.vertex_coordinates(key))
 
@@ -285,14 +259,12 @@ Steps
 
         return ekeys
 
-
     # ==============================================================================
     # Modifiers
     # ==============================================================================
 
     def scale_displacements(self, displacements, factor):
-
-        """ Scales displacements by a given factor.
+        """Scales displacements by a given factor.
 
         Parameters
         ----------
@@ -305,9 +277,7 @@ Steps
         -------
         dict
             The scaled displacements dictionary.
-
         """
-
         disp_dic = {}
 
         for key, disp in displacements.items():
@@ -318,10 +288,8 @@ Steps
 
         return disp_dic
 
-
     def scale_loads(self, loads, factor):
-
-        """ Scales loads by a given factor.
+        """Scales loads by a given factor.
 
         Parameters
         ----------
@@ -334,9 +302,7 @@ Steps
         -------
         dict
             The scaled loads dictionary.
-
         """
-
         loads_dic = {}
 
         for key, load in loads.items():
@@ -352,8 +318,7 @@ Steps
     # ==============================================================================
 
     def set_steps_order(self, order):
-
-        """ Sets the order that the Steps will be analysed.
+        """Sets the order that the Steps will be analysed.
 
         Parameters
         ----------
@@ -363,19 +328,15 @@ Steps
         Returns
         -------
         None
-
         """
-
         self.steps_order = order
-
 
     # ==============================================================================
     # Results
     # ==============================================================================
 
     def get_nodal_results(self, step, field, nodes='all'):
-
-        """ Extract nodal results from self.results.
+        """Extract nodal results from self.results.
 
         Parameters
         ----------
@@ -390,18 +351,12 @@ Steps
         -------
         dict
             The nodal results for the requested field.
-
         """
-
         data  = {}
         rdict = self.results[step]['nodal']
 
         if nodes == 'all':
             keys = list(self.nodes.keys())
-
-        # elif isinstance(nodes, str):              TODO: transfor to 'collection'
-        #     keys = self.sets[nodes].selection
-
         else:
             keys = nodes
 
@@ -410,10 +365,8 @@ Steps
 
         return data
 
-
     def get_element_results(self, step, field, elements='all'):
-
-        """ Extract element results from self.results.
+        """Extract element results from self.results.
 
         Parameters
         ----------
@@ -428,9 +381,7 @@ Steps
         -------
         dict
             The element results for the requested field.
-
         """
-
         data  = {}
         rdict = self.results[step]['element']
 
@@ -448,14 +399,12 @@ Steps
 
         return data
 
-
     # ==============================================================================
     # Summary
     # ==============================================================================
 
     def summary(self):
-
-        """ Prints a summary of the Structure object.
+        """Prints a summary of the Structure object.
 
         Parameters
         ----------
@@ -464,19 +413,15 @@ Steps
         Returns
         -------
         None
-
         """
-
         print(self)
-
 
     # ==============================================================================
     # Save
     # ==============================================================================
 
     def save_to_cfea(self, output=True):
-
-        """ Exports the Structure object to an .obj file through Pickle.
+        """Exports the Structure object to an .obj file through Pickle.
 
         Parameters
         ----------
@@ -486,9 +431,7 @@ Steps
         Returns
         -------
         None
-
         """
-
         filename = os.path.join(self.path, self.name + '.cfea')
 
         with open(filename, 'wb') as f:
@@ -497,15 +440,13 @@ Steps
         if output:
             print('***** Structure saved to: {0} *****\n'.format(filename))
 
-
     # ==============================================================================
     # Load
     # ==============================================================================
 
     @staticmethod
     def load_from_cfea(filename, output=True):
-
-        """ Imports a Structure object from an .obj file through Pickle.
+        """Imports a Structure object from an .obj file through Pickle.
 
         Parameters
         ----------
@@ -518,9 +459,7 @@ Steps
         -------
         obj
             Imported Structure object.
-
         """
-
         with open(filename, 'rb') as f:
             structure = pickle.load(f)
 

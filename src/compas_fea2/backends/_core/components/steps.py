@@ -219,7 +219,7 @@ class HarmonicStepBase(StepBase):
         if not loads:
             loads = []
 
-        self.__name__      = 'HarmoniStepBase'
+        self.__name__      = 'HarmonicStepBase'
         self.name          = name
         self.freq_list     = freq_list
         self.displacements = displacements
@@ -319,7 +319,7 @@ class AcousticStepBase(StepBase):
         if not sources:
             sources = []
 
-        self.__name__      = 'AcoustiStepBase'
+        self.__name__      = 'AcousticStepBase'
         self.name          = name
         self.freq_range    = freq_range
         self.freq_step     = freq_step

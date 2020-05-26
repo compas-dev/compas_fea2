@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -20,7 +19,6 @@ from compas_fea2.backends._core import AcousticDiffuseFieldLoadBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-
 __all__ = [
     'Load',
     'PrestressLoad',
@@ -38,8 +36,7 @@ __all__ = [
 
 
 class Load(LoadBase):
-
-    """ Initialises base Load object.
+    """Initialises base Load object.
 
     Parameters
     ----------
@@ -74,8 +71,7 @@ class Load(LoadBase):
 
 
 class PrestressLoad(PrestressLoadBase):
-
-    """ Pre-stress [units: N/m2] applied to element(s).
+    """Pre-stress [units: N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -93,8 +89,7 @@ class PrestressLoad(PrestressLoadBase):
 
 
 class PointLoad(PointLoadBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to node(s).
+    """Concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
     ----------
@@ -122,8 +117,7 @@ class PointLoad(PointLoadBase):
 
 
 class PointLoads(PointLoadsBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to different nodes.
+    """Concentrated forces and moments [units:N, Nm] applied to different nodes.
 
     Parameters
     ----------
@@ -139,8 +133,7 @@ class PointLoads(PointLoadsBase):
 
 
 class LineLoad(LineLoadBase):
-
-    """ Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
+    """Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
 
     Parameters
     ----------
@@ -168,8 +161,7 @@ class LineLoad(LineLoadBase):
 
 
 class AreaLoad(AreaLoadBase):
-
-    """ Distributed area force [units:N/m2] applied to element(s).
+    """Distributed area force [units:N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -191,8 +183,7 @@ class AreaLoad(AreaLoadBase):
 
 
 class GravityLoad(GravityLoadBase):
-
-    """ Gravity load [units:N/m3] applied to element(s).
+    """Gravity load [units:N/m3] applied to element(s).
 
     Parameters
     ----------
@@ -216,8 +207,7 @@ class GravityLoad(GravityLoadBase):
 
 
 class ThermalLoad(ThermalLoadBase):
-
-    """ Thermal load.
+    """Thermal load.
 
     Parameters
     ----------
@@ -235,8 +225,7 @@ class ThermalLoad(ThermalLoadBase):
 
 
 class TributaryLoad(TributaryLoadBase):
-
-    """ Tributary area loads applied to nodes.
+    """Tributary area loads applied to nodes.
 
     Parameters
     ----------
@@ -267,8 +256,7 @@ class TributaryLoad(TributaryLoadBase):
 
 
 class HarmoniPointLoadBase(HarmonicPointLoadBase):
-
-    """ Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
+    """Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
     ----------
@@ -296,8 +284,7 @@ class HarmoniPointLoadBase(HarmonicPointLoadBase):
 
 
 class HarmonicPressureLoad(HarmonicPressureLoadBase):
-
-    """ Harmonic pressure loads [units:N/m2] applied to element(s).
+    """Harmonic pressure loads [units:N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -317,8 +304,7 @@ class HarmonicPressureLoad(HarmonicPressureLoadBase):
 
 
 class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
-
-    """ Acoustic Diffuse field loads applied to elements.
+    """Acoustic Diffuse field loads applied to elements.
 
     Parameters
     ----------

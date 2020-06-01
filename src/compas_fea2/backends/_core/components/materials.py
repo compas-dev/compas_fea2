@@ -1,10 +1,8 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from math import log
-
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
@@ -26,8 +24,7 @@ __all__ = [
 
 
 class MaterialBase(object):
-
-    """ Initialises base Material object.
+    """Initialises base Material object.
 
     Parameters
     ----------
@@ -38,30 +35,22 @@ class MaterialBase(object):
     ----------
     name : str
         Name of the Material object.
-
     """
 
     def __init__(self, name):
-
         self.__name__  = 'Material'
         self.name      = name
         self.attr_list = ['name']
 
-
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
-
         for attr in self.attr_list:
             print('{0:<11} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
 
@@ -70,8 +59,7 @@ class MaterialBase(object):
 # ==============================================================================
 
 class ElasticIsotropicBase(MaterialBase):
-
-    """ Elastic, isotropic and homogeneous material.
+    """Elastic, isotropic and homogeneous material.
 
     Parameters
     ----------
@@ -87,12 +75,10 @@ class ElasticIsotropicBase(MaterialBase):
         Can take tension.
     compression : bool
         Can take compression.
-
     """
 
     def __init__(self, name, E, v, p, tension=True, compression=True):
         MaterialBase.__init__(self, name=name)
-
         self.__name__    = 'ElasticIsotropic'
         self.name        = name
         self.E           = {'E': E}
@@ -105,8 +91,7 @@ class ElasticIsotropicBase(MaterialBase):
 
 
 class StiffBase(ElasticIsotropicBase):
-
-    """ Elastic, very stiff and massless material.
+    """Elastic, very stiff and massless material.
 
     Parameters
     ----------
@@ -114,18 +99,15 @@ class StiffBase(ElasticIsotropicBase):
         Material name.
     E : float
         Young's modulus E [Pa].
-
     """
 
     def __init__(self, name, E=10**13):  #NOTE: depending on the unit used, this might not be correct.
         ElasticIsotropic.__init__(self, name=name, E=E, v=0.3, p=10**(-1))
-
         self.__name__ = 'Stiff'
 
 
 class ElasticOrthotropicBase(MaterialBase):
-
-    """ Elastic, orthotropic and homogeneous material.
+    """Elastic, orthotropic and homogeneous material.
 
     Parameters
     ----------
@@ -159,12 +141,10 @@ class ElasticOrthotropicBase(MaterialBase):
     Notes
     -----
     - Can be created but is currently not implemented.
-
     """
 
     def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension=True, compression=True):
         MaterialBase.__init__(self, name=name)
-
         self.__name__    = 'ElasticOrthotropic'
         self.name        = name
         self.E           = {'Ex': Ex, 'Ey': Ey, 'Ez': Ez}
@@ -181,8 +161,7 @@ class ElasticOrthotropicBase(MaterialBase):
 # ==============================================================================
 
 class ElasticPlasticBase(MaterialBase):
-
-    """ Elastic and plastic, isotropic and homogeneous material.
+    """Elastic and plastic, isotropic and homogeneous material.
 
     Parameters
     ----------
@@ -227,8 +206,7 @@ class ElasticPlasticBase(MaterialBase):
 # ==============================================================================
 
 class SteelBase(MaterialBase):
-
-    """ Bi-linear steel with given yield stress.
+    """Bi-linear steel with given yield stress.
 
     Parameters
     ----------
@@ -297,8 +275,7 @@ class SteelBase(MaterialBase):
 # ==============================================================================
 
 class ConcreteBase(MaterialBase):
-
-    """ Elastic and plastic-cracking Eurocode based concrete material.
+    """Elastic and plastic-cracking Eurocode based concrete material.
 
     Parameters
     ----------
@@ -355,8 +332,7 @@ class ConcreteBase(MaterialBase):
 
 
 class ConcreteBaseSmearedCrack(MaterialBase):
-
-    """ Elastic and plastic, cracking concrete material.
+    """Elastic and plastic, cracking concrete material.
 
     Parameters
     ----------
@@ -397,8 +373,7 @@ class ConcreteBaseSmearedCrack(MaterialBase):
 
 
 class ConcreteBaseDamagedPlasticity(MaterialBase):
-
-    """ Damaged plasticity isotropic and homogeneous material.
+    """Damaged plasticity isotropic and homogeneous material.
 
     Parameters
     ----------
@@ -439,8 +414,7 @@ class ConcreteBaseDamagedPlasticity(MaterialBase):
 # ==============================================================================
 
 class ThermalMaterialBase(MaterialBase):
-
-    """ Class for thermal material properties.
+    """Class for thermal material properties.
 
     Parameters
     ----------

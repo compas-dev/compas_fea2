@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,8 +20,7 @@ __all__ = [
 
 
 class StepBase(object):
-
-    """ Initialises base Step object.
+    """Initialises base Step object.
 
     Parameters
     ----------
@@ -42,27 +40,20 @@ class StepBase(object):
         self.name      = name
         self.attr_list = ['name']
 
-
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 10))
-
         for attr in self.attr_list:
             print('{0:<13} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
 
 class GeneralStepBase(StepBase):
-
-    """ Initialises GeneralStep object for use in a static analysis.
+    """Initialises GeneralStep object for use in a static analysis.
 
     Parameters
     ----------
@@ -117,8 +108,7 @@ class GeneralStepBase(StepBase):
 
 
 class HeatStepBase(StepBase):
-
-    """ Initialises HeatStep object for use in a thermal analysis.
+    """Initialises HeatStep object for use in a thermal analysis.
 
     Parameters
     ----------
@@ -154,8 +144,7 @@ class HeatStepBase(StepBase):
 
 
 class ModalStepBase(StepBase):
-
-    """ Initialises ModalStep object for use in a modal analysis.
+    """Initialises ModalStep object for use in a modal analysis.
 
     Parameters
     ----------
@@ -188,8 +177,7 @@ class ModalStepBase(StepBase):
 
 
 class HarmonicStepBase(StepBase):
-
-    """ Initialises HarmoniStepBase object for use in a harmonic analysis.
+    """Initialises HarmoniStepBase object for use in a harmonic analysis.
 
     Parameters
     ----------
@@ -231,8 +219,7 @@ class HarmonicStepBase(StepBase):
 
 
 class BucklingStepBase(StepBase):
-
-    """ Initialises BucklingStep object for use in a buckling analysis.
+    """Initialises BucklingStep object for use in a buckling analysis.
 
     Parameters
     ----------
@@ -278,8 +265,7 @@ class BucklingStepBase(StepBase):
 
 
 class AcousticStepBase(StepBase):
-
-    """ Initialises AcoustiStepBase object for use in a acoustic analysis.
+    """Initialises AcoustiStepBase object for use in a acoustic analysis.
 
     Parameters
     ----------

@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -14,8 +13,7 @@ __all__ = [
 
 
 class ElementPropertiesBase(object):
-
-    """ Initialises an ElementProperties object.
+    """Initialises an ElementProperties object.
 
     Parameters
     ----------
@@ -47,24 +45,16 @@ class ElementPropertiesBase(object):
         self.section  = section
         self.elements = elements
         self.rebar    = rebar
-
         # if (not elset) and (not elements):
         #     raise NameError('***** ElementProperties objects require elements or element sets *****') #TODO move to abaqus only
 
-
-
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
-
         for attr in ['name', 'material', 'section', 'collection', 'elements']:
             print('{0:<13} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)

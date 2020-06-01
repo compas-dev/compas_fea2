@@ -1,8 +1,6 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
@@ -27,8 +25,7 @@ __all__ = [
 
 
 class LoadBase(object):
-
-    """ Initialises base Load object.
+    """Initialises base Load object.
 
     Parameters
     ----------
@@ -55,11 +52,9 @@ class LoadBase(object):
         Node set or node keys the load is applied to.
     elements : str, list
         Element set or element keys the load is applied to.
-
     """
 
     def __init__(self, name, axes='global', components={}, nodes=[], elements=[]):
-
         self.__name__   = 'LoadObject'
         self.name       = name
         self.axes       = axes
@@ -70,25 +65,19 @@ class LoadBase(object):
 
 
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 10))
-
         for attr in self.attr_list:
             print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
 
 class PrestressLoadBase(LoadBase):
-
-    """ Pre-stress [units: N/m2] applied to element(s).
+    """Pre-stress [units: N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -98,19 +87,16 @@ class PrestressLoadBase(LoadBase):
         Element set or element keys the prestress is applied to.
     sxx : float
         Value of prestress for axial stress component sxx.
-
     """
 
     def __init__(self, name, elements, sxx=0):
         Load.__init__(self, name=name, elements=elements, axes='local')
-
         self.__name__   = 'PrestressLoad'
         self.components = {'sxx': sxx}
 
 
 class PointLoadBase(LoadBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to node(s).
+    """Concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
     ----------
@@ -130,19 +116,16 @@ class PointLoadBase(LoadBase):
         yy component of moment.
     zz : float
         zz component of moment.
-
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
         LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
-
         self.__name__   = 'PointLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
 class PointLoadsBase(LoadBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to different nodes.
+    """Concentrated forces and moments [units:N, Nm] applied to different nodes.
 
     Parameters
     ----------
@@ -150,18 +133,15 @@ class PointLoadsBase(LoadBase):
         Name of the PointLoads object.
     components : dict
         Node key : components dictionary data.
-
     """
 
     def __init__(self, name, components):
         LoadBase.__init__(self, name=name, components=components, axes='global')
-
         self.__name__ = 'PointLoads'
 
 
 class LineLoadBase(LoadBase):
-
-    """ Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
+    """Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
 
     Parameters
     ----------
@@ -181,19 +161,16 @@ class LineLoadBase(LoadBase):
         yy component of moment / length.
     zz : float
         zz component of moment / length.
-
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='local'):
         LoadBase.__init__(self, name=name, elements=elements, axes=axes)
-
         self.__name__   = 'LineLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
 class AreaLoadBase(LoadBase):
-
-    """ Distributed area force [units:N/m2] applied to element(s).
+    """Distributed area force [units:N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -207,19 +184,16 @@ class AreaLoadBase(LoadBase):
         y component of area load.
     z : float
         z component of area load.
-
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, axes='local'):
         LoadBase.__init__(self, name=name, elements=elements, axes=axes)
-
         self.__name__   = 'AreaLoad'
         self.components = {'x': x, 'y': y, 'z': z}
 
 
 class GravityLoadBase(LoadBase):
-
-    """ Gravity load [units:N/m3] applied to element(s).
+    """Gravity load [units:N/m3] applied to element(s).
 
     Parameters
     ----------
@@ -235,12 +209,10 @@ class GravityLoadBase(LoadBase):
         Factor to apply to y direction.
     z : float
         Factor to apply to z direction.
-
     """
 
     def __init__(self, name, elements, g=-9.81, x=0., y=0., z=1.):
         LoadBase.__init__(self, name=name, elements=elements, axes='global')
-
         self.__name__   = 'GravityLoad'
         self.g          = g
         self.components = {'x': x, 'y': y, 'z': z}
@@ -248,8 +220,7 @@ class GravityLoadBase(LoadBase):
 
 
 class ThermalLoadBase(object):
-
-    """ Thermal load.
+    """Thermal load.
 
     Parameters
     ----------
@@ -259,11 +230,9 @@ class ThermalLoadBase(object):
         Element set or element keys the load is applied to.
     temperature : float
         Temperature to apply to elements.
-
     """
 
     def __init__(self, name, elements, temperature):
-
         self.__name__    = 'ThermalLoad'
         self.name        = name
         self.elements    = elements
@@ -271,8 +240,7 @@ class ThermalLoadBase(object):
 
 
 class TributaryLoadBase(LoadBase):
-
-    """ Tributary area loads applied to nodes.
+    """Tributary area loads applied to nodes.
 
     Parameters
     ----------
@@ -295,12 +263,10 @@ class TributaryLoadBase(LoadBase):
     -----
     - The load components are loads per unit area [N/m2].
     - Currently only supports 'global' axis.
-
     """
 
     def __init__(self, structure, name, mesh, x=0, y=0, z=0, axes='global'):
         LoadBase.__init__(self, name=name, axes=axes)
-
         self.__name__ = 'TributaryLoad'
         self.attr_list.append('mesh')
 
@@ -321,8 +287,7 @@ class TributaryLoadBase(LoadBase):
 
 
 class HarmonicPointLoadBase(LoadBase):
-
-    """ Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
+    """Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
     ----------
@@ -342,19 +307,16 @@ class HarmonicPointLoadBase(LoadBase):
         yy component of moment.
     zz : float
         zz component of moment.
-
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
         LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
-
         self.__name__   = 'HarmoniPointLoadBase'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
 class HarmonicPressureLoadBase(LoadBase):
-
-    """ Harmonic pressure loads [units:N/m2] applied to element(s).
+    """Harmonic pressure loads [units:N/m2] applied to element(s).
 
     Parameters
     ----------
@@ -366,19 +328,16 @@ class HarmonicPressureLoadBase(LoadBase):
         Normal acting pressure to be applied to the elements.
     phase : float
         Phase angle in radians.
-
     """
 
     def __init__(self, name, elements, pressure=0, phase=None):
         LoadBase.__init__(self, name=name, elements=elements, axes='global')
-
         self.__name__   = 'HarmonicPressureLoad'
         self.components = {'pressure': pressure, 'phase': phase}
 
 
 class AcousticDiffuseFieldLoadBase(LoadBase):
-
-    """ Acoustic Diffuse field loads applied to elements.
+    """Acoustic Diffuse field loads applied to elements.
 
     Parameters
     ----------
@@ -392,12 +351,10 @@ class AcousticDiffuseFieldLoadBase(LoadBase):
         Speed of sound (defaults to air at 20 degrees)
     max_inc_angle: float
         Maximum angle with the positive z axis for the randon incident plane waves
-
     """
 
     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
         LoadBase.__init__(self, name=name, elements=elements, axes='global')
-
         self.__name__   = 'AcousticDiffuseFieldLoad'
         self.components = {'air_density':   air_density,
                            'sound_speed':   sound_speed,

@@ -14,8 +14,7 @@ __all__ = [
 
 
 class ConstraintBase(object):
-
-    """ Initialises base Constraint object.
+    """Initialises base Constraint object.
 
     Parameters
     ----------
@@ -25,30 +24,24 @@ class ConstraintBase(object):
     Returns
     -------
     None
-
     """
 
     def __init__(self, name):
-
         self.__name__ = 'ConstraintObject'
         self.name = name
         self.attr_list = ['name']
 
     def __str__(self):
-
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 10))
-
         for attr in self.attr_list:
             print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
         return ''
 
 
 class TieConstraintBase(ConstraintBase):
-
-    """ Tie constraint between two sets of nodes, elements or surfaces.
+    """Tie constraint between two sets of nodes, elements or surfaces.
 
     Parameters
     ----------
@@ -64,12 +57,10 @@ class TieConstraintBase(ConstraintBase):
     Returns
     -------
     None
-
     """
 
     def __init__(self, name, master, slave, tol):
         ConstraintBase.__init__(self, name=name)
-
         self.__name__ = 'TieConstraint'
         self.master = master
         self.slave = slave

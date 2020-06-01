@@ -3,7 +3,7 @@ compas_fea2
 ********************************************************************************
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :titlesonly:
 
    intro

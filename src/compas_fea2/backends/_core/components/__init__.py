@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-Model/Analysis (Components)
+_core.components
 ********************************************************************************
 
 .. currentmodule:: compas_fea2.backends._core.components
@@ -45,13 +45,21 @@ Boundary Conditions
     RollerDisplacementXZBase
 
 
+Nodes
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    NodeBase
+
+
 Elements
 ========
 
 .. autosummary::
     :toctree: generated/
 
-    NodeBase
     ElementBase
     MassElementBase
     BeamElementBase
@@ -93,7 +101,7 @@ Loads
     HarmonicPointLoadBase
 
 
-materials
+Materials
 =========
 
 .. autosummary::
@@ -166,6 +174,7 @@ from __future__ import print_function
 from .structure import *
 from .bcs import *
 from .constraints import *
+from .nodes import *
 from .elements import *
 from .load_cases import *
 from .load_combos import *

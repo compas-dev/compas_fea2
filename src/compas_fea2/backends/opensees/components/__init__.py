@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-OpenSEES Analysis Components
+opensees.components
 ********************************************************************************
 
-.. currentmodule:: compas_fea.backends.opensees.components
+.. currentmodule:: compas_fea2.backends.opensees.components
 
 
 Structure

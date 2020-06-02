@@ -13,6 +13,7 @@ from compas_fea2.utilities import group_keys_by_attributes
 
 from compas_fea2.backends._core.components.elements import *
 
+from compas_fea2.backends._core.components.nodes import NodeBase
 from compas_fea2.backends._core.components.properties import ElementPropertiesBase
 from compas_fea2.backends._core.components.loads import LoadBase
 from compas_fea2.backends._core.components.loads import ThermalLoadBase

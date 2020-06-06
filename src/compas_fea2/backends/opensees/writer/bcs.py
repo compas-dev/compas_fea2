@@ -26,7 +26,7 @@ class BCs(object):
         self.write_section('Boundary conditions')
         self.blank_line()
 
-        collections   = self.structure.collections
+        sets   = self.structure.sets
         steps         = self.structure.steps
         displacements = self.structure.displacements
 
@@ -41,8 +41,8 @@ class BCs(object):
 
                 nodes      = displacements[key].nodes
                 components = displacements[key].components
-                collection       = nodes if isinstance(nodes, str) else None
-                selection  = collections[collection].selection if isinstance(nodes, str) else nodes
+                nset       = nodes if isinstance(nodes, str) else None
+                selection  = sets[nset].selection if isinstance(nodes, str) else nodes
 
                 self.write_subsection(key)
 

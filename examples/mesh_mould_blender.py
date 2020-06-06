@@ -1,14 +1,14 @@
-
 from compas_fea2.cad import blender
-from compas_fea2.backends.opensees.core import Concrete
-from compas_fea2.backends.opensees.core import ElementProperties as Properties
-from compas_fea2.backends.opensees.core import FixedDisplacement
-from compas_fea2.backends.opensees.core import GeneralStep
-from compas_fea2.backends.opensees.core import GravityLoad
-from compas_fea2.backends.opensees.core import PointLoad
-from compas_fea2.backends.opensees.core import ShellSection
-from compas_fea2.backends.opensees.core import Steel
-from compas_fea2.backends.opensees.core import Structure
+
+from compas_fea2.backends.opensees import Concrete
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import FixedDisplacement
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import GravityLoad
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import ShellSection
+from compas_fea2.backends.opensees import Steel
+from compas_fea2.backends.opensees import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

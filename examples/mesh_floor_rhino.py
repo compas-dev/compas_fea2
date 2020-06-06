@@ -1,27 +1,27 @@
-
-from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import Concrete
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import GravityLoad
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PrestressLoad
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import RollerDisplacementXY
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import Stiff
-from compas_fea2.backends.abaqus.core import Structure
-from compas_fea2.backends.abaqus.core import TributaryLoad
-from compas_fea2.backends.abaqus.core import TrussSection
-
-from compas.datastructures import Mesh
-from compas_rhino.helpers import mesh_from_guid
+from math import pi
 
 import rhinoscriptsyntax as rs
 
-from math import pi
+from compas.datastructures import Mesh
+from compas_rhino.geometry import RhinoMesh
+
+from compas_fea2.cad import rhino
+
+from compas_fea2.backends.abaqus import Concrete
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import GravityLoad
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PrestressLoad
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementXY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import Steel
+from compas_fea2.backends.abaqus import Stiff
+from compas_fea2.backends.abaqus import Structure
+from compas_fea2.backends.abaqus import TributaryLoad
+from compas_fea2.backends.abaqus import TrussSection
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -79,10 +79,13 @@ mdl.add([
 
 # Loads
 
+guid = rs.ObjectsByLayer('load_mesh')[0]
+mesh = RhinoMesh.from_guid(guid).to_compas(cls=Mesh)
+
 mdl.add([
     GravityLoad(name='load_gravity', elements=['elset_ribs', 'elset_vault']),
     PrestressLoad(name='load_prestress', elements='elset_ties', sxx=10*10**6),
-    TributaryLoad(mdl, name='load_area', mesh=mesh_from_guid(Mesh(), rs.ObjectsByLayer('load_mesh')[0]), z=-2000),
+    TributaryLoad(mdl, name='load_area', mesh=mesh, z=-2000),
 ])
 
 # Steps

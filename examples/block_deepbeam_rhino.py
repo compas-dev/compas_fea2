@@ -1,17 +1,17 @@
-
-from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import SolidSection
-from compas_fea2.backends.abaqus.core import Structure
-
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 import rhinoscriptsyntax as rs
 
+from compas_fea2.cad import rhino
 
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 
 # Structure
@@ -21,7 +21,7 @@ mdl = Structure(name='block_deepbeam', path='C:/Temp/')
 # Extrude
 
 nz = 20
-rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh'), layers=nz, thickness=1./nz,
+rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh')[0], layers=nz, thickness=1./nz,
                    blocks_name='elset_blocks')
 
 # Sets
@@ -62,9 +62,10 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
 
 rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)
 
-mdl.save_to_obj()
+mdl.save_to_cfea()
+

@@ -9,6 +9,9 @@ compas_fea2
 .. toctree::
     :maxdepth: 1
 
+    compas_fea2.backends
+    compas_fea2.cad
+
 
 """
 

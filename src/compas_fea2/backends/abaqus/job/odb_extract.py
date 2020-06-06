@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -47,8 +46,7 @@ element_fields = ['sf', 'sm', 'sk', 'se', 's', 'e', 'pe', 'ctf', 'rbfor']
 
 
 def extract_odb_data(temp, name, fields, components, steps='all'):
-
-    """ Extracts data from the .odb file for the requested steps and fields.
+    """Extracts data from the .odb file for the requested steps and fields.
 
     Parameters
     ----------
@@ -68,7 +66,6 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
     None
 
     """
-
     odb = openOdb(path='{0}{1}.odb'.format(temp, name))
 
     if not components:
@@ -294,6 +291,10 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
     with open('{0}{1}-info.json'.format(temp, name), 'w') as f:
         json.dump(info, f)
 
+
+# ============================================================================
+# Main
+# ============================================================================
 
 if __name__ == "__main__":
 

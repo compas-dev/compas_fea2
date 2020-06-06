@@ -1,18 +1,18 @@
+import rhinoscriptsyntax as rs
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import Concrete
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PointLoads
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PrestressLoad
-from compas_fea2.backends.abaqus.core import RollerDisplacementX
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import TrussSection
-from compas_fea2.backends.abaqus.core import Structure
 
-import rhinoscriptsyntax as rs
+from compas_fea2.backends.abaqus import Concrete
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PointLoads
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PrestressLoad
+from compas_fea2.backends.abaqus import RollerDisplacementX
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import Steel
+from compas_fea2.backends.abaqus import TrussSection
+from compas_fea2.backends.abaqus import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

@@ -1,14 +1,14 @@
-
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import Concrete
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import FixedDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import GravityLoad
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import Steel
-from compas_fea2.backends.abaqus.core import Structure
+
+from compas_fea2.backends.abaqus import Concrete
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import FixedDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import GravityLoad
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import Steel
+from compas_fea2.backends.abaqus import Structure
 
 import rhinoscriptsyntax as rs
 

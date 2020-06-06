@@ -1,20 +1,20 @@
-
-from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElasticPlastic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import RollerDisplacementY
-from compas_fea2.backends.abaqus.core import ShellSection
-from compas_fea2.backends.abaqus.core import SolidSection
-from compas_fea2.backends.abaqus.core import Structure
-
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 import rhinoscriptsyntax as rs
 
+from compas_fea2.cad import rhino
 
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.backends.abaqus import ElasticPlastic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 
 # Structure
@@ -23,7 +23,7 @@ mdl = Structure(name='block_strip', path='C:/Temp/')
 
 # Extrude
 
-rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh'), layers=5, thickness=0.010,
+rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh')[0], layers=5, thickness=0.010,
                    blocks_name='elset_blocks', plot_blocks=0)
 
 # Elements

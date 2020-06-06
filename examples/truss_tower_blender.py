@@ -1,12 +1,12 @@
-
 from compas_fea2.cad import blender
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import Structure
-from compas_fea2.backends.abaqus.core import TrussSection
+
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import Structure
+from compas_fea2.backends.abaqus import TrussSection
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

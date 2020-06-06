@@ -565,22 +565,22 @@ def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, ip
     vn, ve = process_data(data=data, dtype=dtype, iptype=iptype, nodal=nodal, elements=elements, n=len(U))
 
     fscaled, fabs = normalise_data(data=vn, cmin=cbar[0], cmax=cbar[1])
-    cnodes = colorbar(fsc=fscaled, input='array', type=ctype)
+    NodeBases = colorbar(fsc=fscaled, input='array', type=ctype)
 
     if dtype == 'element':
         escaled, eabs = normalise_data(data=ve, cmin=cbar[0], cmax=cbar[1])
-        celements = colorbar(fsc=escaled, input='array', type=ctype)
-        celements_ = [list(i) for i in list(celements)]
+        ElementBases = colorbar(fsc=escaled, input='array', type=ctype)
+        ElementBases_ = [list(i) for i in list(ElementBases)]
     else:
         eabs = 0
-        celements_ = []
+        ElementBases_ = []
 
     toc      = time() - tic
-    cnodes_  = [list(i) for i in list(cnodes)]
+    NodeBases_  = [list(i) for i in list(NodeBases)]
     fabs_    = float(fabs)
     fscaled_ = [float(i) for i in list(fscaled)]
 
-    return toc, U, cnodes_, fabs_, fscaled_, celements_, float(eabs)
+    return toc, U, NodeBases_, fabs_, fscaled_, ElementBases_, float(eabs)
 
 
 def plotvoxels(values, U, vdx, indexing=None):

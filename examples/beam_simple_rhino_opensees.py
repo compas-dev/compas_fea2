@@ -1,13 +1,14 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.opensees.core import CircularSection
-from compas_fea2.backends.opensees.core import ElasticIsotropic
-from compas_fea2.backends.opensees.core import ElementProperties as Properties
-from compas_fea2.backends.opensees.core import GeneralDisplacement
-from compas_fea2.backends.opensees.core import GeneralStep
-from compas_fea2.backends.opensees.core import PinnedDisplacement
-from compas_fea2.backends.opensees.core import PointLoad
-from compas_fea2.backends.opensees.core import Structure
+
+from compas_fea2.backends.opensees import CircularSection
+from compas_fea2.backends.opensees import ElasticIsotropic
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import GeneralDisplacement
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import PinnedDisplacement
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import Structure
 
 from math import pi
 

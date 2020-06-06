@@ -116,40 +116,37 @@ def launch_process(structure, exe, cpus, output, umat):
     if not exe:
 
         if not umat:
-            os.chdir(temp)
-            # os.system('{0} {1} -- {2} {3} {4}'.format('abaqus', 'user='+user_path, cpus, path, name))
-            # os.environ['myEnv'] = 'C:/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/bin'
-            os.system('abaqus job=' + path + name + ' interactive')
+            args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
+            p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
-            success = True
-            # args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
-            # p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+            while True:
 
-            # while True:
+                line = p.stdout.readline()
+                if not line:
+                    break
+                line = str(line.strip())
 
-            #     line = p.stdout.readline()
-            #     if not line:
-            #         break
-            #     line = str(line.strip())
+                if output:
+                    print(line)
 
-            #     if output:
-            #         print(line)
+                if 'COMPLETED' in line:
+                    success = True
 
-            #     if 'COMPLETED' in line:
-            #         success = True
+            stdout, stderr = p.communicate()
 
-            # stdout, stderr = p.communicate()
-
-            # if output:
-            #     print(stdout)
-            #     print(stderr)
+            if output:
+                print(stdout)
+                print(stderr)
 
         else:
-            os.chdir(temp)
-            # os.system('{0} {1} -- {2} {3} {4}'.format('abaqus', 'user='+user_path, cpus, path, name))
-            # os.environ['myEnv'] = 'C:/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/bin'
-            os.system('abaqus user=C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/umat-hooke-iso.f job=' + path + name + ' interactive') #TODO change!
-            success = True
+
+            # path ='C:/Users/franaudo/abaqus_test/'#TODO easy fix. change!
+            umat_job=name
+            temp_job='C:/temp/'+name
+            umat_path='C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat/umat-hooke-iso.f'
+            cmd='cd {} && abaqus user={} job={} input={} interactive'.format(path, umat_path, temp_job, umat_job)
+            print(cmd)
+            os.system(cmd)
 
     else:
 

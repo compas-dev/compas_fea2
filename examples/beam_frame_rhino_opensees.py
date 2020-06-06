@@ -1,13 +1,14 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.opensees.core import ElementProperties as Properties
-from compas_fea2.backends.opensees.core import GeneralStep
-from compas_fea2.backends.opensees.core import PinnedDisplacement
-from compas_fea2.backends.opensees.core import PipeSection
-from compas_fea2.backends.opensees.core import PointLoad
-from compas_fea2.backends.opensees.core import RollerDisplacementXZ
-from compas_fea2.backends.opensees.core import Steel
-from compas_fea2.backends.opensees.core import Structure
+
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import PinnedDisplacement
+from compas_fea2.backends.opensees import PipeSection
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import RollerDisplacementXZ
+from compas_fea2.backends.opensees import Steel
+from compas_fea2.backends.opensees import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

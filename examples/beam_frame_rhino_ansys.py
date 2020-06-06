@@ -1,13 +1,14 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.ansys.core import ElementProperties as Properties
-from compas_fea2.backends.ansys.core import GeneralStep
-from compas_fea2.backends.ansys.core import PinnedDisplacement
-from compas_fea2.backends.ansys.core import PipeSection
-from compas_fea2.backends.ansys.core import PointLoad
-from compas_fea2.backends.ansys.core import RollerDisplacementXZ
-from compas_fea2.backends.ansys.core import Steel
-from compas_fea2.backends.ansys.core import Structure
+
+from compas_fea2.backends.ansys import ElementProperties as Properties
+from compas_fea2.backends.ansys import GeneralStep
+from compas_fea2.backends.ansys import PinnedDisplacement
+from compas_fea2.backends.ansys import PipeSection
+from compas_fea2.backends.ansys import PointLoad
+from compas_fea2.backends.ansys import RollerDisplacementXZ
+from compas_fea2.backends.ansys import Steel
+from compas_fea2.backends.ansys import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -65,14 +66,14 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'rf', 'sf', 'sm'], license='teaching')
+mdl.analyse_and_extract(fields=['u'], license='teaching')
 
 rhino.plot_data(mdl, step='step_loads', field='um', scale=50)
-rhino.plot_data(mdl, step='step_loads', field='sf1')
-rhino.plot_data(mdl, step='step_loads', field='sf2')
-rhino.plot_data(mdl, step='step_loads', field='sm1')
-rhino.plot_reaction_forces(mdl, step='step_loads', scale=0.5)
+#rhino.plot_data(mdl, step='step_loads', field='sf1')
+#rhino.plot_data(mdl, step='step_loads', field='sf2')
+#rhino.plot_data(mdl, step='step_loads', field='sm1')
+#rhino.plot_reaction_forces(mdl, step='step_loads', scale=0.5)
 
-print(mdl.get_nodal_results(step='step_loads', field='rfm', nodes='nset_pins'))
-print(mdl.get_nodal_results(step='step_loads', field='um', nodes='nset_load_v'))
+#print(mdl.get_nodal_results(step='step_loads', field='rfm', nodes='nset_pins'))
+#print(mdl.get_nodal_results(step='step_loads', field='um', nodes='nset_load_v'))
 

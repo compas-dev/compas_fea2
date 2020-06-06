@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.utilities import cWriter
+from compas_fea2.utilities import WriterBase
 
 from compas_fea2.backends.abaqus.writer import Heading
 from compas_fea2.backends.abaqus.writer.elements import Elements
@@ -21,7 +21,7 @@ __all__ = [
     'Writer',
 ]
 
-class Writer(cWriter, Steps, Materials, BCs, Elements, Nodes, Sets, Heading):
+class Writer(WriterBase, Steps, Materials, BCs, Elements, Nodes, Sets, Heading):
 
     """ Initialises abaqus file writer.
 

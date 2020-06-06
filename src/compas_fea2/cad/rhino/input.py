@@ -2,14 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-try:
-    from compas_rhino.geometry import RhinoMesh
-except:
-    pass
-
 import sys
 
-from compas.datastructures.mesh import Mesh
+from compas.datastructures import Mesh
 from compas.datastructures import Network
 from compas.geometry import add_vectors
 from compas.geometry import cross_vectors
@@ -17,6 +12,8 @@ from compas.geometry import length_vector
 from compas.geometry import scale_vector
 from compas.geometry import subtract_vectors
 from compas.rpc import Proxy
+
+from compas_rhino.geometry import RhinoMesh
 
 from compas_fea2 import utilities
 from compas_fea2.preprocess import extrude_mesh
@@ -220,7 +217,7 @@ def add_nodes_elements_from_layers(structure, layers, line_type=None, mesh_type=
 
                 axes = {'ex': ex, 'ey': ey, 'ez': ez}
 
-                ekey = structure.add_element(nodes=[sp, ep], type=line_type, thermal=thermal, axes=axes)
+                ekey = structure.add_element(nodes=[sp, ep], etype=line_type, thermal=thermal, axes=axes)
 
                 if (line_type == 'BeamElement') and (ex is None):
 

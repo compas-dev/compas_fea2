@@ -367,7 +367,7 @@ class Structure(StructureBase):
         input_generate(self, fields=fields, output=output)
 
     # this should be an abstract method of the base class
-    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, umat=False, save=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=False, user_sub=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -392,7 +392,7 @@ class Structure(StructureBase):
         self.write_input_file(fields=fields, output=output, save=save)
 
         cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output, umat=umat)
+        launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_sub=user_sub)
 
     # this should be an abstract method of the base class
     def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
@@ -430,13 +430,11 @@ class Structure(StructureBase):
 
     # this should be an abstract method of the base class
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, umat=False):
+                            return_data=True, components=None, user_sub=False, overwrite=True):
         """Runs the analysis through the chosen FEA software / library and extracts data.
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
             Data field requests.
         exe : str
@@ -453,15 +451,17 @@ class Structure(StructureBase):
             Return data back into structure.results.
         components : list
             Specific components to extract from the fields data.
+        user_sub : bool
+            Specify the user subroutine if needed.
 
         Returns
         -------
         None
 
         """
-        self.write_input_file(fields=fields, output=output, save=save) # todo: this cannot be here but just in analyse
+        # self.write_input_file(fields=fields, output=output, save=save) # todo: this cannot be here but just in analyse
 
-        self.analyse(exe=exe, cpus=cpus, license=license, output=output, umat=umat)
+        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_sub=user_sub, overwrite=overwrite, save=save)
 
         self.extract_data(fields=fields, exe=exe, license=license, output=output,
                           return_data=return_data, components=components)

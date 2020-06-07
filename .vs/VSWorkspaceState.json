@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\compas_fea2",
+    "\\src\\compas_fea2\\backends",
+    "\\src\\compas_fea2\\backends\\abaqus",
+    "\\src\\compas_fea2\\backends\\abaqus\\job",
+    "\\src\\compas_fea2\\_core"
+  ],
+  "SelectedNode": "\\src\\compas_fea2\\backends\\abaqus\\job\\send_job.py",
+  "PreviewInSolutionExplorer": false
+}

@@ -1214,7 +1214,8 @@ Steps
         -------
         None
         """
-        filename = os.path.join(self.path, self.name + '.cfea')
+
+        filename = '{0}{1}/{2}.cfea'.format(self.path, self.name, self.name)
 
         with open(filename, 'wb') as f:
             pickle.dump(self, f)

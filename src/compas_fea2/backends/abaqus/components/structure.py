@@ -14,11 +14,10 @@ from compas_fea2.backends._core import StructureBase
 from compas_fea2.backends.abaqus.components import Set
 from compas_fea2.backends.abaqus.components.elements import *
 
-from compas_fea2.backends.abaqus.job.send_job import input_generate
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-
+from compas_fea2.backends.abaqus.writer import Writer
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 
@@ -355,19 +354,44 @@ class Structure(StructureBase):
         output : bool
             Print terminal output.
         save : bool
-            Save structure to .obj before file writing.
+            Save structure to .cfea before file writing.
 
         Returns
         -------
         None
 
         """
+        directory='{0}{1}'.format(self.path, self.name)
+        filename = '{0}{1}/{2}.inp'.format(self.path, self.name, self.name)
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         if save:
             self.save_to_cfea()
-        input_generate(self, fields=fields, output=output)
+
+        if isinstance(fields, str):
+            fields = [fields]
+
+        if 'u' not in fields:
+            fields.append('u')
+
+        with Writer(structure=self, filename=filename, fields=fields) as writer:
+
+            writer.write_heading()
+            writer.write_nodes()
+            writer.write_node_sets()
+            writer.write_boundary_conditions()
+            writer.write_materials()
+            writer.write_elements()
+            writer.write_element_sets()
+            writer.write_steps()
+
+        if output:
+            print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
     # this should be an abstract method of the base class
-    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True, umat=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_sub=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -389,11 +413,13 @@ class Structure(StructureBase):
         None
 
         """
+        self.write_input_file(fields=fields, output=output, save=save)
+
         cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output, umat=umat)
+        launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_sub=user_sub)
 
     # this should be an abstract method of the base class
-    def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+    def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
                      return_data=True, components=None):
         """Extracts data from the analysis output files.
 
@@ -428,13 +454,11 @@ class Structure(StructureBase):
 
     # this should be an abstract method of the base class
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, umat=False):
+                            return_data=True, components=None, user_sub=False, overwrite=True):
         """Runs the analysis through the chosen FEA software / library and extracts data.
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
             Data field requests.
         exe : str
@@ -451,16 +475,17 @@ class Structure(StructureBase):
             Return data back into structure.results.
         components : list
             Specific components to extract from the fields data.
+        user_sub : bool
+            Specify the user subroutine if needed.
 
         Returns
         -------
         None
 
         """
-        self.write_input_file(fields=fields, output=output, save=save)
 
-        self.analyse(exe=exe, cpus=cpus, license=license, output=output, umat=umat)
+        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_sub=user_sub, overwrite=overwrite, save=save)
 
-        self.extract_data(fields=fields, exe=exe, license=license, output=output,
+        self.extract(fields=fields, exe=exe, license=license, output=output,
                           return_data=return_data, components=components)
 

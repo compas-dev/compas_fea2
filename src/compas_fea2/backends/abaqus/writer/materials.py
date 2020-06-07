@@ -54,6 +54,12 @@ class Materials(object):
                 self.write_line('*User Material, constants=2') #TODO change to the varaible number of constants
                 self.write_line('{0}, {1}'.format(E['E'], v['v']))
 
+            # USER DEFINED
+
+            if mtype in ['Umat_iso']:
+                self.write_line('*User Material, constants=2')  #TODO make parametric
+                self.write_line('{0}, {1}'.format(E['E'], v['v']))
+
             # Elastic
             # -------
 

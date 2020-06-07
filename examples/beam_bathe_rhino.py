@@ -74,6 +74,6 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'sf', 'sm'])
+mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], save=True)
 
 rhino.plot_data(mdl, step='step_load', field='uz', radius=1)

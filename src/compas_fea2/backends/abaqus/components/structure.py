@@ -361,14 +361,14 @@ class Structure(StructureBase):
         None
 
         """
-        if save:
-            self.save_to_cfea()
-        # input_generate(self, fields=fields, output=output)
         directory='{0}{1}'.format(self.path, self.name)
         filename = '{0}{1}/{2}.inp'.format(self.path, self.name, self.name)
 
         if not os.path.exists(directory):
             os.makedirs(directory)
+
+        if save:
+            self.save_to_cfea()
 
         if isinstance(fields, str):
             fields = [fields]

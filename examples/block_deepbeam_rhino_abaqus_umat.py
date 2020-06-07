@@ -64,10 +64,10 @@ mdl.steps_order = ['step_bc', 'step_load']
 mdl.summary()
 
 # Run
-mdl.analyse(user_sub=True, overwrite=False)
-# mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
+#mdl.analyse(user_sub=True, overwrite=False)
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], user_sub=True)
 
 #rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)
 
-#mdl.save_to_cfea()
+mdl.save_to_cfea()

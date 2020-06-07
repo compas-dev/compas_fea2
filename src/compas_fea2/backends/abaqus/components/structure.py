@@ -367,7 +367,7 @@ class Structure(StructureBase):
         input_generate(self, fields=fields, output=output)
 
     # this should be an abstract method of the base class
-    def analyse(self, exe=None, cpus=4, license='research', delete=True, output=True, umat=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, umat=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -389,6 +389,8 @@ class Structure(StructureBase):
         None
 
         """
+        self.write_input_file(fields=fields, output=output, save=save)
+
         cpus = 1 if license == 'student' else cpus
         launch_process(self, exe=exe, cpus=cpus, output=output, umat=umat)
 
@@ -457,7 +459,7 @@ class Structure(StructureBase):
         None
 
         """
-        self.write_input_file(fields=fields, output=output, save=save)
+        self.write_input_file(fields=fields, output=output, save=save) # todo: this cannot be here but just in analyse
 
         self.analyse(exe=exe, cpus=cpus, license=license, output=output, umat=umat)
 

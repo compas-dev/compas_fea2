@@ -19,7 +19,7 @@ import rhinoscriptsyntax as rs
 
 # Structure
 
-mdl = Structure(name='block_deepbeam_rhino_umat', path='C:/Users/franaudo/abaqus_test/')
+mdl = Structure(name='block_deepbeam_rhino_umat', path='C:/temp/')
 
 # Extrude
 
@@ -67,7 +67,7 @@ mdl.summary()
 mdl.analyse(umat=True)
 # mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
 
-rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
+#rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])
 #rhino.plot_voxels(mdl, step='step_load', field='smises', cbar=[0, 2], vdx=1./nz)
 
-mdl.save_to_cfea()
+#mdl.save_to_cfea()

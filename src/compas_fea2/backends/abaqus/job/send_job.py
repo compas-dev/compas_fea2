@@ -10,6 +10,7 @@ except:
 
 import sys
 
+from compas_fea2 import UMAT
 from compas_fea2.backends.abaqus.writer import Writer
 
 from compas_fea2.backends.abaqus.job import launch_job
@@ -111,8 +112,6 @@ def launch_process(structure, exe, cpus, output, umat):
     subprocess = 'noGUI={0}'.format(launch_job.__file__.replace('\\', '/'))
     success    = False
 
-    user_path = '{0}{1}.inp'.format('C:/Code/COMPAS/compas_fea2/src/compas_fea2/_core/umat/', 'umat-hooke-iso.f')
-
     if not exe:
 
         if not umat:
@@ -139,13 +138,9 @@ def launch_process(structure, exe, cpus, output, umat):
                 print(stderr)
 
         else:
-
-            # path ='C:/Users/franaudo/abaqus_test/'#TODO easy fix. change!
-            umat_job=name
-            temp_job='C:/temp/'+name
-            umat_path='C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat/umat-hooke-iso.f'
-            cmd='cd {} && abaqus user={} job={} input={} interactive'.format(path, umat_path, temp_job, umat_job)
-            print(cmd)
+            # umat_path=os.path.join(UMAT,'umat-hooke-iso.f') #TODO should be like this
+            umat_path=os.path.join('C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat','umat-hooke-iso.f') #TODO change
+            cmd='cd {} && abaqus user={} job={} interactive'.format(path, umat_path, name)
             os.system(cmd)
 
     else:

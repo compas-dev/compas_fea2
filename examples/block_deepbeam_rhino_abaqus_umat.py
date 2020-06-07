@@ -64,7 +64,7 @@ mdl.steps_order = ['step_bc', 'step_load']
 mdl.summary()
 
 # Run
-mdl.analyse(user_sub=True)
+mdl.analyse(user_sub=True, overwrite=False)
 # mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'], umat=True)
 
 #rhino.plot_data(mdl, step='step_load', field='smises', cbar=[0, 2])

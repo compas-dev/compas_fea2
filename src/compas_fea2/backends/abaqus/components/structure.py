@@ -367,7 +367,7 @@ class Structure(StructureBase):
         input_generate(self, fields=fields, output=output)
 
     # this should be an abstract method of the base class
-    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=False, user_sub=False, save=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_sub=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -459,7 +459,6 @@ class Structure(StructureBase):
         None
 
         """
-        # self.write_input_file(fields=fields, output=output, save=save) # todo: this cannot be here but just in analyse
 
         self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_sub=user_sub, overwrite=overwrite, save=save)
 

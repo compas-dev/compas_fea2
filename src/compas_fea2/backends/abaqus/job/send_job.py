@@ -116,73 +116,71 @@ def launch_process(structure, exe, cpus, output, overwrite, user_sub):
     if overwrite:
         overwrite_kw = ' ask_delete=OFF'
     if user_sub:
+        # umat_path=os.path.join(UMAT,'umat-hooke-iso.f') #TODO should be like this
         umat_path=os.path.join('C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat','umat-hooke-iso.f')
         user_sub_kw = ' user={}'.format(umat_path)
 
     # Analyse
 
     tic = time()
-
-    subprocess = 'noGUI={0}'.format(launch_job.__file__.replace('\\', '/'))
     success    = False
 
-    if not exe:
-        cmd='cd {} && abaqus{} job={} interactive{}'.format(path, user_sub_kw, name, overwrite_kw)
-        # if not user_sub:
-        #     # args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
-        #     # p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+    # if not exe:
+    #     cmd='cd {} && abaqus{} job={} interactive{}'.format(path, user_sub_kw, name, overwrite_kw)
+    #     args = ['abaqus', 'cae', subprocess, '--', str(cpus), path, name]
+    # else:
+    #     os.chdir(temp)
+    #     cmd = '{0} {1} -- {2} {3} {4}'.format(exe, subprocess, cpus, path, name)
+    # os.system(cmd)
 
-        #     # while True:
+    # args = ['abaqus', user_sub_kw, 'job='+name, 'cpus='+str(cpus), 'interactive', overwrite_kw]
+    # p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
+    cmd='cd {} && abaqus{} job={} interactive{}'.format(path, user_sub_kw, name, overwrite_kw)
+    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
 
-        #     #     line = p.stdout.readline()
-        #     #     if not line:
-        #     #         break
-        #     #     line = str(line.strip())
+    while True:
 
-        #     #     if output:
-        #     #         print(line)
+        line = p.stdout.readline()
+        if not line:
+            break
+        line = str(line.strip())
 
-        #     #     if 'COMPLETED' in line:
-        #     #         success = True
+        if output:
+            print(line)
 
-        #     # stdout, stderr = p.communicate()
+        if 'COMPLETED' in line:
+            success = True
 
-        #     # if output:
-        #     #     print(stdout)
-        #     #     print(stderr)
-        #     cmd='cd {} && abaqus /Q job={} interactive'.format(path, name)
-        # else:
-        #     # umat_path=os.path.join(UMAT,'umat-hooke-iso.f') #TODO should be like this
-        #     umat_path=os.path.join('C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat','umat-hooke-iso.f') #TODO change
-        #     cmd='cd {} && abaqus user={} job={} interactive'.format(path, umat_path, name)
-    else:
-        os.chdir(temp)
-        cmd = '{0} {1} -- {2} {3} {4}'.format(exe, subprocess, cpus, path, name)
+    stdout, stderr = p.communicate()
 
-    os.system(cmd)
+    if output:
+        print(stdout)
+        print(stderr)
+
+
 
     # success = True
     toc = time() - tic
 
-    # if not success:
+    if not success:
 
-    #     try:
+        try:
 
-    #         with open(temp + name + '.sta', 'r') as f:
+            with open(temp + name + '.sta', 'r') as f:
 
-    #             if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
-    #                 success = True
+                if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
+                    success = True
 
-    #     except:
-    #         pass
+        except:
+            pass
 
-    # if success:
+    if success:
 
-    #     if output:
-    #         print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
+        if output:
+            print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
 
-    # else:
-    #     print('***** Analysis failed *****')
+    else:
+        print('***** Analysis failed *****')
 
 
 

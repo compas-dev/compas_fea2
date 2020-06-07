@@ -74,6 +74,6 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], overwrite=True)
+mdl.analyse(fields=['u', 'sf', 'sm'], overwrite=False)
 
-rhino.plot_data(mdl, step='step_load', field='uz', radius=1)
+#rhino.plot_data(mdl, step='step_load', field='uz', radius=1)

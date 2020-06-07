@@ -18,7 +18,7 @@ from compas_fea2.backends.abaqus.job.send_job import input_generate
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-
+from compas_fea2.backends.abaqus.writer import Writer
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 
@@ -364,7 +364,29 @@ class Structure(StructureBase):
         """
         if save:
             self.save_to_cfea()
-        input_generate(self, fields=fields, output=output)
+        # input_generate(self, fields=fields, output=output)
+
+        filename = '{0}{1}.inp'.format(self.path, self.name)
+
+        if isinstance(fields, str):
+            fields = [fields]
+
+        if 'u' not in fields:
+            fields.append('u')
+
+        with Writer(structure=self, filename=filename, fields=fields) as writer:
+
+            writer.write_heading()
+            writer.write_nodes()
+            writer.write_node_sets()
+            writer.write_boundary_conditions()
+            writer.write_materials()
+            writer.write_elements()
+            writer.write_element_sets()
+            writer.write_steps()
+
+        if output:
+            print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
     # this should be an abstract method of the base class
     def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_sub=False, save=False):
@@ -395,7 +417,7 @@ class Structure(StructureBase):
         launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_sub=user_sub)
 
     # this should be an abstract method of the base class
-    def extract_data(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+    def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
                      return_data=True, components=None):
         """Extracts data from the analysis output files.
 
@@ -462,6 +484,6 @@ class Structure(StructureBase):
 
         self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_sub=user_sub, overwrite=overwrite, save=save)
 
-        self.extract_data(fields=fields, exe=exe, license=license, output=output,
+        self.extract(fields=fields, exe=exe, license=license, output=output,
                           return_data=return_data, components=components)
 

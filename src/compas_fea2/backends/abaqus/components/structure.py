@@ -14,7 +14,6 @@ from compas_fea2.backends._core import StructureBase
 from compas_fea2.backends.abaqus.components import Set
 from compas_fea2.backends.abaqus.components.elements import *
 
-from compas_fea2.backends.abaqus.job.send_job import input_generate
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
@@ -355,7 +354,7 @@ class Structure(StructureBase):
         output : bool
             Print terminal output.
         save : bool
-            Save structure to .obj before file writing.
+            Save structure to .cfea before file writing.
 
         Returns
         -------
@@ -365,8 +364,11 @@ class Structure(StructureBase):
         if save:
             self.save_to_cfea()
         # input_generate(self, fields=fields, output=output)
+        directory='{0}{1}'.format(self.path, self.name)
+        filename = '{0}{1}/{2}.inp'.format(self.path, self.name, self.name)
 
-        filename = '{0}{1}.inp'.format(self.path, self.name)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
         if isinstance(fields, str):
             fields = [fields]

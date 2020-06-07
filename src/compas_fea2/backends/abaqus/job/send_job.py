@@ -63,7 +63,7 @@ def launch_process(structure, exe, cpus, output, overwrite, user_sub):
     tic = time()
     success    = False
 
-    cmd='cd {} && {} {} job={} interactive {}'.format(path,exe_kw, user_sub_kw, name, overwrite_kw)
+    cmd='cd {} && {} {} job={} interactive {}'.format(temp,exe_kw, user_sub_kw, name, overwrite_kw)
     p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
 
     while True:
@@ -84,7 +84,6 @@ def launch_process(structure, exe, cpus, output, overwrite, user_sub):
         print(stdout)
         print(stderr)
 
-    # success = True
     toc = time() - tic
 
     if not success:

@@ -1,14 +1,12 @@
 """
 ********************************************************************************
-preprocess
+PreProcess
 ********************************************************************************
 
-.. currentmodule:: compas_fea.utilities
-
-The compas_fea package's supporting utilities and functions.
+.. currentmodule:: compas_fea.preprocess
 
 
-meshing
+Meshing
 =======
 
 .. autosummary::
@@ -18,8 +16,9 @@ meshing
     extrude_mesh
     tets_from_vertices_faces
 
-discretize
-==========
+
+Discretization
+==============
 
 .. autosummary::
     :toctree: generated/

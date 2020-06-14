@@ -120,7 +120,7 @@ def extrude_mesh(structure, mesh, layers, thickness, mesh_name, links_name, bloc
 
                 etype  = 'PentahedronElement' if len(vs) == 3 else 'HexahedronElement'
                 nodes  = [ki[j] for j in bot + top]
-                ekey   = structure.add_element(nodes=nodes, type=etype, thermal=False)
+                ekey   = structure.add_element(nodes=nodes, etype=etype, thermal=False)
                 blocks.append(ekey)
                 slices[i].append(ekey)
 

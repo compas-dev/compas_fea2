@@ -1,18 +1,19 @@
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElasticPlastic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import GravityLoad
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import RectangularSection
-from compas_fea2.backends.abaqus.core import RollerDisplacementZ
-from compas_fea2.backends.abaqus.core import Structure
-from compas_fea2.backends.abaqus.core import TrapezoidalSection
 
-
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElasticPlastic
+from compas_fea2.backends.abaqus import ElementProperties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import GravityLoad
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementZ
+from compas_fea2.backends.abaqus import Structure
+from compas_fea2.backends.abaqus import TrapezoidalSection
 
 
 # Structure
@@ -49,11 +50,11 @@ mdl.add([
 # Properties
 
 mdl.add([
-    Properties(name='ep_mush_1', material='mat_mushroom', section='sec_mushroom', elset='struts_mushroom'),
-    Properties(name='ep_mush_2', material='mat_mushroom', section='sec_mushroom', elset='joints_mushroom'),
-    Properties(name='ep_bamb_1', material='mat_bamboo', section='sec_bamboo', elset='struts_bamboo'),
-    Properties(name='ep_bamb_2', material='mat_bamboo', section='sec_bamboo', elset='joints_bamboo'),
-    Properties(name='ep_joints', material='mat_bamboo', section='sec_joints', elset='joints_grid'),
+    ElementProperties(name='ep_mush_1', material='mat_mushroom', section='sec_mushroom', elset='struts_mushroom'),
+    ElementProperties(name='ep_mush_2', material='mat_mushroom', section='sec_mushroom', elset='joints_mushroom'),
+    ElementProperties(name='ep_bamb_1', material='mat_bamboo', section='sec_bamboo', elset='struts_bamboo'),
+    ElementProperties(name='ep_bamb_2', material='mat_bamboo', section='sec_bamboo', elset='joints_bamboo'),
+    ElementProperties(name='ep_joints', material='mat_bamboo', section='sec_joints', elset='joints_grid'),
 ])
 
 # Displacements
@@ -81,7 +82,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'sf', 'rf'])
+mdl.analyse_and_extract(fields=['u', 'sf', 'rf'])
 
 rhino.plot_data(mdl, step='step_loads', field='um', radius=0.05, cbar_size=0.5)
 rhino.plot_data(mdl, step='step_loads', field='sf1', radius=0.05, cbar_size=0.5)

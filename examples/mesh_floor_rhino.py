@@ -1,27 +1,27 @@
-
-from compas_fea.cad import rhino
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PrestressLoad
-from compas_fea.structure import RectangularSection
-from compas_fea.structure import RollerDisplacementXY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Stiff
-from compas_fea.structure import Structure
-from compas_fea.structure import TributaryLoad
-from compas_fea.structure import TrussSection
-
-from compas.datastructures import Mesh
-from compas_rhino.helpers import mesh_from_guid
+from math import pi
 
 import rhinoscriptsyntax as rs
 
-from math import pi
+from compas.datastructures import Mesh
+from compas_rhino.geometry import RhinoMesh
+
+from compas_fea2.cad import rhino
+
+from compas_fea2.backends.abaqus import Concrete
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import GravityLoad
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PrestressLoad
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementXY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import Steel
+from compas_fea2.backends.abaqus import Stiff
+from compas_fea2.backends.abaqus import Structure
+from compas_fea2.backends.abaqus import TributaryLoad
+from compas_fea2.backends.abaqus import TrussSection
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -79,10 +79,13 @@ mdl.add([
 
 # Loads
 
+guid = rs.ObjectsByLayer('load_mesh')[0]
+mesh = RhinoMesh.from_guid(guid).to_compas(cls=Mesh)
+
 mdl.add([
     GravityLoad(name='load_gravity', elements=['elset_ribs', 'elset_vault']),
     PrestressLoad(name='load_prestress', elements='elset_ties', sxx=10*10**6),
-    TributaryLoad(mdl, name='load_area', mesh=mesh_from_guid(Mesh(), rs.ObjectsByLayer('load_mesh')[0]), z=-2000),
+    TributaryLoad(mdl, name='load_area', mesh=mesh, z=-2000),
 ])
 
 # Steps
@@ -99,7 +102,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's', 'cf'], components=['ux', 'uy', 'uz', 'smises', 'cfx', 'cfy', 'cfz'])
+mdl.analyse_and_extract(fields=['u', 's', 'cf'], components=['ux', 'uy', 'uz', 'smises', 'cfx', 'cfy', 'cfz'])
 
 rhino.plot_data(mdl, step='step_loads', field='uz', radius=0.02, cbar_size=0.5)
 rhino.plot_data(mdl, step='step_loads', field='smises', radius=0.02, cbar_size=0.5, cbar=[0, 5*10**6])

@@ -9,6 +9,9 @@ compas_fea2
 .. toctree::
     :maxdepth: 1
 
+    compas_fea2.backends
+    compas_fea2.cad
+
 
 """
 
@@ -30,6 +33,7 @@ HERE = os.path.dirname(__file__)
 
 HOME = os.path.abspath(os.path.join(HERE, "../../"))
 DATA = os.path.abspath(os.path.join(HOME, "data"))
+UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 

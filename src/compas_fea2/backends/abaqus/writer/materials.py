@@ -46,6 +46,19 @@ class Materials(object):
 
             self.write_line('*MATERIAL, NAME={0}'.format(key))
             self.blank_line()
+            # User Material
+            # -------
+
+            if mtype in ['UserMaterial']:
+
+                self.write_line('*User Material, constants=2') #TODO change to the varaible number of constants
+                self.write_line('{0}, {1}'.format(E['E'], v['v']))
+
+            # USER DEFINED
+
+            if mtype in ['Umat_hooke_iso']:
+                self.write_line('*User Material, constants=2')  #TODO make parametric
+                self.write_line('{0}, {1}'.format(E['E'], v['v']))
 
             # Elastic
             # -------

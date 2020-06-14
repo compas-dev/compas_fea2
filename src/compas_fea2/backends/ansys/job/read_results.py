@@ -142,13 +142,13 @@ def load_to_results(structure, fields, steps):
                 fdict = get_modal_freq_from_result_files(out_path)
                 structure.results[step]['frequencies'] = fdict
 
-        elif structure.steps[step].__name__ == 'HarmonicStep':
+        elif structure.steps[step].__name__ == 'HarmoniStepBase':
             rlist = []
             if 'u' in fields or 'all' in fields:
                 harmonic_disp, frequencies = get_harmonic_data_from_result_files(structure, out_path, step)
                 structure.results[step]['frequencies'] = frequencies
                 rlist.append(harmonic_disp)
-        elif structure.steps[step].__name__ == 'AcousticStep':
+        elif structure.steps[step].__name__ == 'AcoustiStepBase':
             rlist = None
             tl_data = get_acoustic_radiation_from_results_files(out_path, step)
             structure.results[step]['frequency'] = tl_data

@@ -1,0 +1,8 @@
+.. rst-class:: detail
+
+Structure.save_to_cfea
+=============================================================
+
+.. currentmodule:: compas_fea2.backends.abaqus.components
+
+.. automethod:: Structure.save_to_cfea

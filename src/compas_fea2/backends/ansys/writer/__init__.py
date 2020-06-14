@@ -1,18 +1,9 @@
 """
 ********************************************************************************
-writer
+ANSYS Analysis Writer
 ********************************************************************************
 
 .. currentmodule:: compas_fea.backends.ansys.writer
-
-ansys
-=====
-
-.. currentmodule:: compas_fea2.backends.ansys.writer
-
-.. autosummary::
-    :toctree: generated/
-
 
 
 """
@@ -22,3 +13,6 @@ from .static import *
 from .modal import *
 from .harmonic import *
 from .acoustic import *
+
+
+__all__ = [name for name in dir() if not name.startswith('_')]

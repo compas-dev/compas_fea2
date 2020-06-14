@@ -2,43 +2,30 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from compas_fea2.backends.abaqus.writer import Writer
-#
-# from compas_fea2.backends.abaqus.job import launch_job
-from compas_fea2.backends.abaqus.job import odb_extract
+import os
+import sys
+import json
 
+from time import time
 from subprocess import Popen
 from subprocess import PIPE
 
-from time import time
+from compas_fea2.backends.abaqus.job import odb_extract
 
-import json
-import os
-
-try:
-    from job import *
-except:
-    pass
-
-import json
-import sys
+# try:
+#     from job import *
+# except:
+#     pass
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
-
 
 __all__ = [
     'extract_data',
 ]
 
-
-node_fields    = ['rf', 'rm', 'u', 'ur', 'cf', 'cm']
-element_fields = ['sf', 'sm', 'sk', 'se', 's', 'e', 'pe', 'rbfor', 'ctf']
-
-
 def extract_data(structure, fields, exe, output, return_data, components):
-
-    """ Extract data from the Abaqus .odb file.
+    """Extract data from the Abaqus .odb file.
 
     Parameters
     ----------

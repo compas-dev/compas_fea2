@@ -23,7 +23,7 @@ from compas_fea2.preprocess import extrude_mesh
 from compas_fea2.utilities import network_order
 
 # NOTE this can be tricky!!
-from compas_fea2._core import cStructure
+from compas_fea2.backends._core import StructureBase
 # from compas_fea2.backends.abaqus.structure import Structure
 
 
@@ -370,10 +370,9 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
 
     result = functions.postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, 255, iptype, nodal)
 
-    print("worked here: 1")
 
     try:
-        toc, U, cnodes, fabs, fscaled, celements, eabs = result
+        toc, U, NodeBases, fabs, fscaled, ElementBases, eabs = result
         print('\n***** Data processed : {0} s *****'.format(toc))
 
         # Plot meshes
@@ -406,11 +405,11 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
                 guid = rs.AddMesh(pts, line_faces)
 
                 if dtype == 'element':
-                    col1 = col2 = celements[element]
+                    col1 = col2 = ElementBases[element]
 
                 elif dtype == 'nodal':
-                    col1 = cnodes[u]
-                    col2 = cnodes[v]
+                    col1 = NodeBases[u]
+                    col2 = NodeBases[v]
 
                 rs.MeshVertexColors(guid, [col1] * 4 + [col2] * 4)
 
@@ -433,7 +432,7 @@ def plot_data(structure, step, field='um', layer=None, scale=1.0, radius=0.05, c
 
         if mesh_faces:
             guid = rs.AddMesh(U, mesh_faces)
-            rs.MeshVertexColors(guid, cnodes)
+            rs.MeshVertexColors(guid, NodeBases)
 
         # Plot colorbar
 
@@ -604,7 +603,7 @@ def plot_voxels(structure, step, field='smises', cbar=[None, None], iptype='mean
     result = functions.postprocess(xyz, elements, ux, uy, uz, data, dtype, 1, cbar, 255, iptype, nodal)
 
     try:
-        toc, U, cnodes, fabs, fscaled, celements, eabs = result
+        toc, U, NodeBases, fabs, fscaled, ElementBases, eabs = result
         print('\n***** Data processed : {0} s *****'.format(toc))
 
     except:

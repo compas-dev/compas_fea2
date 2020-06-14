@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -33,12 +32,9 @@ abaqus_data = {
 class Nodes(object):
 
     def __init__(self):
-
         pass
 
-
     def write_nodes(self):
-
         self.write_section('Nodes')
         self.write_line('**\n*NODE, NSET=nset_all\n**')
 
@@ -49,19 +45,15 @@ class Nodes(object):
         self.blank_line()
         self.blank_line()
 
-
     def write_node(self, key):
-
         prefix  = ''
-        spacer  = ', '
+        spacer  = self.spacer
         x, y, z = self.structure.node_xyz(key)
 
         line    = '{0}{1}{2}{3:.3f}{2}{4:.3f}{2}{5:.3f}'.format(prefix, key + 1, spacer, x, y, z)
         self.write_line(line)
 
-
     def write_mass(self, key):
-
         mr = '' if self.ndof == 3 else '0 0 0'
         line = 'mass {0} {1} {1} {1} {2}'.format(key + 1, self.structure.nodes[key].mass, mr)
         self.write_line(line)
@@ -70,12 +62,9 @@ class Nodes(object):
 class Elements(object):
 
     def __init__(self):
-
         pass
 
-
     def write_elements(self):
-
         self.write_section('Elements')
         self.blank_line()
 
@@ -127,7 +116,6 @@ class Elements(object):
                 ey      = element.axes.get('ey', None)
                 ez      = element.axes.get('ez', None)
 
-
                 # =====================================================================================================
                 # =====================================================================================================
                 # SOLID
@@ -143,7 +131,6 @@ class Elements(object):
                     self.write_line('{0}, {1}'.format(n, ','.join(nodes)))
                     self.write_line('*SOLID SECTION, ELSET={0}, MATERIAL={1}'.format(e, material.name))
                     self.write_line('')
-
 
                 # =====================================================================================================
                 # =====================================================================================================
@@ -183,7 +170,6 @@ class Elements(object):
 
                             self.write_line('{0}, {1}, {2}, {3}, {4}, {5}'.format(name, area, l, pos, rmat, angle))
 
-
                 # =====================================================================================================
                 # =====================================================================================================
                 # TRUSS
@@ -198,7 +184,6 @@ class Elements(object):
                     self.write_line('*SOLID SECTION, ELSET={0}, MATERIAL={1}'.format(e, material.name))
                     self.write_line(str(A))
 
-
                 # =====================================================================================================
                 # =====================================================================================================
                 # SPRING
@@ -210,7 +195,6 @@ class Elements(object):
                     kx = section.stiffness.get('axial', 0)
                     ky = section.stiffness.get('lateral', 0)
                     kr = section.stiffness.get('rotation', 0)
-
 
                     if section.stiffness:
 
@@ -243,7 +227,6 @@ class Elements(object):
                         self.write_line('AXIAL')
                         self.write_line('ORI_{0}'.format(select))
 
-
                 # =====================================================================================================
                 # =====================================================================================================
                 # MASS
@@ -258,7 +241,6 @@ class Elements(object):
                     self.write_line('{0}, {1}'.format(n, ','.join(nodes)))
                     self.write_line('*MASS, ELSET={0}'.format(e))
                     self.write_line(element.mass)
-
 
                 # =====================================================================================================
                 # =====================================================================================================

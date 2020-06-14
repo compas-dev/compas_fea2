@@ -1,14 +1,14 @@
+from compas_fea2.cad import blender
 
-from compas_fea.cad import blender
-from compas_fea.structure import Concrete
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import PointLoad
-from compas_fea.structure import ShellSection
-from compas_fea.structure import Steel
-from compas_fea.structure import Structure
+from compas_fea2.backends.opensees import Concrete
+from compas_fea2.backends.opensees import ElementProperties as Properties
+from compas_fea2.backends.opensees import FixedDisplacement
+from compas_fea2.backends.opensees import GeneralStep
+from compas_fea2.backends.opensees import GravityLoad
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import ShellSection
+from compas_fea2.backends.opensees import Steel
+from compas_fea2.backends.opensees import Structure
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
@@ -86,7 +86,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's', 'sf', 'rbfor', 'rf', 'cf'])
+mdl.analyse_and_extract(fields=['u', 's', 'sf', 'rbfor', 'rf', 'cf'])
 
 # blender.plot_data(mdl, step='step_loads', field='um', cbar_size=0.5)
 # blender.plot_data(mdl, step='step_loads', field='sf1', cbar_size=0.5)

@@ -1,13 +1,14 @@
 
 from compas_fea2.cad import rhino
-from compas_fea2.backends.ansys.core import CircularSection
-from compas_fea2.backends.ansys.core import ElasticIsotropic
-from compas_fea2.backends.ansys.core import ElementProperties as Properties
-from compas_fea2.backends.ansys.core import GeneralDisplacement
-from compas_fea2.backends.ansys.core import GeneralStep
-from compas_fea2.backends.ansys.core import PinnedDisplacement
-from compas_fea2.backends.ansys.core import PointLoad
-from compas_fea2.backends.ansys.core import Structure
+
+from compas_fea2.backends.ansys import CircularSection
+from compas_fea2.backends.ansys import ElasticIsotropic
+from compas_fea2.backends.ansys import ElementProperties as Properties
+from compas_fea2.backends.ansys import GeneralDisplacement
+from compas_fea2.backends.ansys import GeneralStep
+from compas_fea2.backends.ansys import PinnedDisplacement
+from compas_fea2.backends.ansys import PointLoad
+from compas_fea2.backends.ansys import Structure
 
 from math import pi
 
@@ -22,6 +23,7 @@ mdl = Structure(name='beam_simple', path='C:/Temp/')
 # Elements
 
 network = rhino.network_from_lines(layer='elset_lines')
+
 mdl.add_nodes_elements_from_network(network=network, element_type='BeamElement',
                                     elset='elset_lines', axes={'ex': [0, -1, 0]})
 

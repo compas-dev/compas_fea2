@@ -1,12 +1,13 @@
 
-from compas_fea.cad import blender
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import SolidSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import blender
+
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 from compas_blender.utilities import get_object_by_name
 
@@ -68,7 +69,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
 
 mdl.save_to_obj()
 

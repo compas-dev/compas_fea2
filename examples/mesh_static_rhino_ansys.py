@@ -1,20 +1,19 @@
 import rhinoscriptsyntax as rs
 
-import compas_fea
-
-from compas_fea.cad import rhino
-
 from compas.datastructures import Mesh
+from compas_rhino.geometry import RhinoMesh
 
-from compas_fea.structure import Structure
-from compas_fea.structure import FixedDisplacement
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ShellSection
-from compas_fea.structure import ElementProperties
-from compas_fea.structure import GravityLoad
-from compas_fea.structure import GeneralStep
+import compas_fea2
 
-from compas_rhino.helpers import mesh_from_guid
+from compas_fea2.cad import rhino
+
+from compas_fea2.backends.ansys import Structure
+from compas_fea2.backends.ansys import FixedDisplacement
+from compas_fea2.backends.ansys import ElasticIsotropic
+from compas_fea2.backends.ansys import ShellSection
+from compas_fea2.backends.ansys import ElementProperties
+from compas_fea2.backends.ansys import GravityLoad
+from compas_fea2.backends.ansys import GeneralStep
 
 
 # Author(s): Tomás Méndez Echenagucia (github.com/tmsmendez)
@@ -22,12 +21,13 @@ from compas_rhino.helpers import mesh_from_guid
 
 # get mesh from rhino layer ----------------------------------------------------
 
-mesh = mesh_from_guid(Mesh, rs.ObjectsByLayer('mesh')[0])
+guid = rs.ObjectsByLayer('mesh')[0]
+mesh = RhinoMesh.from_guid(guid).to_compas(cls=Mesh)
 
 # add shell elements from mesh -------------------------------------------------
 
 name = 'shell_example'
-s = Structure(name=name, path=compas_fea.TEMP)
+s = Structure(name=name, path=compas_fea2.TEMP)
 shell_keys = s.add_nodes_elements_from_mesh(mesh, element_type='ShellElement')
 s.add_set('shell', 'element', shell_keys)
 

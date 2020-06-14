@@ -1,21 +1,20 @@
-
-from compas_fea2.cad import rhino
-from compas_fea2.backends.abaqus.core import CircularSection
-from compas_fea2.backends.abaqus.core import ElasticIsotropic
-from compas_fea2.backends.abaqus.core import ElementProperties as Properties
-from compas_fea2.backends.abaqus.core import GeneralDisplacement
-from compas_fea2.backends.abaqus.core import GeneralStep
-from compas_fea2.backends.abaqus.core import PinnedDisplacement
-from compas_fea2.backends.abaqus.core import PointLoad
-from compas_fea2.backends.abaqus.core import Structure
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 
 from math import pi
 
+from compas_fea2.cad import rhino
 
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.backends.abaqus import CircularSection
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import Structure
 
-# OpenSees executable location (check getting started page to learn more about opensees)
-os_exe='C:/OpenSees3.2.0/bin/OpenSees.exe'
 
 # Structure
 
@@ -43,7 +42,7 @@ for i, Li in zip(ekeys, L):
     ri = (1 + Li / Lt) * 0.020
     sname = 'sec_{0}'.format(i)
     mdl.add(CircularSection(name=sname, r=ri))
-    mdl.add(Properties(name='ep_{0}'.format(i), material='mat_elastic', section=sname, elements=[i]))
+    mdl.add(ElementProperties(name='ep_{0}'.format(i), material='mat_elastic', section=sname, elements=[i]))
 
 # Displacements
 
@@ -70,8 +69,8 @@ mdl.steps_order = ['step_bc', 'step_load']
 mdl.summary()
 
 # Run
-# mdl.analyse_and_extract(software='opensees', exe=os_exe, fields=['u', 'ur', 'sf', 'sm'])
-mdl.analyse_and_extract(software='abaqus', fields=['u', 'ur', 'sf', 'sm'])
+
+mdl.analyse_and_extract(fields=['u', 'ur', 'sf', 'sm'], save=True)
 
 rhino.plot_data(mdl, step='step_load', field='um', radius=0.01, cbar_size=0.3)
 rhino.plot_data(mdl, step='step_load', field='sf1', radius=0.01, cbar_size=0.3)

@@ -1,20 +1,20 @@
-
-from compas_fea.cad import rhino
-from compas_fea.structure import ElasticPlastic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralDisplacement
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import RectangularSection
-from compas_fea.structure import RollerDisplacementY
-from compas_fea.structure import ShellSection
-from compas_fea.structure import SolidSection
-from compas_fea.structure import Structure
-
+"""
+Author(s): Andrew Liew (github.com/andrewliew)
+"""
 import rhinoscriptsyntax as rs
 
+from compas_fea2.cad import rhino
 
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.backends.abaqus import ElasticPlastic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import RectangularSection
+from compas_fea2.backends.abaqus import RollerDisplacementY
+from compas_fea2.backends.abaqus import ShellSection
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 
 # Structure
@@ -23,7 +23,7 @@ mdl = Structure(name='block_strip', path='C:/Temp/')
 
 # Extrude
 
-rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh'), layers=5, thickness=0.010,
+rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh')[0], layers=5, thickness=0.010,
                    blocks_name='elset_blocks', plot_blocks=0)
 
 # Elements
@@ -97,6 +97,6 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
+mdl.analyse_and_extract(fields=['u', 's'], components=['ux', 'uy', 'uz', 'smises'])
 
 rhino.plot_data(mdl, step='step_move', field='smises', radius=0.002)

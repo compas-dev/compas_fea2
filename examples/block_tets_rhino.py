@@ -1,12 +1,13 @@
 
-from compas_fea.cad import rhino
-from compas_fea.structure import ElasticIsotropic
-from compas_fea.structure import ElementProperties as Properties
-from compas_fea.structure import GeneralStep
-from compas_fea.structure import PinnedDisplacement
-from compas_fea.structure import PointLoad
-from compas_fea.structure import SolidSection
-from compas_fea.structure import Structure
+from compas_fea2.cad import rhino
+
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import ElementProperties as Properties
+from compas_fea2.backends.abaqus import GeneralStep
+from compas_fea2.backends.abaqus import PinnedDisplacement
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import SolidSection
+from compas_fea2.backends.abaqus import Structure
 
 import rhinoscriptsyntax as rs
 
@@ -61,7 +62,7 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(software='abaqus', fields=['u'])
+mdl.analyse_and_extract(fields=['u'])
 
 rhino.plot_data(mdl, step='step_load', field='um')
 #rhino.plot_voxels(mdl, step='step_load', field='um', vdx=0.05)

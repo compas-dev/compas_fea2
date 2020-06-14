@@ -36,17 +36,6 @@ class Steps(object):
         sets          = self.structure.sets
         fields        = self.fields
 
-        # temp folder
-
-        temp = '{0}{1}/'.format(self.structure.path, self.structure.name)
-
-        try:
-            os.stat(temp)
-            for file in os.listdir(temp):
-                os.remove(os.path.join(temp, file))
-        except:
-            os.mkdir(temp)
-
         # Steps
 
         for key in self.structure.steps_order[1:]:

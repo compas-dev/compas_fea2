@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
-
+import os
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -30,7 +30,7 @@ __all__ = [
     'ElasticPlastic',
     # 'ThermalMaterial',
     'Steel',
-    'UserMaterial'
+    'Umat_hooke_iso'
 ]
 
 
@@ -331,7 +331,7 @@ class ThermalMaterial(ThermalMaterialBase):
     #     super(ThermalMaterial, self).__init__(name, conductivity, p, sheat)
 
 
-class UserMaterial(MaterialBase):
+class Umat_hooke_iso(MaterialBase):
 
     """ User Defined Material Example. This particular material requires the
     definition of two mechanical constants (E, v)
@@ -346,15 +346,18 @@ class UserMaterial(MaterialBase):
         Poisson's ratio v [-].
     p : float
         Density [kg/m3].
+    path : str
+        Path to the subroutine (no spaces are allowed in the path!)
     """
 
-    def __init__(self, name, E, v, p):
+    def __init__(self, name, E, v, p, path):  #TODO change parameters to *args
         MaterialBase.__init__(self, name=name)
 
-        self.__name__    = 'UserMaterial'
+        self.__name__    = 'Umat_hooke_iso'
         self.name        = name
         self.E           = {'E': E}
         self.v           = {'v': v}
-        self.G           = {'G': 0.5 * E / (1 + v)}
+        self.G           = {'G': 0.5 * E / (1 + v)}  #TODO remove
         self.p           = p
-        self.attr_list.extend(['E', 'v', 'G', 'p'])
+        self.sub_path    = path #os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
+        self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])

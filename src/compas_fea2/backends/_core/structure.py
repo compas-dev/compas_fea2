@@ -778,50 +778,6 @@ Steps
     # one has no way of knowing that this is only relevant
     # for "components"
     # it also constantly needs to be updated to add support for new "components"
-    def add(self, objects):
-        """Adds object(s) to their correct attribute dictionary in the structure.
-
-        Parameters
-        ----------
-        objects : obj, list
-            The object or list of objects to add.
-
-        Returns
-        -------
-        None
-        """
-        if not isinstance(objects, list):
-            objects = [objects]
-
-        for obj in objects:
-            # cl = i.__class__
-            # if issubclass(cl, MaterialBase):
-            #     self.add_material(i)
-            # elif issubclass(cl, SectionBase):
-            #     self.add_section(i)
-            # elif isinstance(i, ElementPropertiesBase):
-            #     self.add_element_properties(i)
-            # elif issubclass(cl, GeneralDisplacementBase) or isinstance(i, GeneralDisplacementBase):
-            #     self.add_displacement(i)
-            # elif issubclass(cl, LoadBase) or isinstance(i, ThermalLoadBase):
-            #     self.add_load(i)
-            # elif issubclass(cl, StepBase):
-            #     self.add_step(i)
-            if isinstance(obj, MaterialBase):
-                self.add_material(obj)
-            elif isinstance(obj, SectionBase):
-                self.add_section(obj)
-            elif isinstance(obj, ElementPropertiesBase):
-                self.add_element_properties(obj)
-            elif isinstance(obj, GeneralDisplacementBase):
-                self.add_displacement(obj)
-            elif isinstance(obj, LoadBase):
-                self.add_load(obj)
-            elif isinstance(obj, StepBase):
-                self.add_step(obj)
-            else:
-                raise NotImplementedError
-                # print('***** WARNING: object type not found using structure.add() *****')
 
     def add_constraint(self, constraint):
         """Adds a Constraint object to structure.constraints.

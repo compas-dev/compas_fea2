@@ -71,8 +71,6 @@ class GeneralDisplacement(GeneralDisplacementBase):
 
     """
     pass
-    # def __init__(self, name, nodes, x, y, z, xx, yy, zz, axes):
-    #     super(GeneralDisplacement, self).__init__(name, nodes, x, y, z, xx, yy, zz, axes)
 
 
 
@@ -88,9 +86,6 @@ class FixedDisplacement(FixedDisplacementBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(FixedDisplacement, self).__init__(name, nodes, axes)
-
 
 class PinnedDisplacement(PinnedDisplacementBase):
     """A pinned nodal displacement boundary condition.
@@ -104,8 +99,6 @@ class PinnedDisplacement(PinnedDisplacementBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #         super(PinnedDisplacement, self).__init__(name, nodes, axes)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
@@ -122,8 +115,6 @@ class FixedDisplacementXX(FixedDisplacementXXBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(FixedDisplacementXX, self).__init__(name, nodes, axes)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
@@ -140,8 +131,6 @@ class FixedDisplacementYY(FixedDisplacementYYBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(FixedDisplacementYY, self).__init__(name, nodes, axes)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
@@ -158,8 +147,6 @@ class FixedDisplacementZZ(FixedDisplacementZZBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(FixedDisplacementZZ, self).__init__(name, nodes, axes)
 
 
 class RollerDisplacementX(RollerDisplacementXBase):
@@ -176,9 +163,6 @@ class RollerDisplacementX(RollerDisplacementXBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementX, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementY(RollerDisplacementYBase):
     """A pinned nodal displacement boundary condition released in Y.
@@ -194,9 +178,6 @@ class RollerDisplacementY(RollerDisplacementYBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementY, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementZ(RollerDisplacementZBase):
     """A pinned nodal displacement boundary condition released in Z.
@@ -212,9 +193,6 @@ class RollerDisplacementZ(RollerDisplacementZBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementZ, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
     """A pinned nodal displacement boundary condition released in X and Y.
@@ -230,9 +208,6 @@ class RollerDisplacementXY(RollerDisplacementXYBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementXY, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementYZ(RollerDisplacementYZBase):
     """A pinned nodal displacement boundary condition released in Y and Z.
@@ -248,9 +223,6 @@ class RollerDisplacementYZ(RollerDisplacementYZBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementYZ, self).__init__(name, nodes, axes)
-
 
 class RollerDisplacementXZ(RollerDisplacementXZBase):
     """A pinned nodal displacement boundary condition released in X and Z.
@@ -266,5 +238,3 @@ class RollerDisplacementXZ(RollerDisplacementXZBase):
 
     """
     pass
-    # def __init__(self, name, nodes, axes):
-    #     super(RollerDisplacementXZ, self).__init__(name, nodes, axes)

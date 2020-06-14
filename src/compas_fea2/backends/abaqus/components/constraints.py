@@ -25,8 +25,6 @@ class Constraint(ConstraintBase):
 
     """
     pass
-    # def __init__(self, name):
-    #     super(Constraint, self).__init__(name)
 
 
 class TieConstraint(TieConstraintBase):
@@ -45,5 +43,3 @@ class TieConstraint(TieConstraintBase):
 
     """
     pass
-    # def __init__(self, name, master, slave, tol):
-    #     super(TieConstraint, self).__init__(name, master, slave, tol)

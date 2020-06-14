@@ -842,7 +842,6 @@ Steps
                 self.element_properties[element_property.name] = element_property
                 self.assign_element_property(element_property)
         else:
-            print(element_properties)
             element_properties.index = len(self.element_properties)
             self.element_properties[element_properties.name] = element_properties
             self.assign_element_property(element_properties)

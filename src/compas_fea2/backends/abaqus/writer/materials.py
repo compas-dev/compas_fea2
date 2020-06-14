@@ -56,7 +56,7 @@ class Materials(object):
 
             # USER DEFINED
 
-            if mtype in ['Umat_iso']:
+            if mtype in ['Umat_hooke_iso']:
                 self.write_line('*User Material, constants=2')  #TODO make parametric
                 self.write_line('{0}, {1}'.format(E['E'], v['v']))
 

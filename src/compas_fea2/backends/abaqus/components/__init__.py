@@ -169,7 +169,6 @@ import os
 # additional software-based classes
 from .bcs import *
 from .set import *
-from .structure import *
 from .constraints import *
 from .elements import *
 from .steps import *

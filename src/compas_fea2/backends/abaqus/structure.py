@@ -391,7 +391,7 @@ class Structure(StructureBase):
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
     # this should be an abstract method of the base class
-    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_sub=False, save=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -416,7 +416,7 @@ class Structure(StructureBase):
         self.write_input_file(fields=fields, output=output, save=save)
 
         cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_sub=user_sub)
+        launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
 
     # this should be an abstract method of the base class
     def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
@@ -454,7 +454,7 @@ class Structure(StructureBase):
 
     # this should be an abstract method of the base class
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, user_sub=False, overwrite=True):
+                            return_data=True, components=None, user_mat=False, overwrite=True):
         """Runs the analysis through the chosen FEA software / library and extracts data.
 
         Parameters
@@ -484,7 +484,7 @@ class Structure(StructureBase):
 
         """
 
-        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_sub=user_sub, overwrite=overwrite, save=save)
+        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat, overwrite=overwrite, save=save)
 
         self.extract(fields=fields, exe=exe, license=license, output=output,
                           return_data=return_data, components=components)

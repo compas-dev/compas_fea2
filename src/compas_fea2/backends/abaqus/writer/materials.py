@@ -51,7 +51,7 @@ class Materials(object):
             if mtype in ['UserMaterial']:
                 k = [str(i) for i in material.constants]
                 self.write_line('*User Material, constants={}'.format(len(k)))
-                self.write_line(', '.join(k))
+                self.write_line(', '.join(reversed(k)))
 
             # Elastic
             # -------

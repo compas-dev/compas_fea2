@@ -23,7 +23,7 @@ mdl = Structure(name='block_deepbeam_rhino_umat', path='C:/temp/')
 
 # Extrude
 
-nz = 20
+nz = 5
 rhino.mesh_extrude(mdl, guid=rs.ObjectsByLayer('base_mesh')[0], layers=nz, thickness=1./nz,
                    blocks_name='elset_blocks')
 
@@ -33,7 +33,7 @@ rhino.add_sets_from_layers(mdl, layers=['nset_load', 'nset_supports'])
 
 # Materials
 umat_path = 'C:/Code/COMPAS/compas_fea2/src/compas_fea2/backends/abaqus/components/umat/umat-hooke-iso.f'
-mdl.add_material(UserMaterial(name='umat', path=umat_path, p=1, c1=10**(10), c2=0.3))
+mdl.add_material(UserMaterial(name='umat', path=umat_path, p=1, c1=10**(3), c2=0.3))
 
 # Sections
 
@@ -61,7 +61,7 @@ mdl.steps_order = ['step_bc', 'step_load']
 
 # Structure
 
-#mdl.summary()
+mdl.summary()
 
 #print(mdl.materials['umat'].sub_path)
 

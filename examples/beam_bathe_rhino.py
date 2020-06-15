@@ -44,15 +44,15 @@ rhino.add_sets_from_layers(mdl, layers=['nset_support', 'nset_load'])
 
 # Materials
 
-mdl.define_material(ElasticIsotropic(name='mat_elastic', E=10**7, v=10**(-5), p=1))
+mdl.add_material(ElasticIsotropic(name='mat_elastic', E=10**7, v=10**(-5), p=1))
 
 # Sections
 
-mdl.define_section(RectangularSection(name='sec_beam', b=1, h=1))
+mdl.add_section(RectangularSection(name='sec_beam', b=1, h=1))
 
 # Properties
 
-mdl.define_element_properties(ElementProperties(name='ep_beam', material='mat_elastic', section='sec_beam', elset='elset_beams'))
+mdl.add_element_properties(ElementProperties(name='ep_beam', material='mat_elastic', section='sec_beam', elset='elset_beams'))
 
 # Displacements
 
@@ -76,6 +76,6 @@ mdl.summary()
 
 # Run
 
-#mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], save=True)
+mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], cpus=1)
 #
 #rhino.plot_data(mdl, step='step_load', field='uz', radius=1)

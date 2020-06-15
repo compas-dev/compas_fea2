@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.utilities import WriterBase
+from compas_fea2.backends._core import WriterBase
 
 from compas_fea2.backends.abaqus.writer import Heading
 from compas_fea2.backends.abaqus.writer.elements import Elements

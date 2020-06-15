@@ -171,7 +171,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .structure import *
 from .bcs import *
 from .constraints import *
 from .nodes import *

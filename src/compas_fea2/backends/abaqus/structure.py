@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 import pickle
+import sys
 
 # from compas_fea.utilities import combine_all_sets
 from compas_fea2.utilities import group_keys_by_attribute
@@ -391,7 +392,7 @@ class Structure(StructureBase):
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
     # this should be an abstract method of the base class
-    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):
+    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=None, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -413,6 +414,16 @@ class Structure(StructureBase):
         None
 
         """
+
+        # check if the analysis requires a subroutine for material
+        materials = self.materials
+        for key, material in materials.items():
+            mtype       = material.__name__
+            if mtype in ['UserMaterial'] and not user_mat:
+                print('***** For User Material you must specify the name of the material to use with the subroutine *****')
+                print('***** Input File not generated *****')
+                raise TypeError('user_mat keyword missing')
+
         self.write_input_file(fields=fields, output=output, save=save)
 
         cpus = 1 if license == 'student' else cpus
@@ -454,7 +465,7 @@ class Structure(StructureBase):
 
     # this should be an abstract method of the base class
     def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, user_mat=False, overwrite=True):
+                            return_data=True, components=None, user_mat=None, overwrite=True):
         """Runs the analysis through the chosen FEA software / library and extracts data.
 
         Parameters

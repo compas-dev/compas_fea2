@@ -352,7 +352,7 @@ class UserMaterial(MaterialBase):
         self.__name__    = 'UserMaterial'
         self.__dict__.update(kwargs)
         self.name        = name
-        self.sub_path    = path #os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
+        self.sub_path    = path
         self.p = p
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
@@ -372,3 +372,4 @@ if __name__ == "__main__":
     k=[str(i) for i in umat.constants]
     print(k)
     print(', '.join(k))
+    print(umat.__name__)

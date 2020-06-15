@@ -6,6 +6,9 @@ from __future__ import print_function
 from compas_fea2.backends._core import WriterBase
 
 from compas_fea2.backends.abaqus.writer import Heading
+from compas_fea2.backends.abaqus.writer import Parts
+from compas_fea2.backends.abaqus.writer import Assembly
+from compas_fea2.backends.abaqus.writer import Instances
 from compas_fea2.backends.abaqus.writer.elements import Elements
 from compas_fea2.backends.abaqus.writer.elements import Nodes
 from compas_fea2.backends.abaqus.writer.sets import Sets
@@ -21,7 +24,7 @@ __all__ = [
     'Writer',
 ]
 
-class Writer(WriterBase, Steps, Materials, BCs, Elements, Nodes, Sets, Heading):
+class Writer(WriterBase, Parts, Instances, Assembly, Steps, Materials, BCs, Elements, Nodes, Sets, Heading):
 
     """ Initialises abaqus file writer.
 

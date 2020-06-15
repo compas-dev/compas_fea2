@@ -11,6 +11,8 @@ from compas.geometry import subtract_vectors
 
 from compas_fea2.cad import rhino
 
+from compas_fea2.backends.abaqus import Structure
+
 from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ElementProperties
@@ -18,7 +20,7 @@ from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import GeneralStep
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import RectangularSection
-from compas_fea2.backends.abaqus import Structure
+
 
 
 # Local ex
@@ -74,6 +76,6 @@ mdl.summary()
 
 # Run
 
-mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], save=True)
-
-rhino.plot_data(mdl, step='step_load', field='uz', radius=1)
+#mdl.analyse_and_extract(fields=['u', 'sf', 'sm'], save=True)
+#
+#rhino.plot_data(mdl, step='step_load', field='uz', radius=1)

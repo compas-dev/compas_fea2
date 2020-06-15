@@ -30,7 +30,7 @@ __all__ = [
     'ElasticPlastic',
     # 'ThermalMaterial',
     'Steel',
-    'Umat_hooke_iso'
+    'UserMaterial'
 ]
 
 
@@ -331,33 +331,44 @@ class ThermalMaterial(ThermalMaterialBase):
     #     super(ThermalMaterial, self).__init__(name, conductivity, p, sheat)
 
 
-class Umat_hooke_iso(MaterialBase):
+class UserMaterial(MaterialBase):
 
-    """ User Defined Material Example. This particular material requires the
-    definition of two mechanical constants (E, v)
+    """ User Defined Material (UMAT). Tho implement this type of material, a
+    separate subroutine is required
 
     Parameters
     ----------
     name : str
         Material name.
-    E : float
-        Young's modulus E [Pa].
-    v : float
-        Poisson's ratio v [-].
-    p : float
-        Density [kg/m3].
     path : str
         Path to the subroutine (no spaces are allowed in the path!)
+    **kwars : var
+        constants needed for the UMAT definition (depends on the subroutine)
     """
 
-    def __init__(self, name, E, v, p, path):  #TODO change parameters to *args
+    def __init__(self, name, path, p=None, **kwargs):
         MaterialBase.__init__(self, name=name)
 
-        self.__name__    = 'Umat_hooke_iso'
+        self.__name__    = 'UserMaterial'
+        self.__dict__.update(kwargs)
         self.name        = name
-        self.E           = {'E': E}
-        self.v           = {'v': v}
-        self.G           = {'G': 0.5 * E / (1 + v)}  #TODO remove
-        self.p           = p
         self.sub_path    = path #os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
-        self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
+        self.p = p
+        self.constants = self.get_constants()
+        # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
+
+    def get_constants(self):
+        constants = []
+        for k in self.__dict__:
+            if k not in ['__name__', 'name', 'attr_list', 'sub_path', 'p']:
+                constants.append(self.__dict__[k])
+        return constants
+
+
+### -------------------------------- DEBUG ------------------------------- ###
+
+if __name__ == "__main__":
+    umat = UserMaterial(name='umat', path='test/path.f', p=30, E=10, v=1000)
+    k=[str(i) for i in umat.constants]
+    print(k)
+    print(', '.join(k))

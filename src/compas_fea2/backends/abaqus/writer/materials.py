@@ -32,33 +32,26 @@ class Materials(object):
         for key, material in materials.items():
 
             self.write_subsection(key)
-
-            mtype       = material.__name__
-            m_index     = material.index + 1
-            compression = getattr(material, 'compression', None)
-            tension     = getattr(material, 'tension', None)
-            E           = material.E
-            G           = material.G
-            v           = material.v
-            p           = material.p
-
-
-
             self.write_line('*MATERIAL, NAME={0}'.format(key))
             self.blank_line()
-            # User Material
-            # -------
+
+            mtype       = material.__name__
+            if mtype not in ['UserMaterial']:
+                m_index     = material.index + 1
+                compression = getattr(material, 'compression', None)
+                tension     = getattr(material, 'tension', None)
+                E           = material.E
+                G           = material.G
+                v           = material.v
+            p           = material.p
+
+            # User Defined
+            # ------------
 
             if mtype in ['UserMaterial']:
-
-                self.write_line('*User Material, constants=2') #TODO change to the varaible number of constants
-                self.write_line('{0}, {1}'.format(E['E'], v['v']))
-
-            # USER DEFINED
-
-            if mtype in ['Umat_hooke_iso']:
-                self.write_line('*User Material, constants=2')  #TODO make parametric
-                self.write_line('{0}, {1}'.format(E['E'], v['v']))
+                k = [str(i) for i in material.constants]
+                self.write_line('*User Material, constants={}'.format(len(k)))
+                self.write_line(', '.join(k))
 
             # Elastic
             # -------

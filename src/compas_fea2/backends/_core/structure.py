@@ -656,7 +656,25 @@ Steps
 
         return ekey
 
+    def assign_element_property(self, element_property):
+        """Assign the ElementProperties object name to associated Elements.
 
+        Parameters
+        ----------
+        element_property : obj
+            ElementProperties object.
+
+        Returns
+        -------
+        None
+        """
+        if element_property.collection:
+            elements = self.collections[element_property.collection].selection
+        else:
+            elements = element_property.elements
+
+        for element in elements:
+            self.elements[element].element_property = element_property.name
 
     # ==============================================================================
     # Nodes and Elements
@@ -761,6 +779,21 @@ Steps
     # for "components"
     # it also constantly needs to be updated to add support for new "components"
 
+    def add_constraint(self, constraint):
+        """Adds a Constraint object to structure.constraints.
+
+        Parameters
+        ----------
+        constraint : obj
+            The Constraint object.
+
+        Returns
+        -------
+        None
+        """
+        constraint.index = len(self.constraints)
+        self.constraints[constraint.name] = constraint
+
     def add_displacement(self, displacement):
         """Adds a Displacement object to structure.displacements.
 
@@ -790,6 +823,43 @@ Steps
         """
         for displacement in displacements:
             self.add_displacement(displacement)
+
+    def add_element_properties(self, element_properties):
+        """Adds ElementProperties object(s) to structure.element_properties.
+
+        Parameters
+        ----------
+        element_properties : obj, list
+            The ElementProperties object(s).
+
+        Returns
+        -------
+        None
+        """
+        if isinstance(element_properties, list):
+            for element_property in element_properties:
+                element_property.index = len(self.element_properties)
+                self.element_properties[element_property.name] = element_property
+                self.assign_element_property(element_property)
+        else:
+            element_properties.index = len(self.element_properties)
+            self.element_properties[element_properties.name] = element_properties
+            self.assign_element_property(element_properties)
+
+    def add_interaction(self, interaction):
+        """Adds an Interaction object to structure.interactions.
+
+        Parameters
+        ----------
+        interaction : obj
+            The Interaction object.
+
+        Returns
+        -------
+        None
+        """
+        interaction.index = len(self.interactions)
+        self.interactions[interaction.name] = interaction
 
     def add_load(self, load):
         """Adds a Load object to structure.loads.
@@ -821,37 +891,7 @@ Steps
         for load in loads:
             self.add_load(load)
 
-    def define_constraint(self, constraint):
-        """Adds a Constraint object to structure.constraints.
-
-        Parameters
-        ----------
-        constraint : obj
-            The Constraint object.
-
-        Returns
-        -------
-        None
-        """
-        constraint.index = len(self.constraints)
-        self.constraints[constraint.name] = constraint
-
-    def define_interaction(self, interaction):
-        """Adds an Interaction object to structure.interactions.
-
-        Parameters
-        ----------
-        interaction : obj
-            The Interaction object.
-
-        Returns
-        -------
-        None
-        """
-        interaction.index = len(self.interactions)
-        self.interactions[interaction.name] = interaction
-
-    def define_material(self, material):
+    def add_material(self, material):
         """Adds a Material object to structure.materials.
 
         Parameters
@@ -866,7 +906,7 @@ Steps
         material.index = len(self.materials)
         self.materials[material.name] = material
 
-    def define_materials(self, materials):
+    def add_materials(self, materials):
         """Adds Material objects to structure.materials.
 
         Parameters
@@ -881,7 +921,7 @@ Steps
         for material in materials:
             self.add_material(material)
 
-    def add_misc(self, misc):  #TODO: what is a Misc object?
+    def add_misc(self, misc):
         """Adds a Misc object to structure.misc.
 
         Parameters
@@ -896,7 +936,7 @@ Steps
         misc.index = len(self.misc)
         self.misc[misc.name] = misc
 
-    def define_section(self, section):
+    def add_section(self, section):
         """Adds a Section object to structure.sections.
 
         Parameters
@@ -911,7 +951,7 @@ Steps
         section.index = len(self.sections)
         self.sections[section.name] = section
 
-    def define_sections(self, sections):
+    def add_sections(self, sections):
         """Adds Section objects to structure.sections.
 
         Parameters
@@ -926,7 +966,7 @@ Steps
         for section in sections:
             self.add_section(section)
 
-    def define_step(self, step):
+    def add_step(self, step):
         """Adds a Step object to structure.steps.
 
         Parameters
@@ -941,7 +981,7 @@ Steps
         step.index = len(self.steps)
         self.steps[step.name] = step
 
-    def define_steps(self, steps):
+    def add_steps(self, steps):
         """Adds Step objects to structure.steps.
 
         Parameters
@@ -955,48 +995,6 @@ Steps
         """
         for step in steps:
             self.add_step(step)
-
-    def define_element_properties(self, element_properties):
-        """Adds ElementProperties object(s) to structure.element_properties.
-
-        Parameters
-        ----------
-        element_properties : obj, list
-            The ElementProperties object(s).
-
-        Returns
-        -------
-        None
-        """
-        if isinstance(element_properties, list):
-            for element_property in element_properties:
-                element_property.index = len(self.element_properties)
-                self.element_properties[element_property.name] = element_property
-                self.assign_element_property(element_property)
-        else:
-            element_properties.index = len(self.element_properties)
-            self.element_properties[element_properties.name] = element_properties
-            self.assign_element_property(element_properties)
-
-    def assign_element_property(self, element_property):
-        """Assign the ElementProperties object name to associated Elements.
-
-        Parameters
-        ----------
-        element_property : obj
-            ElementProperties object.
-
-        Returns
-        -------
-        None
-        """
-        if element_property.collection:
-            elements = self.collections[element_property.collection].selection
-        else:
-            elements = element_property.elements
-
-        for element in elements:
-            self.elements[element].element_property = element_property.name
 
     # ==============================================================================
     # Modifiers
@@ -1056,7 +1054,7 @@ Steps
     # Steps
     # ==============================================================================
 
-    def define_steps_order(self, order):
+    def set_steps_order(self, order):
         """Sets the order that the Steps will be analysed.
 
         Parameters

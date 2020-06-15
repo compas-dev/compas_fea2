@@ -47,11 +47,7 @@ class Structure(StructureBase):
 
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
-        self.parts = {}
-        self.instances = {}
-        self.assembly = name
         self.sets = {}
-
 
     # ==============================================================================
     # Elements
@@ -383,34 +379,13 @@ class Structure(StructureBase):
         with Writer(structure=self, filename=filename, fields=fields) as writer:
 
             writer.write_heading()
-            # write parts
-            for part in self.parts:
-                writer.write_part_start(part.name)
-                writer.write_nodes()
-                writer.write_elements()
-                writer.write_nsets()
-                writer.write_elsets()
-                writer.write_section()
-                writer.write_part_end()
-            # write assembly
-            writer.write_assembly_start(self.assembly.name)
-            for instance in self.instances:
-                writer.write_instance(instance.name, instance.part)
-            for surface in self.surfaces:
-                writer.write_surface(surface.type, surface.name, surface.s)
-            writer.write_assembly_nsets()
-            writer.write_assembly_elsets()
-            writer.write_assembly_end()
-            # write other properties
-            writer.write_materials()
-            writer.write_interaction_properties()
+            writer.write_nodes()
+            writer.write_node_sets()
             writer.write_boundary_conditions()
-            writer.write_interactions()
-            # write steps
+            writer.write_materials()
+            writer.write_elements()
+            writer.write_element_sets()
             writer.write_steps()
-
-
-
 
         if output:
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))

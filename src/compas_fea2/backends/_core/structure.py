@@ -455,7 +455,7 @@ Steps
             return ekey
         return None
 
-    def add_elements(self, elements, type, thermal=False, axes={}):
+    def add_elements(self, elements, etype, thermal=False, axes={}):
         """Adds multiple elements of the same type to structure.elements.
 
         Parameters
@@ -478,7 +478,7 @@ Steps
         -----
         Elements are numbered sequentially starting from 0.
         """
-        return [self.add_element(nodes=nodes, type=type, thermal=thermal, axes=axes) for nodes in elements]
+        return [self.add_element(nodes=nodes, etype=etype, thermal=thermal, axes=axes) for nodes in elements]
 
     def add_element_to_element_index(self, key, nodes, virtual=False):
         """Adds the element to the element_index dictionary.

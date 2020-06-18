@@ -47,6 +47,9 @@ class Structure(StructureBase):
 
     def __init__(self, path, name='abaqus-Structure'):
         super(Structure, self).__init__(path, name)
+        self.parts = {}
+        self.instances = {}
+        self.assembly = name
         self.sets = {}
 
     # ==============================================================================

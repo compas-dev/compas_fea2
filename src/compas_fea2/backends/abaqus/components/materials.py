@@ -81,7 +81,7 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, tension, compression):
         super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
 
-    def to_input_file(self, f):
+    def write_to_input_file(self, f):
         no_c=''
         no_t=''
         if not self.compression:

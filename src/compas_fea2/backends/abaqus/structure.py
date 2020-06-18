@@ -376,16 +376,97 @@ class Structure(StructureBase):
         if 'u' not in fields:
             fields.append('u')
 
-        with Writer(structure=self, filename=filename, fields=fields) as writer:
 
-            writer.write_heading()
-            writer.write_nodes()
-            writer.write_node_sets()
-            writer.write_boundary_conditions()
-            writer.write_materials()
-            writer.write_elements()
-            writer.write_element_sets()
-            writer.write_steps()
+
+
+
+        # Open input file
+        f=open(self.path,'w')
+
+        # write heading
+        Writer.write_headers('input_file',f)
+
+        # Write parts
+        for part in self.parts:
+            part.write_header(f)
+            # Write nodes
+            for node in self.nodes[part]:
+                node.to_input_file(f)
+            # Write elements
+            for element in self.elements[part]:
+                element.to_input_file(f)
+            # Write node sets
+            for nset in self.nsets[part]:
+                nset.to_input_file(f)
+            # Write elements sets
+            for elset in self.elsets[part]:
+                elset.to_input_file(f)
+            # Write sections
+            for section in self.sections[part]:
+                section.to_input_file(f)
+            part.write_footer(f)
+
+        # Write Assembly
+        self.assembly.write_header(f)
+        # Write instances
+        for instance in self.instances:
+            instance.to_input_file(f)
+        # Write assembly node sets
+        for nset in self.assembly_nsets:
+            nset.to_input_file(f)
+        # Write assembly element sets
+        for elset in self.assembly_elsets:
+            elset.to_input_file(f)
+        # Write assembly surfaces
+        for surface in self.surfaces:
+            surface.to_input_file(f)
+        for constraint in self.constraints:
+            constraint.to_input_file(f)
+        self.assembly.write_footer(f)
+
+        # Write materials
+        Writer.write_headers('materials')
+        for material in self.materials:
+            material.to_input_file(f)
+
+        # Write interaction properties
+        Writer.write_headers('interaction properties')
+        for interaction_property in self.interaction_properties:
+            interaction_property.to_input_file(f)
+
+        # Write interactions
+        Writer.write_headers('interactions')
+        for interaction in self.interactions:
+            interaction.to_input_file(f)
+
+        # Write boundary conditions
+        Writer.write_headers('bc')
+        for bc in self.bcs:
+            bc.to_input_file(f)
+
+        # Write steps
+        for step in self.steps:
+            step.write_header(f)
+            # Write loads
+            Writer.write_headers('loads')
+            for load in self.loads[step]:
+                load.to_input_file(f)
+            # Write Output Reequests
+            Writer.write_headers('outputs')
+            for output in self.outputs[step]:
+                output.to_input_file(f)
+            step.write_footer(f)
+
+        # Close input file
+        f.close()
+
+
+
+
+
+
+
+
 
         if output:
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))

@@ -34,7 +34,7 @@ class Writer(WriterBase, Steps, Materials, BCs, Elements, Nodes, Sets, Heading):
     None
 
     """
-
+    @staticmethod
     def __init__(self, structure, filename, fields):
         super(Writer, self).__init__(structure, filename, fields)
         self.comment   = '**'

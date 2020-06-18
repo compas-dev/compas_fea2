@@ -78,10 +78,25 @@ class ElasticIsotropic(ElasticIsotropicBase):
         Can take compression.
 
     """
-    pass
-    # def __init__(self, name, E, v, p, tension, compression):
-    #     super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
+    def __init__(self, name, E, v, p, tension, compression):
+        super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
 
+    def to_input_file(self, f):
+        no_c=''
+        no_t=''
+        if not self.compression:
+            no_c = '\n*NO COMPRESSION'
+        if not self.tension:
+            no_t = '\n*NO TENSION'
+
+        line = """*Material, name={}
+*Density
+{},
+*Elastic
+{}, {}{}{}
+""".format(self.name, self.p, self.E['E'], self.v['v'], no_c, no_t)
+
+        f.write(line)
 
 class Stiff(StiffBase):
 
@@ -95,9 +110,8 @@ class Stiff(StiffBase):
         Young's modulus E [Pa].
 
     """
-    pass
-    # def __init__(self, name, E):
-    #     super(Stiff, self).__init__(name, E)
+    def __init__(self, name, E):
+        super(Stiff, self).__init__(name, E)
 
 
 class ElasticOrthotropic(ElasticOrthotropicBase):
@@ -171,9 +185,9 @@ class ElasticPlastic(ElasticPlasticBase):
     - Plastic stress--strain pairs applies to both compression and tension.
 
     """
-    pass
-    # def __init__(self, name, E, v, p, f, e):
-    #     super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
+    def __init__(self, name, E, v, p, f, e):
+        super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
+
 
 
 # ==============================================================================
@@ -202,9 +216,10 @@ class Steel(SteelBase):
         Density [kg/m3].
 
     """
-    pass
-    # def __init__(self, name, fy, fu, eu, E, v, p):
-    #     super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
+
+    def __init__(self, name, fy, fu, eu, E, v, p):
+        super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
+
 
 
 # ==============================================================================
@@ -243,9 +258,11 @@ class Concrete(ConcreteBase):
     - The concrete model is based on Eurocode 2 up to fck=90 MPa.
 
     """
-    pass
-    # def __init__(self, name, fck, v, p, fr):
-    #     super(Concrete, self).__init__(name, fck, v, p, fr)
+
+    def __init__(self, name, fck, v, p, fr):
+        super(Concrete, self).__init__(name, fck, v, p, fr)
+
+
 
 
 class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
@@ -274,9 +291,8 @@ class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
         Failure ratios.
 
     """
-    pass
-    # def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
-    #     super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
+    def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
+        super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
 
 
 class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
@@ -301,9 +317,8 @@ class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
         Tension stiffening parameters.
 
     """
-    pass
-    # def __init__(self, name, E, v, p, damage, hardening, stiffening):
-    #     super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
+    def __init__(self, name, E, v, p, damage, hardening, stiffening):
+        super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
 
 
 # ==============================================================================
@@ -368,7 +383,19 @@ class UserMaterial(MaterialBase):
 ### -------------------------------- DEBUG ------------------------------- ###
 
 if __name__ == "__main__":
-    umat = UserMaterial(name='umat', path='test/path.f', p=30, E=10, v=1000)
-    k=[str(i) for i in umat.constants]
-    print(k)
-    print(', '.join(k))
+    # umat = UserMaterial(name='umat', path='test/path.f', p=30, E=10, v=1000)
+    # k=[str(i) for i in umat.constants]
+    # print(k)
+    # print(', '.join(k))
+    def write_to_file(my_string, destination_path):
+        f=open(destination_path,'w')
+        f.write(my_string)
+        f.close()
+
+    # material = ElasticIsotropic(name='test', E=1, v=2, p=3, tension=False, compression=True)
+    # print(material.to_input_file())
+    # write_to_file(material.to_input_file(), 'C:/temp/test_input.inp')
+    f=open('C:/temp/test_input.inp','w')
+    material = ElasticIsotropic(name='test', E=1, v=2, p=3, tension=False, compression=True)
+    material.to_input_file(f)
+    f.close()

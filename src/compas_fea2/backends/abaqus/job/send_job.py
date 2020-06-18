@@ -15,6 +15,9 @@ __all__ = [
     'launch_process',
 ]
 
+def write_input_file(structure, path):
+    pass
+
 def launch_process(structure, exe, cpus, output, overwrite, user_mat):
 
     """ Runs the analysis through Abaqus.

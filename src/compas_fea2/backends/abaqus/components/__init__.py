@@ -168,6 +168,7 @@ import os
 
 # additional software-based classes
 from .assembly import *
+from .parts import *
 from .bcs import *
 from .set import *
 from .constraints import *

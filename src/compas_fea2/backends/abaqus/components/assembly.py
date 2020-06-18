@@ -3,18 +3,16 @@ from __future__ import division
 from __future__ import print_function
 
 class Assembly():
-    """Initialises the Part object.
+    """Initialises the Assembly object.
 
     """
 
-    def __init__(self, name, instance=None, nsets=None, elsets=None, surfaces=None, features=None, engineering_features=None):
+    def __init__(self, name, instance=None, nsets=None, elsets=None, surfaces=None):
         self.__name__ = 'Assembly'
         self.name = name
         self.nsets = nsets
         self.elsets = elsets
         self.surfaces = surfaces
-        self.features = features
-        self.engineering_features = engineering_features
 
     def __str__(self):
 
@@ -32,6 +30,19 @@ class Assembly():
 
         return '{0}({1})'.format(self.__name__, self.name)
 
+    def write_header(self, f):
+        line = """
+**
+** ASSEMBLY
+**
+*Assembly, name={}
+**""".format(self.name)
+
+        f.write(line)
+
+    def write_footer(self, f):
+        line = "*End Assembly\n**"
+        f.write(line)
 
 if __name__ == "__main__":
 

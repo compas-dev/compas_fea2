@@ -49,10 +49,10 @@ class ElementBase(object):
         Element property name
     """
 
-    def __init__(self, nodes=None, number=None, thermal=None, axes={}):
+    def __init__(self, key=None, nodes_keys=None, thermal=None, axes={}):
         self.__name__         = 'Element'
-        self.nodes            = nodes
-        self.number           = number
+        self.key              = key
+        self.nodes_keys       = nodes_keys
         self.thermal          = thermal
         self.axes             = axes
         self.element_property = None
@@ -61,12 +61,12 @@ class ElementBase(object):
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
-        for attr in ['nodes', 'number', 'thermal', 'axes', 'element_property']:
+        for attr in ['key', 'nodes_keys', 'thermal', 'axes', 'element_property']:
             print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
         return ''
 
     def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.number)
+        return '{0}({1})'.format(self.__name__, self.key)
 
 
 # ==============================================================================

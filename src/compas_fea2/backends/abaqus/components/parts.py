@@ -31,6 +31,15 @@ class Part():
 
         return '{0}({1})'.format(self.__name__, self.name)
 
+    def write_header(self, f):
+        line = "*Part, name={}".format(self.name)
+        f.write(line)
+
+    def write_footer(self, f):
+        line = "*End Part\n**"
+        f.write(line)
+
+
 
 if __name__ == "__main__":
 

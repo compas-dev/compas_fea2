@@ -25,7 +25,6 @@ from compas_fea2.backends._core import HexahedronElementBase
 # TODO add the property class here
 
 __all__ = [
-    'Node',
     'Element',
     'MassElement',
     'BeamElement',
@@ -46,49 +45,6 @@ __all__ = [
 # ==============================================================================
 # General
 # ==============================================================================
-
-class Node(NodeBase):
-    """Initialises base Node object.
-
-    Parameters
-    ----------
-    key : int
-        Node key number.
-    xyz : list
-        [x, y, z] co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    Attributes
-    ----------
-    key : int
-        Node key number.
-    x : float
-        x co-ordinates of the node.
-    y : float
-        y co-ordinates of the node.
-    z : float
-        z co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    """
-
-    def __init__(self, key, xyz, ex, ey, ez, mass):
-        super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
-
 
 class Element(ElementBase):
     """Initialises base Element object.
@@ -264,9 +220,32 @@ class SolidElement(SolidElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(SolidElement, self).__init__()
+    def __init__(self):
+        super(SolidElement, self).__init__()
+
+    def write_header(self, f):
+        etypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
+        e = 'element_{0}'.format(select)
+
+        self.write_line('*ELEMENT, TYPE={0}, ELSET={1}'.format(etypes[len(nodes)], e))
+        self.write_line('{0}, {1}'.format(n, ','.join(nodes)))
+        self.write_line('*SOLID SECTION, ELSET={0}, MATERIAL={1}'.format(e, material.name))
+        self.write_line('')
+
+        line = "*Element, type={}".format(etypes[len(self.nodes)])
+
+        f.write(line)
+
+    def write_to_input_file(self, f):
+        prefix  = ''
+        spacer  = self.spacer
+        x, y, z = self.xyz
+        nkeys   = [str(i + 1) for i in self.nodes_keys]
+
+        line    = '{0}, {1}'.format(self.key, ','.join(nkeys))
+
+        f.write(line)
+
 
 
 class PentahedronElement(PentahedronElementBase):

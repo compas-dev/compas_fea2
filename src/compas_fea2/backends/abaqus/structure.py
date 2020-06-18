@@ -393,11 +393,13 @@ class Structure(StructureBase):
         for part in self.parts:
             part.write_header(f)
             # Write nodes
+            self.nodes[part][0].write_header(f)
             for node in self.nodes[part]:
                 node.to_input_file(f)
             # Write elements
-            for element in self.elements[part]:
-                element.to_input_file(f)
+            for eltype in self.eltypes[part]:
+                for element in self.elements[part][eltype]:
+                    element.to_input_file(f)
             # Write node sets
             for nset in self.nsets[part]:
                 nset.to_input_file(f)

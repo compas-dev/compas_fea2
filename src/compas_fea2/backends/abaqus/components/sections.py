@@ -403,9 +403,15 @@ class SolidSection(SolidSectionBase):
         Section name.
 
     """
-    pass
-    # def __init__(self, name):
-    #     super(SolidSection, self).__init__(name)
+    def __init__(self, name):
+        super(SolidSection, self).__init__(name)
+
+    def write_data(self, elset, f):
+
+        line="""** Section: {}
+*Solid Section, elset={}, material={}""".format(self.name, elset, self.material.name)
+
+        f.write(line)
 
 
 

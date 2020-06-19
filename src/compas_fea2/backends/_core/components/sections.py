@@ -47,10 +47,11 @@ class SectionBase(object):
 
     """
 
-    def __init__(self, name):
+    def __init__(self, name, material):
 
         self.__name__ = 'Section'
         self.name     = name
+        self.material = material
         self.geometry = {}
 
     def __str__(self):
@@ -112,8 +113,8 @@ class AngleSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, b, h, t):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, b, h, t, material):
+        SectionBase.__init__(self, name=name, material=material)
 
         p   = 2. * (b + h - t)
         xc  = (b**2 + h * t - t**2) / p
@@ -124,7 +125,7 @@ class AngleSectionBase(SectionBase):
         J   = (1. / 3) * (h + b - t) * t**3
 
         self.__name__ = 'AngleSection'
-        self.name     = name
+        # self.name     = name
         self.geometry = {'b': b, 'h': h, 't': t, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': None}
 
 
@@ -146,8 +147,8 @@ class BoxSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, b, h, tw, tf):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, b, h, tw, tf, material):
+        SectionBase.__init__(self, name=name, material=material)
 
         A   = b * h - (b - 2 * tw) * (h - 2 * tf)
         Ap  = (h - tf) * (b - tw)

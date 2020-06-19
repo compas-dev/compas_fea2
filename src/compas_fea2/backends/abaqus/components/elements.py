@@ -74,9 +74,12 @@ class Element(ElementBase):
         Element property name
 
     """
-    pass
-    # def __init__(self, nodes, number, thermal, axes):
-    #     super(Element, self).__init__(nodes, number, thermal, axes)
+    def __init__(self, key, eltype, nodes_keys, section, elset=None, thermal=None, axes={}):
+        super(Element, self).__init__(key, eltype, nodes_keys, section, thermal=None, axes={})
+        if not elset:
+            self.elset        = self.section.name
+        else:
+            self.elset        = elset
 
 
 # ==============================================================================
@@ -223,20 +226,13 @@ class SolidElement(SolidElementBase):
     def __init__(self):
         super(SolidElement, self).__init__()
 
-    def write_header(self, f):
+    def write_keyword(self, f):
         etypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
-        e = 'element_{0}'.format(select)
-
-        self.write_line('*ELEMENT, TYPE={0}, ELSET={1}'.format(etypes[len(nodes)], e))
-        self.write_line('{0}, {1}'.format(n, ','.join(nodes)))
-        self.write_line('*SOLID SECTION, ELSET={0}, MATERIAL={1}'.format(e, material.name))
-        self.write_line('')
-
-        line = "*Element, type={}".format(etypes[len(self.nodes)])
+        line = "*Element, type={}, elset={}".format(etypes[len(self.nodes)], self.elset)
 
         f.write(line)
 
-    def write_to_input_file(self, f):
+    def write_data(self, f):
         prefix  = ''
         spacer  = self.spacer
         x, y, z = self.xyz

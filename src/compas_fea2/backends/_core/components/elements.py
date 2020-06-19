@@ -49,13 +49,15 @@ class ElementBase(object):
         Element property name
     """
 
-    def __init__(self, key=None, nodes_keys=None, thermal=None, axes={}):
+    def __init__(self, key, eltype, nodes_keys, section, thermal=None, axes={}):
         self.__name__         = 'Element'
         self.key              = key
+        self.eltype           = eltype
         self.nodes_keys       = nodes_keys
+        self.section          = section
         self.thermal          = thermal
         self.axes             = axes
-        self.element_property = None
+
 
     def __str__(self):
         print('\n')
@@ -67,7 +69,6 @@ class ElementBase(object):
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.key)
-
 
 # ==============================================================================
 # 0D elements

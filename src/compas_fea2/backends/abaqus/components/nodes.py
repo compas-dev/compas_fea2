@@ -57,14 +57,14 @@ class Node(NodeBase):
 
     """
 
-    def __init__(self, key, xyz, ex, ey, ez, mass, part):
+    def __init__(self, key, xyz, ex, ey, ez, mass):
         super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
 
-    def write_header(self, f):
+    def write_keyword(self, f):
         line = '*Node'
         f.write(line)
 
-    def write_to_input_file(self, f):
+    def write_data(self, f):
         prefix  = ''
         spacer  = self.spacer
         x, y, z = self.xyz

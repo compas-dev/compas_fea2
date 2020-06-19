@@ -70,3 +70,7 @@ class WriterBase(object):
         self.write_line('{0} {1}'.format(self.comment, subsection))
         self.write_line('{0}-{1}'.format(self.comment, '-' * len(subsection)))
         self.blank_line()
+
+
+if __name__ == "__main__":
+    WriterBase.write_line(line="test")

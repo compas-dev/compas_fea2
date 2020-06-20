@@ -2,6 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+__all__ = [
+    'Part',
+]
+
 class Part():
     """Initialises the Part object.
 
@@ -19,6 +23,7 @@ class Part():
         self.elements_by_section = groups[1]
         self.elements_by_elset = groups[2]
         self.elsets_by_section = groups[3]
+        self.elements_by_material = groups[4]
 
     def __str__(self):
 
@@ -46,20 +51,20 @@ class Part():
         el_dict={}
         for el in self.elements:
             el_dict[el] = (el.eltype, el.section, el.elset)
+
         type_elements = {}
         section_elements = {}
         elset_elements = {}
         section_elsets = {}
+        material_elements = {}
         for key, value in el_dict.items():
             type_elements.setdefault(value[0], set()).add(key)
             section_elements.setdefault(value[1], set()).add(key)
+            material_elements.setdefault(value[1].material, set()).add(key)
             elset_elements.setdefault(value[2], set()).add(key)
             section_elsets.setdefault(value[1], set()).add(value[2])
 
-
-        # section_elements = sorted(section_elements, key=lambda x: x.key, reverse=True)
-
-        return type_elements, section_elements, elset_elements, section_elsets
+        return type_elements, section_elements, elset_elements, section_elsets, material_elements
 
 
     # ==============================================================================
@@ -127,6 +132,7 @@ if __name__ == "__main__":
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
+    print(my_part.elements_by_material)
     # f=open('/home/fr/Downloads/test_input.inp','w')
     f=open('C:/temp/test_input.inp','w')
     my_part.write_keyword_start(f)

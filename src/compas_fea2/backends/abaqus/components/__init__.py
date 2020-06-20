@@ -170,6 +170,7 @@ import os
 from .nodes import *
 from .assembly import *
 from .parts import *
+from .interactions import *
 from .bcs import *
 from .set import *
 from .constraints import *
@@ -179,7 +180,7 @@ from .steps import *
 #from .load_combos import *
 from .loads import *
 from .materials import *
-from .properties import *
+# from .properties import *
 from .sections import *
 from .misc import *
 

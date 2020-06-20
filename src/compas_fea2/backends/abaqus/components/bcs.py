@@ -33,44 +33,22 @@ __all__ = [
     'RollerDisplacementXZ'
 ]
 
+dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 class GeneralDisplacement(GeneralDisplacementBase):
-    """Initialises the base GeneralDisplacement object.
+    def __init__(self, name, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        super(GeneralDisplacement, self).__init__(name, nodes, x, y, z, xx, yy, zz, axes)
 
-    Parameters
-    ----------
-    name : str
-        Name of the Displacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    x : float
-        Value of x translation.
-    y : float
-        Value of y translation.
-    z : float
-        Value of z translation.
-    xx : float
-        Value of xx rotation.
-    yy : float
-        Value of yy rotation.
-    zz : float
-        Value of zz rotation.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def write_data(self, f):
+        line = """*Boundary
+name={}
+*Density
+{},
+*Elastic
+{}, {}{}{}
+""".format(self.name, self.p, self.E['E'], self.v['v'], no_c, no_t)
 
-    Attributes
-    ----------
-    name : str
-        Name of the Displacement object.
-    nodes : str
-        Node set string or nodes list the displacement is applied to.
-    components : dict
-        Values of x, y, z, xx, yy, zz degrees-of-freedom.
-    axes : str
-        'local' or 'global' coordinate axes.
-
-    """
-    pass
+        f.write(line)
 
 
 

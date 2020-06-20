@@ -45,6 +45,8 @@ __all__ = [
     'SpringSection',
 ]
 
+labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+
 # ==============================================================================
 # 0D
 # ==============================================================================
@@ -81,7 +83,6 @@ class AngleSection(AngleSectionBase):
         super(AngleSection, self).__init__(name, b, h, t, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -97,7 +98,6 @@ class BoxSection(BoxSectionBase):
         super(BoxSection, self).__init__(name, b, h, tw, tf, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -113,7 +113,6 @@ class CircularSection(CircularSectionBase):
         super(CircularSection, self).__init__(name, r, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -129,7 +128,6 @@ class GeneralSection(GeneralSectionBase):
         super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -145,7 +143,6 @@ class ISection(ISectionBase):
         super(ISection, self).__init__(name, b, h, tw, tf, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -161,7 +158,6 @@ class PipeSection(PipeSectionBase):
         super(PipeSection, self).__init__(name, r, t, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -177,7 +173,6 @@ class RectangularSection(RectangularSectionBase):
         super(RectangularSection, self).__init__(name, b, h, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -193,7 +188,6 @@ class TrapezoidalSection(TrapezoidalSectionBase):
         super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
 
     def write_data(self, elset, f):
-        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
         properties = []
         for l in labels:
             if l in self.geometry.keys():
@@ -288,7 +282,7 @@ class SolidSection(SolidSectionBase):
 if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import Concrete
     conc = Concrete('my_mat',1,2,3,4)
-    solid = BoxSection('mysec', 10, 20,1,2,conc)
+    solid = BoxSection('mysec', 100, 20,1,2,conc)
     # solid = SolidSection('mysec',conc)
     f = open('C:/temp/input_temp.inp', 'w')
     solid.write_data('my_elset', f)

@@ -16,7 +16,7 @@ from compas_fea2.backends.abaqus.components.elements import *
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-from compas_fea2.backends.abaqus.writer import Writer
+# from compas_fea2.backends.abaqus.writer import Writer
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
 
@@ -26,254 +26,33 @@ __all__ = [
 ]
 
 
-ETYPES = {
-    'BeamElement':        BeamElement,
-    'SpringElement':      SpringElement,
-    'TrussElement':       TrussElement,
-    'StrutElement':       StrutElement,
-    'TieElement':         TieElement,
-    'ShellElement':       ShellElement,
-    'MembraneElement':    MembraneElement,
-    'FaceElement':        FaceElement,
-    'SolidElement':       SolidElement,
-    'TetrahedronElement': TetrahedronElement,
-    'PentahedronElement': PentahedronElement,
-    'HexahedronElement':  HexahedronElement,
-    'MassElement':        MassElement
-}
+# ETYPES = {
+#     'BeamElement':        BeamElement,
+#     'SpringElement':      SpringElement,
+#     'TrussElement':       TrussElement,
+#     'StrutElement':       StrutElement,
+#     'TieElement':         TieElement,
+#     'ShellElement':       ShellElement,
+#     'MembraneElement':    MembraneElement,
+#     'FaceElement':        FaceElement,
+#     'SolidElement':       SolidElement,
+#     # 'TetrahedronElement': TetrahedronElement,
+#     # 'PentahedronElement': PentahedronElement,
+#     # 'HexahedronElement':  HexahedronElement,
+#     'MassElement':        MassElement
+# }
 
 
 class Structure(StructureBase):
 
-    def __init__(self, name, parts, assembly, interactions, steps):
+    def __init__(self, name, parts, assembly, interactions, bcs, steps):
         super(Structure, self).__init__(name)
         self.parts = parts
         self.assembly = assembly
+        self.assembly = interactions
+        self.assembly = bcs
+        self.assembly = steps
 
-
-    # # ==============================================================================
-    # # Elements
-    # # ==============================================================================
-
-    # def add_nodal_element(self, node, type, virtual_node=False):
-    #     """Adds a nodal element to structure.elements with the possibility of
-    #     adding a coincident virtual node. Virtual nodes are added to a node
-    #     set called 'virtual_nodes'.
-
-    #     Parameters
-    #     ----------
-    #     node : int
-    #         Node number the element is connected to.
-    #     type : str
-    #         Element type: 'SpringElement'.
-    #     virtual_node : bool
-    #         Create a virtual node or not.
-
-    #     Returns
-    #     -------
-    #     int
-    #         Key of the added element.
-
-    #     Notes
-    #     -----
-    #     - Elements are numbered sequentially starting from 0.
-
-    #     """
-    #     if virtual_node:
-    #         xyz = self.node_xyz(node)
-    #         key = self.virtual_nodes.setdefault(node, self.node_count())
-    #         self.nodes[key] = {'x': xyz[0], 'y': xyz[1], 'z': xyz[2],
-    #                            'ex': [1, 0, 0], 'ey': [0, 1, 0], 'ez': [0, 0, 1], 'virtual': True}
-    #         if 'virtual_nodes' in self.sets:
-    #             self.sets['virtual_nodes']['selection'].append(key)
-    #         else:
-    #             self.sets['virtual_nodes'] = {'type': 'node', 'selection': [key], 'explode': False}
-    #         nodes = [node, key]
-    #     else:
-    #         nodes = [node]
-
-    #     func_dict = {
-    #         'SpringElement': SpringElement,
-    #     }
-
-    #     ekey = self.element_count()
-    #     element = func_dict[type]()
-    #     element.nodes = nodes
-    #     element.number = ekey
-    #     self.elements[ekey] = element
-    #     return ekey
-
-    # def add_virtual_element(self, nodes, type, thermal=False, axes={}):
-    #     """Adds a virtual element to structure.elements and to element set 'virtual_elements'.
-
-    #     Parameters
-    #     ----------
-    #     nodes : list
-    #         Nodes the element is connected to.
-    #     type : str
-    #         Element type: 'HexahedronElement', 'BeamElement, 'TrussElement' etc.
-    #     thermal : bool
-    #         Thermal properties on or off.
-    #     axes : dict
-    #         The local element axes 'ex', 'ey' and 'ez'.
-
-    #     Returns
-    #     -------
-    #     int
-    #         Key of the added virtual element.
-
-    #     Notes
-    #     -----
-    #     - Virtual elements are numbered sequentially starting from 0.
-
-    #     """
-    #     ekey = self.check_element_exists(nodes, virtual=True)
-
-    #     if ekey is None:
-    #         ekey            = self.element_count()
-    #         element         = func_dict[type]()
-    #         element.axes    = axes
-    #         element.nodes   = nodes
-    #         element.number  = ekey
-    #         element.thermal = thermal
-
-    #         self.virtual_elements[ekey] = element
-    #         self.add_element_to_element_index(ekey, nodes, virtual=True)
-
-    #         if 'virtual_elements' in self.sets:
-    #             self.sets['virtual_elements']['selection'].append(ekey)
-    #         else:
-    #             self.sets['virtual_elements'] = {'type': 'virtual_element', 'selection': [ekey],
-    #                                              'index': len(self.sets)}
-    #     return ekey
-
-    # def assign_element_property(self, element_property):
-    #     """Assign the ElementProperties object name to associated Elements.
-
-    #     Parameters
-    #     ----------
-    #     element_property : obj
-    #         ElementProperties object.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-    #     if element_property.elset:
-    #         elements = self.sets[element_property.elset].selection
-    #     else:
-    #         elements = element_property.elements
-
-    #     for element in elements:
-    #         self.elements[element].element_property = element_property.name
-
-    # # ==============================================================================
-    # # Nodes and Elements
-    # # ==============================================================================
-
-    # def add_nodes_elements_from_mesh(self, mesh, element_type, thermal=False, elset=None):
-    #     """Adds the nodes and faces of a Mesh to the Structure object.
-
-    #     Parameters
-    #     ----------
-    #     mesh : obj
-    #         Mesh datastructure object.
-    #     element_type : str
-    #         Element type: 'ShellElement', 'MembraneElement' etc.
-    #     thermal : bool
-    #         Thermal properties on or off.
-    #     elset : str
-    #         Name of element set to create.
-
-    #     Returns
-    #     -------
-    #     list
-    #         Keys of the created elements.
-    #     """
-    #     ekeys = super(Structure, self).add_nodes_elements_from_mesh(mesh, element_type, thermal)
-    #     if elset:
-    #         self.add_set(name=elset, type='element', selection=ekeys)
-    #     return ekeys
-
-    # def add_nodes_elements_from_network(self, network, element_type, thermal=False, axes={}, elset=None):
-    #     """Adds the nodes and edges of a Network to the Structure object.
-
-    #     Parameters
-    #     ----------
-    #     network : obj
-    #         Network datastructure object.
-    #     element_type : str
-    #         Element type: 'BeamElement', 'TrussElement' etc.
-    #     thermal : bool
-    #         Thermal properties on or off.
-    #     axes : dict
-    #         The local element axes 'ex', 'ey' and 'ez' for all elements.
-    #     elset : str
-    #         Name of element set to create.
-
-    #     Returns
-    #     -------
-    #     list
-    #         Keys of the created elements.
-
-    #     """
-    #     ekeys = super(Structure, self).add_nodes_elements_from_network(network, element_type, thermal, axes)
-    #     if elset:
-    #         self.add_set(name=elset, type='element', selection=ekeys)
-    #     return ekeys
-
-    # def add_nodes_elements_from_volmesh(self, volmesh, element_type='SolidElement', thermal=False, axes={}, elset=None):
-    #     """Adds the nodes and cells of a VolMesh to the Structure object.
-
-    #     Parameters
-    #     ----------
-    #     volmesh : obj
-    #         VolMesh datastructure object.
-    #     element_type : str
-    #         Element type: 'SolidElement' or ....
-    #     thermal : bool
-    #         Thermal properties on or off.
-    #     axes : dict
-    #         The local element axes 'ex', 'ey' and 'ez' for all elements.
-    #     elset : str
-    #         Name of element set to create.
-
-    #     Returns
-    #     -------
-    #     list
-    #         Keys of the created elements.
-
-    #     """
-    #     ekeys = super(Structure, self).add_nodes_elements_from_volmesh(volmesh, element_type, thermal, axes)
-    #     if elset:
-    #         self.add_set(name=elset, type='element', selection=ekeys)
-    #     return ekeys
-
-    # # ==============================================================================
-    # # Sets
-    # # ==============================================================================
-
-    # def add_set(self, name, type, selection):
-    #     """Adds a node, element or surface set to structure.sets.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         Name of the Set.
-    #     type : str
-    #         'node', 'element', 'surface_node', surface_element'.
-    #     selection : list, dict
-    #         The integer keys of the nodes, elements or the element numbers and sides.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-    #     if isinstance(selection, int):
-    #         selection = [selection]
-    #     self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
     def write_heading(self, job_name, f):
 
         line="""** {}
@@ -313,11 +92,11 @@ class Structure(StructureBase):
         if save:
             self.save_to_cfea()
 
-        if isinstance(fields, str):
-            fields = [fields]
+        # if isinstance(fields, str):
+        #     fields = [fields]
 
-        if 'u' not in fields:
-            fields.append('u')
+        # if 'u' not in fields:
+        #     fields.append('u')
 
 
 
@@ -352,22 +131,18 @@ class Structure(StructureBase):
         self.assembly.write_keyword_end(f)
 
         # Write materials
-        Writer.write_keyword('materials')
-        for material in self.materials:
+        for material in self.assembly.materials:
             material.write_data_line(f)
 
-        # Write interaction properties
-        Writer.write_keyword('interaction properties')
-        for interaction_property in self.interaction_properties:
-            interaction_property.write_data_line(f)
-
-        # Write interactions
-        Writer.write_keyword('interactions')
-        for interaction in self.interactions:
-            interaction.write_data_line(f)
+        # # Write interaction properties
+        # for interaction_property in self.interaction_properties:
+        #     interaction_property.write_data_line(f)
+        #
+        # # Write interactions
+        # for interaction in self.interactions:
+        #     interaction.write_data_line(f)
 
         # Write boundary conditions
-        Writer.write_keyword('bc')
         for bc in self.bcs:
             bc.write_data_line(f)
 
@@ -375,11 +150,9 @@ class Structure(StructureBase):
         for step in self.steps:
             step.write_header(f)
             # Write loads
-            Writer.write_keyword_start('loads')
             for load in self.loads[step]:
                 load.write_data_line(f)
             # Write Output Reequests
-            Writer.write_headers('outputs')
             for output in self.outputs[step]:
                 output.write_data_line(f)
             step.write_keyword_end(f)

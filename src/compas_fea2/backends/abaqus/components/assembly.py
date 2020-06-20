@@ -2,6 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+__all__ = [
+    'Assembly',
+    'Instance',
+]
+
 class Assembly():
     """Initialises the Assembly object.
 
@@ -14,6 +19,8 @@ class Assembly():
         self.nsets      = nsets
         self.elsets     = elsets
         self.surfaces   = surfaces
+
+        self.parts_by_material = self._get_materials()
 
     def __str__(self):
 
@@ -30,6 +37,13 @@ class Assembly():
     def __repr__(self):
 
         return '{0}({1})'.format(self.__name__, self.name)
+
+    def _get_materials(self):
+        materials = []
+        for i in self.instances:
+            for mat in i.part.elements_by_material.keys():
+                materials.append(mat)
+        return list(set(materials))
 
     def write_keyword_start(self, f):
         line = """
@@ -108,6 +122,7 @@ if __name__ == "__main__":
     my_instance = Instance(name='test_instance', part=my_part)
     my_assembly = Assembly(name='test', instances=[my_instance])
 
+    print(my_assembly.parts_by_material)
     # f=open('/home/fr/Downloads/test_input.inp','w')
     f=open('C:/temp/test_input.inp','w')
     my_part.write_keyword_start(f)

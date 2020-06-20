@@ -66,5 +66,5 @@ class Node(NodeBase):
 
     def write_data(self, f):
         x, y, z = self.xyz
-        line    = '{0}, {1:.3f}, {2:.3f}, {3:.3f}\n'.format(self.key + 1, x, y, z)
+        line    = ' {0},    {1:.3f},    {2:.3f},    {3:.3f}\n'.format(self.key, x, y, z)
         f.write(line)

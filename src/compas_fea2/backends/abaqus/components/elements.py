@@ -242,9 +242,7 @@ class SolidElement(SolidElementBase):
         nkeys = []
         for n in self.connectivity:
             nkeys.append(str(n.key))
-
         line    = '{0}, {1}\n'.format(self.key, ','.join(nkeys))
-
         f.write(line)
 
 

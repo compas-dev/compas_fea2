@@ -243,17 +243,16 @@ class ShellSection(ShellSectionBase):
         number of integration points. 5 by default.
 
     """
+
     def __init__(self, name, t, material, int_points=5):
         super(ShellSection, self).__init__(name, t, material)
         self.__doc__ += ShellSection.__doc__
         self.int_points = int_points
 
     def write_data(self, elset, f):
-
         line="""** Section: {}
 *Shell Section, elset={}, material={}
 {}, {}\n""".format(self.name, elset, self.material.name, self.t, self.int_points)
-
         f.write(line)
 
 class MembraneSection(MembraneSectionBase):

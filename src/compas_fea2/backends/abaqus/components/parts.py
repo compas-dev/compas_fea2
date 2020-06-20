@@ -56,6 +56,9 @@ class Part():
             elset_elements.setdefault(value[2], set()).add(key)
             section_elsets.setdefault(value[1], set()).add(value[2])
 
+
+        # section_elements = sorted(section_elements, key=lambda x: x.key, reverse=True)
+
         return type_elements, section_elements, elset_elements, section_elsets
 
 
@@ -76,6 +79,7 @@ class Part():
         for eltype in self.elements_by_type.keys():
             for elset in self.elements_by_elset.keys():
                 elements = self.elements_by_elset[elset].intersection(self.elements_by_type[eltype])
+                elements = sorted(elements, key=lambda x: x.key, reverse=False)
                 if elements:
                     elements = list(elements)
                     elements[0].write_keyword(f)
@@ -112,19 +116,19 @@ if __name__ == "__main__":
 
     my_nodes = []
     for k in range(5):
-        my_nodes.append(Node(k,[1,2,3]))
-    print(sorted(my_nodes, key=lambda x: x.key, reverse=False))
+        my_nodes.append(Node(k,[1+k,2-k,3]))
     material_one = Concrete('my_mat',1,2,3,4)
     material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
     section_A = SolidSection(name='section_A', material=material_one)
     section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
-    el_one = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
-    el_two = SolidElement(key=2, connectivity=my_nodes[:4], section=section_A)
-    el_three = BeamElement(key=3, connectivity=[2,3], section=section_B, elset='group_2')
-    el_4 = SolidElement(key=4, connectivity=my_nodes[:4], section=section_A)
+    el_one = SolidElement(key=0, connectivity=my_nodes[:4], section=section_A)
+    el_two = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
+    el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
+    el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
-    f=open('/home/fr/Downloads/test_input.inp','w')
+    # f=open('/home/fr/Downloads/test_input.inp','w')
+    f=open('C:/temp/test_input.inp','w')
     my_part.write_keyword_start(f)
     my_part.write_data(f)
     my_part.write_keyword_end(f)

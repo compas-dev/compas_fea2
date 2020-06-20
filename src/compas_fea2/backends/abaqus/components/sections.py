@@ -68,7 +68,7 @@ class MassSection(SectionBase):
     def write_data(self, elset, f):
         line="""** Section: {}
 *Mass, elset={}
-{}""".format(self.name, elset, self.mass)
+{}\n""".format(self.name, elset, self.mass)
         f.write(line)
 
 # ==============================================================================
@@ -88,7 +88,7 @@ class AngleSection(AngleSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class BoxSection(BoxSectionBase):
@@ -104,7 +104,7 @@ class BoxSection(BoxSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class CircularSection(CircularSectionBase):
@@ -120,7 +120,7 @@ class CircularSection(CircularSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class GeneralSection(GeneralSectionBase):
@@ -136,7 +136,7 @@ class GeneralSection(GeneralSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class ISection(ISectionBase):
@@ -152,7 +152,7 @@ class ISection(ISectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class PipeSection(PipeSectionBase):
@@ -168,7 +168,7 @@ class PipeSection(PipeSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class RectangularSection(RectangularSectionBase):
@@ -184,7 +184,7 @@ class RectangularSection(RectangularSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class TrapezoidalSection(TrapezoidalSectionBase):
@@ -200,7 +200,7 @@ class TrapezoidalSection(TrapezoidalSectionBase):
                 properties.append(str(self.geometry[l]))
         line="""** Section: {}
 *Beam Section, elset={}, material={}
-{}""".format(self.name, elset, self.material.name, ','.join(properties))
+{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
         f.write(line)
 
 class TrussSection(TrussSectionBase):
@@ -211,7 +211,7 @@ class TrussSection(TrussSectionBase):
     def write_data(self, elset, f):
         line="""** Section: {}
 *Solid Section, elset={}, material={}
-{},""".format(self.name, elset, self.material.name, self.geometry['A'])
+{},\n""".format(self.name, elset, self.material.name, self.geometry['A'])
         f.write(line)
 
 class StrutSection(StrutSectionBase):
@@ -252,7 +252,7 @@ class ShellSection(ShellSectionBase):
 
         line="""** Section: {}
 *Shell Section, elset={}, material={}
-{}, {}""".format(self.name, elset, self.material.name, self.t, self.int_points)
+{}, {}\n""".format(self.name, elset, self.material.name, self.t, self.int_points)
 
         f.write(line)
 
@@ -265,7 +265,7 @@ class MembraneSection(MembraneSectionBase):
 
         line="""** Section: {}
 *Membrane Section, elset={}, material={}
-{},""".format(self.name, elset, self.material.name, self.t)
+{},\n""".format(self.name, elset, self.material.name, self.t)
 
         f.write(line)
 # ==============================================================================
@@ -281,7 +281,7 @@ class SolidSection(SolidSectionBase):
         print(self.name)
         line="""** Section: {}
 *Solid Section, elset={}, material={}
-,""".format(self.name, elset, self.material.name)
+,\n""".format(self.name, elset, self.material.name)
         f.write(line)
 
 

@@ -28,7 +28,7 @@ class ElementBase(object):
     key : int
         Number of the element.
     connectivity : list
-        Node keys the element connects to.
+        Ordered Nodes objects the element connects to.
     section : Section Object
         Section Object assigned to the element.
     thermal : bool
@@ -72,9 +72,10 @@ class ElementBase(object):
 #     None
 #     """
 
-#     def __init__(self):
-#         super(MassElementBase, self).__init__()
-#         self.__name__ = 'MassElement'
+#     def __init__(self,key, connectivity, section, thermal=None):
+#         super(MassElementBase, self).__init__(key, connectivity, section, thermal)
+#         self.__name__ = 'BeamElement'
+#         self.etype = 'beam'
 
 
 # ==============================================================================

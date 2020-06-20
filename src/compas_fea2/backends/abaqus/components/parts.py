@@ -6,11 +6,11 @@ class Part():
     """Initialises the Part object.
 
     """
-    def __init__(self, name, nodes, elements, nsets=None, elsets=None):
+    def __init__(self, name, nodes, elements, nsets=[], elsets=[]):
         self.__name__ = 'Part'
         self.name = name
-        self.nodes = nodes  # list with the Node Objects
-        self.elements = elements  # list of Element Objects
+        self.nodes = self._sort(nodes)
+        self.elements = self._sort(elements)
         self.nsets = nsets
         self.elsets = elsets
 
@@ -39,6 +39,8 @@ class Part():
     # ==============================================================================
     # Constructor methods
     # ==============================================================================
+    def _sort(self, attr):
+        return sorted(attr, key=lambda x: x.key, reverse=False)
 
     def _group_elements(self):  #TODO this can be done better...
         el_dict={}
@@ -62,7 +64,7 @@ class Part():
     # ==============================================================================
 
     def write_keyword_start(self, f):
-        line = "*Part, name={}".format(self.name)
+        line = "*Part, name={}\n".format(self.name)
         f.write(line)
 
     def write_data(self, f):
@@ -89,7 +91,7 @@ class Part():
             elset.write_data(f)
         # Write sections ()
         for section in self.elements_by_section.keys():
-            for elset in elsets_by_section[section]:
+            for elset in self.elsets_by_section[section]:
                 section.write_data(elset, f)
 
     def write_keyword_end(self, f):
@@ -111,18 +113,21 @@ if __name__ == "__main__":
     my_nodes = []
     for k in range(5):
         my_nodes.append(Node(k,[1,2,3]))
+    print(sorted(my_nodes, key=lambda x: x.key, reverse=False))
     material_one = Concrete('my_mat',1,2,3,4)
     material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
     section_A = SolidSection(name='section_A', material=material_one)
     section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
-    el_one = SolidElement(key=1, connectivity=[2,3,4,5], section=section_A, elset='group_2')
-    el_two = SolidElement(key=2, connectivity=[2,3,4,5], section=section_A)
+    el_one = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
+    el_two = SolidElement(key=2, connectivity=my_nodes[:4], section=section_A)
     el_three = BeamElement(key=3, connectivity=[2,3], section=section_B, elset='group_2')
-    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three])
+    el_4 = SolidElement(key=4, connectivity=my_nodes[:4], section=section_A)
+    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
-
-    f=open('C:/temp/test_input.inp','w')
+    f=open('/home/fr/Downloads/test_input.inp','w')
+    my_part.write_keyword_start(f)
     my_part.write_data(f)
+    my_part.write_keyword_end(f)
     f.close()
 
     # # print(type(my_part.elements_by_section[section_A]))

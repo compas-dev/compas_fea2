@@ -96,11 +96,11 @@ class BeamElement(BeamElementBase):
         self.eltype = 'B31'
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}".format(self.eltype, self.elset)
+        line = "*Element, type={}, elset={}\n".format(self.eltype, self.elset)
         f.write(line)
 
     def write_data(self, f):
-        f.write('{0}, {1},{2}'.format(self.key, self.connectivity[0], self.connectivity[1]))
+        f.write('{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1]))
 
 
 # class SpringElement(SpringElementBase):
@@ -235,14 +235,15 @@ class SolidElement(SolidElementBase):
             self.eltype = eltype
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}".format(self.eltype, self.elset)
+        line = "*Element, type={}, elset={}\n".format(self.eltype, self.elset)
         f.write(line)
 
     def write_data(self, f):
-        x, y, z = self.xyz #TODO wrong!
-        nkeys   = [str(i + 1) for i in self.nodes_keys]
+        nkeys = []
+        for n in self.connectivity:
+            nkeys.append(str(n.key))
 
-        line    = '{0}, {1}'.format(self.key, ','.join(nkeys))
+        line    = '{0}, {1}\n'.format(self.key, ','.join(nkeys))
 
         f.write(line)
 

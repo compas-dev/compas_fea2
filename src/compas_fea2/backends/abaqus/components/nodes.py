@@ -61,14 +61,10 @@ class Node(NodeBase):
         super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
 
     def write_keyword(self, f):
-        line = '*Node'
+        line = '*Node\n'
         f.write(line)
 
     def write_data(self, f):
-        prefix  = ''
-        spacer  = ', '
         x, y, z = self.xyz
-
-        line    = '{0}{1}{2}{3:.3f}{4:.3f}{2}{5:.3f}'.format(prefix, self.key + 1, spacer, x, y, z)
-
+        line    = '{0}, {1:.3f}, {2:.3f}, {3:.3f}\n'.format(self.key + 1, x, y, z)
         f.write(line)

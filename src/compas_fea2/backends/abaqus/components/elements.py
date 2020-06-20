@@ -22,10 +22,7 @@ from compas_fea2.backends._core import HexahedronElementBase
 
 # Francesco Ranaudo (github.com/franaudo)
 
-# TODO add the property class here
-
 __all__ = [
-    'Element',
     'MassElement',
     'BeamElement',
     'SpringElement',
@@ -43,60 +40,39 @@ __all__ = [
 
 
 # ==============================================================================
-# General
-# ==============================================================================
-
-class Element(ElementBase):
-    """Initialises base Element object.
-
-    Parameters
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-
-    Attributes
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-    element_property : str
-        Element property name
-
-    """
-    def __init__(self, key, eltype, nodes_keys, section, elset=None, thermal=None, axes={}):
-        super(Element, self).__init__(key, eltype, nodes_keys, section, thermal=None, axes={})
-        if not elset:
-            self.elset        = self.section.name
-        else:
-            self.elset        = elset
-
-
-# ==============================================================================
 # 0D elements
 # ==============================================================================
 
 class MassElement(MassElementBase):
     """A 0D element for concentrated point mass.
 
-    Parameters
+    Attributes
     ----------
-    None
-
+    key : int
+        Number of the element.
+    elset : str
+        Name of the automatically generated element set where the masses is applied.
+    mass : float
+        Concentrated mass (mass of each point of the set).
     """
-    pass
-    # def __init__(self):
-    #     super(MassElement, self).__init__()
+
+    def __init__(self, key, elset, mass):
+        self.__name__         = 'Element'
+        self.key              = key
+        self.elset            = elset
+        self.etype            = 'MASS'
+
+
+    def __str__(self):
+        print('\n')
+        print('compas_fea {0} object'.format(self.__name__))
+        print('-' * (len(self.__name__) + 18))
+        for attr in ['key','etype', 'elset', 'mass']:
+            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+        return ''
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.key)
 
 
 # ==============================================================================
@@ -111,22 +87,34 @@ class BeamElement(BeamElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(BeamElement, self).__init__()
+
+    def __init__(self, key, nodes_keys, section, elset=None, thermal=None):
+        super(BeamElement, self).__init__(key, nodes_keys, section, thermal=None)
+        if not elset:
+            self.elset = self.section.name
+        else:
+            self.elset
+        self.etype = 'B31'
+
+    def write_keyword(self, f):
+        line = "*Element, type={}, elset={}".format(self.etype, self.elset)
+        f.write(line)
+
+    def write_data(self, f):
+        f.write('{0}, {1},{2}'.format(self.key, self.connectivity[0], self.connectivity[1]))
 
 
-class SpringElement(SpringElementBase):
-    """A 1D spring element.
+# class SpringElement(SpringElementBase):
+#     """A 1D spring element.
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(SpringElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(SpringElement, self).__init__()
 
 
 class TrussElement(TrussElementBase):
@@ -137,35 +125,39 @@ class TrussElement(TrussElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(TrussElement, self).__init__()
+    def __init__(self, key, connectivity, section, elset=None, thermal=None):
+        super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
+        if not elset:
+            self.elset = self.section.name
+        else:
+            self.elset
+        self.etype = 'T3D2'
 
 
-class StrutElement(StrutElementBase):
-    """A truss element that resists axial compressive loads.
+# class StrutElement(StrutElementBase):
+#     """A truss element that resists axial compressive loads.
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(StrutElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(StrutElement, self).__init__()
 
 
-class TieElement(TieElementBase):
-    """A truss element that resists axial tensile loads.
+# class TieElement(TieElementBase):
+#     """A truss element that resists axial tensile loads.
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(TieElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(TieElement, self).__init__()
 
 
 # ==============================================================================
@@ -183,19 +175,32 @@ class ShellElement(ShellElementBase):
     pass
     # def __init__(self):
     #     super(ShellElement, self).__init__()
+    def __init__(self, key, connectivity, section, elset=None, thermal=None):
+        super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
+        if not elset:
+            self.elset = self.section.name
+        else:
+            self.elset
+
+        if len(self.connectivity) == 3:
+            self.etype = 'S3'
+        elif len(self.connectivity) == 4:
+            self.etype = 'S4'
+        else:
+            NotImplemented
 
 
-class FaceElement(FaceElementBase):
-    """A 2D Face element used for special loading cases.
+# class FaceElement(FaceElementBase):
+#     """A 2D Face element used for special loading cases.
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(FaceElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(FaceElement, self).__init__()
 
 
 class MembraneElement(MembraneElementBase):
@@ -216,20 +221,22 @@ class MembraneElement(MembraneElementBase):
 # ==============================================================================
 
 class SolidElement(SolidElementBase):
-    """A 3D element that resists axial, shear, bending and torsion.
 
-    Parameters
-    ----------
-    None
+    def __init__(self, key, connectivity, section, etype=None, elset=None, thermal=None):
+        super(SolidElement, self).__init__(key, connectivity, section, thermal=None)
+        if not elset:
+            self.elset = self.section.name
+        else:
+            self.elset
 
-    """
-    def __init__(self):
-        super(SolidElement, self).__init__()
+        if not etype:
+            etypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
+            self.etype = etypes[len(self.connectivity)]
+        else:
+            self.etype = etype
 
     def write_keyword(self, f):
-        etypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
-        line = "*Element, type={}, elset={}".format(etypes[len(self.nodes)], self.elset)
-
+        line = "*Element, type={}, elset={}".format(self.etype, self.elset)
         f.write(line)
 
     def write_data(self, f):
@@ -244,40 +251,40 @@ class SolidElement(SolidElementBase):
 
 
 
-class PentahedronElement(PentahedronElementBase):
-    """A Solid element with 5 faces (extruded triangle).
+# class PentahedronElement(PentahedronElementBase):
+#     """A Solid element with 5 faces (extruded triangle).
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(PentahedronElement, self).__init__()
-
-
-class TetrahedronElement(TetrahedronElementBase):
-    """A Solid element with 4 faces.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(TetrahedronElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(PentahedronElement, self).__init__()
 
 
-class HexahedronElement(HexahedronElementBase):
-    """A Solid cuboid element with 6 faces (extruded rectangle).
+# class TetrahedronElement(TetrahedronElementBase):
+#     """A Solid element with 4 faces.
 
-    Parameters
-    ----------
-    None
+#     Parameters
+#     ----------
+#     None
 
-    """
-    pass
-    # def __init__(self):
-    #     super(HexahedronElement, self).__init__()
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(TetrahedronElement, self).__init__()
+
+
+# class HexahedronElement(HexahedronElementBase):
+#     """A Solid cuboid element with 6 faces (extruded rectangle).
+
+#     Parameters
+#     ----------
+#     None
+
+#     """
+#     pass
+#     # def __init__(self):
+#     #     super(HexahedronElement, self).__init__()

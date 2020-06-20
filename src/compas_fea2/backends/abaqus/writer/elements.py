@@ -9,7 +9,7 @@ from math import pi
 
 
 __all__ = [
-    'Nodes',
+    # 'Nodes',
     'Elements',
 ]
 

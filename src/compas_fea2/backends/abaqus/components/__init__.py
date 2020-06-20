@@ -167,6 +167,7 @@ from __future__ import print_function
 import os
 
 # additional software-based classes
+from .nodes import *
 from .assembly import *
 from .parts import *
 from .bcs import *

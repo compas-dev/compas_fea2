@@ -40,7 +40,7 @@ __all__ = [
 
 class ElasticIsotropic(ElasticIsotropicBase):
 
-    def __init__(self, name, E, v, p, tension, compression):
+    def __init__(self, name, E, v, p, tension=None, compression=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
 
     def write_data(self, f):

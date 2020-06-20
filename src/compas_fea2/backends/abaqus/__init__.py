@@ -15,9 +15,9 @@ abaqus
 
 """
 
-from .components import *
-from .job import *
-from .writer import *
-from .structure import *
+# from .components import *
+# from .job import *
+# from .writer import *
+# from .structure import *
 
 __all__ = [name for name in dir() if not name.startswith('_')]

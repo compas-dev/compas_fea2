@@ -5,7 +5,6 @@ from __future__ import print_function
 
 __all__ = [
     'ElementBase',
-    'MassElementBase',
     'BeamElementBase',
     'SpringElementBase',
     'TrussElementBase',
@@ -13,7 +12,7 @@ __all__ = [
     'TieElementBase',
     'ShellElementBase',
     'MembraneElementBase',
-    'FaceElementBase',
+    # 'FaceElementBase',
     'SolidElementBase',
     'PentahedronElementBase',
     'TetrahedronElementBase',
@@ -249,5 +248,4 @@ class HexahedronElementBase(SolidElementBase):
 
 if __name__ == "__main__":
     my_element = BeamElementBase(1, [0,1], 'my_section')
-    # my_mass = MassElementBase()
     print(my_element)

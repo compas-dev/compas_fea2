@@ -5,7 +5,6 @@ from __future__ import print_function
 
 from compas_fea2.backends._core import NodeBase
 from compas_fea2.backends._core import ElementBase
-from compas_fea2.backends._core import MassElementBase
 from compas_fea2.backends._core import BeamElementBase
 from compas_fea2.backends._core import SpringElementBase
 from compas_fea2.backends._core import TrussElementBase
@@ -13,11 +12,11 @@ from compas_fea2.backends._core import StrutElementBase
 from compas_fea2.backends._core import TieElementBase
 from compas_fea2.backends._core import ShellElementBase
 from compas_fea2.backends._core import MembraneElementBase
-from compas_fea2.backends._core import FaceElementBase
+# from compas_fea2.backends._core import FaceElementBase
 from compas_fea2.backends._core import SolidElementBase
-from compas_fea2.backends._core import PentahedronElementBase
-from compas_fea2.backends._core import TetrahedronElementBase
-from compas_fea2.backends._core import HexahedronElementBase
+# from compas_fea2.backends._core import PentahedronElementBase
+# from compas_fea2.backends._core import TetrahedronElementBase
+# from compas_fea2.backends._core import HexahedronElementBase
 
 
 # Francesco Ranaudo (github.com/franaudo)
@@ -25,17 +24,17 @@ from compas_fea2.backends._core import HexahedronElementBase
 __all__ = [
     'MassElement',
     'BeamElement',
-    'SpringElement',
+    # 'SpringElement',
     'TrussElement',
-    'StrutElement',
-    'TieElement',
+    # 'StrutElement',
+    # 'TieElement',
     'ShellElement',
     'MembraneElement',
-    'FaceElement',
+    # 'FaceElement',
     'SolidElement',
-    'PentahedronElement',
-    'TetrahedronElement',
-    'HexahedronElement',
+    # 'PentahedronElement',
+    # 'TetrahedronElement',
+    # 'HexahedronElement',
 ]
 
 
@@ -43,7 +42,7 @@ __all__ = [
 # 0D elements
 # ==============================================================================
 
-class MassElement(MassElementBase):
+class MassElement():
     """A 0D element for concentrated point mass.
 
     Attributes
@@ -60,14 +59,14 @@ class MassElement(MassElementBase):
         self.__name__         = 'Element'
         self.key              = key
         self.elset            = elset
-        self.etype            = 'MASS'
+        self.eltype            = 'MASS'
 
 
     def __str__(self):
         print('\n')
         print('compas_fea {0} object'.format(self.__name__))
         print('-' * (len(self.__name__) + 18))
-        for attr in ['key','etype', 'elset', 'mass']:
+        for attr in ['key','eltype', 'elset', 'mass']:
             print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
         return ''
 
@@ -88,16 +87,16 @@ class BeamElement(BeamElementBase):
 
     """
 
-    def __init__(self, key, nodes_keys, section, elset=None, thermal=None):
-        super(BeamElement, self).__init__(key, nodes_keys, section, thermal=None)
+    def __init__(self, key, connectivity, section, elset=None, thermal=None):
+        super(BeamElement, self).__init__(key, connectivity, section, thermal=None)
         if not elset:
             self.elset = self.section.name
         else:
-            self.elset
-        self.etype = 'B31'
+            self.elset = elset
+        self.eltype = 'B31'
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}".format(self.etype, self.elset)
+        line = "*Element, type={}, elset={}".format(self.eltype, self.elset)
         f.write(line)
 
     def write_data(self, f):
@@ -130,8 +129,8 @@ class TrussElement(TrussElementBase):
         if not elset:
             self.elset = self.section.name
         else:
-            self.elset
-        self.etype = 'T3D2'
+            self.elset = elset
+        self.eltype = 'T3D2'
 
 
 # class StrutElement(StrutElementBase):
@@ -180,12 +179,12 @@ class ShellElement(ShellElementBase):
         if not elset:
             self.elset = self.section.name
         else:
-            self.elset
+            self.elset = elset
 
         if len(self.connectivity) == 3:
-            self.etype = 'S3'
+            self.eltype = 'S3'
         elif len(self.connectivity) == 4:
-            self.etype = 'S4'
+            self.eltype = 'S4'
         else:
             NotImplemented
 
@@ -222,26 +221,24 @@ class MembraneElement(MembraneElementBase):
 
 class SolidElement(SolidElementBase):
 
-    def __init__(self, key, connectivity, section, etype=None, elset=None, thermal=None):
+    def __init__(self, key, connectivity, section, eltype=None, elset=None, thermal=None):
         super(SolidElement, self).__init__(key, connectivity, section, thermal=None)
         if not elset:
             self.elset = self.section.name
         else:
-            self.elset
+            self.elset = elset
 
-        if not etype:
-            etypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
-            self.etype = etypes[len(self.connectivity)]
+        if not eltype:
+            eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
+            self.eltype = eltypes[len(self.connectivity)]
         else:
-            self.etype = etype
+            self.eltype = eltype
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}".format(self.etype, self.elset)
+        line = "*Element, type={}, elset={}".format(self.eltype, self.elset)
         f.write(line)
 
     def write_data(self, f):
-        prefix  = ''
-        spacer  = self.spacer
         x, y, z = self.xyz
         nkeys   = [str(i + 1) for i in self.nodes_keys]
 

@@ -39,12 +39,12 @@ ETYPES = {
     'TieElement':         TieElementBase,
     'ShellElement':       ShellElementBase,
     'MembraneElement':    MembraneElementBase,
-    'FaceElement':        FaceElementBase,
+    # 'FaceElement':        FaceElementBase,
     'SolidElement':       SolidElementBase,
     'TetrahedronElement': TetrahedronElementBase,
     'PentahedronElement': PentahedronElementBase,
     'HexahedronElement':  HexahedronElementBase,
-    'MassElement':        MassElementBase
+    # 'MassElement':        MassElementBase
 }
 
 

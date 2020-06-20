@@ -21,14 +21,13 @@ from compas_fea2.backends._core import TrussSectionBase
 from compas_fea2.backends._core import StrutSectionBase
 from compas_fea2.backends._core import TieSectionBase
 from compas_fea2.backends._core import SpringSectionBase
-from compas_fea2.backends._core import MassSectionBase
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
 
 __all__ = [
-    'Section',
+    'MassSection',
     'AngleSection',
     'BoxSection',
     'CircularSection',
@@ -44,27 +43,33 @@ __all__ = [
     'StrutSection',
     'TieSection',
     'SpringSection',
-    'MassSection'
 ]
 
 # ==============================================================================
 # 0D
 # ==============================================================================
 
-class MassSection(MassSectionBase):
-
-    """ Section for mass elements.
+class MassSection(SectionBase):
+    """Section for mass elements.
 
     Parameters
     ----------
     name : str
         Section name.
-
+    mass : float
+        Point mass value.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, mass):
         super(MassSection, self).__init__(name)
+        self.__name__ = 'MassSection'
+        self.mass = mass
 
+    def write_data(self, elset, f):
+        line="""** Section: {}
+*Mass, elset={}
+{}""".format(self.name, elset, self.mass)
+        f.write(line)
 
 # ==============================================================================
 # 1D
@@ -72,253 +77,156 @@ class MassSection(MassSectionBase):
 
 class AngleSection(AngleSectionBase):
 
-    """ Uniform thickness angle cross-section for beam elements.
+    def __init__(self, name, b, h, t, material):
+        super(AngleSection, self).__init__(name, b, h, t, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    t : float
-        Thickness.
-
-    Notes
-    -----
-    - Ixy not yet calculated.
-
-    """
-
-    def __init__(self, name, b, h, t):
-        super(AngleSection, self).__init__(name, b, h, t)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class BoxSection(BoxSectionBase):
 
-    """ Hollow rectangular box cross-section for beam elements.
+    def __init__(self, name, b, h, tw, tf, material):
+        super(BoxSection, self).__init__(name, b, h, tw, tf, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
-
-    """
-
-    def __init__(self, name, b, h, tw, tf):
-        super(BoxSection, self).__init__(name, b, h, tw, tf)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class CircularSection(CircularSectionBase):
 
-    """ Solid circular cross-section for beam elements.
+    def __init__(self, name, r, material):
+        super(CircularSection, self).__init__(name, r, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Radius.
-
-    """
-
-    def __init__(self, name, r):
-        super(CircularSection, self).__init__(name, r)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class GeneralSection(GeneralSectionBase):
 
-    """ General cross-section for beam elements.
+    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
+        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-    Ixx : float
-        Second moment of area about axis x-x.
-    Ixy : float
-        Cross moment of area.
-    Iyy : float
-        Second moment of area about axis y-y.
-    J : float
-        Torsional rigidity.
-    g0 : float
-        Sectorial moment.
-    gw : float
-        Warping constant.
-
-    """
-
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw):
-        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class ISection(ISectionBase):
 
-    """ Equal flanged I-section for beam elements.
+    def __init__(self, name, b, h, tw, tf, material):
+        super(ISection, self).__init__(name, b, h, tw, tf, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
-
-    """
-
-    def __init__(self, name, b, h, tw, tf):
-        super(ISection, self).__init__(name, b, h, tw, tf)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class PipeSection(PipeSectionBase):
 
-    """ Hollow circular cross-section for beam elements.
+    def __init__(self, name, r, t, material):
+        super(PipeSection, self).__init__(name, r, t, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Outer radius.
-    t : float
-        Wall thickness.
-
-    """
-
-    def __init__(self, name, r, t):
-        super(PipeSection, self).__init__(name, r, t)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class RectangularSection(RectangularSectionBase):
 
-    """ Solid rectangular cross-section for beam elements.
+    def __init__(self, name, b, h, material):
+        super(RectangularSection, self).__init__(name, b, h, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-
-    """
-
-    def __init__(self, name, b, h):
-        super(RectangularSection, self).__init__(name, b, h)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class TrapezoidalSection(TrapezoidalSectionBase):
 
-    """ Solid trapezoidal cross-section for beam elements.
+    def __init__(self, name, b1, b2, h, material):
+        super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b1 : float
-        Width at bottom.
-    b2 : float
-        Width at top.
-    h : float
-        Height.
-
-    Notes
-    -----
-    - J not yet calculated.
-
-    """
-
-    def __init__(self, name, b1, b2, h):
-        super(TrapezoidalSection, self).__init__( name, b1, b2, h)
-
+    def write_data(self, elset, f):
+        labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
+        properties = []
+        for l in labels:
+            if l in self.geometry.keys():
+                properties.append(str(self.geometry[l]))
+        line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}""".format(self.name, elset, self.material.name, ','.join(properties))
+        f.write(line)
 
 class TrussSection(TrussSectionBase):
 
-    def __init__(self, name, A):
-        super(TrussSection, self).__init__(name, A)
+    def __init__(self, name, A, material):
+        super(TrussSection, self).__init__(name, A, material)
 
     def write_data(self, elset, f):
-
         line="""** Section: {}
 *Solid Section, elset={}, material={}
 {},""".format(self.name, elset, self.material.name, self.geometry['A'])
-
         f.write(line)
 
 class StrutSection(StrutSectionBase):
 
-    """ For use with strut elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(StrutSection, self).__init__(name, A)
+    def __init__(self, name, A, material):
+        super(StrutSection, self).__init__(name, A, material)
 
 
 class TieSection(TieSectionBase):
 
-    """ For use with tie elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(TieSection, self).__init__(name, A)
+    def __init__(self, name, A, material):
+        super(TieSection, self).__init__(name, A, material)
 
 
 class SpringSection(SpringSectionBase):
-
-    """ For use with spring elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    forces : dict
-        Forces data for non-linear springs.
-    displacements : dict
-        Displacements data for non-linear springs.
-    stiffness : dict
-        Elastic stiffness for linear springs.
-
-    Notes
-    -----
-    - Force and displacement data should range from negative to positive values.
-    - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
-    - Directions are 'axial', 'lateral', 'rotation'.
-
-    """
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
         super(SpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
@@ -335,8 +243,8 @@ class ShellSection(ShellSectionBase):
         number of integration points. 5 by default.
 
     """
-    def __init__(self, name, t, int_points=5):
-        super(ShellSection, self).__init__(name, t)
+    def __init__(self, name, t, material, int_points=5):
+        super(ShellSection, self).__init__(name, t, material)
         self.__doc__ += ShellSection.__doc__
         self.int_points = int_points
 
@@ -350,8 +258,8 @@ class ShellSection(ShellSectionBase):
 
 class MembraneSection(MembraneSectionBase):
 
-    # def __init__(self, name, t):
-    #     super(MembraneSection, self).__init__(name, t)
+    def __init__(self, name, t, material):
+        super(MembraneSection, self).__init__(name, t, material)
 
     def write_data(self, elset, f):
 
@@ -370,16 +278,20 @@ class SolidSection(SolidSectionBase):
         super(SolidSectionBase, self).__init__(name, material)
 
     def write_data(self, elset, f):
-
+        print(self.name)
         line="""** Section: {}
 *Solid Section, elset={}, material={}
 ,""".format(self.name, elset, self.material.name)
-
         f.write(line)
 
 
 
 if __name__ == "__main__":
-    shell = SolidSection('mysec', material='mat')
+    from compas_fea2.backends.abaqus.components import Concrete
+    conc = Concrete('my_mat',1,2,3,4)
+    solid = BoxSection('mysec', 10, 20,1,2,conc)
+    # solid = SolidSection('mysec',conc)
+    f = open('C:/temp/input_temp.inp', 'w')
+    solid.write_data('my_elset', f)
+    f.close
 
-    print(shell.material)

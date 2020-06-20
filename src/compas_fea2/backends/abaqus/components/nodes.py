@@ -57,7 +57,7 @@ class Node(NodeBase):
 
     """
 
-    def __init__(self, key, xyz, ex, ey, ez, mass):
+    def __init__(self, key, xyz, ex=None, ey=None, ez=None, mass=None):
         super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
 
     def write_keyword(self, f):
@@ -66,7 +66,7 @@ class Node(NodeBase):
 
     def write_data(self, f):
         prefix  = ''
-        spacer  = self.spacer
+        spacer  = ', '
         x, y, z = self.xyz
 
         line    = '{0}{1}{2}{3:.3f}{4:.3f}{2}{5:.3f}'.format(prefix, self.key + 1, spacer, x, y, z)

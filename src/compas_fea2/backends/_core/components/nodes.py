@@ -46,9 +46,10 @@ class NodeBase(object):
         Mass in kg associated with the node.
     """
 
-    def __init__(self, key, xyz, ex, ey, ez, mass):
+    def __init__(self, key, xyz, ex=None, ey=None, ez=None, mass=None):
         self.__name__ = 'Node'
         self.key      = key
+        self.xyz      = xyz
         self.x        = xyz[0]
         self.y        = xyz[1]
         self.z        = xyz[2]

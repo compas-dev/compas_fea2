@@ -47,29 +47,6 @@ __all__ = [
     'MassSection'
 ]
 
-
-class Section(SectionBase):
-
-    """ Initialises base Section object.
-
-    Parameters
-    ----------
-    name : str
-        Section object name.
-
-    Attributes
-    ----------
-    name : str
-        Section object name.
-    geometry : dict
-        Geometry of the Section.
-
-    """
-
-    def __init__(self, name):
-        super(Section, self).__init__(name)
-
-
 # ==============================================================================
 # 0D
 # ==============================================================================
@@ -275,20 +252,16 @@ class TrapezoidalSection(TrapezoidalSectionBase):
 
 class TrussSection(TrussSectionBase):
 
-    """ For use with truss elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
     def __init__(self, name, A):
         super(TrussSection, self).__init__(name, A)
 
+    def write_data(self, elset, f):
+
+        line="""** Section: {}
+*Solid Section, elset={}, material={}
+{},""".format(self.name, elset, self.material.name, self.geometry['A'])
+
+        f.write(line)
 
 class StrutSection(StrutSectionBase):
 
@@ -357,61 +330,56 @@ class SpringSection(SpringSectionBase):
 
 class ShellSection(ShellSectionBase):
 
-    """ Section for shell elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
+    """
+    int_points : int
+        number of integration points. 5 by default.
 
     """
-    pass
-    # def __init__(self, name, t):
-    #     super(ShellSection, self).__init__(name, t)
+    def __init__(self, name, t, int_points=5):
+        super(ShellSection, self).__init__(name, t)
+        self.__doc__ += ShellSection.__doc__
+        self.int_points = int_points
 
+    def write_data(self, elset, f):
+
+        line="""** Section: {}
+*Shell Section, elset={}, material={}
+{}, {}""".format(self.name, elset, self.material.name, self.t, self.int_points)
+
+        f.write(line)
 
 class MembraneSection(MembraneSectionBase):
 
-    """ Section for membrane elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
-
-    """
-    pass
     # def __init__(self, name, t):
     #     super(MembraneSection, self).__init__(name, t)
 
+    def write_data(self, elset, f):
 
+        line="""** Section: {}
+*Membrane Section, elset={}, material={}
+{},""".format(self.name, elset, self.material.name, self.t)
+
+        f.write(line)
 # ==============================================================================
 # 3D
 # ==============================================================================
 
 class SolidSection(SolidSectionBase):
 
-    """ Section for solid elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-
-    """
-    def __init__(self, name):
-        super(SolidSection, self).__init__(name)
+    def __init__(self, name, material):
+        super(SolidSectionBase, self).__init__(name, material)
 
     def write_data(self, elset, f):
 
         line="""** Section: {}
-*Solid Section, elset={}, material={}""".format(self.name, elset, self.material.name)
+*Solid Section, elset={}, material={}
+,""".format(self.name, elset, self.material.name)
 
         f.write(line)
 
 
 
+if __name__ == "__main__":
+    shell = SolidSection('mysec', material='mat')
+
+    print(shell.material)

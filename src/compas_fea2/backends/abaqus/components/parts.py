@@ -315,18 +315,6 @@ class Part():
 if __name__ == "__main__":
 
     class MaterialBase(object):
-        """Initialises base Material object.
-
-        Parameters
-        ----------
-        name : str
-            Name of the Material object.
-
-        Attributes
-        ----------
-        name : str
-            Name of the Material object.
-        """
 
         def __init__(self, name):
             self.__name__  = 'Material'
@@ -346,23 +334,6 @@ if __name__ == "__main__":
 
 
     class ElasticIsotropicBase(MaterialBase):
-        """Elastic, isotropic and homogeneous material.
-
-        Parameters
-        ----------
-        name : str
-            Material name.
-        E : float
-            Young's modulus E [Pa].
-        v : float
-            Poisson's ratio v [-].
-        p : float
-            Density [kg/m3].
-        tension : bool
-            Can take tension.
-        compression : bool
-            Can take compression.
-        """
 
         def __init__(self, name, E, v, p, tension=True, compression=True):
             MaterialBase.__init__(self, name=name)
@@ -378,21 +349,6 @@ if __name__ == "__main__":
 
 
     class SectionBase(object):
-        """Initialises base Section object.
-
-        Parameters
-        ----------
-        name : str
-            Section object name.
-
-        Attributes
-        ----------
-        name : str
-            Section object name.
-        geometry : dict
-            Geometry of the Section.
-
-        """
 
         def __init__(self, name, material):
 
@@ -414,22 +370,6 @@ if __name__ == "__main__":
             return '{0}({1})'.format(self.__name__, self.name)
 
     class BoxSectionBase(SectionBase):
-        """Hollow rectangular box cross-section for beam elements.
-
-        Parameters
-        ----------
-        name : str
-            Section name.
-        b : float
-            Width.
-        h : float
-            Height.
-        tw : float
-            Web thickness.
-        tf : float
-            Flange thickness.
-
-        """
 
         def __init__(self, name, b, h, tw, tf, material):
             SectionBase.__init__(self, name=name, material=material)
@@ -446,32 +386,6 @@ if __name__ == "__main__":
             self.geometry = {'b': b, 'h': h, 'tw': tw, 'tf': tf, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0}
 
     class ElementBase(object):
-        """Initialises base Element object.
-
-        Parameters
-        ----------
-        nodes : list
-            Node keys the element connects to.
-        number : int
-            Number of the element.
-        thermal : bool
-            Thermal properties on or off.
-        axes : dict
-            The local element axes.
-
-        Attributes
-        ----------
-        nodes : list
-            Node keys the element connects to.
-        number : int
-            Number of the element.
-        thermal : bool
-            Thermal properties on or off.
-        axes : dict
-            The local element axes.
-        element_property : str
-            Element property name
-        """
 
         def __init__(self, key, eltype, nodes_keys, section, elset=None, thermal=None, axes={}):
             self.__name__         = 'Element'

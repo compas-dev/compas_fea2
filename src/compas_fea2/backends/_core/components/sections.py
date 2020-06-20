@@ -81,11 +81,10 @@ class MassSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'MassSection'
-        self.name     = name
         self.geometry = None
 
 
@@ -114,7 +113,7 @@ class AngleSectionBase(SectionBase):
     """
 
     def __init__(self, name, b, h, t, material):
-        SectionBase.__init__(self, name=name, material=material)
+        SectionBase.__init__(self, name, material)
 
         p   = 2. * (b + h - t)
         xc  = (b**2 + h * t - t**2) / p
@@ -125,7 +124,6 @@ class AngleSectionBase(SectionBase):
         J   = (1. / 3) * (h + b - t) * t**3
 
         self.__name__ = 'AngleSection'
-        # self.name     = name
         self.geometry = {'b': b, 'h': h, 't': t, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': None}
 
 
@@ -148,7 +146,7 @@ class BoxSectionBase(SectionBase):
     """
 
     def __init__(self, name, b, h, tw, tf, material):
-        SectionBase.__init__(self, name=name, material=material)
+        SectionBase.__init__(self, name, material)
 
         A   = b * h - (b - 2 * tw) * (h - 2 * tf)
         Ap  = (h - tf) * (b - tw)
@@ -158,7 +156,6 @@ class BoxSectionBase(SectionBase):
         J   = 4 * (Ap**2) / p
 
         self.__name__ = 'BoxSection'
-        self.name     = name
         self.geometry = {'b': b, 'h': h, 'tw': tw, 'tf': tf, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0}
 
 
@@ -174,8 +171,8 @@ class CircularSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, r):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, r, material):
+        SectionBase.__init__(self, name, material)
 
         D   = 2 * r
         A   = 0.25 * pi * D**2
@@ -183,7 +180,6 @@ class CircularSectionBase(SectionBase):
         J   = (pi * D**4) / 32
 
         self.__name__ = 'CircularSection'
-        self.name     = name
         self.geometry = {'r': r, 'D': D, 'A': A, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0, 'J': J}
 
 
@@ -211,11 +207,10 @@ class GeneralSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'GeneralSection'
-        self.name     = name
         self.geometry = {'A': A, 'Ixx': Ixx, 'Ixy': Ixy, 'Iyy': Iyy, 'J': J, 'g0': g0, 'gw': gw}
 
 
@@ -237,8 +232,8 @@ class ISectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, b, h, tw, tf):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, b, h, tw, tf, material):
+        SectionBase.__init__(self, name, material)
 
         A   = 2 * b * tf + (h - 2 * tf) * tw
         Ixx = (tw * (h - 2 * tf)**3) / 12. + 2 * ((tf**3) * b / 12. + b * tf * (h / 2. - tf / 2.)**2)
@@ -246,7 +241,6 @@ class ISectionBase(SectionBase):
         J   = (1. / 3) * (2 * b * tf**3 + (h - tf) * tw**3)
 
         self.__name__ = 'ISection'
-        self.name     = name
         self.geometry = {'b': b, 'h': h, 'tw': tw, 'tf': tf, 'c': h/2., 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0}
 
 
@@ -264,8 +258,8 @@ class PipeSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, r, t):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, r, t, material):
+        SectionBase.__init__(self, name, material)
 
         D   = 2 * r
         A   = 0.25 * pi * (D**2 - (D - 2 * t)**2)
@@ -273,7 +267,6 @@ class PipeSectionBase(SectionBase):
         J   = (2. / 3) * pi * (r + 0.5 * t) * t**3
 
         self.__name__ = 'PipeSection'
-        self.name     = name
         self.geometry = {'r': r, 't': t, 'D': D, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0}
 
 
@@ -291,8 +284,8 @@ class RectangularSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, b, h):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, b, h, material):
+        SectionBase.__init__(self, name, material)
 
         A   = b * h
         Ixx = (1 / 12.) * b * h**3
@@ -304,7 +297,6 @@ class RectangularSectionBase(SectionBase):
         J   = (l1 * l2**3) * (0.33333 - 0.21 * (l2 / l1) * (1 - (l2**4) / (12 * l1**4)))
 
         self.__name__ = 'RectangularSection'
-        self.name     = name
         self.geometry = {'b': b, 'h': h, 'A': A, 'J': J, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0}
 
 
@@ -328,8 +320,8 @@ class TrapezoidalSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, b1, b2, h):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, b1, b2, h, material):
+        SectionBase.__init__(self, name, material)
 
         c   = (h * (2 * b2 + b1)) / (3. * (b1 + b2))
         A   = 0.5 * (b1 + b2) * h
@@ -337,7 +329,6 @@ class TrapezoidalSectionBase(SectionBase):
         Iyy = (1 / 48.) * h * (b1 + b2) * (b2**2 + 7 * b1**2)
 
         self.__name__ = 'TrapezoidalSection'
-        self.name     = name
         self.geometry = {'b1': b1, 'b2': b2, 'h': h, 'A': A, 'c': c, 'Ixx': Ixx, 'Iyy': Iyy, 'Ixy': 0, 'J': None}
 
 
@@ -353,11 +344,10 @@ class TrussSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, A):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, A, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'TrussSection'
-        self.name     = name
         self.geometry = {'A': A, 'Ixx': 0, 'Iyy': 0, 'Ixy': 0, 'J': 0}
 
 
@@ -373,8 +363,8 @@ class StrutSectionBase(TrussSectionBase):
 
     """
 
-    def __init__(self, name, A):
-        TrussSectionBase.__init__(self, name=name, A=A)
+    def __init__(self, name, A, material):
+        TrussSectionBase.__init__(self, name, A, material)
 
         self.__name__ = 'StrutSection'
 
@@ -391,8 +381,8 @@ class TieSectionBase(TrussSectionBase):
 
     """
 
-    def __init__(self, name, A):
-        TrussSectionBase.__init__(self, name=name, A=A)
+    def __init__(self, name, A, material):
+        TrussSectionBase.__init__(self, name, A, material)
 
         self.__name__ = 'TieSection'
 
@@ -420,11 +410,11 @@ class SpringSectionBase(SectionBase):
     """
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        SectionBase.__init__(self, name=name)
+        SectionBase.__init__(self, name)
 
         self.__name__      = 'SpringSection'
-        self.name          = name
         self.geometry      = None
+        self.material      = None
         self.forces        = forces
         self.displacements = displacements
         self.stiffness     = stiffness
@@ -446,11 +436,10 @@ class ShellSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, t):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, t, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'ShellSection'
-        self.name     = name
         self.geometry = {'t': t}
 
 
@@ -466,11 +455,10 @@ class MembraneSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name, t):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, t, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'MembraneSection'
-        self.name     = name
         self.geometry = {'t': t}
 
 
@@ -488,11 +476,10 @@ class SolidSectionBase(SectionBase):
 
     """
 
-    def __init__(self, name):
-        SectionBase.__init__(self, name=name)
+    def __init__(self, name, material):
+        SectionBase.__init__(self, name, material)
 
         self.__name__ = 'SolidSection'
-        self.name     = name
         self.geometry = None
 
 

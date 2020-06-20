@@ -41,7 +41,10 @@ class Assembly():
         f.write(line)
 
     def write_footer(self, f):
-        line = "*End Assembly\n**"
+        line = """*End Assembly
+**
+** MATERIALS
+**"""
         f.write(line)
 
 if __name__ == "__main__":

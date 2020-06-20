@@ -239,7 +239,7 @@ class SolidElement(SolidElementBase):
         f.write(line)
 
     def write_data(self, f):
-        x, y, z = self.xyz
+        x, y, z = self.xyz #TODO wrong!
         nkeys   = [str(i + 1) for i in self.nodes_keys]
 
         line    = '{0}, {1}'.format(self.key, ','.join(nkeys))

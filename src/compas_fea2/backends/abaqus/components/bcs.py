@@ -35,7 +35,7 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-def _write_disp_data(obj, bset, f):
+def _write_disp_data(obj, f):
     line = """** Name: {} Type: Displacement/Rotation
 *Boundary\n""".format(obj.name)
     f.write(line)
@@ -43,9 +43,9 @@ def _write_disp_data(obj, bset, f):
     for dof in dofs:
         if dof in obj.components.keys() and obj.components[dof]!=None:
             if not obj.components[dof]:
-                line = """{}, {}, {}\n""".format(bset, c, c)
+                line = """{}, {}, {}\n""".format(obj.bset, c, c)
             else:
-                line = """{}, {}, {}, {}\n""".format(bset, c, c, obj.components[dof])
+                line = """{}, {}, {}, {}\n""".format(obj.bset, c, c, obj.components[dof])
             f.write(line)
         c+=1
 
@@ -56,7 +56,7 @@ class GeneralDisplacement(GeneralDisplacementBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 class FixedDisplacement(FixedDisplacementBase):
 
@@ -65,7 +65,7 @@ class FixedDisplacement(FixedDisplacementBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 
 class PinnedDisplacement(PinnedDisplacementBase):
@@ -75,7 +75,7 @@ class PinnedDisplacement(PinnedDisplacementBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
@@ -85,7 +85,7 @@ class FixedDisplacementXX(FixedDisplacementXXBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
@@ -95,7 +95,7 @@ class FixedDisplacementYY(FixedDisplacementYYBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
@@ -105,7 +105,7 @@ class FixedDisplacementZZ(FixedDisplacementZZBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 class RollerDisplacementX(RollerDisplacementXBase):
 
@@ -114,7 +114,7 @@ class RollerDisplacementX(RollerDisplacementXBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 class RollerDisplacementY(RollerDisplacementYBase):
 
@@ -123,7 +123,7 @@ class RollerDisplacementY(RollerDisplacementYBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 class RollerDisplacementZ(RollerDisplacementZBase):
 
@@ -133,7 +133,7 @@ class RollerDisplacementZ(RollerDisplacementZBase):
 
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
 
@@ -142,7 +142,8 @@ class RollerDisplacementXY(RollerDisplacementXYBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
+
 class RollerDisplacementYZ(RollerDisplacementYZBase):
 
     def __init__(self, name, bset, axes='global'):
@@ -150,7 +151,8 @@ class RollerDisplacementYZ(RollerDisplacementYZBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
+
 class RollerDisplacementXZ(RollerDisplacementXZBase):
 
     def __init__(self, name, bset, axes='global'):
@@ -158,7 +160,7 @@ class RollerDisplacementXZ(RollerDisplacementXZBase):
         self.bset = bset
 
     def write_data(self, f):
-        _write_disp_data(self, self.bset, f)
+        _write_disp_data(self, f)
 
 
 if __name__ == "__main__":

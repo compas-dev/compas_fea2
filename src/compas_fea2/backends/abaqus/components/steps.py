@@ -24,26 +24,16 @@ __all__ = [
     'AcoustiStepBase'
 ]
 
-
-class Step(StepBase):
-
-    """ Initialises base Step object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the Step object.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Step object.
-
-    """
-    pass
-    # def __init__(self, name):
-    #     super(Step, self).__init__(name)
-
+def _write_step_data(obj,f):
+    line = """** ----------------------------------------------------------------
+**
+** STEP: {0}
+**
+* Step, name={0}, nlgeom={}, inc={}
+*{}
+{}, {}, {}, {}""".format(obj.name, obj.nlgeom, obj.increments, obj.stype)
+    f.write(line)
+    c=1
 
 class GeneralStep(GeneralStepBase):
 

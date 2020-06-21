@@ -172,7 +172,7 @@ from .assembly import *
 from .parts import *
 from .interactions import *
 from .bcs import *
-from .set import *
+from .sets import *
 from .constraints import *
 from .elements import *
 from .steps import *

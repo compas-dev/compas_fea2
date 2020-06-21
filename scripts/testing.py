@@ -22,9 +22,13 @@ class Child2(Parent2):
         self.id ='C'
 
 if __name__ == "__main__":
-    p1 = Parent1()
-    c1 = Child1()
-    p2 = Parent2()
-    c2 = Child2()
+    # p1 = Parent1()
+    # c1 = Child1()
+    # p2 = Parent2()
+    # c2 = Child2()
 
-    print(p1.__doc__, c1.__doc__, p2.id, c2.id)
+    # print(p1.__doc__, c1.__doc__, p2.id, c2.id)
+    d ={'a':0, 'b': 3}
+    if d['a']:
+
+        print("""{}""".format(d['a'] ))

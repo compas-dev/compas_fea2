@@ -144,7 +144,7 @@ class Structure(StructureBase):
 
         # Write boundary conditions
         for bc in self.bcs:
-            bc.write_data_line(f)
+            bc.write_data(f)
 
         # Write steps
         for step in self.steps:

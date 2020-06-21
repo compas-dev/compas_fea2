@@ -35,184 +35,137 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
+def _write_disp_data(obj, bset, f):
+    line = """** Name: {} Type: Displacement/Rotation
+*Boundary\n""".format(obj.name)
+    f.write(line)
+    c=1
+    for dof in dofs:
+        if dof in obj.components.keys() and obj.components[dof]!=None:
+            if not obj.components[dof]:
+                line = """{}, {}, {}\n""".format(bset, c, c)
+            else:
+                line = """{}, {}, {}, {}\n""".format(bset, c, c, obj.components[dof])
+            f.write(line)
+        c+=1
+
 class GeneralDisplacement(GeneralDisplacementBase):
-    def __init__(self, name, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-        super(GeneralDisplacement, self).__init__(name, nodes, x, y, z, xx, yy, zz, axes)
+
+    def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
+        self.bset = bset
 
     def write_data(self, f):
-        line = """*Boundary
-name={}
-*Density
-{},
-*Elastic
-{}, {}{}{}
-""".format(self.name, self.p, self.E['E'], self.v['v'], no_c, no_t)
-
-        f.write(line)
-
-
+        _write_disp_data(self, self.bset, f)
 
 class FixedDisplacement(FixedDisplacementBase):
-    """A fixed nodal displacement boundary condition.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacement, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
+
 
 class PinnedDisplacement(PinnedDisplacementBase):
-    """A pinned nodal displacement boundary condition.
 
-    Parameters
-    ----------
-    name : str
-        Name of the PinnedDisplacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
+    def __init__(self, name, bset, axes='global'):
+        super(PinnedDisplacement, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
-    """A pinned nodal displacement boundary condition clamped in XX.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementXX object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementXX, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
-    """A pinned nodal displacement boundary condition clamped in YY.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementYY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementYY, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
-    """A pinned nodal displacement boundary condition clamped in ZZ.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementZZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementZZ, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
-
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 class RollerDisplacementX(RollerDisplacementXBase):
-    """A pinned nodal displacement boundary condition released in X.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementX object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementX, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 class RollerDisplacementY(RollerDisplacementYBase):
-    """A pinned nodal displacement boundary condition released in Y.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementY, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 class RollerDisplacementZ(RollerDisplacementZBase):
-    """A pinned nodal displacement boundary condition released in Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementZ object.
-    nodes : str
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementZ, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
-    """A pinned nodal displacement boundary condition released in X and Y.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementXY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementXY, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
-
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 class RollerDisplacementYZ(RollerDisplacementYZBase):
-    """A pinned nodal displacement boundary condition released in Y and Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementYZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementYZ, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
-
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
 class RollerDisplacementXZ(RollerDisplacementXZBase):
-    """A pinned nodal displacement boundary condition released in X and Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementXZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementXZ, self).__init__(name, None, axes)
+        self.bset = bset
 
-    """
-    pass
+    def write_data(self, f):
+        _write_disp_data(self, self.bset, f)
+
+
+if __name__ == "__main__":
+    d = RollerDisplacementXZ('test_disp', 'test set')
+    f=open('C:/temp/test_input.inp','w')
+    # d.write_keyword(f)
+    d.write_data(f)
+    f.close()
+
+

@@ -67,7 +67,6 @@ class FixedDisplacement(FixedDisplacementBase):
     def write_data(self, f):
         _write_disp_data(self, f)
 
-
 class PinnedDisplacement(PinnedDisplacementBase):
 
     def __init__(self, name, bset, axes='global'):
@@ -76,7 +75,6 @@ class PinnedDisplacement(PinnedDisplacementBase):
 
     def write_data(self, f):
         _write_disp_data(self, f)
-
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
 
@@ -87,7 +85,6 @@ class FixedDisplacementXX(FixedDisplacementXXBase):
     def write_data(self, f):
         _write_disp_data(self, f)
 
-
 class FixedDisplacementYY(FixedDisplacementYYBase):
 
     def __init__(self, name, bset, axes='global'):
@@ -96,7 +93,6 @@ class FixedDisplacementYY(FixedDisplacementYYBase):
 
     def write_data(self, f):
         _write_disp_data(self, f)
-
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
 

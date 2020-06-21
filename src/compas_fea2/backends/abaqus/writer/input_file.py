@@ -7,9 +7,10 @@ __all__ = [
 ]
 class InputFile():
 
-    def __init__(self, name, job_name, structure, path):
-        self.name           = name
-        self.job_name       = job_name
+    def __init__(self, structure, path):
+        self.name           = structure.name
+        self.job_name       = structure.name
+        self.path           = path
         self.heading="""** {}
 *Heading
 ** Job name: {}
@@ -66,17 +67,20 @@ class InputFile():
         # for interaction_property in self.interaction_properties:
         #     interaction_property.write_data_line(f)
         pass
+
     def _generate_interactions_section(self, structure):
         #
         # # Write interactions
         # for interaction in self.interactions:
         #     interaction.write_data_line(f)
         pass
+
     def _generate_bcs_section(self, structure):
         # # Write boundary conditions
         # for bc in self.bcs:
         #     bc.write_data(f)
         pass
+
     def _generate_steps_section(self, structure):
         # # Write steps
         # for step in self.steps:
@@ -98,7 +102,7 @@ class InputFile():
     # General methods
     # ==============================================================================
 
-    def write(self, file):
-        with open(file, 'w') as f:
+    def write_to_file(self):
+        with open(self.path, 'w') as f:
             f.writelines(self.complete)
 

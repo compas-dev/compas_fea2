@@ -72,8 +72,8 @@ class Structure(StructureBase):
         #     fields.append('u')
 
 
-        input_file = Input(self.name, self.name, self, filename)
-        input_file.write()
+        input_file = Input(self, filename)
+        input_file.write_to_file()
         if output:
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 

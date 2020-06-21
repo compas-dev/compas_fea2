@@ -15,7 +15,6 @@ from compas_fea2.backends._core import AcousticStepBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
-    'Step',
     'GeneralStep',
     # 'HeatStepBase',
     'ModalStep',

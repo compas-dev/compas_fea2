@@ -47,6 +47,17 @@ __all__ = [
 
 labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
 
+#TODO: probably elsest should be defined in the section object definition
+def _write_beam_section(obj, elset):
+    properties = []
+    for l in labels:
+        if l in obj.geometry.keys():
+            properties.append(str(obj.geometry[l]))
+    line="""** Section: {}
+*Beam Section, elset={}, material={}
+{}\n""".format(obj.name, elset, obj.material.name, ','.join(properties))
+    f.write(line)
+
 # ==============================================================================
 # 0D
 # ==============================================================================
@@ -83,14 +94,7 @@ class AngleSection(AngleSectionBase):
         super(AngleSection, self).__init__(name, b, h, t, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class BoxSection(BoxSectionBase):
 
@@ -98,14 +102,7 @@ class BoxSection(BoxSectionBase):
         super(BoxSection, self).__init__(name, b, h, tw, tf, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class CircularSection(CircularSectionBase):
 
@@ -113,29 +110,14 @@ class CircularSection(CircularSectionBase):
         super(CircularSection, self).__init__(name, r, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
-
+        _write_beam_section(self,elset)
 class GeneralSection(GeneralSectionBase):
 
     def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
         super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class ISection(ISectionBase):
 
@@ -143,14 +125,7 @@ class ISection(ISectionBase):
         super(ISection, self).__init__(name, b, h, tw, tf, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class PipeSection(PipeSectionBase):
 
@@ -158,14 +133,7 @@ class PipeSection(PipeSectionBase):
         super(PipeSection, self).__init__(name, r, t, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class RectangularSection(RectangularSectionBase):
 
@@ -173,14 +141,7 @@ class RectangularSection(RectangularSectionBase):
         super(RectangularSection, self).__init__(name, b, h, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class TrapezoidalSection(TrapezoidalSectionBase):
 
@@ -188,14 +149,7 @@ class TrapezoidalSection(TrapezoidalSectionBase):
         super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
 
     def write_data(self, elset, f):
-        properties = []
-        for l in labels:
-            if l in self.geometry.keys():
-                properties.append(str(self.geometry[l]))
-        line="""** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(self.name, elset, self.material.name, ','.join(properties))
-        f.write(line)
+        _write_beam_section(self,elset)
 
 class TrussSection(TrussSectionBase):
 
@@ -284,7 +238,8 @@ if __name__ == "__main__":
     conc = Concrete('my_mat',1,2,3,4)
     solid = BoxSection('mysec', 100, 20,1,2,conc)
     # solid = SolidSection('mysec',conc)
-    f = open('C:/temp/input_temp.inp', 'w')
+    f=open('/home/fr/Downloads/test_input.inp','w')
+    # f = open('C:/temp/input_temp.inp', 'w')
     solid.write_data('my_elset', f)
     f.close
 

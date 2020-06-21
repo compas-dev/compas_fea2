@@ -35,10 +35,11 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-def _write_disp_data(obj, f):
+def _generate_data(obj):
+    data_section = []
     line = """** Name: {} Type: Displacement/Rotation
-*Boundary\n""".format(obj.name)
-    f.write(line)
+*Boundary""".format(obj.name)
+    data_section.append(line)
     c=1
     for dof in dofs:
         if dof in obj.components.keys() and obj.components[dof]!=None:
@@ -46,123 +47,111 @@ def _write_disp_data(obj, f):
                 line = """{}, {}, {}\n""".format(obj.bset, c, c)
             else:
                 line = """{}, {}, {}, {}\n""".format(obj.bset, c, c, obj.components[dof])
-            f.write(line)
+            data_section.append(line)
         c+=1
-
+    return '\n'.join(data_section)
 class GeneralDisplacement(GeneralDisplacementBase):
 
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class FixedDisplacement(FixedDisplacementBase):
 
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class PinnedDisplacement(PinnedDisplacementBase):
 
     def __init__(self, name, bset, axes='global'):
         super(PinnedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
 
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementXX, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
 
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementYY, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
 
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementZZ, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementX(RollerDisplacementXBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementX, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementY(RollerDisplacementYBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementY, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementZ(RollerDisplacementZBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementZ, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXY, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementYZ(RollerDisplacementYZBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementYZ, self).__init__(name, None, axes)
         self.bset = bset
+        self.data = _generate_data(self)
 
-    def write_data(self, f):
-        _write_disp_data(self, f)
 
 class RollerDisplacementXZ(RollerDisplacementXZBase):
 
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXZ, self).__init__(name, None, axes)
         self.bset = bset
-
-    def write_data(self, f):
-        _write_disp_data(self, f)
+        self.data = _generate_data(self)
 
 
 if __name__ == "__main__":
     d = RollerDisplacementXZ('test_disp', 'test set')
-    f=open('C:/temp/test_input.inp','w')
-    # d.write_keyword(f)
-    d.write_data(f)
-    f.close()
+    print(d.data)
+    # f=open('C:/temp/test_input.inp','w')
+    # # d.write_keyword(f)
+    # d.write_data(f)
+    # f.close()
 
 

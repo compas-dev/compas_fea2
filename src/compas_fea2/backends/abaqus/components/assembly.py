@@ -22,6 +22,18 @@ class Assembly():
 
         self.parts_by_material = self._get_materials()
 
+        self.keyword_start = """
+**
+** ASSEMBLY
+**
+*Assembly, name={}
+**\n""".format(self.name)
+
+        self.keyword_end = """*End Assembly
+**
+** MATERIALS
+**\n"""
+
     def __str__(self):
 
         print('\n')
@@ -45,22 +57,6 @@ class Assembly():
                 materials.append(mat)
         return list(set(materials))
 
-    def write_keyword_start(self, f):
-        line = """
-**
-** ASSEMBLY
-**
-*Assembly, name={}
-**\n""".format(self.name)
-
-        f.write(line)
-
-    def write_keyword_end(self, f):
-        line = """*End Assembly
-**
-** MATERIALS
-**\n"""
-        f.write(line)
 
 class Instance():
     """Initialises the Instance object.
@@ -71,6 +67,10 @@ class Instance():
         self.__name__ = 'Instance'
         self.name = name
         self.part = part
+
+        self.data = """*Instance, name={}, part={}
+*End Instance
+**\n""".format(self.name, self.part.name)
 
     def __str__(self):
         print('\n')
@@ -84,12 +84,6 @@ class Instance():
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
-
-    def write_data(self, f):
-        line = """*Instance, name={}, part={}
-*End Instance
-**\n""".format(self.name, self.part.name)
-        f.write(line)
 
 
 

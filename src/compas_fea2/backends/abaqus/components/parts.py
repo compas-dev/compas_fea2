@@ -25,6 +25,10 @@ class Part():
         self.elsets_by_section = groups[3]
         self.elements_by_material = groups[4]
 
+        self.keyword_start = "*Part, name={}\n".format(self.name)
+        self.keyword_end = "*End Part\n**"
+        self.data = self._generate_data()
+
     def __str__(self):
 
         print('\n')
@@ -68,18 +72,14 @@ class Part():
 
 
     # ==============================================================================
-    # Write to input file
+    # Generate input file data
     # ==============================================================================
 
-    def write_keyword_start(self, f):
-        line = "*Part, name={}\n".format(self.name)
-        f.write(line)
-
-    def write_data(self, f):
+    def _generate_data(self):
         # Write nodes
-        self.nodes[0].write_keyword(f)
+        data_section = [self.nodes[0].keyword]
         for node in self.nodes:
-            node.write_data(f)
+            data_section.append(node.data)
         # Write elements
         for eltype in self.elements_by_type.keys():
             for elset in self.elements_by_elset.keys():
@@ -87,25 +87,22 @@ class Part():
                 elements = sorted(elements, key=lambda x: x.key, reverse=False)
                 if elements:
                     elements = list(elements)
-                    elements[0].write_keyword(f)
+                    data_section.append(elements[0].keyword)
                     for element in elements:
-                        element.write_data(f)
+                        data_section.append(element.data)
         # Write node sets
         for nset in self.nsets:
-            nset.write_keyword(f)
-            nset.write_data(f)
+            data_section.append(nset.keyword)
+            data_section.append(nset.data)
         # Write elements sets
         for elset in self.elsets:
-            elset.write_keyword(f)
-            elset.write_data(f)
+            data_section.append(elset.keyword)
+            data_section.append(elset.data)
         # Write sections ()
         for section in self.elements_by_section.keys():
             for elset in self.elsets_by_section[section]:
-                section.write_data(elset, f)
-
-    def write_keyword_end(self, f):
-        line = "*End Part\n**"
-        f.write(line)
+                data_section.append(section.data)  #TODO CHECK
+        return ''.join(data_section)
 
 
 
@@ -121,8 +118,9 @@ if __name__ == "__main__":
 
     my_nodes = []
     for k in range(5):
+        k+=1
         my_nodes.append(Node(k,[1+k,2-k,3]))
-    material_one = Concrete('my_mat',1,2,3,4)
+    material_one = ElasticIsotropic('my_mat',1,2,3,4)
     material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
     section_A = SolidSection(name='section_A', material=material_one)
     section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
@@ -132,13 +130,7 @@ if __name__ == "__main__":
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
-    print(my_part.elements_by_material)
-    # f=open('/home/fr/Downloads/test_input.inp','w')
-    f=open('C:/temp/test_input.inp','w')
-    my_part.write_keyword_start(f)
-    my_part.write_data(f)
-    my_part.write_keyword_end(f)
-    f.close()
+    print(my_part.data)
 
     # # print(type(my_part.elements_by_section[section_A]))
 

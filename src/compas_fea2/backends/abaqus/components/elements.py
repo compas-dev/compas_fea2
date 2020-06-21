@@ -37,9 +37,10 @@ __all__ = [
     # 'HexahedronElement',
     ]
 
-def _write_elemnts_keyword(obj, f):
-    line = "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
-    f.write(line)
+# TODO the key should not be assigned by the user but generated automatically
+
+def _generate_keyword(obj):
+    return "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
 
 
 # ==============================================================================
@@ -99,11 +100,8 @@ class BeamElement(BeamElementBase):
             self.elset = elset
         self.eltype = 'B31'
 
-    def write_keyword(self, f):
-        _write_elemnts_keyword(self, f)
-
-    def write_data(self, f):
-        f.write('{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1]))
+        self.keyword = _generate_keyword(self)
+        self.data    = '{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1])
 
 
 # class SpringElement(SpringElementBase):
@@ -135,6 +133,8 @@ class TrussElement(TrussElementBase):
             self.elset = elset
         self.eltype = 'T3D2'
 
+        self.keyword = _generate_keyword(self)
+        self.data    = '{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1])  #TODO check!!
 
 # class StrutElement(StrutElementBase):
 #     """A truss element that resists axial compressive loads.
@@ -237,15 +237,14 @@ class SolidElement(SolidElementBase):
         else:
             self.eltype = eltype
 
-    def write_keyword(self, f):
-        _write_elemnts_keyword(self, f)
+        self.keyword = _generate_keyword(self)
+        self.data    = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
         nkeys = []
         for n in self.connectivity:
             nkeys.append(str(n.key))
-        line    = '{0}, {1}\n'.format(self.key, ','.join(nkeys))
-        f.write(line)
+        return '{0}, {1}\n'.format(self.key, ','.join(nkeys))
 
 
 
@@ -286,3 +285,10 @@ class SolidElement(SolidElementBase):
 #     pass
 #     # def __init__(self):
 #     #     super(HexahedronElement, self).__init__()
+
+if __name__ == "__main__":
+    from compas_fea2.backends.abaqus.components import Node
+    from compas_fea2.backends.abaqus.components import BeamElement
+
+    n = Node(1,[2,3,4])
+    b = BeamElement(1, [n,n], 's')

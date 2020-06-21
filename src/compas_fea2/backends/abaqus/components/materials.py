@@ -42,8 +42,9 @@ class ElasticIsotropic(ElasticIsotropicBase):
 
     def __init__(self, name, E, v, p, tension=None, compression=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
         no_c=''
         no_t=''
         if not self.compression:
@@ -51,28 +52,24 @@ class ElasticIsotropic(ElasticIsotropicBase):
         if not self.tension:
             no_t = '\n*NO TENSION'
 
-        line = """*Material, name={}
+        return """*Material, name={}
 *Density
 {},
 *Elastic
 {}, {}{}{}
 """.format(self.name, self.p, self.E['E'], self.v['v'], no_c, no_t)
 
-        f.write(line)
-
 class Stiff(StiffBase):
 
     def __init__(self, name, E):
         super(Stiff, self).__init__(name, E)
-
-    def write_data(self, f):
-        line = """*Material, name={}
+        self.data = """*Material, name={}
 *Density
 {},
 *Elastic
 {}, {}
 """.format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+
 
 class ElasticOrthotropic(ElasticOrthotropicBase):
     NotImplemented
@@ -87,20 +84,22 @@ class ElasticPlastic(ElasticPlasticBase):
 
     def __init__(self, name, E, v, p, f, e):
         super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
         line = """*Material, name={}
 *Density
 {},
 *Elastic
 {}, {}
-*Plastic
-""".format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+*Plastic""".format(self.name, self.p, self.E['E'], self.v['v'])
+        data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
             line = """{}, {}""".format(abs(i), abs(j))
-            f.write(line)
+            data_section.append(line)
+        return '\n'.join(data_section)
 
 
 # ==============================================================================
@@ -111,21 +110,22 @@ class Steel(SteelBase):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
         super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
         line = """*Material, name={}
 *Density
 {},
 *Elastic
 {}, {}
-*Plastic
-""".format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+*Plastic""".format(self.name, self.p, self.E['E'], self.v['v'])
+        data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
             line = """{}, {}""".format(abs(i), abs(j))
-            f.write(line)
-
+            data_section.append(line)
+        return '\n'.join(data_section)
 
 # ==============================================================================
 # non-linear timber
@@ -145,8 +145,10 @@ class Concrete(ConcreteBase):
 
     def __init__(self, name, fck, v, p, fr):
         super(Concrete, self).__init__(name, fck, v, p, fr)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
         line = """*Material, name={}
 *Density
 {},
@@ -154,28 +156,32 @@ class Concrete(ConcreteBase):
 {}, {}
 *Concrete
 """.format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+        data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
             line = """{}, {}""".format(abs(i), abs(j))
-            f.write(line)
+            data_section.append(line)
 
-        f.write('*Tension stiffening')
+            data_section.append('*Tension stiffening')
 
         for i, j in zip(self.tension['f'], self.tension['e']):
             line = """{}, {}""".format(i, j)
-            f.write(line)
+            data_section.append(line)
 
         a, b = self.fratios
         line = """*Failure ratios
 {}, {}""".format(a, b)
-        f.write(line)
+        data_section.append(line)
+        return '\n'.join(data_section)
+
 class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
         super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
         line = """*Material, name={}
 *Density
 {},
@@ -183,29 +189,32 @@ class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
 {}, {}
 *Concrete
 """.format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+        data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
             line = """{}, {}""".format(abs(i), abs(j))
-            f.write(line)
+            data_section.append(line)
 
-        f.write('*Tension stiffening')
+            data_section.append('*Tension stiffening')
 
         for i, j in zip(self.tension['f'], self.tension['e']):
             line = """{}, {}""".format(i, j)
-            f.write(line)
+            data_section.append(line)
 
         a, b = self.fratios
         line = """*Failure ratios
 {}, {}""".format(a, b)
-        f.write(line)
+        data_section.append(line)
+        return '\n'.join(data_section)
 
 class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
         super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
+        self.data = self._generate_data()
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
         line = """*Material, name={}
 *Density
 {},
@@ -213,18 +222,18 @@ class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
 {}, {}
 *Concrete Damaged Plasticity
 """.format(self.name, self.p, self.E['E'], self.v['v'])
-        f.write(line)
+        data_section.append(line)
 
-        f.write(', '.join([str(i) for i in self.damage]))
-        f.write('*CONCRETE COMPRESSION HARDENING')
+        data_section.append(', '.join([str(i) for i in self.damage]))
+        data_section.append('*CONCRETE COMPRESSION HARDENING')
         for i in self.hardening:
-            f.write(', '.join([str(j) for j in i]))
+            data_section.append(', '.join([str(j) for j in i]))
 
-
-        f.write('*Concrete Tension Stiffening, type=GFI')
+        data_section.append('*Concrete Tension Stiffening, type=GFI')
         for i in self.stiffening:
-            f.write(', '.join([str(j) for j in i]))
+            data_section.append(', '.join([str(j) for j in i]))
 
+        return '\n'.join(data_section)
 
 # ==============================================================================
 # thermal
@@ -261,6 +270,8 @@ class UserMaterial(MaterialBase):
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
 
+        self.data = self._generate_data()
+
     def get_constants(self):
         constants = []
         for k in self.__dict__:
@@ -268,33 +279,21 @@ class UserMaterial(MaterialBase):
                 constants.append(self.__dict__[k])
         return constants
 
-    def write_data(self, f):
+    def _generate_data(self):
         k = [str(i) for i in self.constants]
-        line = """*Material, name={}
+        return """*Material, name={}
 *Density
 {},
 *User Material, constants={}
 {}""".format(self.name, self.p, len(k), ', '.join(reversed(k)))  #TODO check it reversed or not
-        f.write(line)
+
 
 
 ### -------------------------------- DEBUG ------------------------------- ###
 
 if __name__ == "__main__":
-    # umat = UserMaterial(name='umat', path='test/path.f', p=30, E=10, v=1000)
-    # k=[str(i) for i in umat.constants]
-    # print(k)
-    # print(', '.join(k))
-    def write_to_file(my_string, destination_path):
-        f=open(destination_path,'w')
-        f.write(my_string)
-        f.close()
 
-    # material = ElasticIsotropic(name='test', E=1, v=2, p=3, tension=False, compression=True)
-    # print(material.to_input_file())
-    # write_to_file(material.to_input_file(), 'C:/temp/test_input.inp')
-    f=open('C:/temp/test_input.inp','w')
     material = ElasticIsotropic(name='test', E=1, v=2, p=3, tension=False, compression=True)
+    plastic = ElasticPlastic('plastic', 1,2,3,[4,5],[6,7])
     umat = UserMaterial(name='my_umat', sub_path='C;/', p=10, v=30, E=20)
-    umat.write_data(f)
-    f.close()
+    print(umat.data)

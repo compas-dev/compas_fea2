@@ -22,17 +22,7 @@ class Assembly():
 
         self.parts_by_material = self._get_materials()
 
-        self.keyword_start = """
-**
-** ASSEMBLY
-**
-*Assembly, name={}
-**\n""".format(self.name)
-
-        self.keyword_end = """*End Assembly
-**
-** MATERIALS
-**\n"""
+        self.data = self._generate_data()
 
     def __str__(self):
 
@@ -45,7 +35,6 @@ class Assembly():
 
         return ''
 
-
     def __repr__(self):
 
         return '{0}({1})'.format(self.__name__, self.name)
@@ -57,6 +46,22 @@ class Assembly():
                 materials.append(mat)
         return list(set(materials))
 
+    def _generate_data(self):
+        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**'.format(self.name)
+        section_data = [line]
+        for instance in self.instances:
+            section_data.append(instance.data)
+        for nset in self.nsets:
+            section_data.append(nset.data)
+        for elset in self.elsets:
+            section_data.append(elset.data)
+        for surface in self.surfaces:
+            section_data.append(surface.data)
+        for constraint in self.constraints:
+            section_data.append(constraint.data)
+        line = '*End Assembly\n**'
+        section_data.append(line)
+        return ''.join(section_data)
 
 class Instance():
     """Initialises the Instance object.
@@ -68,9 +73,7 @@ class Instance():
         self.name = name
         self.part = part
 
-        self.data = """*Instance, name={}, part={}
-*End Instance
-**\n""".format(self.name, self.part.name)
+        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 
     def __str__(self):
         print('\n')
@@ -116,17 +119,6 @@ if __name__ == "__main__":
     my_instance = Instance(name='test_instance', part=my_part)
     my_assembly = Assembly(name='test', instances=[my_instance])
 
-    print(my_assembly.parts_by_material)
+    print(my_assembly.data)
     # f=open('/home/fr/Downloads/test_input.inp','w')
-    f=open('C:/temp/test_input.inp','w')
-    my_part.write_keyword_start(f)
-    my_part.write_data(f)
-    my_part.write_keyword_end(f)
-    my_assembly.write_keyword_start(f)
-    # Write instances
-    for instance in my_assembly.instances:
-        instance.write_data(f)
-    my_assembly.write_keyword_end(f)
-    f.close()
-
     # # print(type(my_part.elements_by_section[section_A]))

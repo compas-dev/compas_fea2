@@ -19,48 +19,36 @@ class InputFile():
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMANN=5.67e-8
 **\n""".format(self.name, self.job_name)
 
-        self.parts          = self._generate_part_section(self, structure)
-        self.assembly       = self._generate_assembly_section(self, structure)
-        self.materials      = self._generate_material_section(self, structure)
-        self.int_props      = self._generate_int_props_section(self, structure)
-        self.interactions   = self._generate_interactions_section(self, structure)
-        self.bcs            = self._generate_bcs_section(self, structure)
-        self.steps          = self._generate_steps_section(self, structure)
+        self.parts          = self._generate_part_section(structure)
+        self.assembly       = self._generate_assembly_section(structure)
+        self.materials      = self._generate_material_section(structure)
+        self.int_props      = self._generate_int_props_section(structure)
+        self.interactions   = self._generate_interactions_section(structure)
+        self.bcs            = self._generate_bcs_section(structure)
+        self.steps          = self._generate_steps_section(structure)
+
+        self.data           = self._generate_data()
 
     # ==============================================================================
     # Constructor methods
     # ==============================================================================
 
-    def _generate_part_section(self, structure, f):
+    def _generate_part_section(self, structure):
         header = """** PARTS\n**\n"""
-        section = [header]
+        section_data = [header]
         for part in structure.parts:
-            section.append(part.keyword_start)
-            section.append(part.data)
-            section.append(part.keyword_end)
-        return section
+            section_data.append(part.data)
+        return section_data
 
-    def _generate_assembly_section(self, structure, f):
-        header = """** ASSEMBLY\n**\n"""
-        section = [header]
-        section.append(structure.assembly.keyword_start)
-        for instance in structure.assembly.instances:
-            section.append(instance.data)
-        for nset in structure.assembly.nsets:
-            section.append(nset.data)
-        for elset in structure.assembly.elsets:
-            section.append(elset.data)
-        for surface in structure.assembly.surfaces:
-            section.append(surface.data)
-        for constraint in structure.assembly.constraints:
-            section.append(constraint.data)
-        section.append(structure.assembly.keyword_end)
+    def _generate_assembly_section(self, structure):
+        return structure.assembly.data
 
-    def _generate_material_section(self, structure, f):
+    def _generate_material_section(self, structure):
         header = """** MATERIALS\n**\n"""
-        section = [header]
+        section_data = [header]
         for material in structure.assembly.materials:
-            section.append(material.data)
+            section_data.append(material.data)
+        return section_data
 
     def _generate_int_props_section(self, structure):
         # # Write interaction properties
@@ -94,7 +82,7 @@ class InputFile():
         #     step.write_keyword_end(f)
         pass
 
-    def _generate_complete_file(self):
+    def _generate_data(self):
         return ''.join(self.heading, self.parts_header ,self.parts, self.assembly,
                        self.materials, self.int_props, self.interactions, self.bcs, self.steps)
 
@@ -104,5 +92,5 @@ class InputFile():
 
     def write_to_file(self):
         with open(self.path, 'w') as f:
-            f.writelines(self.complete)
+            f.writelines(self.data)
 

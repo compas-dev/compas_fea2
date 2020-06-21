@@ -25,9 +25,9 @@ class Part():
         self.elsets_by_section = groups[3]
         self.elements_by_material = groups[4]
 
-        self.keyword_start = "*Part, name={}\n".format(self.name)
-        self.keyword_end = "*End Part\n**"
-        self.data = self._generate_data()
+        self.data = ''.join(["*Part, name={}\n".format(self.name),
+                            self._generate_data(),
+                            "*End Part\n**"])
 
     def __str__(self):
 

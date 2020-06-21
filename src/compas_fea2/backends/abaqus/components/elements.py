@@ -35,7 +35,11 @@ __all__ = [
     # 'PentahedronElement',
     # 'TetrahedronElement',
     # 'HexahedronElement',
-]
+    ]
+
+def _write_elemnts_keyword(obj, f):
+    line = "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
+    f.write(line)
 
 
 # ==============================================================================
@@ -96,8 +100,7 @@ class BeamElement(BeamElementBase):
         self.eltype = 'B31'
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}\n".format(self.eltype, self.elset)
-        f.write(line)
+        _write_elemnts_keyword(self, f)
 
     def write_data(self, f):
         f.write('{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1]))
@@ -235,8 +238,7 @@ class SolidElement(SolidElementBase):
             self.eltype = eltype
 
     def write_keyword(self, f):
-        line = "*Element, type={}, elset={}\n".format(self.eltype, self.elset)
-        f.write(line)
+        _write_elemnts_keyword(self, f)
 
     def write_data(self, f):
         nkeys = []

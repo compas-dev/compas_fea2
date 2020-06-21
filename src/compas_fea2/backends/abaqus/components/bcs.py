@@ -131,7 +131,6 @@ class RollerDisplacementZ(RollerDisplacementZBase):
         super(RollerDisplacementZ, self).__init__(name, None, axes)
         self.bset = bset
 
-
     def write_data(self, f):
         _write_disp_data(self, f)
 

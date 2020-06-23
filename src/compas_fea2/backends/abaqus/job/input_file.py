@@ -65,10 +65,11 @@ class InputFile():
         return ''
 
     def _generate_bcs_section(self, structure):
-        # # Write boundary conditions
-        # for bc in self.bcs:
-        #     bc.write_data(f)
-        return ''
+        header = """**\n** BOUNDARY\n**\n"""
+        section_data = [header]
+        for bc in structure.bcs:
+            section_data.append(bc.data)
+        return ''.join(section_data)
 
     def _generate_steps_section(self, structure):
         # # Write steps
@@ -104,6 +105,8 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import SolidSection
     from compas_fea2.backends.abaqus.components import BeamElement
     from compas_fea2.backends.abaqus.components import SolidElement
+    from compas_fea2.backends.abaqus.components import FixedDisplacement
+    from compas_fea2.backends.abaqus.components import RollerDisplacementXZ
     from compas_fea2.backends.abaqus.components import Part
     from compas_fea2.backends.abaqus.components import Set
     from compas_fea2.backends.abaqus.components import Assembly
@@ -126,6 +129,8 @@ if __name__ == "__main__":
     el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
 
+    d1 = RollerDisplacementXZ('test_disp', 'test set')
+    d2 = FixedDisplacement('fixed_disp', 'fixed')
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
     nset = Set('test_neset', my_nodes)
@@ -133,5 +138,5 @@ if __name__ == "__main__":
     my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
     my_assembly = Assembly(name='test', instances=[my_instance])
 
-    my_structure = Structure('test_structure', [my_part], my_assembly, [], [], [])
+    my_structure = Structure('test_structure', [my_part], my_assembly, [], [d1,d2], [])
     my_structure.write_input_file(path='C:/temp')

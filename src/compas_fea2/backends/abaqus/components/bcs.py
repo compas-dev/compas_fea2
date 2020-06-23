@@ -44,12 +44,14 @@ def _generate_data(obj):
     for dof in dofs:
         if dof in obj.components.keys() and obj.components[dof]!=None:
             if not obj.components[dof]:
-                line = """{}, {}, {}\n""".format(obj.bset, c, c)
+                line = """{}, {}, {}""".format(obj.bset, c, c)
             else:
-                line = """{}, {}, {}, {}\n""".format(obj.bset, c, c, obj.components[dof])
+                line = """{}, {}, {}, {}""".format(obj.bset, c, c, obj.components[dof])
             data_section.append(line)
         c+=1
-    return '\n'.join(data_section)
+    return '\n'.join(data_section) +'\n'
+
+
 class GeneralDisplacement(GeneralDisplacementBase):
 
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):

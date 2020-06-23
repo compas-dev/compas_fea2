@@ -25,7 +25,8 @@ __all__ = [
 
 
 # TODO add field and history output requrests
-def _write_step_data(obj,f):
+def _generate_data(obj):
+    section_data = []
     line = """** ----------------------------------------------------------------
 **
 ** STEP: {0}
@@ -37,18 +38,16 @@ def _write_step_data(obj,f):
 ** BOUNDARY CONDITIONS
 **\n""".format(obj.name, obj.nlgeom, obj.increments, obj.stype,
             obj.int_incr, obj.full_time, obj.min_incr, obj.max_incr)
-    f.write(line)
+    section_data.append(line)
 
     for displacement in obj.displacements:
-        displacement.write_data(f)
+        section_data.append(displacement.data)
 
-    line = """**
-** LOADS
-**\n"""
-    f.write(line)
+    line = """**\n** LOADS\n**"""
+    section_data.append(line)
 
     for load in obj.loads:
-        load.write_data(f)
+        section_data.append(load.data)
 
     line = """**
 ** OUTPUT REQUESTS
@@ -64,16 +63,16 @@ def _write_step_data(obj,f):
 *Output, history, variable=PRESELECT
 *End Step\n"""
 
-    f.write(line)
+    section_data.append(line)
 
+    return ''.join(section_data)
 
 class GeneralStep(GeneralStepBase):
 
     def __init__(self, name, increments, iterations, tolerance, factor, nlgeom, nlmat, displacements, loads, stype, modify):
         super(GeneralStep, self).__init__(name, increments, iterations, tolerance, factor, nlgeom, nlmat, displacements, loads, stype, modify)
+        self.data = _generate_data(self)
 
-    def write_step_data(self, f):
-        _write_step_data(self, f)
 
 class HeatStep(HeatStepBase):
     pass

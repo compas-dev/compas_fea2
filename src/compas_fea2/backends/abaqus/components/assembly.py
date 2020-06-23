@@ -12,13 +12,12 @@ class Assembly():
 
     """
 
-    def __init__(self, name, instances=None, nsets=None, elsets=None, surfaces=None):
+    def __init__(self, name, instances=None, surfaces=[], constraints=[]):
         self.__name__ = 'Assembly'
         self.name       = name
         self.instances  = instances
-        self.nsets      = nsets
-        self.elsets     = elsets
         self.surfaces   = surfaces
+        self.constraints = constraints
 
         self.parts_by_material = self._get_materials()
 
@@ -51,10 +50,8 @@ class Assembly():
         section_data = [line]
         for instance in self.instances:
             section_data.append(instance.data)
-        for nset in self.nsets:
-            section_data.append(nset.data)
-        for elset in self.elsets:
-            section_data.append(elset.data)
+            for iset in instance.sets:
+                section_data.append(iset.data)
         for surface in self.surfaces:
             section_data.append(surface.data)
         for constraint in self.constraints:
@@ -68,10 +65,13 @@ class Instance():
 
     """
 
-    def __init__(self, name, part):
+    def __init__(self, name, part, sets=[]):
         self.__name__ = 'Instance'
         self.name = name
         self.part = part
+        self.sets = sets
+        for iset in sets:
+            iset.instance = self.name
 
         self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 
@@ -99,12 +99,14 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import BeamElement
     from compas_fea2.backends.abaqus.components import SolidElement
     from compas_fea2.backends.abaqus.components import Part
+    from compas_fea2.backends.abaqus.components import Set
 
     my_nodes = []
     for k in range(5):
         my_nodes.append(Node(k,[1+k,2-k,3]))
 
-    material_one = Concrete('my_mat',1,2,3,4)
+    # material_one = Concrete('my_mat',1,2,3,4)
+    material_one = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
     material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
 
     section_A = SolidSection(name='section_A', material=material_one)
@@ -116,7 +118,10 @@ if __name__ == "__main__":
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
 
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
-    my_instance = Instance(name='test_instance', part=my_part)
+
+    nset = Set('test_neset', my_nodes)
+
+    my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
     my_assembly = Assembly(name='test', instances=[my_instance])
 
     print(my_assembly.data)

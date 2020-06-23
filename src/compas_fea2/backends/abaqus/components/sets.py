@@ -40,12 +40,20 @@ class Set(object):
 
     """
 
-    def __init__(self, name, selection, generate=False):
+    #TODO generate option might not be a good idea!
+    def __init__(self, name, selection, generate=False, instance=None):
 
         self.__name__  = 'Set'
         self.name      = name
         self.selection = selection
         self.generate  = generate
+        if self.selection[0].__name__ == 'Node':
+            self.stype = 'nset'
+        else:
+            self.stype = 'elset'
+        self.instance = instance
+
+        self.data = self._generate_data()
 
     def __str__(self):
 
@@ -63,76 +71,55 @@ class Set(object):
 
         return '{0}({1})'.format(self.__name__, self.name)
 
-    def write_data(self, f):
+    def _generate_data(self):
+        data_section = []
+        line = '*{}, {}={}'.format(self.stype, self.stype, self.name)
+        if self.instance:
+            line = ', instance='.join([line, self.instance])
         if self.generate:
-            line    = '{0}, {1}, 1'.format(self.selection[0].key, self.selection[-1].key)
-            f.write(line)
+            line = ', '.join([line, 'generate'])
+            data_section.append(line)
+            data_section.append('{0}, {1}, 1'.format(self.selection[0].key, self.selection[-1].key))
         else:
-            for s in self.selection:  # note: can be grouped in 16 elements
-                line    = ''.format(s.key)
-                f.write(line)
+            data_section.append(line)
+            for s in self.selection:
+                # note: can be grouped in 16 elements
+                data_section.append(str(s.key))
+        return '\n'.join(data_section) + '\n'
 
 
 
-class PartNSet(Set):
-    def __init__(self, name, selection, part):
-        super(Set, self).__init__(name)
-        self.part = part
-        self.type = 'nset'
-        self.domain = 'part'
-
-    def write_keyword(self, f):
-        if self.generate:
-            g =", generate"
-        else:
-            g=""
-        line = "*Nset, nset={}{}".format(self.name, g)
-        f.write(line)
-
-class PartElSet(Set):
-    def __init__(self, name, selection, sections, part):
-        super(Set, self).__init__(name, selection)
-        self.part = part
-        self.type = 'elset'
-        self.domain = 'part'
-
-    def write_keyword(self, f):
-        if self.generate:
-            g =", generate"
-        else:
-            g=""
-        line = "*Elset, elset={}{}".format(self.name, g)
-        f.write(line)
+# class PartNSet(Set):
+#     def __init__(self, name, selection):
+#         super(Set, self).__init__(name)
+#         self.part = part
+#         self.stype = 'nset'
+#         self.domain = 'part'
+#         self.data = self._generate_data()
 
 
-class AssemblyNSet(Set):
-    def __init__(self, name, selection, instance, assembly):
-        super(Set, self).__init__(name)
-        self.assembly = assembly
-        self.instance = instance
-        self.type = 'nset'
-        self.domain = 'assembly'
+# class PartElSet(Set):
+#     def __init__(self, name, selection):
+#         super(Set, self).__init__(name, selection)
+#         self.part = None
+#         self.type = 'elset'
+#         self.domain = 'part'
+#         self.data = self._generate_data()
 
-    def write_keyword(self, f):
-        if self.generate:
-            g =", generate"
-        else:
-            g=""
-        line = "*Nset, nset={}, instance={}{}".format(self.name, self.instance, g)
-        f.write(line)
 
-class AssemblyElSet(Set):
-    def __init__(self, name, selection, instance, assembly):
-        super(Set, self).__init__(name, selection)
-        self.assembly = assembly
-        self.instance = instance
-        self.type = 'elset'
-        self.domain = 'assembly'
+# class AssemblyNSet(Set):
+#     def __init__(self, name, selection, instance):
+#         super(Set, self).__init__(name)
+#         self.instance = instance
+#         self.type = 'nset'
+#         self.domain = 'assembly'
+#         self.data = self._generate_data()
 
-    def write_keyword(self, f):
-        if self.generate:
-            g =", generate"
-        else:
-            g=""
-        line = "*Elset, elset={}, instance={}{}".format(self.name, self.instance, g)
-        f.write(line)
+
+# class AssemblyElSet(Set):
+#     def __init__(self, name, selection, instance):
+#         super(Set, self).__init__(name, selection)
+#         self.instance = instance
+#         self.type = 'elset'
+#         self.domain = 'assembly'
+#         self.data = self._generate_data()

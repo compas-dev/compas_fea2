@@ -10,13 +10,12 @@ class Part():
     """Initialises the Part object.
 
     """
-    def __init__(self, name, nodes, elements, nsets=[], elsets=[]):
+    def __init__(self, name, nodes, elements, sets=[]):
         self.__name__ = 'Part'
         self.name = name
         self.nodes = self._sort(nodes)
         self.elements = self._sort(elements)
-        self.nsets = nsets
-        self.elsets = elsets
+        self.sets = sets
 
         groups = self._group_elements()
         self.elements_by_type = groups[0]
@@ -90,15 +89,10 @@ class Part():
                     data_section.append(elements[0].keyword)
                     for element in elements:
                         data_section.append(element.data)
-        # Write node sets
-        for nset in self.nsets:
-            data_section.append(nset.keyword)
-            data_section.append(nset.data)
-        # Write elements sets
-        for elset in self.elsets:
-            data_section.append(elset.keyword)
-            data_section.append(elset.data)
-        # Write sections ()
+        # Write sets
+        for pset in self.sets:
+            data_section.append(pset.data)
+        # Write sections
         for section in self.elements_by_section.keys():
             for elset in self.elsets_by_section[section]:
                 data_section.append(section.data)  #TODO CHECK
@@ -115,6 +109,7 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import SolidSection
     from compas_fea2.backends.abaqus.components import BeamElement
     from compas_fea2.backends.abaqus.components import SolidElement
+    from compas_fea2.backends.abaqus.components import Set
 
     my_nodes = []
     for k in range(5):
@@ -128,7 +123,9 @@ if __name__ == "__main__":
     el_two = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
     el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
-    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
+
+    nset = Set('test_neset', my_nodes)
+    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4], sets=[nset])
 
     print(my_part.data)
 

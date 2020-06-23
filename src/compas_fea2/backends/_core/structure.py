@@ -106,7 +106,7 @@ class StructureBase(object):
         Index of virtual elements (element centroid geometric keys).
     """
 
-    def __init__(self, path, name='compas_fea-Structure'):
+    def __init__(self, name='compas_fea-Structure'):
         self.constraints           = {}
         self.displacements         = {}
         self.elements              = {}
@@ -119,7 +119,6 @@ class StructureBase(object):
         self.name                  = name
         self.nodes                 = {}
         self.node_index            = {}
-        self.path                  = path
         self.results               = {}
         self.sections              = {}
         self.steps                 = {}
@@ -1157,7 +1156,7 @@ Steps
     # Save
     # ==============================================================================
 
-    def save_to_cfea(self, output=True):
+    def save_to_cfea(self, path, output=True):
         """Exports the Structure object to an .obj file through Pickle.
 
         Parameters
@@ -1170,7 +1169,7 @@ Steps
         None
         """
 
-        filename = '{0}{1}/{2}.cfea'.format(self.path, self.name, self.name)
+        filename = '{0}{1}/{2}.cfea'.format(path, self.name, self.name)
 
         with open(filename, 'wb') as f:
             pickle.dump(self, f)

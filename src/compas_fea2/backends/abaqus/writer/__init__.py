@@ -14,12 +14,13 @@ from __future__ import print_function
 
 # from .heading import *
 # from .bcs import *
-from .constraints import *
-from .elements import *
+# from .constraints import *
+# from .elements import *
 # from .materials import *
-from .steps import *
-from .sets import *
-from .writer import *
+# from .steps import *
+# from .sets import *
+# from .writer import *
 
+from .input_file import *
 
 __all__ = [name for name in dir() if not name.startswith('_')]

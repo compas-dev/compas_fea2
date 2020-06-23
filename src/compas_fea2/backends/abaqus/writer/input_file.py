@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 __all__ = [
-    'Input',
+    'InputFile',
 ]
 class InputFile():
 
@@ -38,7 +38,7 @@ class InputFile():
         section_data = [header]
         for part in structure.parts:
             section_data.append(part.data)
-        return section_data
+        return ''.join(section_data)
 
     def _generate_assembly_section(self, structure):
         return structure.assembly.data
@@ -48,26 +48,26 @@ class InputFile():
         section_data = [header]
         for material in structure.assembly.materials:
             section_data.append(material.data)
-        return section_data
+        return ''.join(section_data)
 
     def _generate_int_props_section(self, structure):
         # # Write interaction properties
         # for interaction_property in self.interaction_properties:
         #     interaction_property.write_data_line(f)
-        pass
+        return ''
 
     def _generate_interactions_section(self, structure):
         #
         # # Write interactions
         # for interaction in self.interactions:
         #     interaction.write_data_line(f)
-        pass
+        return ''
 
     def _generate_bcs_section(self, structure):
         # # Write boundary conditions
         # for bc in self.bcs:
         #     bc.write_data(f)
-        pass
+        return ''
 
     def _generate_steps_section(self, structure):
         # # Write steps
@@ -80,11 +80,11 @@ class InputFile():
         #     for output in self.outputs[step]:
         #         output.write_data_line(f)
         #     step.write_keyword_end(f)
-        pass
+        return ''
 
     def _generate_data(self):
-        return ''.join(self.heading, self.parts_header ,self.parts, self.assembly,
-                       self.materials, self.int_props, self.interactions, self.bcs, self.steps)
+        return ''.join([self.heading, self.parts, self.assembly,
+                       self.materials, self.int_props, self.interactions, self.bcs, self.steps])
 
     # ==============================================================================
     # General methods
@@ -94,3 +94,42 @@ class InputFile():
         with open(self.path, 'w') as f:
             f.writelines(self.data)
 
+if __name__ == "__main__":
+    from compas_fea2.backends.abaqus.components import Node
+    from compas_fea2.backends.abaqus.components import Concrete
+    from compas_fea2.backends.abaqus.components import ElasticIsotropic
+    from compas_fea2.backends.abaqus.components import BoxSection
+    from compas_fea2.backends.abaqus.components import SolidSection
+    from compas_fea2.backends.abaqus.components import BeamElement
+    from compas_fea2.backends.abaqus.components import SolidElement
+    from compas_fea2.backends.abaqus.components import Part
+    from compas_fea2.backends.abaqus.components import Set
+    from compas_fea2.backends.abaqus.components import Assembly
+    from compas_fea2.backends.abaqus.components import Instance
+    from compas_fea2.backends.abaqus import Structure
+
+    my_nodes = []
+    for k in range(5):
+        my_nodes.append(Node(k,[1+k,2-k,3]))
+
+    # material_one = Concrete('my_mat',1,2,3,4)
+    material_one = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
+    material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
+
+    section_A = SolidSection(name='section_A', material=material_one)
+    section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
+
+    el_one = SolidElement(key=0, connectivity=my_nodes[:4], section=section_A)
+    el_two = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
+    el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
+    el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
+
+    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
+
+    nset = Set('test_neset', my_nodes)
+
+    my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
+    my_assembly = Assembly(name='test', instances=[my_instance])
+
+    my_structure = Structure('test_structure', [my_part], my_assembly, [], [], [])
+    my_structure.write_input_file(path='C:/temp')

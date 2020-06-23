@@ -18,8 +18,8 @@ class Assembly():
         self.instances  = instances
         self.surfaces   = surfaces
         self.constraints = constraints
-
-        self.parts_by_material = self._get_materials()
+        self.materials = self._get_materials()
+        # self.parts_by_material = self._get_materials()
 
         self.data = self._generate_data()
 

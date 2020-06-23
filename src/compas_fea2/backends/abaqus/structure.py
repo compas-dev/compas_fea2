@@ -14,7 +14,7 @@ from compas_fea2.backends._core import StructureBase
 # from compas_fea2.backends.abaqus.components import Set
 # from compas_fea2.backends.abaqus.components.elements import *
 
-from compas_fea2.backends.abaqus.writer import Input
+from compas_fea2.backends.abaqus.writer import InputFile
 
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
@@ -31,7 +31,7 @@ __all__ = [
 class Structure(StructureBase):
 
     def __init__(self, name, parts, assembly, interactions, bcs, steps):
-        super(Structure, self).__init__(name)
+        super(Structure, self).__init__(name=name)
         self.parts = parts
         self.assembly = assembly
         self.interactions = interactions
@@ -56,12 +56,11 @@ class Structure(StructureBase):
         None
 
         """
-        directory='{0}{1}'.format(self.path, self.name)
-        filename = '{0}{1}/{2}.inp'.format(self.path, self.name, self.name)
+        # directory='{0}'.format(self.path, self.name)
+        filename = '{0}/{1}.inp'.format(path, self.name)
 
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
+        if not os.path.exists(path):
+            os.makedirs(path)
         if save:
             self.save_to_cfea()
 
@@ -72,7 +71,7 @@ class Structure(StructureBase):
         #     fields.append('u')
 
 
-        input_file = Input(self, filename)
+        input_file = InputFile(self, filename)
         input_file.write_to_file()
         if output:
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))

@@ -82,7 +82,7 @@ class GeneralStepBase(StepBase):
 
     """
 
-    def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=True, nlmat=True, displacements=None, loads=None, type='static', modify=True):
+    def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True, displacements=None, loads=None, stype='static', modify=True):
         StepBase.__init__(self, name=name)
 
         if not displacements:
@@ -102,9 +102,9 @@ class GeneralStepBase(StepBase):
         self.displacements = displacements
         self.loads         = loads
         self.modify        = modify
-        self.type          = type
+        self.stype          = stype
         self.attr_list.extend(['increments', 'iterations', 'factor', 'nlgeom', 'nlmat', 'displacements', 'loads',
-                               'type', 'tolerance', 'modify'])
+                               'stype', 'tolerance', 'modify'])
 
 
 class HeatStepBase(StepBase):
@@ -129,7 +129,7 @@ class HeatStepBase(StepBase):
 
     """
 
-    def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, type='heat transfer', duration=1):
+    def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, stype='heat transfer', duration=1):
         StepBase.__init__(self, name=name)
 
         self.__name__    = 'HeatStep'
@@ -138,9 +138,9 @@ class HeatStepBase(StepBase):
         self.increments  = increments
         self.temp0       = temp0
         self.dTmax       = dTmax
-        self.type        = type
+        self.stype        = stype
         self.duration    = duration
-        self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'type', 'duration'])
+        self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'stype', 'duration'])
 
 
 class ModalStepBase(StepBase):
@@ -161,7 +161,7 @@ class ModalStepBase(StepBase):
 
     """
 
-    def __init__(self, name, modes=10, increments=100, displacements=None, type='modal'):
+    def __init__(self, name, modes=10, increments=100, displacements=None, stype='modal'):
         StepBase.__init__(self, name=name)
 
         if not displacements:
@@ -172,8 +172,8 @@ class ModalStepBase(StepBase):
         self.modes         = modes
         self.increments    = increments
         self.displacements = displacements
-        self.type          = type
-        self.attr_list.extend(['modes', 'increments', 'displacements', 'type'])
+        self.stype          = stype
+        self.attr_list.extend(['modes', 'increments', 'displacements', 'stype'])
 
 
 class HarmonicStepBase(StepBase):
@@ -198,7 +198,7 @@ class HarmonicStepBase(StepBase):
 
     """
 
-    def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None, type='harmonic'):
+    def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None, stype='harmonic'):
         StepBase.__init__(self, name=name)
 
         if not displacements:
@@ -214,8 +214,8 @@ class HarmonicStepBase(StepBase):
         self.loads         = loads
         self.factor        = factor
         self.damping       = damping
-        self.type          = type
-        self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'type'])
+        self.stype          = stype
+        self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
 class BucklingStepBase(StepBase):
@@ -242,7 +242,7 @@ class BucklingStepBase(StepBase):
 
     """
 
-    def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, type='buckle',
+    def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, stype='buckle',
                  step=None):
         StepBase.__init__(self, name=name)
 
@@ -259,9 +259,9 @@ class BucklingStepBase(StepBase):
         self.factor        = factor
         self.displacements = displacements
         self.loads         = loads
-        self.type          = type
+        self.stype          = stype
         self.step          = step
-        self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'type', 'step'])
+        self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'stype', 'step'])
 
 
 class AcousticStepBase(StepBase):
@@ -293,7 +293,7 @@ class AcousticStepBase(StepBase):
     """
 
     def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,
-                 factor=1.0, damping=None, type='acoustic'):
+                 factor=1.0, damping=None, stype='acoustic'):
         StepBase.__init__(self, name=name)
 
         if not displacements:
@@ -315,6 +315,6 @@ class AcousticStepBase(StepBase):
         self.loads         = loads
         self.factor        = factor
         self.damping       = damping
-        self.type          = type
+        self.stype          = stype
         self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor',
-                               'damping', 'type'])
+                               'damping', 'stype'])

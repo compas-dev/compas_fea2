@@ -167,10 +167,12 @@ from __future__ import print_function
 import os
 
 # additional software-based classes
+from .nodes import *
 from .assembly import *
 from .parts import *
+from .interactions import *
 from .bcs import *
-from .set import *
+from .sets import *
 from .constraints import *
 from .elements import *
 from .steps import *
@@ -178,7 +180,7 @@ from .steps import *
 #from .load_combos import *
 from .loads import *
 from .materials import *
-from .properties import *
+# from .properties import *
 from .sections import *
 from .misc import *
 

@@ -33,208 +33,125 @@ __all__ = [
     'RollerDisplacementXZ'
 ]
 
+dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
+def _generate_data(obj):
+    data_section = []
+    line = """** Name: {} Type: Displacement/Rotation
+*Boundary""".format(obj.name)
+    data_section.append(line)
+    c=1
+    for dof in dofs:
+        if dof in obj.components.keys() and obj.components[dof]!=None:
+            if not obj.components[dof]:
+                line = """{}, {}, {}\n""".format(obj.bset, c, c)
+            else:
+                line = """{}, {}, {}, {}\n""".format(obj.bset, c, c, obj.components[dof])
+            data_section.append(line)
+        c+=1
+    return '\n'.join(data_section)
 class GeneralDisplacement(GeneralDisplacementBase):
-    """Initialises the base GeneralDisplacement object.
 
-    Parameters
-    ----------
-    name : str
-        Name of the Displacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    x : float
-        Value of x translation.
-    y : float
-        Value of y translation.
-    z : float
-        Value of z translation.
-    xx : float
-        Value of xx rotation.
-    yy : float
-        Value of yy rotation.
-    zz : float
-        Value of zz rotation.
-    axes : str
-        'local' or 'global' co-ordinate axes.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Displacement object.
-    nodes : str
-        Node set string or nodes list the displacement is applied to.
-    components : dict
-        Values of x, y, z, xx, yy, zz degrees-of-freedom.
-    axes : str
-        'local' or 'global' coordinate axes.
-
-    """
-    pass
-
+    def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
 
 class FixedDisplacement(FixedDisplacementBase):
-    """A fixed nodal displacement boundary condition.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacement, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class PinnedDisplacement(PinnedDisplacementBase):
-    """A pinned nodal displacement boundary condition.
 
-    Parameters
-    ----------
-    name : str
-        Name of the PinnedDisplacement object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-
-    """
-    pass
+    def __init__(self, name, bset, axes='global'):
+        super(PinnedDisplacement, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
-    """A pinned nodal displacement boundary condition clamped in XX.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementXX object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
-
-    """
-    pass
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementXX, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
-    """A pinned nodal displacement boundary condition clamped in YY.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementYY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
-
-    """
-    pass
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementYY, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
-    """A pinned nodal displacement boundary condition clamped in ZZ.
 
-    Parameters
-    ----------
-    name : str
-        Name of the FixedDisplacementZZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
-
-    """
-    pass
+    def __init__(self, name, bset, axes='global'):
+        super(FixedDisplacementZZ, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
 
 class RollerDisplacementX(RollerDisplacementXBase):
-    """A pinned nodal displacement boundary condition released in X.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementX object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementX, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class RollerDisplacementY(RollerDisplacementYBase):
-    """A pinned nodal displacement boundary condition released in Y.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementY, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class RollerDisplacementZ(RollerDisplacementZBase):
-    """A pinned nodal displacement boundary condition released in Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementZ object.
-    nodes : str
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementZ, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
-    """A pinned nodal displacement boundary condition released in X and Y.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementXY object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementXY, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class RollerDisplacementYZ(RollerDisplacementYZBase):
-    """A pinned nodal displacement boundary condition released in Y and Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementYZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementYZ, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
 
 class RollerDisplacementXZ(RollerDisplacementXZBase):
-    """A pinned nodal displacement boundary condition released in X and Z.
 
-    Parameters
-    ----------
-    name : str
-        Name of the RollerDisplacementXZ object.
-    nodes : str, list
-        Node set string or nodes list the displacement is applied to.
-    axes : str
-        'local' or 'global' co-ordinate axes.
+    def __init__(self, name, bset, axes='global'):
+        super(RollerDisplacementXZ, self).__init__(name, None, axes)
+        self.bset = bset
+        self.data = _generate_data(self)
 
-    """
-    pass
+
+if __name__ == "__main__":
+    d = RollerDisplacementXZ('test_disp', 'test set')
+    print(d.data)
+    # f=open('C:/temp/test_input.inp','w')
+    # # d.write_keyword(f)
+    # d.write_data(f)
+    # f.close()
+
+

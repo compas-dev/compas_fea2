@@ -21,14 +21,13 @@ from compas_fea2.backends._core import TrussSectionBase
 from compas_fea2.backends._core import StrutSectionBase
 from compas_fea2.backends._core import TieSectionBase
 from compas_fea2.backends._core import SpringSectionBase
-from compas_fea2.backends._core import MassSectionBase
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
 
 __all__ = [
-    'Section',
+    'MassSection',
     'AngleSection',
     'BoxSection',
     'CircularSection',
@@ -44,50 +43,44 @@ __all__ = [
     'StrutSection',
     'TieSection',
     'SpringSection',
-    'MassSection'
 ]
 
+labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
 
-class Section(SectionBase):
+#TODO: elset should come from the element the section is assigned to and not form the section itself...
 
-    """ Initialises base Section object.
-
-    Parameters
-    ----------
-    name : str
-        Section object name.
-
-    Attributes
-    ----------
-    name : str
-        Section object name.
-    geometry : dict
-        Geometry of the Section.
-
-    """
-
-    def __init__(self, name):
-        super(Section, self).__init__(name)
+def _generate_beam_data(obj):
+    properties = []
+    for l in labels:
+        if l in obj.geometry.keys():
+            properties.append(str(obj.geometry[l]))
+    return """** Section: {}
+*Beam Section, elset={}, material={}
+{}\n""".format(obj.name, obj.elset, obj.material.name, ','.join(properties))
 
 
 # ==============================================================================
 # 0D
 # ==============================================================================
 
-class MassSection(MassSectionBase):
-
-    """ Section for mass elements.
+class MassSection(SectionBase):
+    """Section for mass elements.
 
     Parameters
     ----------
     name : str
         Section name.
-
+    mass : float
+        Point mass value.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, mass, elset=None):
         super(MassSection, self).__init__(name)
+        self.mass = mass
 
+        self.data = """** Section: {}
+*Mass, elset={}
+{}\n""".format(name, elset, mass)
 
 # ==============================================================================
 # 1D
@@ -95,261 +88,95 @@ class MassSection(MassSectionBase):
 
 class AngleSection(AngleSectionBase):
 
-    """ Uniform thickness angle cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    t : float
-        Thickness.
-
-    Notes
-    -----
-    - Ixy not yet calculated.
-
-    """
-
-    def __init__(self, name, b, h, t):
-        super(AngleSection, self).__init__(name, b, h, t)
+    def __init__(self, name, b, h, t, material, elset=None):
+        super(AngleSection, self).__init__(name, b, h, t, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class BoxSection(BoxSectionBase):
 
-    """ Hollow rectangular box cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
-
-    """
-
-    def __init__(self, name, b, h, tw, tf):
-        super(BoxSection, self).__init__(name, b, h, tw, tf)
+    def __init__(self, name, b, h, tw, tf, material, elset=None):
+        super(BoxSection, self).__init__(name, b, h, tw, tf, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class CircularSection(CircularSectionBase):
 
-    """ Solid circular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Radius.
-
-    """
-
-    def __init__(self, name, r):
-        super(CircularSection, self).__init__(name, r)
+    def __init__(self, name, r, material, elset=None):
+        super(CircularSection, self).__init__(name, r, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class GeneralSection(GeneralSectionBase):
 
-    """ General cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-    Ixx : float
-        Second moment of area about axis x-x.
-    Ixy : float
-        Cross moment of area.
-    Iyy : float
-        Second moment of area about axis y-y.
-    J : float
-        Torsional rigidity.
-    g0 : float
-        Sectorial moment.
-    gw : float
-        Warping constant.
-
-    """
-
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw):
-        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw)
+    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material, elset=None):
+        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class ISection(ISectionBase):
 
-    """ Equal flanged I-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
-
-    """
-
-    def __init__(self, name, b, h, tw, tf):
-        super(ISection, self).__init__(name, b, h, tw, tf)
+    def __init__(self, name, b, h, tw, tf, material, elset=None):
+        super(ISection, self).__init__(name, b, h, tw, tf, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class PipeSection(PipeSectionBase):
 
-    """ Hollow circular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Outer radius.
-    t : float
-        Wall thickness.
-
-    """
-
-    def __init__(self, name, r, t):
-        super(PipeSection, self).__init__(name, r, t)
+    def __init__(self, name, r, t, material, elset=None):
+        super(PipeSection, self).__init__(name, r, t, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class RectangularSection(RectangularSectionBase):
 
-    """ Solid rectangular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-
-    """
-
-    def __init__(self, name, b, h):
-        super(RectangularSection, self).__init__(name, b, h)
+    def __init__(self, name, b, h, material, elset=None):
+        super(RectangularSection, self).__init__(name, b, h, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class TrapezoidalSection(TrapezoidalSectionBase):
 
-    """ Solid trapezoidal cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b1 : float
-        Width at bottom.
-    b2 : float
-        Width at top.
-    h : float
-        Height.
-
-    Notes
-    -----
-    - J not yet calculated.
-
-    """
-
-    def __init__(self, name, b1, b2, h):
-        super(TrapezoidalSection, self).__init__( name, b1, b2, h)
+    def __init__(self, name, b1, b2, h, material, elset=None):
+        super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
+        self.elset = elset
+        self.data = _generate_beam_data(self)
 
 
 class TrussSection(TrussSectionBase):
 
-    """ For use with truss elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(TrussSection, self).__init__(name, A)
+    def __init__(self, name, A, material, elset=None):
+        super(TrussSection, self).__init__(name, A, material)
+        self.elset = elset
+        self.data = """** Section: {}
+*Solid Section, elset={}, material={}
+{},\n""".format(self.name, elset, self.material.name, self.geometry['A'])
 
 
 class StrutSection(StrutSectionBase):
 
-    """ For use with strut elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(StrutSection, self).__init__(name, A)
-
+    def __init__(self, name, A, material, elset=None):
+        super(StrutSection, self).__init__(name, A, material)
+        self.elset = elset
 
 class TieSection(TieSectionBase):
 
-    """ For use with tie elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(TieSection, self).__init__(name, A)
-
+    def __init__(self, name, A, material, elset=None):
+        super(TieSection, self).__init__(name, A, material)
+        self.elset = elset
 
 class SpringSection(SpringSectionBase):
 
-    """ For use with spring elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    forces : dict
-        Forces data for non-linear springs.
-    displacements : dict
-        Displacements data for non-linear springs.
-    stiffness : dict
-        Elastic stiffness for linear springs.
-
-    Notes
-    -----
-    - Force and displacement data should range from negative to positive values.
-    - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
-    - Directions are 'axial', 'lateral', 'rotation'.
-
-    """
-
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
         super(SpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
-
+        self.elset = elset
 
 # ==============================================================================
 # 2D
@@ -357,37 +184,30 @@ class SpringSection(SpringSectionBase):
 
 class ShellSection(ShellSectionBase):
 
-    """ Section for shell elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
+    """
+    int_points : int
+        number of integration points. 5 by default.
 
     """
-    pass
-    # def __init__(self, name, t):
-    #     super(ShellSection, self).__init__(name, t)
+
+    def __init__(self, name, t, material, elset=None, int_points=5):
+        super(ShellSection, self).__init__(name, t, material)
+        self.__doc__ += ShellSection.__doc__
+        self.elset = elset
+        self.int_points = int_points
+        self.data = """** Section: {}
+*Shell Section, elset={}, material={}
+{}, {}\n""".format(self.name, self.elset, self.material.name, self.t, self.int_points)
 
 
 class MembraneSection(MembraneSectionBase):
 
-    """ Section for membrane elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
-
-    """
-    pass
-    # def __init__(self, name, t):
-    #     super(MembraneSection, self).__init__(name, t)
-
+    def __init__(self, name, t, material, elset=None):
+        super(MembraneSection, self).__init__(name, t, material)
+        self.elset = elset
+        self.data = """** Section: {}
+*Membrane Section, elset={}, material={}
+{},\n""".format(self.name, elset, self.material.name, self.t)
 
 # ==============================================================================
 # 3D
@@ -395,17 +215,24 @@ class MembraneSection(MembraneSectionBase):
 
 class SolidSection(SolidSectionBase):
 
-    """ Section for solid elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-
-    """
-    pass
-    # def __init__(self, name):
-    #     super(SolidSection, self).__init__(name)
+    def __init__(self, name, material, elset=None):
+        super(SolidSectionBase, self).__init__(name, material)
+        self.elset = elset
+        self.data = """** Section: {}
+*Solid Section, elset={}, material={}
+,\n""".format(self.name, elset, self.material.name)
 
 
+if __name__ == "__main__":
 
+    from compas_fea2.backends.abaqus.components import Concrete
+
+    conc = Concrete('my_mat',1,2,3,4)
+    solid = BoxSection('mysec', 100, 20,1,2,conc)
+    # solid = SolidSection('mysec',conc)
+    # f=open('/home/fr/Downloads/test_input.inp','w')
+    # # f = open('C:/temp/input_temp.inp', 'w')
+    # solid.write_data('my_elset', f)
+    # f.close
+
+    print(solid.data)

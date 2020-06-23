@@ -15,8 +15,8 @@ abaqus
 
 """
 
-from .components import *
-from .job import *
+# from .components import *
+# from .job import *
 from .writer import *
 from .structure import *
 

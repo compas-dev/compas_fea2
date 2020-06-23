@@ -24,24 +24,13 @@ class Set(object):
         'node', 'element', 'surface_node', surface_element'.
     selection : list, dict
         The integer keys of the nodes, elements or the element numbers and sides.
-    index : int
-        Set index number.
-
-    Attributes
-    ----------
-    name : str
-        Name of the set.
-    type : str
-        'node', 'element', 'surface_node', surface_element'.
-    selection : list, dict
-        The integer keys of the nodes, elements or the element numbers and sides.
-    index : int
-        Set index number.
+    generate : bool
+        Automatically generates a set of elements/nodes between the two keys specified.
 
     """
 
     #TODO generate option might not be a good idea!
-    def __init__(self, name, selection, generate=False, instance=None):
+    def __init__(self, name, selection, generate=False):
 
         self.__name__  = 'Set'
         self.name      = name
@@ -51,7 +40,7 @@ class Set(object):
             self.stype = 'nset'
         else:
             self.stype = 'elset'
-        self.instance = instance
+        self.instance = None
 
         self.data = self._generate_data()
 

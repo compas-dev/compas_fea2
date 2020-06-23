@@ -5,6 +5,7 @@ from __future__ import print_function
 __all__ = [
     'InputFile',
 ]
+
 class InputFile():
 
     def __init__(self, structure, path):
@@ -93,6 +94,7 @@ class InputFile():
     def write_to_file(self):
         with open(self.path, 'w') as f:
             f.writelines(self.data)
+
 
 if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import Node

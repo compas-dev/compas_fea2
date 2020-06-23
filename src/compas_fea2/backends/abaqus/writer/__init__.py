@@ -21,6 +21,6 @@ from __future__ import print_function
 # from .sets import *
 # from .writer import *
 
-from .input_file import *
+# from .input_file import *
 
 __all__ = [name for name in dir() if not name.startswith('_')]

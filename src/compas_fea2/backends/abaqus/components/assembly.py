@@ -60,6 +60,7 @@ class Assembly():
         section_data.append(line)
         return ''.join(section_data)
 
+
 class Instance():
     """Initialises the Instance object.
 
@@ -72,6 +73,7 @@ class Instance():
         self.sets = sets
         for iset in sets:
             iset.instance = self.name
+            iset.data = iset._generate_data()
 
         self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 

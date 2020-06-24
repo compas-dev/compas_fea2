@@ -114,7 +114,7 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus import Structure
 
     my_nodes = []
-    for k in range(5):
+    for k in range(100):
         my_nodes.append(Node(k,[1+k,2-k,3]))
 
     # material_one = Concrete('my_mat',1,2,3,4)

@@ -14,7 +14,7 @@ __all__ = [
 
 class Set(object):
 
-    """Initialises base Set object.
+    """Initialises the Set object.
 
     Parameters
     ----------
@@ -68,7 +68,48 @@ class Set(object):
             data_section.append('{0}, {1}, 1'.format(self.selection[0].key, self.selection[-1].key))
         else:
             data_section.append(line)
+            data = []
             for s in self.selection:
-                # note: can be grouped in 16 elements
-                data_section.append(str(s.key))
+                data.append(str(s.key))
+            chunks = [data[x:x+15] for x in range(0, len(data), 15)]
+            for chunk in chunks:
+                data_section.append(', '.join(chunk))
         return '\n'.join(data_section) + '\n'
+
+
+class Surface():
+    """Initialises the Surfaces object.
+
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    selection : list
+        A list with either the Node or Element objects belonging to the set.
+    generate : bool
+        Automatically generates a set of elements/nodes between the two keys specified.
+    """
+
+    #TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
+    def __init__(self, name, elset, generate=False):
+
+        self.__name__  = 'Set'
+        self.name      = name
+        self.selection = selection
+        self.generate  = generate
+        if self.selection[0].__name__ == 'Node':
+            self.stype = 'nset'
+        else:
+            self.stype = 'elset'
+        self.instance = None
+
+        self.data = self._generate_data()
+
+    def data(self):
+        line = '*Surface, type=ELEMENT, NAME={0}'.format(self.name)
+        self.write_line('** ELEMENT, SIDE')
+
+        for element, sides in element_set.selection.items():
+            for side in sides:
+                self.write_line('{0}, {1}'.format(element + 1, side))
+                self.blank_line()

@@ -7,9 +7,45 @@ __all__ = [
 ]
 
 class Part():
-    """Initialises the Part object.
+    """Initialises base Assembly object.
 
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    nodes : list
+        A list with the Nodes objects belonging to the Part.
+    elements : list
+        A list with the Element objects belonging to the Part.
+    sets : list
+        A list with the Set objects belonging to the Part.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    nodes : list
+        Sorted list (by Node key) with the Nodes objects belonging to the Part.
+    elements : list
+        Sorted list (by Element key) with the Element objects belonging to the Part.
+    sets : list
+        A list with the Set objects belonging to the Part.
+    data : str
+        The data block for the generation of the input file.
+    elements_by_type : dict
+        Dictionary sorting the elements by unique element types.
+    elements_by_type : dict
+        Dictionary sorting the elements by unique element types.
+    elements_by_section : dict
+        Dictionary sorting the elements by unique sections.
+    elements_by_elset : dict
+        Dictionary sorting the elements by their element set.
+    elements_by_material : dict
+        Dictionary sorting the elements by unique materials.
+    data : str
+        The data block for the generation of the input file.
     """
+
     def __init__(self, name, nodes, elements, sets=[]):
         self.__name__ = 'Part'
         self.name = name

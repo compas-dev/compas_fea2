@@ -8,8 +8,33 @@ __all__ = [
 ]
 
 class Assembly():
-    """Initialises the Assembly object.
+    """Initialises base Assembly object.
 
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    instances : list
+        A list with the Instance objects belonging to the assembly.
+    surfaces : list
+        A list with the Surface objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    instances : list
+        A list with the Instance objects belonging to the assembly.
+    surfaces : list
+        A list with the Surface objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+    materials : list
+        A list of all the materials defined int the assembly.
+    data : str
+        The data block for the generation of the input file.
     """
 
     def __init__(self, name, instances=None, surfaces=[], constraints=[]):
@@ -19,7 +44,6 @@ class Assembly():
         self.surfaces   = surfaces
         self.constraints = constraints
         self.materials = self._get_materials()
-        # self.parts_by_material = self._get_materials()
 
         self.data = self._generate_data()
 
@@ -62,8 +86,31 @@ class Assembly():
 
 
 class Instance():
-    """Initialises the Instance object.
+    """Initialises base Assembly object.
 
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    part : list
+        A list with the Part object from which create the instance.
+    sets : list
+        A list with the Set objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    part : list
+        A list with the Part object from which create the instance.
+    sets : list
+        A list with the Set objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+    data : str
+        The data block for the generation of the input file.
     """
 
     def __init__(self, name, part, sets=[]):

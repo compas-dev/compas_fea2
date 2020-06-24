@@ -14,19 +14,16 @@ __all__ = [
 
 class Set(object):
 
-    """ Initialises base Set object.
+    """Initialises base Set object.
 
     Parameters
     ----------
     name : str
         Name of the set.
-    type : str
-        'node', 'element', 'surface_node', surface_element'.
-    selection : list, dict
-        The integer keys of the nodes, elements or the element numbers and sides.
+    selection : list
+        A list with either the Node or Element objects belonging to the set.
     generate : bool
         Automatically generates a set of elements/nodes between the two keys specified.
-
     """
 
     #TODO generate option might not be a good idea!
@@ -75,40 +72,3 @@ class Set(object):
                 # note: can be grouped in 16 elements
                 data_section.append(str(s.key))
         return '\n'.join(data_section) + '\n'
-
-
-
-# class PartNSet(Set):
-#     def __init__(self, name, selection):
-#         super(Set, self).__init__(name)
-#         self.part = part
-#         self.stype = 'nset'
-#         self.domain = 'part'
-#         self.data = self._generate_data()
-
-
-# class PartElSet(Set):
-#     def __init__(self, name, selection):
-#         super(Set, self).__init__(name, selection)
-#         self.part = None
-#         self.type = 'elset'
-#         self.domain = 'part'
-#         self.data = self._generate_data()
-
-
-# class AssemblyNSet(Set):
-#     def __init__(self, name, selection, instance):
-#         super(Set, self).__init__(name)
-#         self.instance = instance
-#         self.type = 'nset'
-#         self.domain = 'assembly'
-#         self.data = self._generate_data()
-
-
-# class AssemblyElSet(Set):
-#     def __init__(self, name, selection, instance):
-#         super(Set, self).__init__(name, selection)
-#         self.instance = instance
-#         self.type = 'elset'
-#         self.domain = 'assembly'
-#         self.data = self._generate_data()

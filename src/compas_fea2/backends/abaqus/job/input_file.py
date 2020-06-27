@@ -72,17 +72,11 @@ class InputFile():
         return ''.join(section_data)
 
     def _generate_steps_section(self, structure):
-        # # Write steps
-        # for step in self.steps:
-        #     step.write_header(f)
-        #     # Write loads
-        #     for load in self.loads[step]:
-        #         load.write_data_line(f)
-        #     # Write Output Reequests
-        #     for output in self.outputs[step]:
-        #         output.write_data_line(f)
-        #     step.write_keyword_end(f)
-        return ''
+        header = """**\n"""
+        section_data = [header]
+        for step in structure.steps:
+            section_data.append(step.data)
+        return ''.join(section_data)
 
     def _generate_data(self):
         return ''.join([self.heading, self.parts, self.assembly,
@@ -111,6 +105,10 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import Set
     from compas_fea2.backends.abaqus.components import Assembly
     from compas_fea2.backends.abaqus.components import Instance
+    from compas_fea2.backends.abaqus.components import GeneralStaticStep
+    from compas_fea2.backends.abaqus.components import PointLoad
+    from compas_fea2.backends.abaqus.components import FieldOutput
+
     from compas_fea2.backends.abaqus import Structure
 
     my_nodes = []
@@ -129,8 +127,7 @@ if __name__ == "__main__":
     el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
     el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
 
-    d1 = RollerDisplacementXZ('test_disp', 'test set')
-    d2 = FixedDisplacement('fixed_disp', 'fixed')
+
     my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
 
     nset = Set('test_neset', my_nodes)
@@ -138,5 +135,12 @@ if __name__ == "__main__":
     my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
     my_assembly = Assembly(name='test', instances=[my_instance])
 
-    my_structure = Structure('test_structure', [my_part], my_assembly, [], [d1,d2], [])
+    d1 = RollerDisplacementXZ('test_disp', 'test set')
+    d2 = FixedDisplacement('fixed_disp', 'fixed')
+
+    l1 = PointLoad('pload', nset, 10, 0, 0, 2.3)
+
+    fout = FieldOutput('my_fout')
+    step = GeneralStaticStep('gstep', loads=[l1], field_output=[fout])
+    my_structure = Structure('test_structure', [my_part], my_assembly, [], [d1,d2], [step])
     my_structure.write_input_file(path='C:/temp')

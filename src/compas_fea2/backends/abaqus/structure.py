@@ -5,22 +5,15 @@ from __future__ import print_function
 import os
 import pickle
 
-# from compas_fea.utilities import combine_all_sets
-# from compas_fea2.utilities import group_keys_by_attribute
-# from compas_fea2.utilities import group_keys_by_attributes
-
 from compas_fea2.backends._core import StructureBase
-
-# from compas_fea2.backends.abaqus.components import Set
-# from compas_fea2.backends.abaqus.components.elements import *
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-# from compas_fea2.backends.abaqus.writer import Writer
-
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Francesco Ranaudo (github.com/franaudo),
+#            Andrew Liew (github.com/andrewliew),
+#            Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 
 __all__ = [

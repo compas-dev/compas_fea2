@@ -9,6 +9,7 @@ from __future__ import print_function
 
 __all__ = [
     'Set',
+    'Surface',
 ]
 
 
@@ -91,7 +92,7 @@ class Surface():
     """
 
     #TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
-    def __init__(self, name, elset, generate=False):
+    def __init__(self, name, set, generate=False):
 
         self.__name__  = 'Set'
         self.name      = name
@@ -106,7 +107,7 @@ class Surface():
         self.data = self._generate_data()
 
     def data(self):
-        line = '*Surface, type=ELEMENT, NAME={0}'.format(self.name)
+        line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
         self.write_line('** ELEMENT, SIDE')
 
         for element, sides in element_set.selection.items():

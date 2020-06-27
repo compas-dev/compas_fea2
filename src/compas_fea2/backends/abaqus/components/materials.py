@@ -73,7 +73,6 @@ class Stiff(StiffBase):
 
 class ElasticOrthotropic(ElasticOrthotropicBase):
     NotImplemented
-    pass
 
 
 # ==============================================================================
@@ -241,7 +240,6 @@ class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
 
 class ThermalMaterial(ThermalMaterialBase):
     NotImplemented
-    pass
 
 
 class UserMaterial(MaterialBase):

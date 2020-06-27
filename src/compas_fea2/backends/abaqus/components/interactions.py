@@ -10,7 +10,7 @@ class Interaction():
     """Initialises the Interaction object.
 
     """
-    pass
+    NotImplemented
     # def __init__(self, name, nodes, elements, nsets=[], elsets=[]):
     #     self.__name__ = 'Part'
     #     self.name = name

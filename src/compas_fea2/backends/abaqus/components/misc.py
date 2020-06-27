@@ -18,65 +18,12 @@ __all__ = [
 
 
 class Misc(MiscBase):
-
-    """ Initialises base Misc object.
-
-    Parameters
-    ----------
-    name : str
-        Misc object name.
-
-    Returns
-    -------
-    None
-
-    """
-    pass
-    # def __init__(self, name):
-    #     super(Misc, self).__init__(name)
+    NotImplemented
 
 
 class Amplitude(AmplitudeBase):
-
-    """ Initialises an Amplitude object to act as a discretised function f(x).
-
-    Parameters
-    ----------
-    name : str
-        Amplitude object name.
-    values : list
-        Amplitude function value pairs [[x0, y0], [x1, y1], ..].
-
-    Returns
-    -------
-    None
-
-    """
-    pass
-    # def __init__(self, name, values):
-    #     super(Amplitude, self).__init__(name, values)
+    NotImplemented
 
 
 class Temperatures(TemperaturesBase):
-
-    """ Define nodal temperatures data.
-
-    Parameters
-    ----------
-    name : str
-        Temperature object name.
-    file : str
-        Path of nodal temperatures file to extract data from.
-    values : list
-        List of [[node, temperature, time], ...] data.
-    tend : float
-        End time in seconds to read data till.
-
-    Returns
-    -------
-    None
-
-    """
-    pass
-    # def __init__(self, name, file, values, tend):
-    #     super(Temperatures, self).__init__(name, file, values, tend)
+    NotImplemented

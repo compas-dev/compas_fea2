@@ -198,6 +198,7 @@ from .materials import *
 # from .properties import *
 from .sections import *
 from .misc import *
+from .outputs import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

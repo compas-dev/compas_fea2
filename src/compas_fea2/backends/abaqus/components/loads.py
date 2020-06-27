@@ -33,88 +33,85 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-def _write_load_data(obj, f):
-    line = """** Name: {} Type: Concentrated force
-*Cload, OP={0}\n""".format(obj.name, obj.op)
-    f.write(line)
-    c=1
-    for dof in dofs:
-        if dof in obj.components.keys() and obj.components[dof]!=None:
-            if not obj.components[dof]:
-                line = """{}, {}, {}\n""".format(obj.bset, c, c)
-            else:
-                line = """{}, {}, {}, {}\n""".format(obj.bset, c, c, obj.components[dof])
-            f.write(line)
-        c+=1
-
 class PrestressLoad(PrestressLoadBase):
-    """Pre-stress [units: N/m2] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the PrestressLoad object.
-    elements : str, list
-        Element set or element keys the prestress is applied to.
-    sxx : float
-        Value of prestress for axial stress component sxx.
-
-    """
-    pass
+    NotImplemented
     # def __init__(self, name, elements, sxx):
     #     super(PrestressLoad, self).__init__(name, elements, sxx)
 
 
 class PointLoad(PointLoadBase):
-    def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-        super(PointLoad, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+    def __init__(self, name, selection, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
+        super(PointLoad, self).__init__(name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
 
-    def write_data(self, f):
-        _write_load_data(self, f)
+        self.selection = selection
+        if modify:
+            self.op = 'NEW'
+        else:
+            self.op = 'MOD'
+        if follow:
+            self.follow = ', follower'
+        else:
+            self.follow = ''
+
+        self.data = self._generate_data()
+
+    def _generate_data(self):
+        data_section = []
+        line = """** Name: {} Type: Concentrated Force
+*Cload, OP={}{}""".format(self.name, self.op, self.follow)
+        data_section.append(line)
+        c=1
+        for dof in dofs:
+            if self.components[dof]:
+                line = """{}, {}, {}""".format(self.selection.name, c, self.components[dof])
+                data_section.append(line)
+            c+=1
+        return '\n'.join(data_section) +'\n'
+
 
 class LineLoad(LineLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
     #     super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
 
 
 class AreaLoad(AreaLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, x, y, z, axes):
     #     super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
 
 
 class GravityLoad(GravityLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, g, x, y, z):
     #     super(GravityLoad, self).__init__(name, elements, g, x, y, z)
 
 
 class ThermalLoad(ThermalLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, temperature):
     #     super(ThermalLoad, self).__init__(name, elements, temperature)
 
 
 class TributaryLoad(TributaryLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, structure, name, mesh, x, y, z, axes):
     #     super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
 
 
 class HarmoniPointLoadBase(HarmonicPointLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, nodes, x, y, z, xx, yy, zz):
     #     super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
 
 
 class HarmonicPressureLoad(HarmonicPressureLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, pressure, phase):
     #     super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
 
 
 class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
-    pass
+    NotImplemented
     # def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
     #     super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)

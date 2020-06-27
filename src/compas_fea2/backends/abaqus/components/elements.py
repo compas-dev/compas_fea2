@@ -174,9 +174,6 @@ class ShellElement(ShellElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(ShellElement, self).__init__()
     def __init__(self, key, connectivity, section, elset=None, thermal=None):
         super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
         if not elset:
@@ -189,7 +186,7 @@ class ShellElement(ShellElementBase):
         elif len(self.connectivity) == 4:
             self.eltype = 'S4'
         else:
-            NotImplemented
+            raise NotImplementedError
 
 
 # class FaceElement(FaceElementBase):
@@ -206,14 +203,7 @@ class ShellElement(ShellElementBase):
 
 
 class MembraneElement(MembraneElementBase):
-    """A shell element that resists only axial loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
+    NotImplemented
     # def __init__(self):
     #     super(MembraneElement, self).__init__()
 

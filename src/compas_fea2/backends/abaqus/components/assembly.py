@@ -8,8 +8,33 @@ __all__ = [
 ]
 
 class Assembly():
-    """Initialises the Assembly object.
+    """Initialises base Assembly object.
 
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    instances : list
+        A list with the Instance objects belonging to the assembly.
+    surfaces : list
+        A list with the Surface objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    instances : list
+        A list with the Instance objects belonging to the assembly.
+    surfaces : list
+        A list with the Surface objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+    materials : list
+        A list of all the materials defined int the assembly.
+    data : str
+        The data block for the generation of the input file.
     """
 
     def __init__(self, name, instances=None, surfaces=[], constraints=[]):
@@ -19,7 +44,6 @@ class Assembly():
         self.surfaces   = surfaces
         self.constraints = constraints
         self.materials = self._get_materials()
-        # self.parts_by_material = self._get_materials()
 
         self.data = self._generate_data()
 
@@ -46,7 +70,7 @@ class Assembly():
         return list(set(materials))
 
     def _generate_data(self):
-        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**'.format(self.name)
+        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**\n'.format(self.name)
         section_data = [line]
         for instance in self.instances:
             section_data.append(instance.data)
@@ -56,13 +80,37 @@ class Assembly():
             section_data.append(surface.data)
         for constraint in self.constraints:
             section_data.append(constraint.data)
-        line = '*End Assembly\n**'
+        line = '*End Assembly\n**\n'
         section_data.append(line)
         return ''.join(section_data)
 
-class Instance():
-    """Initialises the Instance object.
 
+class Instance():
+    """Initialises base Assembly object.
+
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    part : list
+        A list with the Part object from which create the instance.
+    sets : list
+        A list with the Set objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    part : list
+        A list with the Part object from which create the instance.
+    sets : list
+        A list with the Set objects belonging to the assembly.
+    constraints : list
+        A list with the Constraint objects belonging to the assembly.
+    data : str
+        The data block for the generation of the input file.
     """
 
     def __init__(self, name, part, sets=[]):
@@ -72,6 +120,7 @@ class Instance():
         self.sets = sets
         for iset in sets:
             iset.instance = self.name
+            iset.data = iset._generate_data()
 
         self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 

@@ -77,7 +77,7 @@ class ElasticIsotropicBase(MaterialBase):
         Can take compression.
     """
 
-    def __init__(self, name, E, v, p, tension=True, compression=True):
+    def __init__(self, name, E, v, p):
         MaterialBase.__init__(self, name=name)
         self.__name__    = 'ElasticIsotropic'
         self.name        = name
@@ -85,8 +85,6 @@ class ElasticIsotropicBase(MaterialBase):
         self.v           = {'v': v}
         self.G           = {'G': 0.5 * E / (1 + v)}
         self.p           = p
-        self.tension     = tension
-        self.compression = compression
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
@@ -102,7 +100,7 @@ class StiffBase(ElasticIsotropicBase):
     """
 
     def __init__(self, name, E=10**13):  #NOTE: depending on the unit used, this might not be correct.
-        ElasticIsotropic.__init__(self, name=name, E=E, v=0.3, p=10**(-1))
+        ElasticIsotropicBase.__init__(self, name=name, E=E, v=0.3, p=10**(-1))
         self.__name__ = 'Stiff'
 
 
@@ -143,7 +141,7 @@ class ElasticOrthotropicBase(MaterialBase):
     - Can be created but is currently not implemented.
     """
 
-    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p, tension=True, compression=True):
+    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
         MaterialBase.__init__(self, name=name)
         self.__name__    = 'ElasticOrthotropic'
         self.name        = name
@@ -151,8 +149,6 @@ class ElasticOrthotropicBase(MaterialBase):
         self.v           = {'vxy': vxy, 'vyz': vyz, 'vzx': vzx}
         self.G           = {'Gxy': Gxy, 'Gyz': Gyz, 'Gzx': Gzx}
         self.p           = p
-        self.tension     = tension
-        self.compression = compression
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression'])
 
 

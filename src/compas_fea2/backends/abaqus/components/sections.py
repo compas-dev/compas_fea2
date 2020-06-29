@@ -55,8 +55,8 @@ def _generate_beam_data(obj):
         if l in obj.geometry.keys():
             properties.append(str(obj.geometry[l]))
     return """** Section: {}
-*Beam Section, elset={}, material={}
-{}\n""".format(obj.name, obj.elset, obj.material.name, ','.join(properties))
+*Beam Section, elset={}, material={}, section={}
+{}\n""".format(obj.name, obj.elset, obj.material.name, obj.stype, ','.join(properties))
 
 
 # ==============================================================================
@@ -94,12 +94,16 @@ class AngleSection(AngleSectionBase):
         self.data = _generate_beam_data(self)
 
 
-class BoxSection(BoxSectionBase):
+class BoxSection(SectionBase):
 
-    def __init__(self, name, b, h, tw, tf, material, elset=None):
-        super(BoxSection, self).__init__(name, b, h, tw, tf, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+    def __init__(self, name, a, b, t1, t2, t3, t4, material):
+        super(BoxSection, self).__init__(name, material)
+        self.elset = self.name
+        self.stype = 'box'
+        self.properties = [str(a), str(b), str(t1), str(t2), str(t3), str(t4)]
+        self.data = """** Section: {}
+*Beam Section, elset={}, material={}, section={}
+{}\n""".format(self.name, self.elset, self.material.name, self.stype, ','.join(self.properties))
 
 
 class CircularSection(CircularSectionBase):

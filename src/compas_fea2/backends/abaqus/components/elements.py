@@ -84,24 +84,17 @@ class MassElement():
 # ==============================================================================
 
 class BeamElement(BeamElementBase):
-    """A 1D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
-    """
 
     def __init__(self, key, connectivity, section, elset=None, thermal=None):
         super(BeamElement, self).__init__(key, connectivity, section, thermal=None)
-        if not elset:
-            self.elset = self.section.name
+        if elset:
+            self.elset = elset.name
         else:
-            self.elset = elset
+            self.elset = self.section.name
         self.eltype = 'B31'
 
         self.keyword = _generate_keyword(self)
-        self.data    = '{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1])
+        self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 
 
 # class SpringElement(SpringElementBase):
@@ -174,9 +167,6 @@ class ShellElement(ShellElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(ShellElement, self).__init__()
     def __init__(self, key, connectivity, section, elset=None, thermal=None):
         super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
         if not elset:
@@ -189,7 +179,7 @@ class ShellElement(ShellElementBase):
         elif len(self.connectivity) == 4:
             self.eltype = 'S4'
         else:
-            NotImplemented
+            raise NotImplementedError
 
 
 # class FaceElement(FaceElementBase):
@@ -206,14 +196,7 @@ class ShellElement(ShellElementBase):
 
 
 class MembraneElement(MembraneElementBase):
-    """A shell element that resists only axial loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
+    NotImplemented
     # def __init__(self):
     #     super(MembraneElement, self).__init__()
 

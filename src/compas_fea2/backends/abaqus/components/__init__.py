@@ -6,14 +6,22 @@ abaqus.components
 .. currentmodule:: compas_fea2.backends.abaqus.components
 
 
-Structure
-=========
+Assembly
+========
 
 .. autosummary::
     :toctree: generated/
 
-    Structure
+    Assembly
+    Instance
 
+Parts
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Part
 
 Constraints
 ===========
@@ -44,6 +52,13 @@ Boundary Conditions
     RollerDisplacementYZ
     RollerDisplacementXZ
 
+Nodes
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Node
 
 Elements
 ========
@@ -51,7 +66,6 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    Node
     Element
     MassElement
     BeamElement
@@ -108,6 +122,7 @@ Materials
     ElasticOrthotropic
     ElasticPlastic
     Steel
+    UserMaterial
 
 
 Misc
@@ -145,8 +160,8 @@ Sections
     SpringSection
 
 
-Load Cases
-==========
+Steps
+=====
 
 .. autosummary::
     :toctree: generated/
@@ -183,6 +198,7 @@ from .materials import *
 # from .properties import *
 from .sections import *
 from .misc import *
+from .outputs import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

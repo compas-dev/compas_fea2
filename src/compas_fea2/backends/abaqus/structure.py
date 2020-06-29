@@ -5,23 +5,15 @@ from __future__ import print_function
 import os
 import pickle
 
-# from compas_fea.utilities import combine_all_sets
-# from compas_fea2.utilities import group_keys_by_attribute
-# from compas_fea2.utilities import group_keys_by_attributes
-
 from compas_fea2.backends._core import StructureBase
 
-# from compas_fea2.backends.abaqus.components import Set
-# from compas_fea2.backends.abaqus.components.elements import *
-
-from compas_fea2.backends.abaqus.writer import InputFile
-
+from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-# from compas_fea2.backends.abaqus.writer import Writer
-
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Francesco Ranaudo (github.com/franaudo),
+#            Andrew Liew (github.com/andrewliew),
+#            Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 
 __all__ = [
@@ -56,84 +48,20 @@ class Structure(StructureBase):
         None
 
         """
-        # directory='{0}'.format(self.path, self.name)
+
         filename = '{0}/{1}.inp'.format(path, self.name)
 
         if not os.path.exists(path):
             os.makedirs(path)
+
         if save:
             self.save_to_cfea()
-
-        # if isinstance(fields, str):
-        #     fields = [fields]
-
-        # if 'u' not in fields:
-        #     fields.append('u')
-
 
         input_file = InputFile(self, filename)
         input_file.write_to_file()
         if output:
             print('***** Abaqus input file generated: {0} *****\n'.format(filename))
 
-        # # Open input file
-        # f=open(self.path,'w')
-
-        # # write heading
-        # self.write_heading(self.name, self.job_name, f)
-        # # Write parts
-        # for part in self.parts:
-        #     part.write_keyword_start(f)
-        #     part.write_data(f)
-        #     part.write_keyword_end(f)
-
-        # # Write Assembly
-        # self.assembly.write_keyword_start(f)
-        # # Write instances
-        # for instance in self.assembly.instances:
-        #     instance.write_data_line(f)
-        # # Write assembly node sets
-        # for nset in self.assembly.nsets:
-        #     nset.write_data_line(f)
-        # # Write assembly element sets
-        # for elset in self.assembly.elsets:
-        #     elset.write_data_line(f)
-        # # Write assembly surfaces
-        # for surface in self.assembly.surfaces:
-        #     surface.write_data_line(f)
-        # for constraint in self.assembly.constraints:
-        #     constraint.write_data_line(f)
-        # self.assembly.write_keyword_end(f)
-
-        # # Write materials
-        # for material in self.assembly.materials:
-        #     material.write_data_line(f)
-
-        # # # Write interaction properties
-        # # for interaction_property in self.interaction_properties:
-        # #     interaction_property.write_data_line(f)
-        # #
-        # # # Write interactions
-        # # for interaction in self.interactions:
-        # #     interaction.write_data_line(f)
-
-        # # Write boundary conditions
-        # for bc in self.bcs:
-        #     bc.write_data(f)
-
-        # # Write steps
-        # for step in self.steps:
-        #     step.write_header(f)
-        #     # Write loads
-        #     for load in self.loads[step]:
-        #         load.write_data_line(f)
-        #     # Write Output Reequests
-        #     for output in self.outputs[step]:
-        #         output.write_data_line(f)
-        #     step.write_keyword_end(f)
-
-        # # Close input file
-        # f.close()
 
     # this should be an abstract method of the base class
     def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):

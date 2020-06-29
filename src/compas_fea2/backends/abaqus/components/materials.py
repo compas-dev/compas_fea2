@@ -40,24 +40,28 @@ __all__ = [
 
 class ElasticIsotropic(ElasticIsotropicBase):
 
-    def __init__(self, name, E, v, p, tension=None, compression=None):
-        super(ElasticIsotropic, self).__init__(name, E, v, p, tension, compression)
+    def __init__(self, name, E, v, p, unilateral=None):
+        super(ElasticIsotropic, self).__init__(name, E, v, p)
+        self.unilateral = unilateral
         self.data = self._generate_data()
 
     def _generate_data(self):
-        no_c=''
-        no_t=''
-        if not self.compression:
-            no_c = '\n*NO COMPRESSION'
-        if not self.tension:
-            no_t = '\n*NO TENSION'
+        n=''
+        if self.unilateral:
+            if self.unilateral == 'nc':
+                n = '\n*NO COMPRESSION'
+            elif self.unilateral == 'nt':
+                n = '\n*NO TENSION'
+            else:
+                raise Exception('keyword {} for unilateral parameter not recognised. Please review the documentation'.format(self.unilateral))
 
         return """*Material, name={}
 *Density
 {},
 *Elastic
-{}, {}{}{}
-""".format(self.name, self.p, self.E['E'], self.v['v'], no_c, no_t)
+{}, {}{}
+""".format(self.name, self.p, self.E['E'], self.v['v'], n)
+
 
 class Stiff(StiffBase):
 

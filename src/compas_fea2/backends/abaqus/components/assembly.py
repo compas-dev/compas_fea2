@@ -70,7 +70,7 @@ class Assembly():
         return list(set(materials))
 
     def _generate_data(self):
-        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**'.format(self.name)
+        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**\n'.format(self.name)
         section_data = [line]
         for instance in self.instances:
             section_data.append(instance.data)
@@ -80,7 +80,7 @@ class Assembly():
             section_data.append(surface.data)
         for constraint in self.constraints:
             section_data.append(constraint.data)
-        line = '*End Assembly\n**'
+        line = '*End Assembly\n**\n'
         section_data.append(line)
         return ''.join(section_data)
 

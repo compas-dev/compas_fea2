@@ -125,7 +125,7 @@ class GeneralStaticStep(_GeneralStep):
         line = """**
 ** OUTPUT REQUESTS
 **
-*Restart, write, frquency=0
+*Restart, write, frequency=0
 **\n"""
         section_data.append(line)
 

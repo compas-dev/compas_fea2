@@ -111,36 +111,43 @@ if __name__ == "__main__":
 
     from compas_fea2.backends.abaqus import Structure
 
-    my_nodes = []
-    for k in range(100):
-        my_nodes.append(Node(k,[1+k,2-k,3]))
+    nodes = []
+    nodes.append(Node(1,[0.0, 0.0, 0.0]))
+    nodes.append(Node(2,[1000.0, 0.0, 0.0]))
+    nodes.append(Node(3,[1000.0, 1000.0, 0.0]))
+    nodes.append(Node(4,[0.0, 1000.0, 0.0]))
+
 
     # material_one = Concrete('my_mat',1,2,3,4)
-    material_one = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
-    material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
+    mat1 = ElasticIsotropic(name='mat1',E=29000,v=0.17,p=2.5e-9)
+    mat2 = ElasticIsotropic(name='mat2',E=25000,v=0.17,p=2.4e-9)
 
-    section_A = SolidSection(name='section_A', material=material_one)
-    section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
+    section_A = SolidSection(name='section_A', material=mat1)
+    section_B = BoxSection(name='section_B', material=mat2, a=100, b=200, t1=10, t2=10, t3=10, t4=10)
 
-    el_one = SolidElement(key=0, connectivity=my_nodes[:4], section=section_A)
-    el_two = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
-    el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
-    el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
+    elements = []
+    elements.append(BeamElement(1, [nodes[0], nodes[1]], section_B))
+    elements.append(BeamElement(2, [nodes[1], nodes[2]], section_B))
+    elements.append(BeamElement(3, [nodes[2], nodes[3]], section_B))
+    elements.append(BeamElement(4, [nodes[3], nodes[0]], section_B))
 
+    part1 = Part(name='part-1', nodes=nodes, elements=elements)
 
-    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
+    nset_fixed = Set('fixed', [nodes[0], nodes[3]])
+    nset_roller = Set('roller', [nodes[1]])
+    nset_pload = Set('pload', [nodes[2]])
 
-    nset = Set('test_neset', my_nodes)
+    sets = [nset_fixed, nset_roller, nset_pload]
+    instance1 = Instance(name='test_instance', part=part1, sets=sets)
+    assembly = Assembly(name='part-1', instances=[instance1])
 
-    my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
-    my_assembly = Assembly(name='test', instances=[my_instance])
+    bc1 = RollerDisplacementXZ('bc_roller',nset_roller)
+    bc2 = FixedDisplacement('bc_fix', nset_fixed)
 
-    d1 = RollerDisplacementXZ('test_disp', 'test set')
-    d2 = FixedDisplacement('fixed_disp', 'fixed')
-
-    l1 = PointLoad('pload', nset, 10, 0, 0, 2.3)
+    pload1 = PointLoad('pload1', nset_pload, 100)
 
     fout = FieldOutput('my_fout')
-    step = GeneralStaticStep('gstep', loads=[l1], field_output=[fout])
-    my_structure = Structure('test_structure', [my_part], my_assembly, [], [d1,d2], [step])
+    step = GeneralStaticStep('gstep', loads=[pload1], field_output=[fout])
+    # my_structure = Structure('test_structure', [my_part], my_assembly, [], [d1,d2], [step])
+    my_structure = Structure('test_structure', [part1], assembly, [], [bc1, bc2], [step])
     my_structure.write_input_file(path='C:/temp')

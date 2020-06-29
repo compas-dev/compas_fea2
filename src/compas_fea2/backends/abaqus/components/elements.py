@@ -84,24 +84,17 @@ class MassElement():
 # ==============================================================================
 
 class BeamElement(BeamElementBase):
-    """A 1D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
-    """
 
     def __init__(self, key, connectivity, section, elset=None, thermal=None):
         super(BeamElement, self).__init__(key, connectivity, section, thermal=None)
-        if not elset:
-            self.elset = self.section.name
+        if elset:
+            self.elset = elset.name
         else:
-            self.elset = elset
+            self.elset = self.section.name
         self.eltype = 'B31'
 
         self.keyword = _generate_keyword(self)
-        self.data    = '{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1])
+        self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 
 
 # class SpringElement(SpringElementBase):

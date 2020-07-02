@@ -29,16 +29,15 @@ class Structure(StructureBase):
         self.interactions = interactions
         self.bcs = bcs
         self.steps = steps
-        self.input_path = ""
 
 
-    def write_input_file(self, fields='u', output=True, save=False, path='C:/temp'):
+    def write_input_file(self, path='C:/temp', output=True, save=False, ):
         """Writes abaqus input file.
 
         Parameters
         ----------
-        fields : list, str
-            Data field requests.
+        path : str
+            Path to the folder where the input file will be saved.
         output : bool
             Print terminal output.
         save : bool
@@ -50,11 +49,9 @@ class Structure(StructureBase):
 
         """
 
-        filepath = '{0}/{1}.inp'.format(path, self.name)
-        self.input_path = filepath
-
         if not os.path.exists(path):
             os.makedirs(path)
+        filepath = '{0}/{1}.inp'.format(path, self.name)
 
         if save:
             self.save_to_cfea()
@@ -66,7 +63,8 @@ class Structure(StructureBase):
 
 
     # this should be an abstract method of the base class
-    def analyse(self, path='C:/temp', fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):
+    def analyse(self, path, exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True,
+                user_mat=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -79,19 +77,21 @@ class Structure(StructureBase):
         license : str
             Software license type: 'research', 'student'.
         delete : bool
-            -
+            If True, the analysis results are deleted after being read. [Not Implemented yet]
         output : bool
             Print terminal output.
+        save : bool
+            Save structure to .cfea before file writing.
 
         Returns
         -------
         None
 
         """
-        self.write_input_file(path=path, fields=fields, output=output, save=save)
+        self.write_input_file(path=path, output=output, save=save)
 
         cpus = 1 if license == 'student' else cpus
-        launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
+        launch_process(self, path=path, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
 
     # this should be an abstract method of the base class
     def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
@@ -100,8 +100,6 @@ class Structure(StructureBase):
 
         Parameters
         ----------
-        software : str
-            Analysis software / library to use, 'abaqus', 'opensees' or 'ansys'.
         fields : list, str
             Data field requests.
         steps : list
@@ -159,79 +157,80 @@ class Structure(StructureBase):
 
         """
 
-        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat, overwrite=overwrite, save=save)
+        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,
+                    overwrite=overwrite, save=save)
 
         self.extract(fields=fields, exe=exe, license=license, output=output,
-                          return_data=return_data, components=components)
+                    return_data=return_data, components=components)
 
 
     # ==============================================================================
     # Results
     # ==============================================================================
 
-    # this should be stored in a more generic way
-    def get_nodal_results(self, step, field, nodes='all'):
-        """Extract nodal results from self.results.
+    # # this should be stored in a more generic way
+    # def get_nodal_results(self, step, field, nodes='all'):
+    #     """Extract nodal results from self.results.
 
-        Parameters
-        ----------
-        step : str
-            Step to extract from.
-        field : str
-            Data field request.
-        nodes : str, list
-            Extract 'all' or a node set/list.
+    #     Parameters
+    #     ----------
+    #     step : str
+    #         Step to extract from.
+    #     field : str
+    #         Data field request.
+    #     nodes : str, list
+    #         Extract 'all' or a node set/list.
 
-        Returns
-        -------
-        dict
-            The nodal results for the requested field.
-        """
-        data  = {}
-        rdict = self.results[step]['nodal']
+    #     Returns
+    #     -------
+    #     dict
+    #         The nodal results for the requested field.
+    #     """
+    #     data  = {}
+    #     rdict = self.results[step]['nodal']
 
-        if nodes == 'all':
-            keys = list(self.nodes.keys())
-        elif isinstance(nodes, str):
-            keys = self.sets[nodes].selection
-        else:
-            keys = nodes
+    #     if nodes == 'all':
+    #         keys = list(self.nodes.keys())
+    #     elif isinstance(nodes, str):
+    #         keys = self.sets[nodes].selection
+    #     else:
+    #         keys = nodes
 
-        for key in keys:
-            data[key] = rdict[field][key]
+    #     for key in keys:
+    #         data[key] = rdict[field][key]
 
-        return data
+    #     return data
 
 
-    def get_element_results(self, step, field, elements='all'):
-        """Extract element results from self.results.
+    # def get_element_results(self, step, field, elements='all'):
+    #     """Extract element results from self.results.
 
-        Parameters
-        ----------
-        step : str
-            Step to extract from.
-        field : str
-            Data field request.
-        elements : str, list
-            Extract 'all' or an element set/list.
+    #     Parameters
+    #     ----------
+    #     step : str
+    #         Step to extract from.
+    #     field : str
+    #         Data field request.
+    #     elements : str, list
+    #         Extract 'all' or an element set/list.
 
-        Returns
-        -------
-        dict
-            The element results for the requested field.
+    #     Returns
+    #     -------
+    #     dict
+    #         The element results for the requested field.
 
-        """
-        data  = {}
-        rdict = self.results[step]['element']
+    #     """
+    #     data  = {}
+    #     rdict = self.results[step]['element']
 
-        if elements == 'all':
-            keys = list(self.elements.keys())
-        elif isinstance(elements, str):
-            keys = self.sets[elements].selection
-        else:
-            keys = elements
+    #     if elements == 'all':
+    #         keys = list(self.elements.keys())
+    #     elif isinstance(elements, str):
+    #         keys = self.sets[elements].selection
+    #     else:
+    #         keys = elements
 
-        for key in keys:
-            data[key] = rdict[field][key]
+    #     for key in keys:
+    #         data[key] = rdict[field][key]
 
-        return data
+    #     return data

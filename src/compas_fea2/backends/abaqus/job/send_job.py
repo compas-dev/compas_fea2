@@ -18,7 +18,7 @@ __all__ = [
 def write_input_file(structure, path):
     pass
 
-def launch_process(structure, exe, cpus, output, overwrite, user_mat):
+def launch_process(structure, path, exe, cpus, output, overwrite, user_mat):
 
     """ Runs the analysis through Abaqus.
 
@@ -26,6 +26,8 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     ----------
     structure : obj
         Structure object.
+    path : str
+        Path where to start the process.
     exe : str
         Abaqus exe path to bypass defaults.
     cpus : int
@@ -43,10 +45,6 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
 
     """
 
-
-    name = structure.name
-    temp = os.path.dirname(structure.input_path)
-
     # Set options
     overwrite_kw=''
     user_sub_kw=''
@@ -62,9 +60,8 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     # Analyse
     tic = time()
     success    = False
-    cmd='cd {} && {} {} job={} interactive {}'.format(temp, exe_kw, user_sub_kw, name, overwrite_kw)
-    print(cmd)
-    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+    cmd='cd {} && {} {} job={} interactive {}'.format(path, exe_kw, user_sub_kw, structure.name, overwrite_kw)
+    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
 
     while True:
         line = p.stdout.readline()
@@ -88,7 +85,7 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
 
     if not success:
         try:
-            with open(temp + name + '.sta', 'r') as f:
+            with open(path + structure.name + '.sta', 'r') as f:
                 if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
                     success = True
         except:

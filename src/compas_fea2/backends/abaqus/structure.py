@@ -63,7 +63,7 @@ class Structure(StructureBase):
 
 
     # this should be an abstract method of the base class
-    def analyse(self, path, exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True,
+    def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True,
                 user_mat=False, save=False):
         """Runs the analysis through abaqus.
 
@@ -74,12 +74,10 @@ class Structure(StructureBase):
             Full terminal command to bypass subprocess defaults.
         cpus : int
             Number of CPU cores to use.
-        license : str
-            Software license type: 'research', 'student'.
-        delete : bool
-            If True, the analysis results are deleted after being read. [Not Implemented yet]
         output : bool
             Print terminal output.
+        user_mat : str TODO: REMOVE!
+            Name of the material defined through a subroutine (currently only one material is supported)
         save : bool
             Save structure to .cfea before file writing.
 
@@ -90,78 +88,79 @@ class Structure(StructureBase):
         """
         self.write_input_file(path=path, output=output, save=save)
 
-        cpus = 1 if license == 'student' else cpus
         launch_process(self, path=path, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
 
-    # this should be an abstract method of the base class
-    def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-                     return_data=True, components=None):
-        """Extracts data from the analysis output files.
+    # # this should be an abstract method of the base class
+    # def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+    #                  return_data=True, components=None):
+    #     """Extracts data from the analysis output files.
 
-        Parameters
-        ----------
-        fields : list, str
-            Data field requests.
-        steps : list
-            Loads steps to extract from.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        sets : list
-            -
-        license : str
-            Software license type: 'research', 'student'.
-        output : bool
-            Print terminal output.
-        return_data : bool
-            Return data back into structure.results.
-        components : list
-            Specific components to extract from the fields data.
+    #     Parameters
+    #     ----------
+    #     fields : list, str
+    #         Data field requests.
+    #     steps : list
+    #         Loads steps to extract from.
+    #     exe : str
+    #         Full terminal command to bypass subprocess defaults.
+    #     sets : list
+    #         -
+    #     license : str
+    #         Software license type: 'research', 'student'.
+    #     output : bool
+    #         Print terminal output.
+    #     return_data : bool
+    #         Return data back into structure.results.
+    #     components : list
+    #         Specific components to extract from the fields data.
 
-        Returns
-        -------
-        None
+    #     Returns
+    #     -------
+    #     None
 
-        """
-        extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-                            components=components)
+    #     """
+    #     extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
+    #                         components=components)
 
-    # this should be an abstract method of the base class
-    def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-                            return_data=True, components=None, user_mat=False, overwrite=True):
-        """Runs the analysis through the chosen FEA software / library and extracts data.
+    # # this should be an abstract method of the base class
+    # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
+    #                         return_data=True, components=None, user_mat=False, overwrite=True):
+    #     """Runs the analysis through the chosen FEA software / library and extracts data.
 
-        Parameters
-        ----------
-        fields : list, str
-            Data field requests.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        cpus : int
-            Number of CPU cores to use.
-        license : str
-            Software license type: 'research', 'student'.
-        output : bool
-            Print terminal output.
-        save : bool
-            Save the structure to .obj before writing.
-        return_data : bool
-            Return data back into structure.results.
-        components : list
-            Specific components to extract from the fields data.
-        user_sub : bool
-            Specify the user subroutine if needed.
+    #     Parameters
+    #     ----------
+    #     fields : list, str
+    #         Data field requests.
+    #     exe : str
+    #         Full terminal command to bypass subprocess defaults.
+    #     cpus : int
+    #         Number of CPU cores to use.
+    #     license : str
+    #         Software license type: 'research', 'student'.
+    #     output : bool
+    #         Print terminal output.
+    #     save : bool
+    #         Save the structure to .obj before writing.
+    #     return_data : bool
+    #         Return data back into structure.results.
+    #     components : list
+    #         Specific components to extract from the fields data.
+    #     user_sub : bool
+    #         Specify the user subroutine if needed.
+    #     delete : bool
+    #         If True, the analysis results are deleted after being read. [Not Implemented yet]
 
-        Returns
-        -------
-        None
+    #     Returns
+    #     -------
+    #     None
 
-        """
+    #     """
 
-        self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,
-                    overwrite=overwrite, save=save)
+    #     self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,
+    #                 overwrite=overwrite, save=save)
 
-        self.extract(fields=fields, exe=exe, license=license, output=output,
-                    return_data=return_data, components=components)
+    #     self.extract(fields=fields, exe=exe, license=license, output=output,
+    #                 return_data=return_data, components=components)
 
 
     # ==============================================================================

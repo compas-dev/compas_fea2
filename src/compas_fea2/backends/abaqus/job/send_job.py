@@ -15,9 +15,6 @@ __all__ = [
     'launch_process',
 ]
 
-def write_input_file(structure, path):
-    pass
-
 def launch_process(structure, path, exe, cpus, output, overwrite, user_mat):
 
     """ Runs the analysis through Abaqus.
@@ -36,7 +33,7 @@ def launch_process(structure, path, exe, cpus, output, overwrite, user_mat):
         Print terminal output.
     overwrite : bool
         Automatically overwrite results
-    user_mat : str
+    user_mat : str TODO: REMOVE!
         Name of the material defined through a subroutine (currently only one material is supported)
 
     Returns

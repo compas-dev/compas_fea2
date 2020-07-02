@@ -8,10 +8,10 @@ __all__ = [
 
 class InputFile():
 
-    def __init__(self, structure, path):
+    def __init__(self, structure, filepath):
         self.name           = structure.name
         self.job_name       = structure.name
-        self.path           = path
+        self.filepath       = filepath
         self.heading="""** {}
 *Heading
 ** Job name: {}
@@ -87,7 +87,7 @@ class InputFile():
     # ==============================================================================
 
     def write_to_file(self):
-        with open(self.path, 'w') as f:
+        with open(self.filepath, 'w') as f:
             f.writelines(self.data)
 
 
@@ -112,10 +112,19 @@ if __name__ == "__main__":
     from compas_fea2.backends.abaqus import Structure
 
     nodes = []
-    nodes.append(Node(1,[0.0, 0.0, 0.0]))
-    nodes.append(Node(2,[1000.0, 0.0, 0.0]))
-    nodes.append(Node(3,[1000.0, 1000.0, 0.0]))
-    nodes.append(Node(4,[0.0, 1000.0, 0.0]))
+    c=1
+    for x in range(0,1100,100):
+        nodes.append(Node(c,[x, 0.0, 0.0]))
+        c+=1
+    for y in range(100,600,100):
+        nodes.append(Node(c,[x, y, 0.0]))
+        c+=1
+    for x in range(900,-100,-100):
+        nodes.append(Node(c,[x, y, 0.0]))
+        c+=1
+    for y in range(400,0,-100):
+        nodes.append(Node(c,[x, y, 0.0]))
+        c+=1
 
 
     # material_one = Concrete('my_mat',1,2,3,4)
@@ -123,19 +132,20 @@ if __name__ == "__main__":
     mat2 = ElasticIsotropic(name='mat2',E=25000,v=0.17,p=2.4e-9)
 
     section_A = SolidSection(name='section_A', material=mat1)
-    section_B = BoxSection(name='section_B', material=mat2, a=100, b=200, t1=10, t2=10, t3=10, t4=10)
+    section_B = BoxSection(name='section_B', material=mat2, a=50, b=100, t1=5, t2=5, t3=5, t4=5)
 
     elements = []
-    elements.append(BeamElement(1, [nodes[0], nodes[1]], section_B))
-    elements.append(BeamElement(2, [nodes[1], nodes[2]], section_B))
-    elements.append(BeamElement(3, [nodes[2], nodes[3]], section_B))
-    elements.append(BeamElement(4, [nodes[3], nodes[0]], section_B))
+    c=1
+    for e in range(len(nodes)-1):
+        elements.append(BeamElement(c, [nodes[e], nodes[e+1]], section_B))
+        c+=1
+    elements.append(BeamElement(c, [nodes[len(nodes)-1], nodes[0]], section_B))
 
     part1 = Part(name='part-1', nodes=nodes, elements=elements)
 
-    nset_fixed = Set('fixed', [nodes[0], nodes[3]])
-    nset_roller = Set('roller', [nodes[1]])
-    nset_pload = Set('pload', [nodes[2]])
+    nset_fixed = Set('fixed', [nodes[0]])
+    nset_roller = Set('roller', [nodes[10]])
+    nset_pload = Set('pload', [nodes[20]])
 
     sets = [nset_fixed, nset_roller, nset_pload]
     instance1 = Instance(name='test_instance', part=part1, sets=sets)
@@ -144,7 +154,7 @@ if __name__ == "__main__":
     bc1 = RollerDisplacementXZ('bc_roller',nset_roller)
     bc2 = FixedDisplacement('bc_fix', nset_fixed)
 
-    pload1 = PointLoad('pload1', nset_pload, 100)
+    pload1 = PointLoad('pload1', nset_pload, y=-1000)
 
     fout = FieldOutput('my_fout')
     step = GeneralStaticStep('gstep', loads=[pload1], field_output=[fout])

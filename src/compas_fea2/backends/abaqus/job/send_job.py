@@ -43,9 +43,9 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
 
     """
 
+
     name = structure.name
-    path = structure.path
-    temp = '{0}{1}/'.format(path, name)
+    temp = os.path.dirname(structure.input_path)
 
     # Set options
     overwrite_kw=''
@@ -63,7 +63,8 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     tic = time()
     success    = False
     cmd='cd {} && {} {} job={} interactive {}'.format(temp, exe_kw, user_sub_kw, name, overwrite_kw)
-    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
+    print(cmd)
+    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
     while True:
         line = p.stdout.readline()

@@ -29,9 +29,10 @@ class Structure(StructureBase):
         self.interactions = interactions
         self.bcs = bcs
         self.steps = steps
+        self.input_path = ""
 
 
-    def write_input_file(self, fields='u', output=True, save=False, path='C:/'):
+    def write_input_file(self, fields='u', output=True, save=False, path='C:/temp'):
         """Writes abaqus input file.
 
         Parameters
@@ -49,7 +50,8 @@ class Structure(StructureBase):
 
         """
 
-        filename = '{0}/{1}.inp'.format(path, self.name)
+        filepath = '{0}/{1}.inp'.format(path, self.name)
+        self.input_path = filepath
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -57,14 +59,14 @@ class Structure(StructureBase):
         if save:
             self.save_to_cfea()
 
-        input_file = InputFile(self, filename)
+        input_file = InputFile(self, filepath)
         input_file.write_to_file()
         if output:
-            print('***** Abaqus input file generated: {0} *****\n'.format(filename))
+            print('***** Abaqus input file generated: {0} *****\n'.format(filepath))
 
 
     # this should be an abstract method of the base class
-    def analyse(self, fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):
+    def analyse(self, path='C:/temp', fields='u', exe=None, cpus=4, license='research', delete=True, output=True, overwrite=True, user_mat=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -86,7 +88,7 @@ class Structure(StructureBase):
         None
 
         """
-        self.write_input_file(fields=fields, output=output, save=save)
+        self.write_input_file(path=path, fields=fields, output=output, save=save)
 
         cpus = 1 if license == 'student' else cpus
         launch_process(self, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)

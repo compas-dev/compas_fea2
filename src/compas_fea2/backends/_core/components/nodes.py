@@ -44,6 +44,10 @@ class NodeBase(object):
         Node's local z axis.
     mass : float
         Mass in kg associated with the node.
+
+    Examples
+    --------
+    >>> node = Node(1.0, 2.0, 3.0)
     """
 
     def __init__(self, key, xyz, ex=None, ey=None, ez=None, mass=None):

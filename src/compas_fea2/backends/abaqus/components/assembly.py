@@ -70,7 +70,7 @@ class Assembly():
         return list(set(materials))
 
     def _generate_data(self):
-        line = '**\n** ASSEMBLY\n**\n*Assembly, name={}\n**\n'.format(self.name)
+        line = '*Assembly, name={}\n**\n'.format(self.name)
         section_data = [line]
         for instance in self.instances:
             section_data.append(instance.data)
@@ -80,35 +80,39 @@ class Assembly():
             section_data.append(surface.data)
         for constraint in self.constraints:
             section_data.append(constraint.data)
-        line = '*End Assembly\n**\n'
+        line = '*End Assembly\n**'
         section_data.append(line)
         return ''.join(section_data)
 
+    def add_instance(self, instance):
+        self.instances.append(instance)
+
+    def add_surface(self, surface):
+        self.surfaces.append(surface)
+
+    def add_constraint(self, constraint):
+        self.constraints.append(constraint)
 
 class Instance():
-    """Initialises base Assembly object.
+    """Initialises base Instance object.
 
     Parameters
     ----------
     name : str
         Name of the set.
-    part : list
-        A list with the Part object from which create the instance.
+    part : Part object
+        The part from which create the instance.
     sets : list
-        A list with the Set objects belonging to the assembly.
-    constraints : list
-        A list with the Constraint objects belonging to the assembly.
+        A list with the Set objects belonging to the instance.
 
     Attributes
     ----------
     name : str
         Name of the set.
-    part : list
-        A list with the Part object from which create the instance.
+    part : Part object
+        The part from which create the instance.
     sets : list
-        A list with the Set objects belonging to the assembly.
-    constraints : list
-        A list with the Constraint objects belonging to the assembly.
+        A list with the Set objects belonging to the instance.
     data : str
         The data block for the generation of the input file.
     """
@@ -154,7 +158,6 @@ if __name__ == "__main__":
     for k in range(5):
         my_nodes.append(Node(k,[1+k,2-k,3]))
 
-    # material_one = Concrete('my_mat',1,2,3,4)
     material_one = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
     material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
 
@@ -174,5 +177,3 @@ if __name__ == "__main__":
     my_assembly = Assembly(name='test', instances=[my_instance])
 
     print(my_assembly.data)
-    # f=open('/home/fr/Downloads/test_input.inp','w')
-    # # print(type(my_part.elements_by_section[section_A]))

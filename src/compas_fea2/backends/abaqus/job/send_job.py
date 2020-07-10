@@ -15,10 +15,7 @@ __all__ = [
     'launch_process',
 ]
 
-def write_input_file(structure, path):
-    pass
-
-def launch_process(structure, exe, cpus, output, overwrite, user_mat):
+def launch_process(structure, path, exe, cpus, output, overwrite, user_mat):
 
     """ Runs the analysis through Abaqus.
 
@@ -26,6 +23,8 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     ----------
     structure : obj
         Structure object.
+    path : str
+        Path where to start the process.
     exe : str
         Abaqus exe path to bypass defaults.
     cpus : int
@@ -34,7 +33,7 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
         Print terminal output.
     overwrite : bool
         Automatically overwrite results
-    user_mat : str
+    user_mat : str TODO: REMOVE!
         Name of the material defined through a subroutine (currently only one material is supported)
 
     Returns
@@ -42,10 +41,6 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     None
 
     """
-
-    name = structure.name
-    path = structure.path
-    temp = '{0}{1}/'.format(path, name)
 
     # Set options
     overwrite_kw=''
@@ -62,7 +57,7 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
     # Analyse
     tic = time()
     success    = False
-    cmd='cd {} && {} {} job={} interactive {}'.format(temp, exe_kw, user_sub_kw, name, overwrite_kw)
+    cmd='cd {} && {} {} job={} interactive {}'.format(path, exe_kw, user_sub_kw, structure.name, overwrite_kw)
     p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=path, shell=True)
 
     while True:
@@ -87,7 +82,7 @@ def launch_process(structure, exe, cpus, output, overwrite, user_mat):
 
     if not success:
         try:
-            with open(temp + name + '.sta', 'r') as f:
+            with open(path + structure.name + '.sta', 'r') as f:
                 if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
                     success = True
         except:

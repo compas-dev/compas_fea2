@@ -62,7 +62,7 @@ class Part():
 
         self.data = ''.join(["*Part, name={}\n".format(self.name),
                             self._generate_data(),
-                            "*End Part\n**"])
+                            "*End Part\n**\n"])
 
     def __str__(self):
 

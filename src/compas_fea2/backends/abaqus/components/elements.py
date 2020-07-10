@@ -86,7 +86,7 @@ class MassElement():
 class BeamElement(BeamElementBase):
 
     def __init__(self, key, connectivity, section, elset=None, thermal=None):
-        super(BeamElement, self).__init__(key, connectivity, section, thermal=None)
+        super(BeamElement, self).__init__(key=key, connectivity=connectivity, section=section, thermal=thermal)
         if elset:
             self.elset = elset.name
         else:

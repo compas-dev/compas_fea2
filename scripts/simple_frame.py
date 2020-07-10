@@ -17,9 +17,12 @@ from compas_fea2.backends.abaqus.components import FieldOutput
 
 from compas_fea2.backends.abaqus import Structure
 
+# Initialise the assembly object
+# model = Assembly(name='structural model')
+
 # Define materials
-mat1 = ElasticIsotropic(name='mat1',E=29000,v=0.17,p=2.5e-9)
-mat2 = ElasticIsotropic(name='mat2',E=25000,v=0.17,p=2.4e-9)
+mat1 = ElasticIsotropic(name='mat1', E=29000, v=0.17, p=2.5e-9)
+mat2 = ElasticIsotropic(name='mat2', E=25000, v=0.17, p=2.4e-9)
 
 # Define sections
 section_A = SolidSection(name='section_A', material=mat1)
@@ -81,4 +84,5 @@ step = GeneralStaticStep('gstep', loads=[pload1], field_output=[fout])
 my_structure = Structure('test_structure', [part1], assembly, [], [bc1, bc2], [step])
 
 # Analyse the structure
+# my_structure.write_input_file(path='C:/temp/test_structure')
 my_structure.analyse(path='C:/temp/test_structure')

@@ -1,22 +1,22 @@
+
+# TODO model components
+from compas_fea2.backends.abaqus.components import Assembly
+from compas_fea2.backends.abaqus.components import Part
 from compas_fea2.backends.abaqus.components import Node
-from compas_fea2.backends.abaqus.components import Concrete
 from compas_fea2.backends.abaqus.components import ElasticIsotropic
 from compas_fea2.backends.abaqus.components import BoxSection
-from compas_fea2.backends.abaqus.components import SolidSection
 from compas_fea2.backends.abaqus.components import BeamElement
-from compas_fea2.backends.abaqus.components import SolidElement
+from compas_fea2.backends.abaqus.components import Set
+
+# TODO problem components
+from compas_fea2.backends.abaqus import Structure
 from compas_fea2.backends.abaqus.components import FixedDisplacement
 from compas_fea2.backends.abaqus.components import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.components import Part
-from compas_fea2.backends.abaqus.components import Set
-from compas_fea2.backends.abaqus.components import Assembly
-from compas_fea2.backends.abaqus.components import Instance
-from compas_fea2.backends.abaqus.components import GeneralStaticStep
 from compas_fea2.backends.abaqus.components import PointLoad
 from compas_fea2.backends.abaqus.components import FieldOutput
+from compas_fea2.backends.abaqus.components import GeneralStaticStep
 
-from compas_fea2.backends.abaqus import Structure
-
+### ------------------------- MODEL -------------------------###
 # Initialise the assembly object
 model = Assembly(name='structural_model')
 
@@ -52,6 +52,7 @@ model.add_assembly_set(Set(name='fixed', selection=[0], stype='nset'), instance=
 model.add_assembly_set(Set(name='roller', selection=[10], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
 
+### ------------------------- PROBLEM -------------------------###
 # Create the Problem object
 my_problem = Structure(name='test_structure', assembly=model)
 

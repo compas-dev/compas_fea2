@@ -62,12 +62,13 @@ class Part():
         self.nsets                   = []
         self.elsets                   = []
         self.nodes_gkeys            = []
+        self.sections               = {}
 
         self.elements_by_type       = {}
         self.elements_by_section    = {}
         self.elements_by_elset      = {}
         self.elsets_by_section      = {}
-        self.elements_by_material   = {}
+        # self.elements_by_material   = {}
 
     def __str__(self):
         title = 'compas_fea2 {0} object'.format(self.__name__)
@@ -334,18 +335,18 @@ class Part():
         section_elements = {}
         elset_elements = {}
         section_elsets = {}
-        material_elements = {}
+        # material_elements = {}
         for key, value in el_dict.items():
             type_elements.setdefault(value[0], set()).add(key)
             section_elements.setdefault(value[1], set()).add(key)
-            material_elements.setdefault(value[1].material, set()).add(key)
+            # material_elements.setdefault(value[1].material, set()).add(key)
             elset_elements.setdefault(value[2], set()).add(key)
             section_elsets.setdefault(value[1], set()).add(value[2])
 
         self.elements_by_type = type_elements
         self.elements_by_section = section_elements
         self.elements_by_elset = elset_elements
-        self.elements_by_material = material_elements
+        # self.elements_by_material = material_elements
 
         # self.remove_element_from_set()
         # for s in self.nsets:
@@ -392,10 +393,10 @@ class Part():
                 self.elements_by_section[element.section] = []
             self.elements_by_section[element.section].append(element.key)
 
-            # add the element key to its material group
-            if element.section.material not in self.elements_by_material.keys():
-                self.elements_by_material[element.section.material] = []
-            self.elements_by_material[element.section.material].append(element.key)
+            # # add the element key to its material group
+            # if element.section.material not in self.elements_by_material.keys():
+            #     self.elements_by_material[element.section.material] = []
+            # self.elements_by_material[element.section.material].append(element.key)
 
             # add the element key to its elset group
             if element.elset:
@@ -502,12 +503,12 @@ class Part():
         # Write sets
         for section in self.elements_by_section.keys():
             from compas_fea2.backends.abaqus.components import Set
-            self.add_element_set(Set(section.name, self.elements_by_section[section], 'elset'))
+            self.add_element_set(Set(section, self.elements_by_section[section], 'elset'))
         for elset in self.elsets:
             data_section.append(elset._generate_data())
 
         # Write sections
-        for section in self.elements_by_section.keys():
+        for section in self.sections.values():
             # for elset in self.elsets_by_section[section]:
             data_section.append(section.data)  #TODO CHECK
 

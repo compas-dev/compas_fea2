@@ -45,8 +45,8 @@ class Assembly():
         self.parts          = {}
         self.surfaces       = []
         self.constraints    = []
-        self.materials      = []
-        self.sections       = []
+        self.materials      = {}
+        self.sections       = {}
         self.sets           = {}
         # self.materials      = self._get_materials()
 
@@ -314,7 +314,10 @@ class Assembly():
         error_code=0
         if part in self.parts.keys():
             self.parts[part].add_element(element)
-            self.add_section(element.section)
+            if element.section not in self.sections.keys():
+                sys.exit('ERROR: section {} not found in the assembly!'.format(element.section))
+            elif element.section not in self.parts[part].sections.keys():
+                self.parts[part].sections[element.section] = self.sections[element.section]
             error_code=1
 
         if error_code == 0:
@@ -410,8 +413,36 @@ class Assembly():
     # =========================================================================
 
     def add_material(self, material):
-        if material not in self.materials:
-            self.materials.append(material)
+        '''Adds a Material object to the Assembly so that it can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : obj
+            compas_fea2 material object.
+
+        Returns
+        -------
+        None
+        '''
+        if material.name not in self.materials.keys():
+            self.materials[material.name] = material
+
+    def add_materials(self, materials):
+        '''Adds multiple Material objects to the Assembly so that they can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : list
+            List of compas_fea2 material objects.
+
+        Returns
+        -------
+        None
+        '''
+        for material in materials:
+            self.add_material(material)
 
     # =========================================================================
     #                           Sections methods
@@ -432,9 +463,11 @@ class Assembly():
         None
         """
 
-        if section not in self.sections:
-            self.sections.append(section)
-            self.add_material(section.material)
+        if section.name not in self.sections.keys():
+            self.sections[section.name] = section
+            if section.material not in self.materials.keys():
+                sys.exit('ERROR: material {} not found in the assembly!'.format(section.material))
+            self.add_material(self.materials[section.material])
 
 
 

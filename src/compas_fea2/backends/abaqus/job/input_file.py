@@ -41,7 +41,7 @@ class InputFile():
 
     def _generate_material_section(self, structure):
         section_data = []
-        for material in structure.assembly.materials:
+        for material in structure.assembly.materials.values():
             section_data.append(material.data)
         return ''.join(section_data)
 

@@ -59,8 +59,8 @@ my_problem = Structure(name='test_structure')
 my_problem.set_assembly(assembly=model)
 
 # Assign boundary conditions to the node stes
-bc1 = RollerDisplacementXZ(name='bc_roller', bset=model.sets['roller'])
-bc2 = FixedDisplacement(name='bc_fix', bset=model.sets['fixed'])
+bc1 = RollerDisplacementXZ(name='bc_roller', bset='roller')
+bc2 = FixedDisplacement(name='bc_fix', bset='fixed')
 my_problem.add_bcs(bcs=[bc1, bc2])
 
 # Define the analysis step

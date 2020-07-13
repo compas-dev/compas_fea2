@@ -44,9 +44,9 @@ def _generate_data(obj):
     for dof in dofs:
         if dof in obj.components.keys() and obj.components[dof]!=None:
             if not obj.components[dof]:
-                line = """{}, {}, {}""".format(obj.bset.name, c, c)
+                line = """{}, {}, {}""".format(obj.bset, c, c)
             else:
-                line = """{}, {}, {}, {}""".format(obj.bset.name, c, c, obj.components[dof])
+                line = """{}, {}, {}, {}""".format(obj.bset, c, c, obj.components[dof])
             data_section.append(line)
         c+=1
     return '\n'.join(data_section) +'\n'

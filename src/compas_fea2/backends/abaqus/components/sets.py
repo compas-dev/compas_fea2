@@ -4,8 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-# Author(s): Andrew Liew (github.com/andrewliew)
-
+# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'Set',
@@ -23,36 +22,36 @@ class Set(object):
         Name of the set.
     selection : list
         A list with either the Node or Element objects belonging to the set.
+    stype : str
+        Node or Element set identifier. It can be either 'nset' or 'elset'
     generate : bool
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
     #TODO generate option might not be a good idea!
-    def __init__(self, name, selection, generate=False):
+    def __init__(self, name, selection, stype, generate=False):
 
         self.__name__  = 'Set'
         self.name      = name
         self.selection = selection
         self.generate  = generate
-        if self.selection[0].__name__ == 'Node':
-            self.stype = 'nset'
-        else:
-            self.stype = 'elset'
+        self.stype = stype
+        # if self.selection[0].__name__ == 'Node':
+        #     self.stype = 'nset'
+        # else:
+        #     self.stype = 'elset'
         self.instance = None
 
-        self.data = self._generate_data()
+        # self.data = self._generate_data()
 
     def __str__(self):
-
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        data = []
         for attr in ['name', 'type', 'selection', 'index']:
-            print('{0:<9} : {1}'.format(attr, getattr(self, attr)))
+            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
 
-        return ''
-
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
     def __repr__(self):
 
@@ -71,7 +70,7 @@ class Set(object):
             data_section.append(line)
             data = []
             for s in self.selection:
-                data.append(str(s.key))
+                data.append(str(s+1))
             chunks = [data[x:x+15] for x in range(0, len(data), 15)]
             for chunk in chunks:
                 data_section.append(', '.join(chunk))

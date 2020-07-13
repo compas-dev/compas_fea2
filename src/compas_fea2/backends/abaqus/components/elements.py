@@ -19,7 +19,7 @@ from compas_fea2.backends._core import SolidElementBase
 # from compas_fea2.backends._core import HexahedronElementBase
 
 
-# Francesco Ranaudo (github.com/franaudo)
+# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'MassElement',
@@ -85,17 +85,16 @@ class MassElement():
 
 class BeamElement(BeamElementBase):
 
-    def __init__(self, key, connectivity, section, elset=None, thermal=None):
-        super(BeamElement, self).__init__(key=key, connectivity=connectivity, section=section, thermal=thermal)
-        if elset:
-            self.elset = elset.name
-        else:
-            self.elset = self.section.name
+    def __init__(self, connectivity, section, elset=None, thermal=None):
+        super(BeamElement, self).__init__(connectivity=connectivity, section=section, thermal=thermal)
+        self.elset = elset
         self.eltype = 'B31'
 
         self.keyword = _generate_keyword(self)
-        self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
+        # self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 
+    def _generate_data(self):
+        return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 # class SpringElement(SpringElementBase):
 #     """A 1D spring element.
@@ -227,7 +226,7 @@ class SolidElement(SolidElementBase):
         nkeys = []
         for n in self.connectivity:
             nkeys.append(str(n.key))
-        return '{0}, {1}\n'.format(self.key, ','.join(nkeys))
+        return '{0}, {1}\n'.format(self.key+1, ','.join(nkeys))
 
 
 

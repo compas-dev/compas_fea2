@@ -2,6 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# Author(s): Francesco Ranaudo (github.com/franaudo)
+
+import sys
+
 __all__ = [
     'Assembly',
     'Instance',
@@ -13,50 +17,52 @@ class Assembly():
     Parameters
     ----------
     name : str
-        Name of the set.
-    instances : list
-        A list with the Instance objects belonging to the assembly.
-    surfaces : list
-        A list with the Surface objects belonging to the assembly.
-    constraints : list
-        A list with the Constraint objects belonging to the assembly.
+        Name of the Assembly.
 
     Attributes
     ----------
     name : str
-        Name of the set.
+        Name of the Assembly.
+    parts : list
+        A list with the Part objects referenced in the Assembly.
     instances : list
-        A list with the Instance objects belonging to the assembly.
+        A list with the Instance objects belonging to the Assembly.
+    parts : list
+        A list with the Part objects referenced in the Assembly.
     surfaces : list
-        A list with the Surface objects belonging to the assembly.
+        A list with the Surface objects belonging to the Assembly.
     constraints : list
-        A list with the Constraint objects belonging to the assembly.
+        A list with the Constraint objects belonging to the Assembly.
     materials : list
-        A list of all the materials defined int the assembly.
-    data : str
-        The data block for the generation of the input file.
+        A list of all the materials defined int the Assembly.
+
     """
 
-    def __init__(self, name, instances=None, surfaces=[], constraints=[]):
-        self.__name__ = 'Assembly'
-        self.name       = name
-        self.instances  = instances
-        self.surfaces   = surfaces
-        self.constraints = constraints
-        self.materials = self._get_materials()
+    def __init__(self, name, ):
+        self.__name__       = 'Assembly'
+        self.name           = name
+        self.instances      = {}
+        self.parts          = {}
+        self.surfaces       = []
+        self.constraints    = []
+        self.materials      = []
+        self.sections       = []
+        self.sets           = {}
+        # self.materials      = self._get_materials()
 
-        self.data = self._generate_data()
+        # self.data           = self._generate_data()
 
     def __str__(self):
-
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        data = []
         for attr in ['name']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+            data.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
 
-        return ''
+        data.append('{0:<15} : {1}'.format('# of parts', len(self.parts)))
+        data.append('{0:<15} : {1}'.format('# of instances', len(self.instances)))
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
+
 
     def __repr__(self):
 
@@ -72,26 +78,393 @@ class Assembly():
     def _generate_data(self):
         line = '*Assembly, name={}\n**\n'.format(self.name)
         section_data = [line]
-        for instance in self.instances:
-            section_data.append(instance.data)
+        for instance in self.instances.values():
+            section_data.append(instance._generate_data())
             for iset in instance.sets:
-                section_data.append(iset.data)
-        for surface in self.surfaces:
-            section_data.append(surface.data)
-        for constraint in self.constraints:
-            section_data.append(constraint.data)
+                section_data.append(iset._generate_data())
+        # for surface in self.surfaces:
+        #     section_data.append(surface.data)
+        # for constraint in self.constraints:
+        #     section_data.append(constraint.data)
         line = '*End Assembly\n**'
         section_data.append(line)
         return ''.join(section_data)
 
-    def add_instance(self, instance):
-        self.instances.append(instance)
+    # =========================================================================
+    #                            General methods
+    # =========================================================================
 
+
+    # =========================================================================
+    #                             Parts methods
+    # =========================================================================
+
+    def add_part(self, part, transformation={}):
+        """Adds a Part to the Assembly and creates an Instance object from the
+        specified Part and adds it to the Assembly. If a transformation matrix
+        is specified, the instance is creteated in the transformed location.
+
+        Parameters
+        ----------
+        part : obj
+            Part object from which the Instance is created.
+        transformation : dict
+            Dictionary containing the trasformation matrices to apply to the Part
+            before creating the Instances.
+            key: (str) instance name
+            value: (matrix) transformation matrix
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        In this example a part is added to the model and two instances are created
+        using two transformation matrices.
+        >>> model = Assembly('mymodel')
+        >>> part = Part('mypart')
+        >>> model.add_part(part=part, transformation=[M1, M2])
+        """
+
+        if part.name in self.parts.keys():
+            print("WARNING: Part {} already in the Assembly. Part not added!".format(part.name))
+        else:
+            self.parts[part.name] = part
+
+        if transformation:
+            for i in transformation.keys():
+                instance = self._instance_from_part(part, i, transformation[i])
+                self.add_instance(instance)
+        else:
+            self.add_instance(Instance('{}-{}'.format(part.name, 1), part))
+
+    def remove_part(self, part):
+        """ Removes the part from the assembly and all the referenced instances
+        of that part.
+
+        Parameters
+        ----------
+        part : str
+            Name of the Part to remove.
+
+        Returns
+        -------
+        None
+        """
+
+        self.parts.pop(part)
+
+        for instance in self.instances:
+            if self.instances[instance].part.name == part:
+                self.instances.pop(instance)
+
+    # =========================================================================
+    #                          Instances methods
+    # =========================================================================
+    def add_instance(self, instance):
+        """Adds a compas_fea2 Instance object to the Assembly. If the Part to
+        which the instance is referred to does not exist, it is automatically
+        created.
+
+        Parameters
+        ----------
+        instance : obj
+            compas_fea2 Instance object.
+
+        Returns
+        -------
+        None
+        """
+        if instance.name not in self.instances.keys():
+            self.instances[instance.name]= instance
+            if instance.part.name not in self.parts.keys():
+                self.parts[part.name] = instance.part
+        else:
+            print('Duplicate instance {} will be ignored!'.format(instance.name))
+
+    def remove_instance(self, instance):
+        """ Removes the part from the assembly and all the referenced instances.
+
+        Parameters
+        ----------
+        instace : str
+            Name of the Instance object to remove.
+
+        Returns
+        -------
+        None
+        """
+
+        self.instances.pop(instance)
+
+    def _instance_from_part(self, part, instance_name, transformation):
+        pass
+
+    # =========================================================================
+    #                           Nodes methods
+    # =========================================================================
+
+    def add_node(self, node, part):
+        """Adds a compas_fea2 Node object to a Part in the Assmbly.
+        If the Node object has no label, one is automatically assigned. Duplicate
+        nodes are autmatically excluded.
+        The part must have been previously added to the Assembly.
+
+        Parameters
+        ----------
+        node : obj
+            compas_fea2 Node object.
+        part : str
+            Name of the part where the node will be added.
+
+        Returns
+        -------
+        None
+        """
+        error_code=0
+        if part in self.parts.keys():
+            self.parts[part].add_node(node)
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+
+    def add_nodes(self, nodes, part):
+        """Add multiple compas_fea2 Node objects a Part in the Assmbly.
+        If the Node object has no label, one is automatically assigned. Duplicate
+        nodes are autmatically excluded.
+        The part must have been previously added to the Assembly.
+
+        Parameters
+        ----------
+        nodes : list
+            List of compas_fea2 Node objects.
+        part : str
+            Name of the part where the node will be added.
+
+        Returns
+        -------
+        None
+        """
+
+        for node in nodes:
+            self.add_node(node, part)
+
+    def remove_node(self, node_key, part):
+        '''Remove the node from a Part in the Assmbly. If there are duplicate nodes,
+        it removes also all the duplicates.
+
+        Parameters
+        ----------
+        node_key : int
+            Key number of the node to be removed.
+        part : str
+            Name of the part where the node will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+        error_code=0
+        if part in self.parts.keys():
+            self.parts[part].remove_node(node_key)
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+
+    def remove_nodes(self, nodes, part):
+        '''Remove the nodes from a Part in the Assmbly. If there are duplicate nodes,
+        it removes also all the duplicates.
+
+        Parameters
+        ----------
+        node : list
+            List with the key numbers of the nodes to be removed.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+
+        for node in nodes:
+            self.remove_node(node, part)
+
+    # =========================================================================
+    #                           Elements methods
+    # =========================================================================
+    def add_element(self, element, part):
+        """Adds a compas_fea2 Element object to a Part in the Assmbly.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        error_code=0
+        if part in self.parts.keys():
+            self.parts[part].add_element(element)
+            self.add_section(element.section)
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+
+    def add_elements(self, elements, part):
+        """Adds multiple compas_fea2 Element objects to a Part in the Assmbly.
+
+        Parameters
+        ----------
+        elements : list
+            List of compas_fea2 Element objects.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        for element in elements:
+            self.add_element(element, part)
+
+    def remove_element(self, element_key, part):
+        '''Removes the element from a Part in the Assmbly.
+
+        Parameters
+        ----------
+        element_key : int
+            Key number of the element to be removed.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+        error_code=0
+        if part in self.parts.keys():
+            self.parts[part].remove_element(element_key)
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+
+    def remove_elements(self, elements, part):
+        '''Removes the elements from a Part in the Assmbly.
+
+        Parameters
+        ----------
+        elements : list
+            List with the key numbers of the element to be removed.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+
+        for element in elements:
+            self.remove_node(element, part)
+
+    # =========================================================================
+    #                               Sets methods
+    # =========================================================================
+    def add_part_node_set(self, part, nset):
+        pass
+
+    def add_assembly_set(self, set, instance):
+        '''Adds a Set object to the Assembly.
+
+        Parameters
+        ----------
+        set : obj
+            node set object.
+        instance : str
+            Name of the instance where the set belongs to.
+
+        Returns
+        -------
+        None
+        '''
+        if instance not in self.instances.keys():
+            sys.exit('ERROR: instance {} not found in the assembly!'.format(instance))
+        set.instance = instance
+        self.instances[instance].sets.append(set)
+
+        self.sets[set.name] = set
+
+    # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def add_material(self, material):
+        if material not in self.materials:
+            self.materials.append(material)
+
+    # =========================================================================
+    #                           Sections methods
+    # =========================================================================
+
+    def add_section(self, section):
+        """Adds a compas_fea2 Section object to the Assmbly.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        if section not in self.sections:
+            self.sections.append(section)
+            self.add_material(section.material)
+
+
+
+
+
+
+    # =========================================================================
+    #                        Surfaces methods
+    # =========================================================================
     def add_surface(self, surface):
         self.surfaces.append(surface)
 
+
+    # =========================================================================
+    #                       Constraints methods
+    # =========================================================================
     def add_constraint(self, constraint):
         self.constraints.append(constraint)
+
+    # def add_instance_set(self, iset, instance):
+    #     """ Adds a set to a previously defined Instance.
+
+    #     Parameters
+    #     ----------
+    #     part : obj
+    #         Part object from which the Instance is created.
+    #     transformation : matrix
+    #         Trasformation matrix to apply to the Part before creating the Instance.
+    #     """
+    #     self.instances[instance].sets.append(iset)
 
 class Instance():
     """Initialises base Instance object.
@@ -100,8 +473,8 @@ class Instance():
     ----------
     name : str
         Name of the set.
-    part : Part object
-        The part from which create the instance.
+    part : obj
+        The Part from which the instance is created.
     sets : list
         A list with the Set objects belonging to the instance.
 
@@ -139,9 +512,10 @@ class Instance():
         return ''
 
     def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
+        return '{0}({1})'.format(self.__name__, self.part.name)
 
-
+    def _generate_data(self):
+        return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 
 if __name__ == "__main__":
     from compas_fea2.backends.abaqus.components import Node

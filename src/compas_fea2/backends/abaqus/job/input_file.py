@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# Author(s): Francesco Ranaudo (github.com/franaudo)
+
 __all__ = [
     'InputFile',
 ]
@@ -30,11 +32,12 @@ class InputFile():
     def _generate_part_section(self, structure):
         section_data = []
         for part in structure.parts:
-            section_data.append(part.data)
+            data  = part._generate_data()
+            section_data.append(data)
         return ''.join(section_data)
 
     def _generate_assembly_section(self, structure):
-        return structure.assembly.data
+        return structure.assembly._generate_data()
 
     def _generate_material_section(self, structure):
         section_data = []

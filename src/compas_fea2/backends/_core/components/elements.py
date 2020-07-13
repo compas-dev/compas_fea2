@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'ElementBase',
@@ -26,9 +27,9 @@ class ElementBase(object):
     Attributes
     ----------
     key : int
-        Number of the element.
+        Key number of the element.
     connectivity : list
-        Ordered Nodes objects the element connects to.
+        Ordered nodes keys the element connects to.
     section : Section Object
         Section Object assigned to the element.
     thermal : bool
@@ -39,10 +40,11 @@ class ElementBase(object):
         Element type identifier. Each software has a different way of identifying the elements.
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
+    def __init__(self, connectivity, section, thermal=None):
         self.__name__         = 'Element'
-        self.key              = key
+        self.key              = 0
         self.connectivity     = connectivity
+        self.connectivity_key     = '_'.join(sorted([str(c) for c in self.connectivity]))
         self.section          = section
         self.thermal          = thermal
         self.etype            = None
@@ -50,12 +52,15 @@ class ElementBase(object):
 
 
     def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-        for attr in ['key','etype', 'connectivity', 'section']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-        return ''
+
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        data = []
+        for attr in ['key','etype', 'connectivity']:
+            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
+
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.key)
@@ -90,8 +95,8 @@ class BeamElementBase(ElementBase):
     None
     """
 
-    def __init__(self,key, connectivity, section, thermal=None):
-        super(BeamElementBase, self).__init__(key, connectivity, section, thermal)
+    def __init__(self, connectivity, section, thermal=None):
+        super(BeamElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'BeamElement'
         self.etype = 'beam'
 

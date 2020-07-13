@@ -21,15 +21,58 @@ __all__ = [
 ]
 
 class Structure(StructureBase):
+    """Initialises the Structure object.
 
-    def __init__(self, name, parts, assembly, interactions, bcs, steps):
+    Parameters
+    ----------
+    name : str
+        Name of the Structure.
+
+    Attributes
+    ----------
+    name : str
+        Name of the Structure.
+    assembly : obj
+        Assembly object.
+    bc : list
+        List containing the boundary conditions objects.
+    interactions : list
+        List containing the interaction objects.
+    steps : list
+        List containing the Steps objects.
+
+    """
+    def __init__(self, name):
         super(Structure, self).__init__(name=name)
-        self.parts = parts
-        self.assembly = assembly
-        self.interactions = interactions
-        self.bcs = bcs
-        self.steps = steps
+        # self.parts = parts
+        self.assembly = None
+        self.interactions = []
+        self.bcs = []
+        self.steps = []
 
+    def set_assembly(self, assembly):
+        self.assembly = assembly
+        self.parts = assembly.parts.values()
+
+    def add_bc(self, bc):
+        self.bcs. append(bc)
+
+    def add_bcs(self, bcs):
+        for bc in bcs:
+            self.add_bc(bc)
+
+    def add_interactions(self, interactions):
+        pass
+
+    def add_step(self, step):
+        self.steps.append(step)
+
+    def add_steps(self, steps):
+        for step in steps:
+            self.add_step
+
+    def define_steps_order(self, order):
+        pass
 
     def write_input_file(self, path='C:/temp', output=True, save=False, ):
         """Writes abaqus input file.

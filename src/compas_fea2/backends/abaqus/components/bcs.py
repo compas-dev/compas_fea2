@@ -57,7 +57,9 @@ class GeneralDisplacement(GeneralDisplacementBase):
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class FixedDisplacement(FixedDisplacementBase):
@@ -65,7 +67,9 @@ class FixedDisplacement(FixedDisplacementBase):
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class PinnedDisplacement(PinnedDisplacementBase):
@@ -73,7 +77,9 @@ class PinnedDisplacement(PinnedDisplacementBase):
     def __init__(self, name, bset, axes='global'):
         super(PinnedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
@@ -81,7 +87,9 @@ class FixedDisplacementXX(FixedDisplacementXXBase):
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementXX, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
@@ -89,7 +97,9 @@ class FixedDisplacementYY(FixedDisplacementYYBase):
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementYY, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
@@ -97,7 +107,9 @@ class FixedDisplacementZZ(FixedDisplacementZZBase):
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementZZ, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementX(RollerDisplacementXBase):
@@ -105,7 +117,9 @@ class RollerDisplacementX(RollerDisplacementXBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementX, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementY(RollerDisplacementYBase):
@@ -113,7 +127,9 @@ class RollerDisplacementY(RollerDisplacementYBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementY, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementZ(RollerDisplacementZBase):
@@ -121,7 +137,9 @@ class RollerDisplacementZ(RollerDisplacementZBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementZ, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
@@ -129,7 +147,9 @@ class RollerDisplacementXY(RollerDisplacementXYBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXY, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementYZ(RollerDisplacementYZBase):
@@ -137,7 +157,9 @@ class RollerDisplacementYZ(RollerDisplacementYZBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementYZ, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 class RollerDisplacementXZ(RollerDisplacementXZBase):
@@ -145,12 +167,14 @@ class RollerDisplacementXZ(RollerDisplacementXZBase):
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXZ, self).__init__(name, None, axes)
         self.bset = bset
-        self.data = _generate_data(self)
+
+    def _generate_data(self):
+        return _generate_data(self)
 
 
 if __name__ == "__main__":
-    d = RollerDisplacementXZ('test_disp', 'test set')
-    print(d.data)
+    d = RollerDisplacementXZ(name='bc_roller', bset='roller')
+    print(d._generate_data())
     # f=open('C:/temp/test_input.inp','w')
     # # d.write_keyword(f)
     # d.write_data(f)

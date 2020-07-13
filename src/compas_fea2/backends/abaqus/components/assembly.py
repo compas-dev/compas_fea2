@@ -45,6 +45,7 @@ class Assembly():
         self.parts          = {}
         self.surfaces       = []
         self.constraints    = []
+        self.add_interactions = []
         self.materials      = {}
         self.sections       = {}
         self.sets           = {}
@@ -498,6 +499,14 @@ class Assembly():
     #         Trasformation matrix to apply to the Part before creating the Instance.
     #     """
     #     self.instances[instance].sets.append(iset)
+
+    # =========================================================================
+    #                        Interaction methods
+    # =========================================================================
+
+    def add_interactions(self, interactions):
+        pass
+
 
 class Instance():
     """Initialises base Instance object.

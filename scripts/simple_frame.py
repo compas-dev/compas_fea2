@@ -53,23 +53,17 @@ model.add_assembly_set(Set(name='roller', selection=[10], stype='nset'), instanc
 model.add_assembly_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
 
 # Create the Problem object
-my_problem = Structure(name='test_structure')
-
-# Add the model to the problem
-my_problem.set_assembly(assembly=model)
+my_problem = Structure(name='test_structure', assembly=model)
 
 # Assign boundary conditions to the node stes
-bc1 = RollerDisplacementXZ(name='bc_roller', bset='roller')
-bc2 = FixedDisplacement(name='bc_fix', bset='fixed')
-my_problem.add_bcs(bcs=[bc1, bc2])
-
-# Define the analysis step
+my_problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
+                        FixedDisplacement(name='bc_fix', bset='fixed')])
 # Assign a point load to the node set
-pload1 = PointLoad(name='pload1', lset=model.sets['pload'], y=-1000)
+my_problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
 # Define the field outputs required
-fout = FieldOutput(name='my_fout')
-step = GeneralStaticStep(name='gstep', loads=[pload1], field_output=[fout])
-my_problem.add_step(step=step)
+my_problem.add_field_output(fout=FieldOutput(name='fout'))
+# Define the analysis step
+my_problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
 
 # Solve the problem
 # my_structure.write_input_file(path='C:/temp/test_structure')

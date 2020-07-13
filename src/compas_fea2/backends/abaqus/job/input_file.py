@@ -60,14 +60,17 @@ class InputFile():
 
     def _generate_bcs_section(self, structure):
         section_data = []
-        for bc in structure.bcs:
-            section_data.append(bc.data)
+        for bc in structure.bcs.values():
+            section_data.append(bc._generate_data())
         return ''.join(section_data)
 
     def _generate_steps_section(self, structure):
         section_data = []
         for step in structure.steps:
-            section_data.append(step.data)
+            section_data.append(step._generate_data(structure.displacements.values(),
+                                                    structure.loads.values(),
+                                                    structure.field_outputs.values(),
+                                                    structure.history_outputs.values()))
         return ''.join(section_data)
 
     def _generate_data(self):

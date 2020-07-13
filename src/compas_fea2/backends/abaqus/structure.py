@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 import pickle
+import sys
 
 from compas_fea2.backends._core import StructureBase
 
@@ -14,7 +15,6 @@ from compas_fea2.backends.abaqus.job.read_results import extract_data
 # Author(s): Francesco Ranaudo (github.com/franaudo),
 #            Andrew Liew (github.com/andrewliew),
 #            Tomas Mendez Echenagucia (github.com/tmsmendez)
-
 
 __all__ = [
     'Structure',
@@ -27,11 +27,15 @@ class Structure(StructureBase):
     ----------
     name : str
         Name of the Structure.
+    assembly : obj
+        Assembly object.
 
     Attributes
     ----------
     name : str
         Name of the Structure.
+    parts : list
+        List of the parts in the assembly.
     assembly : obj
         Assembly object.
     bc : list
@@ -42,30 +46,89 @@ class Structure(StructureBase):
         List containing the Steps objects.
 
     """
-    def __init__(self, name):
+    def __init__(self, name, assembly):
         super(Structure, self).__init__(name=name)
-        # self.parts = parts
-        self.assembly = None
-        self.interactions = []
-        self.bcs = []
-        self.steps = []
+        self.assembly       = assembly
+        self.parts          = assembly.parts.values()
+        self.interactions   = {}
+        self.bcs            = {}
+        self.loads          = {}
+        self.field_outputs  = {}
+        self.history_outputs  = {}
+        self.steps          = []
 
-    def set_assembly(self, assembly):
-        self.assembly = assembly
-        self.parts = assembly.parts.values()
+
+    # =========================================================================
+    #                           BCs methods
+    # =========================================================================
 
     def add_bc(self, bc):
-        self.bcs. append(bc)
+        if bc.bset not in self.assembly.sets.keys():
+            sys.exit('ERROR: bc set {} not found in the assembly!'.format(bc.bset))
+        if bc.name not in self.bcs.keys():
+            self.bcs[bc.name] = bc
 
     def add_bcs(self, bcs):
         for bc in bcs:
             self.add_bc(bc)
 
-    def add_interactions(self, interactions):
+    def remove_bc(self, bc_name):
         pass
 
+    def remove_bcs(self, bcs):
+        pass
+
+    def remove_all_bcs(self):
+        self.bcs = {}
+
+    # =========================================================================
+    #                           Loads methods
+    # =========================================================================
+
+    def add_load(self, load):
+        if load.lset not in self.assembly.sets.keys():
+            sys.exit('ERROR: load set {} not found in the assembly!'.format(load.lset))
+        if load.name not in self.loads.keys():
+            self.loads[load.name] = load
+
+    def add_loads(self, loads):
+        for load in loads:
+            self.add_load(load)
+
+    def remove_bc(self, bc_name):
+        pass
+
+    def remove_bcs(self, bcs):
+        pass
+
+    def remove_all_loads(self):
+        self.loads = {}
+
+
+    # =========================================================================
+    #                           Step methods
+    # =========================================================================
+
     def add_step(self, step):
+
+        for disp in step.displacements:
+            if disp not in self.displacements.keys():
+                sys.exit('ERROR: displacement {} not found in the assembly!'.format(disp))
+
+        for load in step.loads:
+            if load not in self.loads.keys():
+                sys.exit('ERROR: load {} not found in the assembly!'.format(load))
+
+        for hout in step.history_outputs:
+            if hout not in self.history_outputs.keys():
+                sys.exit('ERROR: history output {} not found in the assembly!'.format(hout))
+
+        for fout in step.field_outputs:
+            if fout not in self.field_outputs.keys():
+                sys.exit('ERROR: field output {} not found in the assembly!'.format(fout))
+
         self.steps.append(step)
+
 
     def add_steps(self, steps):
         for step in steps:
@@ -73,6 +136,22 @@ class Structure(StructureBase):
 
     def define_steps_order(self, order):
         pass
+
+    # =========================================================================
+    #                           Field outputs
+    # =========================================================================
+
+    def add_field_output(self, fout):
+        if fout.name not in self.field_outputs.keys():
+            self.field_outputs[fout.name] = fout
+
+    def add_field_outputs(self, fouts):
+        for fout in fouts:
+            self.add_field_output(fout)
+
+    # =========================================================================
+    #                         Analysis methods
+    # =========================================================================
 
     def write_input_file(self, path='C:/temp', output=True, save=False, ):
         """Writes abaqus input file.
@@ -130,8 +209,12 @@ class Structure(StructureBase):
 
         """
         self.write_input_file(path=path, output=output, save=save)
-
         launch_process(self, path=path, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
+
+
+    # =========================================================================
+    #                         Results methods
+    # =========================================================================
 
     # # this should be an abstract method of the base class
     # def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,

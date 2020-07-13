@@ -63,7 +63,7 @@ class PointLoad(PointLoadBase):
         c=1
         for dof in dofs:
             if self.components[dof]:
-                line = """{}, {}, {}""".format(self.lset.name, c, self.components[dof])
+                line = """{}, {}, {}""".format(self.lset, c, self.components[dof])
                 data_section.append(line)
             c+=1
         return '\n'.join(data_section) +'\n'

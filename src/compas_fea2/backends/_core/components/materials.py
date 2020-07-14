@@ -85,7 +85,7 @@ class ElasticIsotropicBase(MaterialBase):
         self.v           = {'v': v}
         self.G           = {'G': 0.5 * E / (1 + v)}
         self.p           = p
-        self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression'])
+        self.attr_list.extend(['E', 'v', 'G', 'p'])
 
 
 class StiffBase(ElasticIsotropicBase):
@@ -149,7 +149,7 @@ class ElasticOrthotropicBase(MaterialBase):
         self.v           = {'vxy': vxy, 'vyz': vyz, 'vzx': vzx}
         self.G           = {'Gxy': Gxy, 'Gyz': Gyz, 'Gzx': Gzx}
         self.p           = p
-        self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression'])
+        self.attr_list.extend(['E', 'v', 'G', 'p'])
 
 
 # ==============================================================================

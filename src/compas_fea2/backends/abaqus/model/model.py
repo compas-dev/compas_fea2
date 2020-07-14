@@ -102,7 +102,7 @@ class Model():
     # =========================================================================
 
     def add_part(self, part, transformation={}):
-        """Adds a Part to the Assembly and creates an Instance object from the
+        """Adds a Part to the Model and creates an Instance object from the
         specified Part and adds it to the Assembly. If a transformation matrix
         is specified, the instance is creteated in the transformed location.
 
@@ -130,7 +130,7 @@ class Model():
         """
 
         if part.name in self.parts.keys():
-            print("WARNING: Part {} already in the Assembly. Part not added!".format(part.name))
+            print("WARNING: Part {} already in the Model. Part not added!".format(part.name))
         else:
             self.parts[part.name] = part
 
@@ -142,7 +142,7 @@ class Model():
             self.add_instance(Instance('{}-{}'.format(part.name, 1), part))
 
     def remove_part(self, part):
-        """ Removes the part from the assembly and all the referenced instances
+        """ Removes the part from the Model and all the referenced instances
         of that part.
 
         Parameters
@@ -165,7 +165,7 @@ class Model():
     #                          Instances methods
     # =========================================================================
     def add_instance(self, instance):
-        """Adds a compas_fea2 Instance object to the Assembly. If the Part to
+        """Adds a compas_fea2 Instance object to the Model. If the Part to
         which the instance is referred to does not exist, it is automatically
         created.
 
@@ -186,7 +186,7 @@ class Model():
             print('Duplicate instance {} will be ignored!'.format(instance.name))
 
     def remove_instance(self, instance):
-        """ Removes the part from the assembly and all the referenced instances.
+        """ Removes the part from the Model and all the referenced instances.
 
         Parameters
         ----------
@@ -208,10 +208,10 @@ class Model():
     # =========================================================================
 
     def add_node(self, node, part):
-        """Adds a compas_fea2 Node object to a Part in the Assmbly.
+        """Adds a compas_fea2 Node object to a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
         nodes are autmatically excluded.
-        The part must have been previously added to the Assembly.
+        The part must have been previously added to the Model.
 
         Parameters
         ----------
@@ -230,13 +230,13 @@ class Model():
             error_code=1
 
         if error_code == 0:
-            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
 
     def add_nodes(self, nodes, part):
-        """Add multiple compas_fea2 Node objects a Part in the Assmbly.
+        """Add multiple compas_fea2 Node objects a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
         nodes are autmatically excluded.
-        The part must have been previously added to the Assembly.
+        The part must have been previously added to the Model.
 
         Parameters
         ----------
@@ -254,7 +254,7 @@ class Model():
             self.add_node(node, part)
 
     def remove_node(self, node_key, part):
-        '''Remove the node from a Part in the Assmbly. If there are duplicate nodes,
+        '''Remove the node from a Part in the Model. If there are duplicate nodes,
         it removes also all the duplicates.
 
         Parameters
@@ -274,10 +274,10 @@ class Model():
             error_code=1
 
         if error_code == 0:
-            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
 
     def remove_nodes(self, nodes, part):
-        '''Remove the nodes from a Part in the Assmbly. If there are duplicate nodes,
+        '''Remove the nodes from a Part in the Model. If there are duplicate nodes,
         it removes also all the duplicates.
 
         Parameters
@@ -299,7 +299,7 @@ class Model():
     #                           Elements methods
     # =========================================================================
     def add_element(self, element, part):
-        """Adds a compas_fea2 Element object to a Part in the Assmbly.
+        """Adds a compas_fea2 Element object to a Part in the Model.
 
         Parameters
         ----------
@@ -317,16 +317,16 @@ class Model():
         if part in self.parts.keys():
             self.parts[part].add_element(element)
             if element.section not in self.sections.keys():
-                sys.exit('ERROR: section {} not found in the assembly!'.format(element.section))
+                sys.exit('ERROR: section {} not found in the Model!'.format(element.section))
             elif element.section not in self.parts[part].sections.keys():
                 self.parts[part].sections[element.section] = self.sections[element.section]
             error_code=1
 
         if error_code == 0:
-            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
 
     def add_elements(self, elements, part):
-        """Adds multiple compas_fea2 Element objects to a Part in the Assmbly.
+        """Adds multiple compas_fea2 Element objects to a Part in the Model.
 
         Parameters
         ----------
@@ -344,7 +344,7 @@ class Model():
             self.add_element(element, part)
 
     def remove_element(self, element_key, part):
-        '''Removes the element from a Part in the Assmbly.
+        '''Removes the element from a Part in the Model.
 
         Parameters
         ----------
@@ -363,10 +363,10 @@ class Model():
             error_code=1
 
         if error_code == 0:
-            sys.exit('ERROR: part {} not found in the assembly!'.format(part))
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
 
     def remove_elements(self, elements, part):
-        '''Removes the elements from a Part in the Assmbly.
+        '''Removes the elements from a Part in the Model.
 
         Parameters
         ----------
@@ -390,7 +390,7 @@ class Model():
         pass
 
     def add_assembly_set(self, set, instance):
-        '''Adds a Set object to the Assembly.
+        '''Adds a Set object to the Model.
 
         Parameters
         ----------
@@ -404,7 +404,7 @@ class Model():
         None
         '''
         if instance not in self.instances.keys():
-            sys.exit('ERROR: instance {} not found in the assembly!'.format(instance))
+            sys.exit('ERROR: instance {} not found in the Model!'.format(instance))
         set.instance = instance
         self.instances[instance].sets.append(set)
 
@@ -415,7 +415,7 @@ class Model():
     # =========================================================================
 
     def add_material(self, material):
-        '''Adds a Material object to the Assembly so that it can be later refernced
+        '''Adds a Material object to the Model so that it can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -431,7 +431,7 @@ class Model():
             self.materials[material.name] = material
 
     def add_materials(self, materials):
-        '''Adds multiple Material objects to the Assembly so that they can be later refernced
+        '''Adds multiple Material objects to the Model so that they can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -451,7 +451,7 @@ class Model():
     # =========================================================================
 
     def add_section(self, section):
-        """Adds a compas_fea2 Section object to the Assmbly.
+        """Adds a compas_fea2 Section object to the Model.
 
         Parameters
         ----------
@@ -468,7 +468,7 @@ class Model():
         if section.name not in self.sections.keys():
             self.sections[section.name] = section
             if section.material not in self.materials.keys():
-                sys.exit('ERROR: material {} not found in the assembly!'.format(section.material))
+                sys.exit('ERROR: material {} not found in the Model!'.format(section.material))
             self.add_material(self.materials[section.material])
 
 
@@ -591,6 +591,6 @@ if __name__ == "__main__":
     nset = Set('test_neset', my_nodes)
 
     my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
-    my_assembly = Assembly(name='test', instances=[my_instance])
+    my_assembly = Model(name='test', instances=[my_instance])
 
     print(my_assembly.data)

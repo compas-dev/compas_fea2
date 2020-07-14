@@ -78,8 +78,8 @@ class _GeneralStep(StepBase):
 
         self.displacements      = []
         self.loads              = []
-        self.field_outputs       = []
-        self.history_outputs     = []
+        self.field_outputs      = []
+        self.history_outputs    = []
 
         # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
         #                     'displacements', 'loads'])

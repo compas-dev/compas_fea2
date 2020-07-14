@@ -96,6 +96,17 @@ class Model():
     #                            General methods
     # =========================================================================
 
+    def from_network(self, network):
+        pass
+
+    def from_mesh(self, mesh):
+        pass
+
+    def from_volmesh(self, volmesh):
+        pass
+
+    def from_solid(self, solid):
+        pass
 
     # =========================================================================
     #                             Parts methods
@@ -508,6 +519,19 @@ class Model():
     def add_interactions(self, interactions):
         pass
 
+
+    # =========================================================================
+    #                          Helper methods
+    # =========================================================================
+
+    # TODO change to check through the instance
+    def get_node_from_coordinates(self, xyz):
+        node_dict = {}
+        for part in self.parts.values():
+            for node in part.nodes:
+                if node.xyz == xyz:
+                    node_dict[part.name] = node.key
+        return node_dict
 
 class Instance():
     """Initialises base Instance object.

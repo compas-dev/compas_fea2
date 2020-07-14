@@ -47,8 +47,6 @@ __all__ = [
 
 labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
 
-#TODO: elset should come from the element the section is assigned to and not form the section itself...
-
 def _generate_beam_data(obj):
     properties = []
     for l in labels:
@@ -74,13 +72,14 @@ class MassSection(SectionBase):
         Point mass value.
     """
 
-    def __init__(self, name, mass, elset=None):
+    def __init__(self, name, mass):
         super(MassSection, self).__init__(name)
         self.mass = mass
 
-        self.data = """** Section: {}
+    def _generate_data(self, set_name, orientation):
+        return """** Section: {}
 *Mass, elset={}
-{}\n""".format(name, elset, mass)
+{}\n""".format(self.name, set_name, self.mass)
 
 # ==============================================================================
 # 1D
@@ -88,91 +87,87 @@ class MassSection(SectionBase):
 
 class AngleSection(AngleSectionBase):
 
-    def __init__(self, name, b, h, t, material, elset=None):
+    def __init__(self, name, b, h, t, material):
         super(AngleSection, self).__init__(name, b, h, t, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class BoxSection(SectionBase):
 
     def __init__(self, name, a, b, t1, t2, t3, t4, material):
         super(BoxSection, self).__init__(name, material)
-        self.elset = self.name
         self.stype = 'box'
         self.properties = [str(a), str(b), str(t1), str(t2), str(t3), str(t4)]
-        self.data = """** Section: {}
+
+    def _generate_data(self, set_name, orientation):
+        orientation_line = ', '.join([str(v) for v in orientation])
+        return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
-{}\n""".format(self.name, self.elset, self.material, self.stype, ', '.join(self.properties))
+{}\n{}\n""".format(self.name, set_name, self.material, self.stype, ', '.join(self.properties), orientation_line)
 
 
 class CircularSection(CircularSectionBase):
 
-    def __init__(self, name, r, material, elset=None):
+    def __init__(self, name, r, material):
         super(CircularSection, self).__init__(name, r, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class GeneralSection(GeneralSectionBase):
 
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material, elset=None):
+    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
         super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class ISection(ISectionBase):
 
-    def __init__(self, name, b, h, tw, tf, material, elset=None):
+    def __init__(self, name, b, h, tw, tf, material):
         super(ISection, self).__init__(name, b, h, tw, tf, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class PipeSection(PipeSectionBase):
 
-    def __init__(self, name, r, t, material, elset=None):
+    def __init__(self, name, r, t, material):
         super(PipeSection, self).__init__(name, r, t, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class RectangularSection(RectangularSectionBase):
 
-    def __init__(self, name, b, h, material, elset=None):
+    def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, b, h, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class TrapezoidalSection(TrapezoidalSectionBase):
 
-    def __init__(self, name, b1, b2, h, material, elset=None):
+    def __init__(self, name, b1, b2, h, material):
         super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
-        self.elset = elset
-        self.data = _generate_beam_data(self)
+        # self.data = _generate_beam_data(self)
 
 
 class TrussSection(TrussSectionBase):
 
-    def __init__(self, name, A, material, elset=None):
+    def __init__(self, name, A, material):
         super(TrussSection, self).__init__(name, A, material)
-        self.elset = elset
-        self.data = """** Section: {}
+
+    def _generate_data(self, set_name):
+        return """** Section: {}
 *Solid Section, elset={}, material={}
-{},\n""".format(self.name, elset, self.material.name, self.geometry['A'])
+{},\n""".format(self.name, set_name, self.material.name, self.geometry['A'])
 
 
 class StrutSection(StrutSectionBase):
 
-    def __init__(self, name, A, material, elset=None):
+    def __init__(self, name, A, material):
         super(StrutSection, self).__init__(name, A, material)
         self.elset = elset
 
 class TieSection(TieSectionBase):
 
-    def __init__(self, name, A, material, elset=None):
+    def __init__(self, name, A, material):
         super(TieSection, self).__init__(name, A, material)
         self.elset = elset
 
@@ -194,24 +189,26 @@ class ShellSection(ShellSectionBase):
 
     """
 
-    def __init__(self, name, t, material, elset=None, int_points=5):
+    def __init__(self, name, t, material, int_points=5):
         super(ShellSection, self).__init__(name, t, material)
         self.__doc__ += ShellSection.__doc__
-        self.elset = elset
         self.int_points = int_points
-        self.data = """** Section: {}
+
+    def _generate_data(self, set_name):
+        return """** Section: {}
 *Shell Section, elset={}, material={}
-{}, {}\n""".format(self.name, self.elset, self.material.name, self.t, self.int_points)
+{}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
 
 
 class MembraneSection(MembraneSectionBase):
 
-    def __init__(self, name, t, material, elset=None):
+    def __init__(self, name, t, material):
         super(MembraneSection, self).__init__(name, t, material)
-        self.elset = elset
-        self.data = """** Section: {}
+
+    def _generate_data(self, set_name):
+        return """** Section: {}
 *Membrane Section, elset={}, material={}
-{},\n""".format(self.name, elset, self.material.name, self.t)
+{},\n""".format(self.name, set_name, self.material.name, self.t)
 
 # ==============================================================================
 # 3D
@@ -219,12 +216,13 @@ class MembraneSection(MembraneSectionBase):
 
 class SolidSection(SolidSectionBase):
 
-    def __init__(self, name, material, elset=None):
+    def __init__(self, name, material):
         super(SolidSectionBase, self).__init__(name, material)
-        self.elset = elset
-        self.data = """** Section: {}
+
+    def _generate_data(self, set_name):
+        return """** Section: {}
 *Solid Section, elset={}, material={}
-,\n""".format(self.name, elset, self.material.name)
+,\n""".format(self.name, set_name, self.material.name)
 
 
 if __name__ == "__main__":

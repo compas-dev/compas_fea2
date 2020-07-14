@@ -85,11 +85,11 @@ class MassElement():
 
 class BeamElement(BeamElementBase):
 
-    def __init__(self, connectivity, section, elset=None, thermal=None):
+    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
         super(BeamElement, self).__init__(connectivity=connectivity, section=section, thermal=thermal)
         self.elset = elset
         self.eltype = 'B31'
-
+        self.orientation = orientation
         self.keyword = _generate_keyword(self)
         # self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 

@@ -66,6 +66,7 @@ class Part():
 
         self.elements_by_type       = {}
         self.elements_by_section    = {}
+        self.orientations_by_section    = {}
         self.elements_by_elset      = {}
         self.elsets_by_section      = {}
         # self.elements_by_material   = {}
@@ -83,6 +84,54 @@ class Part():
     def __repr__(self):
 
         return '{0}({1})'.format(self.__name__, self.name)
+
+    # =========================================================================
+    #                       Generate input file data
+    # =========================================================================
+
+    def _generate_data(self):
+
+        # Write nodes
+        data_section = ['*Node\n']
+        for node in self.nodes:
+            data_section.append(node._generate_data())
+
+        # Write elements
+        for eltype in self.elements_by_type.keys():
+            data_section.append("*Element, type={}\n".format(eltype))
+            data = []
+            for key in self.elements_by_type[eltype]:
+                data_section.append(self.elements[key]._generate_data())
+
+        # Write nsets
+        for nset in self.nsets:
+            data_section.append(nset._generate_data())
+
+        # Write sets
+        for section in self.elements_by_section.keys():
+            o=1
+            for orientation in self.orientations_by_section[section]:
+                from compas_fea2.backends.abaqus.model import Set
+                elements = []
+                for element in self.elements_by_section[section]:
+                    if self.elements[element].orientation == orientation:
+                        elements.append(element)
+                self.add_element_set(Set('_{}-{}'.format(section, o), elements, 'elset'))
+                o+=1
+
+        for elset in self.elsets:
+            data_section.append(elset._generate_data())
+
+        # Write sections
+        for section in self.sections.values():
+            o=1
+            for orientation in self.orientations_by_section[section.name]:
+                data_section.append(section._generate_data('_{}-{}'.format(section.name, o), orientation))
+                o+=1
+
+        temp = ''.join(data_section)
+        return ''.join(["*Part, name={}\n".format(self.name), temp,
+                        "*End Part\n**\n"])
 
     # =========================================================================
     #                         General methods
@@ -143,6 +192,9 @@ class Part():
 
         for node in nodes:
             self.add_node(node, check)
+
+    # TODO remove methods need to be checked. For example, check if removing an
+    # also removes the sections and sets associated to it.
 
     def remove_node(self, node_key):
         '''Remove the node from the Part. If there are duplicate nodes, it
@@ -329,12 +381,13 @@ class Part():
 
         el_dict={}
         for el in self.elements:
-            el_dict[el.key] = (el.eltype, el.section, el.elset)
+            el_dict[el.key] = (el.eltype, el.section, el.elset, el.orientation)
 
         type_elements = {}
         section_elements = {}
         elset_elements = {}
         section_elsets = {}
+        section_orientations = {}
         # material_elements = {}
         for key, value in el_dict.items():
             type_elements.setdefault(value[0], set()).add(key)
@@ -342,10 +395,12 @@ class Part():
             # material_elements.setdefault(value[1].material, set()).add(key)
             elset_elements.setdefault(value[2], set()).add(key)
             section_elsets.setdefault(value[1], set()).add(value[2])
+            section_orientations.setdefault(value[1], set()).add(value[3])
 
         self.elements_by_type = type_elements
         self.elements_by_section = section_elements
         self.elements_by_elset = elset_elements
+        self.orientations_by_section = section_orientations
         # self.elements_by_material = material_elements
 
         # self.remove_element_from_set()
@@ -392,6 +447,12 @@ class Part():
             if element.section not in self.elements_by_section.keys():
                 self.elements_by_section[element.section] = []
             self.elements_by_section[element.section].append(element.key)
+
+            # add the element orientation to its section group
+            if element.section not in self.orientations_by_section.keys():
+                self.orientations_by_section[element.section] = []
+            if element.orientation not in self.orientations_by_section[element.section]:
+                self.orientations_by_section[element.section].append(element.orientation)
 
             # # add the element key to its material group
             # if element.section.material not in self.elements_by_material.keys():
@@ -478,43 +539,7 @@ class Part():
     def remove_element_from_set(self, set_name, element):
         pass
 
-    # =========================================================================
-    #                       Generate input file data
-    # =========================================================================
 
-    def _generate_data(self):
-
-        # Write nodes
-        data_section = ['*Node\n']
-        for node in self.nodes:
-            data_section.append(node._generate_data())
-
-        # Write elements
-        for eltype in self.elements_by_type.keys():
-            data_section.append("*Element, type={}\n".format(eltype))
-            data = []
-            for key in self.elements_by_type[eltype]:
-                data_section.append(self.elements[key]._generate_data())
-
-        # Write nsets
-        for nset in self.nsets:
-            data_section.append(nset._generate_data())
-
-        # Write sets
-        for section in self.elements_by_section.keys():
-            from compas_fea2.backends.abaqus.model import Set
-            self.add_element_set(Set(section, self.elements_by_section[section], 'elset'))
-        for elset in self.elsets:
-            data_section.append(elset._generate_data())
-
-        # Write sections
-        for section in self.sections.values():
-            # for elset in self.elsets_by_section[section]:
-            data_section.append(section.data)  #TODO CHECK
-
-        temp = ''.join(data_section)
-        return ''.join(["*Part, name={}\n".format(self.name), temp,
-                        "*End Part\n**\n"])
 
 
 

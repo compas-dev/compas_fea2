@@ -17,10 +17,10 @@ from compas_fea2.backends.abaqus.job.read_results import extract_data
 #            Tomas Mendez Echenagucia (github.com/tmsmendez)
 
 __all__ = [
-    'Structure',
+    'Problem',
 ]
 
-class Structure(StructureBase):
+class Problem(StructureBase):
     """Initialises the Structure object.
 
     Parameters
@@ -47,7 +47,7 @@ class Structure(StructureBase):
 
     """
     def __init__(self, name, assembly):
-        super(Structure, self).__init__(name=name)
+        super(Problem, self).__init__(name=name)
         self.assembly       = assembly
         self.parts          = assembly.parts.values()
         self.interactions   = {}

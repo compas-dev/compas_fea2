@@ -7,12 +7,13 @@ from __future__ import print_function
 import sys
 
 __all__ = [
-    'Assembly',
+    'Model',
     'Instance',
 ]
 
-class Assembly():
-    """Initialises base Assembly object.
+class Model():
+    """Initialises Model object. This is in many aspects equivalent to an
+    `Assembly` in Abaqus.
 
     Parameters
     ----------
@@ -39,7 +40,7 @@ class Assembly():
     """
 
     def __init__(self, name, ):
-        self.__name__       = 'Assembly'
+        self.__name__       = 'Model'
         self.name           = name
         self.instances      = {}
         self.parts          = {}

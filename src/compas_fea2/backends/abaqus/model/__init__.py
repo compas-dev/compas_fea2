@@ -1,18 +1,18 @@
 """
 ********************************************************************************
-abaqus.components
+abaqus.model
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.backends.abaqus.components
+.. currentmodule:: compas_fea2.backends.abaqus.model
 
 
-Assembly
-========
+Model
+=====
 
 .. autosummary::
     :toctree: generated/
 
-    Assembly
+    Model
     Instance
 
 Parts
@@ -22,35 +22,6 @@ Parts
     :toctree: generated/
 
     Part
-
-Constraints
-===========
-
-.. autosummary::
-    :toctree: generated/
-
-    Constraint
-    TieConstraint
-
-
-Boundary Conditions
-===================
-
-.. autosummary::
-    :toctree: generated/
-
-    GeneralDisplacement
-    FixedDisplacement
-    PinnedDisplacement
-    FixedDisplacementXX
-    FixedDisplacementYY
-    FixedDisplacementZZ
-    RollerDisplacementX
-    RollerDisplacementY
-    RollerDisplacementZ
-    RollerDisplacementXY
-    RollerDisplacementYZ
-    RollerDisplacementXZ
 
 Nodes
 =====
@@ -81,30 +52,22 @@ Elements
     TetrahedronElement
     HexahedronElement
 
+Constraints
+===========
+
+.. autosummary::
+    :toctree: generated/
+
+    Constraint
+    TieConstraint
 
 Properties
 ==========
+
 .. autosummary::
     :toctree: generated/
 
     ElementProperties
-
-
-Loads
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Load
-    PrestressLoad
-    PointLoad
-    PointLoads
-    LineLoad
-    AreaLoad
-    GravityLoad
-    TributaryLoad
-    HarmoniPointLoadBase
 
 
 Materials
@@ -123,17 +86,6 @@ Materials
     ElasticPlastic
     Steel
     UserMaterial
-
-
-Misc
-====
-
-.. autosummary::
-    :toctree: generated/
-
-    Misc
-    Amplitude
-    Temperatures
 
 
 Sections
@@ -160,19 +112,6 @@ Sections
     SpringSection
 
 
-Steps
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Step
-    GeneralStep
-    ModalStep
-    HarmoniStepBase
-    BucklingStep
-
-
 """
 
 from __future__ import absolute_import
@@ -182,23 +121,16 @@ from __future__ import print_function
 import os
 
 # additional software-based classes
-from .nodes import *
-from .assembly import *
+from .model import *
 from .parts import *
+from .nodes import *
 from .interactions import *
-from .bcs import *
 from .sets import *
 from .constraints import *
 from .elements import *
-from .steps import *
-#from .load_cases import *
-#from .load_combos import *
-from .loads import *
 from .materials import *
 # from .properties import *
 from .sections import *
-from .misc import *
-from .outputs import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

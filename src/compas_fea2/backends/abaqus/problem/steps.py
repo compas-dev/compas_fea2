@@ -27,8 +27,6 @@ __all__ = [
 
 # TODO add field and history output requrests
 
-
-
 class _GeneralStep(StepBase):
     """Initialises GeneralStep object for use in a static analysis.
 

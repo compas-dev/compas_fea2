@@ -502,7 +502,7 @@ class Part():
 
         # Write sets
         for section in self.elements_by_section.keys():
-            from compas_fea2.backends.abaqus.components import Set
+            from compas_fea2.backends.abaqus.model import Set
             self.add_element_set(Set(section, self.elements_by_section[section], 'elset'))
         for elset in self.elsets:
             data_section.append(elset._generate_data())

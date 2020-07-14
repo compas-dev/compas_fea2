@@ -1,27 +1,26 @@
 
-# TODO model components
-from compas_fea2.backends.abaqus.components import Assembly
-from compas_fea2.backends.abaqus.components import Part
-from compas_fea2.backends.abaqus.components import Node
-from compas_fea2.backends.abaqus.components import ElasticIsotropic
-from compas_fea2.backends.abaqus.components import BoxSection
-from compas_fea2.backends.abaqus.components import BeamElement
-from compas_fea2.backends.abaqus.components import Set
+from compas_fea2.backends.abaqus.model import Model
+from compas_fea2.backends.abaqus.model import Part
+from compas_fea2.backends.abaqus.model import Node
+from compas_fea2.backends.abaqus.model import ElasticIsotropic
+from compas_fea2.backends.abaqus.model import BoxSection
+from compas_fea2.backends.abaqus.model import BeamElement
+from compas_fea2.backends.abaqus.model import Set
 
-# TODO problem components
-from compas_fea2.backends.abaqus import Structure
-from compas_fea2.backends.abaqus.components import FixedDisplacement
-from compas_fea2.backends.abaqus.components import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.components import PointLoad
-from compas_fea2.backends.abaqus.components import FieldOutput
-from compas_fea2.backends.abaqus.components import GeneralStaticStep
+from compas_fea2.backends.abaqus.problem import Problem
+from compas_fea2.backends.abaqus.problem import FixedDisplacement
+from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
+from compas_fea2.backends.abaqus.problem import PointLoad
+from compas_fea2.backends.abaqus.problem import FieldOutput
+from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
-### ------------------------- MODEL -------------------------###
+##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
-model = Assembly(name='structural_model')
+model = Model(name='structural_model')
 
 # Add a Part to the model
 model.add_part(Part(name='part-1'))
+
 # Add nodes to the part
 for x in range(0, 1100, 100):
     model.add_node(Node(xyz=[x, 0.0, 0.0]), part='part-1')
@@ -52,20 +51,24 @@ model.add_assembly_set(Set(name='fixed', selection=[0], stype='nset'), instance=
 model.add_assembly_set(Set(name='roller', selection=[10], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
 
-### ------------------------- PROBLEM -------------------------###
+
+##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
-my_problem = Structure(name='test_structure', assembly=model)
+problem = Problem(name='test_structure', assembly=model)
 
 # Assign boundary conditions to the node stes
-my_problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
+problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
                         FixedDisplacement(name='bc_fix', bset='fixed')])
+
 # Assign a point load to the node set
-my_problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
+problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
+
 # Define the field outputs required
-my_problem.add_field_output(fout=FieldOutput(name='fout'))
+problem.add_field_output(fout=FieldOutput(name='fout'))
+
 # Define the analysis step
-my_problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
+problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
 
 # Solve the problem
 # my_structure.write_input_file(path='C:/temp/test_structure')
-my_problem.analyse(path='C:/temp/test_structure')
+problem.analyse(path='C:/temp/test_structure')

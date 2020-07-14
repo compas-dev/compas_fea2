@@ -103,7 +103,7 @@ class BoxSection(SectionBase):
         self.properties = [str(a), str(b), str(t1), str(t2), str(t3), str(t4)]
         self.data = """** Section: {}
 *Beam Section, elset={}, material={}, section={}
-{}\n""".format(self.name, self.elset, self.material.name, self.stype, ','.join(self.properties))
+{}\n""".format(self.name, self.elset, self.material, self.stype, ', '.join(self.properties))
 
 
 class CircularSection(CircularSectionBase):

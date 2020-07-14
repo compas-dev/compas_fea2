@@ -40,10 +40,10 @@ class PrestressLoad(PrestressLoadBase):
 
 
 class PointLoad(PointLoadBase):
-    def __init__(self, name, selection, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
+    def __init__(self, name, lset, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
         super(PointLoad, self).__init__(name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
 
-        self.selection = selection
+        self.lset = lset
         if modify:
             self.op = 'NEW'
         else:
@@ -63,7 +63,7 @@ class PointLoad(PointLoadBase):
         c=1
         for dof in dofs:
             if self.components[dof]:
-                line = """{}, {}, {}""".format(self.selection.name, c, self.components[dof])
+                line = """{}, {}, {}""".format(self.lset, c, self.components[dof])
                 data_section.append(line)
             c+=1
         return '\n'.join(data_section) +'\n'

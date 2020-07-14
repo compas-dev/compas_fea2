@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'NodeBase',
@@ -13,8 +14,6 @@ class NodeBase(object):
 
     Parameters
     ----------
-    key : int
-        Node key number.
     xyz : list
         [x, y, z] co-ordinates of the node.
     ex : list
@@ -25,11 +24,14 @@ class NodeBase(object):
         Node's local z axis.
     mass : float
         Mass in kg associated with the node.
+    label : string
+        Node's label. If no label is specified, it is automatically generated
+        when a node is added. The label does not need to be unique.
 
     Attributes
     ----------
     key : int
-        Node key number.
+        Node key number. The key number is unique.
     x : float
         x co-ordinates of the node.
     y : float
@@ -44,31 +46,41 @@ class NodeBase(object):
         Node's local z axis.
     mass : float
         Mass in kg associated with the node.
+    label : string
+        Node's label. If no label is specified, it is automatically generated
+        when a node is added. The label does not need to be unique.
+    gkey : string
+        Node's geometric key to uniquely identify it. The geometric key is built
+        as: x_y_z
 
     Examples
     --------
     >>> node = Node(1.0, 2.0, 3.0)
     """
 
-    def __init__(self, key, xyz, ex=None, ey=None, ez=None, mass=None):
+    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
         self.__name__ = 'Node'
-        self.key      = key
-        self.xyz      = xyz
-        self.x        = xyz[0]
-        self.y        = xyz[1]
-        self.z        = xyz[2]
+        self.key      = 0
+        self.xyz      = [float(x) for x in xyz]
+        self.x        = self.xyz[0]
+        self.y        = self.xyz[1]
+        self.z        = self.xyz[2]
         self.ex       = ex
         self.ey       = ey
         self.ez       = ez
         self.mass     = mass
+        self.label    = label
+        self.gkey     = '{}_{}_{}'.format(self.x, self.y, self.z)
 
     def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-        for attr in ['key', 'x', 'y', 'z', 'ex', 'ey', 'ez', 'mass']:
-            print('{0:<5} : {1}'.format(attr, getattr(self, attr)))
-        return ''
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        data = []
+        for attr in ['label', 'key', 'x', 'y', 'z', 'ex', 'ey', 'ez', 'mass']:
+            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
     def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.key)
+
+        return '{0}({1} - {2})'.format(self.__name__, self.key, self.label)

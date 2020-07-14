@@ -27,8 +27,6 @@ __all__ = [
 
 # TODO add field and history output requrests
 
-
-
 class _GeneralStep(StepBase):
     """Initialises GeneralStep object for use in a static analysis.
 
@@ -77,10 +75,11 @@ class _GeneralStep(StepBase):
             self.nlgeom         = 'YES'
         else:
             self.nlgeom         = 'NO'
-        self.displacements      = displacements
-        self.loads              = loads
-        self.field_output       = field_output
-        self.history_output     = history_output
+
+        self.displacements      = []
+        self.loads              = []
+        self.field_outputs       = []
+        self.history_outputs     = []
 
         # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
         #                     'displacements', 'loads'])
@@ -96,9 +95,9 @@ class GeneralStaticStep(_GeneralStep):
         self.stype = 'Static'
         self.attr_list.extend(['stype'])
 
-        self.data = self._generate_data()
+        # self.data = self._generate_data()
 
-    def _generate_data(self):  #todo: this could be moved outside the class
+    def _generate_data(self, displacements=[], loads=[], field_outputS=[], history_outputS=[]):  #todo: this could be moved outside the class
         section_data = []
         line = """** ----------------------------------------------------------------
 **
@@ -108,19 +107,19 @@ class GeneralStaticStep(_GeneralStep):
 *{3}
 {4}, {5}, {6}, {5}
 **
-** BOUNDARY CONDITIONS
+** DISPLACEMENTS
 **\n""".format(self.name, self.nlgeom, self.max_increments, self.stype,
                 self.initial_inc_size, self.time, self.min_inc_size)
         section_data.append(line)
 
-        for displacement in self.displacements:
-            section_data.append(displacement.data)
+        for displacement in displacements:
+            section_data.append(displacement._generate_data())
 
         line = """**\n** LOADS\n**\n"""
         section_data.append(line)
 
-        for load in self.loads:
-            section_data.append(load.data)
+        for load in loads:
+            section_data.append(load._generate_data())
 
         line = """**
 ** OUTPUT REQUESTS
@@ -129,9 +128,9 @@ class GeneralStaticStep(_GeneralStep):
 **\n"""
         section_data.append(line)
 
-        for foutput in self.field_output:
+        for foutput in field_outputS:
             section_data.append(foutput.data)
-        for houtput in self.history_output:
+        for houtput in history_outputS:
             section_data.append(houtput.data)
         section_data.append('*End Step\n')
 

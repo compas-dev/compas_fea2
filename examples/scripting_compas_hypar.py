@@ -18,6 +18,7 @@ from compas_fea2.backends.abaqus.problem import PointLoad
 from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
+##### ------------------------------ MODEL ------------------------------ #####
 
 # Initialise the assembly object
 model = Model(name='hypar')
@@ -28,10 +29,6 @@ model.add_part(Part(name='part-1'))
 mesh = Mesh.from_obj('C:/temp/hypar.obj')
 for v in mesh.vertices():
     model.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
-
-# print(model.node_from_coordinates([5000, 0, 0,]))
-# print(model.node_from_coordinates([0, 3000, 0,]))
-# print(model.node_from_coordinates([0, 0, 5000]))
 
 # Define materials
 model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
@@ -51,16 +48,18 @@ for e in edges:
     # add element to the model
     model.add_element(BeamElement(connectivity=[e[0], e[1]], section='section_A', orientation=v), part='part-1')
 
-n_fixed = model.node_from_coordinates([5000, 0, 0,])
-n_roller = model.node_from_coordinates([0, 3000, 0,])
-n_load  = model.node_from_coordinates([0, 0, -5000])
+n_fixed = model.get_node_from_coordinates([5000, 0, 0,])
+n_roller = model.get_node_from_coordinates([0, 3000, 0,])
+n_load  = model.get_node_from_coordinates([0, 0, -5000])
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
+
 ##### ----------------------------- PROBLEM ----------------------------- #####
+
 # Create the Problem object
 problem = Problem(name='compas_test', assembly=model)
 

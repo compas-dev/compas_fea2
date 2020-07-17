@@ -11,9 +11,9 @@ abaqus
 
 .. automodule:: compas_fea2.backends.abaqus.problem
 
-.. automodule:: compas_fea2.backends.abaqus.job
-
 """
 
+from .model import *
+from .problem import *
 
 __all__ = [name for name in dir() if not name.startswith('_')]

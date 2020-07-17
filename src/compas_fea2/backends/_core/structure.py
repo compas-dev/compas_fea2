@@ -5,8 +5,8 @@ from __future__ import print_function
 import os
 import pickle
 
-from compas.geometry import centroid_points
-from compas.utilities import geometric_key
+# from compas.geometry import centroid_points
+# from compas.utilities import geometric_key
 
 from compas_fea2.utilities import group_keys_by_attribute
 from compas_fea2.utilities import group_keys_by_attributes
@@ -177,25 +177,25 @@ Steps
     # Nodes
     # ==============================================================================
 
-    def check_node_exists(self, xyz):
-        """Check if a node already exists at given x, y, z co-ordinates.
+    # def check_node_exists(self, xyz):
+    #     """Check if a node already exists at given x, y, z co-ordinates.
 
-        Parameters
-        ----------
-        xyz : list
-            [x, y, z] co-ordinates of node to check.
+    #     Parameters
+    #     ----------
+    #     xyz : list
+    #         [x, y, z] co-ordinates of node to check.
 
-        Returns
-        -------
-        int
-            The node index if the node already exists, None if not.
+    #     Returns
+    #     -------
+    #     int
+    #         The node index if the node already exists, None if not.
 
-        Notes
-        -----
-        Geometric key check is made according to self.tol [m] tolerance.
-        """
-        xyz = [float(i) for i in xyz]
-        return self.node_index.get(geometric_key(xyz, '{0}f'.format(self.tol)), None)
+    #     Notes
+    #     -----
+    #     Geometric key check is made according to self.tol [m] tolerance.
+    #     """
+    #     xyz = [float(i) for i in xyz]
+    #     return self.node_index.get(geometric_key(xyz, '{0}f'.format(self.tol)), None)
 
     # def edit_node(self, key, attr_dict):
     #     """Edit the data of a node.
@@ -217,48 +217,48 @@ Steps
     #         setattr(self.nodes[key], attr, item)
     #     self.add_node_to_node_index(key, self.node_xyz(key))
 
-    def node_bounds(self):
-        """Return the bounds formed by the Structure's nodal co-ordinates.
+    # def node_bounds(self):
+    #     """Return the bounds formed by the Structure's nodal co-ordinates.
 
-        Parameters
-        ----------
-        None
+    #     Parameters
+    #     ----------
+    #     None
 
-        Returns
-        -------
-        list
-            [xmin, xmax].
-        list
-            [ymin, ymax].
-        list
-            [zmin, zmax].
-        """
-        n = self.node_count()
-        x = [0] * n
-        y = [0] * n
-        z = [0] * n
-        for c, node in self.nodes.items():
-            x[c] = node.x
-            y[c] = node.y
-            z[c] = node.z
-        xmin, xmax = min(x), max(x)
-        ymin, ymax = min(y), max(y)
-        zmin, zmax = min(z), max(z)
-        return [xmin, xmax], [ymin, ymax], [zmin, zmax]
+    #     Returns
+    #     -------
+    #     list
+    #         [xmin, xmax].
+    #     list
+    #         [ymin, ymax].
+    #     list
+    #         [zmin, zmax].
+    #     """
+    #     n = self.node_count()
+    #     x = [0] * n
+    #     y = [0] * n
+    #     z = [0] * n
+    #     for c, node in self.nodes.items():
+    #         x[c] = node.x
+    #         y[c] = node.y
+    #         z[c] = node.z
+    #     xmin, xmax = min(x), max(x)
+    #     ymin, ymax = min(y), max(y)
+    #     zmin, zmax = min(z), max(z)
+    #     return [xmin, xmax], [ymin, ymax], [zmin, zmax]
 
-    def node_count(self):
-        """Return the number of nodes in the Structure.
+    # def node_count(self):
+    #     """Return the number of nodes in the Structure.
 
-        Parameters
-        ----------
-        None
+    #     Parameters
+    #     ----------
+    #     None
 
-        Returns
-        -------
-        int
-            Number of nodes stored in the Structure object.
-        """
-        return len(self.nodes) + len(self.virtual_nodes)
+    #     Returns
+    #     -------
+    #     int
+    #         Number of nodes stored in the Structure object.
+    #     """
+    #     return len(self.nodes) + len(self.virtual_nodes)
 
 
     def nodes_xyz(self, nodes=None):
@@ -341,50 +341,50 @@ Steps
     #     """
     #     return centroid_points(self.nodes_xyz(nodes=self.elements[element].nodes))
 
-    def add_virtual_element(self, nodes, type, thermal=False, axes={}):
-        """Adds a virtual element to structure.elements and to element set 'virtual_elements'.
+    # def add_virtual_element(self, nodes, type, thermal=False, axes={}):
+    #     """Adds a virtual element to structure.elements and to element set 'virtual_elements'.
 
-        Parameters
-        ----------
-        nodes : list
-            Nodes the element is connected to.
-        type : str
-            Element type: 'HexahedronElement', 'BeamElement, 'TrussElement' etc.
-        thermal : bool
-            Thermal properties on or off.
-        axes : dict
-            The local element axes 'ex', 'ey' and 'ez'.
+    #     Parameters
+    #     ----------
+    #     nodes : list
+    #         Nodes the element is connected to.
+    #     type : str
+    #         Element type: 'HexahedronElement', 'BeamElement, 'TrussElement' etc.
+    #     thermal : bool
+    #         Thermal properties on or off.
+    #     axes : dict
+    #         The local element axes 'ex', 'ey' and 'ez'.
 
-        Returns
-        -------
-        int
-            Key of the added virtual element.
+    #     Returns
+    #     -------
+    #     int
+    #         Key of the added virtual element.
 
-        Notes
-        -----
-        Virtual elements are numbered sequentially starting from 0.
-        """
-        ekey = self.check_element_exists(nodes, virtual=True)
+    #     Notes
+    #     -----
+    #     Virtual elements are numbered sequentially starting from 0.
+    #     """
+    #     ekey = self.check_element_exists(nodes, virtual=True)
 
-        if ekey is None:
+    #     if ekey is None:
 
-            ekey            = self.element_count()
-            element         = func_dict[type]()
-            element.axes    = axes
-            element.nodes   = nodes
-            element.number  = ekey
-            element.thermal = thermal
+    #         ekey            = self.element_count()
+    #         element         = func_dict[type]()
+    #         element.axes    = axes
+    #         element.nodes   = nodes
+    #         element.number  = ekey
+    #         element.thermal = thermal
 
-            self.virtual_elements[ekey] = element
-            self.add_element_to_element_index(ekey, nodes, virtual=True)
+    #         self.virtual_elements[ekey] = element
+    #         self.add_element_to_element_index(ekey, nodes, virtual=True)
 
-            if 'virtual_elements' in self.sets:
-                self.collections['virtual_elements']['selection'].append(ekey)
-            else:
-                self.collections['virtual_elements'] = {'type': 'virtual_element', 'selection': [ekey],
-                                                 'index': len(self.sets)}
+    #         if 'virtual_elements' in self.sets:
+    #             self.collections['virtual_elements']['selection'].append(ekey)
+    #         else:
+    #             self.collections['virtual_elements'] = {'type': 'virtual_element', 'selection': [ekey],
+    #                                              'index': len(self.sets)}
 
-        return ekey
+    #     return ekey
 
     # ==============================================================================
     # Modifiers

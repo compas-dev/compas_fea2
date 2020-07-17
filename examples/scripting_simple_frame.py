@@ -1,18 +1,18 @@
 
-from compas_fea2.backends.abaqus.model import Model
-from compas_fea2.backends.abaqus.model import Part
-from compas_fea2.backends.abaqus.model import Node
-from compas_fea2.backends.abaqus.model import ElasticIsotropic
-from compas_fea2.backends.abaqus.model import BoxSection
-from compas_fea2.backends.abaqus.model import BeamElement
-from compas_fea2.backends.abaqus.model import Set
+from compas_fea2.backends.abaqus import Model
+from compas_fea2.backends.abaqus import Part
+from compas_fea2.backends.abaqus import Node
+from compas_fea2.backends.abaqus import ElasticIsotropic
+from compas_fea2.backends.abaqus import BoxSection
+from compas_fea2.backends.abaqus import BeamElement
+from compas_fea2.backends.abaqus import Set
 
-from compas_fea2.backends.abaqus.problem import Problem
-from compas_fea2.backends.abaqus.problem import FixedDisplacement
-from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.problem import PointLoad
-from compas_fea2.backends.abaqus.problem import FieldOutput
-from compas_fea2.backends.abaqus.problem import GeneralStaticStep
+from compas_fea2.backends.abaqus import Problem
+from compas_fea2.backends.abaqus import FixedDisplacement
+from compas_fea2.backends.abaqus import RollerDisplacementXZ
+from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import FieldOutput
+from compas_fea2.backends.abaqus import GeneralStaticStep
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
@@ -70,5 +70,5 @@ problem.add_field_output(fout=FieldOutput(name='fout'))
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
 
 # Solve the problem
-# problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path='C:/temp/test_structure')
+problem.write_input_file(path='C:/temp/test_structure')
+# problem.analyse(path='C:/temp/test_structure')

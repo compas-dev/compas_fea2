@@ -129,7 +129,6 @@ from .sets import *
 from .constraints import *
 from .elements import *
 from .materials import *
-# from .properties import *
 from .sections import *
 
 

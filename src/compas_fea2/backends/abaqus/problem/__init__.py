@@ -79,7 +79,6 @@ import os
 from .bcs import *
 from .steps import *
 from .loads import *
-from .misc import *
 from .outputs import *
 from .problem import *
 

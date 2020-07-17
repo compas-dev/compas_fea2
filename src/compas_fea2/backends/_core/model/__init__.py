@@ -171,18 +171,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .bcs import *
-from .constraints import *
+
 from .nodes import *
 from .elements import *
-from .load_cases import *
-from .load_combos import *
-from .loads import *
-from .steps import *
 from .materials import *
-from .properties import *
 from .sections import *
-from .misc import *
+from .constraints import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

@@ -6,7 +6,7 @@ import os
 import pickle
 import sys
 
-from compas_fea2.backends._core import StructureBase
+from compas_fea2.backends._core.problem import ProblemBase
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
@@ -20,7 +20,7 @@ __all__ = [
     'Problem',
 ]
 
-class Problem(StructureBase):
+class Problem(ProblemBase):
     """Initialises the Structure object.
 
     Parameters

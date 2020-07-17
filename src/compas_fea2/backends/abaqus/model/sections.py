@@ -5,22 +5,22 @@ from __future__ import print_function
 
 from math import pi
 
-from compas_fea2.backends._core import SectionBase
-from compas_fea2.backends._core import AngleSectionBase
-from compas_fea2.backends._core import BoxSectionBase
-from compas_fea2.backends._core import CircularSectionBase
-from compas_fea2.backends._core import GeneralSectionBase
-from compas_fea2.backends._core import ISectionBase
-from compas_fea2.backends._core import PipeSectionBase
-from compas_fea2.backends._core import RectangularSectionBase
-from compas_fea2.backends._core import ShellSectionBase
-from compas_fea2.backends._core import MembraneSectionBase
-from compas_fea2.backends._core import SolidSectionBase
-from compas_fea2.backends._core import TrapezoidalSectionBase
-from compas_fea2.backends._core import TrussSectionBase
-from compas_fea2.backends._core import StrutSectionBase
-from compas_fea2.backends._core import TieSectionBase
-from compas_fea2.backends._core import SpringSectionBase
+from compas_fea2.backends._core.model import SectionBase
+from compas_fea2.backends._core.model import AngleSectionBase
+from compas_fea2.backends._core.model import BoxSectionBase
+from compas_fea2.backends._core.model import CircularSectionBase
+from compas_fea2.backends._core.model import GeneralSectionBase
+from compas_fea2.backends._core.model import ISectionBase
+from compas_fea2.backends._core.model import PipeSectionBase
+from compas_fea2.backends._core.model import RectangularSectionBase
+from compas_fea2.backends._core.model import ShellSectionBase
+from compas_fea2.backends._core.model import MembraneSectionBase
+from compas_fea2.backends._core.model import SolidSectionBase
+from compas_fea2.backends._core.model import TrapezoidalSectionBase
+from compas_fea2.backends._core.model import TrussSectionBase
+from compas_fea2.backends._core.model import StrutSectionBase
+from compas_fea2.backends._core.model import TieSectionBase
+from compas_fea2.backends._core.model import SpringSectionBase
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)

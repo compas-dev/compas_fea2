@@ -8,26 +8,26 @@ import pickle
 # from compas.geometry import centroid_points
 # from compas.utilities import geometric_key
 
-from compas_fea2.utilities import group_keys_by_attribute
-from compas_fea2.utilities import group_keys_by_attributes
+# from compas_fea2.utilities import group_keys_by_attribute
+# from compas_fea2.utilities import group_keys_by_attributes
 
-from compas_fea2.backends._core.components.elements import *
+# from compas_fea2.backends._core.components.elements import *
 
-from compas_fea2.backends._core.components.nodes import NodeBase
-from compas_fea2.backends._core.components.properties import ElementPropertiesBase
-from compas_fea2.backends._core.components.loads import LoadBase
-from compas_fea2.backends._core.components.loads import ThermalLoadBase
-from compas_fea2.backends._core.components.bcs import GeneralDisplacementBase
-from compas_fea2.backends._core.components.materials import MaterialBase
-from compas_fea2.backends._core.components.sections import SectionBase
-from compas_fea2.backends._core.components.steps import StepBase
+# from compas_fea2.backends._core.components.nodes import NodeBase
+# from compas_fea2.backends._core.components.properties import ElementPropertiesBase
+# from compas_fea2.backends._core.components.loads import LoadBase
+# from compas_fea2.backends._core.components.loads import ThermalLoadBase
+# from compas_fea2.backends._core.components.bcs import GeneralDisplacementBase
+# from compas_fea2.backends._core.components.materials import MaterialBase
+# from compas_fea2.backends._core.components.sections import SectionBase
+# from compas_fea2.backends._core.components.steps import StepBase
 
 
 __all__ = [
-    'StructureBase',
+    'ProblemBase',
 ]
 
-class StructureBase(object):
+class ProblemBase(object):
     """Initialises Structure object for use in finite element analysis.
 
     Parameters

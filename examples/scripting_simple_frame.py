@@ -70,5 +70,6 @@ problem.add_field_output(fout=FieldOutput(name='fout'))
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
 
 # Solve the problem
-problem.write_input_file(path='C:/temp/test_structure')
+print(problem)
+# problem.write_input_file(path='C:/temp/test_structure')
 # problem.analyse(path='C:/temp/test_structure')

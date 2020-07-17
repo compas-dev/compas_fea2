@@ -61,7 +61,7 @@ model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='ns
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
-problem = Problem(name='compas_test', assembly=model)
+problem = Problem(name='compas_test', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
@@ -77,5 +77,5 @@ problem.add_field_output(fout=FieldOutput(name='fout'))
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
 
 # Solve the problem
-# problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path='C:/temp/test_structure')
+problem.write_input_file(path='C:/temp/test_structure')
+# problem.analyse(path='C:/temp/test_structure')

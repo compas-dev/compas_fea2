@@ -12,9 +12,7 @@ from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 
-# Author(s): Francesco Ranaudo (github.com/franaudo),
-#            Andrew Liew (github.com/andrewliew),
-#            Tomas Mendez Echenagucia (github.com/tmsmendez)
+# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'Problem',
@@ -48,106 +46,9 @@ class Problem(ProblemBase):
     """
     def __init__(self, name, model):
         super(Problem, self).__init__(name=name, model=model)
-        self.model              = model
         self.parts              = model.parts.values()
         # self.interactions       = model.interactions
-        self.bcs                = {}
-        self.loads              = {}
-        self.field_outputs      = {}
-        self.history_outputs    = {}
-        self.steps              = []
 
-
-    # =========================================================================
-    #                           BCs methods
-    # =========================================================================
-
-    def add_bc(self, bc):
-        if bc.bset not in self.model.sets.keys():
-            sys.exit('ERROR: bc set {} not found in the model!'.format(bc.bset))
-        if bc.name not in self.bcs.keys():
-            self.bcs[bc.name] = bc
-
-    def add_bcs(self, bcs):
-        for bc in bcs:
-            self.add_bc(bc)
-
-    def remove_bc(self, bc_name):
-        pass
-
-    def remove_bcs(self, bcs):
-        pass
-
-    def remove_all_bcs(self):
-        self.bcs = {}
-
-    # =========================================================================
-    #                           Loads methods
-    # =========================================================================
-
-    def add_load(self, load):
-        if load.lset not in self.model.sets.keys():
-            sys.exit('ERROR: load set {} not found in the model!'.format(load.lset))
-        if load.name not in self.loads.keys():
-            self.loads[load.name] = load
-
-    def add_loads(self, loads):
-        for load in loads:
-            self.add_load(load)
-
-    def remove_bc(self, bc_name):
-        pass
-
-    def remove_bcs(self, bcs):
-        pass
-
-    def remove_all_loads(self):
-        self.loads = {}
-
-
-    # =========================================================================
-    #                           Step methods
-    # =========================================================================
-
-    def add_step(self, step):
-
-        for disp in step.displacements:
-            if disp not in self.displacements.keys():
-                sys.exit('ERROR: displacement {} not found in the model!'.format(disp))
-
-        for load in step.loads:
-            if load not in self.loads.keys():
-                sys.exit('ERROR: load {} not found in the model!'.format(load))
-
-        for hout in step.history_outputs:
-            if hout not in self.history_outputs.keys():
-                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
-
-        for fout in step.field_outputs:
-            if fout not in self.field_outputs.keys():
-                sys.exit('ERROR: field output {} not found in the model!'.format(fout))
-
-        self.steps.append(step)
-
-
-    def add_steps(self, steps):
-        for step in steps:
-            self.add_step
-
-    def define_steps_order(self, order):
-        pass
-
-    # =========================================================================
-    #                           Field outputs
-    # =========================================================================
-
-    def add_field_output(self, fout):
-        if fout.name not in self.field_outputs.keys():
-            self.field_outputs[fout.name] = fout
-
-    def add_field_outputs(self, fouts):
-        for fout in fouts:
-            self.add_field_output(fout)
 
     # =========================================================================
     #                         Analysis methods
@@ -181,8 +82,7 @@ class Problem(ProblemBase):
         input_file = InputFile(self, filepath)
         input_file.write_to_file()
         if output:
-            print('***** Abaqus input file generated: {0} *****\n'.format(filepath))
-
+            print('***** Input file generated: {0} *****\n'.format(filepath))
 
     # this should be an abstract method of the base class
     def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True,
@@ -209,7 +109,8 @@ class Problem(ProblemBase):
 
         """
         self.write_input_file(path=path, output=output, save=save)
-        launch_process(self, path=path, exe=exe, cpus=cpus, output=output, overwrite=overwrite, user_mat=user_mat)
+        launch_process(self, path=path, exe=exe, cpus=cpus, output=output,
+                       overwrite=overwrite, user_mat=user_mat)
 
 
     # =========================================================================
@@ -287,11 +188,6 @@ class Problem(ProblemBase):
 
     #     self.extract(fields=fields, exe=exe, license=license, output=output,
     #                 return_data=return_data, components=components)
-
-
-    # ==============================================================================
-    # Results
-    # ==============================================================================
 
     # # this should be stored in a more generic way
     # def get_nodal_results(self, step, field, nodes='all'):

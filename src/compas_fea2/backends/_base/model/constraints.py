@@ -32,12 +32,13 @@ class ConstraintBase(object):
         self.attr_list = ['name']
 
     def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 10))
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        l = []
         for attr in self.attr_list:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-        return ''
+            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
 
 class TieConstraintBase(ConstraintBase):

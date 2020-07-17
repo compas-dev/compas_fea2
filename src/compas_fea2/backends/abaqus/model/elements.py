@@ -2,19 +2,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._core.model import ElementBase
-from compas_fea2.backends._core.model import BeamElementBase
-from compas_fea2.backends._core.model import SpringElementBase
-from compas_fea2.backends._core.model import TrussElementBase
-from compas_fea2.backends._core.model import StrutElementBase
-from compas_fea2.backends._core.model import TieElementBase
-from compas_fea2.backends._core.model import ShellElementBase
-from compas_fea2.backends._core.model import MembraneElementBase
-# from compas_fea2.backends._core.model import FaceElementBase
-from compas_fea2.backends._core.model import SolidElementBase
-# from compas_fea2.backends._core.model import PentahedronElementBase
-# from compas_fea2.backends._core.model import TetrahedronElementBase
-# from compas_fea2.backends._core.model import HexahedronElementBase
+from compas_fea2.backends._base.model import ElementBase
+from compas_fea2.backends._base.model import BeamElementBase
+from compas_fea2.backends._base.model import SpringElementBase
+from compas_fea2.backends._base.model import TrussElementBase
+from compas_fea2.backends._base.model import StrutElementBase
+from compas_fea2.backends._base.model import TieElementBase
+from compas_fea2.backends._base.model import ShellElementBase
+from compas_fea2.backends._base.model import MembraneElementBase
+# from compas_fea2.backends._base.model import FaceElementBase
+from compas_fea2.backends._base.model import SolidElementBase
+# from compas_fea2.backends._base.model import PentahedronElementBase
+# from compas_fea2.backends._base.model import TetrahedronElementBase
+# from compas_fea2.backends._base.model import HexahedronElementBase
 
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
@@ -267,8 +267,8 @@ class SolidElement(SolidElementBase):
 #     #     super(HexahedronElement, self).__init__()
 
 if __name__ == "__main__":
-    from compas_fea2.backends.abaqus.components import Node
-    from compas_fea2.backends.abaqus.components import BeamElement
+    from compas_fea2.backends.abaqus import Node
+    from compas_fea2.backends.abaqus import BeamElement
 
     n = Node(1,[2,3,4])
     b = BeamElement(1, [n,n], 's')

@@ -75,11 +75,11 @@ class NodeBase(object):
     def __str__(self):
         title = 'compas_fea2 {0} object'.format(self.__name__)
         separator = '-' * (len(self.__name__) + 19)
-        data = []
+        l = []
         for attr in ['label', 'key', 'x', 'y', 'z', 'ex', 'ey', 'ez', 'mass']:
-            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
 
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
     def __repr__(self):
 

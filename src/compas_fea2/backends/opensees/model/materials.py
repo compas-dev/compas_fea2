@@ -8,16 +8,16 @@ from math import log
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-from compas_fea2.backends._core import MaterialBase
-from compas_fea2.backends._core import ConcreteBase
-from compas_fea2.backends._core import ConcreteBaseSmearedCrack
-from compas_fea2.backends._core import ConcreteBaseDamagedPlasticity
-from compas_fea2.backends._core import ElasticIsotropicBase
-from compas_fea2.backends._core import StiffBase
-from compas_fea2.backends._core import ElasticOrthotropicBase
-from compas_fea2.backends._core import ElasticPlasticBase
-from compas_fea2.backends._core import SteelBase
-from compas_fea2.backends._core import ThermalMaterialBase
+from compas_fea2.backends._core.model import MaterialBase
+from compas_fea2.backends._core.model import ConcreteBase
+from compas_fea2.backends._core.model import ConcreteBaseSmearedCrack
+from compas_fea2.backends._core.model import ConcreteBaseDamagedPlasticity
+from compas_fea2.backends._core.model import ElasticIsotropicBase
+from compas_fea2.backends._core.model import StiffBase
+from compas_fea2.backends._core.model import ElasticOrthotropicBase
+from compas_fea2.backends._core.model import ElasticPlasticBase
+from compas_fea2.backends._core.model import SteelBase
+from compas_fea2.backends._core.model import ThermalMaterialBase
 
 
 __all__ = [

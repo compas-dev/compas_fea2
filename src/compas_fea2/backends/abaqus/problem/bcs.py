@@ -2,18 +2,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._core.problem import GeneralDisplacementBase
-from compas_fea2.backends._core.problem import FixedDisplacementBase
-from compas_fea2.backends._core.problem import PinnedDisplacementBase
-from compas_fea2.backends._core.problem import FixedDisplacementXXBase
-from compas_fea2.backends._core.problem import FixedDisplacementYYBase
-from compas_fea2.backends._core.problem import FixedDisplacementZZBase
-from compas_fea2.backends._core.problem import RollerDisplacementXBase
-from compas_fea2.backends._core.problem import RollerDisplacementYBase
-from compas_fea2.backends._core.problem import RollerDisplacementZBase
-from compas_fea2.backends._core.problem import RollerDisplacementXYBase
-from compas_fea2.backends._core.problem import RollerDisplacementYZBase
-from compas_fea2.backends._core.problem import RollerDisplacementXZBase
+from compas_fea2.backends._base.problem import GeneralDisplacementBase
+from compas_fea2.backends._base.problem import FixedDisplacementBase
+from compas_fea2.backends._base.problem import PinnedDisplacementBase
+from compas_fea2.backends._base.problem import FixedDisplacementXXBase
+from compas_fea2.backends._base.problem import FixedDisplacementYYBase
+from compas_fea2.backends._base.problem import FixedDisplacementZZBase
+from compas_fea2.backends._base.problem import RollerDisplacementXBase
+from compas_fea2.backends._base.problem import RollerDisplacementYBase
+from compas_fea2.backends._base.problem import RollerDisplacementZBase
+from compas_fea2.backends._base.problem import RollerDisplacementXYBase
+from compas_fea2.backends._base.problem import RollerDisplacementYZBase
+from compas_fea2.backends._base.problem import RollerDisplacementXZBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

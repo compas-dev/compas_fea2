@@ -54,13 +54,14 @@ class SectionBase(object):
         self.geometry = {}
 
     def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-        print('name  : {0}'.format(self.name))
-        for i, j in self.geometry.items():
-            print('{0:<5} : {1}'.format(i, j))
-        return ''
+
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(self.__name__) + 19)
+        l = ['name  : {0}'.format(self.name)]
+        for i, j  in self.geometry.items():
+            l.append('{0:<5} : {1}'.format(i, j))
+
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)

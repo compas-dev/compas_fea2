@@ -1,18 +1,9 @@
 """
 ********************************************************************************
-opensees.components
+opensees.model
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.backends.opensees.components
-
-
-Structure
-=========
-
-.. autosummary::
-    :toctree: generated/
-
-    Structure
+.. currentmodule:: compas_fea2.backends.opensees.model
 
 
 Constraints
@@ -23,26 +14,6 @@ Constraints
 
     Constraint
     TieConstraint
-
-
-Boundary Conditions
-===================
-
-.. autosummary::
-    :toctree: generated/
-
-    GeneralDisplacement
-    FixedDisplacement
-    PinnedDisplacement
-    FixedDisplacementXX
-    FixedDisplacementYY
-    FixedDisplacementZZ
-    RollerDisplacementX
-    RollerDisplacementY
-    RollerDisplacementZ
-    RollerDisplacementXY
-    RollerDisplacementYZ
-    RollerDisplacementXZ
 
 
 Elements
@@ -76,22 +47,6 @@ Properties
     ElementProperties
 
 
-Loads
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Load
-    PrestressLoad
-    PointLoad
-    PointLoads
-    LineLoad
-    AreaLoad
-    GravityLoad
-    TributaryLoad
-    HarmoniPointLoadBase
-
 
 Materials
 =========
@@ -108,17 +63,6 @@ Materials
     ElasticOrthotropic
     ElasticPlastic
     Steel
-
-
-Misc
-====
-
-.. autosummary::
-    :toctree: generated/
-
-    Misc
-    Amplitude
-    Temperatures
 
 
 Sections
@@ -145,19 +89,6 @@ Sections
     SpringSection
 
 
-Load Cases
-==========
-
-.. autosummary::
-    :toctree: generated/
-
-    Step
-    GeneralStep
-    ModalStep
-    HarmoniStepBase
-    BucklingStep
-
-
 """
 
 from __future__ import absolute_import
@@ -166,18 +97,11 @@ from __future__ import print_function
 
 
 # additional software-based classes
-from .bcs import *
 from .set import * #TODO remove
-from .structure import *
 from .constraints import *
 from .elements import *
-from .load_cases import *
-#from .load_combos import *
-from .loads import *
 from .materials import *
-from .properties import *
 from .sections import *
-from .misc import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

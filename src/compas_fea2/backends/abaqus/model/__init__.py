@@ -37,20 +37,12 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    Element
     MassElement
     BeamElement
-    SpringElement
     TrussElement
-    StrutElement
-    TieElement
     ShellElement
     MembraneElement
-    FaceElement
     SolidElement
-    PentahedronElement
-    TetrahedronElement
-    HexahedronElement
 
 Constraints
 ===========

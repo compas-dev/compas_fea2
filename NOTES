@@ -1,16 +1,16 @@
-- rename compas_fea2.cad to compas_fea2.interfaces
+X rename compas_fea2.cad to compas_fea2.interfaces
 - rename compas_fea2.postprocess to compas_fea2.postprocessor(s)
 - rename compas_fea2.preprocess to compas_fea2.preprocessor(s)
 - add compas_fea2.analysis
 - ansys reading/writing: wrap everything in with statement and use the file iterators
-- rename Structure category to Models
+x rename Structure category to Models
 - set title of opensees.core.__init__ to Model Components
-- rename _core to _base
+x rename _core to _base
 - add model, job, writer to _base
-- rename core to model (or model components)
+x rename core to model (or model components)
 - rhino.input.py line 116
 - the from rhino stuff is not very transparent
-- this connect by name thing doesn't work for me. it is fragile. use some kind of (GU)ID instead for identification
+x this connect by name thing doesn't work for me. it is fragile. use some kind of (GU)ID instead for identification
 - li chen should help with the scene objects and the viewer
-- some of the stuff stored on the structure object should go to analysis: temp path, executable path, ...
+x some of the stuff stored on the structure object should go to analysis: temp path, executable path, ...
 

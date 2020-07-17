@@ -6,7 +6,7 @@ import os
 import pickle
 import sys
 
-from compas_fea2.backends._core.problem import ProblemBase
+from compas_fea2.backends._base.problem import ProblemBase
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
@@ -21,23 +21,23 @@ __all__ = [
 ]
 
 class Problem(ProblemBase):
-    """Initialises the Structure object.
+    """Initialises the Problem object.
 
     Parameters
     ----------
     name : str
         Name of the Structure.
-    assembly : obj
-        Assembly object.
+    model : obj
+        model object.
 
     Attributes
     ----------
     name : str
         Name of the Structure.
     parts : list
-        List of the parts in the assembly.
-    assembly : obj
-        Assembly object.
+        List of the parts in the model.
+    model : obj
+        model object.
     bc : list
         List containing the boundary conditions objects.
     interactions : list
@@ -46,16 +46,16 @@ class Problem(ProblemBase):
         List containing the Steps objects.
 
     """
-    def __init__(self, name, assembly):
-        super(Problem, self).__init__(name=name)
-        self.assembly       = assembly
-        self.parts          = assembly.parts.values()
-        self.interactions   = {}
-        self.bcs            = {}
-        self.loads          = {}
-        self.field_outputs  = {}
-        self.history_outputs  = {}
-        self.steps          = []
+    def __init__(self, name, model):
+        super(Problem, self).__init__(name=name, model=model)
+        self.model              = model
+        self.parts              = model.parts.values()
+        # self.interactions       = model.interactions
+        self.bcs                = {}
+        self.loads              = {}
+        self.field_outputs      = {}
+        self.history_outputs    = {}
+        self.steps              = []
 
 
     # =========================================================================
@@ -63,8 +63,8 @@ class Problem(ProblemBase):
     # =========================================================================
 
     def add_bc(self, bc):
-        if bc.bset not in self.assembly.sets.keys():
-            sys.exit('ERROR: bc set {} not found in the assembly!'.format(bc.bset))
+        if bc.bset not in self.model.sets.keys():
+            sys.exit('ERROR: bc set {} not found in the model!'.format(bc.bset))
         if bc.name not in self.bcs.keys():
             self.bcs[bc.name] = bc
 
@@ -86,8 +86,8 @@ class Problem(ProblemBase):
     # =========================================================================
 
     def add_load(self, load):
-        if load.lset not in self.assembly.sets.keys():
-            sys.exit('ERROR: load set {} not found in the assembly!'.format(load.lset))
+        if load.lset not in self.model.sets.keys():
+            sys.exit('ERROR: load set {} not found in the model!'.format(load.lset))
         if load.name not in self.loads.keys():
             self.loads[load.name] = load
 
@@ -113,19 +113,19 @@ class Problem(ProblemBase):
 
         for disp in step.displacements:
             if disp not in self.displacements.keys():
-                sys.exit('ERROR: displacement {} not found in the assembly!'.format(disp))
+                sys.exit('ERROR: displacement {} not found in the model!'.format(disp))
 
         for load in step.loads:
             if load not in self.loads.keys():
-                sys.exit('ERROR: load {} not found in the assembly!'.format(load))
+                sys.exit('ERROR: load {} not found in the model!'.format(load))
 
         for hout in step.history_outputs:
             if hout not in self.history_outputs.keys():
-                sys.exit('ERROR: history output {} not found in the assembly!'.format(hout))
+                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
 
         for fout in step.field_outputs:
             if fout not in self.field_outputs.keys():
-                sys.exit('ERROR: field output {} not found in the assembly!'.format(fout))
+                sys.exit('ERROR: field output {} not found in the model!'.format(fout))
 
         self.steps.append(step)
 

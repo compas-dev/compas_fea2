@@ -10,7 +10,6 @@ compas_fea2
     :maxdepth: 1
 
     compas_fea2.backends
-    compas_fea2.cad
 
 
 """

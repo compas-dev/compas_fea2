@@ -11,16 +11,16 @@ import pickle
 # from compas_fea2.utilities import group_keys_by_attribute
 # from compas_fea2.utilities import group_keys_by_attributes
 
-# from compas_fea2.backends._core.components.elements import *
+# from compas_fea2.backends._base.components.elements import *
 
-# from compas_fea2.backends._core.components.nodes import NodeBase
-# from compas_fea2.backends._core.components.properties import ElementPropertiesBase
-# from compas_fea2.backends._core.components.loads import LoadBase
-# from compas_fea2.backends._core.components.loads import ThermalLoadBase
-# from compas_fea2.backends._core.components.bcs import GeneralDisplacementBase
-# from compas_fea2.backends._core.components.materials import MaterialBase
-# from compas_fea2.backends._core.components.sections import SectionBase
-# from compas_fea2.backends._core.components.steps import StepBase
+# from compas_fea2.backends._base.components.nodes import NodeBase
+# from compas_fea2.backends._base.components.properties import ElementPropertiesBase
+# from compas_fea2.backends._base.components.loads import LoadBase
+# from compas_fea2.backends._base.components.loads import ThermalLoadBase
+# from compas_fea2.backends._base.components.bcs import GeneralDisplacementBase
+# from compas_fea2.backends._base.components.materials import MaterialBase
+# from compas_fea2.backends._base.components.sections import SectionBase
+# from compas_fea2.backends._base.components.steps import StepBase
 
 
 __all__ = [
@@ -28,98 +28,52 @@ __all__ = [
 ]
 
 class ProblemBase(object):
-    """Initialises Structure object for use in finite element analysis.
+    """Initialises the Problem object.
 
     Parameters
     ----------
-    path : str
-        Path to save all compas_fea associated files.
     name : str
-        Name of the structure.
+        Name of the Structure.
+    model : obj
+        model object.
 
     Attributes
     ----------
-    constraints : dict
-        Constraint objects.
-    displacements : dict
-        Displacement objects.
-    elements : dict
-        Element objects.
-    element_index : dict
-        Index of elements (element centroid geometric keys).
-    element_properties : dict
-        ElementProperties objects.
-    interactions : dict
-        Interaction objects.
-    loads : dict
-        Load objects.
-    materials : dict
-        Material objects.
-    misc : dict
-        Misc objects.
     name : str
-        Structure name.
-    nodes : dict
-        Node objects.
-    node_index : dict
-        Index of nodes (node geometric keys).
-    path : str
-        Path to save files.
-    results : dict
-        Dictionary containing analysis results.
-    sections : dict
-        Section objects.
-    sets : dict
-        Set objects.
-    steps : dict
-        Step objects.
-    steps_order : list
-        Sorted list of Step object names.
-    tol : str
-        Geometric key tolerance.
-    virtual_nodes : dict
-        Node objects for virtual nodes.
-    virtual_elements : dict
-        Element objects for virtual elements.
-    virtual_element_index : dict
-        Index of virtual elements (element centroid geometric keys).
+        Name of the Structure.
+    parts : list
+        List of the parts in the model.
+    model : obj
+        model object.
+    bc : list
+        List containing the boundary conditions objects.
+    interactions : list
+        List containing the interaction objects.
+    steps : list
+        List containing the Steps objects.
+
     """
 
-    def __init__(self, name='compas_fea-Structure'):
-        self.constraints           = {}
-        self.displacements         = {}
-        self.elements              = {}
-        self.element_index         = {}
-        self.element_properties    = {}
-        self.interactions          = {}
-        self.loads                 = {}
-        self.materials             = {}
-        self.misc                  = {}
-        self.name                  = name
-        self.nodes                 = {}
-        self.node_index            = {}
-        self.results               = {}
-        self.sections              = {}
-        self.steps                 = {}
-        self.steps_order           = []
-        self.tol                   = '3'
-        self.virtual_nodes         = {}
-        self.virtual_node_index    = {}
-        self.virtual_elements      = {}
-        self.virtual_element_index = {}
+    def __init__(self, name, model):
+        self.name                 = name
+        self.model              = model
+
+        self.bcs                = {}
+        self.loads              = {}
+        self.displacements      = {}
+        self.steps              = []
+        self.steps_order        = []
+        self.field_outputs      = {}
+        self.history_outputs    = {}
 
     def __str__(self):
-        n = self.node_count()
-        m = self.element_count()
-        data = [
-            self.materials,
-            self.sections,
-            self.loads,
-            self.displacements,
-            self.constraints,
-            self.interactions,
-            self.misc,
-            self.steps]
+        data = [self.bcs,
+                self.loads,
+                self.displacements,
+                self.steps,
+                self.steps_order,
+                self.field_outputs,
+                self.history_outputs]
         d = []
         for entry in data:
             if entry:
@@ -128,50 +82,35 @@ class ProblemBase(object):
                 d.append('n/a')
         return """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea Structure: {}
+compas_fea Problem: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Nodes
------
-{}
-
-Elements
---------
-{}
-
-Materials
----------
-{}
-
-Sections
---------
+Boundary Conditions
+-------------------
 {}
 
 Loads
 -----
 {}
 
-Displacements
--------------
-{}
-
-Constraints
------------
-{}
-
-Interactions
-------------
-{}
-
-Misc
-----
-{}
-
 Steps
 -----
 {}
 
-""".format(self.name, n, m, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7])
+Steps Order
+-----------
+{}
+
+Field Output Requests
+---------------------
+{}
+
+History Output Requests
+-----------------------
+{}
+
+
+""".format(self.name, n, m, d[0], d[1], d[2], d[3], d[4], d[5])
 
     # ==============================================================================
     # Nodes

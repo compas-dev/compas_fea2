@@ -40,16 +40,16 @@ class Model():
     """
 
     def __init__(self, name, ):
-        self.__name__       = 'Model'
-        self.name           = name
-        self.instances      = {}
-        self.parts          = {}
-        self.surfaces       = []
-        self.constraints    = []
-        self.add_interactions = []
-        self.materials      = {}
-        self.sections       = {}
-        self.sets           = {}
+        self.__name__           = 'Model'
+        self.name               = name
+        self.instances          = {}
+        self.parts              = {}
+        self.surfaces           = []
+        self.constraints        = []
+        self.add_interactions   = []
+        self.materials          = {}
+        self.sections           = {}
+        self.sets               = {}
         # self.materials      = self._get_materials()
 
         # self.data           = self._generate_data()
@@ -65,9 +65,7 @@ class Model():
         data.append('{0:<15} : {1}'.format('# of instances', len(self.instances)))
         return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
     def _get_materials(self):
@@ -585,15 +583,15 @@ class Instance():
         return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
 
 if __name__ == "__main__":
-    from compas_fea2.backends.abaqus.components import Node
-    from compas_fea2.backends.abaqus.components import Concrete
-    from compas_fea2.backends.abaqus.components import ElasticIsotropic
-    from compas_fea2.backends.abaqus.components import BoxSection
-    from compas_fea2.backends.abaqus.components import SolidSection
-    from compas_fea2.backends.abaqus.components import BeamElement
-    from compas_fea2.backends.abaqus.components import SolidElement
-    from compas_fea2.backends.abaqus.components import Part
-    from compas_fea2.backends.abaqus.components import Set
+    from compas_fea2.backends.abaqus import Node
+    from compas_fea2.backends.abaqus import Concrete
+    from compas_fea2.backends.abaqus import ElasticIsotropic
+    from compas_fea2.backends.abaqus import BoxSection
+    from compas_fea2.backends.abaqus import SolidSection
+    from compas_fea2.backends.abaqus import BeamElement
+    from compas_fea2.backends.abaqus import SolidElement
+    from compas_fea2.backends.abaqus import Part
+    from compas_fea2.backends.abaqus import Set
 
     my_nodes = []
     for k in range(5):

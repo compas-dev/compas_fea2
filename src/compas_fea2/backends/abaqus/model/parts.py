@@ -55,31 +55,31 @@ class Part():
     """
 
     def __init__(self, name):
-        self.__name__               = 'Part'
-        self.name                   = name
-        self.nodes                  = [] #self._sort(nodes)
-        self.elements               = [] #self._sort(elements)
-        self.nsets                   = []
-        self.elsets                   = []
-        self.nodes_gkeys            = []
-        self.sections               = {}
+        self.__name__                   = 'Part'
+        self.name                       = name
+        self.nodes                      = [] #self._sort(nodes)
+        self.elements                   = [] #self._sort(elements)
+        self.nsets                      = []
+        self.elsets                     = []
+        self.nodes_gkeys                = []
+        self.sections                   = {}
 
-        self.elements_by_type       = {}
-        self.elements_by_section    = {}
+        self.elements_by_type           = {}
+        self.elements_by_section        = {}
         self.orientations_by_section    = {}
-        self.elements_by_elset      = {}
-        self.elsets_by_section      = {}
+        self.elements_by_elset          = {}
+        self.elsets_by_section          = {}
         # self.elements_by_material   = {}
 
     def __str__(self):
         title = 'compas_fea2 {0} object'.format(self.__name__)
         separator = '-' * (len(self.__name__) + 19)
-        data = []
+        l = []
         for attr in ['name']:
-            data.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
-        data.append('{0:<15} : {1}'.format('# of nodes', len(self.nodes)))
-        data.append('{0:<15} : {1}'.format('# of elements', len(self.elements)))
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
+            l.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
+        l.append('{0:<15} : {1}'.format('# of nodes', len(self.nodes)))
+        l.append('{0:<15} : {1}'.format('# of elements', len(self.elements)))
+        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
     def __repr__(self):
 
@@ -193,7 +193,7 @@ class Part():
         for node in nodes:
             self.add_node(node, check)
 
-    # TODO remove methods need to be checked. For example, check if removing an
+    # TODO remove methods need to be checked. For example, check if removing an element
     # also removes the sections and sets associated to it.
 
     def remove_node(self, node_key):
@@ -463,7 +463,7 @@ class Part():
             if element.elset:
             #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
                 if element.elset not in self.elements_by_elset.keys():
-                    from compas_fea2.backends.abaqus.components import Set
+                    from compas_fea2.backends.abaqus import Set
                     self.add_element_set(Set(element.elset, [], 'elset'))
                     self.elements_by_elset[element.elset] = []
                 self.elements_by_elset[element.elset].append(element.key)
@@ -545,14 +545,14 @@ class Part():
 
 if __name__ == "__main__":
 
-    from compas_fea2.backends.abaqus.components import Node
-    from compas_fea2.backends.abaqus.components import Concrete
-    from compas_fea2.backends.abaqus.components import ElasticIsotropic
-    from compas_fea2.backends.abaqus.components import BoxSection
-    from compas_fea2.backends.abaqus.components import SolidSection
-    from compas_fea2.backends.abaqus.components import BeamElement
-    from compas_fea2.backends.abaqus.components import SolidElement
-    from compas_fea2.backends.abaqus.components import Set
+    from compas_fea2.backends.abaqus import Node
+    from compas_fea2.backends.abaqus import Concrete
+    from compas_fea2.backends.abaqus import ElasticIsotropic
+    from compas_fea2.backends.abaqus import BoxSection
+    from compas_fea2.backends.abaqus import SolidSection
+    from compas_fea2.backends.abaqus import BeamElement
+    from compas_fea2.backends.abaqus import SolidElement
+    from compas_fea2.backends.abaqus import Set
 
     part1 = Part(name='part-1')
 

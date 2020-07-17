@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.backends._core.model import NodeBase
+from compas_fea2.backends._base.model import NodeBase
 
 # Francesco Ranaudo (github.com/franaudo)
 
@@ -38,7 +38,7 @@ class Node(NodeBase):
 
 
 if __name__ == "__main__":
-    from compas_fea2.backends.abaqus.components import Node
+    from compas_fea2.backends.abaqus import Node
 
     n = Node([2,3,4])
     n.key=300

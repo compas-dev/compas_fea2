@@ -44,7 +44,7 @@ class ElementBase(object):
         self.__name__         = 'Element'
         self.key              = 0
         self.connectivity     = connectivity
-        self.connectivity_key     = '_'.join(sorted([str(c) for c in self.connectivity]))
+        self.connectivity_key = '_'.join(sorted([str(c) for c in self.connectivity]))
         self.section          = section
         self.thermal          = thermal
         self.etype            = None

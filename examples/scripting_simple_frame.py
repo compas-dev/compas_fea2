@@ -54,7 +54,7 @@ model.add_assembly_set(Set(name='pload', selection=[20], stype='nset'), instance
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
-problem = Problem(name='test_structure', assembly=model)
+problem = Problem(name='test_structure', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),

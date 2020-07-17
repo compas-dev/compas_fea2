@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-cad
+interfaces
 ********************************************************************************
 
 
@@ -10,7 +10,7 @@ Blender
 .. toctree::
     :maxdepth: 1
 
-    compas_fea2.cad.blender
+    compas_fea2.interfaces.blender
 
 
 .. currentmodule:: compas_fea2.cad.blender
@@ -27,10 +27,10 @@ Rhino
 .. toctree::
     :maxdepth: 1
 
-    compas_fea2.cad.rhino
+    compas_fea2.interfaces.rhino
 
 
-.. currentmodule:: compas_fea2.cad.rhino
+.. currentmodule:: compas_fea2.interfaces.rhino
 
 
 .. code-block:: python

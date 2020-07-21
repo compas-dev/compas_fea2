@@ -212,8 +212,8 @@ class GravityLoadBase(LoadBase):
         Factor to apply to z direction.
     """
 
-    def __init__(self, name, elements, g=-9.81, x=0., y=0., z=1.):
-        LoadBase.__init__(self, name=name, elements=elements, axes='global')
+    def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
+        LoadBase.__init__(self, name=name, axes='global')
         self.__name__   = 'GravityLoad'
         self.g          = g
         self.components = {'x': x, 'y': y, 'z': z}

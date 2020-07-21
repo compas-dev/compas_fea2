@@ -82,10 +82,15 @@ class AreaLoad(AreaLoadBase):
 
 
 class GravityLoad(GravityLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, g, x, y, z):
-    #     super(GravityLoad, self).__init__(name, elements, g, x, y, z)
 
+    def __init__(self, name, g, x, y, z):
+        super(GravityLoad, self).__init__(name, g, x, y, z)
+        self.lset = None
+
+    def _generate_data(self):
+        return """** Name: {} Type: Gravity
+*Dload
+, GRAV, {}, {}, {}, {}\n""".format(self.name, self.g, self.components['x'], self.components['y'], self.components['z'])
 
 class ThermalLoad(ThermalLoadBase):
     NotImplemented

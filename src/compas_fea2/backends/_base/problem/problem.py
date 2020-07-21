@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import sys
 import pickle
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
@@ -125,7 +126,7 @@ History Output Requests
     # =========================================================================
 
     def add_load(self, load):
-        if load.lset not in self.model.sets.keys():
+        if load.lset and load.lset not in self.model.sets:
             sys.exit('ERROR: load set {} not found in the model!'.format(load.lset))
         if load.name not in self.loads.keys():
             self.loads[load.name] = load

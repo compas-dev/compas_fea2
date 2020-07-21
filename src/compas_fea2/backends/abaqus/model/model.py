@@ -12,30 +12,30 @@ __all__ = [
 ]
 
 class Model():
-    """Initialises Model object. This is in many aspects equivalent to an
+    """Initialises the Model object. This is in many aspects equivalent to an
     `Assembly` in Abaqus.
 
     Parameters
     ----------
     name : str
-        Name of the Assembly.
+        Name of the Model.
 
     Attributes
     ----------
     name : str
-        Name of the Assembly.
+        Name of the Model.
     parts : list
-        A list with the Part objects referenced in the Assembly.
+        A list with the Part objects referenced in the Model.
     instances : list
-        A list with the Instance objects belonging to the Assembly.
+        A list with the Instance objects belonging to the Model.
     parts : list
-        A list with the Part objects referenced in the Assembly.
+        A list with the Part objects referenced in the Model.
     surfaces : list
-        A list with the Surface objects belonging to the Assembly.
+        A list with the Surface objects belonging to the Model.
     constraints : list
-        A list with the Constraint objects belonging to the Assembly.
+        A list with the Constraint objects belonging to the Model.
     materials : list
-        A list of all the materials defined int the Assembly.
+        A list of all the materials defined int the Model.
 
     """
 
@@ -138,11 +138,12 @@ class Model():
         >>> model.add_part(part=part, transformation=[M1, M2])
         """
 
-        if part.name in self.parts.keys():
+        if part.name in self.parts:
             print("WARNING: Part {} already in the Model. Part not added!".format(part.name))
         else:
             self.parts[part.name] = part
 
+        # TODO: implement transfromation operations
         if transformation:
             for i in transformation.keys():
                 instance = self._instance_from_part(part, i, transformation[i])
@@ -187,9 +188,10 @@ class Model():
         -------
         None
         """
-        if instance.name not in self.instances.keys():
-            self.instances[instance.name]= instance
-            if instance.part.name not in self.parts.keys():
+
+        if instance.name not in self.instances:
+            self.instances[instance.name] = instance
+            if instance.part.name not in self.parts:
                 self.parts[part.name] = instance.part
         else:
             print('Duplicate instance {} will be ignored!'.format(instance.name))
@@ -234,9 +236,9 @@ class Model():
         None
         """
         error_code=0
-        if part in self.parts.keys():
+        if part in self.parts:
             self.parts[part].add_node(node)
-            error_code=1
+            error_code = 1
 
         if error_code == 0:
             sys.exit('ERROR: part {} not found in the Model!'.format(part))
@@ -277,8 +279,9 @@ class Model():
         -------
         None
         '''
+
         error_code=0
-        if part in self.parts.keys():
+        if part in self.parts:
             self.parts[part].remove_node(node_key)
             error_code=1
 
@@ -303,320 +306,6 @@ class Model():
 
         for node in nodes:
             self.remove_node(node, part)
-
-    # =========================================================================
-    #                           Elements methods
-    # =========================================================================
-    def add_element(self, element, part):
-        """Adds a compas_fea2 Element object to a Part in the Model.
-
-        Parameters
-        ----------
-        element : obj
-            compas_fea2 Element object.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        """
-
-        error_code=0
-        if part in self.parts.keys():
-            self.parts[part].add_element(element)
-            if element.section not in self.sections.keys():
-                sys.exit('ERROR: section {} not found in the Model!'.format(element.section))
-            elif element.section not in self.parts[part].sections.keys():
-                self.parts[part].sections[element.section] = self.sections[element.section]
-            error_code=1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
-
-    def add_elements(self, elements, part):
-        """Adds multiple compas_fea2 Element objects to a Part in the Model.
-
-        Parameters
-        ----------
-        elements : list
-            List of compas_fea2 Element objects.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        """
-
-        for element in elements:
-            self.add_element(element, part)
-
-    def remove_element(self, element_key, part):
-        '''Removes the element from a Part in the Model.
-
-        Parameters
-        ----------
-        element_key : int
-            Key number of the element to be removed.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        '''
-        error_code=0
-        if part in self.parts.keys():
-            self.parts[part].remove_element(element_key)
-            error_code=1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
-
-    def remove_elements(self, elements, part):
-        '''Removes the elements from a Part in the Model.
-
-        Parameters
-        ----------
-        elements : list
-            List with the key numbers of the element to be removed.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        '''
-
-        for element in elements:
-            self.remove_node(element, part)
-
-    # =========================================================================
-    #                               Sets methods
-    # =========================================================================
-    def add_part_node_set(self, part, nset):
-        pass
-
-    def add_assembly_set(self, set, instance):
-        '''Adds a Set object to the Model.
-
-        Parameters
-        ----------
-        set : obj
-            node set object.
-        instance : str
-            Name of the instance where the set belongs to.
-
-        Returns
-        -------
-        None
-        '''
-        if instance not in self.instances.keys():
-            sys.exit('ERROR: instance {} not found in the Model!'.format(instance))
-        set.instance = instance
-        self.instances[instance].sets.append(set)
-
-        self.sets[set.name] = set
-
-    # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def add_material(self, material):
-        '''Adds a Material object to the Model so that it can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : obj
-            compas_fea2 material object.
-
-        Returns
-        -------
-        None
-        '''
-        if material.name not in self.materials.keys():
-            self.materials[material.name] = material
-
-    def add_materials(self, materials):
-        '''Adds multiple Material objects to the Model so that they can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : list
-            List of compas_fea2 material objects.
-
-        Returns
-        -------
-        None
-        '''
-        for material in materials:
-            self.add_material(material)
-
-    # =========================================================================
-    #                           Sections methods
-    # =========================================================================
-
-    def add_section(self, section):
-        """Adds a compas_fea2 Section object to the Model.
-
-        Parameters
-        ----------
-        element : obj
-            compas_fea2 Element object.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        """
-
-        if section.name not in self.sections.keys():
-            self.sections[section.name] = section
-            if section.material not in self.materials.keys():
-                sys.exit('ERROR: material {} not found in the Model!'.format(section.material))
-            self.add_material(self.materials[section.material])
-
-
-
-
-
-
-    # =========================================================================
-    #                        Surfaces methods
-    # =========================================================================
-    def add_surface(self, surface):
-        self.surfaces.append(surface)
-
-
-    # =========================================================================
-    #                       Constraints methods
-    # =========================================================================
-    def add_constraint(self, constraint):
-        self.constraints.append(constraint)
-
-    # def add_instance_set(self, iset, instance):
-    #     """ Adds a set to a previously defined Instance.
-
-    #     Parameters
-    #     ----------
-    #     part : obj
-    #         Part object from which the Instance is created.
-    #     transformation : matrix
-    #         Trasformation matrix to apply to the Part before creating the Instance.
-    #     """
-    #     self.instances[instance].sets.append(iset)
-
-    # =========================================================================
-    #                        Interaction methods
-    # =========================================================================
-
-    def add_interactions(self, interactions):
-        pass
-
-
-    # =========================================================================
-    #                          Helper methods
-    # =========================================================================
-
-    # TODO change to check through the instance
-    def get_node_from_coordinates(self, xyz):
-        node_dict = {}
-        for part in self.parts.values():
-            for node in part.nodes:
-                if node.xyz == xyz:
-                    node_dict[part.name] = node.key
-        return node_dict
-
-class Instance():
-    """Initialises base Instance object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the set.
-    part : obj
-        The Part from which the instance is created.
-    sets : list
-        A list with the Set objects belonging to the instance.
-
-    Attributes
-    ----------
-    name : str
-        Name of the set.
-    part : Part object
-        The part from which create the instance.
-    sets : list
-        A list with the Set objects belonging to the instance.
-    data : str
-        The data block for the generation of the input file.
-    """
-
-    def __init__(self, name, part, sets=[]):
-        self.__name__ = 'Instance'
-        self.name = name
-        self.part = part
-        self.sets = sets
-        for iset in sets:
-            iset.instance = self.name
-            iset.data = iset._generate_data()
-
-        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
-
-    def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-
-        for attr in ['name']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return ''
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.part.name)
-
-    def _generate_data(self):
-        return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
-
-if __name__ == "__main__":
-    from compas_fea2.backends.abaqus import Node
-    from compas_fea2.backends.abaqus import Concrete
-    from compas_fea2.backends.abaqus import ElasticIsotropic
-    from compas_fea2.backends.abaqus import BoxSection
-    from compas_fea2.backends.abaqus import SolidSection
-    from compas_fea2.backends.abaqus import BeamElement
-    from compas_fea2.backends.abaqus import SolidElement
-    from compas_fea2.backends.abaqus import Part
-    from compas_fea2.backends.abaqus import Set
-
-    my_nodes = []
-    for k in range(5):
-        my_nodes.append(Node(k,[1+k,2-k,3]))
-
-    material_one = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
-    material_elastic = ElasticIsotropic(name='elastic',E=1,v=2,p=3)
-
-    section_A = SolidSection(name='section_A', material=material_one)
-    section_B = BoxSection(name='section_B', material=material_elastic, b=10, h=20, tw=2, tf=5)
-
-    el_one = SolidElement(key=0, connectivity=my_nodes[:4], section=section_A)
-    el_two = SolidElement(key=1, connectivity=my_nodes[:4], section=section_A)
-    el_three = SolidElement(key=2, connectivity=my_nodes[1:5], section=section_A)
-    el_4 = SolidElement(key=3, connectivity=my_nodes[:4], section=section_A)
-
-    my_part = Part(name='test', nodes=my_nodes, elements=[el_one, el_two, el_three, el_4])
-
-    nset = Set('test_neset', my_nodes)
-
-    my_instance = Instance(name='test_instance', part=my_part, sets=[nset])
-    my_assembly = Model(name='test', instances=[my_instance])
-
-    print(my_assembly.data)
-
 
 
 
@@ -832,3 +521,299 @@ if __name__ == "__main__":
     #                                              'index': len(self.sets)}
 
     #     return ekey
+
+
+
+
+    # =========================================================================
+    #                           Elements methods
+    # =========================================================================
+    def add_element(self, element, part):
+        """Adds a compas_fea2 Element object to a Part in the Model.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        error_code=0
+        if part in self.parts:
+            self.parts[part].add_element(element)
+            if element.section not in self.sections:
+                sys.exit('ERROR: section {} not found in the Model!'.format(element.section))
+            elif element.section not in self.parts[part].sections:
+                self.parts[part].sections[element.section] = self.sections[element.section]
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+
+    def add_elements(self, elements, part):
+        """Adds multiple compas_fea2 Element objects to a Part in the Model.
+
+        Parameters
+        ----------
+        elements : list
+            List of compas_fea2 Element objects.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        for element in elements:
+            self.add_element(element, part)
+
+    def remove_element(self, element_key, part):
+        '''Removes the element from a Part in the Model.
+
+        Parameters
+        ----------
+        element_key : int
+            Key number of the element to be removed.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+        error_code=0
+        if part in self.parts:
+            self.parts[part].remove_element(element_key)
+            error_code=1
+
+        if error_code == 0:
+            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+
+    def remove_elements(self, elements, part):
+        '''Removes the elements from a Part in the Model.
+
+        Parameters
+        ----------
+        elements : list
+            List with the key numbers of the element to be removed.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+
+        for element in elements:
+            self.remove_node(element, part)
+
+    # =========================================================================
+    #                               Sets methods
+    # =========================================================================
+    def add_part_node_set(self, part, nset):
+        pass
+
+    def add_assembly_set(self, set, instance):
+        '''Adds a Set object to the Model.
+
+        Parameters
+        ----------
+        set : obj
+            node set object.
+        instance : str
+            Name of the instance where the set belongs to.
+
+        Returns
+        -------
+        None
+        '''
+        if instance not in self.instances:
+            sys.exit('ERROR: instance {} not found in the Model!'.format(instance))
+        set.instance = instance
+        self.instances[instance].sets.append(set)
+
+        self.sets[set.name] = set
+
+    # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def add_material(self, material):
+        '''Adds a Material object to the Model so that it can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : obj
+            compas_fea2 material object.
+
+        Returns
+        -------
+        None
+        '''
+        if material.name not in self.materials:
+            self.materials[material.name] = material
+
+    def add_materials(self, materials):
+        '''Adds multiple Material objects to the Model so that they can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : list
+            List of compas_fea2 material objects.
+
+        Returns
+        -------
+        None
+        '''
+        for material in materials:
+            self.add_material(material)
+
+    def assign_material_to_element(self, material, part, element):
+        NotImplemented
+
+    # =========================================================================
+    #                           Sections methods
+    # =========================================================================
+
+    def add_section(self, section):
+        """Adds a compas_fea2 Section object to the Model.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        if section.name not in self.sections:
+            self.sections[section.name] = section
+            if section.material not in self.materials.keys():
+                sys.exit('ERROR: material {} not found in the Model!'.format(section.material))
+            self.add_material(self.materials[section.material])
+
+    def assign_section_to_element(self, material, part, element):
+        NotImplemented
+
+
+    # =========================================================================
+    #                        Surfaces methods
+    # =========================================================================
+    def add_surface(self, surface):
+        self.surfaces.append(surface)
+
+
+    # =========================================================================
+    #                       Constraints methods
+    # =========================================================================
+    def add_constraint(self, constraint):
+        self.constraints.append(constraint)
+
+    # def add_instance_set(self, iset, instance):
+    #     """ Adds a set to a previously defined Instance.
+
+    #     Parameters
+    #     ----------
+    #     part : obj
+    #         Part object from which the Instance is created.
+    #     transformation : matrix
+    #         Trasformation matrix to apply to the Part before creating the Instance.
+    #     """
+    #     self.instances[instance].sets.append(iset)
+
+    # =========================================================================
+    #                        Interaction methods
+    # =========================================================================
+
+    def add_interactions(self, interactions):
+        pass
+
+
+    # =========================================================================
+    #                          Helper methods
+    # =========================================================================
+
+    # TODO change to check through the instance
+    def get_node_from_coordinates(self, xyz):
+        node_dict = {}
+        for part in self.parts.values():
+            for node in part.nodes:
+                if node.xyz == xyz:
+                    node_dict[part.name] = node.key
+        return node_dict
+
+class Instance():
+    """Initialises base Instance object.
+
+    Parameters
+    ----------
+    name : str
+        Name of the set.
+    part : obj
+        The Part from which the instance is created.
+    sets : list
+        A list with the Set objects belonging to the instance.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    part : Part object
+        The part from which create the instance.
+    sets : list
+        A list with the Set objects belonging to the instance.
+    data : str
+        The data block for the generation of the input file.
+    """
+
+    def __init__(self, name, part, sets=[]):
+        self.__name__ = 'Instance'
+        self.name = name
+        self.part = part
+        self.sets = sets
+        for iset in sets:
+            iset.instance = self.name
+            iset.data = iset._generate_data()
+
+        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
+
+    def __str__(self):
+        print('\n')
+        print('compas_fea {0} object'.format(self.__name__))
+        print('-' * (len(self.__name__) + 18))
+
+        for attr in ['name']:
+            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+
+        return ''
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.part.name)
+
+    def _generate_data(self):
+        return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
+
+
+# =============================================================================
+#                               Debugging
+# =============================================================================
+
+if __name__ == "__main__":
+    pass
+
+
+
+
+

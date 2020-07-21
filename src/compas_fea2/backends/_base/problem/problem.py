@@ -181,14 +181,24 @@ History Output Requests
     # =========================================================================
 
     def add_field_output(self, fout):
-        if fout.name not in self.field_outputs.keys():
+        if fout.name not in self.field_outputs:
             self.field_outputs[fout.name] = fout
 
     def add_field_outputs(self, fouts):
         for fout in fouts:
             self.add_field_output(fout)
 
+    # =========================================================================
+    #                           History outputs
+    # =========================================================================
 
+    def add_history_output(self, hout):
+        if hout.name not in self.history_outputs:
+            self.field_outputs[hout.name] = hout
+
+    def add_history_outputs(self, houts):
+        for hout in houts:
+            self.add_field_output(hout)
 
 
     # ==============================================================================

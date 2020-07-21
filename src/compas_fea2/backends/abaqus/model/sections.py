@@ -93,7 +93,12 @@ class AngleSection(AngleSectionBase):
 
 
 class BoxSection(SectionBase):
+    """
+    Note:
+    -----
 
+    Section properties are computed automatically by Abaqus.
+    """
     def __init__(self, name, a, b, t1, t2, t3, t4, material):
         super(BoxSection, self).__init__(name, material)
         self.stype = 'box'
@@ -156,7 +161,7 @@ class TrussSection(TrussSectionBase):
     def _generate_data(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
-{},\n""".format(self.name, set_name, self.material.name, self.geometry['A'])
+{},\n""".format(self.name, set_name, self.material, self.geometry['A'])
 
 
 class StrutSection(StrutSectionBase):
@@ -231,10 +236,5 @@ if __name__ == "__main__":
 
     conc = Concrete('my_mat',1,2,3,4)
     solid = BoxSection('mysec', 100, 20,1,2,conc)
-    # solid = SolidSection('mysec',conc)
-    # f=open('/home/fr/Downloads/test_input.inp','w')
-    # # f = open('C:/temp/input_temp.inp', 'w')
-    # solid.write_data('my_elset', f)
-    # f.close
 
     print(solid.data)

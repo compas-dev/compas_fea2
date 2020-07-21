@@ -92,23 +92,23 @@ class Part():
     def _generate_data(self):
 
         # Write nodes
-        data_section = ['*Node\n']
+        part_data = ['*Node\n']
         for node in self.nodes:
-            data_section.append(node._generate_data())
+            part_data.append(node._generate_data())
 
         # Write elements
-        for eltype in self.elements_by_type.keys():
-            data_section.append("*Element, type={}\n".format(eltype))
-            data = []
+        for eltype in self.elements_by_type:
+            part_data.append("*Element, type={}\n".format(eltype))
+            # data = []
             for key in self.elements_by_type[eltype]:
-                data_section.append(self.elements[key]._generate_data())
+                part_data.append(self.elements[key]._generate_data())
 
-        # Write nsets
+        # Write user-defined nsets
         for nset in self.nsets:
-            data_section.append(nset._generate_data())
+            part_data.append(nset._generate_data())
 
         # Write sets
-        for section in self.elements_by_section.keys():
+        for section in self.elements_by_section:
             o=1
             for orientation in self.orientations_by_section[section]:
                 from compas_fea2.backends.abaqus.model import Set
@@ -120,16 +120,19 @@ class Part():
                 o+=1
 
         for elset in self.elsets:
-            data_section.append(elset._generate_data())
+            part_data.append(elset._generate_data())
 
         # Write sections
         for section in self.sections.values():
             o=1
             for orientation in self.orientations_by_section[section.name]:
-                data_section.append(section._generate_data('_{}-{}'.format(section.name, o), orientation))
-                o+=1
+                if orientation:
+                    part_data.append(section._generate_data('_{}-{}'.format(section.name, o), orientation))
+                    o+=1
+                else:
+                    part_data.append(section._generate_data('_{}-{}'.format(section.name, o)))
 
-        temp = ''.join(data_section)
+        temp = ''.join(part_data)
         return ''.join(["*Part, name={}\n".format(self.name), temp,
                         "*End Part\n**\n"])
 
@@ -451,9 +454,11 @@ class Part():
             # add the element orientation to its section group
             if element.section not in self.orientations_by_section.keys():
                 self.orientations_by_section[element.section] = []
-            if element.orientation not in self.orientations_by_section[element.section]:
-                self.orientations_by_section[element.section].append(element.orientation)
-
+            if hasattr(element, 'orientation'):
+                if element.orientation not in self.orientations_by_section[element.section]:
+                    self.orientations_by_section[element.section].append(element.orientation)
+            else:
+                sys.exit("ELEMENT ORIENTATION NOT DEFINED")
             # # add the element key to its material group
             # if element.section.material not in self.elements_by_material.keys():
             #     self.elements_by_material[element.section.material] = []

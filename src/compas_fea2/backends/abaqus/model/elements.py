@@ -35,10 +35,10 @@ __all__ = [
     # 'HexahedronElement',
     ]
 
-# TODO the key should not be assigned by the user but generated automatically
+# # TODO the key should not be assigned by the user but generated automatically
 
-def _generate_keyword(obj):
-    return "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
+# def _generate_keyword(obj):
+#     return "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
 
 
 # ==============================================================================
@@ -88,7 +88,7 @@ class BeamElement(BeamElementBase):
         self.elset = elset
         self.eltype = 'B31'
         self.orientation = orientation
-        self.keyword = _generate_keyword(self)
+        # self.keyword = _generate_keyword(self)
         # self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 
     def _generate_data(self):
@@ -115,16 +115,16 @@ class TrussElement(TrussElementBase):
     None
 
     """
-    def __init__(self, key, connectivity, section, elset=None, thermal=None):
-        super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
-        if not elset:
-            self.elset = self.section.name
-        else:
-            self.elset = elset
-        self.eltype = 'T3D2'
+    def __init__(self, connectivity, section, elset=None, thermal=None):
+        super(TrussElement, self).__init__(connectivity, section, thermal=None)
 
-        self.keyword = _generate_keyword(self)
-        self.data    = '{0}, {1},{2}\n'.format(self.key, self.connectivity[0], self.connectivity[1])  #TODO check!!
+        self.elset = elset
+        self.eltype = 'T3D2'
+        self.orientation = None
+        # self.keyword = _generate_keyword(self)
+
+    def _generate_data(self):
+        return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 # class StrutElement(StrutElementBase):
 #     """A truss element that resists axial compressive loads.

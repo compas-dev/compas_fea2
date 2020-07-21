@@ -122,9 +122,13 @@ class TrussElementBase(ElementBase):
     None
     """
 
-    def __init__(self,key, connectivity, section, thermal=None):
-        super(TrussElementBase, self).__init__(key, connectivity, section, thermal)
+    def __init__(self, connectivity, section, thermal=None):
+        super(TrussElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'TrussElement'
+
+    def _checks(self):
+        if self.section.__name__ in []:
+            raise TypeError("The chosen section cannot be applied to Truss elements")
 
 
 class StrutElementBase(TrussElementBase):

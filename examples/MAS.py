@@ -19,28 +19,28 @@ from compas_fea2.backends.abaqus import GeneralStaticStep
 
 ##### ---------------------------- IMPORTS ------------------------------ #####
 
-with open("C:/temp/MAS/points.txt", "r") as f:
+with open("C:/temp/MAS/input/points.txt", "r") as f:
     nodes=[]
     for x in f:
         nodes.append(list((float(y)*1000 for y in x.split(","))))
 
-with open("C:/temp/MAS/start.txt", "r") as f:
+with open("C:/temp/MAS/input/start.txt", "r") as f:
     start=[]
     for x in f:
         start.append(int(x))
 
-with open("C:/temp/MAS/end.txt", "r") as f:
+with open("C:/temp/MAS/input/end.txt", "r") as f:
     end=[]
     for x in f:
         end.append(int(x))
 connectivity = list(zip(start, end))
 
-with open("C:/temp/MAS/supports.txt", "r") as f:
+with open("C:/temp/MAS/input/supports.txt", "r") as f:
     supports=[]
     for x in f:
         supports.append(int(x))
 
-with open("C:/temp/MAS/loads.txt", "r") as f:
+with open("C:/temp/MAS/input/loads.txt", "r") as f:
     loads=[]
     for x in f:
         loads.append(int(x))
@@ -70,13 +70,13 @@ model.add_assembly_set(Set(name='pload', selection=loads, stype='nset'), instanc
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
-problem = Problem(name='mas_test', model=model)
+problem = Problem(name='mas_test_combined', model=model)
 problem.add_bcs(bcs=[FixedDisplacement(name='bc_fix', bset='fixed')])
-problem.add_load(load=PointLoad(name='pload', lset='pload', z=-1000))
+problem.add_load(load=PointLoad(name='pload', lset='pload', z=-10))
 problem.add_load(load=GravityLoad(name='gravity', g=9806., x=0, y=0, z=-1))
 problem.add_field_output(fout=FieldOutput(name='fout'))
 problem.add_history_output(hout=HistoryOutput(name='hout'))
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
-
+problem.add_step(step=GeneralStaticStep(name='gravity', loads=['gravity'], field_outputs=['fout'], history_outputs=['hout']))
+problem.add_step(step=GeneralStaticStep(name='pload', loads=['pload'], field_outputs=['fout'], history_outputs=['hout']))
 # problem.write_input_file(path='C:/temp/mas')
 problem.analyse(path='C:/temp/mas')

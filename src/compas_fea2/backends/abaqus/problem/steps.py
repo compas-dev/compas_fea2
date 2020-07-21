@@ -61,7 +61,7 @@ class _GeneralStep(StepBase):
     """
 
     def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time,
-                nlgeom, displacements, loads, field_output, history_output):
+                nlgeom, displacements, loads, field_outputs, history_outputs):
         super(_GeneralStep, self).__init__(name=name)
 
         self.__name__           = 'GeneralStep'
@@ -76,10 +76,10 @@ class _GeneralStep(StepBase):
         else:
             self.nlgeom         = 'NO'
 
-        self.displacements      = []
-        self.loads              = []
-        self.field_outputs      = []
-        self.history_outputs    = []
+        self.displacements      = displacements
+        self.loads              = loads
+        self.field_outputs      = field_outputs
+        self.history_outputs    = history_outputs
 
         # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
         #                     'displacements', 'loads'])
@@ -89,9 +89,9 @@ class _GeneralStep(StepBase):
 
 class GeneralStaticStep(_GeneralStep):
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-                nlgeom=False, displacements=[], loads=[], field_output=[], history_output=[]):
+                nlgeom=False, displacements=[], loads=[], field_outputs=[], history_outputs=[]):
         super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size,min_inc_size, time, nlgeom,
-                                                displacements, loads, field_output, history_output)
+                                                displacements, loads, field_outputs, history_outputs)
         self.stype = 'Static'
         self.attr_list.extend(['stype'])
 

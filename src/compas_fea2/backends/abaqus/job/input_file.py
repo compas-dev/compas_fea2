@@ -64,13 +64,26 @@ class InputFile():
             section_data.append(bc._generate_data())
         return ''.join(section_data)
 
+    #TODO I need to loop through problem.STEP.loads
     def _generate_steps_section(self, problem):
         section_data = []
         for step in problem.steps:
-            section_data.append(step._generate_data(problem.displacements.values(),
-                                                    problem.loads.values(),
-                                                    problem.field_outputs.values(),
-                                                    problem.history_outputs.values()))
+            displacements = []
+            for displacement in step.displacements:
+                displacements.append(problem.displacements[displacement])
+            loads = []
+            for load in step.loads:
+                loads.append(problem.loads[load])
+            field_outputs = []
+            for field_output in step.field_outputs:
+                field_outputs.append(problem.field_outputs[field_output])
+            history_outputs = []
+            for history_output in step.history_outputs:
+                history_outputs.append(problem.history_outputs[history_output])
+            section_data.append(step._generate_data(displacements,
+                                                    loads,
+                                                    field_outputs,
+                                                    history_outputs))
         return ''.join(section_data)
 
     def _generate_data(self):

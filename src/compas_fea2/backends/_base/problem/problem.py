@@ -152,19 +152,19 @@ History Output Requests
     def add_step(self, step):
 
         for disp in step.displacements:
-            if disp not in self.displacements.keys():
+            if disp not in self.displacements:
                 sys.exit('ERROR: displacement {} not found in the model!'.format(disp))
 
         for load in step.loads:
-            if load not in self.loads.keys():
+            if load not in self.loads:
                 sys.exit('ERROR: load {} not found in the model!'.format(load))
 
         for hout in step.history_outputs:
-            if hout not in self.history_outputs.keys():
+            if hout not in self.history_outputs:
                 sys.exit('ERROR: history output {} not found in the model!'.format(hout))
 
         for fout in step.field_outputs:
-            if fout not in self.field_outputs.keys():
+            if fout not in self.field_outputs:
                 sys.exit('ERROR: field output {} not found in the model!'.format(fout))
 
         self.steps.append(step)
@@ -195,11 +195,11 @@ History Output Requests
 
     def add_history_output(self, hout):
         if hout.name not in self.history_outputs:
-            self.field_outputs[hout.name] = hout
+            self.history_outputs[hout.name] = hout
 
     def add_history_outputs(self, houts):
         for hout in houts:
-            self.add_field_output(hout)
+            self.add_history_output(hout)
 
 
     # ==============================================================================

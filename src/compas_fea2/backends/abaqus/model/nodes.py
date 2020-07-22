@@ -17,6 +17,9 @@ __all__ = [
 # ==============================================================================
 
 class Node(NodeBase):
+    """ Note: the nodes key numbering in compas_fea2 starts from 0, while in Abaqus
+    it starts from 1. The conversion in automatically resolved by compas_fea2.
+    """
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, label=label)
         # self.keyword = '*Node\n'

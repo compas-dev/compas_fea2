@@ -97,7 +97,8 @@ class GeneralStaticStep(_GeneralStep):
 
         # self.data = self._generate_data()
 
-    def _generate_data(self, displacements=[], loads=[], field_outputS=[], history_outputS=[]):  #todo: this could be moved outside the class
+    def _generate_data(self, displacements=[], loads=[], field_outputs=[], history_outputs=[]):  #todo: this could be moved outside the class
+
         section_data = []
         line = """** ----------------------------------------------------------------
 **
@@ -128,9 +129,9 @@ class GeneralStaticStep(_GeneralStep):
 **\n"""
         section_data.append(line)
 
-        for foutput in field_outputS:
+        for foutput in field_outputs:
             section_data.append(foutput.data)
-        for houtput in history_outputS:
+        for houtput in history_outputs:
             section_data.append(houtput.data)
         section_data.append('*End Step\n')
 

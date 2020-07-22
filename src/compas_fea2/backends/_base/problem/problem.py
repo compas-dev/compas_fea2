@@ -159,13 +159,13 @@ History Output Requests
             if load not in self.loads:
                 sys.exit('ERROR: load {} not found in the model!'.format(load))
 
-        for hout in step.history_outputs:
-            if hout not in self.history_outputs:
-                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
-
         for fout in step.field_outputs:
             if fout not in self.field_outputs:
                 sys.exit('ERROR: field output {} not found in the model!'.format(fout))
+
+        for hout in step.history_outputs:
+            if hout not in self.history_outputs:
+                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)
 

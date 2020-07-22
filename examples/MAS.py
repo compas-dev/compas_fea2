@@ -70,13 +70,13 @@ model.add_assembly_set(Set(name='pload', selection=loads, stype='nset'), instanc
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
-problem = Problem(name='mas_test_combined', model=model)
+problem = Problem(name='mas', model=model)
 problem.add_bcs(bcs=[FixedDisplacement(name='bc_fix', bset='fixed')])
 problem.add_load(load=PointLoad(name='pload', lset='pload', z=-10))
 problem.add_load(load=GravityLoad(name='gravity', g=9806., x=0, y=0, z=-1))
-problem.add_field_output(fout=FieldOutput(name='fout'))
+problem.add_field_output(fout=FieldOutput(name='fout', node_outputs=['RF', 'CF', 'U'], element_outputs=['S']))
 problem.add_history_output(hout=HistoryOutput(name='hout'))
 problem.add_step(step=GeneralStaticStep(name='gravity', loads=['gravity'], field_outputs=['fout'], history_outputs=['hout']))
 problem.add_step(step=GeneralStaticStep(name='pload', loads=['pload'], field_outputs=['fout'], history_outputs=['hout']))
-problem.write_input_file(path='C:/temp/mas')
-# problem.analyse(path='C:/temp/mas')
+# problem.write_input_file(path='C:/temp/mas')
+problem.analyse(path='C:/temp/mas')

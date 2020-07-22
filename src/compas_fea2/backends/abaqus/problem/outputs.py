@@ -12,16 +12,29 @@ __all__ = [
 
 #todo: this is the pre-made field output -> change to costumised
 class FieldOutput():
-    def __init__(self, name):
+    def __init__(self, name, node_outputs=[], element_outputs=[]):
         self.__name__  = 'FieldOutputRequst'
         self.name      = name
         # self.domain    = domain
         # self.frequency = frequency
         # self.variables = variables
-        self.data      = """** FIELD OUTPUT: {}
-**
-*Output, field, variable=PRESELECT
-**\n""".format(self.name)
+        self.node_outputs = node_outputs
+        self.element_outputs = element_outputs
+
+        self.data      = self._generate_data()
+
+    def _generate_data(self):
+        data = ['** FIELD OUTPUT: {}\n**'.format(self.name)]
+        if not (self.node_outputs and self.element_outputs):
+            data.append('*Output, field, variable=PRESELECT\n**\n')
+        else:
+            data.append("""*Output, field
+*Node Output
+{}
+*Element output, direction=YES
+{}\n""".format(', '.join(self.node_outputs), ', '.join(self.element_outputs)))
+
+        return '\n'.join(data)
 
 class HistoryOutput():
     def __init__(self, name):

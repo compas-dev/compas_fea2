@@ -30,18 +30,8 @@ class Problem(ProblemBase):
 
     Attributes
     ----------
-    name : str
-        Name of the Structure.
     parts : list
         List of the parts in the model.
-    model : obj
-        model object.
-    bc : list
-        List containing the boundary conditions objects.
-    interactions : list
-        List containing the interaction objects.
-    steps : list
-        List containing the Steps objects.
 
     """
     def __init__(self, name, model):
@@ -54,8 +44,8 @@ class Problem(ProblemBase):
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, path='C:/temp', output=True, save=False, ):
-        """Writes abaqus input file.
+    def write_input_file(self, path='C:/temp', output=True, save=False):
+        """Writes the abaqus input file.
 
         Parameters
         ----------
@@ -74,15 +64,14 @@ class Problem(ProblemBase):
 
         if not os.path.exists(path):
             os.makedirs(path)
-        filepath = '{0}/{1}.inp'.format(path, self.name)
 
         if save:
             self.save_to_cfea()
 
-        input_file = InputFile(self, filepath)
-        input_file.write_to_file()
+        input_file = InputFile(self)
+        r = input_file.write_to_file(path)
         if output:
-            print('***** Input file generated: {0} *****\n'.format(filepath))
+            print(r)
 
     # this should be an abstract method of the base class
     def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True,
@@ -91,7 +80,8 @@ class Problem(ProblemBase):
 
         Parameters
         ----------
-
+        path : str
+            Path to the folder where the input file is saved.
         exe : str
             Full terminal command to bypass subprocess defaults.
         cpus : int

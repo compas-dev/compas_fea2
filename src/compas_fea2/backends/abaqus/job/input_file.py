@@ -26,7 +26,7 @@ class InputFile():
 
     """
     def __init__(self, problem):
-        self.name           = problem.name
+        self.name           = '{}.inp'.format(problem.name)
         self.job_name       = problem.name
         self.data           = self._generate_data(problem)
 

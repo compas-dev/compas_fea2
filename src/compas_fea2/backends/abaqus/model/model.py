@@ -5,6 +5,7 @@ from __future__ import print_function
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 import sys
+import math
 
 __all__ = [
     'Model',
@@ -746,12 +747,38 @@ class Model():
     # =========================================================================
 
     # TODO change to check through the instance
-    def get_node_from_coordinates(self, xyz):
+    def get_node_from_coordinates(self, xyz, tol):
+        """Finds (if any) the Node object in the model with the specified coordinates.
+        A tollerance factor can be specified.
+
+        Parameters
+        ----------
+        xyz : list
+            List with the [x, y, z] coordinates of the Node.
+        tol : int
+            multiple to which round the coordinates.
+
+        Returns
+        -------
+        node : dict
+            Dictionary with the Node object for each Instance.
+            key =  Instance
+            value = Node object with the specified coordinates.
+        """
+
         node_dict = {}
         for part in self.parts.values():
             for node in part.nodes:
-                if node.xyz == xyz:
+
+                a = [tol * round(i/tol) for i in node.xyz]
+                b =  [tol * round(i/tol) for i in xyz]
+                # if math.isclose(node.xyz, xyz, tol):
+                if a == b:
                     node_dict[part.name] = node.key
+
+        if not node_dict:
+            print("WARNING: Node at {} not found!".format(b))
+
         return node_dict
 
 class Instance():

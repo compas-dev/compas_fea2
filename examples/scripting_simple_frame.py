@@ -67,9 +67,8 @@ problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
 problem.add_field_output(fout=FieldOutput(name='fout'))
 
 # Define the analysis step
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload'], field_output=['fout']))
+problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 print(problem)
-# problem.write_input_file(path='C:/temp/test_structure')
-# problem.analyse(path='C:/temp/test_structure')
+

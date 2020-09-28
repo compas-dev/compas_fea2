@@ -295,7 +295,7 @@ class UserMaterial(MaterialBase):
 
 if __name__ == "__main__":
 
-    material = ElasticIsotropic(name='test', E=1, v=2, p=3, tension=False, compression=True)
+    material = ElasticIsotropic(name='test', E=1, v=2, p=3)
     plastic = ElasticPlastic('plastic', 1,2,3,[4,5],[6,7])
-    umat = UserMaterial(name='my_umat', sub_path='C;/', p=10, v=30, E=20)
+    umat = UserMaterial(name='my_umat', sub_path='C:/', p=10, v=30, E=20)
     print(umat.data)

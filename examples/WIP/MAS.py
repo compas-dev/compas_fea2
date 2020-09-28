@@ -85,69 +85,70 @@ with open("C:/temp/MAS/input/uplift.csv", "r") as f:
             uplift[k] = v
 
 
-# for n, k in zip(nodes, h_forces):
-#     print(tuple(n), k)
+# # for n, k in zip(nodes, h_forces):
+# #     print(tuple(n), k)
 
-for node in nodes:
-    n = tuple(node)
-    for k in h_forces:
-        if n > k-10 and n < k +10:
-            print(node)
-##### ------------------------------ MODEL ------------------------------ #####
-
-# model = Model(name='structural_model')
-
-# model.add_part(Part(name='part-1'))
-
-# i=0
 # for node in nodes:
-#     model.add_node(Node(xyz=node), part='part-1')
-#     node =tuple(node)
-#     if node in h_forces:
-#         print(i)
-#         i += 1
+#     n = tuple(node)
+#     for k in h_forces:
+#         if n > k-10 and n < k +10:
+#             print(node)
 
-# model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
-# model.add_section(TrussSection(name='Truss_1', material='mat_A', A=200))
-# model.add_section(TrussSection(name='Truss_3', material='mat_A', A=600))
-# # model.add_section(BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
+#### ------------------------------ MODEL ------------------------------ #####
 
-# for c in connectivity_1:
-#     model.add_element(element=TrussElement(connectivity=c, section='Truss_1'), part='part-1')
+model = Model(name='structural_model')
 
-# for c in connectivity_3:
-#     model.add_element(element=TrussElement(connectivity=c, section='Truss_3'), part='part-1')
+model.add_part(Part(name='part-1'))
 
-# for c in connectivity_pt:
-#     model.add_element(element=TrussElement(connectivity=c, section='Truss_1'), part='part-1')
+i=0
+for node in nodes:
+    model.add_node(Node(xyz=node), part='part-1')
+    node =tuple(node)
+    if node in h_forces:
+        print(i)
+        i += 1
+
+model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+model.add_section(TrussSection(name='Truss_1', material='mat_A', A=200))
+model.add_section(TrussSection(name='Truss_3', material='mat_A', A=600))
+# model.add_section(BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
+
+for c in connectivity_1:
+    model.add_element(element=TrussElement(connectivity=c, section='Truss_1'), part='part-1')
+
+for c in connectivity_3:
+    model.add_element(element=TrussElement(connectivity=c, section='Truss_3'), part='part-1')
+
+for c in connectivity_pt:
+    model.add_element(element=TrussElement(connectivity=c, section='Truss_1'), part='part-1')
 
 
-# model.add_assembly_set(Set(name='fixed', selection=supports, stype='nset'), instance='part-1-1')
+model.add_assembly_set(Set(name='fixed', selection=supports, stype='nset'), instance='part-1-1')
 
-# i=0
-# for p in h_forces:
-#     selection = model.get_node_from_coordinates(p[0:3], tol=5)
+i=0
+for p in h_forces:
+    selection = model.get_node_from_coordinates(p[0:3], tol=5)
 
-#     model.add_assembly_set(Set(name='pload_'+str(i), selection=selection, stype='nset'), instance='part-1-1')
-#     i+=1
+    model.add_assembly_set(Set(name='pload_'+str(i), selection=selection, stype='nset'), instance='part-1-1')
+    i+=1
 
-# ##### ----------------------------- PROBLEM ----------------------------- #####
+##### ----------------------------- PROBLEM ----------------------------- #####
 
-# problem = Problem(name='mas', model=model)
-# problem.add_bcs(bcs=[FixedDisplacement(name='bc_fix', bset='fixed')])
+problem = Problem(name='mas', model=model)
+problem.add_bcs(bcs=[FixedDisplacement(name='bc_fix', bset='fixed')])
 
-# i=0
-# loads=[]
-# for p in h_forces:
-#     selection = model.get_node_from_coordinates(p[0:2])
-#     problem.add_load(load=PointLoad(name='pload_'+str(i), lset='pload_'+str(i), z=p[5]))
-#     loads.append('pload_'+str(i))
-#     i+=1
+i=0
+loads=[]
+for p in h_forces:
+    selection = model.get_node_from_coordinates(p[0:2], 10)
+    problem.add_load(load=PointLoad(name='pload_'+str(i), lset='pload_'+str(i), z=p[5]))
+    loads.append('pload_'+str(i))
+    i+=1
 
-# problem.add_load(load=GravityLoad(name='gravity', g=9806., x=0, y=0, z=-1))
-# problem.add_field_output(fout=FieldOutput(name='fout', node_outputs=['RF', 'CF', 'U'], element_outputs=['S']))
-# problem.add_history_output(hout=HistoryOutput(name='hout'))
-# problem.add_step(step=GeneralStaticStep(name='gravity', loads=['gravity'], field_outputs=['fout'], history_outputs=['hout']))
-# problem.add_step(step=GeneralStaticStep(name='pload', loads=loads, field_outputs=['fout'], history_outputs=['hout']))
-# # problem.write_input_file(path='C:/temp/mas')
-# problem.analyse(path='C:/temp/mas')
+problem.add_load(load=GravityLoad(name='gravity', g=9806., x=0, y=0, z=-1))
+problem.add_field_output(fout=FieldOutput(name='fout', node_outputs=['RF', 'CF', 'U'], element_outputs=['S']))
+problem.add_history_output(hout=HistoryOutput(name='hout'))
+problem.add_step(step=GeneralStaticStep(name='gravity', loads=['gravity'], field_outputs=['fout'], history_outputs=['hout']))
+problem.add_step(step=GeneralStaticStep(name='pload', loads=loads, field_outputs=['fout'], history_outputs=['hout']))
+# problem.write_input_file(path='C:/temp/mas')
+problem.analyse(path='C:/temp/mas')

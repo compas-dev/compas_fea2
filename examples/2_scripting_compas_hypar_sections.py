@@ -62,7 +62,7 @@ model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='ns
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
-problem = Problem(name='compas_test', model=model)
+problem = Problem(name='hypar_variable', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),

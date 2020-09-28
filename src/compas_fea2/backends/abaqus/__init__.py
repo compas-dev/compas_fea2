@@ -5,7 +5,7 @@ abaqus
 
 .. code-block:: python
 
-    # example
+    # Abaqus implementation of compas_fea2
 
 .. automodule:: compas_fea2.backends.abaqus.model
 

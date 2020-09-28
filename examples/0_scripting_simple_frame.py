@@ -1,4 +1,3 @@
-
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import Node

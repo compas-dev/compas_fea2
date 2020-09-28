@@ -3,7 +3,7 @@
 PreProcess
 ********************************************************************************
 
-.. currentmodule:: compas_fea.preprocess
+.. currentmodule:: compas_fea2.preprocess
 
 
 Meshing

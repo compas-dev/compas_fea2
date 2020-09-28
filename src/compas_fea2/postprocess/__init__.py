@@ -3,7 +3,7 @@
 PostProcess
 ********************************************************************************
 
-.. currentmodule:: compas_fea.postprocess
+.. currentmodule:: compas_fea2.postprocess
 
 
 """

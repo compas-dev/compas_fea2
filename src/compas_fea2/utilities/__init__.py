@@ -3,7 +3,7 @@
 Utilities
 ********************************************************************************
 
-.. currentmodule:: compas_fea.utilities
+.. currentmodule:: compas_fea2.utilities
 
 
 Functions

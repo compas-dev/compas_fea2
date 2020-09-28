@@ -62,7 +62,7 @@ model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='ns
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
-problem = Problem(name='compas_test', model=model)
+problem = Problem(name='hypar', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
@@ -76,4 +76,4 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path='C:/temp/hypar_variable_sections')
+problem.analyse(path='C:/temp/hypar')

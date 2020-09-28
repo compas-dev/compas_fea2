@@ -103,6 +103,14 @@ Sections
     TieSection
     SpringSection
 
+Sets
+====
+
+.. autosummary::
+    :toctree: generated/
+
+    Set
+    Surface
 
 """
 

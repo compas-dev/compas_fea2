@@ -9,7 +9,7 @@ import pickle
 # from compas_fea2.utilities import group_keys_by_attribute
 # from compas_fea2.utilities import group_keys_by_attributes
 
-# from compas_fea2.backends._core import StructureBase
+# from compas_fea2.backends._base import StructureBase
 
 # from compas_fea2.backends.opensees.components import Set
 # # from compas_fea2.backends.opensees.components.elements import *

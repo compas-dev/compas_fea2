@@ -18,15 +18,13 @@ from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
 from compas_fea2 import DATA
-##### ------------------------------ MODEL ------------------------------ #####
 
+# Get a Mesh geometry to create the model
+mesh = Mesh.from_obj(DATA + '/hypar.obj')
+
+##### ------------------------------ MODEL ------------------------------ #####
 # Initialise the assembly object
 model = Model(name='hypar')
-
-# Add a Part to the model
-# model.add_part(Part(name='part-1'))
-
-mesh = Mesh.from_obj(DATA + '/hypar.obj')
 
 # Define materials
 model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))

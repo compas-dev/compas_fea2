@@ -3,9 +3,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._core import MiscBase
-from compas_fea2.backends._core import AmplitudeBase
-from compas_fea2.backends._core import TemperaturesBase
+from compas_fea2.backends._base import MiscBase
+from compas_fea2.backends._base import AmplitudeBase
+from compas_fea2.backends._base import TemperaturesBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

@@ -20,6 +20,7 @@ __all__ = [
     'Problem',
 ]
 
+
 class Problem(ProblemBase):
     """Initialises the Problem object.
 
@@ -29,16 +30,14 @@ class Problem(ProblemBase):
         Name of the Structure.
     model : obj
         model object.
-
-    Attributes
-    ----------
     parts : list
         List of the parts in the model.
 
     """
+
     def __init__(self, name, model):
         super(Problem, self).__init__(name=name, model=model)
-        self.parts              = model.parts.values()
+        self.parts = model.parts.values()
         # self.interactions       = model.interactions
 
     # =========================================================================
@@ -46,10 +45,17 @@ class Problem(ProblemBase):
     # =========================================================================
 
     def add_step(self, step):
+        """Adds a Step to the Problem.
 
+        Parameters
+        ----------
+        step : obj
+            compas_fea2 Step object.
+        """
         for disp in step.displacements:
             if disp not in self.displacements:
-                sys.exit('ERROR: displacement {} not found in the model!'.format(disp))
+                sys.exit(
+                    'ERROR: displacement {} not found in the model!'.format(disp))
 
         for load in step.loads:
             if load not in self.loads:
@@ -61,7 +67,8 @@ class Problem(ProblemBase):
             self.field_outputs['standard'] = standard_output
         for fout in step.field_outputs:
             if fout not in self.field_outputs:
-                sys.exit('ERROR: field output {} not found in the model!'.format(fout))
+                sys.exit(
+                    'ERROR: field output {} not found in the model!'.format(fout))
 
         if not step.history_outputs:
             standard_output = HistoryOutput('standard')
@@ -69,16 +76,31 @@ class Problem(ProblemBase):
             self.history_outputs['standard'] = standard_output
         for hout in step.history_outputs:
             if hout not in self.history_outputs:
-                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
+                sys.exit(
+                    'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)
 
-
     def add_steps(self, steps):
+        """Adds multiple steps to the Problem.
+
+        Parameters
+        ----------
+        steps : list
+            list containing compas_fea2 Step objects.
+        """
         for step in steps:
             self.add_step
 
     def define_steps_order(self, order):
+        """Defines the order in which the steps are applied during the analysis.
+        NOTE: not implemented yet!
+
+        Parameters
+        ----------
+        order : list
+            list containing the step names in the chosen order.
+        """
         pass
 
     # =========================================================================
@@ -142,7 +164,6 @@ class Problem(ProblemBase):
         self.write_input_file(path=path, output=output, save=save)
         launch_process(self, path=path, exe=exe, cpus=cpus, output=output,
                        overwrite=overwrite, user_mat=user_mat)
-
 
     # =========================================================================
     #                         Results methods
@@ -252,7 +273,6 @@ class Problem(ProblemBase):
     #         data[key] = rdict[field][key]
 
     #     return data
-
 
     # def get_element_results(self, step, field, elements='all'):
     #     """Extract element results from self.results.

@@ -3,18 +3,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._core import GeneralDisplacementBase
-from compas_fea2.backends._core import FixedDisplacementBase
-from compas_fea2.backends._core import PinnedDisplacementBase
-from compas_fea2.backends._core import FixedDisplacementXXBase
-from compas_fea2.backends._core import FixedDisplacementYYBase
-from compas_fea2.backends._core import FixedDisplacementZZBase
-from compas_fea2.backends._core import RollerDisplacementXBase
-from compas_fea2.backends._core import RollerDisplacementYBase
-from compas_fea2.backends._core import RollerDisplacementZBase
-from compas_fea2.backends._core import RollerDisplacementXYBase
-from compas_fea2.backends._core import RollerDisplacementYZBase
-from compas_fea2.backends._core import RollerDisplacementXZBase
+from compas_fea2.backends._base import GeneralDisplacementBase
+from compas_fea2.backends._base import FixedDisplacementBase
+from compas_fea2.backends._base import PinnedDisplacementBase
+from compas_fea2.backends._base import FixedDisplacementXXBase
+from compas_fea2.backends._base import FixedDisplacementYYBase
+from compas_fea2.backends._base import FixedDisplacementZZBase
+from compas_fea2.backends._base import RollerDisplacementXBase
+from compas_fea2.backends._base import RollerDisplacementYBase
+from compas_fea2.backends._base import RollerDisplacementZBase
+from compas_fea2.backends._base import RollerDisplacementXYBase
+from compas_fea2.backends._base import RollerDisplacementYZBase
+from compas_fea2.backends._base import RollerDisplacementXZBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

@@ -3,18 +3,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._core import LoadBase
-from compas_fea2.backends._core import PrestressLoadBase
-from compas_fea2.backends._core import PointLoadBase
-from compas_fea2.backends._core import PointLoadsBase
-from compas_fea2.backends._core import LineLoadBase
-from compas_fea2.backends._core import AreaLoadBase
-from compas_fea2.backends._core import GravityLoadBase
-from compas_fea2.backends._core import ThermalLoadBase
-from compas_fea2.backends._core import TributaryLoadBase
-from compas_fea2.backends._core import HarmonicPointLoadBase
-from compas_fea2.backends._core import HarmonicPressureLoadBase
-from compas_fea2.backends._core import AcousticDiffuseFieldLoadBase
+from compas_fea2.backends._base import LoadBase
+from compas_fea2.backends._base import PrestressLoadBase
+from compas_fea2.backends._base import PointLoadBase
+from compas_fea2.backends._base import PointLoadsBase
+from compas_fea2.backends._base import LineLoadBase
+from compas_fea2.backends._base import AreaLoadBase
+from compas_fea2.backends._base import GravityLoadBase
+from compas_fea2.backends._base import ThermalLoadBase
+from compas_fea2.backends._base import TributaryLoadBase
+from compas_fea2.backends._base import HarmonicPointLoadBase
+from compas_fea2.backends._base import HarmonicPressureLoadBase
+from compas_fea2.backends._base import AcousticDiffuseFieldLoadBase
 
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)

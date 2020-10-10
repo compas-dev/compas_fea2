@@ -37,10 +37,6 @@ class SectionBase(object):
     name : str
         Section object name.
 
-    Attributes
-    ----------
-    name : str
-        Section object name.
     geometry : dict
         Geometry of the Section.
 

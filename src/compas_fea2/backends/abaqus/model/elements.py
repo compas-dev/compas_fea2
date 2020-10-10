@@ -48,7 +48,7 @@ __all__ = [
 class MassElement():
     """A 0D element for concentrated point mass.
 
-    Attributes
+    Parameters
     ----------
     key : int
         Number of the element.
@@ -217,7 +217,7 @@ class SolidElement(SolidElementBase):
         else:
             self.eltype = eltype
 
-        self.keyword = _generate_keyword(self)
+        # self.keyword = _generate_keyword(self)
         self.data    = self._generate_data()
 
     def _generate_data(self):

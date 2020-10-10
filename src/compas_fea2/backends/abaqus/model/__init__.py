@@ -53,14 +53,13 @@ Constraints
     Constraint
     TieConstraint
 
-Properties
-==========
+Interactions
+============
 
 .. autosummary::
     :toctree: generated/
 
-    ElementProperties
-
+    Interaction
 
 Materials
 =========
@@ -68,15 +67,14 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    Material
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    Stiff
     ElasticIsotropic
+    Stiff
     ElasticOrthotropic
     ElasticPlastic
     Steel
+    Concrete
+    ConcreteSmearedCrack
+    ConcreteDamagedPlasticity
     UserMaterial
 
 
@@ -86,7 +84,7 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    Section
+    MassSection
     AngleSection
     BoxSection
     CircularSection

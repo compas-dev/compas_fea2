@@ -22,14 +22,8 @@ class ProblemBase(object):
     model : obj
         model object.
 
-    Attributes
-    ----------
-    name : str
-        Name of the Structure.
     parts : list
         List of the parts in the model.
-    model : obj
-        model object.
     bc : list
         List containing the boundary conditions objects.
     interactions : list

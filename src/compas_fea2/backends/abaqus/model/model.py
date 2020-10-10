@@ -12,16 +12,12 @@ __all__ = [
     'Instance',
 ]
 
+
 class Model():
     """Initialises the Model object. This is in many aspects equivalent to an
     `Assembly` in Abaqus.
 
     Parameters
-    ----------
-    name : str
-        Name of the Model.
-
-    Attributes
     ----------
     name : str
         Name of the Model.
@@ -41,16 +37,16 @@ class Model():
     """
 
     def __init__(self, name, ):
-        self.__name__           = 'Model'
-        self.name               = name
-        self.instances          = {}
-        self.parts              = {}
-        self.surfaces           = []
-        self.constraints        = []
-        self.add_interactions   = []
-        self.materials          = {}
-        self.sections           = {}
-        self.sets               = {}
+        self.__name__ = 'Model'
+        self.name = name
+        self.instances = {}
+        self.parts = {}
+        self.surfaces = []
+        self.constraints = []
+        self.add_interactions = []
+        self.materials = {}
+        self.sections = {}
+        self.sets = {}
         # self.materials      = self._get_materials()
 
         # self.data           = self._generate_data()
@@ -63,7 +59,8 @@ class Model():
             data.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
 
         data.append('{0:<15} : {1}'.format('# of parts', len(self.parts)))
-        data.append('{0:<15} : {1}'.format('# of instances', len(self.instances)))
+        data.append('{0:<15} : {1}'.format(
+            '# of instances', len(self.instances)))
         return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
     def __repr__(self):
@@ -121,7 +118,7 @@ class Model():
 
         for v in mesh.vertices():
             self.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
-        
+
         # Generate elements between nodes
         key_index = mesh.key_index()
         vertices = list(mesh.vertices())
@@ -132,7 +129,8 @@ class Model():
             v = normalize_vector(mesh.edge_vector(e[0], e[1]))
             v.append(v.pop(0))
             # add element to the model
-            self.add_element(BeamElement(connectivity=[e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')    
+            self.add_element(BeamElement(connectivity=[
+                             e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')
 
     def from_volmesh(self, volmesh):
         pass
@@ -173,7 +171,8 @@ class Model():
         """
 
         if part.name in self.parts:
-            print("WARNING: Part {} already in the Model. Part not added!".format(part.name))
+            print(
+                "WARNING: Part {} already in the Model. Part not added!".format(part.name))
         else:
             self.parts[part.name] = part
 
@@ -269,7 +268,7 @@ class Model():
         -------
         None
         """
-        error_code=0
+        error_code = 0
         if part in self.parts:
             self.parts[part].add_node(node)
             error_code = 1
@@ -314,10 +313,10 @@ class Model():
         None
         '''
 
-        error_code=0
+        error_code = 0
         if part in self.parts:
             self.parts[part].remove_node(node_key)
-            error_code=1
+            error_code = 1
 
         if error_code == 0:
             sys.exit('ERROR: part {} not found in the Model!'.format(part))
@@ -340,8 +339,6 @@ class Model():
 
         for node in nodes:
             self.remove_node(node, part)
-
-
 
     # ==============================================================================
     # Nodes
@@ -430,7 +427,6 @@ class Model():
     #     """
     #     return len(self.nodes) + len(self.virtual_nodes)
 
-
     def nodes_xyz(self, nodes=None):
         """Return the xyz co-ordinates of given or all nodes.
 
@@ -448,7 +444,6 @@ class Model():
             nodes = sorted(self.nodes, key=int)
 
         return [self.node_xyz(node=node) for node in nodes]
-
 
     # def check_element_exists(self, nodes=None, xyz=None, virtual=False):
     #     """Check if an element already exists based on nodes or centroid.
@@ -556,12 +551,10 @@ class Model():
 
     #     return ekey
 
-
-
-
     # =========================================================================
     #                           Elements methods
     # =========================================================================
+
     def add_element(self, element, part):
         """Adds a compas_fea2 Element object to a Part in the Model.
 
@@ -577,14 +570,15 @@ class Model():
         None
         """
 
-        error_code=0
+        error_code = 0
         if part in self.parts:
             self.parts[part].add_element(element)
             if element.section not in self.sections:
-                sys.exit('ERROR: section {} not found in the Model!'.format(element.section))
+                sys.exit('ERROR: section {} not found in the Model!'.format(
+                    element.section))
             elif element.section not in self.parts[part].sections:
                 self.parts[part].sections[element.section] = self.sections[element.section]
-            error_code=1
+            error_code = 1
 
         if error_code == 0:
             sys.exit('ERROR: part {} not found in the Model!'.format(part))
@@ -621,10 +615,10 @@ class Model():
         -------
         None
         '''
-        error_code=0
+        error_code = 0
         if part in self.parts:
             self.parts[part].remove_element(element_key)
-            error_code=1
+            error_code = 1
 
         if error_code == 0:
             sys.exit('ERROR: part {} not found in the Model!'.format(part))
@@ -735,23 +729,24 @@ class Model():
         if section.name not in self.sections:
             self.sections[section.name] = section
             if section.material not in self.materials.keys():
-                sys.exit('ERROR: material {} not found in the Model!'.format(section.material))
+                sys.exit('ERROR: material {} not found in the Model!'.format(
+                    section.material))
             self.add_material(self.materials[section.material])
 
     def assign_section_to_element(self, material, part, element):
         NotImplemented
 
-
     # =========================================================================
     #                        Surfaces methods
     # =========================================================================
+
     def add_surface(self, surface):
         self.surfaces.append(surface)
-
 
     # =========================================================================
     #                       Constraints methods
     # =========================================================================
+
     def add_constraint(self, constraint):
         self.constraints.append(constraint)
 
@@ -774,12 +769,12 @@ class Model():
     def add_interactions(self, interactions):
         pass
 
-
     # =========================================================================
     #                          Helper methods
     # =========================================================================
 
     # TODO change to check through the instance
+
     def get_node_from_coordinates(self, xyz, tol):
         """Finds (if any) the Node object in the model with the specified coordinates.
         A tollerance factor can be specified.
@@ -804,7 +799,7 @@ class Model():
             for node in part.nodes:
 
                 a = [tol * round(i/tol) for i in node.xyz]
-                b =  [tol * round(i/tol) for i in xyz]
+                b = [tol * round(i/tol) for i in xyz]
                 # if math.isclose(node.xyz, xyz, tol):
                 if a == b:
                     node_dict[part.name] = node.key
@@ -813,6 +808,7 @@ class Model():
             print("WARNING: Node at {} not found!".format(b))
 
         return node_dict
+
 
 class Instance():
     """Initialises base Instance object.
@@ -823,15 +819,6 @@ class Instance():
         Name of the set.
     part : obj
         The Part from which the instance is created.
-    sets : list
-        A list with the Set objects belonging to the instance.
-
-    Attributes
-    ----------
-    name : str
-        Name of the set.
-    part : Part object
-        The part from which create the instance.
     sets : list
         A list with the Set objects belonging to the instance.
     data : str
@@ -847,7 +834,8 @@ class Instance():
             iset.instance = self.name
             iset.data = iset._generate_data()
 
-        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
+        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(
+            self.name, self.part.name)
 
     def __str__(self):
         print('\n')
@@ -872,8 +860,3 @@ class Instance():
 
 if __name__ == "__main__":
     pass
-
-
-
-
-

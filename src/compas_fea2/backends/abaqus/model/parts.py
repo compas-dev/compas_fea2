@@ -19,11 +19,6 @@ class Part():
     ----------
     name : str
         Name of the set.
-
-    Attributes
-    ----------
-    name : str
-        Name of the set.
     nodes : list
         Sorted list (by Node key) with the Nodes objects belonging to the Part.
     nodes_gkeys : list

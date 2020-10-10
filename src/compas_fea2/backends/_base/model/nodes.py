@@ -28,8 +28,6 @@ class NodeBase(object):
         Node's label. If no label is specified, it is automatically generated
         when a node is added. The label does not need to be unique.
 
-    Attributes
-    ----------
     key : int
         Node key number. The key number is unique.
     x : float

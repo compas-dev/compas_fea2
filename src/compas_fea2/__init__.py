@@ -11,8 +11,8 @@ compas_fea2
 
     compas_fea2.backends
     compas_fea2.interfaces
-    compas_fea2.postprocess
-    compas_fea2.preprocess
+    compas_fea2.postprocessor
+    compas_fea2.preprocessor
     compas_fea2.utilities
 
 

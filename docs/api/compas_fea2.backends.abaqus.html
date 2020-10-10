@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
     
-        <link rel="next" title="License" href="../license.html" />
+        <link rel="next" title="Model" href="generated/compas_fea2.backends.abaqus.model.Model.html" />
     
     
     
@@ -57,368 +57,365 @@
                     
 
                     <span class="target" id="module-compas_fea2.backends.abaqus"></span><div class="section" id="abaqus">
-<h1>abaqus</h1>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="c1"># example</span>
-</code></pre></div>
-</div>
-<span class="target" id="module-compas_fea2.backends.abaqus.model"></span><div class="section" id="abaqus-model">
-<h2>abaqus.model</h2>
+<h1>Abaqus</h1>
+<p>This is the Abaqus implementation of compas_fea2.</p>
+<p>The following classes are used for the generation of the Model to be analysed in
+Abaqus</p>
 <div class="section" id="model">
-<h3>Model</h3>
+<h2>Model</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Model.html#compas_fea2.backends.abaqus.model.Model" title="compas_fea2.backends.abaqus.model.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></a>(name)</p></td>
 <td><p>Initialises the Model object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instance</span></code>(name, part[, sets])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Instance.html#compas_fea2.backends.abaqus.model.Instance" title="compas_fea2.backends.abaqus.model.Instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instance</span></code></a>(name, part[, sets])</p></td>
 <td><p>Initialises base Instance object.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="parts">
-<h3>Parts</h3>
+<h2>Parts</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Part</span></code>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Part.html#compas_fea2.backends.abaqus.model.Part" title="compas_fea2.backends.abaqus.model.Part"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Part</span></code></a>(name)</p></td>
 <td><p>Initialises base Assembly object.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="nodes">
-<h3>Nodes</h3>
+<h2>Nodes</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code>(xyz[, ex, ey, ez, mass, label])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Node.html#compas_fea2.backends.abaqus.model.Node" title="compas_fea2.backends.abaqus.model.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(xyz[, ex, ey, ez, mass, label])</p></td>
 <td><p>Note: the nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts from 1.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="elements">
-<h3>Elements</h3>
+<h2>Elements</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassElement</span></code>(key, elset, mass)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.MassElement.html#compas_fea2.backends.abaqus.model.MassElement" title="compas_fea2.backends.abaqus.model.MassElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassElement</span></code></a>(key, elset, mass)</p></td>
 <td><p>A 0D element for concentrated point mass.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamElement</span></code>(connectivity, section[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.BeamElement.html#compas_fea2.backends.abaqus.model.BeamElement" title="compas_fea2.backends.abaqus.model.BeamElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamElement</span></code></a>(connectivity, section[, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussElement</span></code>(connectivity, section[, elset, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.TrussElement.html#compas_fea2.backends.abaqus.model.TrussElement" title="compas_fea2.backends.abaqus.model.TrussElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussElement</span></code></a>(connectivity, section[, elset, …])</p></td>
 <td><p>A 1D element that resists axial loads.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellElement</span></code>(key, connectivity, section[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ShellElement.html#compas_fea2.backends.abaqus.model.ShellElement" title="compas_fea2.backends.abaqus.model.ShellElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellElement</span></code></a>(key, connectivity, section[, …])</p></td>
 <td><p>A 2D element that resists axial, shear, bending and torsion.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneElement</span></code>(key, connectivity, section)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.MembraneElement.html#compas_fea2.backends.abaqus.model.MembraneElement" title="compas_fea2.backends.abaqus.model.MembraneElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneElement</span></code></a>(key, connectivity, section)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidElement</span></code>(key, connectivity, section[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.SolidElement.html#compas_fea2.backends.abaqus.model.SolidElement" title="compas_fea2.backends.abaqus.model.SolidElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidElement</span></code></a>(key, connectivity, section[, …])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="constraints">
-<h3>Constraints</h3>
+<h2>Constraints</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constraint</span></code>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Constraint.html#compas_fea2.backends.abaqus.model.Constraint" title="compas_fea2.backends.abaqus.model.Constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constraint</span></code></a>(name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieConstraint</span></code>(name, master, slave, tol)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.TieConstraint.html#compas_fea2.backends.abaqus.model.TieConstraint" title="compas_fea2.backends.abaqus.model.TieConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieConstraint</span></code></a>(name, master, slave, tol)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="properties">
-<h3>Properties</h3>
+<div class="section" id="interactions">
+<h2>Interactions</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElementProperties</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Interaction.html#compas_fea2.backends.abaqus.model.Interaction" title="compas_fea2.backends.abaqus.model.Interaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interaction</span></code></a></p></td>
+<td><p>Initialises the Interaction object.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="materials">
-<h3>Materials</h3>
+<h2>Materials</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Material</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ElasticIsotropic.html#compas_fea2.backends.abaqus.model.ElasticIsotropic" title="compas_fea2.backends.abaqus.model.ElasticIsotropic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticIsotropic</span></code></a>(name, E, v, p[, unilateral])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Concrete</span></code>(name, fck, v, p, fr)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Stiff.html#compas_fea2.backends.abaqus.model.Stiff" title="compas_fea2.backends.abaqus.model.Stiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stiff</span></code></a>(name, E)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteSmearedCrack</span></code>(name, E, v, p, fc, ec, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ElasticOrthotropic.html#compas_fea2.backends.abaqus.model.ElasticOrthotropic" title="compas_fea2.backends.abaqus.model.ElasticOrthotropic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticOrthotropic</span></code></a>(name, Ex, Ey, Ez, vxy, …)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteDamagedPlasticity</span></code>(name, E, v, p, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ElasticPlastic.html#compas_fea2.backends.abaqus.model.ElasticPlastic" title="compas_fea2.backends.abaqus.model.ElasticPlastic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticPlastic</span></code></a>(name, E, v, p, f, e)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stiff</span></code>(name, E)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Steel.html#compas_fea2.backends.abaqus.model.Steel" title="compas_fea2.backends.abaqus.model.Steel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Steel</span></code></a>(name, fy, fu, eu, E, v, p)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticIsotropic</span></code>(name, E, v, p[, unilateral])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Concrete.html#compas_fea2.backends.abaqus.model.Concrete" title="compas_fea2.backends.abaqus.model.Concrete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Concrete</span></code></a>(name, fck, v, p, fr)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticOrthotropic</span></code>(name, Ex, Ey, Ez, vxy, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ConcreteSmearedCrack.html#compas_fea2.backends.abaqus.model.ConcreteSmearedCrack" title="compas_fea2.backends.abaqus.model.ConcreteSmearedCrack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteSmearedCrack</span></code></a>(name, E, v, p, fc, ec, …)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticPlastic</span></code>(name, E, v, p, f, e)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ConcreteDamagedPlasticity.html#compas_fea2.backends.abaqus.model.ConcreteDamagedPlasticity" title="compas_fea2.backends.abaqus.model.ConcreteDamagedPlasticity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteDamagedPlasticity</span></code></a>(name, E, v, p, …)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Steel</span></code>(name, fy, fu, eu, E, v, p)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserMaterial</span></code>(name, sub_path[, p])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.UserMaterial.html#compas_fea2.backends.abaqus.model.UserMaterial" title="compas_fea2.backends.abaqus.model.UserMaterial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserMaterial</span></code></a>(name, sub_path[, p])</p></td>
 <td><p>User Defined Material (UMAT).</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="sections">
-<h3>Sections</h3>
+<h2>Sections</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Section</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.MassSection.html#compas_fea2.backends.abaqus.model.MassSection" title="compas_fea2.backends.abaqus.model.MassSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassSection</span></code></a>(name, mass)</p></td>
+<td><p>Section for mass elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.AngleSection.html#compas_fea2.backends.abaqus.model.AngleSection" title="compas_fea2.backends.abaqus.model.AngleSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleSection</span></code></a>(name, b, h, t, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleSection</span></code>(name, b, h, t, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.BoxSection.html#compas_fea2.backends.abaqus.model.BoxSection" title="compas_fea2.backends.abaqus.model.BoxSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxSection</span></code></a>(name, a, b, t1, t2, t3, t4, material)</p></td>
+<td><p>Note: Section properties are computed automatically by Abaqus.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.CircularSection.html#compas_fea2.backends.abaqus.model.CircularSection" title="compas_fea2.backends.abaqus.model.CircularSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircularSection</span></code></a>(name, r, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxSection</span></code>(name, a, b, t1, t2, t3, t4, material)</p></td>
-<td><p>Note:</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircularSection</span></code>(name, r, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.GeneralSection.html#compas_fea2.backends.abaqus.model.GeneralSection" title="compas_fea2.backends.abaqus.model.GeneralSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralSection</span></code></a>(name, A, Ixx, Ixy, Iyy, J, …)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralSection</span></code>(name, A, Ixx, Ixy, Iyy, J, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ISection.html#compas_fea2.backends.abaqus.model.ISection" title="compas_fea2.backends.abaqus.model.ISection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISection</span></code></a>(name, b, h, tw, tf, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISection</span></code>(name, b, h, tw, tf, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.PipeSection.html#compas_fea2.backends.abaqus.model.PipeSection" title="compas_fea2.backends.abaqus.model.PipeSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PipeSection</span></code></a>(name, r, t, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PipeSection</span></code>(name, r, t, material)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.RectangularSection.html#compas_fea2.backends.abaqus.model.RectangularSection" title="compas_fea2.backends.abaqus.model.RectangularSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularSection</span></code></a>(name, b, h, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularSection</span></code>(name, b, h, material)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellSection</span></code>(name, t, material[, int_points])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.ShellSection.html#compas_fea2.backends.abaqus.model.ShellSection" title="compas_fea2.backends.abaqus.model.ShellSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellSection</span></code></a>(name, t, material[, int_points])</p></td>
 <td><p>int_points : int</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneSection</span></code>(name, t, material)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.MembraneSection.html#compas_fea2.backends.abaqus.model.MembraneSection" title="compas_fea2.backends.abaqus.model.MembraneSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneSection</span></code></a>(name, t, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidSection</span></code>(name, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.SolidSection.html#compas_fea2.backends.abaqus.model.SolidSection" title="compas_fea2.backends.abaqus.model.SolidSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidSection</span></code></a>(name, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrapezoidalSection</span></code>(name, b1, b2, h, material)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.TrapezoidalSection.html#compas_fea2.backends.abaqus.model.TrapezoidalSection" title="compas_fea2.backends.abaqus.model.TrapezoidalSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrapezoidalSection</span></code></a>(name, b1, b2, h, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussSection</span></code>(name, A, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.TrussSection.html#compas_fea2.backends.abaqus.model.TrussSection" title="compas_fea2.backends.abaqus.model.TrussSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussSection</span></code></a>(name, A, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrutSection</span></code>(name, A, material)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.StrutSection.html#compas_fea2.backends.abaqus.model.StrutSection" title="compas_fea2.backends.abaqus.model.StrutSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrutSection</span></code></a>(name, A, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieSection</span></code>(name, A, material)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.TieSection.html#compas_fea2.backends.abaqus.model.TieSection" title="compas_fea2.backends.abaqus.model.TieSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieSection</span></code></a>(name, A, material)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpringSection</span></code>(name[, forces, displacements, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.SpringSection.html#compas_fea2.backends.abaqus.model.SpringSection" title="compas_fea2.backends.abaqus.model.SpringSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpringSection</span></code></a>(name[, forces, displacements, …])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="sets">
-<h3>Sets</h3>
+<h2>Sets</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Set</span></code>(name, selection, stype[, generate])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Set.html#compas_fea2.backends.abaqus.model.Set" title="compas_fea2.backends.abaqus.model.Set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Set</span></code></a>(name, selection, stype[, generate])</p></td>
 <td><p>Initialises the Set object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Surface</span></code>(name, set[, generate])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.model.Surface.html#compas_fea2.backends.abaqus.model.Surface" title="compas_fea2.backends.abaqus.model.Surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Surface</span></code></a>(name, set[, generate])</p></td>
 <td><p>Initialises the Surfaces object.</p></td>
 </tr>
 </tbody>
 </table>
+<p>The following classes are used to set up the analysis problem</p>
 </div>
-</div>
-<span class="target" id="module-compas_fea2.backends.abaqus.problem"></span><div class="section" id="abaqus-problem">
-<h2>abaqus.problem</h2>
-<div class="section" id="boundary-conditions">
-<h3>Boundary Conditions</h3>
+<div class="section" id="problem">
+<h2>Problem</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralDisplacement</span></code>(name, bset[, x, y, z, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.Problem.html#compas_fea2.backends.abaqus.problem.Problem" title="compas_fea2.backends.abaqus.problem.Problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Problem</span></code></a>(name, model)</p></td>
+<td><p>Initialises the Problem object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="boundary-conditions">
+<h2>Boundary Conditions</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.GeneralDisplacement.html#compas_fea2.backends.abaqus.problem.GeneralDisplacement" title="compas_fea2.backends.abaqus.problem.GeneralDisplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralDisplacement</span></code></a>(name, bset[, x, y, z, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacement</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.FixedDisplacement.html#compas_fea2.backends.abaqus.problem.FixedDisplacement" title="compas_fea2.backends.abaqus.problem.FixedDisplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacement</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinnedDisplacement</span></code>(name, bset[, axes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.PinnedDisplacement.html#compas_fea2.backends.abaqus.problem.PinnedDisplacement" title="compas_fea2.backends.abaqus.problem.PinnedDisplacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinnedDisplacement</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementXX</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.FixedDisplacementXX.html#compas_fea2.backends.abaqus.problem.FixedDisplacementXX" title="compas_fea2.backends.abaqus.problem.FixedDisplacementXX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementXX</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementYY</span></code>(name, bset[, axes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.FixedDisplacementYY.html#compas_fea2.backends.abaqus.problem.FixedDisplacementYY" title="compas_fea2.backends.abaqus.problem.FixedDisplacementYY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementYY</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementZZ</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.FixedDisplacementZZ.html#compas_fea2.backends.abaqus.problem.FixedDisplacementZZ" title="compas_fea2.backends.abaqus.problem.FixedDisplacementZZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementZZ</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementX</span></code>(name, bset[, axes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementX.html#compas_fea2.backends.abaqus.problem.RollerDisplacementX" title="compas_fea2.backends.abaqus.problem.RollerDisplacementX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementX</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementY</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementY.html#compas_fea2.backends.abaqus.problem.RollerDisplacementY" title="compas_fea2.backends.abaqus.problem.RollerDisplacementY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementY</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementZ</span></code>(name, bset[, axes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementZ" title="compas_fea2.backends.abaqus.problem.RollerDisplacementZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementZ</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXY</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXY.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXY" title="compas_fea2.backends.abaqus.problem.RollerDisplacementXY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXY</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementYZ</span></code>(name, bset[, axes])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementYZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementYZ" title="compas_fea2.backends.abaqus.problem.RollerDisplacementYZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementYZ</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXZ</span></code>(name, bset[, axes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXZ" title="compas_fea2.backends.abaqus.problem.RollerDisplacementXZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXZ</span></code></a>(name, bset[, axes])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="loads">
-<h3>Loads</h3>
+<h2>Loads</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Load</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.PointLoad.html#compas_fea2.backends.abaqus.problem.PointLoad" title="compas_fea2.backends.abaqus.problem.PointLoad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointLoad</span></code></a>(name, lset[, x, y, z, xx, yy, zz, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrestressLoad</span></code>(name, elements[, sxx])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.LineLoad.html#compas_fea2.backends.abaqus.problem.LineLoad" title="compas_fea2.backends.abaqus.problem.LineLoad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineLoad</span></code></a>(name, elements[, x, y, z, xx, yy, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointLoad</span></code>(name, lset[, x, y, z, xx, yy, zz, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.AreaLoad.html#compas_fea2.backends.abaqus.problem.AreaLoad" title="compas_fea2.backends.abaqus.problem.AreaLoad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AreaLoad</span></code></a>(name, elements[, x, y, z, axes])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointLoads</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.GravityLoad.html#compas_fea2.backends.abaqus.problem.GravityLoad" title="compas_fea2.backends.abaqus.problem.GravityLoad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GravityLoad</span></code></a>(name, g, x, y, z)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineLoad</span></code>(name, elements[, x, y, z, xx, yy, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.TributaryLoad.html#compas_fea2.backends.abaqus.problem.TributaryLoad" title="compas_fea2.backends.abaqus.problem.TributaryLoad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TributaryLoad</span></code></a>(structure, name, mesh[, x, y, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AreaLoad</span></code>(name, elements[, x, y, z, axes])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GravityLoad</span></code>(name, g, x, y, z)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TributaryLoad</span></code>(structure, name, mesh[, x, y, …])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmoniPointLoadBase</span></code>(name, nodes[, x, y, z, …])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="misc">
-<h3>Misc</h3>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Misc</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Amplitude</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Temperatures</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase.html#compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase" title="compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmoniPointLoadBase</span></code></a>(name, nodes[, x, y, z, …])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="steps">
-<h3>Steps</h3>
+<h2>Steps</h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Step</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.GeneralStaticStep.html#compas_fea2.backends.abaqus.problem.GeneralStaticStep" title="compas_fea2.backends.abaqus.problem.GeneralStaticStep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralStaticStep</span></code></a>(name[, max_increments, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralStep</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.StaticLinearPertubationStep.html#compas_fea2.backends.abaqus.problem.StaticLinearPertubationStep" title="compas_fea2.backends.abaqus.problem.StaticLinearPertubationStep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StaticLinearPertubationStep</span></code></a>(name, …)</p></td>
+<td><p>Initialises the StaticLinearPertubationStep object for use in a static analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.ModalStep.html#compas_fea2.backends.abaqus.problem.ModalStep" title="compas_fea2.backends.abaqus.problem.ModalStep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModalStep</span></code></a>(name[, modes, increments, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModalStep</span></code>(name[, modes, increments, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.HarmoniStepBase.html#compas_fea2.backends.abaqus.problem.HarmoniStepBase" title="compas_fea2.backends.abaqus.problem.HarmoniStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmoniStepBase</span></code></a>(name, freq_list[, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmoniStepBase</span></code>(name, freq_list[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.BucklingStep.html#compas_fea2.backends.abaqus.problem.BucklingStep" title="compas_fea2.backends.abaqus.problem.BucklingStep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BucklingStep</span></code></a>(name[, modes, increments, …])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BucklingStep</span></code>(name[, modes, increments, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.AcoustiStepBase.html#compas_fea2.backends.abaqus.problem.AcoustiStepBase" title="compas_fea2.backends.abaqus.problem.AcoustiStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AcoustiStepBase</span></code></a>(name, freq_range, freq_step)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<div class="section" id="output-requests">
+<h2>Output Requests</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.FieldOutput.html#compas_fea2.backends.abaqus.problem.FieldOutput" title="compas_fea2.backends.abaqus.problem.FieldOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FieldOutput</span></code></a>(name[, node_outputs, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends.abaqus.problem.HistoryOutput.html#compas_fea2.backends.abaqus.problem.HistoryOutput" title="compas_fea2.backends.abaqus.problem.HistoryOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HistoryOutput</span></code></a>(name)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -455,9 +452,15 @@
 <li class="nav-item active"><a class="nav-link reference internal" href="../api.html">API Reference</a><ul class="nav active">
 <li class="nav-item active"><a class="nav-link reference internal" href="compas_fea2.html">compas_fea2</a><ul class="nav active">
 <li class="nav-item active"><a class="nav-link reference internal" href="compas_fea2.backends.html">backends</a><ul class="nav active">
-<li class="toctree-l4 current"><a class="nav-link active current reference internal" href="#">abaqus</a></li>
+<li class="toctree-l4 current"><a class="nav-link active current reference internal" href="#">Abaqus</a></li>
+<li class="toctree-l4"><a class="nav-link reference internal" href="compas_fea2.backends.ansys.html">ANSYS</a></li>
+<li class="toctree-l4"><a class="nav-link reference internal" href="compas_fea2.backends.opensees.html">OpenSees</a></li>
 </ul>
 </li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.interfaces.html">interfaces</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.postprocessor.html">PostProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.preprocessor.html">PreProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.utilities.html">Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -481,26 +484,21 @@
                 
 
                 <ul class="nav flex-column" id="compas-localnav">
-<li class="nav-item"><a class="nav-link reference internal" href="#">abaqus</a><ul class="nav">
-<li class="nav-item"><a class="nav-link reference internal" href="#abaqus-model">abaqus.model</a><ul class="nav">
+<li class="nav-item"><a class="nav-link reference internal" href="#">Abaqus</a><ul class="nav">
 <li class="nav-item"><a class="nav-link reference internal" href="#model">Model</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#parts">Parts</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#nodes">Nodes</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#elements">Elements</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#constraints">Constraints</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#properties">Properties</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#interactions">Interactions</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#materials">Materials</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#sections">Sections</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#sets">Sets</a></li>
-</ul>
-</li>
-<li class="nav-item"><a class="nav-link reference internal" href="#abaqus-problem">abaqus.problem</a><ul class="nav">
+<li class="nav-item"><a class="nav-link reference internal" href="#problem">Problem</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#boundary-conditions">Boundary Conditions</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#loads">Loads</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="#misc">Misc</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="#steps">Steps</a></li>
-</ul>
-</li>
+<li class="nav-item"><a class="nav-link reference internal" href="#output-requests">Output Requests</a></li>
 </ul>
 </li>
 </ul>
@@ -514,7 +512,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Sep 28, 2020.
+                Last updated on Oct 10, 2020.
             
 
             

@@ -92,12 +92,9 @@ class AngleSection(AngleSectionBase):
         # self.data = _generate_beam_data(self)
 
 
-class BoxSection(SectionBase):
+class BoxSection(BoxSectionBase):
     """
-    Note:
-    -----
-
-    Section properties are computed automatically by Abaqus.
+    Note: Section properties are computed automatically by Abaqus.
     """
     def __init__(self, name, a, b, t1, t2, t3, t4, material):
         super(BoxSection, self).__init__(name, material)

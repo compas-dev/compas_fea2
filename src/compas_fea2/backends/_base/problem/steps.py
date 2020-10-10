@@ -26,12 +26,6 @@ class StepBase(object):
     ----------
     name : str
         Name of the Step object.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Step object.
-
     """
 
     def __init__(self, name):

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>compas_fea2</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <meta name="author" content="" />
+    <meta name="description" content="" />
+
+    <link rel="shortcut icon" href="../../_static/images/compas.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="../../_static/css/prism.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../_static/css/compas.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
+
+    
+        <link rel="next" title="Problem.__init__" href="compas_fea2.backends.abaqus.problem.Problem.__init__.html" />
+    
+    
+    
+        <link rel="prev" title="Surface.data" href="compas_fea2.backends.abaqus.model.Surface.data.html" />
+    
+
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</head>
+
+<body data-spy="scroll" data-target="#compas-localnav">
+
+    <nav class="navbar navbar-expand compas-navbar">
+        <a class="navbar-brand" href="/">
+            <img src="../../_static/images/compas_icon_white.png" width="36px" height="36px" alt="compas" />
+        </a>
+
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="../../index.html">compas_fea2</a></li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" target="_blank" href="">Github</a></li>
+            <li class="nav-item"><a class="nav-link" target="_blank" href="https://compas-dev.github.io">COMPAS framework</a></li>
+        </ul>
+    </nav>    
+
+    <div class="container-fluid">
+        <div class="row flex-xl-nowrap">
+
+            <main class="col-12 col-md-9 col-xl-8 compas-content" role="main">
+                <div class="container">
+                
+
+                    
+
+                    <div class="detail section" id="problem">
+<h1>Problem</h1>
+<dl class="class">
+<dt id="compas_fea2.backends.abaqus.problem.Problem">
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.problem.</code><code class="sig-name descname">Problem</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">model</em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.problem.ProblemBase</span></code></p>
+<p>Initialises the Problem object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Structure.</p></li>
+<li><p><strong>model</strong> (<em>obj</em>) – model object.</p></li>
+<li><p><strong>parts</strong> (<em>list</em>) – List of the parts in the model.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.__init__.html#compas_fea2.backends.abaqus.problem.Problem.__init__" title="compas_fea2.backends.abaqus.problem.Problem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, model)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_step.html#compas_fea2.backends.abaqus.problem.Problem.add_step" title="compas_fea2.backends.abaqus.problem.Problem.add_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_step</span></code></a>(step)</p></td>
+<td><p>Adds a Step to the Problem.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_steps.html#compas_fea2.backends.abaqus.problem.Problem.add_steps" title="compas_fea2.backends.abaqus.problem.Problem.add_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_steps</span></code></a>(steps)</p></td>
+<td><p>Adds multiple steps to the Problem.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse" title="compas_fea2.backends.abaqus.problem.Problem.analyse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyse</span></code></a>(path[, exe, cpus, output, …])</p></td>
+<td><p>Runs the analysis through abaqus.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.define_steps_order.html#compas_fea2.backends.abaqus.problem.Problem.define_steps_order" title="compas_fea2.backends.abaqus.problem.Problem.define_steps_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_steps_order</span></code></a>(order)</p></td>
+<td><p>Defines the order in which the steps are applied during the analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file" title="compas_fea2.backends.abaqus.problem.Problem.write_input_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_input_file</span></code></a>([path, output, save])</p></td>
+<td><p>Writes the abaqus input file.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Inherited Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_bc.html#compas_fea2.backends.abaqus.problem.Problem.add_bc" title="compas_fea2.backends.abaqus.problem.Problem.add_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_bc</span></code></a>(bc)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_bcs.html#compas_fea2.backends.abaqus.problem.Problem.add_bcs" title="compas_fea2.backends.abaqus.problem.Problem.add_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_bcs</span></code></a>(bcs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_field_output.html#compas_fea2.backends.abaqus.problem.Problem.add_field_output" title="compas_fea2.backends.abaqus.problem.Problem.add_field_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_field_output</span></code></a>(fout)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_field_outputs.html#compas_fea2.backends.abaqus.problem.Problem.add_field_outputs" title="compas_fea2.backends.abaqus.problem.Problem.add_field_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_field_outputs</span></code></a>(fouts)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_history_output.html#compas_fea2.backends.abaqus.problem.Problem.add_history_output" title="compas_fea2.backends.abaqus.problem.Problem.add_history_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_history_output</span></code></a>(hout)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_history_outputs.html#compas_fea2.backends.abaqus.problem.Problem.add_history_outputs" title="compas_fea2.backends.abaqus.problem.Problem.add_history_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_history_outputs</span></code></a>(houts)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_load.html#compas_fea2.backends.abaqus.problem.Problem.add_load" title="compas_fea2.backends.abaqus.problem.Problem.add_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load</span></code></a>(load)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_loads.html#compas_fea2.backends.abaqus.problem.Problem.add_loads" title="compas_fea2.backends.abaqus.problem.Problem.add_loads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_loads</span></code></a>(loads)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.load_from_cfea.html#compas_fea2.backends.abaqus.problem.Problem.load_from_cfea" title="compas_fea2.backends.abaqus.problem.Problem.load_from_cfea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_cfea</span></code></a>(filename[, output])</p></td>
+<td><p>Imports a Structure object from an .obj file through Pickle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs.html#compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs" title="compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_bcs</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_all_loads.html#compas_fea2.backends.abaqus.problem.Problem.remove_all_loads" title="compas_fea2.backends.abaqus.problem.Problem.remove_all_loads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_loads</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_bc.html#compas_fea2.backends.abaqus.problem.Problem.remove_bc" title="compas_fea2.backends.abaqus.problem.Problem.remove_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_bc</span></code></a>(bc_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_bcs.html#compas_fea2.backends.abaqus.problem.Problem.remove_bcs" title="compas_fea2.backends.abaqus.problem.Problem.remove_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_bcs</span></code></a>(bcs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.save_to_cfea.html#compas_fea2.backends.abaqus.problem.Problem.save_to_cfea" title="compas_fea2.backends.abaqus.problem.Problem.save_to_cfea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_cfea</span></code></a>(path[, output])</p></td>
+<td><p>Exports the Structure object to an .obj file through Pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.summary.html#compas_fea2.backends.abaqus.problem.Problem.summary" title="compas_fea2.backends.abaqus.problem.Problem.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a>()</p></td>
+<td><p>Prints a summary of the Structure object.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+                    
+                
+                </div>
+            </main>
+
+            <!-- site navigation sidebar -->
+
+            <div class="col-12 col-md-3 col-xl-2 compas-sidebar" role="navigation"> 
+                <div class="navbar-light">
+
+                    <form id="" class="d-flex compas-searchbox" action="../../search.html" method="get">
+                        <input class="form-control" type="text" name="q" placeholder="Search docs" />
+                        <input type="hidden" name="check_keywords" value="yes" />
+                        <input type="hidden" name="area" value="default" />
+
+                        <button class="navbar-toggler d-md-none compas-navigation-toggler" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </form>
+
+                    
+                    
+
+                        <div class="navbar-expand-md">
+                            <div id="compas-navigation" class="collapse navbar-collapse compas-navigation">
+
+                            <ul class="nav flex-column active">
+<li class="nav-item"><a class="nav-link reference internal" href="../../intro.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../gettingstarted.html">Getting Started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../examples.html">Examples</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../../api.html">API Reference</a><ul class="nav active">
+<li class="nav-item active"><a class="nav-link reference internal" href="../compas_fea2.html">compas_fea2</a><ul class="nav active">
+<li class="nav-item active"><a class="nav-link reference internal" href="../compas_fea2.backends.html">backends</a><ul class="nav active">
+<li class="toctree-l4 current"><a class="nav-link reference internal" href="../compas_fea2.backends.abaqus.html">Abaqus</a></li>
+<li class="toctree-l4"><a class="nav-link reference internal" href="../compas_fea2.backends.ansys.html">ANSYS</a></li>
+<li class="toctree-l4"><a class="nav-link reference internal" href="../compas_fea2.backends.opensees.html">OpenSees</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="nav-link reference internal" href="../compas_fea2.interfaces.html">interfaces</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../compas_fea2.postprocessor.html">PostProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../compas_fea2.preprocessor.html">PreProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../license.html">License</a></li>
+</ul>
+
+
+                            </div>
+                        </div>
+
+                    
+
+                </div>
+            </div>
+
+            <!-- table of contents of main content -->
+            
+            <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+
+                
+
+                <ul class="nav flex-column" id="compas-localnav">
+<li class="nav-item"><a class="nav-link reference internal" href="#">Problem</a><ul class="nav">
+</ul>
+</li>
+</ul>
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-dark pb-5">
+        <div class="container text-center pt-5 pb-5 text-muted">
+            
+                Last updated on Oct 10, 2020.
+            
+
+            
+                Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.3.
+            
+        </div>
+    </footer>
+
+    
+        <script type="text/javascript">
+            var DOCUMENTATION_OPTIONS = {
+            URL_ROOT          : '',
+            VERSION           : '0.1.0',
+            COLLAPSE_INDEX    : false,
+            FILE_SUFFIX       : '.html',
+            HAS_SOURCE        : 'false',
+            SOURCELINK_SUFFIX : '.txt'
+            };
+        </script>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/highlight.min.js"></script>
+
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/js/searchtools_.js"></script>
+        <!-- <script src="../../_static/js/prism.js"></script> -->
+
+        <script>
+        $(document).ready(function() {
+        $(".language-default code").addClass("python");
+        $(".language-python code").addClass("python");
+        $(".language-bash code").addClass("bash");
+        $(".language-cpp code").addClass("cpp");
+        $(".language-json code").addClass("json");
+        $(".language-none code").addClass("plaintext");
+
+        hljs.initHighlighting();
+        anchors.add();
+        });
+        </script>
+    
+</body>
+</html>

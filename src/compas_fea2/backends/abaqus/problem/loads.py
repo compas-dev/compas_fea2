@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.backends._base.problem import LoadBase
-from compas_fea2.backends._base.problem import PrestressLoadBase
+# from compas_fea2.backends._base.problem import PrestressLoadBase
 from compas_fea2.backends._base.problem import PointLoadBase
 from compas_fea2.backends._base.problem import LineLoadBase
 from compas_fea2.backends._base.problem import AreaLoadBase
@@ -19,7 +19,7 @@ from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
 
 
 __all__ = [
-    'PrestressLoad',
+    # 'PrestressLoad',
     'PointLoad',
     'LineLoad',
     'AreaLoad',
@@ -33,10 +33,10 @@ __all__ = [
 
 dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-class PrestressLoad(PrestressLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, sxx):
-    #     super(PrestressLoad, self).__init__(name, elements, sxx)
+# class PrestressLoad(PrestressLoadBase):
+#     NotImplemented
+#     # def __init__(self, name, elements, sxx):
+#     #     super(PrestressLoad, self).__init__(name, elements, sxx)
 
 
 class PointLoad(PointLoadBase):

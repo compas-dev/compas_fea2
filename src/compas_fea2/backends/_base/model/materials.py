@@ -30,11 +30,6 @@ class MaterialBase(object):
     ----------
     name : str
         Name of the Material object.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Material object.
     """
 
     def __init__(self, name):

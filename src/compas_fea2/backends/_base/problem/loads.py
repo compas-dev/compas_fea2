@@ -10,7 +10,7 @@ from __future__ import print_function
 
 __all__ = [
     'LoadBase',
-    'PrestressLoadBase',
+    # 'PrestressLoadBase',
     'PointLoadBase',
     'PointLoadsBase',
     'LineLoadBase',
@@ -40,18 +40,6 @@ class LoadBase(object):
     elements : str, list
         Element set or element keys the load is applied to.
 
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    elements : str, list
-        Element set or element keys the load is applied to.
     """
 
     def __init__(self, name, axes='global', components={}, nodes=[], elements=[]):
@@ -77,23 +65,23 @@ class LoadBase(object):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class PrestressLoadBase(LoadBase):
-    """Pre-stress [units: N/m2] applied to element(s).
+# class PrestressLoadBase(LoadBase):
+#     """Pre-stress [units: N/m2] applied to element(s).
 
-    Parameters
-    ----------
-    name : str
-        Name of the PrestressLoad object.
-    elements : str, list
-        Element set or element keys the prestress is applied to.
-    sxx : float
-        Value of prestress for axial stress component sxx.
-    """
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the PrestressLoad object.
+#     elements : str, list
+#         Element set or element keys the prestress is applied to.
+#     sxx : float
+#         Value of prestress for axial stress component sxx.
+#     """
 
-    def __init__(self, name, elements, sxx=0):
-        Load.__init__(self, name=name, elements=elements, axes='local')
-        self.__name__   = 'PrestressLoad'
-        self.components = {'sxx': sxx}
+#     def __init__(self, name, elements, sxx=0):
+#         Load.__init__(self, name=name, elements=elements, axes='local')
+#         self.__name__   = 'PrestressLoad'
+#         self.components = {'sxx': sxx}
 
 
 class PointLoadBase(LoadBase):

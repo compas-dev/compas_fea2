@@ -48,12 +48,6 @@ class GeneralDisplacementBase(object):
     axes : str
         'local' or 'global' co-ordinate axes.
 
-    Attributes
-    ----------
-    name : str
-        Name of the Displacement object.
-    nodes : str
-        Node set string or nodes list the displacement is applied to.
     components : dict
         Values of x, y, z, xx, yy, zz degrees-of-freedom.
     axes : str

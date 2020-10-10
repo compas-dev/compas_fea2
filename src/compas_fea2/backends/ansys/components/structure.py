@@ -11,10 +11,10 @@ from __future__ import print_function
 from compas_fea2.backends.ansys.components.mixins import NodeMixins
 from compas_fea2.backends.ansys.components.mixins import ElementMixins
 from compas_fea2.backends.ansys.components.mixins import ObjectMixins
-from compas_fea2.backends._core import StructureBase
+from compas_fea2.backends._base import StructureBase
 
 # from compas_fea2.backends._core.bcs import *
-from compas_fea2.backends.abaqus.components import Set
+from compas_fea2.backends.ansys.components import Set
 
 from compas_fea2.backends.ansys.job import input_generate
 from compas_fea2.backends.ansys.job import launch_process

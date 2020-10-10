@@ -24,7 +24,7 @@ __all__ = [
 class ElementBase(object):
     """Initialises base Element object.
 
-    Attributes
+    Parameters
     ----------
     key : int
         Key number of the element.

@@ -98,8 +98,41 @@ class Model():
     def from_network(self, network):
         pass
 
-    def from_mesh(self, mesh):
+    def from_obj(self, obj):
         pass
+
+    def frame_from_mesh(self, mesh, beam_section, ):
+        """Create a Model object from a compas Mesh object [WIP].
+
+
+        Parameters
+        ----------
+        mesh : Mesh object
+            Mesh to convert to import as a Model.
+        """
+        from compas.geometry import normalize_vector
+
+        from compas_fea2.backends.abaqus.model import Node
+        from compas_fea2.backends.abaqus.model import Part
+        from compas_fea2.backends.abaqus.model import BeamElement
+
+        self.add_part(Part(name='part-1'))
+        self.add_section(beam_section)
+
+        for v in mesh.vertices():
+            self.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
+        
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        vertices = list(mesh.vertices())
+        edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
+
+        for e in edges:
+            # get elements orientation
+            v = normalize_vector(mesh.edge_vector(e[0], e[1]))
+            v.append(v.pop(0))
+            # add element to the model
+            self.add_element(BeamElement(connectivity=[e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')    
 
     def from_volmesh(self, volmesh):
         pass

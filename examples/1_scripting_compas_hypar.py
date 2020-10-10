@@ -1,5 +1,4 @@
 import compas
-from compas.geometry import Box
 from compas.datastructures import Mesh
 from compas.geometry import normalize_vector
 
@@ -25,30 +24,20 @@ from compas_fea2 import DATA
 model = Model(name='hypar')
 
 # Add a Part to the model
-model.add_part(Part(name='part-1'))
+# model.add_part(Part(name='part-1'))
 
 mesh = Mesh.from_obj(DATA + '/hypar.obj')
-for v in mesh.vertices():
-    model.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
 
 # Define materials
 model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 
 # Define sections
-model.add_section(BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
+box_20_80 = BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5)
 
-# Generate elements between nodes
-key_index = mesh.key_index()
-vertices = list(mesh.vertices())
-edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
+# Create a fram model from a mesh
+model.frame_from_mesh(mesh=mesh, beam_section=box_20_80)
 
-for e in edges:
-    # get elements orientation
-    v = normalize_vector(mesh.edge_vector(e[0], e[1]))
-    v.append(v.pop(0))
-    # add element to the model
-    model.add_element(BeamElement(connectivity=[e[0], e[1]], section='section_A', orientation=v), part='part-1')
-
+# Find nodes in the model for the boundary conditions 
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
 n_roller = model.get_node_from_coordinates([0, 3000, 0,], 10)
 n_load  = model.get_node_from_coordinates([0, 0, -5000], 10)

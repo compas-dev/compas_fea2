@@ -1,5 +1,3 @@
-import compas
-from compas.geometry import Box
 from compas.datastructures import Mesh
 from compas.geometry import normalize_vector
 

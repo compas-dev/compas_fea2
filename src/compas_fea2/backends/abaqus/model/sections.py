@@ -92,7 +92,7 @@ class AngleSection(AngleSectionBase):
         # self.data = _generate_beam_data(self)
 
 
-class BoxSection(BoxSectionBase):
+class BoxSection(SectionBase):
     """
     Note: Section properties are computed automatically by Abaqus.
     """

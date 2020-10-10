@@ -1,13 +1,8 @@
-import compas
 from compas.datastructures import Mesh
-from compas.geometry import normalize_vector
 
 from compas_fea2.backends.abaqus.model import Model
-from compas_fea2.backends.abaqus.model import Part
-from compas_fea2.backends.abaqus.model import Node
 from compas_fea2.backends.abaqus.model import ElasticIsotropic
 from compas_fea2.backends.abaqus.model import BoxSection
-from compas_fea2.backends.abaqus.model import BeamElement
 from compas_fea2.backends.abaqus.model import Set
 
 from compas_fea2.backends.abaqus.problem import Problem
@@ -18,6 +13,7 @@ from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
 from compas_fea2 import DATA
+from compas_fea2 import TEMP
 
 # Get a Mesh geometry to create the model
 mesh = Mesh.from_obj(DATA + '/hypar.obj')
@@ -35,7 +31,7 @@ box_20_80 = BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=
 # Create a fram model from a mesh
 model.frame_from_mesh(mesh=mesh, beam_section=box_20_80)
 
-# Find nodes in the model for the boundary conditions 
+# Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
 n_roller = model.get_node_from_coordinates([0, 3000, 0,], 10)
 n_load  = model.get_node_from_coordinates([0, 0, -5000], 10)
@@ -63,4 +59,4 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path='C:/temp/hypar')
+problem.analyse(path= TEMP + '/hypar')

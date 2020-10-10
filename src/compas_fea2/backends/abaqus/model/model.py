@@ -811,7 +811,7 @@ class Model():
 
 
 class Instance():
-    """Initialises base Instance object.
+    """Initialises an Instance object.
 
     Parameters
     ----------

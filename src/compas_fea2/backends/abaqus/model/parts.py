@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 class Part():
-    """Initialises base Assembly object.
+    """Initialises a Part object.
 
     Parameters
     ----------

@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'matplotlib.sphinxext.plot_directive',
     'nbsphinx',
+    'sphinxcontrib.gist',
 ]
 
 # autodoc options

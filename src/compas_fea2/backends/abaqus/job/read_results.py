@@ -12,11 +12,6 @@ from subprocess import PIPE
 
 from compas_fea2.backends.abaqus.job import odb_extract
 
-# try:
-#     from job import *
-# except:
-#     pass
-
 
 # Author(s): Andrew Liew (github.com/andrewliew)
 
@@ -24,13 +19,14 @@ __all__ = [
     'extract_data',
 ]
 
+
 def extract_data(problem, fields, exe, output, return_data, components):
     """Extract data from the Abaqus .odb file.
 
     Parameters
     ----------
-    structure : obj
-        Structure object.
+    problem : obj
+        compas_fea2 Problem object.
     fields : list
         Data field requests.
     exe : str
@@ -57,7 +53,7 @@ def extract_data(problem, fields, exe, output, return_data, components):
     if isinstance(fields, str):
         fields = [fields]
 
-    fields     = ','.join(fields)
+    fields = ','.join(fields)
     components = ','.join(components) if components else 'None'
 
     tic1 = time()
@@ -66,8 +62,9 @@ def extract_data(problem, fields, exe, output, return_data, components):
 
     if not exe:
 
-        args = ['abaqus', 'cae', subprocess, '--', components, fields, name, temp]
-        p    = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+        args = ['abaqus', 'cae', subprocess,
+                '--', components, fields, name, temp]
+        p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
 
         while True:
 
@@ -93,7 +90,8 @@ def extract_data(problem, fields, exe, output, return_data, components):
     toc1 = time() - tic1
 
     if output:
-        print('\n***** Data extracted from Abaqus .odb file : {0:.3f} s *****\n'.format(toc1))
+        print(
+            '\n***** Data extracted from Abaqus .odb file : {0:.3f} s *****\n'.format(toc1))
 
     # Save results to Problem
 
@@ -132,7 +130,8 @@ def extract_data(problem, fields, exe, output, return_data, components):
             toc2 = time() - tic2
 
             if output:
-                print('***** Saving data to structure.results successful : {0:.3f} s *****\n'.format(toc2))
+                print(
+                    '***** Saving data to structure.results successful : {0:.3f} s *****\n'.format(toc2))
 
         except:
 

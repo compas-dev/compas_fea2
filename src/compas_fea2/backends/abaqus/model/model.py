@@ -98,14 +98,17 @@ class Model():
     def from_obj(self, obj):
         pass
 
-    def frame_from_mesh(self, mesh, beam_section, ):
-        """Create a Model object from a compas Mesh object [WIP].
-
+    def frame_from_mesh(self, mesh, beam_section):
+        """Creates a Model object from a compas Mesh object [WIP]. The edges of
+        the mesh become the elements of the frame. Currently, the same section
+        is applied to all the elements.
 
         Parameters
         ----------
-        mesh : Mesh object
+        mesh : obj
             Mesh to convert to import as a Model.
+        beam_section : obj
+            compas_fea2 BeamSection object to to apply to the frame elements.
         """
         from compas.geometry import normalize_vector
 
@@ -131,6 +134,38 @@ class Model():
             # add element to the model
             self.add_element(BeamElement(connectivity=[
                              e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')
+
+    def shell_from_mesh(self, mesh, shell_section):
+        """Creates a Model object from a compas Mesh object [WIP]. The faces of
+        the mesh become the elements of the shell. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        mesh : obj
+            Mesh to convert to import as a Model.
+        shell_section : obj
+            compas_fea2 ShellSection object to to apply to the shell elements.
+        """
+        from compas.geometry import normalize_vector
+
+        from compas_fea2.backends.abaqus.model import Node
+        from compas_fea2.backends.abaqus.model import Part
+        from compas_fea2.backends.abaqus.model import ShellElement
+
+        self.add_part(Part(name='part-1'))
+        self.add_section(shell_section)
+
+        for v in mesh.vertices():
+            self.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
+
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        faces = [[key_index[key] for key in mesh.face_vertices(face)] for face in mesh.faces()]
+
+        for f in faces:
+            self.add_element(ShellElement(connectivity=f, section=shell_section.name), part='part-1')
+
 
     def from_volmesh(self, volmesh):
         pass

@@ -4,5 +4,5 @@ Hypar frame
 
 This example works for: **Abaqus**.
 
-.. literalinclude:: /../examples/1_scripting_compas_hypar.py
+.. literalinclude:: /../examples/1_scripting_compas_hypar_shall.py
     :language: python

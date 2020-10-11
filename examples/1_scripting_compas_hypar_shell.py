@@ -2,7 +2,7 @@ from compas.datastructures import Mesh
 
 from compas_fea2.backends.abaqus.model import Model
 from compas_fea2.backends.abaqus.model import ElasticIsotropic
-from compas_fea2.backends.abaqus.model import BoxSection
+from compas_fea2.backends.abaqus.model import ShellSection
 from compas_fea2.backends.abaqus.model import Set
 
 from compas_fea2.backends.abaqus.problem import Problem
@@ -26,10 +26,9 @@ model = Model(name='hypar')
 model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 
 # Define sections
-box_20_80 = BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5)
-
+shell_20 = ShellSection(name='section_A', material='mat_A', t=20)
 # Create a fram model from a mesh
-model.frame_from_mesh(mesh=mesh, beam_section=box_20_80)
+model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
 
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
@@ -60,3 +59,27 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
 problem.analyse(path= TEMP + '/hypar')
+
+
+# from compas.geometry import normalize_vector
+# from compas.datastructures import Mesh
+
+# from compas_fea2.backends.abaqus.model import Node
+# from compas_fea2.backends.abaqus.model import Part
+# from compas_fea2.backends.abaqus.model import ShellElement
+
+# from compas_fea2 import DATA
+# from compas_fea2 import TEMP
+
+# # Get a Mesh geometry to create the model
+
+# mesh = Mesh.from_obj(DATA + '/hypar.obj')
+
+# # Generate elements between nodes
+# key_index = mesh.key_index()
+# faces = [[key_index[key] for key in mesh.face_vertices(face)] for face in mesh.faces()]
+# print(faces)
+# # for f in faces:
+# #     print(f)
+# #     connectivity = mesh.face_vertices(f)
+# #     print(connectivity)

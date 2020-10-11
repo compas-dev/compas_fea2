@@ -161,13 +161,21 @@ class ShellElement(ShellElementBase):
 
     Parameters
     ----------
-    None
-
+    key : int
+        key identifier for the shell element.
+    connectivity : list
+        List containing the nodes sequence building the shell element.
+    section : obj
+        compas_fea2 ShellSection object
+    elset : obj
+        compas_fea2 Set object
+    thermal : bool
+        NotImplemented
     """
-    def __init__(self, key, connectivity, section, elset=None, thermal=None):
-        super(TrussElement, self).__init__(key, connectivity, section, thermal=None)
+    def __init__(self, connectivity, section, elset=None, thermal=None):
+        super(ShellElement, self).__init__(connectivity, section, thermal=None)
         if not elset:
-            self.elset = self.section.name
+            self.elset = self.section
         else:
             self.elset = elset
 
@@ -178,6 +186,8 @@ class ShellElement(ShellElementBase):
         else:
             raise NotImplementedError
 
+    def _generate_data(self):
+        return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 # class FaceElement(FaceElementBase):
 #     """A 2D Face element used for special loading cases.

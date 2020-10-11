@@ -186,6 +186,14 @@ class SpringSection(SpringSectionBase):
 class ShellSection(ShellSectionBase):
 
     """
+    Parameters
+    ----------
+    name : str
+        name of the section
+    t : float
+        thickness of the section
+    material : obj
+        compas_fea2 Material object
     int_points : int
         number of integration points. 5 by default.
 
@@ -199,7 +207,7 @@ class ShellSection(ShellSectionBase):
     def _generate_data(self, set_name):
         return """** Section: {}
 *Shell Section, elset={}, material={}
-{}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
+{}, {}\n""".format(self.name, set_name, self.material, self.t, self.int_points)
 
 
 class MembraneSection(MembraneSectionBase):

@@ -415,7 +415,7 @@ class ShellSectionBase(SectionBase):
         super(ShellSectionBase, self).__init__(name, material)
 
         self.__name__ = 'ShellSection'
-        self.geometry = {'t': t}
+        self.t = t
 
 
 class MembraneSectionBase(SectionBase):

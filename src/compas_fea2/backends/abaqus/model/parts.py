@@ -104,12 +104,17 @@ class Part():
 
         # Write sets
         for section in self.elements_by_section:
+            #TODO this part is messy and needs to be rewritten
+            # the main problem is that beam elements require orientations
+            # while other elements (such shells) don't
             o=1
             for orientation in self.orientations_by_section[section]:
                 from compas_fea2.backends.abaqus.model import Set
                 elements = []
                 for element in self.elements_by_section[section]:
-                    if self.elements[element].orientation == orientation:
+                    if hasattr(self.elements[element], 'orientation') and self.elements[element].orientation == orientation:
+                        elements.append(element)
+                    elif not hasattr(self.elements[element], 'orientation'):
                         elements.append(element)
                 self.add_element_set(Set('_{}-{}'.format(section, o), elements, 'elset'))
                 o+=1
@@ -452,8 +457,17 @@ class Part():
             if hasattr(element, 'orientation'):
                 if element.orientation not in self.orientations_by_section[element.section]:
                     self.orientations_by_section[element.section].append(element.orientation)
+
+
             else:
-                sys.exit("ELEMENT ORIENTATION NOT DEFINED")
+                if None not in self.orientations_by_section[element.section]:
+                    self.orientations_by_section[element.section].append(None)
+            # else:
+            #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
+            #     # sys.exit("ELEMENT ORIENTATION NOT DEFINED")
+
+
+
             # # add the element key to its material group
             # if element.section.material not in self.elements_by_material.keys():
             #     self.elements_by_material[element.section.material] = []

@@ -17,6 +17,8 @@ from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
 from compas_fea2 import DATA
+from compas_fea2 import TEMP
+
 ##### ------------------------------ MODEL ------------------------------ #####
 
 # Initialise the assembly object
@@ -48,8 +50,8 @@ for e in edges:
     c+=1
 
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
-n_roller = model.get_node_from_coordinates([0, 3000, 0,], 10)
-n_load  = model.get_node_from_coordinates([0, 0, -5000], 10)
+n_roller  = model.get_node_from_coordinates([0, 0, -5000], 10)
+n_load = model.get_node_from_coordinates([0, 3000, 0,], 10)
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
@@ -74,4 +76,4 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path='C:/temp/hypar_variable_sections')
+problem.analyse(path= TEMP + '/hypar_frame_sections')

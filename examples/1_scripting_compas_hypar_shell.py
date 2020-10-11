@@ -33,8 +33,8 @@ model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
 
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
-n_load = model.get_node_from_coordinates([0, 3000, 0,], 10)
 n_roller  = model.get_node_from_coordinates([0, 0, -5000], 10)
+n_load = model.get_node_from_coordinates([0, 3000, 0,], 10)
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')

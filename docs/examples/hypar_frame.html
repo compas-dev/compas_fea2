@@ -19,11 +19,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
     
-        <link rel="next" title="Hypar Shell" href="hypar_shell.html" />
+        <link rel="next" title="Hypar frame with variable sections" href="hypar_frame_sections.html" />
     
     
     
-        <link rel="prev" title="Examples" href="../examples.html" />
+        <link rel="prev" title="Simple frame" href="simple_frame.html" />
     
 
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -59,6 +59,9 @@
                     <div class="section" id="hypar-frame">
 <h1>Hypar frame</h1>
 <p>This example works for: <strong>Abaqus</strong>.</p>
+<div class="figure align-default">
+<img alt="../_images/hypar_frame.png" class="figure-img img-fluid" src="../_images/hypar_frame.png" />
+</div>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -94,8 +97,8 @@
 
 <span class="c1"># Find nodes in the model for the boundary conditions</span>
 <span class="n">n_fixed</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">n_roller</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">n_load</span>  <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5000</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">n_roller</span>  <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5000</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">n_load</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
 
 <span class="c1"># Define sets for boundary conditions and loads</span>
 <span class="n">model</span><span class="o">.</span><span class="n">add_assembly_set</span><span class="p">(</span><span class="n">Set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="p">[</span><span class="n">n_fixed</span><span class="p">[</span><span class="s1">&#39;part-1&#39;</span><span class="p">]],</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;nset&#39;</span><span class="p">),</span> <span class="n">instance</span><span class="o">=</span><span class="s1">&#39;part-1-1&#39;</span><span class="p">)</span>
@@ -104,24 +107,24 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="s1">&#39;part-1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-<span class="c1"># ##### ----------------------------- PROBLEM ----------------------------- #####</span>
+<span class="c1">##### ----------------------------- PROBLEM ----------------------------- #####</span>
 
-<span class="c1"># # Create the Problem object</span>
-<span class="c1"># problem = Problem(name=&#39;hypar&#39;, model=model)</span>
+<span class="c1"># Create the Problem object</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">Problem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hypar&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
 
-<span class="c1"># # Assign boundary conditions to the node stes</span>
-<span class="c1"># problem.add_bcs(bcs=[RollerDisplacementXZ(name=&#39;bc_roller&#39;, bset=&#39;roller&#39;),</span>
-<span class="c1">#                         FixedDisplacement(name=&#39;bc_fix&#39;, bset=&#39;fixed&#39;)])</span>
+<span class="c1"># Assign boundary conditions to the node stes</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">add_bcs</span><span class="p">(</span><span class="n">bcs</span><span class="o">=</span><span class="p">[</span><span class="n">RollerDisplacementXZ</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;bc_roller&#39;</span><span class="p">,</span> <span class="n">bset</span><span class="o">=</span><span class="s1">&#39;roller&#39;</span><span class="p">),</span>
+                        <span class="n">FixedDisplacement</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;bc_fix&#39;</span><span class="p">,</span> <span class="n">bset</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)])</span>
 
-<span class="c1"># # Assign a point load to the node set</span>
-<span class="c1"># problem.add_load(load=PointLoad(name=&#39;pload&#39;, lset=&#39;pload&#39;, y=-1000))</span>
+<span class="c1"># Assign a point load to the node set</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">add_load</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">PointLoad</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;pload&#39;</span><span class="p">,</span> <span class="n">lset</span><span class="o">=</span><span class="s1">&#39;pload&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mi">1000</span><span class="p">))</span>
 
-<span class="c1"># # Define the analysis step</span>
-<span class="c1"># problem.add_step(step=GeneralStaticStep(name=&#39;gstep&#39;, loads=[&#39;pload&#39;]))</span>
+<span class="c1"># Define the analysis step</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="n">GeneralStaticStep</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;gstep&#39;</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pload&#39;</span><span class="p">]))</span>
 
-<span class="c1"># # Solve the problem</span>
-<span class="c1"># # problem.write_input_file(path=&#39;C:/temp/test_structure&#39;)</span>
-<span class="c1"># problem.analyse(path= TEMP + &#39;/hypar&#39;)</span>
+<span class="c1"># Solve the problem</span>
+<span class="c1"># problem.write_input_file(path=&#39;C:/temp/test_structure&#39;)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">analyse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span> <span class="n">TEMP</span> <span class="o">+</span> <span class="s1">&#39;/hypar_frame&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
@@ -156,9 +159,10 @@
 <li class="nav-item"><a class="nav-link reference internal" href="../intro.html">Introduction</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../gettingstarted.html">Getting Started</a></li>
 <li class="nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav active">
+<li class="nav-item"><a class="nav-link reference internal" href="simple_frame.html">Simple frame</a></li>
 <li class="nav-item active"><a class="nav-link active current reference internal" href="#">Hypar frame</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="hypar_frame_sections.html">Hypar frame with variable sections</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="hypar_shell.html">Hypar Shell</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="simple_frame.html">simple frame</a></li>
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>

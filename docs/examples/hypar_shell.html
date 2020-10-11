@@ -19,11 +19,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
     
-        <link rel="next" title="simple frame" href="simple_frame.html" />
+        <link rel="next" title="API Reference" href="../api.html" />
     
     
     
-        <link rel="prev" title="Hypar frame" href="hypar_frame.html" />
+        <link rel="prev" title="Hypar frame with variable sections" href="hypar_frame_sections.html" />
     
 
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -59,6 +59,9 @@
                     <div class="section" id="hypar-shell">
 <h1>Hypar Shell</h1>
 <p>This example works for: <strong>Abaqus</strong>.</p>
+<div class="figure align-default">
+<img alt="../_images/hypar_shell.png" class="figure-img img-fluid" src="../_images/hypar_shell.png" />
+</div>
 <div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -94,8 +97,8 @@
 
 <span class="c1"># Find nodes in the model for the boundary conditions</span>
 <span class="n">n_fixed</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">n_roller</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">n_load</span>  <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5000</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">n_roller</span>  <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5000</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">n_load</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
 
 <span class="c1"># Define sets for boundary conditions and loads</span>
 <span class="n">model</span><span class="o">.</span><span class="n">add_assembly_set</span><span class="p">(</span><span class="n">Set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="p">[</span><span class="n">n_fixed</span><span class="p">[</span><span class="s1">&#39;part-1&#39;</span><span class="p">]],</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;nset&#39;</span><span class="p">),</span> <span class="n">instance</span><span class="o">=</span><span class="s1">&#39;part-1-1&#39;</span><span class="p">)</span>
@@ -156,9 +159,10 @@
 <li class="nav-item"><a class="nav-link reference internal" href="../intro.html">Introduction</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../gettingstarted.html">Getting Started</a></li>
 <li class="nav-item active"><a class="nav-link reference internal" href="../examples.html">Examples</a><ul class="nav active">
+<li class="nav-item"><a class="nav-link reference internal" href="simple_frame.html">Simple frame</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="hypar_frame.html">Hypar frame</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="hypar_frame_sections.html">Hypar frame with variable sections</a></li>
 <li class="nav-item active"><a class="nav-link active current reference internal" href="#">Hypar Shell</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="simple_frame.html">simple frame</a></li>
 </ul>
 </li>
 <li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>

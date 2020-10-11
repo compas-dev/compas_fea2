@@ -7,4 +7,5 @@ Getting Started
    :titlesonly:
    :glob:
 
-   gettingstarted/*
+   gettingstarted/installation.rst
+   gettingstarted/umat.rst

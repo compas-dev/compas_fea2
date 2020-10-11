@@ -24,7 +24,7 @@ __all__ = [
     'extract_data',
 ]
 
-def extract_data(structure, fields, exe, output, return_data, components):
+def extract_data(problem, fields, exe, output, return_data, components):
     """Extract data from the Abaqus .odb file.
 
     Parameters
@@ -50,9 +50,9 @@ def extract_data(structure, fields, exe, output, return_data, components):
 
     #  Extract
 
-    name = structure.name
-    path = structure.path
-    temp = '{0}{1}/'.format(path, name)
+    name = problem.name
+    path = problem.path
+    temp = path+'/'
 
     if isinstance(fields, str):
         fields = [fields]
@@ -95,7 +95,7 @@ def extract_data(structure, fields, exe, output, return_data, components):
     if output:
         print('\n***** Data extracted from Abaqus .odb file : {0:.3f} s *****\n'.format(toc1))
 
-    # Save results to Structure
+    # Save results to Problem
 
     if return_data:
 
@@ -124,10 +124,10 @@ def extract_data(structure, fields, exe, output, return_data, components):
 
                             results[step][dtype][field] = data
 
-            structure.results = results
+            problem.results = results
 
             for step in info:
-                structure.results[step]['info'] = info[step]
+                problem.results[step]['info'] = info[step]
 
             toc2 = time() - tic2
 

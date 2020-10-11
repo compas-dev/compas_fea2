@@ -22,33 +22,33 @@ class ProblemBase(object):
     model : obj
         model object.
 
-    parts : list
-        List of the parts in the model.
-    bc : list
-        List containing the boundary conditions objects.
-    interactions : list
-        List containing the interaction objects.
+
+    bcs : dict
+        Dictionary containing the boundary conditions objects.
+    loads : dict
+        Dictionary containing the loads objects.
     steps : list
         List containing the Steps objects.
 
     """
 
     def __init__(self, name, model):
-        self.name                 = name
+        self.name               = name
         self.model              = model
+        self.path               = None
 
         self.bcs                = {}
         self.loads              = {}
-        self.displacements      = {}
         self.steps              = []
         self.steps_order        = []
         self.field_outputs      = {}
         self.history_outputs    = {}
 
+        self.results            = {}
+
     def __str__(self):
         data = [self.bcs,
                 self.loads,
-                self.displacements,
                 # self.steps,
                 # self.steps_order,
                 self.field_outputs,
@@ -359,8 +359,8 @@ History Output Requests
     # Save
     # ==============================================================================
 
-    def save_to_cfea(self, path, output=True):
-        """Exports the Structure object to an .obj file through Pickle.
+    def save_to_cfp(self, path, output=True):
+        """Exports the Problem object to an .cfp file through Pickle.
 
         Parameters
         ----------
@@ -372,38 +372,38 @@ History Output Requests
         None
         """
 
-        filename = '{0}{1}/{2}.cfea'.format(path, self.name, self.name)
+        filename = '{0}/{1}.cfp'.format(path, self.name)
 
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
         if output:
-            print('***** Structure saved to: {0} *****\n'.format(filename))
+            print('***** Problem saved to: {0} *****\n'.format(filename))
 
     # ==============================================================================
     # Load
     # ==============================================================================
 
     @staticmethod
-    def load_from_cfea(filename, output=True):
-        """Imports a Structure object from an .obj file through Pickle.
+    def load_from_cfp(filename, output=True):
+        """Imports a Problem object from an .cfp file through Pickle.
 
         Parameters
         ----------
         filename : str
-            Path to load the Structure .obj from.
+            Path to load the Problem .cfp from.
         output : bool
             Print terminal output.
 
         Returns
         -------
         obj
-            Imported Structure object.
+            Imported Problem object.
         """
         with open(filename, 'rb') as f:
-            structure = pickle.load(f)
+            probelm = pickle.load(f)
 
         if output:
-            print('***** Structure loaded from: {0} *****'.format(filename))
+            print('***** Problem loaded from: {0} *****'.format(filename))
 
-        return structure
+        return probelm

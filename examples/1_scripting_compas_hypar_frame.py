@@ -41,8 +41,6 @@ model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='n
 model.add_assembly_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
-print(model.parts['part-1'].sections.values())
-
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object

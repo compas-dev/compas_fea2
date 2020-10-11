@@ -4,12 +4,15 @@ from __future__ import print_function
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
+import os
 import sys
 import math
+import pickle
+
+
 
 __all__ = [
     'Model',
-    'Instance',
 ]
 
 
@@ -161,11 +164,12 @@ class Model():
 
         # Generate elements between nodes
         key_index = mesh.key_index()
-        faces = [[key_index[key] for key in mesh.face_vertices(face)] for face in mesh.faces()]
+        faces = [[key_index[key]
+                  for key in mesh.face_vertices(face)] for face in mesh.faces()]
 
         for f in faces:
-            self.add_element(ShellElement(connectivity=f, section=shell_section.name), part='part-1')
-
+            self.add_element(ShellElement(
+                connectivity=f, section=shell_section.name), part='part-1')
 
     def from_volmesh(self, volmesh):
         pass
@@ -204,6 +208,8 @@ class Model():
         >>> part = Part('mypart')
         >>> model.add_part(part=part, transformation=[M1, M2])
         """
+
+        from compas_fea2.backends.abaqus.model import Instance
 
         if part.name in self.parts:
             print(
@@ -844,54 +850,81 @@ class Model():
 
         return node_dict
 
+    # ==============================================================================
+    # Summary
+    # ==============================================================================
 
-class Instance():
-    """Initialises an Instance object.
+    def summary(self):
+        """Prints a summary of the Model object.
 
-    Parameters
-    ----------
-    name : str
-        Name of the set.
-    part : obj
-        The Part from which the instance is created.
-    sets : list
-        A list with the Set objects belonging to the instance.
-    data : str
-        The data block for the generation of the input file.
-    """
+        Parameters
+        ----------
+        None
 
-    def __init__(self, name, part, sets=[]):
-        self.__name__ = 'Instance'
-        self.name = name
-        self.part = part
-        self.sets = sets
-        for iset in sets:
-            iset.instance = self.name
-            iset.data = iset._generate_data()
+        Returns
+        -------
+        None
+        """
+        print(self)
 
-        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(
-            self.name, self.part.name)
+    # ==============================================================================
+    # Save
+    # ==============================================================================
 
-    def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
+    def save_to_cfm(self, path, output=True):
+        """Exports the Model object to an .cfm file through Pickle.
 
-        for attr in ['name']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+        Parameters
+        ----------
+        path : path
+            Path to the folder where save the file to.
+        output : bool
+            Print terminal output.
 
-        return ''
+        Returns
+        -------
+        None
+        """
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.part.name)
+        filename = '{0}/{1}.cfm'.format(path, self.name)
 
-    def _generate_data(self):
-        return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
+
+        if output:
+            print('***** Model saved to: {0} *****\n'.format(filename))
+
+    # ==============================================================================
+    # Load
+    # ==============================================================================
+
+    @staticmethod
+    def load_from_cfm(filename, output=True):
+        """Imports a Model object from an .cfm file through Pickle.
+
+        Parameters
+        ----------
+        filename : str
+            Path to load the Model .cfm from.
+        output : bool
+            Print terminal output.
+
+        Returns
+        -------
+        obj
+            Imported Model object.
+        """
+        with open(filename, 'rb') as f:
+            mdl = pickle.load(f)
+
+        if output:
+            print('***** Model loaded from: {0} *****'.format(filename))
+
+        return mdl
 
 
 # =============================================================================
 #                               Debugging
 # =============================================================================
-
 if __name__ == "__main__":
     pass

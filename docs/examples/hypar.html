@@ -59,16 +59,11 @@
                     <div class="section" id="hypar-frame">
 <h1>Hypar frame</h1>
 <p>This example works for: <strong>Abaqus</strong>.</p>
-<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">import</span> <span class="nn">compas</span>
-<span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
-<span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">normalize_vector</span>
+<div class="language-python notranslate"><div class="highlight"><pre><code><span></span><span class="kn">from</span> <span class="nn">compas.datastructures</span> <span class="kn">import</span> <span class="n">Mesh</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Part</span>
-<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Node</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">ElasticIsotropic</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">BoxSection</span>
-<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">BeamElement</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Set</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem</span> <span class="kn">import</span> <span class="n">Problem</span>
@@ -79,6 +74,7 @@
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem</span> <span class="kn">import</span> <span class="n">GeneralStaticStep</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2</span> <span class="kn">import</span> <span class="n">DATA</span>
+<span class="kn">from</span> <span class="nn">compas_fea2</span> <span class="kn">import</span> <span class="n">TEMP</span>
 
 <span class="c1"># Get a Mesh geometry to create the model</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="n">DATA</span> <span class="o">+</span> <span class="s1">&#39;/hypar.obj&#39;</span><span class="p">)</span>
@@ -96,7 +92,7 @@
 <span class="c1"># Create a fram model from a mesh</span>
 <span class="n">model</span><span class="o">.</span><span class="n">frame_from_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span> <span class="n">beam_section</span><span class="o">=</span><span class="n">box_20_80</span><span class="p">)</span>
 
-<span class="c1"># Find nodes in the model for the boundary conditions </span>
+<span class="c1"># Find nodes in the model for the boundary conditions</span>
 <span class="n">n_fixed</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">n_roller</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,],</span> <span class="mi">10</span><span class="p">)</span>
 <span class="n">n_load</span>  <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_node_from_coordinates</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5000</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
@@ -124,7 +120,7 @@
 
 <span class="c1"># Solve the problem</span>
 <span class="c1"># problem.write_input_file(path=&#39;C:/temp/test_structure&#39;)</span>
-<span class="n">problem</span><span class="o">.</span><span class="n">analyse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;C:/temp/hypar&#39;</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">analyse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span> <span class="n">TEMP</span> <span class="o">+</span> <span class="s1">&#39;/hypar&#39;</span><span class="p">)</span>
 </code></pre></div>
 </div>
 </div>
@@ -195,7 +191,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 10, 2020.
+                Last updated on Oct 11, 2020.
             
 
             

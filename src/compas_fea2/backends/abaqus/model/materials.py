@@ -9,8 +9,8 @@ import os
 
 from compas_fea2.backends._base.model import MaterialBase
 from compas_fea2.backends._base.model import ConcreteBase
-from compas_fea2.backends._base.model import ConcreteBaseSmearedCrack
-from compas_fea2.backends._base.model import ConcreteBaseDamagedPlasticity
+from compas_fea2.backends._base.model import ConcreteSmearedCrackBase
+from compas_fea2.backends._base.model import ConcreteDamagedPlasticityBase
 from compas_fea2.backends._base.model import ElasticIsotropicBase
 from compas_fea2.backends._base.model import StiffBase
 from compas_fea2.backends._base.model import ElasticOrthotropicBase
@@ -177,7 +177,7 @@ class Concrete(ConcreteBase):
         data_section.append(line)
         return '\n'.join(data_section)
 
-class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
+class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
         super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
@@ -210,7 +210,7 @@ class ConcreteSmearedCrack(ConcreteBaseSmearedCrack):
         data_section.append(line)
         return '\n'.join(data_section)
 
-class ConcreteDamagedPlasticity(ConcreteBaseDamagedPlasticity):
+class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
         super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)

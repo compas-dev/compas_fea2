@@ -12,8 +12,8 @@ from math import log
 __all__ = [
     'MaterialBase',
     'ConcreteBase',
-    'ConcreteBaseSmearedCrack',
-    'ConcreteBaseDamagedPlasticity',
+    'ConcreteSmearedCrackBase',
+    'ConcreteDamagedPlasticityBase',
     'ElasticIsotropicBase',
     'StiffBase',
     'ElasticOrthotropicBase',
@@ -324,7 +324,7 @@ class ConcreteBase(MaterialBase):
         self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
-class ConcreteBaseSmearedCrack(MaterialBase):
+class ConcreteSmearedCrackBase(MaterialBase):
     """Elastic and plastic, cracking concrete material.
 
     Parameters
@@ -365,7 +365,7 @@ class ConcreteBaseSmearedCrack(MaterialBase):
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression', 'fratios'])
 
 
-class ConcreteBaseDamagedPlasticity(MaterialBase):
+class ConcreteDamagedPlasticityBase(MaterialBase):
     """Damaged plasticity isotropic and homogeneous material.
 
     Parameters

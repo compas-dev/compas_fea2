@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/compas-reference.css" />
 
     
-        <link rel="next" title="Abaqus" href="compas_fea2.backends.abaqus.html" />
+        <link rel="next" title="BeamElementBase" href="generated/compas_fea2.backends._base.model.BeamElementBase.html" />
     
     
     
@@ -56,7 +56,279 @@
 
                     
 
-                    <span class="target" id="module-compas_fea2.backends._base"></span>
+                    <p>The _base module is temporarily documented as a separate ‘backend’, but eventually each backend will inherit the documentation from the _base.</p>
+<span class="target" id="module-compas_fea2.backends._base"></span><div class="section" id="base">
+<h1>Base</h1>
+<p>This is the Base implementation of compas_fea2, where the individual backends
+inherit from.</p>
+<div class="section" id="elements">
+<h2>Elements</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.BeamElementBase.html#compas_fea2.backends._base.model.BeamElementBase" title="compas_fea2.backends._base.model.BeamElementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamElementBase</span></code></a>(connectivity, section[, thermal])</p></td>
+<td><p>A 1D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.TrussElementBase.html#compas_fea2.backends._base.model.TrussElementBase" title="compas_fea2.backends._base.model.TrussElementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussElementBase</span></code></a>(connectivity, section[, …])</p></td>
+<td><p>A 1D element that resists axial loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ShellElementBase.html#compas_fea2.backends._base.model.ShellElementBase" title="compas_fea2.backends._base.model.ShellElementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellElementBase</span></code></a>(key, connectivity, section)</p></td>
+<td><p>A 2D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.MembraneElementBase.html#compas_fea2.backends._base.model.MembraneElementBase" title="compas_fea2.backends._base.model.MembraneElementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneElementBase</span></code></a>(key, connectivity, section)</p></td>
+<td><p>A shell element that resists only axial loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.SolidElementBase.html#compas_fea2.backends._base.model.SolidElementBase" title="compas_fea2.backends._base.model.SolidElementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidElementBase</span></code></a>(key, connectivity, section)</p></td>
+<td><p>A 3D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="constraints">
+<h2>Constraints</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ConstraintBase.html#compas_fea2.backends._base.model.ConstraintBase" title="compas_fea2.backends._base.model.ConstraintBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstraintBase</span></code></a>(name)</p></td>
+<td><p>Initialises base Constraint object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.TieConstraintBase.html#compas_fea2.backends._base.model.TieConstraintBase" title="compas_fea2.backends._base.model.TieConstraintBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieConstraintBase</span></code></a>(name, master, slave, tol)</p></td>
+<td><p>Tie constraint between two sets of nodes, elements or surfaces.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="materials">
+<h2>Materials</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.MaterialBase.html#compas_fea2.backends._base.model.MaterialBase" title="compas_fea2.backends._base.model.MaterialBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaterialBase</span></code></a>(name)</p></td>
+<td><p>Initialises base Material object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ConcreteBase.html#compas_fea2.backends._base.model.ConcreteBase" title="compas_fea2.backends._base.model.ConcreteBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteBase</span></code></a>(name, fck[, v, p, fr])</p></td>
+<td><p>Elastic and plastic-cracking Eurocode based concrete material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ConcreteSmearedCrackBase.html#compas_fea2.backends._base.model.ConcreteSmearedCrackBase" title="compas_fea2.backends._base.model.ConcreteSmearedCrackBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteSmearedCrackBase</span></code></a>(name, E, v, p, fc, …)</p></td>
+<td><p>Elastic and plastic, cracking concrete material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ConcreteDamagedPlasticityBase.html#compas_fea2.backends._base.model.ConcreteDamagedPlasticityBase" title="compas_fea2.backends._base.model.ConcreteDamagedPlasticityBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteDamagedPlasticityBase</span></code></a>(name, E, v, p, …)</p></td>
+<td><p>Damaged plasticity isotropic and homogeneous material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ElasticIsotropicBase.html#compas_fea2.backends._base.model.ElasticIsotropicBase" title="compas_fea2.backends._base.model.ElasticIsotropicBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticIsotropicBase</span></code></a>(name, E, v, p)</p></td>
+<td><p>Elastic, isotropic and homogeneous material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.StiffBase.html#compas_fea2.backends._base.model.StiffBase" title="compas_fea2.backends._base.model.StiffBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StiffBase</span></code></a>(name[, E])</p></td>
+<td><p>Elastic, very stiff and massless material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ElasticOrthotropicBase.html#compas_fea2.backends._base.model.ElasticOrthotropicBase" title="compas_fea2.backends._base.model.ElasticOrthotropicBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticOrthotropicBase</span></code></a>(name, Ex, Ey, Ez, …)</p></td>
+<td><p>Elastic, orthotropic and homogeneous material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ElasticPlasticBase.html#compas_fea2.backends._base.model.ElasticPlasticBase" title="compas_fea2.backends._base.model.ElasticPlasticBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticPlasticBase</span></code></a>(name, E, v, p, f, e)</p></td>
+<td><p>Elastic and plastic, isotropic and homogeneous material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ThermalMaterialBase.html#compas_fea2.backends._base.model.ThermalMaterialBase" title="compas_fea2.backends._base.model.ThermalMaterialBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThermalMaterialBase</span></code></a>(name, conductivity, p, sheat)</p></td>
+<td><p>Class for thermal material properties.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.SteelBase.html#compas_fea2.backends._base.model.SteelBase" title="compas_fea2.backends._base.model.SteelBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SteelBase</span></code></a>(name[, fy, fu, eu, E, v, p])</p></td>
+<td><p>Bi-linear steel with given yield stress.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sections">
+<h2>Sections</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.SectionBase.html#compas_fea2.backends._base.model.SectionBase" title="compas_fea2.backends._base.model.SectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SectionBase</span></code></a>(name, material)</p></td>
+<td><p>Initialises base Section object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.AngleSectionBase.html#compas_fea2.backends._base.model.AngleSectionBase" title="compas_fea2.backends._base.model.AngleSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleSectionBase</span></code></a>(name, b, h, t, material)</p></td>
+<td><p>Uniform thickness angle cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.BoxSectionBase.html#compas_fea2.backends._base.model.BoxSectionBase" title="compas_fea2.backends._base.model.BoxSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxSectionBase</span></code></a>(name, b, h, tw, tf, material)</p></td>
+<td><p>Hollow rectangular box cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.CircularSectionBase.html#compas_fea2.backends._base.model.CircularSectionBase" title="compas_fea2.backends._base.model.CircularSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircularSectionBase</span></code></a>(name, r, material)</p></td>
+<td><p>Solid circular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.GeneralSectionBase.html#compas_fea2.backends._base.model.GeneralSectionBase" title="compas_fea2.backends._base.model.GeneralSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralSectionBase</span></code></a>(name, A, Ixx, Ixy, Iyy, …)</p></td>
+<td><p>General cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ISectionBase.html#compas_fea2.backends._base.model.ISectionBase" title="compas_fea2.backends._base.model.ISectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISectionBase</span></code></a>(name, b, h, tw, tf, material)</p></td>
+<td><p>Equal flanged I-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.PipeSectionBase.html#compas_fea2.backends._base.model.PipeSectionBase" title="compas_fea2.backends._base.model.PipeSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PipeSectionBase</span></code></a>(name, r, t, material)</p></td>
+<td><p>Hollow circular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.RectangularSectionBase.html#compas_fea2.backends._base.model.RectangularSectionBase" title="compas_fea2.backends._base.model.RectangularSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularSectionBase</span></code></a>(name, b, h, material)</p></td>
+<td><p>Solid rectangular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.ShellSectionBase.html#compas_fea2.backends._base.model.ShellSectionBase" title="compas_fea2.backends._base.model.ShellSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellSectionBase</span></code></a>(name, t, material)</p></td>
+<td><p>Section for shell elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.MembraneSectionBase.html#compas_fea2.backends._base.model.MembraneSectionBase" title="compas_fea2.backends._base.model.MembraneSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneSectionBase</span></code></a>(name, t, material)</p></td>
+<td><p>Section for membrane elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.SolidSectionBase.html#compas_fea2.backends._base.model.SolidSectionBase" title="compas_fea2.backends._base.model.SolidSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidSectionBase</span></code></a>(name, material)</p></td>
+<td><p>Section for solid elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.TrapezoidalSectionBase.html#compas_fea2.backends._base.model.TrapezoidalSectionBase" title="compas_fea2.backends._base.model.TrapezoidalSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrapezoidalSectionBase</span></code></a>(name, b1, b2, h, material)</p></td>
+<td><p>Solid trapezoidal cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.TrussSectionBase.html#compas_fea2.backends._base.model.TrussSectionBase" title="compas_fea2.backends._base.model.TrussSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussSectionBase</span></code></a>(name, A, material)</p></td>
+<td><p>For use with truss elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.StrutSectionBase.html#compas_fea2.backends._base.model.StrutSectionBase" title="compas_fea2.backends._base.model.StrutSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrutSectionBase</span></code></a>(name, A, material)</p></td>
+<td><p>For use with strut elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.TieSectionBase.html#compas_fea2.backends._base.model.TieSectionBase" title="compas_fea2.backends._base.model.TieSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieSectionBase</span></code></a>(name, A, material)</p></td>
+<td><p>For use with tie elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.model.SpringSectionBase.html#compas_fea2.backends._base.model.SpringSectionBase" title="compas_fea2.backends._base.model.SpringSectionBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpringSectionBase</span></code></a>(name[, forces, …])</p></td>
+<td><p>For use with spring elements.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="boundary-conditions">
+<h2>Boundary Conditions</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.GeneralDisplacementBase.html#compas_fea2.backends._base.problem.GeneralDisplacementBase" title="compas_fea2.backends._base.problem.GeneralDisplacementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralDisplacementBase</span></code></a>(name, nodes[, x, y, …])</p></td>
+<td><p>Initialises the base GeneralDisplacement object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.FixedDisplacementBase.html#compas_fea2.backends._base.problem.FixedDisplacementBase" title="compas_fea2.backends._base.problem.FixedDisplacementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A fixed nodal displacement boundary condition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.PinnedDisplacementBase.html#compas_fea2.backends._base.problem.PinnedDisplacementBase" title="compas_fea2.backends._base.problem.PinnedDisplacementBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinnedDisplacementBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.FixedDisplacementXXBase.html#compas_fea2.backends._base.problem.FixedDisplacementXXBase" title="compas_fea2.backends._base.problem.FixedDisplacementXXBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementXXBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in XX.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.FixedDisplacementYYBase.html#compas_fea2.backends._base.problem.FixedDisplacementYYBase" title="compas_fea2.backends._base.problem.FixedDisplacementYYBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementYYBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in YY.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.FixedDisplacementZZBase.html#compas_fea2.backends._base.problem.FixedDisplacementZZBase" title="compas_fea2.backends._base.problem.FixedDisplacementZZBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedDisplacementZZBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in ZZ.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementXBase.html#compas_fea2.backends._base.problem.RollerDisplacementXBase" title="compas_fea2.backends._base.problem.RollerDisplacementXBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in X.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementYBase.html#compas_fea2.backends._base.problem.RollerDisplacementYBase" title="compas_fea2.backends._base.problem.RollerDisplacementYBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementYBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in Y.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementZBase.html#compas_fea2.backends._base.problem.RollerDisplacementZBase" title="compas_fea2.backends._base.problem.RollerDisplacementZBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementZBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in Z.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementXYBase.html#compas_fea2.backends._base.problem.RollerDisplacementXYBase" title="compas_fea2.backends._base.problem.RollerDisplacementXYBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXYBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in X and Y.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementYZBase.html#compas_fea2.backends._base.problem.RollerDisplacementYZBase" title="compas_fea2.backends._base.problem.RollerDisplacementYZBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementYZBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in Y and Z.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.RollerDisplacementXZBase.html#compas_fea2.backends._base.problem.RollerDisplacementXZBase" title="compas_fea2.backends._base.problem.RollerDisplacementXZBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerDisplacementXZBase</span></code></a>(name, nodes[, axes])</p></td>
+<td><p>A pinned nodal displacement boundary condition released in X and Z.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="loads">
+<h2>Loads</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.LoadBase.html#compas_fea2.backends._base.problem.LoadBase" title="compas_fea2.backends._base.problem.LoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoadBase</span></code></a>(name[, axes, components, nodes, …])</p></td>
+<td><p>Initialises base Load object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.PointLoadBase.html#compas_fea2.backends._base.problem.PointLoadBase" title="compas_fea2.backends._base.problem.PointLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointLoadBase</span></code></a>(name, nodes[, x, y, z, xx, yy, zz])</p></td>
+<td><p>Concentrated forces and moments [units:N, Nm] applied to node(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.PointLoadsBase.html#compas_fea2.backends._base.problem.PointLoadsBase" title="compas_fea2.backends._base.problem.PointLoadsBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PointLoadsBase</span></code></a>(name, components)</p></td>
+<td><p>Concentrated forces and moments [units:N, Nm] applied to different nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.LineLoadBase.html#compas_fea2.backends._base.problem.LineLoadBase" title="compas_fea2.backends._base.problem.LineLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineLoadBase</span></code></a>(name, elements[, x, y, z, xx, …])</p></td>
+<td><p>Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.AreaLoadBase.html#compas_fea2.backends._base.problem.AreaLoadBase" title="compas_fea2.backends._base.problem.AreaLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AreaLoadBase</span></code></a>(name, elements[, x, y, z, axes])</p></td>
+<td><p>Distributed area force [units:N/m2] applied to element(s).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.GravityLoadBase.html#compas_fea2.backends._base.problem.GravityLoadBase" title="compas_fea2.backends._base.problem.GravityLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GravityLoadBase</span></code></a>(name[, g, x, y, z])</p></td>
+<td><p>Gravity load [units:N/m3] applied to element(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.ThermalLoadBase.html#compas_fea2.backends._base.problem.ThermalLoadBase" title="compas_fea2.backends._base.problem.ThermalLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThermalLoadBase</span></code></a>(name, elements, temperature)</p></td>
+<td><p>Thermal load.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.TributaryLoadBase.html#compas_fea2.backends._base.problem.TributaryLoadBase" title="compas_fea2.backends._base.problem.TributaryLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TributaryLoadBase</span></code></a>(structure, name, mesh[, …])</p></td>
+<td><p>Tributary area loads applied to nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.HarmonicPointLoadBase.html#compas_fea2.backends._base.problem.HarmonicPointLoadBase" title="compas_fea2.backends._base.problem.HarmonicPointLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmonicPointLoadBase</span></code></a>(name, nodes[, x, y, …])</p></td>
+<td><p>Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.HarmonicPressureLoadBase.html#compas_fea2.backends._base.problem.HarmonicPressureLoadBase" title="compas_fea2.backends._base.problem.HarmonicPressureLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmonicPressureLoadBase</span></code></a>(name, elements[, …])</p></td>
+<td><p>Harmonic pressure loads [units:N/m2] applied to element(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.AcousticDiffuseFieldLoadBase.html#compas_fea2.backends._base.problem.AcousticDiffuseFieldLoadBase" title="compas_fea2.backends._base.problem.AcousticDiffuseFieldLoadBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AcousticDiffuseFieldLoadBase</span></code></a>(name, elements)</p></td>
+<td><p>Acoustic Diffuse field loads applied to elements.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="steps">
+<h2>Steps</h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.StepBase.html#compas_fea2.backends._base.problem.StepBase" title="compas_fea2.backends._base.problem.StepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepBase</span></code></a>(name)</p></td>
+<td><p>Initialises base Step object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.GeneralStepBase.html#compas_fea2.backends._base.problem.GeneralStepBase" title="compas_fea2.backends._base.problem.GeneralStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralStepBase</span></code></a>(name[, increments, …])</p></td>
+<td><p>Initialises GeneralStep object for use in a static analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.HeatStepBase.html#compas_fea2.backends._base.problem.HeatStepBase" title="compas_fea2.backends._base.problem.HeatStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeatStepBase</span></code></a>(name, interaction[, …])</p></td>
+<td><p>Initialises HeatStep object for use in a thermal analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.ModalStepBase.html#compas_fea2.backends._base.problem.ModalStepBase" title="compas_fea2.backends._base.problem.ModalStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModalStepBase</span></code></a>(name[, modes, increments, …])</p></td>
+<td><p>Initialises ModalStep object for use in a modal analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.HarmonicStepBase.html#compas_fea2.backends._base.problem.HarmonicStepBase" title="compas_fea2.backends._base.problem.HarmonicStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HarmonicStepBase</span></code></a>(name, freq_list[, …])</p></td>
+<td><p>Initialises HarmoniStepBase object for use in a harmonic analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.BucklingStepBase.html#compas_fea2.backends._base.problem.BucklingStepBase" title="compas_fea2.backends._base.problem.BucklingStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BucklingStepBase</span></code></a>(name[, modes, increments, …])</p></td>
+<td><p>Initialises BucklingStep object for use in a buckling analysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.backends._base.problem.AcousticStepBase.html#compas_fea2.backends._base.problem.AcousticStepBase" title="compas_fea2.backends._base.problem.AcousticStepBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AcousticStepBase</span></code></a>(name, freq_range, freq_step)</p></td>
+<td><p>Initialises AcoustiStepBase object for use in a acoustic analysis.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
                     
                 
                 </div>
@@ -83,11 +355,21 @@
                         <div class="navbar-expand-md">
                             <div id="compas-navigation" class="collapse navbar-collapse compas-navigation">
 
-                            <ul class="nav flex-column">
+                            <ul class="nav flex-column active">
 <li class="nav-item"><a class="nav-link reference internal" href="../intro.html">Introduction</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../gettingstarted.html">Getting Started</a></li>
 <li class="nav-item"><a class="nav-link reference internal" href="../examples.html">Examples</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="../api.html">API Reference</a></li>
+<li class="nav-item active"><a class="nav-link reference internal" href="../api.html">API Reference</a><ul class="nav active">
+<li class="nav-item active"><a class="nav-link reference internal" href="compas_fea2.html">compas_fea2</a><ul class="nav active">
+<li class="nav-item active"><a class="nav-link reference internal" href="compas_fea2.backends.html">backends</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.interfaces.html">interfaces</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.postprocessor.html">PostProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.preprocessor.html">PreProcessor</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="nav-item"><a class="nav-link reference internal" href="../license.html">License</a></li>
 </ul>
 
@@ -106,7 +388,17 @@
 
                 
 
-                <ul class="simple">
+                <ul class="nav flex-column" id="compas-localnav">
+<li class="nav-item"><a class="nav-link reference internal" href="#">Base</a><ul class="nav">
+<li class="nav-item"><a class="nav-link reference internal" href="#elements">Elements</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#constraints">Constraints</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#materials">Materials</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#sections">Sections</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#boundary-conditions">Boundary Conditions</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#loads">Loads</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#steps">Steps</a></li>
+</ul>
+</li>
 </ul>
 
 
@@ -118,7 +410,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 10, 2020.
+                Last updated on Oct 11, 2020.
             
 
             

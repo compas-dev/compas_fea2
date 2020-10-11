@@ -27,13 +27,14 @@ model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 
 # Define sections
 shell_20 = ShellSection(name='section_A', material='mat_A', t=20)
-# Create a fram model from a mesh
+
+# Create a shell model from a mesh
 model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
 
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
-n_roller = model.get_node_from_coordinates([0, 3000, 0,], 10)
-n_load  = model.get_node_from_coordinates([0, 0, -5000], 10)
+n_load = model.get_node_from_coordinates([0, 3000, 0,], 10)
+n_roller  = model.get_node_from_coordinates([0, 0, -5000], 10)
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
@@ -58,28 +59,5 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path= TEMP + '/hypar')
+problem.analyse(path= TEMP + '/hypar_shell')
 
-
-# from compas.geometry import normalize_vector
-# from compas.datastructures import Mesh
-
-# from compas_fea2.backends.abaqus.model import Node
-# from compas_fea2.backends.abaqus.model import Part
-# from compas_fea2.backends.abaqus.model import ShellElement
-
-# from compas_fea2 import DATA
-# from compas_fea2 import TEMP
-
-# # Get a Mesh geometry to create the model
-
-# mesh = Mesh.from_obj(DATA + '/hypar.obj')
-
-# # Generate elements between nodes
-# key_index = mesh.key_index()
-# faces = [[key_index[key] for key in mesh.face_vertices(face)] for face in mesh.faces()]
-# print(faces)
-# # for f in faces:
-# #     print(f)
-# #     connectivity = mesh.face_vertices(f)
-# #     print(connectivity)

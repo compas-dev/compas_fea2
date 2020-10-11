@@ -61,10 +61,15 @@
 <dl class="method">
 <dt id="compas_fea2.backends.abaqus.model.Model.frame_from_mesh">
 <code class="sig-prename descclassname">Model.</code><code class="sig-name descname">frame_from_mesh</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">beam_section</em><span class="sig-paren">)</span></dt>
-<dd><p>Create a Model object from a compas Mesh object [WIP].</p>
+<dd><p>Creates a Model object from a compas Mesh object [WIP]. The edges of
+the mesh become the elements of the frame. Currently, the same section
+is applied to all the elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mesh</strong> (<em>Mesh object</em>) – Mesh to convert to import as a Model.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<em>obj</em>) – Mesh to convert to import as a Model.</p></li>
+<li><p><strong>beam_section</strong> (<em>obj</em>) – compas_fea2 BeamSection object to to apply to the frame elements.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

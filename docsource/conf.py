@@ -89,6 +89,7 @@ NumpyDocstring._parse_keys_section = parse_keys_section
 def parse_attributes_section(self, section):
     return self._format_fields('Attributes', self._consume_fields())
 
+
 NumpyDocstring._parse_attributes_section = parse_attributes_section
 
 
@@ -98,6 +99,18 @@ def parse_class_attributes_section(self, section):
 
 NumpyDocstring._parse_class_attributes_section = parse_class_attributes_section
 
+
+def patched_parse(self):
+    """ We now patch the parse method to guarantee that the the above methods are
+        assigned to the _section dict
+    """
+    self._sections['keys'] = self._parse_keys_section
+    self._sections['class attributes'] = self._parse_class_attributes_section
+    self._unpatched_parse()
+
+
+NumpyDocstring._unpatched_parse = NumpyDocstring._parse
+NumpyDocstring._parse = patched_parse
 # plot options
 
 # plot_include_source

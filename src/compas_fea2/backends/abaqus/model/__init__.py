@@ -13,6 +13,13 @@ Model
     :toctree: generated/
 
     Model
+
+Instances
+=========
+
+.. autosummary::
+    :toctree: generated/
+
     Instance
 
 Parts
@@ -120,6 +127,7 @@ import os
 
 # additional software-based classes
 from .model import *
+from .instances import *
 from .parts import *
 from .nodes import *
 from .interactions import *

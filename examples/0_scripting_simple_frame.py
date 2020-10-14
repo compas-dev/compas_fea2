@@ -69,5 +69,6 @@ problem.add_field_output(fout=FieldOutput(name='fout'))
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
-print(problem)
+problem.summary()
+
 

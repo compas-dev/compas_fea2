@@ -161,6 +161,7 @@ class Problem(ProblemBase):
         None
 
         """
+        self.path = path
         self.write_input_file(path=path, output=output, save=save)
         launch_process(self, path=path, exe=exe, cpus=cpus, output=output,
                        overwrite=overwrite, user_mat=user_mat)
@@ -169,37 +170,37 @@ class Problem(ProblemBase):
     #                         Results methods
     # =========================================================================
 
-    # # this should be an abstract method of the base class
-    # def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-    #                  return_data=True, components=None):
-    #     """Extracts data from the analysis output files.
+    # this should be an abstract method of the base class
+    def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+                     return_data=True, components=None):
+        """Extracts data from the analysis output files.
 
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests.
-    #     steps : list
-    #         Loads steps to extract from.
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     sets : list
-    #         -
-    #     license : str
-    #         Software license type: 'research', 'student'.
-    #     output : bool
-    #         Print terminal output.
-    #     return_data : bool
-    #         Return data back into structure.results.
-    #     components : list
-    #         Specific components to extract from the fields data.
+        Parameters
+        ----------
+        fields : list, str
+            Data field requests.
+        steps : list
+            Loads steps to extract from.
+        exe : str
+            Full terminal command to bypass subprocess defaults.
+        sets : list
+            -
+        license : str
+            Software license type: 'research', 'student'.
+        output : bool
+            Print terminal output.
+        return_data : bool
+            Return data back into structure.results.
+        components : list
+            Specific components to extract from the fields data.
 
-    #     Returns
-    #     -------
-    #     None
+        Returns
+        -------
+        None
 
-    #     """
-    #     extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-    #                         components=components)
+        """
+        extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
+                            components=components)
 
     # # this should be an abstract method of the base class
     # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,

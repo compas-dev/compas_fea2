@@ -41,6 +41,7 @@ model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='n
 model.add_assembly_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
+# model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
@@ -59,5 +60,7 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 # problem.write_input_file(path='C:/temp/test_structure')
+# problem.summary()
 problem.analyse(path= TEMP + '/hypar_shell')
-
+problem.extract()
+print(problem.results)

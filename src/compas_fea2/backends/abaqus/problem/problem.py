@@ -200,7 +200,7 @@ class Problem(ProblemBase):
 
         """
         extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-                            components=components)
+                     components=components)
 
     # # this should be an abstract method of the base class
     # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,

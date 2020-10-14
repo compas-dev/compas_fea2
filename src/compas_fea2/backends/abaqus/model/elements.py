@@ -161,16 +161,14 @@ class ShellElement(ShellElementBase):
 
     Parameters
     ----------
-    key : int
-        key identifier for the shell element.
     connectivity : list
         List containing the nodes sequence building the shell element.
     section : obj
         compas_fea2 ShellSection object
     elset : obj
-        compas_fea2 Set object
+        compas_fea2 Set object, optional
     thermal : bool
-        NotImplemented
+        NotImplemented,
     """
     def __init__(self, connectivity, section, elset=None, thermal=None):
         super(ShellElement, self).__init__(connectivity, section, thermal=None)

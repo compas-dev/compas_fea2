@@ -8,6 +8,7 @@ import sys
 import os
 
 import sphinx_compas_theme
+from sphinx.ext.napoleon.docstring import NumpyDocstring
 
 
 # -- General configuration ------------------------------------------------
@@ -38,6 +39,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
     'matplotlib.sphinxext.plot_directive',
     'nbsphinx',
     'sphinxcontrib.gist',
@@ -63,7 +66,7 @@ autosummary_generate = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
-napoleon_include_private_with_doc = False
+napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
@@ -71,6 +74,29 @@ napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
 napoleon_use_param = False
 napoleon_use_rtype = False
+
+# Parse Attributes and Class Attributes on Class docs same as parameters.
+# first, we define new methods for any new sections and add them to the class
+
+
+def parse_keys_section(self, section):
+    return self._format_fields('Keys', self._consume_fields())
+
+
+NumpyDocstring._parse_keys_section = parse_keys_section
+
+
+def parse_attributes_section(self, section):
+    return self._format_fields('Attributes', self._consume_fields())
+
+NumpyDocstring._parse_attributes_section = parse_attributes_section
+
+
+def parse_class_attributes_section(self, section):
+    return self._format_fields('Class Attributes', self._consume_fields())
+
+
+NumpyDocstring._parse_class_attributes_section = parse_class_attributes_section
 
 # plot options
 

@@ -60,7 +60,7 @@
 <h1>BoxSectionBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.BoxSectionBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">BoxSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">b</em>, <em class="sig-param">h</em>, <em class="sig-param">tw</em>, <em class="sig-param">tf</em>, <em class="sig-param">material</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">BoxSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">b</em>, <em class="sig-param">h</em>, <em class="sig-param">tw</em>, <em class="sig-param">tf</em>, <em class="sig-param">material</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/sections.html#BoxSectionBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.sections.SectionBase</span></code></p>
 <p>Hollow rectangular box cross-section for beam elements.</p>
 <dl class="field-list simple">
@@ -71,6 +71,14 @@
 <li><p><strong>h</strong> (<em>float</em>) – Height.</p></li>
 <li><p><strong>tw</strong> (<em>float</em>) – Web thickness.</p></li>
 <li><p><strong>tf</strong> (<em>float</em>) – Flange thickness.</p></li>
+<li><p><strong>material</strong> (<em>obj</em>) – <cite>compas_fea2</cite> Material object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Section object name.</p></li>
+<li><p><strong>material</strong> (<em>obj</em>) – <cite>compas_fea2</cite> Material object.</p></li>
+<li><p><strong>geometry</strong> (<em>dict</em>) – Dictionary containing the geometric properties of the section.</p></li>
 </ul>
 </dd>
 </dl>
@@ -171,7 +179,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

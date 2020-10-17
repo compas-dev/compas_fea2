@@ -60,7 +60,7 @@
 <h1>ElasticOrthotropicBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.ElasticOrthotropicBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">ElasticOrthotropicBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">Ex</em>, <em class="sig-param">Ey</em>, <em class="sig-param">Ez</em>, <em class="sig-param">vxy</em>, <em class="sig-param">vyz</em>, <em class="sig-param">vzx</em>, <em class="sig-param">Gxy</em>, <em class="sig-param">Gyz</em>, <em class="sig-param">Gzx</em>, <em class="sig-param">p</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">ElasticOrthotropicBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">Ex</em>, <em class="sig-param">Ey</em>, <em class="sig-param">Ez</em>, <em class="sig-param">vxy</em>, <em class="sig-param">vyz</em>, <em class="sig-param">vzx</em>, <em class="sig-param">Gxy</em>, <em class="sig-param">Gyz</em>, <em class="sig-param">Gzx</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/materials.html#ElasticOrthotropicBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.materials.MaterialBase</span></code></p>
 <p>Elastic, orthotropic and homogeneous material.</p>
 <dl class="field-list simple">
@@ -79,6 +79,15 @@
 <li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
 <li><p><strong>tension</strong> (<em>bool</em>) – Can take tension.</p></li>
 <li><p><strong>compression</strong> (<em>bool</em>) – Can take compression.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Material name.</p></li>
+<li><p><strong>E</strong> (<em>float</em>) – Young’s modulus E [Pa].</p></li>
+<li><p><strong>v</strong> (<em>float</em>) – Poisson’s ratio v [-].</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
+<li><p><strong>G</strong> (<em>float</em>) – Shear modulus G [Pa].</p></li>
 </ul>
 </dd>
 </dl>
@@ -183,7 +192,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

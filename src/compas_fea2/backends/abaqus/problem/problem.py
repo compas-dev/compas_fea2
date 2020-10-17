@@ -117,7 +117,7 @@ class Problem(ProblemBase):
         output : bool
             Print terminal output.
         save : bool
-            Save structure to .cfea before file writing.
+            Save structure to .cfp before file writing.
 
         Returns
         -------
@@ -129,7 +129,7 @@ class Problem(ProblemBase):
             os.makedirs(path)
 
         if save:
-            self.save_to_cfea()
+            self.save_to_cfp()
 
         input_file = InputFile(self)
         r = input_file.write_to_file(path)
@@ -154,7 +154,7 @@ class Problem(ProblemBase):
         user_mat : str TODO: REMOVE!
             Name of the material defined through a subroutine (currently only one material is supported)
         save : bool
-            Save structure to .cfea before file writing.
+            Save structure to .cfp before file writing.
 
         Returns
         -------

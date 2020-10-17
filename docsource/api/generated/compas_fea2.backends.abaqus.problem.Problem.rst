@@ -25,6 +25,7 @@ Problem
         ~Problem.add_steps
         ~Problem.analyse
         ~Problem.define_steps_order
+        ~Problem.extract
         ~Problem.write_input_file
 
     .. rubric:: Inherited Methods
@@ -41,12 +42,12 @@ Problem
         ~Problem.add_history_outputs
         ~Problem.add_load
         ~Problem.add_loads
-        ~Problem.load_from_cfea
+        ~Problem.load_from_cfp
         ~Problem.remove_all_bcs
         ~Problem.remove_all_loads
         ~Problem.remove_bc
         ~Problem.remove_bcs
-        ~Problem.save_to_cfea
+        ~Problem.save_to_cfp
         ~Problem.summary
 
     

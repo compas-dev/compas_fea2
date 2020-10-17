@@ -28,8 +28,10 @@ class NodeBase(object):
         Node's label. If no label is specified, it is automatically generated
         when a node is added. The label does not need to be unique.
 
-    key : int
-        Node key number. The key number is unique.
+    Attributes
+    ----------
+    xyz : list
+        [x, y, z] co-ordinates of the node.
     x : float
         x co-ordinates of the node.
     y : float
@@ -47,9 +49,8 @@ class NodeBase(object):
     label : string
         Node's label. If no label is specified, it is automatically generated
         when a node is added. The label does not need to be unique.
-    gkey : string
-        Node's geometric key to uniquely identify it. The geometric key is built
-        as: x_y_z
+    key : int
+        Node key number. The key number is unique.
 
     Examples
     --------

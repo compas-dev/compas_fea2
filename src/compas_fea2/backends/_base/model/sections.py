@@ -36,10 +36,17 @@ class SectionBase(object):
     ----------
     name : str
         Section object name.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
     geometry : dict
-        Geometry of the Section.
-
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, material):
@@ -80,6 +87,17 @@ class AngleSectionBase(SectionBase):
         Height.
     t : float
         Thickness.
+    material : obj
+        `compas_fea2` Material object.
+
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
 
     Notes
     -----
@@ -117,7 +135,17 @@ class BoxSectionBase(SectionBase):
         Web thickness.
     tf : float
         Flange thickness.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, b, h, tw, tf, material):
@@ -143,7 +171,17 @@ class CircularSectionBase(SectionBase):
         Section name.
     r : float
         Radius.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, r, material):
@@ -179,7 +217,17 @@ class GeneralSectionBase(SectionBase):
         Sectorial moment.
     gw : float
         Warping constant.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
@@ -204,7 +252,17 @@ class ISectionBase(SectionBase):
         Web thickness.
     tf : float
         Flange thickness.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, b, h, tw, tf, material):
@@ -230,7 +288,17 @@ class PipeSectionBase(SectionBase):
         Outer radius.
     t : float
         Wall thickness.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, r, t, material):
@@ -256,7 +324,17 @@ class RectangularSectionBase(SectionBase):
         Width.
     h : float
         Height.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, b, h, material):
@@ -288,11 +366,21 @@ class TrapezoidalSectionBase(SectionBase):
         Width at top.
     h : float
         Height.
+    material : obj
+        `compas_fea2` Material object.
 
-    Notes
-    -----
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
+
+    Note
+    ----
     - J not yet calculated.
-
     """
 
     def __init__(self, name, b1, b2, h, material):
@@ -316,7 +404,17 @@ class TrussSectionBase(SectionBase):
         Section name.
     A : float
         Area.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, A, material):
@@ -335,7 +433,17 @@ class StrutSectionBase(TrussSectionBase):
         Section name.
     A : float
         Area.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, A, material):
@@ -353,7 +461,17 @@ class TieSectionBase(TrussSectionBase):
         Section name.
     A : float
         Area.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, A, material):
@@ -376,12 +494,22 @@ class SpringSectionBase(SectionBase):
     stiffness : dict
         Elastic stiffness for linear springs.
 
-    Notes
-    -----
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    forces : dict
+        Forces data for non-linear springs.
+    displacements : dict
+        Displacements data for non-linear springs.
+    stiffness : dict
+        Elastic stiffness for linear springs.
+
+    Note
+    ----
     - Force and displacement data should range from negative to positive values.
     - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
     - Directions are 'axial', 'lateral', 'rotation'.
-
     """
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
@@ -408,7 +536,17 @@ class ShellSectionBase(SectionBase):
         Section name.
     t : float
         Thickness.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, t, material):
@@ -416,7 +554,7 @@ class ShellSectionBase(SectionBase):
 
         self.__name__ = 'ShellSection'
         self.t = t
-
+        self.geometry = {'t': t}
 
 class MembraneSectionBase(SectionBase):
     """Section for membrane elements.
@@ -427,7 +565,17 @@ class MembraneSectionBase(SectionBase):
         Section name.
     t : float
         Thickness.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, t, material):
@@ -448,7 +596,17 @@ class SolidSectionBase(SectionBase):
     ----------
     name : str
         Section name.
+    material : obj
+        `compas_fea2` Material object.
 
+    Attributes
+    ----------
+    name : str
+        Section object name.
+    material : obj
+        `compas_fea2` Material object.
+    geometry : dict
+        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, material):

@@ -21,9 +21,10 @@ class ConstraintBase(object):
     name : str
         Name of the Constraint object.
 
-    Returns
-    -------
-    None
+    Attributes
+    ----------
+    name : str
+        Name of the Constraint object.
     """
 
     def __init__(self, name):
@@ -55,9 +56,16 @@ class TieConstraintBase(ConstraintBase):
     tol : float
         Constraint tolerance, distance limit between master and slave.
 
-    Returns
-    -------
-    None
+    Attributes
+    ----------
+    name : str
+        TieConstraint name.
+    master : str
+        Master set name.
+    slave : str
+        Slave set name.
+    tol : float
+        Constraint tolerance, distance limit between master and slave.
     """
 
     def __init__(self, name, master, slave, tol):

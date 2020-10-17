@@ -60,18 +60,22 @@
 <h1>Part</h1>
 <dl class="class">
 <dt id="compas_fea2.backends.abaqus.model.Part">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Part</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Part</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/model/parts.html#Part"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Initialises a Part object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the set.</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of the set.</p></li>
 <li><p><strong>nodes</strong> (<em>list</em>) – Sorted list (by Node key) with the Nodes objects belonging to the Part.</p></li>
 <li><p><strong>nodes_gkeys</strong> (<em>list</em>) – List with the geometric keys (x_y_z) of the Nodes objects belonging to the Part.</p></li>
 <li><p><strong>elements</strong> (<em>list</em>) – Sorted list (by Element key) with the Element objects belonging to the Part.</p></li>
-<li><p><strong>sets</strong> (<em>list</em>) – A list with the Set objects belonging to the Part.</p></li>
-<li><p><strong>data</strong> (<em>str</em>) – The data block for the generation of the input file.</p></li>
+<li><p><strong>nsets</strong> (<em>list</em>) – A list with the Set objects belonging to the Part.</p></li>
+<li><p><strong>elsets</strong> (<em>list</em>) – [DOC]   # TODO: complete doc</p></li>
+<li><p><strong>sections</strong> (<em>dict</em>) – [DOC]   # TODO: complete doc</p></li>
 <li><p><strong>elements_by_type</strong> (<em>dict</em>) – Dictionary sorting the elements by unique element types.
 key: element type
 value: element key number</p></li>
@@ -84,7 +88,6 @@ value: element key number</p></li>
 <li><p><strong>elements_by_material</strong> (<em>dict</em>) – Dictionary sorting the elements by unique materials.
 key: material
 value: element key number</p></li>
-<li><p><strong>data</strong> (<em>str</em>) – The data block for the generation of the input file.</p></li>
 </ul>
 </dd>
 </dl>
@@ -233,7 +236,7 @@ value: element key number</p></li>
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

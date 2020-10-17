@@ -61,7 +61,7 @@ class ProblemBase(object):
                 d.append('n/a')
         return """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea Problem: {}
+compas_fea2 Problem: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Boundary Conditions

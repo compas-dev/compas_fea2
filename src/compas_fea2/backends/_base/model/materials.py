@@ -8,6 +8,7 @@ from math import log
 
 
 #TODO: make units independent
+#TODO: remove att_list attribute
 
 __all__ = [
     'MaterialBase',
@@ -68,10 +69,19 @@ class ElasticIsotropicBase(MaterialBase):
         Poisson's ratio v [-].
     p : float
         Density [kg/m3].
-    tension : bool
-        Can take tension.
-    compression : bool
-        Can take compression.
+
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
     """
 
     def __init__(self, name, E, v, p):
@@ -133,6 +143,19 @@ class ElasticOrthotropicBase(MaterialBase):
     compression : bool
         Can take compression.
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+
     Notes
     -----
     - Can be created but is currently not implemented.
@@ -171,10 +194,26 @@ class ElasticPlasticBase(MaterialBase):
     e : list
         Plastic strain data (positive tension values) [-].
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+    tension : dict
+        Parameters for modelling the tension side of the stess--strain curve
+    compression : dict
+        Parameters for modelling the tension side of the stess--strain curve
+
     Notes
     -----
     - Plastic stress--strain pairs applies to both compression and tension.
-
     """
 
     def __init__(self, name, E, v, p, f, e):
@@ -218,6 +257,30 @@ class SteelBase(MaterialBase):
     p : float
         Density [kg/m3].
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+    fy : float
+        Yield stress [MPa].
+    fu : float
+        Ultimate stress [MPa].
+    eu : float
+        Ultimate strain [%].
+    ep : float
+        Plastic strain [%].
+    tension : dict
+        Parameters for modelling the tension side of the stess--strain curve
+    compression : dict
+        Parameters for modelling the tension side of the stess--strain curve
     """
 
     def __init__(self, name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850):
@@ -283,10 +346,30 @@ class ConcreteBase(MaterialBase):
     fr : list
         Failure ratios.
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+    fck : float
+        Characteristic (5%) 28 day cylinder strength [MPa].
+    fr : list
+        Failure ratios.
+    tension : dict
+        Parameters for modelling the tension side of the stess--strain curve
+    compression : dict
+        Parameters for modelling the tension side of the stess--strain curve
+
     Notes
     -----
     - The concrete model is based on Eurocode 2 up to fck=90 MPa.
-
     """
 
     def __init__(self, name, fck, v=0.2, p=2400, fr=None):
@@ -348,6 +431,32 @@ class ConcreteSmearedCrackBase(MaterialBase):
     fr : list
         Failure ratios.
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+    fc : list
+        Plastic stress data in compression [Pa].
+    ec : list
+        Plastic strain data in compression [-].
+    ft : list
+        Plastic stress data in tension [-].
+    et : list
+        Plastic strain data in tension [-].
+    fr : list
+        Failure ratios.
+    tension : dict
+        Parameters for modelling the tension side of the stess--strain curve
+    compression : dict
+        Parameters for modelling the tension side of the stess--strain curve
     """
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
@@ -385,6 +494,24 @@ class ConcreteDamagedPlasticityBase(MaterialBase):
     stiffening : list
         Tension stiffening parameters.
 
+    Attributes
+    ----------
+    name : str
+        Material name.
+    E : float
+        Young's modulus E [Pa].
+    v : float
+        Poisson's ratio v [-].
+    p : float
+        Density [kg/m3].
+    G : float
+        Shear modulus G [Pa].
+    damage : list
+        Damage parameters.
+    hardening : list
+        Compression hardening parameters.
+    stiffening : list
+        Tension stiffening parameters.
     """
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
@@ -407,7 +534,7 @@ class ConcreteDamagedPlasticityBase(MaterialBase):
 # ==============================================================================
 
 class ThermalMaterialBase(MaterialBase):
-    """Class for thermal material properties.
+    """Class for thermal material properties. [WIP]
 
     Parameters
     ----------

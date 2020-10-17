@@ -79,8 +79,7 @@
 
 
 <div class="viewcode-block" id="GeneralDisplacementBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.GeneralDisplacementBase.html#compas_fea2.backends._base.problem.GeneralDisplacementBase">[docs]</a><span class="k">class</span> <span class="nc">GeneralDisplacementBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; Initialises the base GeneralDisplacement object.</span>
+    <span class="sd">&quot;&quot;&quot;Initialises the base GeneralDisplacement object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -103,21 +102,26 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
 <span class="sd">    components : dict</span>
 <span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GeneralDisplacementBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.GeneralDisplacementBase.__init__.html#compas_fea2.backends._base.problem.GeneralDisplacementBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>   <span class="o">=</span> <span class="s1">&#39;GeneralDisplacement&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>       <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span>      <span class="o">=</span> <span class="n">nodes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;xx&#39;</span><span class="p">:</span> <span class="n">xx</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">:</span> <span class="n">yy</span><span class="p">,</span> <span class="s1">&#39;zz&#39;</span><span class="p">:</span> <span class="n">zz</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span>       <span class="o">=</span> <span class="n">axes</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;GeneralDisplacement&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+                           <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;xx&#39;</span><span class="p">:</span> <span class="n">xx</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">:</span> <span class="n">yy</span><span class="p">,</span> <span class="s1">&#39;zz&#39;</span><span class="p">:</span> <span class="n">zz</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;compas_fea2 </span><span class="si">{0}</span><span class="s1"> object&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
@@ -128,15 +132,13 @@
 
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
 
-
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">(</span><span class="si">{1}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FixedDisplacementBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementBase.html#compas_fea2.backends._base.problem.FixedDisplacementBase">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementBase</span><span class="p">(</span><span class="n">GeneralDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A fixed nodal displacement boundary condition.</span>
+    <span class="sd">&quot;&quot;&quot;A fixed nodal displacement boundary condition.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -145,18 +147,28 @@
 <span class="sd">    nodes : str, list</span>
 <span class="sd">        Node set string or nodes list the displacement is applied to.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FixedDisplacementBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementBase.__init__.html#compas_fea2.backends._base.problem.FixedDisplacementBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">GeneralDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">GeneralDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>   <span class="o">=</span> <span class="s1">&#39;FixedDisplacement&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;FixedDisplacement&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;xx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;zz&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span></div></div>
 
 
 <div class="viewcode-block" id="PinnedDisplacementBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PinnedDisplacementBase.html#compas_fea2.backends._base.problem.PinnedDisplacementBase">[docs]</a><span class="k">class</span> <span class="nc">PinnedDisplacementBase</span><span class="p">(</span><span class="n">GeneralDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -165,17 +177,27 @@
 <span class="sd">    nodes : str, list</span>
 <span class="sd">        Node set string or nodes list the displacement is applied to.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PinnedDisplacementBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PinnedDisplacementBase.__init__.html#compas_fea2.backends._base.problem.PinnedDisplacementBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">GeneralDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">GeneralDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;PinnedDisplacement&#39;</span></div></div>
 
 
 <div class="viewcode-block" id="FixedDisplacementXXBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementXXBase.html#compas_fea2.backends._base.problem.FixedDisplacementXXBase">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementXXBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition clamped in XX.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in XX.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -186,18 +208,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FixedDisplacementXXBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementXXBase.__init__.html#compas_fea2.backends._base.problem.FixedDisplacementXXBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;FixedDisplacementXX&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div></div>
 
 
 <div class="viewcode-block" id="FixedDisplacementYYBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementYYBase.html#compas_fea2.backends._base.problem.FixedDisplacementYYBase">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementYYBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition clamped in YY.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in YY.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -208,18 +240,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FixedDisplacementYYBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementYYBase.__init__.html#compas_fea2.backends._base.problem.FixedDisplacementYYBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;FixedDisplacementYY&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;yy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div></div>
 
 
 <div class="viewcode-block" id="FixedDisplacementZZBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementZZBase.html#compas_fea2.backends._base.problem.FixedDisplacementZZBase">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementZZBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition clamped in ZZ.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in ZZ.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -230,18 +272,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FixedDisplacementZZBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.FixedDisplacementZZBase.__init__.html#compas_fea2.backends._base.problem.FixedDisplacementZZBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;FixedDisplacementZZ&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;zz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div></div>
 
 
 <div class="viewcode-block" id="RollerDisplacementXBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXBase.html#compas_fea2.backends._base.problem.RollerDisplacementXBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementXBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in X.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -252,18 +304,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementXBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementXBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementX&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="RollerDisplacementYBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementYBase.html#compas_fea2.backends._base.problem.RollerDisplacementYBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementYBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in Y.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Y.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -274,18 +336,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementYBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementYBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementYBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementY&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="RollerDisplacementZBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementZBase.html#compas_fea2.backends._base.problem.RollerDisplacementZBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementZBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in Z.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Z.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -296,18 +368,28 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementZBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementZBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementZBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementZ&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="RollerDisplacementXYBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXYBase.html#compas_fea2.backends._base.problem.RollerDisplacementXYBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementXYBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in X and Y.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X and Y.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -318,10 +400,21 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementXYBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXYBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementXYBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementXY&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -329,8 +422,7 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementYZBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementYZBase.html#compas_fea2.backends._base.problem.RollerDisplacementYZBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementYZBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in Y and Z.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Y and Z.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -341,10 +433,21 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementYZBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementYZBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementYZBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementYZ&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -352,8 +455,7 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementXZBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXZBase.html#compas_fea2.backends._base.problem.RollerDisplacementXZBase">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementXZBase</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot; A pinned nodal displacement boundary condition released in X and Z.</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X and Z.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -364,10 +466,21 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set string or nodes list the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RollerDisplacementXZBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.RollerDisplacementXZBase.__init__.html#compas_fea2.backends._base.problem.RollerDisplacementXZBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
-        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">PinnedDisplacementBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;RollerDisplacementXZ&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>

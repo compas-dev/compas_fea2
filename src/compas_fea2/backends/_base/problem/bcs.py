@@ -24,8 +24,7 @@ __all__ = [
 
 
 class GeneralDisplacementBase(object):
-
-    """ Initialises the base GeneralDisplacement object.
+    """Initialises the base GeneralDisplacement object.
 
     Parameters
     ----------
@@ -48,21 +47,26 @@ class GeneralDisplacementBase(object):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
     components : dict
         Values of x, y, z, xx, yy, zz degrees-of-freedom.
     axes : str
         'local' or 'global' coordinate axes.
-
     """
 
     def __init__(self, name, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
 
-        self.__name__   = 'GeneralDisplacement'
-        self.name       = name
-        self.nodes      = nodes
-        self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
-        self.axes       = axes
-
+        self.__name__ = 'GeneralDisplacement'
+        self.name = name
+        self.nodes = nodes
+        self.components = {'x': x, 'y': y,
+                           'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
+        self.axes = axes
 
     def __str__(self):
         title = 'compas_fea2 {0} object'.format(self.__name__)
@@ -73,15 +77,13 @@ class GeneralDisplacementBase(object):
 
         return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
-
     def __repr__(self):
 
         return '{0}({1})'.format(self.__name__, self.name)
 
 
 class FixedDisplacementBase(GeneralDisplacementBase):
-
-    """ A fixed nodal displacement boundary condition.
+    """A fixed nodal displacement boundary condition.
 
     Parameters
     ----------
@@ -90,18 +92,28 @@ class FixedDisplacementBase(GeneralDisplacementBase):
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        GeneralDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
-        self.__name__   = 'FixedDisplacement'
+        self.__name__ = 'FixedDisplacement'
         self.components = {'x': 0, 'y': 0, 'z': 0, 'xx': 0, 'yy': 0, 'zz': 0}
 
 
 class PinnedDisplacementBase(GeneralDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition.
+    """A pinned nodal displacement boundary condition.
 
     Parameters
     ----------
@@ -110,17 +122,27 @@ class PinnedDisplacementBase(GeneralDisplacementBase):
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacementBase.__init__(self, name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
+        GeneralDisplacementBase.__init__(
+            self, name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
 
         self.__name__ = 'PinnedDisplacement'
 
 
 class FixedDisplacementXXBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition clamped in XX.
+    """A pinned nodal displacement boundary condition clamped in XX.
 
     Parameters
     ----------
@@ -131,18 +153,28 @@ class FixedDisplacementXXBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementXX'
         self.components['xx'] = 0
 
 
 class FixedDisplacementYYBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition clamped in YY.
+    """A pinned nodal displacement boundary condition clamped in YY.
 
     Parameters
     ----------
@@ -153,18 +185,28 @@ class FixedDisplacementYYBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementYY'
         self.components['yy'] = 0
 
 
 class FixedDisplacementZZBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition clamped in ZZ.
+    """A pinned nodal displacement boundary condition clamped in ZZ.
 
     Parameters
     ----------
@@ -175,18 +217,28 @@ class FixedDisplacementZZBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'FixedDisplacementZZ'
         self.components['zz'] = 0
 
 
 class RollerDisplacementXBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in X.
+    """A pinned nodal displacement boundary condition released in X.
 
     Parameters
     ----------
@@ -197,18 +249,28 @@ class RollerDisplacementXBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementX'
         self.components['x'] = None
 
 
 class RollerDisplacementYBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in Y.
+    """A pinned nodal displacement boundary condition released in Y.
 
     Parameters
     ----------
@@ -219,18 +281,28 @@ class RollerDisplacementYBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementY'
         self.components['y'] = None
 
 
 class RollerDisplacementZBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in Z.
+    """A pinned nodal displacement boundary condition released in Z.
 
     Parameters
     ----------
@@ -241,18 +313,28 @@ class RollerDisplacementZBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementZ'
         self.components['z'] = None
 
 
 class RollerDisplacementXYBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in X and Y.
+    """A pinned nodal displacement boundary condition released in X and Y.
 
     Parameters
     ----------
@@ -263,10 +345,21 @@ class RollerDisplacementXYBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementXY'
         self.components['x'] = None
@@ -274,8 +367,7 @@ class RollerDisplacementXYBase(PinnedDisplacementBase):
 
 
 class RollerDisplacementYZBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in Y and Z.
+    """A pinned nodal displacement boundary condition released in Y and Z.
 
     Parameters
     ----------
@@ -286,10 +378,21 @@ class RollerDisplacementYZBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementYZ'
         self.components['y'] = None
@@ -297,8 +400,7 @@ class RollerDisplacementYZBase(PinnedDisplacementBase):
 
 
 class RollerDisplacementXZBase(PinnedDisplacementBase):
-
-    """ A pinned nodal displacement boundary condition released in X and Z.
+    """A pinned nodal displacement boundary condition released in X and Z.
 
     Parameters
     ----------
@@ -309,10 +411,21 @@ class RollerDisplacementXZBase(PinnedDisplacementBase):
     axes : str
         'local' or 'global' co-ordinate axes.
 
+    Attributes
+    ----------
+    name : str
+        Name of the Displacement object.
+    nodes : str, list
+        Node set string or nodes list the displacement is applied to.
+    components : dict
+        Values of x, y, z, xx, yy, zz degrees-of-freedom.
+    axes : str
+        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, axes=axes)
+        PinnedDisplacementBase.__init__(
+            self, name=name, nodes=nodes, axes=axes)
 
         self.__name__ = 'RollerDisplacementXZ'
         self.components['x'] = None

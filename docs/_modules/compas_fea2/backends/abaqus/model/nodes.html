@@ -67,9 +67,9 @@
 <span class="p">]</span>
 
 
-<span class="c1"># ==============================================================================</span>
+<span class="c1"># =============================================================================</span>
 <span class="c1"># General</span>
-<span class="c1"># ==============================================================================</span>
+<span class="c1"># =============================================================================</span>
 
 <div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Node.html#compas_fea2.backends.abaqus.model.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">NodeBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Node class</span>
@@ -104,16 +104,20 @@
 <span class="sd">    label : [type], optional</span>
 <span class="sd">        [description], by default None</span>
 
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; n = Node([2,3,4])</span>
+<span class="sd">    &gt;&gt;&gt; n.key=300</span>
+<span class="sd">    &gt;&gt;&gt; print(n.key)</span>
+
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
 <span class="sd">    The nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts</span>
 <span class="sd">    from 1. The conversion in automatically resolved by compas_fea2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Node.__init__.html#compas_fea2.backends.abaqus.model.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ez</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
+<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Node.__init__.html#compas_fea2.backends.abaqus.model.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ez</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">xyz</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="n">ex</span><span class="p">,</span> <span class="n">ey</span><span class="o">=</span><span class="n">ey</span><span class="p">,</span> <span class="n">ez</span><span class="o">=</span><span class="n">ez</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="n">mass</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span></div>
-        <span class="c1"># self.keyword = &#39;*Node\n&#39;</span>
-        <span class="c1"># self.data = self._generate_data()</span>
 
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Generates the string information for the input file.</span>
@@ -129,6 +133,10 @@
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xyz</span>
         <span class="k">return</span> <span class="s1">&#39; </span><span class="si">{0}</span><span class="s1">,    </span><span class="si">{1:.3f}</span><span class="s1">,    </span><span class="si">{2:.3f}</span><span class="s1">,    </span><span class="si">{3:.3f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span></div>
 
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># Debugging</span>
+<span class="c1"># =============================================================================</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus</span> <span class="kn">import</span> <span class="n">Node</span>

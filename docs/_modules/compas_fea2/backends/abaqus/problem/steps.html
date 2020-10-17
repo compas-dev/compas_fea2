@@ -79,7 +79,7 @@
     <span class="s1">&#39;AcoustiStepBase&#39;</span>
 <span class="p">]</span>
 
-
+<span class="c1"># TODO remove _GeneralStep and get everything forn _base</span>
 <span class="c1"># TODO add field and history output requrests</span>
 
 <span class="k">class</span> <span class="nc">_GeneralStep</span><span class="p">(</span><span class="n">StepBase</span><span class="p">):</span>
@@ -155,17 +155,17 @@
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[],</span> <span class="n">field_outputs</span><span class="o">=</span><span class="p">[],</span> <span class="n">history_outputs</span><span class="o">=</span><span class="p">[]):</span>  <span class="c1">#todo: this could be moved outside the class</span>
 
         <span class="n">section_data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;** ----------------------------------------------------------------</span>
-<span class="s2">**</span>
-<span class="s2">** STEP: </span><span class="si">{0}</span><span class="s2"></span>
-<span class="s2">**</span>
-<span class="s2">* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, inc=</span><span class="si">{2}</span><span class="s2"></span>
-<span class="s2">*</span><span class="si">{3}</span><span class="s2"></span>
-<span class="si">{4}</span><span class="s2">, </span><span class="si">{5}</span><span class="s2">, </span><span class="si">{6}</span><span class="s2">, </span><span class="si">{5}</span><span class="s2"></span>
-<span class="s2">**</span>
-<span class="s2">** DISPLACEMENTS</span>
-<span class="s2">**</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_increments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">initial_inc_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_inc_size</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;** ----------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;** STEP: </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, inc=</span><span class="si">{2}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;*</span><span class="si">{3}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;</span><span class="si">{4}</span><span class="s2">, </span><span class="si">{5}</span><span class="s2">, </span><span class="si">{6}</span><span class="s2">, </span><span class="si">{5}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;** DISPLACEMENTS</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_increments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_inc_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">min_inc_size</span><span class="p">)</span>
         <span class="n">section_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">displacement</span> <span class="ow">in</span> <span class="n">displacements</span><span class="p">:</span>
@@ -177,11 +177,11 @@
         <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">loads</span><span class="p">:</span>
             <span class="n">section_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">load</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">())</span>
 
-        <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;**</span>
-<span class="s2">** OUTPUT REQUESTS</span>
-<span class="s2">**</span>
-<span class="s2">*Restart, write, frequency=0</span>
-<span class="s2">**</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;** OUTPUT REQUESTS</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;*Restart, write, frequency=0</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">section_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">foutput</span> <span class="ow">in</span> <span class="n">field_outputs</span><span class="p">:</span>
@@ -252,13 +252,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">attr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;displacements&#39;</span><span class="p">,</span> <span class="s1">&#39;loads&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;Static&#39;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;** ----------------------------------------------------------------</span>
-<span class="s2">**</span>
-<span class="s2">** STEP: </span><span class="si">{0}</span><span class="s2"></span>
-<span class="s2">**</span>
-<span class="s2">* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, perturbation</span>
-<span class="s2">*</span><span class="si">{2}</span><span class="s2"></span>
-<span class="s2">**</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;** ----------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;** STEP: </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, perturbation</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;*</span><span class="si">{2}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">)</span></div></div>
 
 <span class="k">class</span> <span class="nc">BuckleStep</span><span class="p">(</span><span class="n">_LinearPertubationStep</span><span class="p">):</span>
     <span class="bp">NotImplemented</span>

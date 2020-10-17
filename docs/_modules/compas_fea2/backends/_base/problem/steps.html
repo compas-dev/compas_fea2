@@ -62,6 +62,7 @@
 <span class="c1">#            Francesco Ranaudo (github.com/franaudo)</span>
 
 <span class="c1"># TODO: change &#39;Step&#39; to &#39;Case&#39; to make it less abaqus-dependent</span>
+<span class="c1"># TODO: check if stype should be accessible or not</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;StepBase&#39;</span><span class="p">,</span>
@@ -78,6 +79,11 @@
     <span class="sd">&quot;&quot;&quot;Initialises base Step object.</span>
 
 <span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Step object.</span>
+
+<span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
 <span class="sd">        Name of the Step object.</span>
@@ -125,14 +131,39 @@
 <span class="sd">        Displacement object names.</span>
 <span class="sd">    loads : list</span>
 <span class="sd">        Load object names.</span>
-<span class="sd">    type : str</span>
+<span class="sd">    stype : str</span>
 <span class="sd">        &#39;static&#39;,&#39;static,riks&#39;.</span>
 <span class="sd">    modify : bool</span>
 <span class="sd">        Modify the previously added loads.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the GeneralStep.</span>
+<span class="sd">    increments : int</span>
+<span class="sd">        Number of step increments.</span>
+<span class="sd">    iterations : int</span>
+<span class="sd">        Number of step iterations.</span>
+<span class="sd">    tolerance : float</span>
+<span class="sd">        A tolerance for analysis solvers.</span>
+<span class="sd">    factor : float, dict</span>
+<span class="sd">        Proportionality factor(s) on the loads and displacements.</span>
+<span class="sd">    nlgeom : bool</span>
+<span class="sd">        Analyse non-linear geometry effects.</span>
+<span class="sd">    nlmat : bool</span>
+<span class="sd">        Analyse non-linear material effects.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement object names.</span>
+<span class="sd">    loads : list</span>
+<span class="sd">        Load object names.</span>
+<span class="sd">    stype : str</span>
+<span class="sd">        &#39;static&#39;,&#39;static,riks&#39;.</span>
+<span class="sd">    modify : bool</span>
+<span class="sd">        Modify the previously added loads.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="GeneralStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.GeneralStepBase.__init__.html#compas_fea2.backends._base.problem.GeneralStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nlgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nlmat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneralStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.GeneralStepBase.__init__.html#compas_fea2.backends._base.problem.GeneralStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">nlgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nlmat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span> <span class="n">modify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">StepBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">displacements</span><span class="p">:</span>
@@ -172,11 +203,27 @@
 <span class="sd">        Initial temperature of all nodes.</span>
 <span class="sd">    dTmax : float</span>
 <span class="sd">        Maximum temperature increase per increment.</span>
-<span class="sd">    type : str</span>
+<span class="sd">    stype : str</span>
 <span class="sd">        &#39;heat transfer&#39;.</span>
 <span class="sd">    duration : float</span>
 <span class="sd">        Duration of step.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the HeatStep.</span>
+<span class="sd">    interaction : str</span>
+<span class="sd">        Name of the HeatTransfer interaction.</span>
+<span class="sd">    increments : int</span>
+<span class="sd">        Number of step increments.</span>
+<span class="sd">    temp0 : float</span>
+<span class="sd">        Initial temperature of all nodes.</span>
+<span class="sd">    dTmax : float</span>
+<span class="sd">        Maximum temperature increase per increment.</span>
+<span class="sd">    stype : str</span>
+<span class="sd">        &#39;heat transfer&#39;.</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration of step.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HeatStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.HeatStepBase.__init__.html#compas_fea2.backends._base.problem.HeatStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">interaction</span><span class="p">,</span> <span class="n">increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">temp0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dTmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;heat transfer&#39;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -206,9 +253,21 @@
 <span class="sd">        Number of increments.</span>
 <span class="sd">    displacements : list</span>
 <span class="sd">        Displacement object names.</span>
-<span class="sd">    type : str</span>
+<span class="sd">    stype : str</span>
 <span class="sd">        &#39;modal&#39;.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the ModalStep.</span>
+<span class="sd">    modes : int</span>
+<span class="sd">        Number of modes to analyse.</span>
+<span class="sd">    increments : int</span>
+<span class="sd">        Number of increments.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement object names.</span>
+<span class="sd">    stype : str</span>
+<span class="sd">        &#39;modal&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ModalStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.ModalStepBase.__init__.html#compas_fea2.backends._base.problem.ModalStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;modal&#39;</span><span class="p">):</span>
@@ -243,9 +302,25 @@
 <span class="sd">        Proportionality factor on the loads and displacements.</span>
 <span class="sd">    damping : float</span>
 <span class="sd">        Constant harmonic damping ratio.</span>
-<span class="sd">    type : str</span>
+<span class="sd">    stype : str</span>
 <span class="sd">        &#39;harmonic&#39;.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the HarmoniStepBase.</span>
+<span class="sd">    freq_list : list</span>
+<span class="sd">        Sorted list of frequencies to analyse.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement object names.</span>
+<span class="sd">    loads : list</span>
+<span class="sd">        Load object names.</span>
+<span class="sd">    factor : float</span>
+<span class="sd">        Proportionality factor on the loads and displacements.</span>
+<span class="sd">    damping : float</span>
+<span class="sd">        Constant harmonic damping ratio.</span>
+<span class="sd">    stype : str</span>
+<span class="sd">        &#39;harmonic&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HarmonicStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.HarmonicStepBase.__init__.html#compas_fea2.backends._base.problem.HarmonicStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">freq_list</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;harmonic&#39;</span><span class="p">):</span>
@@ -264,7 +339,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">loads</span>         <span class="o">=</span> <span class="n">loads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factor</span>        <span class="o">=</span> <span class="n">factor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">damping</span>       <span class="o">=</span> <span class="n">damping</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stype</span>          <span class="o">=</span> <span class="n">stype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stype</span>         <span class="o">=</span> <span class="n">stype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;freq_list&#39;</span><span class="p">,</span> <span class="s1">&#39;displacements&#39;</span><span class="p">,</span> <span class="s1">&#39;loads&#39;</span><span class="p">,</span> <span class="s1">&#39;factor&#39;</span><span class="p">,</span> <span class="s1">&#39;damping&#39;</span><span class="p">,</span> <span class="s1">&#39;stype&#39;</span><span class="p">])</span></div></div>
 
 
@@ -285,11 +360,29 @@
 <span class="sd">        Displacement object names.</span>
 <span class="sd">    loads : list</span>
 <span class="sd">        Load object names.</span>
-<span class="sd">    type : str</span>
+<span class="sd">    stype : str</span>
 <span class="sd">        &#39;buckle&#39;.</span>
 <span class="sd">    step : str</span>
 <span class="sd">        Step to copy loads and displacements from.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the BucklingStep.</span>
+<span class="sd">    modes : int</span>
+<span class="sd">        Number of modes to analyse.</span>
+<span class="sd">    increments : int</span>
+<span class="sd">        Number of increments.</span>
+<span class="sd">    factor : float, dict</span>
+<span class="sd">        Proportionality factor on the loads and displacements.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement object names.</span>
+<span class="sd">    loads : list</span>
+<span class="sd">        Load object names.</span>
+<span class="sd">    stype : str</span>
+<span class="sd">        &#39;buckle&#39;.</span>
+<span class="sd">    step : str</span>
+<span class="sd">        Step to copy loads and displacements from.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BucklingStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.BucklingStepBase.__init__.html#compas_fea2.backends._base.problem.BucklingStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stype</span><span class="o">=</span><span class="s1">&#39;buckle&#39;</span><span class="p">,</span>
@@ -340,6 +433,28 @@
 <span class="sd">    type : str</span>
 <span class="sd">        &#39;acoustic&#39;.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the AcoustiStepBase.</span>
+<span class="sd">    freq_range : list</span>
+<span class="sd">        Range of frequencies to analyse.</span>
+<span class="sd">    freq_step : int</span>
+<span class="sd">        Step size for frequency range.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement object names.</span>
+<span class="sd">    loads : list</span>
+<span class="sd">        Load object names.</span>
+<span class="sd">    sources : list</span>
+<span class="sd">        List of source elements or element sets radiating sound.</span>
+<span class="sd">    samples : int</span>
+<span class="sd">        Number of samples for acoustic analysis.</span>
+<span class="sd">    factor : float</span>
+<span class="sd">        Proportionality factor on the loads and displacements.</span>
+<span class="sd">    damping : float</span>
+<span class="sd">        Constant harmonic damping ratio.</span>
+<span class="sd">    type : str</span>
+<span class="sd">        &#39;acoustic&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AcousticStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.AcousticStepBase.__init__.html#compas_fea2.backends._base.problem.AcousticStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">freq_range</span><span class="p">,</span> <span class="n">freq_step</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>

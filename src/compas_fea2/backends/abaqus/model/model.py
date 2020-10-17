@@ -46,7 +46,7 @@ class Model():
         A dictionary of all the sets defined in the Model.
     """
 
-    def __init__(self, name, ):
+    def __init__(self, name):
         self.__name__ = 'Model'
         self.name = name
         self.instances = {}

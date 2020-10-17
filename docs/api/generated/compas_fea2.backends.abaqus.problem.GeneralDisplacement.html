@@ -62,6 +62,30 @@
 <dt id="compas_fea2.backends.abaqus.problem.GeneralDisplacement">
 <em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.problem.</code><code class="sig-name descname">GeneralDisplacement</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">bset</em>, <em class="sig-param">x=None</em>, <em class="sig-param">y=None</em>, <em class="sig-param">z=None</em>, <em class="sig-param">xx=None</em>, <em class="sig-param">yy=None</em>, <em class="sig-param">zz=None</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/problem/bcs.html#GeneralDisplacement"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.bcs.GeneralDisplacementBase</span></code></p>
+<p>Initialises the base GeneralDisplacement object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Displacement object.</p></li>
+<li><p><strong>bset</strong> (<em>obj</em>) – <cite>compas_fea2</cite> NodeSet object where the displacement is applied to.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – Value of x translation.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – Value of y translation.</p></li>
+<li><p><strong>z</strong> (<em>float</em>) – Value of z translation.</p></li>
+<li><p><strong>xx</strong> (<em>float</em>) – Value of xx rotation.</p></li>
+<li><p><strong>yy</strong> (<em>float</em>) – Value of yy rotation.</p></li>
+<li><p><strong>zz</strong> (<em>float</em>) – Value of zz rotation.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ co-ordinate axes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Displacement object.</p></li>
+<li><p><strong>bset</strong> (<em>obj</em>) – <cite>compas_fea2</cite> NodeSet object where the displacement is applied to.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Values of x, y, z, xx, yy, zz degrees-of-freedom.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ coordinate axes.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>

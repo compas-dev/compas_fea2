@@ -65,9 +65,9 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;LoadBase&#39;</span><span class="p">,</span>
-    <span class="c1"># &#39;PrestressLoadBase&#39;,</span>
+    <span class="s1">&#39;PrestressLoadBase&#39;</span><span class="p">,</span>
     <span class="s1">&#39;PointLoadBase&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PointLoadsBase&#39;</span><span class="p">,</span>
+    <span class="c1"># &#39;PointLoadsBase&#39;,</span>
     <span class="s1">&#39;LineLoadBase&#39;</span><span class="p">,</span>
     <span class="s1">&#39;AreaLoadBase&#39;</span><span class="p">,</span>
     <span class="s1">&#39;GravityLoadBase&#39;</span><span class="p">,</span>
@@ -95,6 +95,18 @@
 <span class="sd">    elements : str, list</span>
 <span class="sd">        Element set or element keys the load is applied to.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    nodes : str, list</span>
+<span class="sd">        Node set or node keys the load is applied to.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.LoadBase.__init__.html#compas_fea2.backends._base.problem.LoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">{},</span> <span class="n">nodes</span><span class="o">=</span><span class="p">[],</span> <span class="n">elements</span><span class="o">=</span><span class="p">[]):</span>
@@ -120,23 +132,34 @@
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">(</span><span class="si">{1}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<span class="c1"># class PrestressLoadBase(LoadBase):</span>
-<span class="c1">#     &quot;&quot;&quot;Pre-stress [units: N/m2] applied to element(s).</span>
+<div class="viewcode-block" id="PrestressLoadBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PrestressLoadBase.html#compas_fea2.backends._base.problem.PrestressLoadBase">[docs]</a><span class="k">class</span> <span class="nc">PrestressLoadBase</span><span class="p">(</span><span class="n">LoadBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pre-stress [units: N/m2] applied to element(s).</span>
 
-<span class="c1">#     Parameters</span>
-<span class="c1">#     ----------</span>
-<span class="c1">#     name : str</span>
-<span class="c1">#         Name of the PrestressLoad object.</span>
-<span class="c1">#     elements : str, list</span>
-<span class="c1">#         Element set or element keys the prestress is applied to.</span>
-<span class="c1">#     sxx : float</span>
-<span class="c1">#         Value of prestress for axial stress component sxx.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the PrestressLoad object.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the prestress is applied to.</span>
+<span class="sd">    sxx : float</span>
+<span class="sd">        Value of prestress for axial stress component sxx.</span>
 
-<span class="c1">#     def __init__(self, name, elements, sxx=0):</span>
-<span class="c1">#         Load.__init__(self, name=name, elements=elements, axes=&#39;local&#39;)</span>
-<span class="c1">#         self.__name__   = &#39;PrestressLoad&#39;</span>
-<span class="c1">#         self.components = {&#39;sxx&#39;: sxx}</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PrestressLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PrestressLoadBase.__init__.html#compas_fea2.backends._base.problem.PrestressLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">sxx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">LoadBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>   <span class="o">=</span> <span class="s1">&#39;PrestressLoad&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sxx&#39;</span><span class="p">:</span> <span class="n">sxx</span><span class="p">}</span></div></div>
 
 
 <div class="viewcode-block" id="PointLoadBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PointLoadBase.html#compas_fea2.backends._base.problem.PointLoadBase">[docs]</a><span class="k">class</span> <span class="nc">PointLoadBase</span><span class="p">(</span><span class="n">LoadBase</span><span class="p">):</span>
@@ -160,6 +183,17 @@
 <span class="sd">        yy component of moment.</span>
 <span class="sd">    zz : float</span>
 <span class="sd">        zz component of moment.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    nodes : str, list #TODO check</span>
+<span class="sd">        Node set or node keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PointLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PointLoadBase.__init__.html#compas_fea2.backends._base.problem.PointLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zz</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -167,21 +201,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>   <span class="o">=</span> <span class="s1">&#39;PointLoad&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;xx&#39;</span><span class="p">:</span> <span class="n">xx</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">:</span> <span class="n">yy</span><span class="p">,</span> <span class="s1">&#39;zz&#39;</span><span class="p">:</span> <span class="n">zz</span><span class="p">}</span></div></div>
 
+<span class="c1"># TODO check</span>
+<span class="c1"># class PointLoadsBase(LoadBase):</span>
+<span class="c1">#     &quot;&quot;&quot;Concentrated forces and moments [units:N, Nm] applied to different nodes.</span>
 
-<div class="viewcode-block" id="PointLoadsBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PointLoadsBase.html#compas_fea2.backends._base.problem.PointLoadsBase">[docs]</a><span class="k">class</span> <span class="nc">PointLoadsBase</span><span class="p">(</span><span class="n">LoadBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Concentrated forces and moments [units:N, Nm] applied to different nodes.</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     name : str</span>
+<span class="c1">#         Name of the PointLoads object.</span>
+<span class="c1">#     components : dict</span>
+<span class="c1">#         Node key : components dictionary data.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Name of the PointLoads object.</span>
-<span class="sd">    components : dict</span>
-<span class="sd">        Node key : components dictionary data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#     Attributes</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     name : str</span>
+<span class="c1">#         Name of the Load object.</span>
+<span class="c1">#     axes : str</span>
+<span class="c1">#         Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="c1">#     components : dict</span>
+<span class="c1">#         Load components.</span>
+<span class="c1">#     nodes : str, list</span>
+<span class="c1">#         Node set or node keys the load is applied to.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PointLoadsBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.PointLoadsBase.__init__.html#compas_fea2.backends._base.problem.PointLoadsBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">components</span><span class="p">):</span>
-        <span class="n">LoadBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;PointLoads&#39;</span></div></div>
+<span class="c1">#     def __init__(self, name, components):</span>
+<span class="c1">#         LoadBase.__init__(self, name=name, components=components, axes=&#39;global&#39;)</span>
+<span class="c1">#         self.__name__ = &#39;PointLoads&#39;</span>
 
 
 <div class="viewcode-block" id="LineLoadBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.LineLoadBase.html#compas_fea2.backends._base.problem.LineLoadBase">[docs]</a><span class="k">class</span> <span class="nc">LineLoadBase</span><span class="p">(</span><span class="n">LoadBase</span><span class="p">):</span>
@@ -205,6 +250,17 @@
 <span class="sd">        yy component of moment / length.</span>
 <span class="sd">    zz : float</span>
 <span class="sd">        zz component of moment / length.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LineLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.LineLoadBase.__init__.html#compas_fea2.backends._base.problem.LineLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">):</span>
@@ -228,6 +284,17 @@
 <span class="sd">        y component of area load.</span>
 <span class="sd">    z : float</span>
 <span class="sd">        z component of area load.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AreaLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.AreaLoadBase.__init__.html#compas_fea2.backends._base.problem.AreaLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">):</span>
@@ -253,6 +320,18 @@
 <span class="sd">        Factor to apply to y direction.</span>
 <span class="sd">    z : float</span>
 <span class="sd">        Factor to apply to z direction.</span>
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    g : float</span>
+<span class="sd">        Value of gravitational acceleration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GravityLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.GravityLoadBase.__init__.html#compas_fea2.backends._base.problem.GravityLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">9.81</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="mf">1.</span><span class="p">):</span>
@@ -274,6 +353,15 @@
 <span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    temperature : float</span>
 <span class="sd">        Temperature to apply to elements.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the ThermalLoad object.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        Temperature to apply to elements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ThermalLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.ThermalLoadBase.__init__.html#compas_fea2.backends._base.problem.ThermalLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
@@ -282,7 +370,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>    <span class="o">=</span> <span class="n">elements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature</span></div></div>
 
-
+<span class="c1">#TODO: this should be a method of the Model object...or something in that direction</span>
 <div class="viewcode-block" id="TributaryLoadBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.TributaryLoadBase.html#compas_fea2.backends._base.problem.TributaryLoadBase">[docs]</a><span class="k">class</span> <span class="nc">TributaryLoadBase</span><span class="p">(</span><span class="n">LoadBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Tributary area loads applied to nodes.</span>
 
@@ -303,8 +391,19 @@
 <span class="sd">    axes : str</span>
 <span class="sd">        TributaryLoad applied via &#39;local&#39; or &#39;global&#39; axes.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
 <span class="sd">    - The load components are loads per unit area [N/m2].</span>
 <span class="sd">    - Currently only supports &#39;global&#39; axis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -372,6 +471,17 @@
 <span class="sd">        Normal acting pressure to be applied to the elements.</span>
 <span class="sd">    phase : float</span>
 <span class="sd">        Phase angle in radians.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HarmonicPressureLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.HarmonicPressureLoadBase.__init__.html#compas_fea2.backends._base.problem.HarmonicPressureLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">pressure</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -395,6 +505,17 @@
 <span class="sd">        Speed of sound (defaults to air at 20 degrees)</span>
 <span class="sd">    max_inc_angle: float</span>
 <span class="sd">        Maximum angle with the positive z axis for the randon incident plane waves</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Load object.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        Load applied via &#39;local&#39; or &#39;global&#39; axes.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Load components.</span>
+<span class="sd">    elements : str, list</span>
+<span class="sd">        Element set or element keys the load is applied to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AcousticDiffuseFieldLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends._base.problem.AcousticDiffuseFieldLoadBase.__init__.html#compas_fea2.backends._base.problem.AcousticDiffuseFieldLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">air_density</span><span class="o">=</span><span class="mf">1.225</span><span class="p">,</span> <span class="n">sound_speed</span><span class="o">=</span><span class="mi">340</span><span class="p">,</span> <span class="n">max_inc_angle</span><span class="o">=</span><span class="mi">90</span><span class="p">):</span>

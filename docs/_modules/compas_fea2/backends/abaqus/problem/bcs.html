@@ -72,6 +72,7 @@
 
 <span class="c1"># Author(s): Francesco Ranaudo (github.com/franaudo)</span>
 
+<span class="c1">#TODO: add the possibility to add bcs to nodes/elements and not only to sets</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;GeneralDisplacement&#39;</span><span class="p">,</span>
@@ -92,8 +93,8 @@
 
 <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="n">data_section</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;** Name: </span><span class="si">{}</span><span class="s2"> Type: Displacement/Rotation</span>
-<span class="s2">*Boundary&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;** Name: </span><span class="si">{}</span><span class="s2"> Type: Displacement/Rotation</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;*Boundary&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">data_section</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="n">c</span><span class="o">=</span><span class="mi">1</span>
     <span class="k">for</span> <span class="n">dof</span> <span class="ow">in</span> <span class="n">dofs</span><span class="p">:</span>
@@ -108,7 +109,40 @@
 
 
 <div class="viewcode-block" id="GeneralDisplacement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.GeneralDisplacement.html#compas_fea2.backends.abaqus.problem.GeneralDisplacement">[docs]</a><span class="k">class</span> <span class="nc">GeneralDisplacement</span><span class="p">(</span><span class="n">GeneralDisplacementBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initialises the base GeneralDisplacement object.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    x : float</span>
+<span class="sd">        Value of x translation.</span>
+<span class="sd">    y : float</span>
+<span class="sd">        Value of y translation.</span>
+<span class="sd">    z : float</span>
+<span class="sd">        Value of z translation.</span>
+<span class="sd">    xx : float</span>
+<span class="sd">        Value of xx rotation.</span>
+<span class="sd">    yy : float</span>
+<span class="sd">        Value of yy rotation.</span>
+<span class="sd">    zz : float</span>
+<span class="sd">        Value of zz rotation.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="GeneralDisplacement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.GeneralDisplacement.__init__.html#compas_fea2.backends.abaqus.problem.GeneralDisplacement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GeneralDisplacement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -118,7 +152,28 @@
 
 
 <div class="viewcode-block" id="FixedDisplacement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacement.html#compas_fea2.backends.abaqus.problem.FixedDisplacement">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacement</span><span class="p">(</span><span class="n">FixedDisplacementBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A fixed nodal displacement boundary condition.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="FixedDisplacement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacement.__init__.html#compas_fea2.backends.abaqus.problem.FixedDisplacement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedDisplacement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -128,7 +183,28 @@
 
 
 <div class="viewcode-block" id="PinnedDisplacement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.PinnedDisplacement.html#compas_fea2.backends.abaqus.problem.PinnedDisplacement">[docs]</a><span class="k">class</span> <span class="nc">PinnedDisplacement</span><span class="p">(</span><span class="n">PinnedDisplacementBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="PinnedDisplacement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.PinnedDisplacement.__init__.html#compas_fea2.backends.abaqus.problem.PinnedDisplacement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PinnedDisplacement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -138,7 +214,28 @@
 
 
 <div class="viewcode-block" id="FixedDisplacementXX"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementXX.html#compas_fea2.backends.abaqus.problem.FixedDisplacementXX">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementXX</span><span class="p">(</span><span class="n">FixedDisplacementXXBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in XX.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="FixedDisplacementXX.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementXX.__init__.html#compas_fea2.backends.abaqus.problem.FixedDisplacementXX.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedDisplacementXX</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -148,7 +245,28 @@
 
 
 <div class="viewcode-block" id="FixedDisplacementYY"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementYY.html#compas_fea2.backends.abaqus.problem.FixedDisplacementYY">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementYY</span><span class="p">(</span><span class="n">FixedDisplacementYYBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in YY.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="FixedDisplacementYY.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementYY.__init__.html#compas_fea2.backends.abaqus.problem.FixedDisplacementYY.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedDisplacementYY</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -158,7 +276,28 @@
 
 
 <div class="viewcode-block" id="FixedDisplacementZZ"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementZZ.html#compas_fea2.backends.abaqus.problem.FixedDisplacementZZ">[docs]</a><span class="k">class</span> <span class="nc">FixedDisplacementZZ</span><span class="p">(</span><span class="n">FixedDisplacementZZBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition clamped in ZZ.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="FixedDisplacementZZ.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.FixedDisplacementZZ.__init__.html#compas_fea2.backends.abaqus.problem.FixedDisplacementZZ.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FixedDisplacementZZ</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -168,7 +307,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementX"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementX.html#compas_fea2.backends.abaqus.problem.RollerDisplacementX">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementX</span><span class="p">(</span><span class="n">RollerDisplacementXBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementX.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementX.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementX.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementX</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -178,7 +338,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementY"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementY.html#compas_fea2.backends.abaqus.problem.RollerDisplacementY">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementY</span><span class="p">(</span><span class="n">RollerDisplacementYBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Y.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementY.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementY.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementY.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementY</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -188,7 +369,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementZ"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementZ">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementZ</span><span class="p">(</span><span class="n">RollerDisplacementZBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Z.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementZ.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementZ.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementZ.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementZ</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -198,7 +400,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementXY"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXY.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXY">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementXY</span><span class="p">(</span><span class="n">RollerDisplacementXYBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X and Y.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementXY.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXY.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXY.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementXY</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -208,7 +431,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementYZ"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementYZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementYZ">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementYZ</span><span class="p">(</span><span class="n">RollerDisplacementYZBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in Y and Z.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementYZ.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementYZ.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementYZ.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementYZ</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -218,7 +462,28 @@
 
 
 <div class="viewcode-block" id="RollerDisplacementXZ"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXZ.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXZ">[docs]</a><span class="k">class</span> <span class="nc">RollerDisplacementXZ</span><span class="p">(</span><span class="n">RollerDisplacementXZBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A pinned nodal displacement boundary condition released in X and Z.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the RollerDisplacementXZ object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; co-ordinate axes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Displacement object.</span>
+<span class="sd">    bset : obj</span>
+<span class="sd">        `compas_fea2` NodeSet object where the displacement is applied to.</span>
+<span class="sd">    components : dict</span>
+<span class="sd">        Values of x, y, z, xx, yy, zz degrees-of-freedom.</span>
+<span class="sd">    axes : str</span>
+<span class="sd">        &#39;local&#39; or &#39;global&#39; coordinate axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RollerDisplacementXZ.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.RollerDisplacementXZ.__init__.html#compas_fea2.backends.abaqus.problem.RollerDisplacementXZ.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bset</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RollerDisplacementXZ</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bset</span> <span class="o">=</span> <span class="n">bset</span></div>
@@ -230,10 +495,6 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">RollerDisplacementXZ</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;bc_roller&#39;</span><span class="p">,</span> <span class="n">bset</span><span class="o">=</span><span class="s1">&#39;roller&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">())</span>
-    <span class="c1"># f=open(&#39;C:/temp/test_input.inp&#39;,&#39;w&#39;)</span>
-    <span class="c1"># # d.write_keyword(f)</span>
-    <span class="c1"># d.write_data(f)</span>
-    <span class="c1"># f.close()</span>
 
 
 </code></pre></div>

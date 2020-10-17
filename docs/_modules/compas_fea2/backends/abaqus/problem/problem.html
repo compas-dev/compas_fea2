@@ -88,11 +88,14 @@
 <span class="sd">    parts : list</span>
 <span class="sd">        List of the parts in the model.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Problem.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.__init__.html#compas_fea2.backends.abaqus.problem.Problem.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Problem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># TODO remove</span></div>
         <span class="c1"># self.interactions       = model.interactions</span>
 
     <span class="c1"># =========================================================================</span>
@@ -106,7 +109,15 @@
 <span class="sd">        ----------</span>
 <span class="sd">        step : obj</span>
 <span class="sd">            compas_fea2 Step object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># NOTE: the abaqus implementation is slightly different from the _base</span>
+        <span class="c1"># TODO: simplify and move to _base</span>
+
         <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">disp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
@@ -135,28 +146,6 @@
                     <span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Problem.add_steps"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.add_steps.html#compas_fea2.backends.abaqus.problem.Problem.add_steps">[docs]</a>    <span class="k">def</span> <span class="nf">add_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Adds multiple steps to the Problem.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        steps : list</span>
-<span class="sd">            list containing compas_fea2 Step objects.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_step</span></div>
-
-<div class="viewcode-block" id="Problem.define_steps_order"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.define_steps_order.html#compas_fea2.backends.abaqus.problem.Problem.define_steps_order">[docs]</a>    <span class="k">def</span> <span class="nf">define_steps_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Defines the order in which the steps are applied during the analysis.</span>
-<span class="sd">        NOTE: not implemented yet!</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        order : list</span>
-<span class="sd">            list containing the step names in the chosen order.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
 
     <span class="c1"># =========================================================================</span>
     <span class="c1">#                         Analysis methods</span>
@@ -191,7 +180,7 @@
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
 
-    <span class="c1"># this should be an abstract method of the base class</span>
+    <span class="c1"># TODO: try to make this an abstract method of the base class</span>
 <div class="viewcode-block" id="Problem.analyse"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse">[docs]</a>    <span class="k">def</span> <span class="nf">analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">user_mat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs the analysis through abaqus.</span>
@@ -225,9 +214,9 @@
     <span class="c1">#                         Results methods</span>
     <span class="c1"># =========================================================================</span>
 
-    <span class="c1"># this should be an abstract method of the base class</span>
+    <span class="c1"># TODO: try to make this an abstract method of the base class</span>
 <div class="viewcode-block" id="Problem.extract"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.extract.html#compas_fea2.backends.abaqus.problem.Problem.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">license</span><span class="o">=</span><span class="s1">&#39;research&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                     <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Extracts data from the analysis output files.</span>
 
 <span class="sd">        Parameters</span>

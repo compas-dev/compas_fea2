@@ -67,6 +67,7 @@
     <span class="s1">&#39;ProblemBase&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
+
 <span class="k">class</span> <span class="nc">ProblemBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Initialises the Problem object.</span>
 
@@ -77,29 +78,41 @@
 <span class="sd">    model : obj</span>
 <span class="sd">        model object.</span>
 
-
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Structure.</span>
+<span class="sd">    model : obj</span>
+<span class="sd">        model object.</span>
 <span class="sd">    bcs : dict</span>
 <span class="sd">        Dictionary containing the boundary conditions objects.</span>
 <span class="sd">    loads : dict</span>
 <span class="sd">        Dictionary containing the loads objects.</span>
 <span class="sd">    steps : list</span>
 <span class="sd">        List containing the Steps objects.</span>
-
+<span class="sd">    steps_order : list</span>
+<span class="sd">        List containing the Steps names in the sequence they are applied.</span>
+<span class="sd">    field_outputs : dict</span>
+<span class="sd">        Dictionary contanining the field output requests.</span>
+<span class="sd">    history_outputs : dict</span>
+<span class="sd">        Dictionary contanining the history output requests.</span>
+<span class="sd">    results : dict</span>
+<span class="sd">        Dictionary contanining the analysis results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>               <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span>              <span class="o">=</span> <span class="n">model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span>               <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span>                <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span>              <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span>              <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">steps_order</span>        <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span>      <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span>    <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps_order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">results</span>            <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="p">,</span>
@@ -111,9 +124,11 @@
         <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">entry</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;  </span><span class="si">{0}</span><span class="s1"> : </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;  </span><span class="si">{0}</span><span class="s1"> : </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
 <span class="s2">compas_fea2 Problem: </span><span class="si">{}</span><span class="s2"></span>
@@ -143,31 +158,83 @@
 <span class="s2">-----------------------</span>
 <span class="si">{}</span><span class="s2"></span>
 
-
 <span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-
 
     <span class="c1"># =========================================================================</span>
     <span class="c1">#                           BCs methods</span>
     <span class="c1"># =========================================================================</span>
 
     <span class="k">def</span> <span class="nf">add_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a boundary condition to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bc : obj</span>
+<span class="sd">            `compas_fea2` BoundaryCondtion object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">bset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: bc set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bc</span><span class="o">.</span><span class="n">bset</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="p">[</span><span class="n">bc</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">bc</span>
 
     <span class="k">def</span> <span class="nf">add_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple boundary conditions to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bcs : list</span>
+<span class="sd">            List of `compas_fea2` BoundaryCondtion objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">bc</span> <span class="ow">in</span> <span class="n">bcs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_bc</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">remove_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a boundary condition from the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bc_name : str</span>
+<span class="sd">            Name of the boundary condition to remove.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">remove_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes multiple boundary conditions from the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bc_names : list</span>
+<span class="sd">            List of names of the boundary conditions to remove.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">remove_all_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes all the boundary conditions from the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># =========================================================================</span>
@@ -175,34 +242,99 @@
     <span class="c1"># =========================================================================</span>
 
     <span class="k">def</span> <span class="nf">add_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple loads to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        load : list</span>
+<span class="sd">            List of `compas_fea2` Load objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">load</span><span class="o">.</span><span class="n">lset</span> <span class="ow">and</span> <span class="n">load</span><span class="o">.</span><span class="n">lset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sets</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: load set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="o">.</span><span class="n">lset</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">load</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">[</span><span class="n">load</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">load</span>
 
     <span class="k">def</span> <span class="nf">add_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loads</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple loads to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loads : list</span>
+<span class="sd">            List of `compas_fea2` Load objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">loads</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_load</span><span class="p">(</span><span class="n">load</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">remove_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes a load from the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        load_name : list</span>
+<span class="sd">            Name of the load to remove.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">remove_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bcs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes multiple loads from the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        load_names : list</span>
+<span class="sd">            List of the names of the loads to remove.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">remove_all_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;Removes all the loads from the Problem object.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># =========================================================================</span>
     <span class="c1">#                           Step methods</span>
     <span class="c1"># =========================================================================</span>
 
     <span class="k">def</span> <span class="nf">add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a Step to the Problem object.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Step : obj</span>
+<span class="sd">            `compas_fea2` Step object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: implement exception handler</span>
         <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">disp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: displacement </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disp</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: displacement </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disp</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">load</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
@@ -210,20 +342,48 @@
 
         <span class="k">for</span> <span class="n">fout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">fout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: field output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fout</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: field output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fout</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">hout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">hout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
 
-
     <span class="k">def</span> <span class="nf">add_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple steps to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        steps : list</span>
+<span class="sd">            List of `compas_fea2` Step objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_step</span>
 
     <span class="k">def</span> <span class="nf">define_steps_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Defines the order in which the steps are applied during the analysis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : list</span>
+<span class="sd">            List contaning the names of the analysis steps in the order in which</span>
+<span class="sd">            they are meant to be applied during the analysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        Not implemented yet!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="c1"># =========================================================================</span>
@@ -231,10 +391,32 @@
     <span class="c1"># =========================================================================</span>
 
     <span class="k">def</span> <span class="nf">add_field_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a FieldOutput object to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fout : obj</span>
+<span class="sd">            `compas_fea2` FieldOutput object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">fout</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">[</span><span class="n">fout</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fout</span>
 
     <span class="k">def</span> <span class="nf">add_field_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fouts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple FieldOutput objects to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fouts : list</span>
+<span class="sd">            List containing `compas_fea2` FieldOutput objects to be added.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">fout</span> <span class="ow">in</span> <span class="n">fouts</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_field_output</span><span class="p">(</span><span class="n">fout</span><span class="p">)</span>
 
@@ -243,13 +425,34 @@
     <span class="c1"># =========================================================================</span>
 
     <span class="k">def</span> <span class="nf">add_history_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a HistoryOutput object to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        hout : obj</span>
+<span class="sd">            `compas_fea2` HistoryOutput object to be added.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">hout</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">[</span><span class="n">hout</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hout</span>
 
     <span class="k">def</span> <span class="nf">add_history_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">houts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds multiple HistoryOutput objects to the Problem object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        houts : list</span>
+<span class="sd">            List containing `compas_fea2` HistoryOutput objects to be added.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">hout</span> <span class="ow">in</span> <span class="n">houts</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_history_output</span><span class="p">(</span><span class="n">hout</span><span class="p">)</span>
-
 
     <span class="c1"># ==============================================================================</span>
     <span class="c1"># Modifiers</span>
@@ -304,24 +507,6 @@
     <span class="c1">#         loads_dic[key] = load</span>
 
     <span class="c1">#     return loads_dic</span>
-
-    <span class="c1"># ==============================================================================</span>
-    <span class="c1"># Steps</span>
-    <span class="c1"># ==============================================================================</span>
-
-    <span class="c1"># def set_steps_order(self, order):</span>
-    <span class="c1">#     &quot;&quot;&quot;Sets the order that the Steps will be analysed.</span>
-
-    <span class="c1">#     Parameters</span>
-    <span class="c1">#     ----------</span>
-    <span class="c1">#     order : list</span>
-    <span class="c1">#         An ordered list of the Step names.</span>
-
-    <span class="c1">#     Returns</span>
-    <span class="c1">#     -------</span>
-    <span class="c1">#     None</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     self.steps_order = order</span>
 
     <span class="c1"># ==============================================================================</span>
     <span class="c1"># Results</span>
@@ -391,8 +576,6 @@
 
     <span class="c1">#     return data</span>
 
-
-
     <span class="c1"># ==============================================================================</span>
     <span class="c1"># Summary</span>
     <span class="c1"># ==============================================================================</span>
@@ -452,8 +635,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        obj</span>
-<span class="sd">            Imported Problem object.</span>
+<span class="sd">        problem : obj</span>
+<span class="sd">            Imported `compas_fea2` Problem object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">probelm</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>

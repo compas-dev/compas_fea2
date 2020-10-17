@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.backends._base.problem import LoadBase
-# from compas_fea2.backends._base.problem import PrestressLoadBase
+from compas_fea2.backends._base.problem import PrestressLoadBase
 from compas_fea2.backends._base.problem import PointLoadBase
 from compas_fea2.backends._base.problem import LineLoadBase
 from compas_fea2.backends._base.problem import AreaLoadBase
@@ -31,7 +31,7 @@ __all__ = [
     'AcousticDiffuseFieldLoad'
 ]
 
-dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
+dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 # class PrestressLoad(PrestressLoadBase):
 #     NotImplemented
@@ -40,8 +40,10 @@ dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
 class PointLoad(PointLoadBase):
+    # TODO: add the possibility to apply the load to a node and not just to a node set
     def __init__(self, name, lset, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
-        super(PointLoad, self).__init__(name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
+        super(PointLoad, self).__init__(
+            name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
 
         self.lset = lset
         if modify:
@@ -57,16 +59,17 @@ class PointLoad(PointLoadBase):
 
     def _generate_data(self):
         data_section = []
-        line = """** Name: {} Type: Concentrated Force
-*Cload, OP={}{}""".format(self.name, self.op, self.follow)
+        line = ("** Name: {} Type: Concentrated Force\n"
+                "*Cload, OP={}{}").format(self.name, self.op, self.follow)
         data_section.append(line)
-        c=1
+        c = 1
         for dof in dofs:
             if self.components[dof]:
-                line = """{}, {}, {}""".format(self.lset, c, self.components[dof])
+                line = """{}, {}, {}""".format(
+                    self.lset, c, self.components[dof])
                 data_section.append(line)
-            c+=1
-        return '\n'.join(data_section) +'\n'
+            c += 1
+        return '\n'.join(data_section) + '\n'
 
 
 class LineLoad(LineLoadBase):
@@ -88,9 +91,11 @@ class GravityLoad(GravityLoadBase):
         self.lset = None
 
     def _generate_data(self):
-        return """** Name: {} Type: Gravity
-*Dload
-, GRAV, {}, {}, {}, {}\n""".format(self.name, self.g, self.components['x'], self.components['y'], self.components['z'])
+        return ("** Name: {} Type: Gravity\n"
+                "*Dload\n"
+                ", GRAV, {}, {}, {}, {}\n").format(self.name, self.g, self.components['x'],
+                                                   self.components['y'], self.components['z'])
+
 
 class ThermalLoad(ThermalLoadBase):
     NotImplemented

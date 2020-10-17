@@ -62,6 +62,24 @@
 <dt id="compas_fea2.backends.abaqus.problem.RollerDisplacementY">
 <em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.problem.</code><code class="sig-name descname">RollerDisplacementY</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">bset</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/problem/bcs.html#RollerDisplacementY"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.bcs.RollerDisplacementYBase</span></code></p>
+<p>A pinned nodal displacement boundary condition released in Y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the RollerDisplacementXZ object.</p></li>
+<li><p><strong>bset</strong> (<em>obj</em>) – <cite>compas_fea2</cite> NodeSet object where the displacement is applied to.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ co-ordinate axes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Displacement object.</p></li>
+<li><p><strong>bset</strong> (<em>obj</em>) – <cite>compas_fea2</cite> NodeSet object where the displacement is applied to.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Values of x, y, z, xx, yy, zz degrees-of-freedom.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ coordinate axes.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>

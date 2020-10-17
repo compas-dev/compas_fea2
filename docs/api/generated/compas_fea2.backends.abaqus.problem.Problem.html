@@ -60,7 +60,7 @@
 <h1>Problem</h1>
 <dl class="class">
 <dt id="compas_fea2.backends.abaqus.problem.Problem">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.problem.</code><code class="sig-name descname">Problem</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">model</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.problem.</code><code class="sig-name descname">Problem</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/problem/problem.html#Problem"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.problem.ProblemBase</span></code></p>
 <p>Initialises the Problem object.</p>
 <dl class="field-list simple">
@@ -70,6 +70,9 @@
 <li><p><strong>model</strong> (<em>obj</em>) – model object.</p></li>
 <li><p><strong>parts</strong> (<em>list</em>) – List of the parts in the model.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><p><strong>None</strong></p>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
@@ -86,7 +89,7 @@
 <td><p>Adds a Step to the Problem.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_steps.html#compas_fea2.backends.abaqus.problem.Problem.add_steps" title="compas_fea2.backends.abaqus.problem.Problem.add_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_steps</span></code></a>(steps)</p></td>
-<td><p>Adds multiple steps to the Problem.</p></td>
+<td><p>Adds multiple steps to the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse" title="compas_fea2.backends.abaqus.problem.Problem.analyse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyse</span></code></a>(path[, exe, cpus, output, …])</p></td>
 <td><p>Runs the analysis through abaqus.</p></td>
@@ -94,7 +97,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.define_steps_order.html#compas_fea2.backends.abaqus.problem.Problem.define_steps_order" title="compas_fea2.backends.abaqus.problem.Problem.define_steps_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_steps_order</span></code></a>(order)</p></td>
 <td><p>Defines the order in which the steps are applied during the analysis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file" title="compas_fea2.backends.abaqus.problem.Problem.write_input_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_input_file</span></code></a>([path, output, save])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.extract.html#compas_fea2.backends.abaqus.problem.Problem.extract" title="compas_fea2.backends.abaqus.problem.Problem.extract"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract</span></code></a>([fields, steps, exe, sets, license, …])</p></td>
+<td><p>Extracts data from the analysis output files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file" title="compas_fea2.backends.abaqus.problem.Problem.write_input_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_input_file</span></code></a>([path, output, save])</p></td>
 <td><p>Writes the abaqus input file.</p></td>
 </tr>
 </tbody>
@@ -107,46 +113,46 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_bc.html#compas_fea2.backends.abaqus.problem.Problem.add_bc" title="compas_fea2.backends.abaqus.problem.Problem.add_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_bc</span></code></a>(bc)</p></td>
-<td><p></p></td>
+<td><p>Adds a boundary condition to the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_bcs.html#compas_fea2.backends.abaqus.problem.Problem.add_bcs" title="compas_fea2.backends.abaqus.problem.Problem.add_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_bcs</span></code></a>(bcs)</p></td>
-<td><p></p></td>
+<td><p>Adds multiple boundary conditions to the Problem object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_field_output.html#compas_fea2.backends.abaqus.problem.Problem.add_field_output" title="compas_fea2.backends.abaqus.problem.Problem.add_field_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_field_output</span></code></a>(fout)</p></td>
-<td><p></p></td>
+<td><p>Adds a FieldOutput object to the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_field_outputs.html#compas_fea2.backends.abaqus.problem.Problem.add_field_outputs" title="compas_fea2.backends.abaqus.problem.Problem.add_field_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_field_outputs</span></code></a>(fouts)</p></td>
-<td><p></p></td>
+<td><p>Adds multiple FieldOutput objects to the Problem object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_history_output.html#compas_fea2.backends.abaqus.problem.Problem.add_history_output" title="compas_fea2.backends.abaqus.problem.Problem.add_history_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_history_output</span></code></a>(hout)</p></td>
-<td><p></p></td>
+<td><p>Adds a HistoryOutput object to the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_history_outputs.html#compas_fea2.backends.abaqus.problem.Problem.add_history_outputs" title="compas_fea2.backends.abaqus.problem.Problem.add_history_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_history_outputs</span></code></a>(houts)</p></td>
-<td><p></p></td>
+<td><p>Adds multiple HistoryOutput objects to the Problem object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_load.html#compas_fea2.backends.abaqus.problem.Problem.add_load" title="compas_fea2.backends.abaqus.problem.Problem.add_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load</span></code></a>(load)</p></td>
-<td><p></p></td>
+<td><p>Adds multiple loads to the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.add_loads.html#compas_fea2.backends.abaqus.problem.Problem.add_loads" title="compas_fea2.backends.abaqus.problem.Problem.add_loads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_loads</span></code></a>(loads)</p></td>
-<td><p></p></td>
+<td><p>Adds multiple loads to the Problem object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.load_from_cfea.html#compas_fea2.backends.abaqus.problem.Problem.load_from_cfea" title="compas_fea2.backends.abaqus.problem.Problem.load_from_cfea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_cfea</span></code></a>(filename[, output])</p></td>
-<td><p>Imports a Structure object from an .obj file through Pickle.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.load_from_cfp.html#compas_fea2.backends.abaqus.problem.Problem.load_from_cfp" title="compas_fea2.backends.abaqus.problem.Problem.load_from_cfp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_cfp</span></code></a>(filename[, output])</p></td>
+<td><p>Imports a Problem object from an .cfp file through Pickle.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs.html#compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs" title="compas_fea2.backends.abaqus.problem.Problem.remove_all_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_bcs</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Removes all the boundary conditions from the Problem object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_all_loads.html#compas_fea2.backends.abaqus.problem.Problem.remove_all_loads" title="compas_fea2.backends.abaqus.problem.Problem.remove_all_loads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_all_loads</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>Removes all the loads from the Problem object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_bc.html#compas_fea2.backends.abaqus.problem.Problem.remove_bc" title="compas_fea2.backends.abaqus.problem.Problem.remove_bc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_bc</span></code></a>(bc_name)</p></td>
-<td><p></p></td>
+<td><p>Removes a boundary condition from the Problem object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_bcs.html#compas_fea2.backends.abaqus.problem.Problem.remove_bcs" title="compas_fea2.backends.abaqus.problem.Problem.remove_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_bcs</span></code></a>(bcs)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.remove_bcs.html#compas_fea2.backends.abaqus.problem.Problem.remove_bcs" title="compas_fea2.backends.abaqus.problem.Problem.remove_bcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_bcs</span></code></a>(bc_names)</p></td>
+<td><p>Removes multiple boundary conditions from the Problem object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.save_to_cfea.html#compas_fea2.backends.abaqus.problem.Problem.save_to_cfea" title="compas_fea2.backends.abaqus.problem.Problem.save_to_cfea"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_cfea</span></code></a>(path[, output])</p></td>
-<td><p>Exports the Structure object to an .obj file through Pickle.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.save_to_cfp.html#compas_fea2.backends.abaqus.problem.Problem.save_to_cfp" title="compas_fea2.backends.abaqus.problem.Problem.save_to_cfp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_cfp</span></code></a>(path[, output])</p></td>
+<td><p>Exports the Problem object to an .cfp file through Pickle.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.problem.Problem.summary.html#compas_fea2.backends.abaqus.problem.Problem.summary" title="compas_fea2.backends.abaqus.problem.Problem.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a>()</p></td>
 <td><p>Prints a summary of the Structure object.</p></td>
@@ -231,7 +237,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

@@ -60,20 +60,25 @@
 <h1>Model</h1>
 <dl class="class">
 <dt id="compas_fea2.backends.abaqus.model.Model">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/model/model.html#Model"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Initialises the Model object. This is in many aspects equivalent to an
 <cite>Assembly</cite> in Abaqus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the Model.</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of the Model.</p></li>
 <li><p><strong>parts</strong> (<em>list</em>) – A list with the Part objects referenced in the Model.</p></li>
-<li><p><strong>instances</strong> (<em>list</em>) – A list with the Instance objects belonging to the Model.</p></li>
-<li><p><strong>parts</strong> (<em>list</em>) – A list with the Part objects referenced in the Model.</p></li>
+<li><p><strong>instances</strong> (<em>dict</em>) – A dictionary with the Instance objects belonging to the Model.</p></li>
+<li><p><strong>parts</strong> (<em>dict</em>) – A dictionary with the Part objects referenced in the Model.</p></li>
 <li><p><strong>surfaces</strong> (<em>list</em>) – A list with the Surface objects belonging to the Model.</p></li>
 <li><p><strong>constraints</strong> (<em>list</em>) – A list with the Constraint objects belonging to the Model.</p></li>
-<li><p><strong>materials</strong> (<em>list</em>) – A list of all the materials defined int the Model.</p></li>
+<li><p><strong>materials</strong> (<em>dict</em>) – A dictionary of all the materials defined in the Model.</p></li>
+<li><p><strong>sections</strong> (<em>dict</em>) – A dictionary of all the sections defined in the Model.</p></li>
+<li><p><strong>sets</strong> (<em>dict</em>) – A dictionary of all the sets defined in the Model.</p></li>
 </ul>
 </dd>
 </dl>
@@ -153,26 +158,38 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.get_node_from_coordinates.html#compas_fea2.backends.abaqus.model.Model.get_node_from_coordinates" title="compas_fea2.backends.abaqus.model.Model.get_node_from_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_from_coordinates</span></code></a>(xyz, tol)</p></td>
 <td><p>Finds (if any) the Node object in the model with the specified coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.nodes_xyz.html#compas_fea2.backends.abaqus.model.Model.nodes_xyz" title="compas_fea2.backends.abaqus.model.Model.nodes_xyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes_xyz</span></code></a>([nodes])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.load_from_cfm.html#compas_fea2.backends.abaqus.model.Model.load_from_cfm" title="compas_fea2.backends.abaqus.model.Model.load_from_cfm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_cfm</span></code></a>(filename[, output])</p></td>
+<td><p>Imports a Model object from an .cfm file through Pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.nodes_xyz.html#compas_fea2.backends.abaqus.model.Model.nodes_xyz" title="compas_fea2.backends.abaqus.model.Model.nodes_xyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes_xyz</span></code></a>([nodes])</p></td>
 <td><p>Return the xyz co-ordinates of given or all nodes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_element.html#compas_fea2.backends.abaqus.model.Model.remove_element" title="compas_fea2.backends.abaqus.model.Model.remove_element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_element</span></code></a>(element_key, part)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_element.html#compas_fea2.backends.abaqus.model.Model.remove_element" title="compas_fea2.backends.abaqus.model.Model.remove_element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_element</span></code></a>(element_key, part)</p></td>
 <td><p>Removes the element from a Part in the Model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_elements.html#compas_fea2.backends.abaqus.model.Model.remove_elements" title="compas_fea2.backends.abaqus.model.Model.remove_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_elements</span></code></a>(elements, part)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_elements.html#compas_fea2.backends.abaqus.model.Model.remove_elements" title="compas_fea2.backends.abaqus.model.Model.remove_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_elements</span></code></a>(elements, part)</p></td>
 <td><p>Removes the elements from a Part in the Model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_instance.html#compas_fea2.backends.abaqus.model.Model.remove_instance" title="compas_fea2.backends.abaqus.model.Model.remove_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_instance</span></code></a>(instance)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_instance.html#compas_fea2.backends.abaqus.model.Model.remove_instance" title="compas_fea2.backends.abaqus.model.Model.remove_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_instance</span></code></a>(instance)</p></td>
 <td><p>Removes the part from the Model and all the referenced instances.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_node.html#compas_fea2.backends.abaqus.model.Model.remove_node" title="compas_fea2.backends.abaqus.model.Model.remove_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_node</span></code></a>(node_key, part)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_node.html#compas_fea2.backends.abaqus.model.Model.remove_node" title="compas_fea2.backends.abaqus.model.Model.remove_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_node</span></code></a>(node_key, part)</p></td>
 <td><p>Remove the node from a Part in the Model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_nodes.html#compas_fea2.backends.abaqus.model.Model.remove_nodes" title="compas_fea2.backends.abaqus.model.Model.remove_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_nodes</span></code></a>(nodes, part)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_nodes.html#compas_fea2.backends.abaqus.model.Model.remove_nodes" title="compas_fea2.backends.abaqus.model.Model.remove_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_nodes</span></code></a>(nodes, part)</p></td>
 <td><p>Remove the nodes from a Part in the Model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_part.html#compas_fea2.backends.abaqus.model.Model.remove_part" title="compas_fea2.backends.abaqus.model.Model.remove_part"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_part</span></code></a>(part)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.remove_part.html#compas_fea2.backends.abaqus.model.Model.remove_part" title="compas_fea2.backends.abaqus.model.Model.remove_part"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_part</span></code></a>(part)</p></td>
 <td><p>Removes the part from the Model and all the referenced instances of that part.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.save_to_cfm.html#compas_fea2.backends.abaqus.model.Model.save_to_cfm" title="compas_fea2.backends.abaqus.model.Model.save_to_cfm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_to_cfm</span></code></a>(path[, output])</p></td>
+<td><p>Exports the Model object to an .cfm file through Pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.shell_from_mesh.html#compas_fea2.backends.abaqus.model.Model.shell_from_mesh" title="compas_fea2.backends.abaqus.model.Model.shell_from_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shell_from_mesh</span></code></a>(mesh, shell_section)</p></td>
+<td><p>Creates a Model object from a compas Mesh object [WIP].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.backends.abaqus.model.Model.summary.html#compas_fea2.backends.abaqus.model.Model.summary" title="compas_fea2.backends.abaqus.model.Model.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a>()</p></td>
+<td><p>Prints a summary of the Model object.</p></td>
 </tr>
 </tbody>
 </table>
@@ -261,7 +278,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

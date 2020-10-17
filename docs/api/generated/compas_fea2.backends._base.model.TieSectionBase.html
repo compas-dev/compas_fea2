@@ -60,7 +60,7 @@
 <h1>TieSectionBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.TieSectionBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">TieSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">A</em>, <em class="sig-param">material</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">TieSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">A</em>, <em class="sig-param">material</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/sections.html#TieSectionBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.sections.TrussSectionBase</span></code></p>
 <p>For use with tie elements.</p>
 <dl class="field-list simple">
@@ -68,6 +68,14 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Section name.</p></li>
 <li><p><strong>A</strong> (<em>float</em>) – Area.</p></li>
+<li><p><strong>material</strong> (<em>obj</em>) – <cite>compas_fea2</cite> Material object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Section object name.</p></li>
+<li><p><strong>material</strong> (<em>obj</em>) – <cite>compas_fea2</cite> Material object.</p></li>
+<li><p><strong>geometry</strong> (<em>dict</em>) – Dictionary containing the geometric properties of the section.</p></li>
 </ul>
 </dd>
 </dl>
@@ -168,7 +176,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

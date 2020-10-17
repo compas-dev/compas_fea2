@@ -22,7 +22,7 @@ __all__ = [
 
 
 class ElementBase(object):
-    """Initialises base Element object.
+    """Initialises a base Element object.
 
     Parameters
     ----------
@@ -34,6 +34,9 @@ class ElementBase(object):
         Section Object assigned to the element.
     thermal : bool
         Thermal properties on or off.
+
+    Attributes
+    ----------
     axes : dict
         The local element axes.
     etype : str

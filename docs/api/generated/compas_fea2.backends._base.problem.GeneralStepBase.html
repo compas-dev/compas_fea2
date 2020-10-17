@@ -60,7 +60,7 @@
 <h1>GeneralStepBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.problem.GeneralStepBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">GeneralStepBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">increments=100</em>, <em class="sig-param">iterations=100</em>, <em class="sig-param">tolerance=0.01</em>, <em class="sig-param">factor=1.0</em>, <em class="sig-param">nlgeom=False</em>, <em class="sig-param">nlmat=True</em>, <em class="sig-param">displacements=None</em>, <em class="sig-param">loads=None</em>, <em class="sig-param">stype='static'</em>, <em class="sig-param">modify=True</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">GeneralStepBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">increments=100</em>, <em class="sig-param">iterations=100</em>, <em class="sig-param">tolerance=0.01</em>, <em class="sig-param">factor=1.0</em>, <em class="sig-param">nlgeom=False</em>, <em class="sig-param">nlmat=True</em>, <em class="sig-param">displacements=None</em>, <em class="sig-param">loads=None</em>, <em class="sig-param">stype='static'</em>, <em class="sig-param">modify=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/problem/steps.html#GeneralStepBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.steps.StepBase</span></code></p>
 <p>Initialises GeneralStep object for use in a static analysis.</p>
 <dl class="field-list simple">
@@ -75,7 +75,22 @@
 <li><p><strong>nlmat</strong> (<em>bool</em>) – Analyse non-linear material effects.</p></li>
 <li><p><strong>displacements</strong> (<em>list</em>) – Displacement object names.</p></li>
 <li><p><strong>loads</strong> (<em>list</em>) – Load object names.</p></li>
-<li><p><strong>type</strong> (<em>str</em>) – ‘static’,’static,riks’.</p></li>
+<li><p><strong>stype</strong> (<em>str</em>) – ‘static’,’static,riks’.</p></li>
+<li><p><strong>modify</strong> (<em>bool</em>) – Modify the previously added loads.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the GeneralStep.</p></li>
+<li><p><strong>increments</strong> (<em>int</em>) – Number of step increments.</p></li>
+<li><p><strong>iterations</strong> (<em>int</em>) – Number of step iterations.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – A tolerance for analysis solvers.</p></li>
+<li><p><strong>factor</strong> (<em>float, dict</em>) – Proportionality factor(s) on the loads and displacements.</p></li>
+<li><p><strong>nlgeom</strong> (<em>bool</em>) – Analyse non-linear geometry effects.</p></li>
+<li><p><strong>nlmat</strong> (<em>bool</em>) – Analyse non-linear material effects.</p></li>
+<li><p><strong>displacements</strong> (<em>list</em>) – Displacement object names.</p></li>
+<li><p><strong>loads</strong> (<em>list</em>) – Load object names.</p></li>
+<li><p><strong>stype</strong> (<em>str</em>) – ‘static’,’static,riks’.</p></li>
 <li><p><strong>modify</strong> (<em>bool</em>) – Modify the previously added loads.</p></li>
 </ul>
 </dd>
@@ -177,7 +192,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

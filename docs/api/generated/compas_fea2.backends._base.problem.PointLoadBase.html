@@ -60,7 +60,7 @@
 <h1>PointLoadBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.problem.PointLoadBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">PointLoadBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">nodes</em>, <em class="sig-param">x=0</em>, <em class="sig-param">y=0</em>, <em class="sig-param">z=0</em>, <em class="sig-param">xx=0</em>, <em class="sig-param">yy=0</em>, <em class="sig-param">zz=0</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">PointLoadBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">nodes</em>, <em class="sig-param">x=0</em>, <em class="sig-param">y=0</em>, <em class="sig-param">z=0</em>, <em class="sig-param">xx=0</em>, <em class="sig-param">yy=0</em>, <em class="sig-param">zz=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/problem/loads.html#PointLoadBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.loads.LoadBase</span></code></p>
 <p>Concentrated forces and moments [units:N, Nm] applied to node(s).</p>
 <dl class="field-list simple">
@@ -74,6 +74,14 @@
 <li><p><strong>xx</strong> (<em>float</em>) – xx component of moment.</p></li>
 <li><p><strong>yy</strong> (<em>float</em>) – yy component of moment.</p></li>
 <li><p><strong>zz</strong> (<em>float</em>) – zz component of moment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Load object.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – Load applied via ‘local’ or ‘global’ axes.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Load components.</p></li>
+<li><p><strong>nodes</strong> (<em>str, list #TODO check</em>) – Node set or node keys the load is applied to.</p></li>
 </ul>
 </dd>
 </dl>
@@ -174,7 +182,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

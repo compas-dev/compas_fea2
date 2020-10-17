@@ -60,7 +60,7 @@
 <h1>ConcreteBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.ConcreteBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">ConcreteBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">fck</em>, <em class="sig-param">v=0.2</em>, <em class="sig-param">p=2400</em>, <em class="sig-param">fr=None</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">ConcreteBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">fck</em>, <em class="sig-param">v=0.2</em>, <em class="sig-param">p=2400</em>, <em class="sig-param">fr=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/materials.html#ConcreteBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.materials.MaterialBase</span></code></p>
 <p>Elastic and plastic-cracking Eurocode based concrete material.</p>
 <dl class="field-list simple">
@@ -71,6 +71,19 @@
 <li><p><strong>v</strong> (<em>float</em>) – Poisson’s ratio v [-].</p></li>
 <li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
 <li><p><strong>fr</strong> (<em>list</em>) – Failure ratios.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Material name.</p></li>
+<li><p><strong>E</strong> (<em>float</em>) – Young’s modulus E [Pa].</p></li>
+<li><p><strong>v</strong> (<em>float</em>) – Poisson’s ratio v [-].</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
+<li><p><strong>G</strong> (<em>float</em>) – Shear modulus G [Pa].</p></li>
+<li><p><strong>fck</strong> (<em>float</em>) – Characteristic (5%) 28 day cylinder strength [MPa].</p></li>
+<li><p><strong>fr</strong> (<em>list</em>) – Failure ratios.</p></li>
+<li><p><strong>tension</strong> (<em>dict</em>) – Parameters for modelling the tension side of the stess–strain curve</p></li>
+<li><p><strong>compression</strong> (<em>dict</em>) – Parameters for modelling the tension side of the stess–strain curve</p></li>
 </ul>
 </dd>
 </dl>
@@ -175,7 +188,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

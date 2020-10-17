@@ -43,6 +43,7 @@ Model
         ~Model.from_solid
         ~Model.from_volmesh
         ~Model.get_node_from_coordinates
+        ~Model.load_from_cfm
         ~Model.nodes_xyz
         ~Model.remove_element
         ~Model.remove_elements
@@ -50,6 +51,9 @@ Model
         ~Model.remove_node
         ~Model.remove_nodes
         ~Model.remove_part
+        ~Model.save_to_cfm
+        ~Model.shell_from_mesh
+        ~Model.summary
 
     .. rubric:: Inherited Methods
 

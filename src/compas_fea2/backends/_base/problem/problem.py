@@ -12,6 +12,7 @@ __all__ = [
     'ProblemBase',
 ]
 
+
 class ProblemBase(object):
     """Initialises the Problem object.
 
@@ -22,29 +23,41 @@ class ProblemBase(object):
     model : obj
         model object.
 
-
+    Attributes
+    ----------
+    name : str
+        Name of the Structure.
+    model : obj
+        model object.
     bcs : dict
         Dictionary containing the boundary conditions objects.
     loads : dict
         Dictionary containing the loads objects.
     steps : list
         List containing the Steps objects.
-
+    steps_order : list
+        List containing the Steps names in the sequence they are applied.
+    field_outputs : dict
+        Dictionary contanining the field output requests.
+    history_outputs : dict
+        Dictionary contanining the history output requests.
+    results : dict
+        Dictionary contanining the analysis results.
     """
 
     def __init__(self, name, model):
-        self.name               = name
-        self.model              = model
-        self.path               = None
+        self.name = name
+        self.model = model
+        self.path = None
 
-        self.bcs                = {}
-        self.loads              = {}
-        self.steps              = []
-        self.steps_order        = []
-        self.field_outputs      = {}
-        self.history_outputs    = {}
+        self.bcs = {}
+        self.loads = {}
+        self.steps = []
+        self.steps_order = []
+        self.field_outputs = {}
+        self.history_outputs = {}
 
-        self.results            = {}
+        self.results = {}
 
     def __str__(self):
         data = [self.bcs,
@@ -56,12 +69,14 @@ class ProblemBase(object):
         d = []
         for entry in data:
             if entry:
-                d.append('\n'.join(['  {0} : {1}'.format(i, j.__name__) for i, j in entry.items()]))
+                d.append('\n'.join(['  {0} : {1}'.format(
+                    i, j.__name__) for i, j in entry.items()]))
             else:
                 d.append('n/a')
+
         return """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea Problem: {}
+compas_fea2 Problem: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Boundary Conditions
@@ -88,31 +103,83 @@ History Output Requests
 -----------------------
 {}
 
-
 """.format(self.name, d[0], d[1], d[2], d[3], d[3], d[3])
-
 
     # =========================================================================
     #                           BCs methods
     # =========================================================================
 
     def add_bc(self, bc):
+        """Adds a boundary condition to the Problem object.
+
+        Parameters
+        ----------
+        bc : obj
+            `compas_fea2` BoundaryCondtion object.
+
+        Returns
+        -------
+        None
+        """
         if bc.bset not in self.model.sets.keys():
             sys.exit('ERROR: bc set {} not found in the model!'.format(bc.bset))
         if bc.name not in self.bcs.keys():
             self.bcs[bc.name] = bc
 
     def add_bcs(self, bcs):
+        """Adds multiple boundary conditions to the Problem object.
+
+        Parameters
+        ----------
+        bcs : list
+            List of `compas_fea2` BoundaryCondtion objects.
+
+        Returns
+        -------
+        None
+        """
         for bc in bcs:
             self.add_bc(bc)
 
     def remove_bc(self, bc_name):
+        """Removes a boundary condition from the Problem object.
+
+        Parameters
+        ----------
+        bc_name : str
+            Name of the boundary condition to remove.
+
+        Returns
+        -------
+        None
+        """
         pass
 
-    def remove_bcs(self, bcs):
+    def remove_bcs(self, bc_names):
+        """Removes multiple boundary conditions from the Problem object.
+
+        Parameters
+        ----------
+        bc_names : list
+            List of names of the boundary conditions to remove.
+
+        Returns
+        -------
+        None
+        """
         pass
 
     def remove_all_bcs(self):
+        """Removes all the boundary conditions from the Problem object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.bcs = {}
 
     # =========================================================================
@@ -120,34 +187,99 @@ History Output Requests
     # =========================================================================
 
     def add_load(self, load):
+        """Adds multiple loads to the Problem object.
+
+        Parameters
+        ----------
+        load : list
+            List of `compas_fea2` Load objects.
+
+        Returns
+        -------
+        None
+        """
         if load.lset and load.lset not in self.model.sets:
             sys.exit('ERROR: load set {} not found in the model!'.format(load.lset))
         if load.name not in self.loads.keys():
             self.loads[load.name] = load
 
     def add_loads(self, loads):
+        """Adds multiple loads to the Problem object.
+
+        Parameters
+        ----------
+        loads : list
+            List of `compas_fea2` Load objects.
+
+        Returns
+        -------
+        None
+        """
         for load in loads:
             self.add_load(load)
 
-    def remove_bc(self, bc_name):
+    def remove_load(self, load_name):
+        """Removes a load from the Problem object.
+
+        Parameters
+        ----------
+        load_name : list
+            Name of the load to remove.
+
+        Returns
+        -------
+        None
+        """
         pass
 
-    def remove_bcs(self, bcs):
+    def remove_loads(self, load_names):
+        """Removes multiple loads from the Problem object.
+
+        Parameters
+        ----------
+        load_names : list
+            List of the names of the loads to remove.
+
+        Returns
+        -------
+        None
+        """
         pass
 
     def remove_all_loads(self):
-        self.loads = {}
+        """Removes all the loads from the Problem object.
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self.loads = {}
 
     # =========================================================================
     #                           Step methods
     # =========================================================================
 
     def add_step(self, step):
+        """Adds a Step to the Problem object.
 
+        Parameters
+        ----------
+        Step : obj
+            `compas_fea2` Step object.
+
+        Returns
+        -------
+        None
+        """
+        # TODO: implement exception handler
         for disp in step.displacements:
             if disp not in self.displacements:
-                sys.exit('ERROR: displacement {} not found in the model!'.format(disp))
+                sys.exit(
+                    'ERROR: displacement {} not found in the model!'.format(disp))
 
         for load in step.loads:
             if load not in self.loads:
@@ -155,20 +287,48 @@ History Output Requests
 
         for fout in step.field_outputs:
             if fout not in self.field_outputs:
-                sys.exit('ERROR: field output {} not found in the model!'.format(fout))
+                sys.exit(
+                    'ERROR: field output {} not found in the model!'.format(fout))
 
         for hout in step.history_outputs:
             if hout not in self.history_outputs:
-                sys.exit('ERROR: history output {} not found in the model!'.format(hout))
+                sys.exit(
+                    'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)
 
-
     def add_steps(self, steps):
+        """Adds multiple steps to the Problem object.
+
+        Parameters
+        ----------
+        steps : list
+            List of `compas_fea2` Step objects.
+
+        Returns
+        -------
+        None
+        """
         for step in steps:
             self.add_step
 
     def define_steps_order(self, order):
+        """Defines the order in which the steps are applied during the analysis.
+
+        Parameters
+        ----------
+        order : list
+            List contaning the names of the analysis steps in the order in which
+            they are meant to be applied during the analysis.
+
+        Returns
+        -------
+        None
+
+        Note
+        ----
+        Not implemented yet!
+        """
         pass
 
     # =========================================================================
@@ -176,10 +336,32 @@ History Output Requests
     # =========================================================================
 
     def add_field_output(self, fout):
+        """Adds a FieldOutput object to the Problem object.
+
+        Parameters
+        ----------
+        fout : obj
+            `compas_fea2` FieldOutput object.
+
+        Returns
+        -------
+        None
+        """
         if fout.name not in self.field_outputs:
             self.field_outputs[fout.name] = fout
 
     def add_field_outputs(self, fouts):
+        """Adds multiple FieldOutput objects to the Problem object.
+
+        Parameters
+        ----------
+        fouts : list
+            List containing `compas_fea2` FieldOutput objects to be added.
+
+        Returns
+        -------
+        None
+        """
         for fout in fouts:
             self.add_field_output(fout)
 
@@ -188,13 +370,34 @@ History Output Requests
     # =========================================================================
 
     def add_history_output(self, hout):
+        """Adds a HistoryOutput object to the Problem object.
+
+        Parameters
+        ----------
+        hout : obj
+            `compas_fea2` HistoryOutput object to be added.
+
+        Returns
+        -------
+        None
+        """
         if hout.name not in self.history_outputs:
             self.history_outputs[hout.name] = hout
 
     def add_history_outputs(self, houts):
+        """Adds multiple HistoryOutput objects to the Problem object.
+
+        Parameters
+        ----------
+        houts : list
+            List containing `compas_fea2` HistoryOutput objects to be added.
+
+        Returns
+        -------
+        None
+        """
         for hout in houts:
             self.add_history_output(hout)
-
 
     # ==============================================================================
     # Modifiers
@@ -249,24 +452,6 @@ History Output Requests
     #         loads_dic[key] = load
 
     #     return loads_dic
-
-    # ==============================================================================
-    # Steps
-    # ==============================================================================
-
-    # def set_steps_order(self, order):
-    #     """Sets the order that the Steps will be analysed.
-
-    #     Parameters
-    #     ----------
-    #     order : list
-    #         An ordered list of the Step names.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     self.steps_order = order
 
     # ==============================================================================
     # Results
@@ -336,8 +521,6 @@ History Output Requests
 
     #     return data
 
-
-
     # ==============================================================================
     # Summary
     # ==============================================================================
@@ -397,8 +580,8 @@ History Output Requests
 
         Returns
         -------
-        obj
-            Imported Problem object.
+        problem : obj
+            Imported `compas_fea2` Problem object.
         """
         with open(filename, 'rb') as f:
             probelm = pickle.load(f)

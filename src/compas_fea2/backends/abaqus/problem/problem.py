@@ -33,11 +33,14 @@ class Problem(ProblemBase):
     parts : list
         List of the parts in the model.
 
+    Attributes
+    ----------
+    None
     """
 
     def __init__(self, name, model):
         super(Problem, self).__init__(name=name, model=model)
-        self.parts = model.parts.values()
+        self.parts = model.parts.values()  # TODO remove
         # self.interactions       = model.interactions
 
     # =========================================================================
@@ -51,7 +54,15 @@ class Problem(ProblemBase):
         ----------
         step : obj
             compas_fea2 Step object.
+
+        Returns
+        -------
+        None
         """
+
+        # NOTE: the abaqus implementation is slightly different from the _base
+        # TODO: simplify and move to _base
+
         for disp in step.displacements:
             if disp not in self.displacements:
                 sys.exit(
@@ -81,28 +92,6 @@ class Problem(ProblemBase):
 
         self.steps.append(step)
 
-    def add_steps(self, steps):
-        """Adds multiple steps to the Problem.
-
-        Parameters
-        ----------
-        steps : list
-            list containing compas_fea2 Step objects.
-        """
-        for step in steps:
-            self.add_step
-
-    def define_steps_order(self, order):
-        """Defines the order in which the steps are applied during the analysis.
-        NOTE: not implemented yet!
-
-        Parameters
-        ----------
-        order : list
-            list containing the step names in the chosen order.
-        """
-        pass
-
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
@@ -117,7 +106,7 @@ class Problem(ProblemBase):
         output : bool
             Print terminal output.
         save : bool
-            Save structure to .cfea before file writing.
+            Save structure to .cfp before file writing.
 
         Returns
         -------
@@ -129,14 +118,14 @@ class Problem(ProblemBase):
             os.makedirs(path)
 
         if save:
-            self.save_to_cfea()
+            self.save_to_cfp()
 
         input_file = InputFile(self)
         r = input_file.write_to_file(path)
         if output:
             print(r)
 
-    # this should be an abstract method of the base class
+    # TODO: try to make this an abstract method of the base class
     def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True,
                 user_mat=False, save=False):
         """Runs the analysis through abaqus.
@@ -154,7 +143,7 @@ class Problem(ProblemBase):
         user_mat : str TODO: REMOVE!
             Name of the material defined through a subroutine (currently only one material is supported)
         save : bool
-            Save structure to .cfea before file writing.
+            Save structure to .cfp before file writing.
 
         Returns
         -------
@@ -170,9 +159,9 @@ class Problem(ProblemBase):
     #                         Results methods
     # =========================================================================
 
-    # this should be an abstract method of the base class
+    # TODO: try to make this an abstract method of the base class
     def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-                     return_data=True, components=None):
+                return_data=True, components=None):
         """Extracts data from the analysis output files.
 
         Parameters
@@ -200,7 +189,7 @@ class Problem(ProblemBase):
 
         """
         extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-                            components=components)
+                     components=components)
 
     # # this should be an abstract method of the base class
     # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,

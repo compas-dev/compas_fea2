@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/compas-reference.css" />
 
     
-        <link rel="next" title="Problem.write_input_file" href="compas_fea2.backends.abaqus.problem.Problem.write_input_file.html" />
+        <link rel="next" title="Problem.extract" href="compas_fea2.backends.abaqus.problem.Problem.extract.html" />
     
     
     
@@ -61,13 +61,20 @@
 <dl class="method">
 <dt id="compas_fea2.backends.abaqus.problem.Problem.define_steps_order">
 <code class="sig-prename descclassname">Problem.</code><code class="sig-name descname">define_steps_order</code><span class="sig-paren">(</span><em class="sig-param">order</em><span class="sig-paren">)</span></dt>
-<dd><p>Defines the order in which the steps are applied during the analysis.
-NOTE: not implemented yet!</p>
+<dd><p>Defines the order in which the steps are applied during the analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>order</strong> (<em>list</em>) – list containing the step names in the chosen order.</p>
+<dd class="field-odd"><p><strong>order</strong> (<em>list</em>) – List contaning the names of the analysis steps in the order in which
+they are meant to be applied during the analysis.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>None</em></p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not implemented yet!</p>
+</div>
 </dd></dl>
 
 </div>
@@ -144,7 +151,7 @@ NOTE: not implemented yet!</p>
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

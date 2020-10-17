@@ -60,7 +60,7 @@
 <h1>TributaryLoadBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.problem.TributaryLoadBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">TributaryLoadBase</code><span class="sig-paren">(</span><em class="sig-param">structure</em>, <em class="sig-param">name</em>, <em class="sig-param">mesh</em>, <em class="sig-param">x=0</em>, <em class="sig-param">y=0</em>, <em class="sig-param">z=0</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">TributaryLoadBase</code><span class="sig-paren">(</span><em class="sig-param">structure</em>, <em class="sig-param">name</em>, <em class="sig-param">mesh</em>, <em class="sig-param">x=0</em>, <em class="sig-param">y=0</em>, <em class="sig-param">z=0</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/problem/loads.html#TributaryLoadBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.loads.LoadBase</span></code></p>
 <p>Tributary area loads applied to nodes.</p>
 <dl class="field-list simple">
@@ -75,12 +75,22 @@
 <li><p><strong>axes</strong> (<em>str</em>) – TributaryLoad applied via ‘local’ or ‘global’ axes.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Load object.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – Load applied via ‘local’ or ‘global’ axes.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Load components.</p></li>
+<li><p><strong>elements</strong> (<em>str, list</em>) – Element set or element keys the load is applied to.</p></li>
+</ul>
+</dd>
 </dl>
-<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>The load components are loads per unit area [N/m2].</p></li>
 <li><p>Currently only supports ‘global’ axis.</p></li>
 </ul>
+</div>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -178,7 +188,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

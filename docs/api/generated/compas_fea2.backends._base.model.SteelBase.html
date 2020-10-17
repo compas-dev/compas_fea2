@@ -60,7 +60,7 @@
 <h1>SteelBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.SteelBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">SteelBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">fy=355</em>, <em class="sig-param">fu=None</em>, <em class="sig-param">eu=20</em>, <em class="sig-param">E=210</em>, <em class="sig-param">v=0.3</em>, <em class="sig-param">p=7850</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">SteelBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">fy=355</em>, <em class="sig-param">fu=None</em>, <em class="sig-param">eu=20</em>, <em class="sig-param">E=210</em>, <em class="sig-param">v=0.3</em>, <em class="sig-param">p=7850</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/materials.html#SteelBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.materials.MaterialBase</span></code></p>
 <p>Bi-linear steel with given yield stress.</p>
 <dl class="field-list simple">
@@ -73,6 +73,21 @@
 <li><p><strong>E</strong> (<em>float</em>) – Young’s modulus E [GPa].</p></li>
 <li><p><strong>v</strong> (<em>float</em>) – Poisson’s ratio v [-].</p></li>
 <li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Material name.</p></li>
+<li><p><strong>E</strong> (<em>float</em>) – Young’s modulus E [Pa].</p></li>
+<li><p><strong>v</strong> (<em>float</em>) – Poisson’s ratio v [-].</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Density [kg/m3].</p></li>
+<li><p><strong>G</strong> (<em>float</em>) – Shear modulus G [Pa].</p></li>
+<li><p><strong>fy</strong> (<em>float</em>) – Yield stress [MPa].</p></li>
+<li><p><strong>fu</strong> (<em>float</em>) – Ultimate stress [MPa].</p></li>
+<li><p><strong>eu</strong> (<em>float</em>) – Ultimate strain [%].</p></li>
+<li><p><strong>ep</strong> (<em>float</em>) – Plastic strain [%].</p></li>
+<li><p><strong>tension</strong> (<em>dict</em>) – Parameters for modelling the tension side of the stess–strain curve</p></li>
+<li><p><strong>compression</strong> (<em>dict</em>) – Parameters for modelling the tension side of the stess–strain curve</p></li>
 </ul>
 </dd>
 </dl>
@@ -173,7 +188,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

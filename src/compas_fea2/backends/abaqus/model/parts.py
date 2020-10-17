@@ -19,16 +19,23 @@ class Part():
     ----------
     name : str
         Name of the set.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
     nodes : list
         Sorted list (by Node key) with the Nodes objects belonging to the Part.
     nodes_gkeys : list
         List with the geometric keys (x_y_z) of the Nodes objects belonging to the Part.
     elements : list
         Sorted list (by Element key) with the Element objects belonging to the Part.
-    sets : list
+    nsets : list
         A list with the Set objects belonging to the Part.
-    data : str
-        The data block for the generation of the input file.
+    elsets : list
+        [DOC]   # TODO: complete doc
+    sections: dict
+        [DOC]   # TODO: complete doc
     elements_by_type : dict
         Dictionary sorting the elements by unique element types.
         key: element type
@@ -45,8 +52,6 @@ class Part():
         Dictionary sorting the elements by unique materials.
         key: material
         value: element key number
-    data : str
-        The data block for the generation of the input file.
     """
 
     def __init__(self, name):
@@ -554,8 +559,9 @@ class Part():
         pass
 
 
-
-
+# =============================================================================
+#                               Debugging
+# =============================================================================
 
 if __name__ == "__main__":
 

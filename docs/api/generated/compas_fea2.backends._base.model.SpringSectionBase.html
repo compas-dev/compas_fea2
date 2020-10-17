@@ -60,7 +60,7 @@
 <h1>SpringSectionBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.SpringSectionBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">SpringSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">forces={}</em>, <em class="sig-param">displacements={}</em>, <em class="sig-param">stiffness={}</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">SpringSectionBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">forces={}</em>, <em class="sig-param">displacements={}</em>, <em class="sig-param">stiffness={}</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/sections.html#SpringSectionBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.sections.SectionBase</span></code></p>
 <p>For use with spring elements.</p>
 <dl class="field-list simple">
@@ -72,13 +72,23 @@
 <li><p><strong>stiffness</strong> (<em>dict</em>) – Elastic stiffness for linear springs.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Section object name.</p></li>
+<li><p><strong>forces</strong> (<em>dict</em>) – Forces data for non-linear springs.</p></li>
+<li><p><strong>displacements</strong> (<em>dict</em>) – Displacements data for non-linear springs.</p></li>
+<li><p><strong>stiffness</strong> (<em>dict</em>) – Elastic stiffness for linear springs.</p></li>
+</ul>
+</dd>
 </dl>
-<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>Force and displacement data should range from negative to positive values.</p></li>
 <li><p>Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.</p></li>
 <li><p>Directions are ‘axial’, ‘lateral’, ‘rotation’.</p></li>
 </ul>
+</div>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -176,7 +186,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

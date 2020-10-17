@@ -60,7 +60,7 @@
 <h1>TieConstraintBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.model.TieConstraintBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">TieConstraintBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">master</em>, <em class="sig-param">slave</em>, <em class="sig-param">tol</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.model.</code><code class="sig-name descname">TieConstraintBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">master</em>, <em class="sig-param">slave</em>, <em class="sig-param">tol</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/model/constraints.html#TieConstraintBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.constraints.ConstraintBase</span></code></p>
 <p>Tie constraint between two sets of nodes, elements or surfaces.</p>
 <dl class="field-list simple">
@@ -72,8 +72,13 @@
 <li><p><strong>tol</strong> (<em>float</em>) – Constraint tolerance, distance limit between master and slave.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>None</em></p>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – TieConstraint name.</p></li>
+<li><p><strong>master</strong> (<em>str</em>) – Master set name.</p></li>
+<li><p><strong>slave</strong> (<em>str</em>) – Slave set name.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Constraint tolerance, distance limit between master and slave.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
@@ -173,7 +178,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

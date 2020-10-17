@@ -24,7 +24,7 @@ __all__ = [
     'AcoustiStepBase'
 ]
 
-
+# TODO remove _GeneralStep and get everything forn _base
 # TODO add field and history output requrests
 
 class _GeneralStep(StepBase):
@@ -100,17 +100,17 @@ class GeneralStaticStep(_GeneralStep):
     def _generate_data(self, displacements=[], loads=[], field_outputs=[], history_outputs=[]):  #todo: this could be moved outside the class
 
         section_data = []
-        line = """** ----------------------------------------------------------------
-**
-** STEP: {0}
-**
-* Step, name={0}, nlgeom={1}, inc={2}
-*{3}
-{4}, {5}, {6}, {5}
-**
-** DISPLACEMENTS
-**\n""".format(self.name, self.nlgeom, self.max_increments, self.stype,
-                self.initial_inc_size, self.time, self.min_inc_size)
+        line = ("** ----------------------------------------------------------------\n"
+                "**\n"
+                "** STEP: {0}\n"
+                "**\n"
+                "* Step, name={0}, nlgeom={1}, inc={2}\n"
+                "*{3}\n"
+                "{4}, {5}, {6}, {5}\n"
+                "**\n"
+                "** DISPLACEMENTS\n"
+                "**\n").format(self.name, self.nlgeom, self.max_increments, self.stype, self.initial_inc_size, self.time,
+                               self.min_inc_size)
         section_data.append(line)
 
         for displacement in displacements:
@@ -122,11 +122,11 @@ class GeneralStaticStep(_GeneralStep):
         for load in loads:
             section_data.append(load._generate_data())
 
-        line = """**
-** OUTPUT REQUESTS
-**
-*Restart, write, frequency=0
-**\n"""
+        line = ("**\n"
+                "** OUTPUT REQUESTS\n"
+                "**\n"
+                "*Restart, write, frequency=0\n"
+                "**\n")
         section_data.append(line)
 
         for foutput in field_outputs:
@@ -197,13 +197,13 @@ class StaticLinearPertubationStep(_LinearPertubationStep):
         self.attr_list.extend(['displacements', 'loads'])
         self.type = 'Static'
 
-        self.data = """** ----------------------------------------------------------------
-**
-** STEP: {0}
-**
-* Step, name={0}, nlgeom={1}, perturbation
-*{2}
-**\n""".format(self.name, self.nlgeom, self.stype)
+        self.data = ("** ----------------------------------------------------------------\n"
+                    "**\n"
+                    "** STEP: {0}\n"
+                    "**\n"
+                    "* Step, name={0}, nlgeom={1}, perturbation\n"
+                    "*{2}\n"
+                    "**\n").format(self.name, self.nlgeom, self.stype)
 
 class BuckleStep(_LinearPertubationStep):
     NotImplemented

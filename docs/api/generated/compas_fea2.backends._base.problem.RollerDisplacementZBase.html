@@ -60,7 +60,7 @@
 <h1>RollerDisplacementZBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.problem.RollerDisplacementZBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">RollerDisplacementZBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">nodes</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">RollerDisplacementZBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">nodes</em>, <em class="sig-param">axes='global'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/problem/bcs.html#RollerDisplacementZBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.bcs.PinnedDisplacementBase</span></code></p>
 <p>A pinned nodal displacement boundary condition released in Z.</p>
 <dl class="field-list simple">
@@ -69,6 +69,14 @@
 <li><p><strong>name</strong> (<em>str</em>) – Name of the RollerDisplacementZ object.</p></li>
 <li><p><strong>nodes</strong> (<em>str</em>) – Node set string or nodes list the displacement is applied to.</p></li>
 <li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ co-ordinate axes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the Displacement object.</p></li>
+<li><p><strong>nodes</strong> (<em>str, list</em>) – Node set string or nodes list the displacement is applied to.</p></li>
+<li><p><strong>components</strong> (<em>dict</em>) – Values of x, y, z, xx, yy, zz degrees-of-freedom.</p></li>
+<li><p><strong>axes</strong> (<em>str</em>) – ‘local’ or ‘global’ coordinate axes.</p></li>
 </ul>
 </dd>
 </dl>
@@ -169,7 +177,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

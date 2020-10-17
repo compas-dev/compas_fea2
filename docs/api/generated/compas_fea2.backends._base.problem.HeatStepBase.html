@@ -60,7 +60,7 @@
 <h1>HeatStepBase</h1>
 <dl class="class">
 <dt id="compas_fea2.backends._base.problem.HeatStepBase">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">HeatStepBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">interaction</em>, <em class="sig-param">increments=100</em>, <em class="sig-param">temp0=20</em>, <em class="sig-param">dTmax=1</em>, <em class="sig-param">stype='heat transfer'</em>, <em class="sig-param">duration=1</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends._base.problem.</code><code class="sig-name descname">HeatStepBase</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">interaction</em>, <em class="sig-param">increments=100</em>, <em class="sig-param">temp0=20</em>, <em class="sig-param">dTmax=1</em>, <em class="sig-param">stype='heat transfer'</em>, <em class="sig-param">duration=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/_base/problem/steps.html#HeatStepBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.problem.steps.StepBase</span></code></p>
 <p>Initialises HeatStep object for use in a thermal analysis.</p>
 <dl class="field-list simple">
@@ -71,7 +71,18 @@
 <li><p><strong>increments</strong> (<em>int</em>) – Number of step increments.</p></li>
 <li><p><strong>temp0</strong> (<em>float</em>) – Initial temperature of all nodes.</p></li>
 <li><p><strong>dTmax</strong> (<em>float</em>) – Maximum temperature increase per increment.</p></li>
-<li><p><strong>type</strong> (<em>str</em>) – ‘heat transfer’.</p></li>
+<li><p><strong>stype</strong> (<em>str</em>) – ‘heat transfer’.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – Duration of step.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the HeatStep.</p></li>
+<li><p><strong>interaction</strong> (<em>str</em>) – Name of the HeatTransfer interaction.</p></li>
+<li><p><strong>increments</strong> (<em>int</em>) – Number of step increments.</p></li>
+<li><p><strong>temp0</strong> (<em>float</em>) – Initial temperature of all nodes.</p></li>
+<li><p><strong>dTmax</strong> (<em>float</em>) – Maximum temperature increase per increment.</p></li>
+<li><p><strong>stype</strong> (<em>str</em>) – ‘heat transfer’.</p></li>
 <li><p><strong>duration</strong> (<em>float</em>) – Duration of step.</p></li>
 </ul>
 </dd>
@@ -173,7 +184,7 @@
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

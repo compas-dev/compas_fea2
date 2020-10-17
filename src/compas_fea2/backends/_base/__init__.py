@@ -101,7 +101,7 @@ Loads
 
     LoadBase
     PointLoadBase
-    PointLoadsBase
+    PrestressLoadBase
     LineLoadBase
     AreaLoadBase
     GravityLoadBase

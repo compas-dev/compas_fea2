@@ -10,7 +10,6 @@ import math
 import pickle
 
 
-
 __all__ = [
     'Model',
 ]
@@ -24,22 +23,30 @@ class Model():
     ----------
     name : str
         Name of the Model.
+
+    Attributes
+    ----------
+    name : str
+        Name of the Model.
     parts : list
         A list with the Part objects referenced in the Model.
-    instances : list
-        A list with the Instance objects belonging to the Model.
-    parts : list
-        A list with the Part objects referenced in the Model.
+    instances : dict
+        A dictionary with the Instance objects belonging to the Model.
+    parts : dict
+        A dictionary with the Part objects referenced in the Model.
     surfaces : list
         A list with the Surface objects belonging to the Model.
     constraints : list
         A list with the Constraint objects belonging to the Model.
-    materials : list
-        A list of all the materials defined int the Model.
-
+    materials : dict
+        A dictionary of all the materials defined in the Model.
+    sections : dict
+        A dictionary of all the sections defined in the Model.
+    sets : dict
+        A dictionary of all the sets defined in the Model.
     """
 
-    def __init__(self, name, ):
+    def __init__(self, name):
         self.__name__ = 'Model'
         self.name = name
         self.instances = {}
@@ -51,7 +58,6 @@ class Model():
         self.sections = {}
         self.sets = {}
         # self.materials      = self._get_materials()
-
         # self.data           = self._generate_data()
 
     def __str__(self):
@@ -184,14 +190,14 @@ class Model():
     def add_part(self, part, transformation={}):
         """Adds a Part to the Model and creates an Instance object from the
         specified Part and adds it to the Assembly. If a transformation matrix
-        is specified, the instance is creteated in the transformed location.
+        is specified, the instance is created in the transformed location.
 
         Parameters
         ----------
         part : obj
             Part object from which the Instance is created.
         transformation : dict
-            Dictionary containing the trasformation matrices to apply to the Part
+            Dictionary containing the transformation matrices to apply to the Part
             before creating the Instances.
             key: (str) instance name
             value: (matrix) transformation matrix
@@ -295,7 +301,7 @@ class Model():
     def add_node(self, node, part):
         """Adds a compas_fea2 Node object to a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
-        nodes are autmatically excluded.
+        nodes are automatically excluded.
         The part must have been previously added to the Model.
 
         Parameters
@@ -320,7 +326,7 @@ class Model():
     def add_nodes(self, nodes, part):
         """Add multiple compas_fea2 Node objects a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
-        nodes are autmatically excluded.
+        nodes are automatically excluded.
         The part must have been previously added to the Model.
 
         Parameters

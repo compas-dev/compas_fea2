@@ -7,6 +7,7 @@ from __future__ import print_function
 #            Francesco Ranaudo (github.com/franaudo)
 
 # TODO: change 'Step' to 'Case' to make it less abaqus-dependent
+# TODO: check if stype should be accessible or not
 
 __all__ = [
     'StepBase',
@@ -23,6 +24,11 @@ class StepBase(object):
     """Initialises base Step object.
 
     Parameters
+    ----------
+    name : str
+        Name of the Step object.
+
+    Attributes
     ----------
     name : str
         Name of the Step object.
@@ -70,14 +76,39 @@ class GeneralStepBase(StepBase):
         Displacement object names.
     loads : list
         Load object names.
-    type : str
+    stype : str
         'static','static,riks'.
     modify : bool
         Modify the previously added loads.
 
+    Attributes
+    ----------
+    name : str
+        Name of the GeneralStep.
+    increments : int
+        Number of step increments.
+    iterations : int
+        Number of step iterations.
+    tolerance : float
+        A tolerance for analysis solvers.
+    factor : float, dict
+        Proportionality factor(s) on the loads and displacements.
+    nlgeom : bool
+        Analyse non-linear geometry effects.
+    nlmat : bool
+        Analyse non-linear material effects.
+    displacements : list
+        Displacement object names.
+    loads : list
+        Load object names.
+    stype : str
+        'static','static,riks'.
+    modify : bool
+        Modify the previously added loads.
     """
 
-    def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True, displacements=None, loads=None, stype='static', modify=True):
+    def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True,
+                 displacements=None, loads=None, stype='static', modify=True):
         StepBase.__init__(self, name=name)
 
         if not displacements:
@@ -117,11 +148,27 @@ class HeatStepBase(StepBase):
         Initial temperature of all nodes.
     dTmax : float
         Maximum temperature increase per increment.
-    type : str
+    stype : str
         'heat transfer'.
     duration : float
         Duration of step.
 
+    Attributes
+    ----------
+    name : str
+        Name of the HeatStep.
+    interaction : str
+        Name of the HeatTransfer interaction.
+    increments : int
+        Number of step increments.
+    temp0 : float
+        Initial temperature of all nodes.
+    dTmax : float
+        Maximum temperature increase per increment.
+    stype : str
+        'heat transfer'.
+    duration : float
+        Duration of step.
     """
 
     def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, stype='heat transfer', duration=1):
@@ -151,9 +198,21 @@ class ModalStepBase(StepBase):
         Number of increments.
     displacements : list
         Displacement object names.
-    type : str
+    stype : str
         'modal'.
 
+    Attributes
+    ----------
+    name : str
+        Name of the ModalStep.
+    modes : int
+        Number of modes to analyse.
+    increments : int
+        Number of increments.
+    displacements : list
+        Displacement object names.
+    stype : str
+        'modal'.
     """
 
     def __init__(self, name, modes=10, increments=100, displacements=None, stype='modal'):
@@ -188,9 +247,25 @@ class HarmonicStepBase(StepBase):
         Proportionality factor on the loads and displacements.
     damping : float
         Constant harmonic damping ratio.
-    type : str
+    stype : str
         'harmonic'.
 
+    Attributes
+    ----------
+    name : str
+        Name of the HarmoniStepBase.
+    freq_list : list
+        Sorted list of frequencies to analyse.
+    displacements : list
+        Displacement object names.
+    loads : list
+        Load object names.
+    factor : float
+        Proportionality factor on the loads and displacements.
+    damping : float
+        Constant harmonic damping ratio.
+    stype : str
+        'harmonic'.
     """
 
     def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None, stype='harmonic'):
@@ -209,7 +284,7 @@ class HarmonicStepBase(StepBase):
         self.loads         = loads
         self.factor        = factor
         self.damping       = damping
-        self.stype          = stype
+        self.stype         = stype
         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
@@ -230,11 +305,29 @@ class BucklingStepBase(StepBase):
         Displacement object names.
     loads : list
         Load object names.
-    type : str
+    stype : str
         'buckle'.
     step : str
         Step to copy loads and displacements from.
 
+    Attributes
+    ----------
+    name : str
+        Name of the BucklingStep.
+    modes : int
+        Number of modes to analyse.
+    increments : int
+        Number of increments.
+    factor : float, dict
+        Proportionality factor on the loads and displacements.
+    displacements : list
+        Displacement object names.
+    loads : list
+        Load object names.
+    stype : str
+        'buckle'.
+    step : str
+        Step to copy loads and displacements from.
     """
 
     def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, stype='buckle',
@@ -285,6 +378,28 @@ class AcousticStepBase(StepBase):
     type : str
         'acoustic'.
 
+    Attributes
+    ----------
+    name : str
+        Name of the AcoustiStepBase.
+    freq_range : list
+        Range of frequencies to analyse.
+    freq_step : int
+        Step size for frequency range.
+    displacements : list
+        Displacement object names.
+    loads : list
+        Load object names.
+    sources : list
+        List of source elements or element sets radiating sound.
+    samples : int
+        Number of samples for acoustic analysis.
+    factor : float
+        Proportionality factor on the loads and displacements.
+    damping : float
+        Constant harmonic damping ratio.
+    type : str
+        'acoustic'.
     """
 
     def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,

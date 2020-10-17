@@ -60,10 +60,42 @@
 <h1>Node</h1>
 <dl class="class">
 <dt id="compas_fea2.backends.abaqus.model.Node">
-<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param">xyz</em>, <em class="sig-param">ex=None</em>, <em class="sig-param">ey=None</em>, <em class="sig-param">ez=None</em>, <em class="sig-param">mass=None</em>, <em class="sig-param">label=None</em><span class="sig-paren">)</span></dt>
+<em class="property">class </em><code class="sig-prename descclassname">compas_fea2.backends.abaqus.model.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param">xyz</em>, <em class="sig-param">ex=None</em>, <em class="sig-param">ey=None</em>, <em class="sig-param">ez=None</em>, <em class="sig-param">mass=None</em>, <em class="sig-param">label=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/compas_fea2/backends/abaqus/model/nodes.html#Node"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.backends._base.model.nodes.NodeBase</span></code></p>
-<p>Note: the nodes key numbering in compas_fea2 starts from 0, while in Abaqus
-it starts from 1. The conversion in automatically resolved by compas_fea2.</p>
+<p>Node class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>list</em>) – [description]</p></li>
+<li><p><strong>ex</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>ey</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>ez</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>mass</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>label</strong> (<em>[type], optional</em>) – [description], by default Non</p></li>
+</ul>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>list</em>) – [description]</p></li>
+<li><p><strong>ex</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>ey</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>ez</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>mass</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+<li><p><strong>label</strong> (<em>[type], optional</em>) – [description], by default None</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest language-python notranslate"><div class="highlight"><pre><code><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">Node</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span><span class="o">.</span><span class="n">key</span><span class="o">=</span><span class="mi">300</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts
+from 1. The conversion in automatically resolved by compas_fea2.</p>
+</div>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -161,7 +193,7 @@ it starts from 1. The conversion in automatically resolved by compas_fea2.</p>
     <footer class="bg-dark pb-5">
         <div class="container text-center pt-5 pb-5 text-muted">
             
-                Last updated on Oct 11, 2020.
+                Last updated on Oct 17, 2020.
             
 
             

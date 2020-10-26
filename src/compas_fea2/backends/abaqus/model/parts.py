@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
+from compas_fea2.backends.abaqus.model import Set
 # from compas_fea2.backends.abaqus.components import Node
 
 
@@ -114,7 +115,7 @@ class Part():
             # while other elements (such shells) don't
             o=1
             for orientation in self.orientations_by_section[section]:
-                from compas_fea2.backends.abaqus.model import Set
+
                 elements = []
                 for element in self.elements_by_section[section]:
                     if hasattr(self.elements[element], 'orientation') and self.elements[element].orientation == orientation:

@@ -55,24 +55,25 @@ class ElasticIsotropic(ElasticIsotropicBase):
             else:
                 raise Exception('keyword {} for unilateral parameter not recognised. Please review the documentation'.format(self.unilateral))
 
-        return """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}{}
-""".format(self.name, self.p, self.E['E'], self.v['v'], n)
+        return ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}{}\n").format(self.name, self.p, self.E['E'], self.v['v'], n)
 
 
 class Stiff(StiffBase):
 
     def __init__(self, name, E):
         super(Stiff, self).__init__(name, E)
-        self.data = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-""".format(self.name, self.p, self.E['E'], self.v['v'])
+        self.data = self._generate_data()
+
+    def _generate_data(self):
+        return ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n").format(self.name, self.p, self.E['E'], self.v['v'])
 
 
 class ElasticOrthotropic(ElasticOrthotropicBase):
@@ -91,12 +92,12 @@ class ElasticPlastic(ElasticPlasticBase):
 
     def _generate_data(self):
         data_section = []
-        line = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-*Plastic""".format(self.name, self.p, self.E['E'], self.v['v'])
+        line = ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n"
+                "*Plastic").format(self.name, self.p, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -117,12 +118,12 @@ class Steel(SteelBase):
 
     def _generate_data(self):
         data_section = []
-        line = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-*Plastic""".format(self.name, self.p, self.E['E'], self.v['v'])
+        line = ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n"
+                "*Plastic").format(self.name, self.p, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -152,13 +153,12 @@ class Concrete(ConcreteBase):
 
     def _generate_data(self):
         data_section = []
-        line = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-*Concrete
-""".format(self.name, self.p, self.E['E'], self.v['v'])
+        line = ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n"
+                "*Concrete\n").format(self.name, self.p, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -172,10 +172,11 @@ class Concrete(ConcreteBase):
             data_section.append(line)
 
         a, b = self.fratios
-        line = """*Failure ratios
-{}, {}""".format(a, b)
+        line = ("*Failure ratios\n"
+                "{}, {}").format(a, b)
         data_section.append(line)
         return '\n'.join(data_section)
+
 
 class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
@@ -185,13 +186,12 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
     def _generate_data(self):
         data_section = []
-        line = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-*Concrete
-""".format(self.name, self.p, self.E['E'], self.v['v'])
+        line = ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n"
+                "*Concrete\n").format(self.name, self.p, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -205,8 +205,8 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
             data_section.append(line)
 
         a, b = self.fratios
-        line = """*Failure ratios
-{}, {}""".format(a, b)
+        line = ("*Failure ratios\n"
+                "{}, {}").format(a, b)
         data_section.append(line)
         return '\n'.join(data_section)
 
@@ -218,13 +218,12 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
     def _generate_data(self):
         data_section = []
-        line = """*Material, name={}
-*Density
-{},
-*Elastic
-{}, {}
-*Concrete Damaged Plasticity
-""".format(self.name, self.p, self.E['E'], self.v['v'])
+        line = ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*Elastic\n"
+                "{}, {}\n"
+                "*Concrete Damaged Plasticity\n").format(self.name, self.p, self.E['E'], self.v['v'])
         data_section.append(line)
 
         data_section.append(', '.join([str(i) for i in self.damage]))
@@ -277,21 +276,22 @@ class UserMaterial(MaterialBase):
     def get_constants(self):
         constants = []
         for k in self.__dict__:
+            # TODO: I think we should we add constants in the list below?
             if k not in ['__name__', 'name', 'attr_list', 'sub_path', 'p']:
                 constants.append(self.__dict__[k])
         return constants
 
     def _generate_data(self):
         k = [str(i) for i in self.constants]
-        return """*Material, name={}
-*Density
-{},
-*User Material, constants={}
-{}""".format(self.name, self.p, len(k), ', '.join(reversed(k)))  #TODO check it reversed or not
-
+        return ("*Material, name={}\n"
+                "*Density\n"
+                "{},\n"
+                "*User Material, constants={}\n"
+                "{}").format(self.name, self.p, len(k), ', '.join(reversed(k)))
 
 
 ### -------------------------------- DEBUG ------------------------------- ###
+
 
 if __name__ == "__main__":
 

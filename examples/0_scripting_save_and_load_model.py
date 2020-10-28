@@ -3,14 +3,7 @@ from compas.datastructures import Mesh
 from compas_fea2.backends.abaqus.model import Model
 from compas_fea2.backends.abaqus.model import ElasticIsotropic
 from compas_fea2.backends.abaqus.model import BoxSection
-from compas_fea2.backends.abaqus.model import Set
 
-from compas_fea2.backends.abaqus.problem import Problem
-from compas_fea2.backends.abaqus.problem import FixedDisplacement
-from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.problem import PointLoad
-from compas_fea2.backends.abaqus.problem import FieldOutput
-from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
 from compas_fea2 import DATA
 from compas_fea2 import TEMP

@@ -5,8 +5,6 @@ from __future__ import print_function
 from math import log
 import os
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
 from compas_fea2.backends._base.model import MaterialBase
 from compas_fea2.backends._base.model import ConcreteBase
 from compas_fea2.backends._base.model import ConcreteSmearedCrackBase
@@ -17,6 +15,9 @@ from compas_fea2.backends._base.model import ElasticOrthotropicBase
 from compas_fea2.backends._base.model import ElasticPlasticBase
 from compas_fea2.backends._base.model import SteelBase
 from compas_fea2.backends._base.model import ThermalMaterialBase
+
+
+# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
 __all__ = [

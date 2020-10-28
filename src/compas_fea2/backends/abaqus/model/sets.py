@@ -3,6 +3,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.model import SetBase
+from compas_fea2.backends._base.model import SurfaceBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -12,7 +14,7 @@ __all__ = [
 ]
 
 
-class Set(object):
+class Set(SetBase):
 
     """Initialises the Set object.
 
@@ -30,32 +32,8 @@ class Set(object):
 
     #TODO generate option might not be a good idea!
     def __init__(self, name, selection, stype, generate=False):
+        super(Set, self).__init__(name, selection, stype, generate)
 
-        self.__name__  = 'Set'
-        self.name      = name
-        self.selection = selection
-        self.generate  = generate
-        self.stype = stype
-        # if self.selection[0].__name__ == 'Node':
-        #     self.stype = 'nset'
-        # else:
-        #     self.stype = 'elset'
-        self.instance = None
-
-        # self.data = self._generate_data()
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        data = []
-        for attr in ['name', 'type', 'selection', 'index']:
-            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
-
-    def __repr__(self):
-
-        return '{0}({1})'.format(self.__name__, self.name)
 
     def _generate_data(self):
         data_section = []
@@ -77,7 +55,7 @@ class Set(object):
         return '\n'.join(data_section) + '\n'
 
 
-class Surface():
+class Surface(SurfaceBase):
     """Initialises the Surfaces object.
 
     Parameters
@@ -92,20 +70,12 @@ class Surface():
 
     #TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
     def __init__(self, name, set, generate=False):
-
-        self.__name__  = 'Set'
-        self.name      = name
-        self.selection = selection
-        self.generate  = generate
-        if self.selection[0].__name__ == 'Node':
-            self.stype = 'nset'
-        else:
-            self.stype = 'elset'
-        self.instance = None
+        super(Surface, self).__init__(name, set, generate)
 
         self.data = self._generate_data()
 
-    def data(self):
+    # TODO: old ---> change
+    def _generate_data(self):
         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
         self.write_line('** ELEMENT, SIDE')
 

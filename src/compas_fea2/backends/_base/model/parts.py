@@ -425,8 +425,8 @@ class PartBase():
             if element.elset:
             #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
                 if element.elset not in self.elements_by_elset.keys():
-                    from compas_fea2.backends.abaqus import Set
-                    self.add_element_set(Set(element.elset, [], 'elset'))
+                    from compas_fea2.backends._base import SetBase
+                    self.add_element_set(SetBase(element.elset, [], 'elset'))
                     self.elements_by_elset[element.elset] = []
                 self.elements_by_elset[element.elset].append(element.key)
                 self.add_elements_to_set(element.elset, [element.key])

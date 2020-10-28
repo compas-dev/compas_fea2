@@ -2,13 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from  compas_fea2.backends._base.model import InstanceBase
 
 __all__ = [
     'Instance',
 ]
 
 
-class Instance():
+class Instance(InstanceBase):
     """Initialises an Instance object.
 
     Parameters
@@ -24,29 +25,10 @@ class Instance():
     """
 
     def __init__(self, name, part, sets=[]):
-        self.__name__ = 'Instance'
-        self.name = name
-        self.part = part
-        self.sets = sets
+        super(Instance, self).__init__(name, part, sets)
         for iset in sets:
             iset.instance = self.name
             iset.data = iset._generate_data()
-
-        self.data = """*Instance, name={}, part={}\n*End Instance\n**\n""".format(
-            self.name, self.part.name)
-
-    def __str__(self):
-        print('\n')
-        print('compas_fea2 {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-
-        for attr in ['name']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return ''
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.part.name)
 
     def _generate_data(self):
         return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)

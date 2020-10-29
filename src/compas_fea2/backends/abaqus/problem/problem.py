@@ -63,32 +63,33 @@ class Problem(ProblemBase):
         # NOTE: the abaqus implementation is slightly different from the _base
         # TODO: simplify and move to _base
 
-        for disp in step.displacements:
-            if disp not in self.displacements:
-                sys.exit(
-                    'ERROR: displacement {} not found in the model!'.format(disp))
+        if not step.stype == 'modal':
+            for disp in step.displacements:
+                if disp not in self.displacements:
+                    sys.exit(
+                        'ERROR: displacement {} not found in the model!'.format(disp))
 
-        for load in step.loads:
-            if load not in self.loads:
-                sys.exit('ERROR: load {} not found in the model!'.format(load))
+            for load in step.loads:
+                if load not in self.loads:
+                    sys.exit('ERROR: load {} not found in the model!'.format(load))
 
-        if not step.field_outputs:
-            standard_output = FieldOutput('standard')
-            step.field_outputs.append('standard')
-            self.field_outputs['standard'] = standard_output
-        for fout in step.field_outputs:
-            if fout not in self.field_outputs:
-                sys.exit(
-                    'ERROR: field output {} not found in the model!'.format(fout))
+            if not step.field_outputs:
+                standard_output = FieldOutput('standard')
+                step.field_outputs.append('standard')
+                self.field_outputs['standard'] = standard_output
+            for fout in step.field_outputs:
+                if fout not in self.field_outputs:
+                    sys.exit(
+                        'ERROR: field output {} not found in the model!'.format(fout))
 
-        if not step.history_outputs:
-            standard_output = HistoryOutput('standard')
-            step.history_outputs.append('standard')
-            self.history_outputs['standard'] = standard_output
-        for hout in step.history_outputs:
-            if hout not in self.history_outputs:
-                sys.exit(
-                    'ERROR: history output {} not found in the model!'.format(hout))
+            if not step.history_outputs:
+                standard_output = HistoryOutput('standard')
+                step.history_outputs.append('standard')
+                self.history_outputs['standard'] = standard_output
+            for hout in step.history_outputs:
+                if hout not in self.history_outputs:
+                    sys.exit(
+                        'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)
 

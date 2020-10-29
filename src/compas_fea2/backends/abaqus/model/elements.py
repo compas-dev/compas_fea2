@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.backends._base.model import ElementBase
+from compas_fea2.backends._base.model import MassElementBase
 from compas_fea2.backends._base.model import BeamElementBase
 from compas_fea2.backends._base.model import SpringElementBase
 from compas_fea2.backends._base.model import TrussElementBase
@@ -45,7 +46,7 @@ __all__ = [
 # 0D elements
 # ==============================================================================
 
-class MassElement():
+class MassElement(MassElementBase):
     """A 0D element for concentrated point mass.
 
     Parameters
@@ -58,23 +59,20 @@ class MassElement():
         Concentrated mass (mass of each point of the set).
     """
 
-    def __init__(self, key, elset, mass):
-        self.__name__         = 'Element'
-        self.key              = key
-        self.elset            = elset
-        self.eltype            = 'MASS'
+    def __init__(self,  key, node, mass, elset):
+        super(MassElement, self).__init__( key, node, mass, elset)
 
 
-    def __str__(self):
-        print('\n')
-        print('compas_fea {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-        for attr in ['key','eltype', 'elset', 'mass']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-        return ''
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.key)
+    # TODO: continue
+    def _generate_data(self):
+        line = ("*ELEMENT, TYPE=MASS, ELSET={}\n"
+                "{}, {}\n"
+                "*MASS, ELSET={0}\n"
+                "{}\n").format(self.elset, self.node, )
+
+
+
 
 
 # ==============================================================================

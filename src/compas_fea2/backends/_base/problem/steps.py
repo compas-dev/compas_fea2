@@ -194,12 +194,6 @@ class ModalStepBase(StepBase):
         Name of the ModalStep.
     modes : int
         Number of modes to analyse.
-    increments : int
-        Number of increments.
-    displacements : list
-        Displacement object names.
-    stype : str
-        'modal'.
 
     Attributes
     ----------
@@ -207,26 +201,17 @@ class ModalStepBase(StepBase):
         Name of the ModalStep.
     modes : int
         Number of modes to analyse.
-    increments : int
-        Number of increments.
-    displacements : list
-        Displacement object names.
     stype : str
         'modal'.
     """
 
-    def __init__(self, name, modes=10, increments=100, displacements=None, stype='modal'):
-        StepBase.__init__(self, name=name)
-
-        if not displacements:
-            displacements = []
+    def __init__(self, name, modes=1):
+        super(ModalStepBase, self).__init__(name)
 
         self.__name__      = 'ModalStep'
         self.name          = name
         self.modes         = modes
-        self.increments    = increments
-        self.displacements = displacements
-        self.stype          = stype
+        self.stype          = 'modal'
         self.attr_list.extend(['modes', 'increments', 'displacements', 'stype'])
 
 

@@ -246,10 +246,22 @@ class HeatStep(HeatStepBase):
 
 
 class ModalStep(ModalStepBase):
-    NotImplemented
-    # def __init__(self, name, modes, increments, displacements, type):
-    #     super(ModalStep, self).__init__(name, modes, increments, displacements, type)
+    def __init__(self, name, modes):
+        super(ModalStep, self).__init__(name, modes)
 
+
+    def _generate_data(self):
+
+        data = ("** ----------------------------------------------------------------\n"
+                "**\n"
+                "** STEP: {0}\n"
+                "**\n"
+                "* Step, name={0}\n"
+                "*FREQUENCY, EIGENSOLVER=LANCZOS, NORMALIZATION=DISPLACEMENT\n"
+                "{1}\n"
+                "*END STEP").format(self.name, self.modes)
+
+        return data
 
 class HarmoniStepBase(HarmonicStepBase):
     NotImplemented

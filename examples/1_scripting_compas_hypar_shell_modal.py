@@ -9,7 +9,6 @@ from compas_fea2.backends.abaqus.problem import Problem
 from compas_fea2.backends.abaqus.problem import FixedDisplacement
 from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
 from compas_fea2.backends.abaqus.problem import PointLoad
-from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import ModalStep
 
 from compas_fea2 import DATA
@@ -41,12 +40,12 @@ model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='n
 model.add_assembly_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
 model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
-# model.summary()
+model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
-problem = Problem(name='hypar', model=model)
+problem = Problem(name='hypar_modal', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
@@ -58,9 +57,10 @@ problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
 # Define the analysis step
 problem.add_step(step=ModalStep(name='modal', modes=3))
 
+problem.summary()
+
 # Solve the problem
-# problem.write_input_file(path='C:/temp/test_structure')
-# problem.summary()
 problem.analyse(path= TEMP + '/hypar_shell')
-# problem.extract()
-# print(problem.results)
+problem.extract()
+
+print(problem.results)

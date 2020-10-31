@@ -9,3 +9,4 @@ Getting Started
 
    gettingstarted/installation.rst
    gettingstarted/umat.rst
+   gettingstarted/units.rst

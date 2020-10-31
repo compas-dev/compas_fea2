@@ -9,6 +9,8 @@ import sys
 import math
 import pickle
 
+# from compas_fea2.utilities.units import _add_units
+
 
 __all__ = [
     'Model',
@@ -53,7 +55,7 @@ class Model():
         self.parts = {}
         self.surfaces = []
         self.constraints = []
-        self.add_interactions = []
+        self.interactions = []
         self.materials = {}
         self.sections = {}
         self.sets = {}

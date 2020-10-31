@@ -24,6 +24,7 @@ import os
 import sys
 import compas
 
+from pint import UnitRegistry
 
 __author__ = ["Francesco Ranaudo"]
 __copyright__ = "Block Research Group"
@@ -39,6 +40,10 @@ DATA = os.path.abspath(os.path.join(HOME, "data"))
 UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
+
+# Set the unit regestry
+ureg = UnitRegistry()
+Q_ = ureg.Quantity
 
 # Check if package is installed from git
 # If that's the case, try to append the current head's hash to __version__
@@ -60,5 +65,6 @@ try:
                 __version__ += '-' + git_commit[:8]
 except Exception:
     pass
+
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

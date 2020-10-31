@@ -4,6 +4,8 @@ from __future__ import print_function
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
+# from compas_fea2.utilities.units import _add_units
+from .... import ureg, Q_
 __all__ = [
     'NodeBase',
 ]
@@ -57,10 +59,11 @@ class NodeBase(object):
     >>> node = Node(1.0, 2.0, 3.0)
     """
 
-    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
+    def __init__(self, xyz, units = 'mm', ex=None, ey=None, ez=None, mass=None, label=None):
         self.__name__ = 'Node'
         self.key      = 0
-        self.xyz      = [float(x) for x in xyz]
+        self.units    = units
+        self.xyz      = [Q_(float(x), self.units) for x in xyz]
         self.x        = self.xyz[0]
         self.y        = self.xyz[1]
         self.z        = self.xyz[2]

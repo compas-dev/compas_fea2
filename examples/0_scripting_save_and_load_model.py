@@ -3,14 +3,6 @@ from compas.datastructures import Mesh
 from compas_fea2.backends.abaqus.model import Model
 from compas_fea2.backends.abaqus.model import ElasticIsotropic
 from compas_fea2.backends.abaqus.model import BoxSection
-from compas_fea2.backends.abaqus.model import Set
-
-from compas_fea2.backends.abaqus.problem import Problem
-from compas_fea2.backends.abaqus.problem import FixedDisplacement
-from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.problem import PointLoad
-from compas_fea2.backends.abaqus.problem import FieldOutput
-from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 
 from compas_fea2 import DATA
 from compas_fea2 import TEMP
@@ -31,10 +23,19 @@ model.frame_from_mesh(mesh=mesh, beam_section=box_20_80)
 
 # view model summary and save to cfm
 model.summary()
-print(model.parts['part-1'])
-model.save_to_cfm(path= TEMP + '/hypar_frame')
 
-# Initializa a new model from the cfm file
-new_model = Model.load_from_cfm(filename= TEMP + '/hypar_frame/hypar.cfm')
-new_model.summary()
-print(new_model.parts['part-1'])
+print(model.parts['part-1'].nodes[0])
+# u1 = model._add_units(3, 'meter')
+# u2 = model._add_units(5, 'newton')
+# u3 = u2/(u1*u1)
+
+# print(u3.to_reduced_units())
+
+
+# print(model.parts['part-1'])
+# model.save_to_cfm(path= TEMP)
+
+# # Initializa a new model from the cfm file
+# new_model = Model.load_from_cfm(filename= TEMP + '/hypar.cfm')
+# new_model.summary()
+# print(new_model.parts['part-1'])

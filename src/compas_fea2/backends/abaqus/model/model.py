@@ -49,6 +49,7 @@ class Model(ModelBase):
 
     def __init__(self, name):
         super(Model, self).__init__(name)
+        self._backend = 'abaqus'
 
     def _generate_data(self):
         line = '*Assembly, name={}\n**\n'.format(self.name)

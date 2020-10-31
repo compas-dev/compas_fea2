@@ -3,7 +3,7 @@
 blender
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.cad
+.. currentmodule:: compas_fea2.interfaces.blender
 
 
 """

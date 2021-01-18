@@ -95,7 +95,7 @@ def clean(ctx, docs=True, bytecode=True, builds=True):
 
         if builds:
             folders.append('build/')
-            folders.append('src/compas_fea2.egg-info/')
+            folders.append('src/compas.egg-info/')
 
         for folder in folders:
             rmtree(os.path.join(BASE_FOLDER, folder), ignore_errors=True)
@@ -105,20 +105,46 @@ def clean(ctx, docs=True, bytecode=True, builds=True):
       'rebuild': 'True to clean all previously built docs before starting, otherwise False.',
       'doctest': 'True to run doctests, otherwise False.',
       'check_links': 'True to check all web links in docs for validity, otherwise False.'})
-def docs(ctx, doctest=False, rebuild=True, check_links=False):
+def docs(ctx, doctest=False, rebuild=False, check_links=False):
     """Builds package's HTML documentation."""
 
     if rebuild:
         clean(ctx)
 
     with chdir(BASE_FOLDER):
-        if doctest:
-            ctx.run('sphinx-build -E -b doctest docsource docs')
+        # ctx.run('sphinx-autogen docs/**.rst')
 
-        ctx.run('sphinx-build -E -b html docsource docs')
+        if doctest:
+            testdocs(ctx, rebuild=rebuild)
+
+        opts = '-E' if rebuild else ''
+        ctx.run('sphinx-build {} -b html docs dist/docs'.format(opts))
 
         if check_links:
-            ctx.run('sphinx-build -E -b linkcheck docsource docs')
+            linkcheck(ctx, rebuild=rebuild)
+
+
+@task()
+def lint(ctx):
+    """Check the consistency of coding style."""
+    log.write('Running flake8 python linter...')
+    ctx.run('flake8 src')
+
+
+@task()
+def testdocs(ctx, rebuild=False):
+    """Test the examples in the docstrings."""
+    log.write('Running doctest...')
+    opts = '-E' if rebuild else ''
+    ctx.run('sphinx-build {} -b doctest docs dist/docs'.format(opts))
+
+
+@task()
+def linkcheck(ctx, rebuild=False):
+    """Check links in documentation."""
+    log.write('Running link check...')
+    opts = '-E' if rebuild else ''
+    ctx.run('sphinx-build {} -b linkcheck docs dist/docs'.format(opts))
 
 
 @task()
@@ -126,17 +152,13 @@ def check(ctx):
     """Check the consistency of documentation, coding style and a few other things."""
 
     with chdir(BASE_FOLDER):
+        lint(ctx)
+
         log.write('Checking MANIFEST.in...')
-        ctx.run('check-manifest --ignore-bad-ideas=test.so,fd.so,smoothing.so,drx_c.so')
+        ctx.run('check-manifest')
 
         log.write('Checking metadata...')
         ctx.run('python setup.py check --strict --metadata')
-
-        # log.write('Running flake8 python linter...')
-        # ctx.run('flake8 src tests setup.py')
-
-        # log.write('Checking python imports...')
-        # ctx.run('isort --check-only --diff --recursive src tests setup.py')
 
 
 @task(help={
@@ -170,7 +192,6 @@ def prepare_changelog(ctx):
         ctx.run('git add CHANGELOG.md && git commit -m "Prepare changelog for next release"')
 
 
-
 @task(help={
       'release_type': 'Type of release follows semver rules. Must be one of: major, minor, patch.'})
 def release(ctx, release_type):
@@ -182,7 +203,7 @@ def release(ctx, release_type):
     ctx.run('invoke check test')
 
     # Bump version and git tag it
-    ctx.run('bumpversion %s --verbose' % release_type)
+    ctx.run('bump2version %s --verbose' % release_type)
 
     # Build project
     ctx.run('python setup.py clean --all sdist bdist_wheel')

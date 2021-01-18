@@ -142,6 +142,9 @@ html_theme_options = {
     'package_name'    : 'compas_fea2',
     'package_title'   : project,
     'package_version' : release,
+    "package_repo"       : "https://github.com/BlockResearchGroup/compas_fea2",
+    "package_docs"       : "https://blockresearchgroup.github.io/compas_fea2/",
+    "package_old_versions_txt" : "https://blockresearchgroup.github.io/compas_fea2/doc_versions.txt"
 }
 
 html_context = {}

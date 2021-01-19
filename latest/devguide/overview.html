@@ -91,26 +91,108 @@
         
         <div class="section" id="overview">
 <h1>Overview</h1>
-<p>All contributions have to be made via Pull Requests (PR) from a fork of the repo.
-In a nutshell this is the procedure for making a contribution.</p>
-<ul class="simple">
-<li><p>Create dev environment.</p></li>
-<li><p>Fork the <code class="docutils literal notranslate"><span class="pre">compas_fea</span></code> to your account.</p></li>
-<li><p>Clone the fork to your machine.</p></li>
-<li><p>Install requirements in dev environment.</p></li>
-<li><p>[ run all checks and tests ]</p></li>
-<li><p>Create a branch for your contribution.</p></li>
-<li><p>Checkout the branch.</p></li>
-<li><p>Make changes.</p></li>
-<li><p>[ run all checks and tests ]</p></li>
-<li><p>Commit changes.</p></li>
-<li><p>Pull latest master/main from <code class="docutils literal notranslate"><span class="pre">compas_fea</span></code>.</p></li>
-<li><p>Rebase branch.</p></li>
-<li><p>Push to origin (your fork).</p></li>
-<li><p>Submit PR.</p></li>
-</ul>
-<div class="section" id="development-environment">
-<h2>Development environment</h2>
+<p>Some light reading :)</p>
+<p><a class="reference external" href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging">https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging</a>
+<a class="reference external" href="https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes">https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes</a></p>
+<p><a class="reference external" href="https://git-scm.com/docs/git-pull">https://git-scm.com/docs/git-pull</a>
+<a class="reference external" href="https://git-scm.com/docs/git-rebase">https://git-scm.com/docs/git-rebase</a></p>
+<div class="section" id="fork-the-repo">
+<h2>Fork the repo</h2>
+<p>All contributions have to be made via pull requests from a fork of the repo.
+To fork the <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> repo, go to GitHub, click the “Fork” button
+and select an account to host the fork.</p>
+</div>
+<div class="section" id="clone-the-fork">
+<h2>Clone the fork</h2>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git clone https://github.com/&lt;username&gt;/compas_fea2.git
+</code></pre></div>
+</div>
+</div>
+<div class="section" id="create-a-dev-environment">
+<h2>Create a dev environment</h2>
+<p>The recommended way to set up a development environment is with <code class="docutils literal notranslate"><span class="pre">conda</span></code>.
+Make sure to activate the environment before using it…</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>conda create -n fea2-dev <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 --yes
+conda activate fea2
+</code></pre></div>
+</div>
+</div>
+<div class="section" id="install-the-requirements">
+<h2>Install the requirements</h2>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>pip install -r requirements-dev.txt
+</code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this will also install <code class="docutils literal notranslate"><span class="pre">compas</span></code> and <code class="docutils literal notranslate"><span class="pre">openseespy</span></code>,
+and add an editable install of your fork of <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> to the environment.</p>
+</div>
+</div>
+<div class="section" id="run-all-checks-and-tests">
+<h2>Run all checks and tests</h2>
+<p>Before starting to work on your contribution,
+it is generally a good idea to run all tests and checks
+to make sure you have a healthy clone of the repo.</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>python -m compas_fea2.test
+</code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the testing framework is currently not available yet.</p>
+</div>
+</div>
+<div class="section" id="create-a-branch-for-your-contribution">
+<h2>Create a branch for your contribution</h2>
+<p>Create and <code class="docutils literal notranslate"><span class="pre">checkout</span></code> a new branch on the forked repo.</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git branch my-awesome-contribution
+git checkout my-awesome-contribution
+</code></pre></div>
+</div>
+</div>
+<div class="section" id="start-making-changes">
+<h2>Start making changes</h2>
+<p>This is all you!</p>
+<p>Make sure to commit your changes regularly.
+This makes it easier to undo if you change your mind about something…</p>
+<p>Also push the commits regularly to your remote fork.
+This way you have plenty of backups in case your computer blows up :)</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git commit -a -m <span class="s2">&quot;Some meaningful description of awesomeness&quot;</span>
+</code></pre></div>
+</div>
+</div>
+<div class="section" id="rebase-on-latest-master-main">
+<h2>Rebase on latest master/main</h2>
+<p>Once you are done, the process of merging your contribution
+into <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> is much simpler if you rebase the contribution branch
+of your fork onto the main branch of <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> before submitting the PR.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a lot simpler using a Git GUI Client such as
+SourceTree, SmartGit or GitKraken than on the command line…</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Run all checks and tests</h2>
+<p>Before pushing your local fork branch to the remote fork repo
+make sure all tests and check still pass
+and make changes if necessary.</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>python -m compas_fea2.test
+</code></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the testing framework is currently not available yet.</p>
+</div>
+</div>
+<div class="section" id="push-to-remote-fork">
+<h2>Push to remote fork</h2>
+<p>Once all your changes have been commited,
+the contribution bracnh is rebased onto the main branch of <code class="docutils literal notranslate"><span class="pre">compaS_fea2</span></code>,
+and all tests and checks pass,
+push the local branch to the remote fork.</p>
+<div class="language-bash notranslate"><div class="highlight"><pre><code><span></span>git push
+</code></pre></div>
+</div>
 </div>
 </div>
 
@@ -153,7 +235,16 @@ In a nutshell this is the procedure for making a contribution.</p>
         
         <ul class="nav flex-column" id="compas-toc">
 <li class="nav-item"><a class="nav-link reference internal" href="#">Overview</a><ul class="nav flex-column">
-<li class="nav-item"><a class="nav-link reference internal" href="#development-environment">Development environment</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#fork-the-repo">Fork the repo</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#clone-the-fork">Clone the fork</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#create-a-dev-environment">Create a dev environment</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#install-the-requirements">Install the requirements</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#run-all-checks-and-tests">Run all checks and tests</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#create-a-branch-for-your-contribution">Create a branch for your contribution</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#start-making-changes">Start making changes</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#rebase-on-latest-master-main">Rebase on latest master/main</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#id1">Run all checks and tests</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#push-to-remote-fork">Push to remote fork</a></li>
 </ul>
 </li>
 </ul>

@@ -8,6 +8,9 @@ compas_fea2
 
    intro
    gettingstarted
+   backends
+   tutorial
    examples
    api
+   devguide
    license

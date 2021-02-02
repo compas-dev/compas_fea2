@@ -1,10 +1,8 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
+from ..base import FEABase
 
 
 __all__ = [
@@ -13,65 +11,53 @@ __all__ = [
 ]
 
 
-class ConstraintBase(object):
-    """Initialises base Constraint object.
+class ConstraintBase(FEABase):
+    """Base class for model constraints.
 
     Parameters
     ----------
-    name : str
+    name: str
         Name of the Constraint object.
 
     Attributes
     ----------
-    name : str
+    name: str
         Name of the Constraint object.
     """
 
     def __init__(self, name):
-        self.__name__ = 'ConstraintObject'
+        super(ConstraintBase, self).__init__()
         self.name = name
-        self.attr_list = ['name']
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in self.attr_list:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
 
 class TieConstraintBase(ConstraintBase):
-    """Tie constraint between two sets of nodes, elements or surfaces.
+    """Base class for a tie constraint between two sets of nodes, elements or surfaces.
 
     Parameters
     ----------
-    name : str
-        TieConstraint name.
-    master : str
-        Master set name.
-    slave : str
-        Slave set name.
-    tol : float
+    name: str
+        Name of the constraint.
+    master: str
+        Name of the master set.
+    slave: str
+        Name of the slave set.
+    tol: float
         Constraint tolerance, distance limit between master and slave.
 
     Attributes
     ----------
-    name : str
-        TieConstraint name.
-    master : str
-        Master set name.
-    slave : str
-        Slave set name.
-    tol : float
+    name: str
+        Name of the constraint.
+    master: str
+        Name of the master set.
+    slave: str
+        Name of the slave set.
+    tol: float
         Constraint tolerance, distance limit between master and slave.
     """
 
     def __init__(self, name, master, slave, tol):
-        ConstraintBase.__init__(self, name=name)
-        self.__name__ = 'TieConstraint'
+        super(TieConstraintBase, self).__init__(name)
         self.master = master
         self.slave = slave
         self.tol = tol
-        self.attr_list.extend(['master', 'slave', 'tol'])

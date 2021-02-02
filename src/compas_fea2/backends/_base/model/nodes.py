@@ -2,14 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'NodeBase',
-]
+from compas.utilities import geometric_key
+from ..base import FEABase
 
 
-class NodeBase(object):
+__all__ = ['NodeBase']
+
+
+class NodeBase(FEABase):
     """Initialises base Node object.
 
     Parameters
@@ -58,28 +58,37 @@ class NodeBase(object):
     """
 
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
-        self.__name__ = 'Node'
-        self.key      = 0
-        self.xyz      = [float(x) for x in xyz]
-        self.x        = self.xyz[0]
-        self.y        = self.xyz[1]
-        self.z        = self.xyz[2]
-        self.ex       = ex
-        self.ey       = ey
-        self.ez       = ez
-        self.mass     = mass
-        self.label    = label
-        self.gkey     = '{}_{}_{}'.format(self.x, self.y, self.z)
+        self._label = None
+        self.tag = 0
+        self.xyz = [float(x) for x in xyz]
+        self.ex = ex
+        self.ey = ey
+        self.ez = ez
+        self.mass = mass
+        self.label = label
 
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in ['label', 'key', 'x', 'y', 'z', 'ex', 'ey', 'ez', 'mass']:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
+    @property
+    def gkey(self):
+        return geometric_key([self.x, self.y, self.z])
 
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
+    @property
+    def x(self):
+        return self.xyz[0]
 
-    def __repr__(self):
+    @property
+    def y(self):
+        return self.xyz[1]
 
-        return '{0}({1} - {2})'.format(self.__name__, self.key, self.label)
+    @property
+    def z(self):
+        return self.xyz[2]
+
+    @property
+    def label(self):
+        if not self._label:
+            self._label = "node-{}".format(self.tag)
+        return self._label
+
+    @label.setter
+    def label(self, label):
+        self._label = label

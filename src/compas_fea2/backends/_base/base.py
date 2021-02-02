@@ -48,28 +48,18 @@ class FEABase(Base):
         >>> p
         None
         """
-        raise NotImplementedError
-
-    def __repr__(self):
-        """Code representation of object.
-
-        This method is used to convert the object to a code representation that can be evaluated by :func:`eval`
-        to recreate the object.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>> str(obj) == str(eval(repr(obj)))
-        True
-        """
-        raise NotImplementedError
+        classname = self.__class__.__name__
+        title = "{}".format(classname)
+        separator = "-" * len(title)
+        body = []
+        for name in self.__dict__:
+            body.append("{}: {}".format(name, self.__dict__[name]))
+        body = "\n".join(body)
+        return """\n{}\n{}\n{}""".format(title, separator, body)
 
     @property
     def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+        """This property is the representation of the object in a software-specific input file.
 
         Returns
         -------

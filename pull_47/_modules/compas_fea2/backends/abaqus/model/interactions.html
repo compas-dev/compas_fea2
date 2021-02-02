@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <title>compas_fea2 - compas_fea2.backends.abaqus.model.interactions</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../../../../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
+  <link rel="stylesheet" type="text/css" href="../../../../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../../../../_static/css/compas-reference.css" />
+
+  
+
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://blockresearchgroup.github.io/compas_fea2/">
+        <img src="../../../../../_static/images/compas_icon_white.png" alt="compas_fea2" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://blockresearchgroup.github.io/compas_fea2/">compas_fea2</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <meta id="doc_versions" data-url="https://blockresearchgroup.github.io/compas_fea2/doc_versions.txt" data-docs="https://blockresearchgroup.github.io/compas_fea2/">
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            0.1.0
+          </a>
+          <div id="doc_version_list" class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions"></div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/BlockResearchGroup/compas_fea2" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../../../../../index.html">docs</a></li>
+            
+              <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+            
+            <li class="breadcrumb-item active" aria-current="page">compas_fea2.backends.abaqus.model.interactions</li>
+          </ol>
+        </nav>
+        
+
+        
+        
+        <h1>Source code for compas_fea2.backends.abaqus.model.interactions</h1><div class="highlight"><pre><code>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Interaction&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<div class="viewcode-block" id="Interaction"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Interaction.html#compas_fea2.backends.abaqus.model.Interaction">[docs]</a><span class="k">class</span> <span class="nc">Interaction</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Initialises the Interaction object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">NotImplemented</span></div>
+    <span class="c1"># def __init__(self, name, nodes, elements, nsets=[], elsets=[]):</span>
+    <span class="c1">#     self.__name__ = &#39;Part&#39;</span>
+    <span class="c1">#     self.name = name</span>
+    <span class="c1">#     self.nodes = self._sort(nodes)</span>
+    <span class="c1">#     self.elements = self._sort(elements)</span>
+    <span class="c1">#     self.nsets = nsets</span>
+    <span class="c1">#     self.elsets = elsets</span>
+
+    <span class="c1">#     groups = self._group_elements()</span>
+    <span class="c1">#     self.elements_by_type = groups[0]</span>
+    <span class="c1">#     self.elements_by_section = groups[1]</span>
+    <span class="c1">#     self.elements_by_elset = groups[2]</span>
+    <span class="c1">#     self.elsets_by_section = groups[3]</span>
+    <span class="c1">#     self.elements_by_material = groups[4]</span>
+
+    <span class="c1"># def __str__(self):</span>
+
+    <span class="c1">#     print(&#39;\n&#39;)</span>
+    <span class="c1">#     print(&#39;compas_fea {0} object&#39;.format(self.__name__))</span>
+    <span class="c1">#     print(&#39;-&#39; * (len(self.__name__) + 18))</span>
+
+    <span class="c1">#     for attr in [&#39;name&#39;]:</span>
+    <span class="c1">#         print(&#39;{0:&lt;10} : {1}&#39;.format(attr, getattr(self, attr)))</span>
+
+    <span class="c1">#     return &#39;&#39;</span>
+
+    <span class="c1"># def __repr__(self):</span>
+
+    <span class="c1">#     return &#39;{0}({1})&#39;.format(self.__name__, self.name)</span>
+
+
+    <span class="c1"># # ==============================================================================</span>
+    <span class="c1"># # Constructor methods</span>
+    <span class="c1"># # ==============================================================================</span>
+    <span class="c1"># def _sort(self, attr):</span>
+    <span class="c1">#     return sorted(attr, key=lambda x: x.key, reverse=False)</span>
+
+    <span class="c1"># def _group_elements(self):  #TODO this can be done better...</span>
+    <span class="c1">#     el_dict={}</span>
+    <span class="c1">#     for el in self.elements:</span>
+    <span class="c1">#         el_dict[el] = (el.eltype, el.section, el.elset)</span>
+    <span class="c1">#     type_elements = {}</span>
+    <span class="c1">#     section_elements = {}</span>
+    <span class="c1">#     elset_elements = {}</span>
+    <span class="c1">#     section_elsets = {}</span>
+    <span class="c1">#     material_elements = {}</span>
+    <span class="c1">#     for key, value in el_dict.items():</span>
+    <span class="c1">#         type_elements.setdefault(value[0], set()).add(key)</span>
+    <span class="c1">#         section_elements.setdefault(value[1], set()).add(key)</span>
+    <span class="c1">#         material_elements.setdefault(value[1].material, set()).add(key)</span>
+    <span class="c1">#         elset_elements.setdefault(value[2], set()).add(key)</span>
+    <span class="c1">#         section_elsets.setdefault(value[1], set()).add(value[2])</span>
+
+
+    <span class="c1">#     # section_elements = sorted(section_elements, key=lambda x: x.key, reverse=True)</span>
+
+    <span class="c1">#     return type_elements, section_elements, elset_elements, section_elsets, material_elements</span>
+
+
+    <span class="c1"># # ==============================================================================</span>
+    <span class="c1"># # Write to input file</span>
+    <span class="c1"># # ==============================================================================</span>
+
+    <span class="c1"># def write_keyword_start(self, f):</span>
+    <span class="c1">#     line = &quot;*Part, name={}\n&quot;.format(self.name)</span>
+    <span class="c1">#     f.write(line)</span>
+
+    <span class="c1"># def write_data(self, f):</span>
+    <span class="c1">#     # Write nodes</span>
+    <span class="c1">#     self.nodes[0].write_keyword(f)</span>
+    <span class="c1">#     for node in self.nodes:</span>
+    <span class="c1">#         node.write_data(f)</span>
+    <span class="c1">#     # Write elements</span>
+    <span class="c1">#     for eltype in self.elements_by_type.keys():</span>
+    <span class="c1">#         for elset in self.elements_by_elset.keys():</span>
+    <span class="c1">#             elements = self.elements_by_elset[elset].intersection(self.elements_by_type[eltype])</span>
+    <span class="c1">#             elements = sorted(elements, key=lambda x: x.key, reverse=False)</span>
+    <span class="c1">#             if elements:</span>
+    <span class="c1">#                 elements = list(elements)</span>
+    <span class="c1">#                 elements[0].write_keyword(f)</span>
+    <span class="c1">#                 for element in elements:</span>
+    <span class="c1">#                     element.write_data(f)</span>
+    <span class="c1">#     # Write node sets</span>
+    <span class="c1">#     for nset in self.nsets:</span>
+    <span class="c1">#         nset.write_keyword(f)</span>
+    <span class="c1">#         nset.write_data(f)</span>
+    <span class="c1">#     # Write elements sets</span>
+    <span class="c1">#     for elset in self.elsets:</span>
+    <span class="c1">#         elset.write_keyword(f)</span>
+    <span class="c1">#         elset.write_data(f)</span>
+    <span class="c1">#     # Write sections ()</span>
+    <span class="c1">#     for section in self.elements_by_section.keys():</span>
+    <span class="c1">#         for elset in self.elsets_by_section[section]:</span>
+    <span class="c1">#             section.write_data(elset, f)</span>
+
+    <span class="c1"># def write_keyword_end(self, f):</span>
+    <span class="c1">#     line = &quot;*End Part\n**&quot;</span>
+    <span class="c1">#     f.write(line)</span>
+</code></pre></div>
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../../../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+          <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../gettingstarted.html">Getting Started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../backends.html">Backends</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../examples.html">Examples</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../api.html">API Reference</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../devguide.html">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../license.html">License</a></li>
+</ul>
+
+          </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+
+      
+    </nav>  
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+      <div class="col-12 col-md-6 mx-md-auto text-center">
+        <h4 class="pb-3 below-text">COMPAS</h4>
+        <p class="below-text">
+          A computational framework for collaboration and research
+          in Architecture, Engineering, Fabrication, and Construction.
+        </p>
+        <nav class="nav justify-content-center pb-3">
+          <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+            <span class="fab fa-python fa-1x"></span>
+          </a>
+        </nav>
+      </div>
+      </div>
+      <div class="row">
+      <div class="col text-center">
+        <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+  URL_ROOT          : '',
+  VERSION           : '0.1.0',
+  COLLAPSE_INDEX    : false,
+  FILE_SUFFIX       : '.html',
+  HAS_SOURCE        : 'false',
+  SOURCELINK_SUFFIX : '.txt'
+  };
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+
+  <script src="../../../../../_static/underscore.js"></script>
+  <script src="../../../../../_static/doctools.js"></script>
+  <script src="../../../../../_static/js/searchtools_.js"></script>
+
+  <script>
+  $(document).ready(function() {
+    $(".language-default code").addClass("python");
+    $(".language-python code").addClass("python");
+    $(".language-bash code").addClass("bash");
+    $(".language-cpp code").addClass("cpp");
+    $(".language-json code").addClass("json");
+    $(".language-none code").addClass("plaintext");
+
+    hljs.initHighlighting();
+    anchors.add();
+
+    $('.nav-versions .dropdown-item').filter(function(i, ver) {
+      return window.location.href.startsWith(ver.href);
+    }).addClass("active");
+
+  });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+</html>

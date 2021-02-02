@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <title>compas_fea2 - compas_fea2.backends.abaqus.problem.problem</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../../../../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
+  <link rel="stylesheet" type="text/css" href="../../../../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../../../../_static/css/compas-reference.css" />
+
+  
+
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://blockresearchgroup.github.io/compas_fea2/">
+        <img src="../../../../../_static/images/compas_icon_white.png" alt="compas_fea2" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://blockresearchgroup.github.io/compas_fea2/">compas_fea2</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <meta id="doc_versions" data-url="https://blockresearchgroup.github.io/compas_fea2/doc_versions.txt" data-docs="https://blockresearchgroup.github.io/compas_fea2/">
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            0.1.0
+          </a>
+          <div id="doc_version_list" class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions"></div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/BlockResearchGroup/compas_fea2" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../../../../../index.html">docs</a></li>
+            
+              <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+            
+            <li class="breadcrumb-item active" aria-current="page">compas_fea2.backends.abaqus.problem.problem</li>
+          </ol>
+        </nav>
+        
+
+        
+        
+        <h1>Source code for compas_fea2.backends.abaqus.problem.problem</h1><div class="highlight"><pre><code>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">compas_fea2.backends._base.problem</span> <span class="kn">import</span> <span class="n">ProblemBase</span>
+
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.input_file</span> <span class="kn">import</span> <span class="n">InputFile</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.send_job</span> <span class="kn">import</span> <span class="n">launch_process</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.read_results</span> <span class="kn">import</span> <span class="n">extract_data</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem.outputs</span> <span class="kn">import</span> <span class="n">FieldOutput</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem.outputs</span> <span class="kn">import</span> <span class="n">HistoryOutput</span>
+
+<span class="c1"># Author(s): Francesco Ranaudo (github.com/franaudo)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Problem&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="Problem"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.html#compas_fea2.backends.abaqus.problem.Problem">[docs]</a><span class="k">class</span> <span class="nc">Problem</span><span class="p">(</span><span class="n">ProblemBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initialises the Problem object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the Structure.</span>
+<span class="sd">    model : obj</span>
+<span class="sd">        model object.</span>
+<span class="sd">    parts : list</span>
+<span class="sd">        List of the parts in the model.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Problem.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.__init__.html#compas_fea2.backends.abaqus.problem.Problem.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Problem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># TODO remove</span></div>
+        <span class="c1"># self.interactions       = model.interactions</span>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1">#                           Step methods</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="Problem.add_step"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.add_step.html#compas_fea2.backends.abaqus.problem.Problem.add_step">[docs]</a>    <span class="k">def</span> <span class="nf">add_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a Step to the Problem.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        step : obj</span>
+<span class="sd">            compas_fea2 Step object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># NOTE: the abaqus implementation is slightly different from the _base</span>
+        <span class="c1"># TODO: simplify and move to _base</span>
+
+        <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">disp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: displacement </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disp</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">load</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: load </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
+            <span class="n">standard_output</span> <span class="o">=</span> <span class="n">FieldOutput</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+            <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">standard_output</span>
+        <span class="k">for</span> <span class="n">fout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: field output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fout</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
+            <span class="n">standard_output</span> <span class="o">=</span> <span class="n">HistoryOutput</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+            <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">standard_output</span>
+        <span class="k">for</span> <span class="n">hout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">hout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span></div>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1">#                         Analysis methods</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="Problem.write_input_file"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;C:/temp&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the abaqus input file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to the folder where the input file will be saved.</span>
+<span class="sd">        output : bool</span>
+<span class="sd">            Print terminal output.</span>
+<span class="sd">        save : bool</span>
+<span class="sd">            Save structure to .cfp before file writing.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_to_cfp</span><span class="p">()</span>
+
+        <span class="n">input_file</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+    <span class="c1"># TODO: try to make this an abstract method of the base class</span>
+<div class="viewcode-block" id="Problem.analyse"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse">[docs]</a>    <span class="k">def</span> <span class="nf">analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">user_mat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs the analysis through abaqus.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to the folder where the input file is saved.</span>
+<span class="sd">        exe : str</span>
+<span class="sd">            Full terminal command to bypass subprocess defaults.</span>
+<span class="sd">        cpus : int</span>
+<span class="sd">            Number of CPU cores to use.</span>
+<span class="sd">        output : bool</span>
+<span class="sd">            Print terminal output.</span>
+<span class="sd">        user_mat : str TODO: REMOVE!</span>
+<span class="sd">            Name of the material defined through a subroutine (currently only one material is supported)</span>
+<span class="sd">        save : bool</span>
+<span class="sd">            Save structure to .cfp before file writing.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_input_file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="n">save</span><span class="p">)</span>
+        <span class="n">launch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="n">exe</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="n">cpus</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+                       <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">user_mat</span><span class="o">=</span><span class="n">user_mat</span><span class="p">)</span></div>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1">#                         Results methods</span>
+    <span class="c1"># =========================================================================</span>
+
+    <span class="c1"># TODO: try to make this an abstract method of the base class</span>
+<div class="viewcode-block" id="Problem.extract"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.extract.html#compas_fea2.backends.abaqus.problem.Problem.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">license</span><span class="o">=</span><span class="s1">&#39;research&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extracts data from the analysis output files.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fields : list, str</span>
+<span class="sd">            Data field requests.</span>
+<span class="sd">        steps : list</span>
+<span class="sd">            Loads steps to extract from.</span>
+<span class="sd">        exe : str</span>
+<span class="sd">            Full terminal command to bypass subprocess defaults.</span>
+<span class="sd">        sets : list</span>
+<span class="sd">            -</span>
+<span class="sd">        license : str</span>
+<span class="sd">            Software license type: &#39;research&#39;, &#39;student&#39;.</span>
+<span class="sd">        output : bool</span>
+<span class="sd">            Print terminal output.</span>
+<span class="sd">        return_data : bool</span>
+<span class="sd">            Return data back into structure.results.</span>
+<span class="sd">        components : list</span>
+<span class="sd">            Specific components to extract from the fields data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="n">exe</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="n">return_data</span><span class="p">,</span>
+                     <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span></div></div>
+
+    <span class="c1"># # this should be an abstract method of the base class</span>
+    <span class="c1"># def analyse_and_extract(self, fields=&#39;u&#39;, exe=None, cpus=4, license=&#39;research&#39;, output=True, save=False,</span>
+    <span class="c1">#                         return_data=True, components=None, user_mat=False, overwrite=True):</span>
+    <span class="c1">#     &quot;&quot;&quot;Runs the analysis through the chosen FEA software / library and extracts data.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     fields : list, str</span>
+    <span class="c1">#         Data field requests.</span>
+    <span class="c1">#     exe : str</span>
+    <span class="c1">#         Full terminal command to bypass subprocess defaults.</span>
+    <span class="c1">#     cpus : int</span>
+    <span class="c1">#         Number of CPU cores to use.</span>
+    <span class="c1">#     license : str</span>
+    <span class="c1">#         Software license type: &#39;research&#39;, &#39;student&#39;.</span>
+    <span class="c1">#     output : bool</span>
+    <span class="c1">#         Print terminal output.</span>
+    <span class="c1">#     save : bool</span>
+    <span class="c1">#         Save the structure to .obj before writing.</span>
+    <span class="c1">#     return_data : bool</span>
+    <span class="c1">#         Return data back into structure.results.</span>
+    <span class="c1">#     components : list</span>
+    <span class="c1">#         Specific components to extract from the fields data.</span>
+    <span class="c1">#     user_sub : bool</span>
+    <span class="c1">#         Specify the user subroutine if needed.</span>
+    <span class="c1">#     delete : bool</span>
+    <span class="c1">#         If True, the analysis results are deleted after being read. [Not Implemented yet]</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     None</span>
+
+    <span class="c1">#     &quot;&quot;&quot;</span>
+
+    <span class="c1">#     self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,</span>
+    <span class="c1">#                 overwrite=overwrite, save=save)</span>
+
+    <span class="c1">#     self.extract(fields=fields, exe=exe, license=license, output=output,</span>
+    <span class="c1">#                 return_data=return_data, components=components)</span>
+
+    <span class="c1"># # this should be stored in a more generic way</span>
+    <span class="c1"># def get_nodal_results(self, step, field, nodes=&#39;all&#39;):</span>
+    <span class="c1">#     &quot;&quot;&quot;Extract nodal results from self.results.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     step : str</span>
+    <span class="c1">#         Step to extract from.</span>
+    <span class="c1">#     field : str</span>
+    <span class="c1">#         Data field request.</span>
+    <span class="c1">#     nodes : str, list</span>
+    <span class="c1">#         Extract &#39;all&#39; or a node set/list.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     dict</span>
+    <span class="c1">#         The nodal results for the requested field.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     data  = {}</span>
+    <span class="c1">#     rdict = self.results[step][&#39;nodal&#39;]</span>
+
+    <span class="c1">#     if nodes == &#39;all&#39;:</span>
+    <span class="c1">#         keys = list(self.nodes.keys())</span>
+    <span class="c1">#     elif isinstance(nodes, str):</span>
+    <span class="c1">#         keys = self.sets[nodes].selection</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         keys = nodes</span>
+
+    <span class="c1">#     for key in keys:</span>
+    <span class="c1">#         data[key] = rdict[field][key]</span>
+
+    <span class="c1">#     return data</span>
+
+    <span class="c1"># def get_element_results(self, step, field, elements=&#39;all&#39;):</span>
+    <span class="c1">#     &quot;&quot;&quot;Extract element results from self.results.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     step : str</span>
+    <span class="c1">#         Step to extract from.</span>
+    <span class="c1">#     field : str</span>
+    <span class="c1">#         Data field request.</span>
+    <span class="c1">#     elements : str, list</span>
+    <span class="c1">#         Extract &#39;all&#39; or an element set/list.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     dict</span>
+    <span class="c1">#         The element results for the requested field.</span>
+
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     data  = {}</span>
+    <span class="c1">#     rdict = self.results[step][&#39;element&#39;]</span>
+
+    <span class="c1">#     if elements == &#39;all&#39;:</span>
+    <span class="c1">#         keys = list(self.elements.keys())</span>
+    <span class="c1">#     elif isinstance(elements, str):</span>
+    <span class="c1">#         keys = self.sets[elements].selection</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         keys = elements</span>
+
+    <span class="c1">#     for key in keys:</span>
+    <span class="c1">#         data[key] = rdict[field][key]</span>
+
+    <span class="c1">#     return data</span>
+</code></pre></div>
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../../../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+          <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../intro.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../gettingstarted.html">Getting Started</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../backends.html">Backends</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../examples.html">Examples</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../api.html">API Reference</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../devguide.html">Developer Guide</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="../../../../../license.html">License</a></li>
+</ul>
+
+          </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+
+      
+    </nav>  
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+      <div class="col-12 col-md-6 mx-md-auto text-center">
+        <h4 class="pb-3 below-text">COMPAS</h4>
+        <p class="below-text">
+          A computational framework for collaboration and research
+          in Architecture, Engineering, Fabrication, and Construction.
+        </p>
+        <nav class="nav justify-content-center pb-3">
+          <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+          <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+            <span class="fab fa-python fa-1x"></span>
+          </a>
+        </nav>
+      </div>
+      </div>
+      <div class="row">
+      <div class="col text-center">
+        <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+  URL_ROOT          : '',
+  VERSION           : '0.1.0',
+  COLLAPSE_INDEX    : false,
+  FILE_SUFFIX       : '.html',
+  HAS_SOURCE        : 'false',
+  SOURCELINK_SUFFIX : '.txt'
+  };
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+
+  <script src="../../../../../_static/underscore.js"></script>
+  <script src="../../../../../_static/doctools.js"></script>
+  <script src="../../../../../_static/js/searchtools_.js"></script>
+
+  <script>
+  $(document).ready(function() {
+    $(".language-default code").addClass("python");
+    $(".language-python code").addClass("python");
+    $(".language-bash code").addClass("bash");
+    $(".language-cpp code").addClass("cpp");
+    $(".language-json code").addClass("json");
+    $(".language-none code").addClass("plaintext");
+
+    hljs.initHighlighting();
+    anchors.add();
+
+    $('.nav-versions .dropdown-item').filter(function(i, ver) {
+      return window.location.href.startsWith(ver.href);
+    }).addClass("active");
+
+  });
+
+
+  var url = $("#doc_versions").data("url");
+  var docs_site = $("#doc_versions").data("docs");
+
+  if (url) {
+    $.get(url, res=>{
+      var lines = res.match(/[^\r\n]+/g);
+      lines.forEach(version => {
+        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      });
+    })
+  }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+</html>

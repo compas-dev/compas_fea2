@@ -230,12 +230,21 @@ class Model:
 
     # ----- Alternative Constructors -----
 
-    @staticmethod
-    def from_database(in_file, geometry_only=False):
+    @classmethod
+    def from_database(cls, in_file, geometry_only=False):
+        # allow reconstruction of input file from existing Sofistik database.
+        # this kind of data transfer to compas_fea2 Model would be realistic for
+        # small or simple models, as it would be hard to capture all detailed FE data.
+
+        # _read_materials_sections()
+        # _read_geometry()
+        # _read_loadcases()
+        # _read_analyses()
+        # _read_results()
         raise NotImplementedError
 
-    @staticmethod
-    def from_json(in_file, geometry_only=False):
+    @classmethod
+    def from_json(cls, in_file, geometry_only=False):
         raise NotImplementedError
 
 

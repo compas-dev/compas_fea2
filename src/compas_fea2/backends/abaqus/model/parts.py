@@ -181,6 +181,9 @@ class Part(PartBase):
             if element.elset:
             #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
                 if element.elset not in self.elements_by_elset.keys():
+                    import importlib
+
+                    mymodule = importlib.import_module('matplotlib.text')
                     from compas_fea2.backends.abaqus.model import Set
                     self.add_element_set(Set(element.elset, [], 'elset'))
                     self.elements_by_elset[element.elset] = []

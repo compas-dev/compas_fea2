@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 class PartBase():
-    """Initialises a base Part object.
+    """Base Part object.
 
     Parameters
     ----------
@@ -363,8 +363,67 @@ class PartBase():
         #     if not s:
         #         del self.elsets[s]
 
+    # =========================================================================
+    #                           Materials methods
+    # =========================================================================
 
+    def add_material(self, material):
+        '''Add a Material object to the Part so that it can be later refernced
+        and used in the Section and Element definitions.
 
+        Parameters
+        ----------
+        material : obj
+            compas_fea2 material object.
+
+        Returns
+        -------
+        None
+        '''
+        if material.name not in self.materials:
+            self.materials[material.name] = material
+        else:
+            print('WARNING - {} already defined and it has been skipped! Note: the material name must be unique.')
+
+    def add_materials(self, materials):
+        '''Add multiple Material objects to the Part so that they can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : list
+            List of compas_fea2 material objects.
+
+        Returns
+        -------
+        None
+        '''
+        for material in materials:
+            self.add_material(material)
+
+    # =========================================================================
+    #                        Sections methods
+    # =========================================================================
+    def add_section(self, section):
+        """Add a compas_fea2 Section object to the Part.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        if section.name not in self.sections:
+            self.sections[section.name] = section
+            self.add_material(self.materials[section.material])
+        else:
+            print('WARNING - {} already defined and it has been skipped! Note: the section name must be unique.')
 
     # =========================================================================
     #                           Sets methods

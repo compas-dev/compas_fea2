@@ -8,7 +8,6 @@ import os
 import sys
 import pickle
 
-
 __all__ = [
     'ModelBase',
 ]
@@ -27,15 +26,15 @@ class ModelBase():
     name : str
         Name of the Model.
     parts : list
-        A list with the Part objects referenced in the Model.
+        A list with the `Part` objects referenced in the Model.
     instances : dict
-        A dictionary with the Instance objects belonging to the Model.
-    parts : dict
-        A dictionary with the Part objects referenced in the Model.
+        A dictionary with the `Instance` objects belonging to the Model.
     surfaces : list
-        A list with the Surface objects belonging to the Model.
+        A list with the `Surface` objects belonging to the Model.
     constraints : list
-        A list with the Constraint objects belonging to the Model.
+        A list with the `Constrain`t objects belonging to the Model.
+    interactions : list
+        A list with the `Interaction` objects belonging to the Model.
     materials : dict
         A dictionary of all the materials defined in the Model.
     sections : dict
@@ -51,7 +50,7 @@ class ModelBase():
         self.parts = {}
         self.surfaces = []
         self.constraints = []
-        self.add_interactions = []
+        self.interactions = []
         self.materials = {}
         self.sections = {}
         self.sets = {}
@@ -80,17 +79,19 @@ class ModelBase():
                 materials.append(mat)
         return list(set(materials))
 
-
-
     # =========================================================================
     #                           Nodes methods
     # =========================================================================
 
     def add_node(self, node, part):
-        """Adds a compas_fea2 Node object to a Part in the Model.
-        If the Node object has no label, one is automatically assigned. Duplicate
-        nodes are automatically excluded.
+        """Add a compas_fea2 `Node` object to a `Part` in the `Model`.
+        If the `Node` object has no label, one is automatically assigned.
+        Duplicate nodes are automatically excluded.
+
+        Warning
+        -------
         The part must have been previously added to the Model.
+
 
         Parameters
         ----------
@@ -103,13 +104,12 @@ class ModelBase():
         -------
         None
         """
-        error_code = 0
+
         if part in self.parts:
             self.parts[part].add_node(node)
-            error_code = 1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+        else:
+            raise ValueError(
+                '** ERROR! **: part {} not found in the Model!'.format(part))
 
     def add_nodes(self, nodes, part):
         """Add multiple compas_fea2 Node objects a Part in the Model.
@@ -148,13 +148,11 @@ class ModelBase():
         None
         '''
 
-        error_code = 0
         if part in self.parts:
             self.parts[part].remove_node(node_key)
-            error_code = 1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+        else:
+            raise ValueError(
+                '** ERROR! **: part {} not found in the Model!'.format(part))
 
     def remove_nodes(self, nodes, part):
         '''Remove the nodes from a Part in the Model. If there are duplicate nodes,
@@ -174,10 +172,6 @@ class ModelBase():
 
         for node in nodes:
             self.remove_node(node, part)
-
-    # ==============================================================================
-    # Nodes
-    # ==============================================================================
 
     # def check_node_exists(self, xyz):
     #     """Check if a node already exists at given x, y, z co-ordinates.
@@ -248,7 +242,7 @@ class ModelBase():
     #     zmin, zmax = min(z), max(z)
     #     return [xmin, xmax], [ymin, ymax], [zmin, zmax]
 
-    # def node_count(self):
+    # def nodes_count(self):
     #     """Return the number of nodes in the Structure.
 
     #     Parameters
@@ -260,25 +254,26 @@ class ModelBase():
     #     int
     #         Number of nodes stored in the Structure object.
     #     """
+
     #     return len(self.nodes) + len(self.virtual_nodes)
 
-    def nodes_xyz(self, nodes=None):
-        """Return the xyz co-ordinates of given or all nodes.
+    # def nodes_xyz(self, nodes=None):
+    #     """Return the xyz co-ordinates of given or all nodes.
 
-        Parameters
-        ----------
-        nodes : list
-            Node numbers, give None for all nodes.
+    #     Parameters
+    #     ----------
+    #     nodes : list
+    #         Node numbers, give None for all nodes.
 
-        Returns
-        -------
-        list
-            [[x, y, z] ...] co-ordinates.
-        """
-        if nodes is None:
-            nodes = sorted(self.nodes, key=int)
+    #     Returns
+    #     -------
+    #     list
+    #         [[x, y, z] ...] co-ordinates.
+    #     """
+    #     if nodes is None:
+    #         nodes = sorted(self.nodes, key=int)
 
-        return [self.node_xyz(node=node) for node in nodes]
+    #     return [self.node_xyz(node=node) for node in nodes]
 
     # def check_element_exists(self, nodes=None, xyz=None, virtual=False):
     #     """Check if an element already exists based on nodes or centroid.
@@ -391,12 +386,12 @@ class ModelBase():
     # =========================================================================
 
     def add_element(self, element, part):
-        """Adds a compas_fea2 Element object to a Part in the Model.
+        """Add a compas_fea2 `Element` object to a `Part` in the `Model`.
 
         Parameters
         ----------
         element : obj
-            compas_fea2 Element object.
+            compas_fea2 `Element` object.
         part : str
             Name of the part where the nodes will be removed from.
 
@@ -405,18 +400,15 @@ class ModelBase():
         None
         """
 
-        error_code = 0
         if part in self.parts:
             self.parts[part].add_element(element)
             if element.section not in self.sections:
-                sys.exit('ERROR: section {} not found in the Model!'.format(
-                    element.section))
+                raise ValueError('ERROR: section {} not found in the Model!'.format(element.section))
             elif element.section not in self.parts[part].sections:
                 self.parts[part].sections[element.section] = self.sections[element.section]
-            error_code = 1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+        else:
+            raise ValueError(
+                '** ERROR! **: part {} not found in the Model!'.format(part))
 
     def add_elements(self, elements, part):
         """Adds multiple compas_fea2 Element objects to a Part in the Model.

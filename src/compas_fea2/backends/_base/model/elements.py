@@ -245,9 +245,8 @@ class SolidElementBase(ElementBase):
     None
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(SolidElementBase, self).__init__(
-            key, connectivity, section, thermal)
+    def __init__(self, connectivity, section, thermal=None):
+        super(SolidElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'SolidElement'
         self.etype = 'solid'
 
@@ -298,5 +297,5 @@ class HexahedronElementBase(SolidElementBase):
 
 
 if __name__ == "__main__":
-    my_element = BeamElementBase(1, [0, 1], 'my_section')
+    my_element = BeamElementBase([0, 1], 'my_section')
     print(my_element)

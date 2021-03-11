@@ -232,7 +232,7 @@ class SolidSection(SolidSectionBase):
     def _generate_data(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
-,\n""".format(self.name, set_name, self.material.name)
+,\n""".format(self.name, set_name, self.material)
 
 
 if __name__ == "__main__":

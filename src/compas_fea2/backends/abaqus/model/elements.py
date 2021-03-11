@@ -210,10 +210,10 @@ class MembraneElement(MembraneElementBase):
 
 class SolidElement(SolidElementBase):
 
-    def __init__(self, key, connectivity, section, eltype=None, elset=None, thermal=None):
-        super(SolidElement, self).__init__(key, connectivity, section, thermal=None)
+    def __init__(self, connectivity, section, eltype=None, elset=None, thermal=None):
+        super(SolidElement, self).__init__(connectivity, section, thermal)
         if not elset:
-            self.elset = self.section.name
+            self.elset = self.section
         else:
             self.elset = elset
 
@@ -223,14 +223,11 @@ class SolidElement(SolidElementBase):
         else:
             self.eltype = eltype
 
-        # self.keyword = _generate_keyword(self)
-        self.data    = self._generate_data()
+        # # self.keyword = _generate_keyword(self)
+        # self.data    = self._generate_data()
 
     def _generate_data(self):
-        nkeys = []
-        for n in self.connectivity:
-            nkeys.append(str(n.key))
-        return '{0}, {1}\n'.format(self.key+1, ','.join(nkeys))
+        return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 
 
@@ -273,8 +270,18 @@ class SolidElement(SolidElementBase):
 #     #     super(HexahedronElement, self).__init__()
 
 if __name__ == "__main__":
-    from compas_fea2.backends.abaqus import Node
-    from compas_fea2.backends.abaqus import BeamElement
+    from compas_fea2.backends.abaqus.model.nodes import Node
+    from compas_fea2.backends.abaqus.model.materials import ElasticIsotropic
+    from compas_fea2.backends.abaqus.model.sections import SolidSection
+    from compas_fea2.backends.abaqus import SolidElement
 
-    n = Node(1,[2,3,4])
-    b = BeamElement(1, [n,n], 's')
+
+    nodes = [Node([i,3,4]) for i in range(4)]
+    mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
+    sec = SolidSection(name='section_A', material='mat_A')
+    print(sec._generate_data())
+    b = SolidElement(connectivity=nodes, section=sec)
+
+    print(b)
+    print(b._generate_data())
+

@@ -141,7 +141,7 @@ class Part(PartBase):
         else:
             for c in element.connectivity:
                 if c > len(self.nodes)-1:
-                    sys.exit('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
+                    raise ValueError('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
             element.key = len(self.elements)
             self.elements.append(element)
 
@@ -168,7 +168,6 @@ class Part(PartBase):
                     self.orientations_by_section[element.section].append(None)
             # else:
             #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
-            #     # sys.exit("ELEMENT ORIENTATION NOT DEFINED")
 
 
 

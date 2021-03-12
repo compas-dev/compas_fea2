@@ -122,7 +122,7 @@ History Output Requests
         None
         """
         if bc.bset not in self.model.sets.keys():
-            sys.exit('ERROR: bc set {} not found in the model!'.format(bc.bset))
+           raise ValueError('ERROR: bc set {} not found in the model!'.format(bc.bset))
         if bc.name not in self.bcs.keys():
             self.bcs[bc.name] = bc
 
@@ -199,7 +199,7 @@ History Output Requests
         None
         """
         if load.lset and load.lset not in self.model.sets:
-            sys.exit('ERROR: load set {} not found in the model!'.format(load.lset))
+            raise ValueError('ERROR: load set {} not found in the model!'.format(load.lset))
         if load.name not in self.loads.keys():
             self.loads[load.name] = load
 
@@ -278,21 +278,21 @@ History Output Requests
         # TODO: implement exception handler
         for disp in step.displacements:
             if disp not in self.displacements:
-                sys.exit(
+                raise ValueError(
                     'ERROR: displacement {} not found in the model!'.format(disp))
 
         for load in step.loads:
             if load not in self.loads:
-                sys.exit('ERROR: load {} not found in the model!'.format(load))
+                raise ValueError('ERROR: load {} not found in the model!'.format(load))
 
         for fout in step.field_outputs:
             if fout not in self.field_outputs:
-                sys.exit(
+                raise ValueError(
                     'ERROR: field output {} not found in the model!'.format(fout))
 
         for hout in step.history_outputs:
             if hout not in self.history_outputs:
-                sys.exit(
+                raise ValueError(
                     'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)

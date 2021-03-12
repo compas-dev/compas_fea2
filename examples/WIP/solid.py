@@ -31,7 +31,7 @@ model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 sec = SolidSection(name='section_A', material='mat_A')
 model.add_section(sec)
 
-size = 3
+size = 10
 # Add nodes to the part
 for z in range(size):
     for y in range(size):

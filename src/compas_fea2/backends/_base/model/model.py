@@ -442,13 +442,11 @@ class ModelBase():
         -------
         None
         '''
-        error_code = 0
+
         if part in self.parts:
             self.parts[part].remove_element(element_key)
-            error_code = 1
-
-        if error_code == 0:
-            sys.exit('ERROR: part {} not found in the Model!'.format(part))
+        else:
+            raise ValueError('ERROR: part {} not found in the Model!'.format(part))
 
     def remove_elements(self, elements, part):
         '''Removes the elements from a Part in the Model.
@@ -489,7 +487,7 @@ class ModelBase():
         None
         '''
         if instance not in self.instances:
-            sys.exit('ERROR: instance {} not found in the Model!'.format(instance))
+            raise ValueError('ERROR: instance {} not found in the Model!'.format(instance))
         set.instance = instance
         self.instances[instance].sets.append(set)
 
@@ -556,7 +554,7 @@ class ModelBase():
         if section.name not in self.sections:
             self.sections[section.name] = section
             if section.material not in self.materials.keys():
-                sys.exit('ERROR: material {} not found in the Model!'.format(
+                raise ValueError('ERROR: material {} not found in the Model!'.format(
                     section.material))
             self.add_material(self.materials[section.material])
 

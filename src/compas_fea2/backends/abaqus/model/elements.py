@@ -34,17 +34,12 @@ __all__ = [
     # 'PentahedronElement',
     # 'TetrahedronElement',
     # 'HexahedronElement',
-    ]
-
-# # TODO the key should not be assigned by the user but generated automatically
-
-# def _generate_keyword(obj):
-#     return "*Element, type={}, elset={}\n".format(obj.eltype, obj.elset)
-
+]
 
 # ==============================================================================
 # 0D elements
 # ==============================================================================
+
 
 class MassElement(MassElementBase):
     """A 0D element for concentrated point mass.
@@ -60,19 +55,15 @@ class MassElement(MassElementBase):
     """
 
     def __init__(self,  key, node, mass, elset):
-        super(MassElement, self).__init__( key, node, mass, elset)
-
-
+        super(MassElement, self).__init__(key, node, mass, elset)
 
     # TODO: continue
+
     def _generate_data(self):
         line = ("*ELEMENT, TYPE=MASS, ELSET={}\n"
                 "{}, {}\n"
                 "*MASS, ELSET={0}\n"
                 "{}\n").format(self.elset, self.node, )
-
-
-
 
 
 # ==============================================================================
@@ -82,27 +73,26 @@ class MassElement(MassElementBase):
 class BeamElement(BeamElementBase):
 
     def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
-        super(BeamElement, self).__init__(connectivity=connectivity, section=section, thermal=thermal)
+        super(BeamElement, self).__init__(connectivity, section, thermal)
         self.elset = elset
         self.eltype = 'B31'
         self.orientation = orientation
-        # self.keyword = _generate_keyword(self)
-        # self.data    = '{0}, {1}, {2}\n'.format(self.key, self.connectivity[0].key, self.connectivity[1].key)
 
     def _generate_data(self):
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
-# class SpringElement(SpringElementBase):
-#     """A 1D spring element.
 
-#     Parameters
-#     ----------
-#     None
+class SpringElement(SpringElementBase):
+    """A 1D spring element.
 
-#     """
-#     pass
-#     # def __init__(self):
-#     #     super(SpringElement, self).__init__()
+    Parameters
+    ----------
+    None
+
+    """
+    pass
+    # def __init__(self):
+    #     super(SpringElement, self).__init__()
 
 
 class TrussElement(TrussElementBase):
@@ -113,13 +103,13 @@ class TrussElement(TrussElementBase):
     None
 
     """
+
     def __init__(self, connectivity, section, elset=None, thermal=None):
-        super(TrussElement, self).__init__(connectivity, section, thermal=None)
+        super(TrussElement, self).__init__(connectivity, section, thermal)
 
         self.elset = elset
         self.eltype = 'T3D2'
         self.orientation = None
-        # self.keyword = _generate_keyword(self)
 
     def _generate_data(self):
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
@@ -168,8 +158,9 @@ class ShellElement(ShellElementBase):
     thermal : bool
         NotImplemented,
     """
+
     def __init__(self, connectivity, section, elset=None, thermal=None):
-        super(ShellElement, self).__init__(connectivity, section, thermal=None)
+        super(ShellElement, self).__init__(connectivity, section, thermal)
         if not elset:
             self.elset = self.section
         else:
@@ -223,12 +214,8 @@ class SolidElement(SolidElementBase):
         else:
             self.eltype = eltype
 
-        # # self.keyword = _generate_keyword(self)
-        # self.data    = self._generate_data()
-
     def _generate_data(self):
         return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
-
 
 
 # class PentahedronElement(PentahedronElementBase):
@@ -268,15 +255,13 @@ class SolidElement(SolidElementBase):
 #     pass
 #     # def __init__(self):
 #     #     super(HexahedronElement, self).__init__()
-
 if __name__ == "__main__":
     from compas_fea2.backends.abaqus.model.nodes import Node
     from compas_fea2.backends.abaqus.model.materials import ElasticIsotropic
     from compas_fea2.backends.abaqus.model.sections import SolidSection
     from compas_fea2.backends.abaqus import SolidElement
 
-
-    nodes = [Node([i,3,4]) for i in range(4)]
+    nodes = [Node([i, 3, 4]) for i in range(4)]
     mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
     sec = SolidSection(name='section_A', material='mat_A')
     print(sec._generate_data())
@@ -284,4 +269,3 @@ if __name__ == "__main__":
 
     print(b)
     print(b._generate_data())
-

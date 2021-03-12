@@ -66,12 +66,12 @@ class Problem(ProblemBase):
         if not step.stype == 'modal':
             for disp in step.displacements:
                 if disp not in self.displacements:
-                    sys.exit(
+                    raise ValueError(
                         'ERROR: displacement {} not found in the model!'.format(disp))
 
             for load in step.loads:
                 if load not in self.loads:
-                    sys.exit('ERROR: load {} not found in the model!'.format(load))
+                    raise ValueError('ERROR: load {} not found in the model!'.format(load))
 
             if not step.field_outputs:
                 standard_output = FieldOutput('standard')
@@ -79,7 +79,7 @@ class Problem(ProblemBase):
                 self.field_outputs['standard'] = standard_output
             for fout in step.field_outputs:
                 if fout not in self.field_outputs:
-                    sys.exit(
+                    raise ValueError(
                         'ERROR: field output {} not found in the model!'.format(fout))
 
             if not step.history_outputs:
@@ -88,7 +88,7 @@ class Problem(ProblemBase):
                 self.history_outputs['standard'] = standard_output
             for hout in step.history_outputs:
                 if hout not in self.history_outputs:
-                    sys.exit(
+                    raise ValueError(
                         'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)

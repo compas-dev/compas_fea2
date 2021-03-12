@@ -16,8 +16,12 @@ __all__ = [
 
 
 class Constraint(ConstraintBase):
-    NotImplemented
+    def __init__(self, name):
+        super(Constraint).__init__(name)
+        raise NotImplementedError
 
 
 class TieConstraint(TieConstraintBase):
-    NotImplemented
+    def __init__(self, name, master, slave, tol):
+        super(TieConstraint).__init__(name, master, slave, tol)
+        raise NotImplementedError

@@ -73,16 +73,16 @@ class PointLoad(PointLoadBase):
 
 
 class LineLoad(LineLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
-    #     super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
 
+    def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
+        super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
+        raise NotImplementedError
 
 class AreaLoad(AreaLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, x, y, z, axes):
-    #     super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
 
+    def __init__(self, name, elements, x, y, z, axes):
+        super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
+        raise NotImplementedError
 
 class GravityLoad(GravityLoadBase):
 
@@ -98,30 +98,29 @@ class GravityLoad(GravityLoadBase):
 
 
 class ThermalLoad(ThermalLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, temperature):
-    #     super(ThermalLoad, self).__init__(name, elements, temperature)
 
+    def __init__(self, name, elements, temperature):
+        super(ThermalLoad, self).__init__(name, elements, temperature)
+        raise NotImplementedError
 
 class TributaryLoad(TributaryLoadBase):
-    NotImplemented
-    # def __init__(self, structure, name, mesh, x, y, z, axes):
-    #     super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
 
+    def __init__(self, structure, name, mesh, x, y, z, axes):
+        super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
+        raise NotImplementedError
 
 class HarmoniPointLoadBase(HarmonicPointLoadBase):
-    NotImplemented
-    # def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-    #     super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
 
+    def __init__(self, name, nodes, x, y, z, xx, yy, zz):
+        super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+        raise NotImplementedError
 
 class HarmonicPressureLoad(HarmonicPressureLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, pressure, phase):
-    #     super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
-
+    def __init__(self, name, elements, pressure, phase):
+        super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
+        raise NotImplementedError
 
 class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
-    #     super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)
+    def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
+        super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)
+        raise NotImplementedError

@@ -10,8 +10,9 @@ class Interaction():
     """Initialises the Interaction object.
 
     """
-    NotImplemented
-    # def __init__(self, name, nodes, elements, nsets=[], elsets=[]):
+
+    def __init__(self, name, nodes, elements, nsets=[], elsets=[]):
+        raise NotImplementedError
     #     self.__name__ = 'Part'
     #     self.name = name
     #     self.nodes = self._sort(nodes)

@@ -530,7 +530,7 @@ class ModelBase():
             self.add_material(material)
 
     def assign_material_to_element(self, material, part, element):
-        NotImplemented
+        raise NotImplementedError
 
     # =========================================================================
     #                           Sections methods
@@ -559,7 +559,7 @@ class ModelBase():
             self.add_material(self.materials[section.material])
 
     def assign_section_to_element(self, material, part, element):
-        NotImplemented
+        raise NotImplementedError
 
     # =========================================================================
     #                        Surfaces methods

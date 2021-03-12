@@ -190,10 +190,9 @@ class ShellElement(ShellElementBase):
 
 
 class MembraneElement(MembraneElementBase):
-    NotImplemented
-    # def __init__(self):
-    #     super(MembraneElement, self).__init__()
-
+    def __init__(self):
+        super(MembraneElement, self).__init__()
+        raise NotImplementedError
 
 # ==============================================================================
 # 3D elements

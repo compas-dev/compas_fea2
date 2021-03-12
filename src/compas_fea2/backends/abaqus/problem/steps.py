@@ -27,6 +27,7 @@ __all__ = [
 # TODO remove _GeneralStep and get everything forn _base
 # TODO add field and history output requrests
 
+
 class _GeneralStep(StepBase):
     """Initialises GeneralStep object for use in a static analysis.
 
@@ -61,43 +62,42 @@ class _GeneralStep(StepBase):
     """
 
     def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time,
-                nlgeom, displacements, loads, field_outputs, history_outputs):
+                 nlgeom, displacements, loads, field_outputs, history_outputs):
         super(_GeneralStep, self).__init__(name=name)
 
-        self.__name__           = 'GeneralStep'
-        self.name               = name
-        self.max_increments     = max_increments
-        self.initial_inc_size   = initial_inc_size
-        self.min_inc_size       = min_inc_size
-        self.time               = time
+        self.__name__ = 'GeneralStep'
+        self.name = name
+        self.max_increments = max_increments
+        self.initial_inc_size = initial_inc_size
+        self.min_inc_size = min_inc_size
+        self.time = time
 
         if nlgeom:
-            self.nlgeom         = 'YES'
+            self.nlgeom = 'YES'
         else:
-            self.nlgeom         = 'NO'
+            self.nlgeom = 'NO'
 
-        self.displacements      = displacements
-        self.loads              = loads
-        self.field_outputs      = field_outputs
-        self.history_outputs    = history_outputs
+        self.displacements = displacements
+        self.loads = loads
+        self.field_outputs = field_outputs
+        self.history_outputs = history_outputs
 
         # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
         #                     'displacements', 'loads'])
 
 
-
-
 class GeneralStaticStep(_GeneralStep):
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-                nlgeom=False, displacements=[], loads=[], field_outputs=[], history_outputs=[]):
-        super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size,min_inc_size, time, nlgeom,
+                 nlgeom=False, displacements=[], loads=[], field_outputs=[], history_outputs=[]):
+        super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time, nlgeom,
                                                 displacements, loads, field_outputs, history_outputs)
         self.stype = 'Static'
         self.attr_list.extend(['stype'])
 
         # self.data = self._generate_data()
 
-    def _generate_data(self, displacements=[], loads=[], field_outputs=[], history_outputs=[]):  #todo: this could be moved outside the class
+    # todo: this could be moved outside the class
+    def _generate_data(self, displacements=[], loads=[], field_outputs=[], history_outputs=[]):
 
         section_data = []
         line = ("** ----------------------------------------------------------------\n"
@@ -137,16 +137,12 @@ class GeneralStaticStep(_GeneralStep):
 
         return ''.join(section_data)
 
-class GeneralStaticRiksStep(_GeneralStep):
-    NotImplemented
-    # def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-    #             nlgeom=False, displacements=[], loads=[]):
-    #     super(GeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time,
-    #                                 nlgeom, displacements, loads)
-    #     self.stype = 'Static, riks'
-    #     self.attr_list.extend(['stype'])
 
-    #     self.data = _generate_data(self)
+class GeneralStaticRiksStep(_GeneralStep):
+
+    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, displacements=[], loads=[]):
+        super(GeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, displacements, loads)
+        raise NotImplementedError
 
 
 class _LinearPertubationStep(StepBase):
@@ -165,11 +161,11 @@ class _LinearPertubationStep(StepBase):
     def __init__(self, name, displacements, loads):
         super(_LinearPertubationStep, self).__init__(name)
 
-        self.__name__      = 'LinearPerturbationStep'
-        self.name          = name
-        self.nlgeom        = 'NO'
+        self.__name__ = 'LinearPerturbationStep'
+        self.name = name
+        self.nlgeom = 'NO'
         self.displacements = displacements
-        self.loads         = loads
+        self.loads = loads
         self.attr_list.extend(['displacements', 'loads', ])
 
 
@@ -189,39 +185,40 @@ class StaticLinearPertubationStep(_LinearPertubationStep):
     def __init__(self, name, displacements, loads):
         super(StaticLinearPertubationStep, self).__init__(name, displacements, loads)
 
-        self.__name__      = 'StaticPerturbationStep'
-        self.name          = name
-        self.nlgeom        = 'NO'  #TODO this depends on the previous step -> loop through the steps order and adjust this parameter
+        self.__name__ = 'StaticPerturbationStep'
+        self.name = name
+        self.nlgeom = 'NO'  # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
         self.displacements = displacements
-        self.loads         = loads
+        self.loads = loads
         self.attr_list.extend(['displacements', 'loads'])
         self.type = 'Static'
 
         self.data = ("** ----------------------------------------------------------------\n"
-                    "**\n"
-                    "** STEP: {0}\n"
-                    "**\n"
-                    "* Step, name={0}, nlgeom={1}, perturbation\n"
-                    "*{2}\n"
-                    "**\n").format(self.name, self.nlgeom, self.stype)
+                     "**\n"
+                     "** STEP: {0}\n"
+                     "**\n"
+                     "* Step, name={0}, nlgeom={1}, perturbation\n"
+                     "*{2}\n"
+                     "**\n").format(self.name, self.nlgeom, self.stype)
+
 
 class BuckleStep(_LinearPertubationStep):
-    NotImplemented
-#     """Initialises BuckleStep object for use in a buckling analysis.
 
-#     Parameters
-#     ----------
-#     name : str
-#         Name of the GeneralStep.
-#     displacements : list
-#         Displacement objects.
-#     loads : list
-#         Load objects.
-#     """
+    """Initialises BuckleStep object for use in a buckling analysis.
 
-#     def __init__(self, name, nmodes, displacements, loads):
-#         super(BuckleStep).__init__(name=name, displacements=displacements, loads=loads)
+    Parameters
+    ----------
+    name : str
+        Name of the GeneralStep.
+    displacements : list
+        Displacement objects.
+    loads : list
+        Load objects.
+    """
 
+    def __init__(self, name, nmodes, displacements, loads):
+        super(BuckleStep).__init__(name, displacements, loads)
+        raise NotImplementedError
 #         self.__name__      = 'BuckleStep'
 #         self.name          = name
 #         self.nlgeom        = 'NO'  #TODO this depends on the previous step -> loop through the steps order and adjust this parameter
@@ -240,15 +237,13 @@ class BuckleStep(_LinearPertubationStep):
 
 
 class HeatStep(HeatStepBase):
-    NotImplemented
-    # def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):
-    #     super(HeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
-
+    def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):
+        super(HeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
+        raise NotImplementedError
 
 class ModalStep(ModalStepBase):
     def __init__(self, name, modes):
         super(ModalStep, self).__init__(name, modes)
-
 
     def _generate_data(self):
 
@@ -263,19 +258,20 @@ class ModalStep(ModalStepBase):
 
         return data
 
-class HarmoniStepBase(HarmonicStepBase):
-    NotImplemented
-    # def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
-    #     super(HarmoniStepBase, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
 
+class HarmoniStepBase(HarmonicStepBase):
+
+    def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
+        super(HarmoniStepBase, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
+        raise NotImplementedError
 
 class BucklingStep(BucklingStepBase):
-    NotImplemented
-    # def __init__(self, name, modes, increments, factor, displacements, loads, type,step):
-    #     super(BucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
-
+    def __init__(self, name, modes, increments, factor, displacements, loads, type,step):
+        super(BucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
+        raise NotImplementedError
 
 class AcoustiStepBase(AcousticStepBase):
-    NotImplemented
-    # def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
-    #     super(AcoustiStepBase, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)
+
+    def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
+        super(AcoustiStepBase, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)
+        raise NotImplementedError

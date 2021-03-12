@@ -78,7 +78,9 @@ class Stiff(StiffBase):
 
 
 class ElasticOrthotropic(ElasticOrthotropicBase):
-    NotImplemented
+    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
+        super(ElasticOrthotropic).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p)
+        raise NotImplementedError
 
 
 # ==============================================================================
@@ -243,7 +245,9 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 # ==============================================================================
 
 class ThermalMaterial(ThermalMaterialBase):
-    NotImplemented
+    def __init__(self, name, conductivity, p, sheat):
+        super(ThermalMaterial).__init__(name, conductivity, p, sheat)
+        raise NotImplementedError
 
 
 class UserMaterial(MaterialBase):

@@ -3,8 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import pickle
-import sys
 
 from compas_fea2.backends._base.problem import ProblemBase
 
@@ -94,7 +92,6 @@ class Problem(ProblemBase):
                         'ERROR: history output {} not found in the model!'.format(hout))
 
         self.steps.append(step)
-
 
     # =========================================================================
     #                           Optimisation methods

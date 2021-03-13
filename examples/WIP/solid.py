@@ -7,7 +7,6 @@ from compas_fea2.backends.abaqus import SolidElement
 from compas_fea2.backends.abaqus import Set
 
 from compas_fea2.backends.abaqus.problem import Problem
-from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import PinnedDisplacement
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
@@ -77,25 +76,12 @@ problem.add_field_output(fout=FieldOutput(name='fout'))
 # Define the analysis step
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
-# Solve the problem
+# Define the optimisation parameters
+problem.set_optimisation_parameters(0.2, 40, 10)
+
+# Get a summary
 problem.summary()
 
-problem.write_input_file()
-
-problem.set_optimisation_parameters(0.2, 40, 10)
-problem.write_parameters_file()
+# Solve the problem
 problem.optimise()
-
-
-# import numpy as np
-# x_range = np.linspace(0,100,n,endpoint=False)
-# y_range = np.linspace(0,100,n,endpoint=False)
-# z_range = np.linspace(0,100,n,endpoint=False)
-
-# xx,yy,zz = np.meshgrid(x_range, y_range, z_range)
-
-
-# coord = [0,50,50]
-# coord_idx = np.argwhere((xx==coord[1]) & (yy==coord[0]) & (zz==coord[2]))[0]
-# num_inx = (coord_idx[0]+coord_idx[1]*n+coord_idx[2]*n**2)+1
 

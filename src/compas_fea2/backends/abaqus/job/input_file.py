@@ -10,8 +10,9 @@ __all__ = [
     'ParFile'
 ]
 
+
 class InputFile():
-    """Initialises the Input file object.
+    """Input file object for standard analysis.
 
     Parameters
     ----------
@@ -26,16 +27,29 @@ class InputFile():
         Name of the Abaqus job. This is the same as the input file name.
 
     """
+
     def __init__(self, problem):
-        self.name           = '{}.inp'.format(problem.name)
-        self.job_name       = problem.name
-        self.data           = self._generate_data(problem)
+        self.name = '{}.inp'.format(problem.name)
+        self.job_name = problem.name
+        self.data = self._generate_data(problem)
 
     # ==============================================================================
     # Constructor methods
     # ==============================================================================
 
     def _generate_data(self, problem):
+        """Generate the content of the input fileself from the Problem object.
+
+        Parameters
+        ----------
+        problem : obj
+            Problem object.
+
+        Resturn
+        -------
+        str
+            content of the input file
+        """
         return """** {}
 *Heading
 ** Job name: {}
@@ -69,16 +83,58 @@ class InputFile():
            self._generate_steps_section(problem))
 
     def _generate_part_section(self, problem):
+        """Generate the content relatitive the each Part for the input file.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
         section_data = []
         for part in problem.model.parts.values():
-            data  = part._generate_data()
+            data = part._generate_data()
             section_data.append(data)
         return ''.join(section_data)
 
     def _generate_assembly_section(self, problem):
+        """Generate the content relatitive the assembly for the input file.
+
+        Note
+        ----
+        in compas_fea2 the Model is for many aspects equivalent to an assembly in
+        abaqus.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
         return problem.model._generate_data()
 
     def _generate_material_section(self, problem):
+        """Generate the content relatitive to the material section for the input
+        file.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
         section_data = []
         for material in problem.model.materials.values():
             section_data.append(material.data)
@@ -98,12 +154,38 @@ class InputFile():
         return ''
 
     def _generate_bcs_section(self, problem):
+        """Generate the content relatitive to the boundary conditions section
+        for the input file.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
         section_data = []
         for bc in problem.bcs.values():
             section_data.append(bc._generate_data())
         return ''.join(section_data)
 
     def _generate_steps_section(self, problem):
+        """Generate the content relatitive to the steps section for the input
+        file.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
         section_data = []
         for step in problem.steps:
             if not step.stype == 'modal':
@@ -156,6 +238,7 @@ class InputFile():
 
         return r
 
+
 """TODO: add cpu parallelization option
 Parallel execution requested but no parallel feature present in the setup
 """
@@ -175,17 +258,30 @@ class ParFile():
         Name of the Abaqus job. This is the same as the input file name.
 
     """
+
     def __init__(self, problem):
-        self.name           = '{}.par'.format(problem.name)
-        self.input_name     = '{}.inp'.format(problem.name)
-        self.job_name       = problem.name
-        self.vf             = problem.vf
-        self.iter_max       = problem.iter_max
+        self.name = '{}.par'.format(problem.name)
+        self.input_name = '{}.inp'.format(problem.name)
+        self.job_name = problem.name
+        self.vf = problem.vf
+        self.iter_max = problem.iter_max
 
-        self.data           = self._generate_data()
-
+        self.data = self._generate_data()
 
     def _generate_data(self):
+        """Generate the content of the parameter file from the optimisation
+        settings of the Problem object.
+
+        Parameters
+        ----------
+        problem : obj
+            Problem object.
+
+        Resturn
+        -------
+        str
+            content of the .par file
+        """
         return """FEM_INPUT
   ID_NAME        = OPTIMIZATION_MODEL
   FILE           = {}

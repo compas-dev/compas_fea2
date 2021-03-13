@@ -122,7 +122,7 @@ History Output Requests
         None
         """
         if bc.bset not in self.model.sets.keys():
-           raise ValueError('ERROR: bc set {} not found in the model!'.format(bc.bset))
+            raise ValueError('ERROR: bc set {} not found in the model!'.format(bc.bset))
         if bc.name not in self.bcs.keys():
             self.bcs[bc.name] = bc
 
@@ -153,7 +153,7 @@ History Output Requests
         -------
         None
         """
-        pass
+        raise NotImplementedError
 
     def remove_bcs(self, bc_names):
         """Removes multiple boundary conditions from the Problem object.
@@ -167,7 +167,7 @@ History Output Requests
         -------
         None
         """
-        pass
+        raise NotImplementedError
 
     def remove_all_bcs(self):
         """Removes all the boundary conditions from the Problem object.
@@ -230,7 +230,7 @@ History Output Requests
         -------
         None
         """
-        pass
+        raise NotImplementedError
 
     def remove_loads(self, load_names):
         """Removes multiple loads from the Problem object.
@@ -244,7 +244,7 @@ History Output Requests
         -------
         None
         """
-        pass
+        raise NotImplementedError
 
     def remove_all_loads(self):
         """Removes all the loads from the Problem object.
@@ -329,7 +329,7 @@ History Output Requests
         ----
         Not implemented yet!
         """
-        pass
+        raise NotImplementedError
 
     # =========================================================================
     #                           Field outputs

@@ -2,9 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-import os
-
 from time import time
 from subprocess import Popen
 from subprocess import PIPE
@@ -14,6 +11,7 @@ from subprocess import PIPE
 __all__ = [
     'launch_process',
 ]
+
 
 def launch_process(problem, exe, output, overwrite, user_mat):
     """ Run the analysis through Abaqus.
@@ -38,22 +36,22 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     """
 
     # Set options
-    overwrite_kw=''
-    user_sub_kw=''
-    exe_kw='abaqus'
+    overwrite_kw = ''
+    user_sub_kw = ''
+    exe_kw = 'abaqus'
     if overwrite:
         overwrite_kw = 'ask_delete=OFF'
     if user_mat:
         umat_path = problem.materials[user_mat].sub_path
-        user_sub_kw ='user={}'.format(umat_path)
+        user_sub_kw = 'user={}'.format(umat_path)
     if exe:
         exe_kw = exe
 
     # Analyse
     tic = time()
-    success    = False
-    cmd='cd {} && {} {} job={} interactive {}'.format(problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
-    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
+    success = False
+    cmd = 'cd {} && {} {} job={} interactive {}'.format(problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
 
     while True:
         line = p.stdout.readline()
@@ -107,13 +105,13 @@ def launch_optimisation(problem, output):
     """
 
     # Set options
-    exe_kw='ToscaStructure'
+    exe_kw = 'ToscaStructure'
 
     # Analyse
     tic = time()
-    success    = False
-    cmd='cd {} && {} --job {} --cpus {}'.format(problem.path, exe_kw, problem.name, problem.cpus)
-    p    = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
+    success = False
+    cmd = 'cd {} && {} --job {} --cpus {}'.format(problem.path, exe_kw, problem.name, problem.cpus)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
 
     while True:
         line = p.stdout.readline()

@@ -1,0 +1,140 @@
+!-------------------------------------------------------------------------------
+! 
+! Benachmarks: Bathe Beam with Ansys MPADL
+! 
+! Programmierung:   Marius Weber
+!
+! Datum:            05.03.2021
+!
+!-------------------------------------------------------------------------------
+! Clear & Start New
+!-------------------------------------------------------------------------------
+finish
+/clear
+
+!-------------------------------------------------------------------------------
+! Materialproperties
+!-------------------------------------------------------------------------------
+
+Ec  = 200000
+vc= 0.3
+
+
+!-------------------------------------------------------------------------------
+! Geometry
+!-------------------------------------------------------------------------------
+/prep7
+
+! Definition of the Keypoints 
+k,1,0,0,0  
+k,2,20000,0,0
+k,3,20000,1000,0
+k,4,0,1000,0
+
+! Create area
+a,1,2,3,4
+
+! Numbers of layers
+nn=20
+
+! Thickness of the beam
+h=100
+
+!-------------------------------------------------------------------------------
+! Elementtyp
+!-------------------------------------------------------------------------------
+
+! Shear stiffness                
+G   = Ec/(2*(1+vc))
+delta_h = h/nn																																	
+h_shear = h
+faktor = 1
+kk  = 5/6
+E111  =  kk*G*h_shear*faktor
+E221  =  kk*G*h_shear*faktor                                   
+E121  =  0
+                        
+et,1,shell181                      ! SHELL181
+keyopt,1,1,0                  ! Keyoption, Elementtyp 1, Keyoption 1, Wert 0
+keyopt,1,3,2                  ! Keyoption, Elementtyp 1, Keyoption 3, Wert 2
+keyopt,1,8,2                  ! Keyoption, Elementtyp 1, Keyoption 8, Wert 2 => Speichert Daten f�r jeden Layer
+
+! Section-Type
+sectype,1,shell                        ! SecID, Type, Name,
+seccontrols,E111,E221,E121,,1,1,1      ! E11, E22, E12, ADDMAS, MEMSCF, BENSCF, DRILLSTIF
+secdata,delta_h,1,0,1,, 
+   
+
+
+!------------------------------------------------------------------------------- 
+! Elementattributs (AATT, MAT, REAL, TYPE, ESYS, SECN)
+!------------------------------------------------------------------------------- 
+aatt,1,1,1,,1
+asel,all
+
+
+!-------------------------------------------------------------------------------
+! Material
+!------------------------------------------------------------------------------- 
+mp,dens,1,0.0000025
+mp,ex,1,Ec
+mp,prxy,1,vc
+
+
+!-------------------------------------------------------------------------------
+! Meshing
+!------------------------------------------------------------------------------- 
+eg = 250
+lesize,all,eg
+mshkey,2       ! free meshing
+mshape,0,2D       ! 0 = Rechtecke   1 = Dreieck
+amesh,all
+allsel
+
+!-------------------------------------------------------------------------------
+! local coordiante system
+!-------------------------------------------------------------------------------
+cskp,11,0,1,2,4		 	 ! 11, 0 (kartesisch), 1 (Nullpkt), 2 (x), 5 (y)
+emodif,all,esys,11   		 ! Anwenden auf alle ausgew�hlte Elemente
+allsel
+CSYS,0
+
+
+!-------------------------------------------------------------------------------
+! Constraints
+!------------------------------------------------------------------------------- 
+dl,4,,all,0
+
+
+!-------------------------------------------------------------------------------
+! Loads
+!------------------------------------------------------------------------------- 
+F,22,FY,-100
+
+
+CHECK
+
+ 	    
+! Solution 1
+! --------------------------------------------------------------------------------------------
+/solu
+! Konvergenzkriterien
+CNVTOL,F,,0.9     
+CNVTOL,U,,0.9
+CNVTOL,m,-1,3
+
+! Solver-Einstellungen
+autots,1                  ! automatische Zeitschritte (substeps) [1=ON ; 0=OFF]
+nsubst,1,1,1        ! Anzahl substeps pro Lastschritt (first,max,min)
+time,1                   ! Zeit am Ende des Lastschrittes
+
+! Speichern von Daten
+outres,erase              ! Zur�cksetzen auf Standard-Einstellungen
+outres,nsol,all           ! Nodal DOF solution
+outres,rsol,all           ! Nodal reaction solution
+outres,esol,all           ! Element solution
+outres,svar,all           ! State variables (used by USERMAT)
+                          ! ...,all := f�r jeden substep
+
+! Solver
+solve

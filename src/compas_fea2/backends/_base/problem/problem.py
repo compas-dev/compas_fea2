@@ -48,7 +48,7 @@ class ProblemBase(object):
     def __init__(self, name, model):
         self.name = name
         self.model = model
-        self.path = None
+        self.path = 'C:/temp'
 
         self.bcs = {}
         self.loads = {}
@@ -590,3 +590,23 @@ History Output Requests
             print('***** Problem loaded from: {0} *****'.format(filename))
 
         return probelm
+
+    # =========================================================================
+    #                         Analysis methods
+    # =========================================================================
+
+    def write_input_file(self):
+        raise NotImplementedError("this function is not available for the selceted backend")
+
+    def analyse(self):
+        raise NotImplementedError("this function is not available for the selceted backend")
+
+    def optimise(self):
+        raise NotImplementedError("this function is not available for the selceted backend")
+
+    # =========================================================================
+    #                         Results methods
+    # =========================================================================
+
+    def extract(self):
+        raise NotImplementedError("this function is not available for the selceted backend")

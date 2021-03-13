@@ -9,7 +9,9 @@ import sys
 from compas_fea2.backends._base.problem import ProblemBase
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
+from compas_fea2.backends.abaqus.job.input_file import ParFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
+from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
 from compas_fea2.backends.abaqus.job.read_results import extract_data
 from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
 from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
@@ -93,11 +95,21 @@ class Problem(ProblemBase):
 
         self.steps.append(step)
 
+
+    # =========================================================================
+    #                           Optimisation methods
+    # =========================================================================
+
+    def set_optimisation_parameters(self, vf, iter_max, cpus):
+        self.vf = vf
+        self.iter_max = iter_max
+        self.cpus = cpus
+
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, path='C:/temp', output=True, save=False):
+    def write_input_file(self, output=True, save=False):
         """Writes the abaqus input file.
 
         Parameters
@@ -114,21 +126,53 @@ class Problem(ProblemBase):
         None
 
         """
-
-        if not os.path.exists(path):
-            os.makedirs(path)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
 
         if save:
             self.save_to_cfp()
 
         input_file = InputFile(self)
-        r = input_file.write_to_file(path)
+        r = input_file.write_to_file(self.path)
         if output:
             print(r)
 
+    def write_parameters_file(self, output=True, save=False):
+        """Writes the abaqus parameters file for the optimisation.
+
+        Parameters
+        ----------
+        path : str
+            Path to the folder where the input file will be saved.
+        output : bool
+            Print terminal output.
+        save : bool
+            Save structure to .cfp before file writing.
+
+        Returns
+        -------
+        None
+
+        """
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+        if save:
+            self.save_to_cfp()
+
+        input_file = InputFile(self)
+        inp = input_file.write_to_file(self.path)
+
+        par_file = ParFile(self)
+        par = par_file.write_to_file(self.path)
+
+        if output:
+            print(inp)
+            print(par)
+
     # TODO: try to make this an abstract method of the base class
-    def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True,
-                user_mat=False, save=False):
+    def analyse(self, path='C:/temp', exe=None, cpus=1, output=True, overwrite=True, user_mat=False, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
@@ -152,9 +196,13 @@ class Problem(ProblemBase):
 
         """
         self.path = path
-        self.write_input_file(path=path, output=output, save=save)
-        launch_process(self, path=path, exe=exe, cpus=cpus, output=output,
-                       overwrite=overwrite, user_mat=user_mat)
+        self.write_input_file(output, save)
+        launch_process(self, exe, cpus, output, overwrite, user_mat)
+
+    def optimise(self, path='C:/temp', output=True, save=False):
+        self.path = path
+        self.write_input_file(output, save)
+        launch_optimisation(self, output)
 
     # =========================================================================
     #                         Results methods

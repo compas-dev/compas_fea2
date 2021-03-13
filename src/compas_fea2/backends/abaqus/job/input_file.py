@@ -7,6 +7,7 @@ import os.path
 
 __all__ = [
     'InputFile',
+    'ParFile'
 ]
 
 class InputFile():
@@ -152,6 +153,148 @@ class InputFile():
             r = '***** Input file generated in: {0} *****\n'.format(filepath)
         except:
             r = '***** ERROR: Input file not generated ****'
+
+        return r
+
+"""TODO: add cpu parallelization option
+Parallel execution requested but no parallel feature present in the setup
+"""
+class ParFile():
+    """ParFile object for optimisation.
+
+    Parameters
+    ----------
+    problem : obj
+        Problem object.
+
+    Attributes
+    ----------
+    name : str
+        Par file name.
+    job_name : str
+        Name of the Abaqus job. This is the same as the input file name.
+
+    """
+    def __init__(self, problem):
+        self.name           = '{}.par'.format(problem.name)
+        self.input_name     = '{}.inp'.format(problem.name)
+        self.job_name       = problem.name
+        self.vf             = problem.vf
+        self.iter_max       = problem.iter_max
+
+        self.data           = self._generate_data()
+
+
+    def _generate_data(self):
+        return """FEM_INPUT
+  ID_NAME        = OPTIMIZATION_MODEL
+  FILE           = {}
+END_
+
+DV_TOPO
+  ID_NAME        = design_variables
+  EL_GROUP       = ALL_ELEMENTS
+END_
+
+DRESP
+  ID_NAME        = DRESP_SUM_ENERGY
+  DEF_TYPE       = SYSTEM
+  TYPE           = STRAIN_ENERGY
+  UPDATE         = EVER
+  EL_GROUP       = ALL_ELEMENTS
+  GROUP_OPER     = SUM
+END_
+
+DRESP
+  ID_NAME        = DRESP_VOL_TOPO
+  DEF_TYPE       = SYSTEM
+  TYPE           = VOLUME
+  UPDATE         = EVER
+  EL_GROUP       = ALL_ELEMENTS
+  GROUP_OPER     = SUM
+END_
+
+OBJ_FUNC
+  ID_NAME        = maximize_stiffness
+  DRESP          = DRESP_SUM_ENERGY
+  TARGET         = MINMAX
+END_
+
+CONSTRAINT
+  ID_NAME        = volume_constraint
+  DRESP          = DRESP_VOL_TOPO
+  MAGNITUDE      = REL
+  EQ_VALUE       = {}
+END_
+
+OPTIMIZE
+  ID_NAME        = topology_optimization
+  DV             = design_variables
+  OBJ_FUNC       = maximize_stiffness
+  CONSTRAINT     = volume_constraint
+  STRATEGY       = TOPO_CONTROLLER
+END_
+
+OPT_PARAM
+  ID_NAME = topology_optimization_OPT_PARAM_
+  OPTIMIZE = topology_optimization
+  AUTO_FROZEN = LOAD
+  DENSITY_UPDATE = NORMAL
+  DENSITY_LOWER = 0.001
+  DENSITY_UPPER = 1.
+  DENSITY_MOVE = 0.25
+  MAT_PENALTY = 3.
+  STOP_CRITERION_LEVEL = BOTH
+  STOP_CRITERION_OBJ = 0.001
+  STOP_CRITERION_DENSITY = 0.005
+  STOP_CRITERION_ITER = 4
+  SUM_Q_FACTOR = 6.
+END_
+
+
+STOP
+  ID_NAME        = global_stop
+  ITER_MAX       = {}
+END_
+
+SMOOTH
+  id_name = ISO_SMOOTHING_0_3
+  task = iso
+  iso_value = 0.3
+  SELF_INTERSECTION_CHECK = runtime
+  smooth_cycles = 10
+  reduction_rate = 60
+  reduction_angle = 5.0
+  format = vtf
+  format = stl
+  format = onf
+END_""".format(self.input_name, self.vf, self.iter_max)
+
+    # ==============================================================================
+    # General methods
+    # ==============================================================================
+
+    def write_to_file(self, path):
+        """Writes the ParFile to a file in a specified location.
+
+        Parameters
+        ----------
+        path : str
+            Path to the folder where the input file will be saved.
+
+        Returns
+        -------
+        r : str
+            Information about the results of the writing process.
+        """
+
+        try:
+            filepath = os.path.join(path, self.name)
+            with open(filepath, 'w') as f:
+                f.writelines(self.data)
+            r = '***** Parameters file generated in: {0} *****\n'.format(filepath)
+        except:
+            r = '***** ERROR: Parameters file not generated ****'
 
         return r
 

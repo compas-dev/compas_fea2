@@ -114,7 +114,7 @@ def launch_optimisation(problem, output):
     tic = time()
     success = False
     cmd = 'cd {} && {} --job {} --cpus {}'.format(problem.path, exe_kw, problem.name, problem.cpus)
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:
         line = p.stdout.readline()

@@ -199,6 +199,7 @@ class Problem(ProblemBase):
     def optimise(self, path='C:/temp', output=True, save=False):
         self.path = path
         self.write_input_file(output, save)
+        self.write_parameters_file(output, save)
         launch_optimisation(self, output)
 
     # =========================================================================

@@ -83,7 +83,7 @@ class ModelBase():
     #                           Nodes methods
     # =========================================================================
 
-    def add_node(self, node, part):
+    def add_node(self, node, part, check=True):
         """Add a compas_fea2 `Node` object to a `Part` in the `Model`.
         If the `Node` object has no label, one is automatically assigned.
         Duplicate nodes are automatically excluded.
@@ -106,7 +106,7 @@ class ModelBase():
         """
 
         if part in self.parts:
-            self.parts[part].add_node(node)
+            self.parts[part].add_node(node, check)
         else:
             raise ValueError(
                 '** ERROR! **: part {} not found in the Model!'.format(part))

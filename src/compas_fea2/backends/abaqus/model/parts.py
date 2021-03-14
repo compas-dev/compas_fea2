@@ -139,10 +139,10 @@ class Part(PartBase):
         if check and self.check_element_in_part(element):
             print('WARNING: duplicate element connecting {} skipped!'.format(element.connectivity_key))
         else:
-            # for c in element.connectivity:
-                # if c > len(self.nodes)-1:
-                #     raise ValueError('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
             element.key = len(self.elements)
+            for c in element.connectivity:
+                if c > len(self.nodes)-1:
+                    raise ValueError('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
             self.elements.append(element)
 
             # add the element key to its type group

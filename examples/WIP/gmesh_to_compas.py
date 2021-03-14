@@ -1,4 +1,4 @@
-from compas_fea2.backends.abaqus import Model
+from compas_fea2.backends.abaqus.model import Model
 from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
@@ -20,25 +20,26 @@ from compas_fea2 import TEMP
 import gmsh
 import sys
 from compas.datastructures import Mesh
+from compas_view2 import app
 
-def gmesh_to_compas(gmshModel):
-    nodes = gmshModel.mesh.getNodes()
-    node_tags = nodes[0]
-    node_coords = nodes[1].reshape((-1, 3), order='C')
-    node_paramcoords = nodes[2]
-    xyz = {}
-    for tag, coords  in zip(node_tags, node_coords):
-        xyz[int(tag)] = coords.tolist()
-    elements = gmshModel.mesh.getElements()
-    triangles = []
-    for etype, etags, ntags in zip(*elements):
-        if etype == 2:
-            for i, etag in enumerate(etags):
-                n = gmshModel.mesh.getElementProperties(etype)[3]
-                triangle = ntags[i * n: i * n + n]
-                triangles.append(triangle.tolist())
-    # gmshModel.finalize()
-    return Mesh.from_vertices_and_faces(xyz, triangles)
+# def gmesh_to_compas(gmshModel):
+#     nodes = gmshModel.mesh.getNodes()
+#     node_tags = nodes[0]
+#     node_coords = nodes[1].reshape((-1, 3), order='C')
+#     node_paramcoords = nodes[2]
+#     xyz = {}
+#     for tag, coords  in zip(node_tags, node_coords):
+#         xyz[int(tag)] = coords.tolist()
+#     elements = gmshModel.mesh.getElements()
+#     triangles = []
+#     for etype, etags, ntags in zip(*elements):
+#         if etype == 2:
+#             for i, etag in enumerate(etags):
+#                 n = gmshModel.mesh.getElementProperties(etype)[3]
+#                 triangle = ntags[i * n: i * n + n]
+#                 triangles.append(triangle.tolist())
+#     # gmshModel.finalize()
+#     return Mesh.from_vertices_and_faces(xyz, triangles)
 
 def compas_to_gmsh(mesh, lc=100, write_path=None, inspect=False):
     gmsh.initialize(sys.argv)
@@ -75,9 +76,14 @@ def compas_to_gmsh(mesh, lc=100, write_path=None, inspect=False):
 
 # Get a Mesh geometry to create the model
 mesh = Mesh.from_obj(DATA + '/hypar.obj')
-gmesh = compas_to_gmsh(mesh, write_path=TEMP)
+gmesh = compas_to_gmsh(mesh, lc=100, write_path=TEMP, inspect=False)
 
-mesh = gmesh_to_compas(gmshModel=gmesh)
+# mesh = gmesh_to_compas(gmshModel=gmesh)
+# mesh.to_obj( TEMP+'\hypar_gmsh.obj')
+# viewer = app.App(width=800, height=500)
+# viewer.add(mesh, show_vertices=True, hide_coplanaredges=True)
+
+# viewer.show()
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
@@ -90,7 +96,9 @@ model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 shell_20 = ShellSection(name='section_A', material='mat_A', t=20)
 
 # Create a shell model from a mesh
-model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
+# model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
+model.shell_from_gmesh(gmshModel=gmesh, shell_section=shell_20)
+
 
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)

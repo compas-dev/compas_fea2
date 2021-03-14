@@ -40,6 +40,8 @@ UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
+precision = '3f'
+
 # Check if package is installed from git
 # If that's the case, try to append the current head's hash to __version__
 try:

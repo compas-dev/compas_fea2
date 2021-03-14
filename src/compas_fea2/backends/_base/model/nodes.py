@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import compas
+import compas_fea2
 
+from compas.utilities.maps import geometric_key
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -69,7 +72,7 @@ class NodeBase(object):
         self.ez       = ez
         self.mass     = mass
         self.label    = label
-        self.gkey     = '{}_{}_{}'.format(self.x, self.y, self.z)
+        self.gkey     = geometric_key(self.xyz, precision=compas_fea2.precision, sanitize=False) #'{}_{}_{}'.format(self.x, self.y, self.z)
 
     def __str__(self):
         title = 'compas_fea2 {0} object'.format(self.__name__)

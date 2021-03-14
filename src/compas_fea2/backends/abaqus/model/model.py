@@ -146,6 +146,30 @@ class Model(ModelBase):
             self.add_element(ShellElement(
                 connectivity=f, section=shell_section.name), part='part-1')
 
+    def shell_from_gmesh(self, gmshModel, shell_section):
+
+        from compas_fea2.backends.abaqus.model import Node
+        from compas_fea2.backends.abaqus.model import Part
+        from compas_fea2.backends.abaqus.model import ShellElement
+
+        self.add_part(Part(name='part-1'))
+        self.add_section(shell_section)
+
+        nodes = gmshModel.mesh.getNodes()
+        node_tags = nodes[0]
+        node_coords = nodes[1].reshape((-1, 3), order='C')
+        for _, coords  in zip(node_tags, node_coords):
+            self.add_node(Node(coords.tolist()), 'part-1', check=False)
+        elements = gmshModel.mesh.getElements()
+        for etype, etags, ntags in zip(*elements):
+            if etype == 2:
+                for i, _ in enumerate(etags):
+                    n = gmshModel.mesh.getElementProperties(etype)[3]
+                    triangle = ntags[i * n: i * n + n] #NOTE: seems pretty much useless
+                    triangle = [x-1 for x in triangle]
+                    self.add_element(ShellElement(connectivity=triangle, section=shell_section.name), part='part-1')
+
+
     def from_volmesh(self, volmesh):
         pass
 

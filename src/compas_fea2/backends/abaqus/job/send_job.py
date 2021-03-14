@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from time import time
+import subprocess
+import os
 from subprocess import Popen
 from subprocess import PIPE
 
@@ -34,6 +36,7 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     None
 
     """
+    # proc = Popen(args, env={'PATH': os.getenv('PATH')})
 
     # Set options
     overwrite_kw = ''
@@ -51,7 +54,7 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     tic = time()
     success = False
     cmd = 'cd {} && {} {} job={} interactive {}'.format(problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:
         line = p.stdout.readline()

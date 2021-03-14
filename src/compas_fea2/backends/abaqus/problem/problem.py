@@ -194,7 +194,7 @@ class Problem(ProblemBase):
         """
         self.path = path
         self.write_input_file(output, save)
-        launch_process(self, exe, cpus, output, overwrite, user_mat)
+        launch_process(self, exe, output, overwrite, user_mat)
 
     def optimise(self, path='C:/temp', output=True, save=False):
         self.path = path

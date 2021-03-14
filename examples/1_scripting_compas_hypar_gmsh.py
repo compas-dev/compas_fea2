@@ -1,12 +1,9 @@
 from compas_fea2.preprocessor.meshing import compas_to_gmsh
 
 from compas_fea2.backends.abaqus.model import Model
-from compas_fea2.backends.abaqus import Part
-from compas_fea2.backends.abaqus import Node
+
 from compas_fea2.backends.abaqus import ElasticIsotropic
-from compas_fea2.backends.abaqus import BoxSection
 from compas_fea2.backends.abaqus import ShellSection
-from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import Set
 
 from compas_fea2.backends.abaqus import Problem

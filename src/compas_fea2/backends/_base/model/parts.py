@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
-
+import importlib
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -277,6 +277,124 @@ class PartBase():
     # =========================================================================
     #                           Elements methods
     # =========================================================================
+
+    def add_element(self, element, check=True):
+        """Adds a compas_fea2 Element object to the Part.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        check : bool
+            If True, checks if the element is already present.
+
+        Returns
+        -------
+        None
+        """
+
+
+        if check and self.check_element_in_part(element):
+            print('WARNING: duplicate element connecting {} skipped!'.format(element.connectivity_key))
+        else:
+            element.key = len(self.elements)
+            for c in element.connectivity:
+                if c > len(self.nodes)-1:
+                    raise ValueError('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
+            self.elements.append(element)
+
+            # add the element key to its type group
+            if element.eltype not in self.elements_by_type.keys():
+                self.elements_by_type[element.eltype] = []
+            self.elements_by_type[element.eltype].append(element.key)
+
+            # add the element key to its section group
+            if element.section not in self.elements_by_section.keys():
+                self.elements_by_section[element.section] = []
+            self.elements_by_section[element.section].append(element.key)
+
+            # add the element orientation to its section group
+            if element.section not in self.orientations_by_section.keys():
+                self.orientations_by_section[element.section] = []
+            if hasattr(element, 'orientation'):
+                if element.orientation not in self.orientations_by_section[element.section]:
+                    self.orientations_by_section[element.section].append(element.orientation)
+
+
+            else:
+                if None not in self.orientations_by_section[element.section]:
+                    self.orientations_by_section[element.section].append(None)
+            # else:
+            #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
+
+
+
+            # # add the element key to its material group
+            # if element.section.material not in self.elements_by_material.keys():
+            #     self.elements_by_material[element.section.material] = []
+            # self.elements_by_material[element.section.material].append(element.key)
+
+            # add the element key to its elset group
+            if element.elset:
+            #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
+                if element.elset not in self.elements_by_elset.keys():
+
+                    m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+                    self.add_element_set(m.Set(element.elset, [], 'elset'))
+                    self.elements_by_elset[element.elset] = []
+                self.elements_by_elset[element.elset].append(element.key)
+                self.add_elements_to_set(element.elset, [element.key])
+
+    def add_elements(self, elements, check=True):
+        """Adds multiple compas_fea2 Element objects to the Part.
+
+        Parameters
+        ----------
+        elements : list
+            List of compas_fea2 Element objects.
+        check : bool
+            If True, checks if the elements are already present.
+
+        Returns
+        -------
+        None
+        """
+
+        for element in elements:
+            self.add_element(element, check)
+
+    def remove_element(self, element_key):
+        '''Removes the element from the Part.
+
+        Parameters
+        ----------
+        element_key : int
+            Key number of the element to be removed.
+
+        Returns
+        -------
+        None
+        '''
+        #TODO check if element key exists
+        del self.elements[element_key]
+        self._reorder_elements()
+
+    def remove_elements(self, elements):
+        '''Removes the elements from the Part.
+
+        Parameters
+        ----------
+        elements : list
+            List with the key numbers of the element to be removed.
+
+        Returns
+        -------
+        None
+        '''
+
+        for element in elements:
+            self.remove_node(element)
+
 
     def check_element_in_part(self, element):
         '''Checks if an element with the same connectivity already exists

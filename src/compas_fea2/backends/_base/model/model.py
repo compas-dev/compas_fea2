@@ -103,16 +103,13 @@ class ModelBase():
             compas_fea2 BeamSection object to to apply to the frame elements.
         """
         from compas.geometry import normalize_vector
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
 
-        from compas_fea2.backends.abaqus.model import Node
-        from compas_fea2.backends.abaqus.model import Part
-        from compas_fea2.backends.abaqus.model import BeamElement
-
-        self.add_part(Part(name='part-1'))
+        self.add_part(m.Part(name='part-1'))
         self.add_section(beam_section)
 
         for v in mesh.vertices():
-            self.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
+            self.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
 
         # Generate elements between nodes
         key_index = mesh.key_index()
@@ -124,7 +121,7 @@ class ModelBase():
             v = normalize_vector(mesh.edge_vector(e[0], e[1]))
             v.append(v.pop(0))
             # add element to the model
-            self.add_element(BeamElement(connectivity=[
+            self.add_element(m.BeamElement(connectivity=[
                              e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')
 
     def shell_from_mesh(self, mesh, shell_section):

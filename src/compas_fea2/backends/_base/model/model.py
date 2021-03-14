@@ -7,6 +7,7 @@ from __future__ import print_function
 import os
 import sys
 import pickle
+import importlib
 
 __all__ = [
     'ModelBase',
@@ -78,6 +79,231 @@ class ModelBase():
             for mat in i.part.elements_by_material.keys():
                 materials.append(mat)
         return list(set(materials))
+
+    # =========================================================================
+    #                       Constructor methods
+    # =========================================================================
+
+    def from_network(self, network):
+        raise NotImplementedError()
+
+    def from_obj(self, obj):
+        raise NotImplementedError()
+
+    def frame_from_mesh(self, mesh, beam_section):
+        """Creates a Model object from a compas Mesh object [WIP]. The edges of
+        the mesh become the elements of the frame. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        mesh : obj
+            Mesh to convert to import as a Model.
+        beam_section : obj
+            compas_fea2 BeamSection object to to apply to the frame elements.
+        """
+        from compas.geometry import normalize_vector
+
+        from compas_fea2.backends.abaqus.model import Node
+        from compas_fea2.backends.abaqus.model import Part
+        from compas_fea2.backends.abaqus.model import BeamElement
+
+        self.add_part(Part(name='part-1'))
+        self.add_section(beam_section)
+
+        for v in mesh.vertices():
+            self.add_node(Node(mesh.vertex_coordinates(v)), 'part-1')
+
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        vertices = list(mesh.vertices())
+        edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
+
+        for e in edges:
+            # get elements orientation
+            v = normalize_vector(mesh.edge_vector(e[0], e[1]))
+            v.append(v.pop(0))
+            # add element to the model
+            self.add_element(BeamElement(connectivity=[
+                             e[0], e[1]], section=beam_section.name, orientation=v), part='part-1')
+
+    def shell_from_mesh(self, mesh, shell_section):
+        """Creates a Model object from a compas Mesh object [WIP]. The faces of
+        the mesh become the elements of the shell. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        mesh : obj
+            Mesh to convert to import as a Model.
+        shell_section : obj
+            compas_fea2 ShellSection object to to apply to the shell elements.
+        """
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+
+        self.add_part(m.Part(name='part-1'))
+        self.add_section(shell_section)
+
+        for v in mesh.vertices():
+            self.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
+
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        faces = [[key_index[key]
+                  for key in mesh.face_vertices(face)] for face in mesh.faces()]
+
+        for f in faces:
+            self.add_element(m.ShellElement(connectivity=f, section=shell_section.name), part='part-1')
+
+    def shell_from_gmesh(self, gmshModel, shell_section):
+        """Creates a Model object from a gmsh Model object [WIP]. The faces of
+        the mesh become the elements of the shell. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        gmshModel : obj
+            gmsh Model to convert.
+        shell_section : obj
+            compas_fea2 ShellSection object to to apply to the shell elements.
+        """
+
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+
+        self.add_part(m.Part(name='part-1'))
+        self.add_section(shell_section)
+
+        nodes = gmshModel.mesh.getNodes()
+        node_tags = nodes[0]
+        node_coords = nodes[1].reshape((-1, 3), order='C')
+        for _, coords in zip(node_tags, node_coords):
+            self.add_node(m.Node(coords.tolist()), 'part-1', check=False)
+        elements = gmshModel.mesh.getElements()
+        for etype, etags, ntags in zip(*elements):
+            if etype == 2:
+                for i, _ in enumerate(etags):
+                    n = gmshModel.mesh.getElementProperties(etype)[3]
+                    triangle = ntags[i * n: i * n + n]  # NOTE: seems pretty much useless
+                    triangle = [x-1 for x in triangle]
+                    self.add_element(m.ShellElement(connectivity=triangle, section=shell_section.name), part='part-1')
+
+    def from_volmesh(self, volmesh):
+        raise NotImplementedError()
+
+    def from_solid(self, solid):
+        raise NotImplementedError()
+
+    # =========================================================================
+    #                             Parts methods
+    # =========================================================================
+
+    def add_part(self, part, transformation={}):
+        """Adds a Part to the Model and creates an Instance object from the
+        specified Part and adds it to the Assembly. If a transformation matrix
+        is specified, the instance is created in the transformed location.
+
+        Parameters
+        ----------
+        part : obj
+            Part object from which the Instance is created.
+        transformation : dict
+            Dictionary containing the transformation matrices to apply to the Part
+            before creating the Instances.
+            key: (str) instance name
+            value: (matrix) transformation matrix
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        In this example a part is added to the model and two instances are created
+        using two transformation matrices.
+        >>> model = Assembly('mymodel')
+        >>> part = Part('mypart')
+        >>> model.add_part(part=part, transformation=[M1, M2])
+        """
+
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+
+        if part.name in self.parts:
+            print(
+                "WARNING: Part {} already in the Model. Part not added!".format(part.name))
+        else:
+            self.parts[part.name] = part
+
+        # TODO: implement transfromation operations
+        if transformation:
+            for i in transformation.keys():
+                instance = self._instance_from_part(part, i, transformation[i])
+                self.add_instance(instance)
+        else:
+            self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
+
+    def remove_part(self, part):
+        """ Removes the part from the Model and all the referenced instances
+        of that part.
+
+        Parameters
+        ----------
+        part : str
+            Name of the Part to remove.
+
+        Returns
+        -------
+        None
+        """
+
+        self.parts.pop(part)
+
+        for instance in self.instances:
+            if self.instances[instance].part.name == part:
+                self.instances.pop(instance)
+
+    # =========================================================================
+    #                          Instances methods
+    # =========================================================================
+    def add_instance(self, instance):
+        """Adds a compas_fea2 Instance object to the Model. If the Part to
+        which the instance is referred to does not exist, it is automatically
+        created.
+
+        Parameters
+        ----------
+        instance : obj
+            compas_fea2 Instance object.
+
+        Returns
+        -------
+        None
+        """
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+
+        if instance.name not in self.instances:
+            self.instances[instance.name] = instance
+            if instance.part.name not in self.parts:
+                self.parts[part.name] = instance.part
+        else:
+            print('Duplicate instance {} will be ignored!'.format(instance.name))
+
+    def remove_instance(self, instance):
+        """ Removes the part from the Model and all the referenced instances.
+
+        Parameters
+        ----------
+        instace : str
+            Name of the Instance object to remove.
+
+        Returns
+        -------
+        None
+        """
+
+        self.instances.pop(instance)
+
+    def _instance_from_part(self, part, instance_name, transformation):
+        pass
 
     # =========================================================================
     #                           Nodes methods

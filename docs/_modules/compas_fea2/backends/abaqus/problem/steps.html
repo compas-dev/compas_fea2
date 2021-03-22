@@ -105,6 +105,7 @@
 <span class="c1"># TODO remove _GeneralStep and get everything forn _base</span>
 <span class="c1"># TODO add field and history output requrests</span>
 
+
 <span class="k">class</span> <span class="nc">_GeneralStep</span><span class="p">(</span><span class="n">StepBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Initialises GeneralStep object for use in a static analysis.</span>
 
@@ -139,43 +140,42 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="p">,</span> <span class="n">min_inc_size</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span>
-                <span class="n">nlgeom</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">field_outputs</span><span class="p">,</span> <span class="n">history_outputs</span><span class="p">):</span>
+                 <span class="n">nlgeom</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">field_outputs</span><span class="p">,</span> <span class="n">history_outputs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_GeneralStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>           <span class="o">=</span> <span class="s1">&#39;GeneralStep&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>               <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_increments</span>     <span class="o">=</span> <span class="n">max_increments</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initial_inc_size</span>   <span class="o">=</span> <span class="n">initial_inc_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">min_inc_size</span>       <span class="o">=</span> <span class="n">min_inc_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span>               <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;GeneralStep&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_increments</span> <span class="o">=</span> <span class="n">max_increments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_inc_size</span> <span class="o">=</span> <span class="n">initial_inc_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_inc_size</span> <span class="o">=</span> <span class="n">min_inc_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
 
         <span class="k">if</span> <span class="n">nlgeom</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span>         <span class="o">=</span> <span class="s1">&#39;YES&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span> <span class="o">=</span> <span class="s1">&#39;YES&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span>         <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span> <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span>      <span class="o">=</span> <span class="n">displacements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span>              <span class="o">=</span> <span class="n">loads</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span>      <span class="o">=</span> <span class="n">field_outputs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span>    <span class="o">=</span> <span class="n">history_outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span> <span class="o">=</span> <span class="n">displacements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="n">loads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span> <span class="o">=</span> <span class="n">field_outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span> <span class="o">=</span> <span class="n">history_outputs</span>
 
         <span class="c1"># self.attr_list.extend([&#39;increments&#39;, &#39;max_increments&#39;, &#39;initial_inc_size&#39;, &#39;min_inc_size&#39;, &#39;time&#39;, &#39;nlgeom&#39;,</span>
         <span class="c1">#                     &#39;displacements&#39;, &#39;loads&#39;])</span>
 
 
-
-
 <div class="viewcode-block" id="GeneralStaticStep"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.GeneralStaticStep.html#compas_fea2.backends.abaqus.problem.GeneralStaticStep">[docs]</a><span class="k">class</span> <span class="nc">GeneralStaticStep</span><span class="p">(</span><span class="n">_GeneralStep</span><span class="p">):</span>
 <div class="viewcode-block" id="GeneralStaticStep.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.GeneralStaticStep.__init__.html#compas_fea2.backends.abaqus.problem.GeneralStaticStep.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_inc_size</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                <span class="n">nlgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[],</span> <span class="n">field_outputs</span><span class="o">=</span><span class="p">[],</span> <span class="n">history_outputs</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralStaticStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="p">,</span><span class="n">min_inc_size</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">nlgeom</span><span class="p">,</span>
+                 <span class="n">nlgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[],</span> <span class="n">field_outputs</span><span class="o">=</span><span class="p">[],</span> <span class="n">history_outputs</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralStaticStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="p">,</span> <span class="n">min_inc_size</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">nlgeom</span><span class="p">,</span>
                                                 <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">field_outputs</span><span class="p">,</span> <span class="n">history_outputs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stype</span> <span class="o">=</span> <span class="s1">&#39;Static&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;stype&#39;</span><span class="p">])</span></div>
 
         <span class="c1"># self.data = self._generate_data()</span>
 
-    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[],</span> <span class="n">field_outputs</span><span class="o">=</span><span class="p">[],</span> <span class="n">history_outputs</span><span class="o">=</span><span class="p">[]):</span>  <span class="c1">#todo: this could be moved outside the class</span>
+    <span class="c1"># todo: this could be moved outside the class</span>
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[],</span> <span class="n">field_outputs</span><span class="o">=</span><span class="p">[],</span> <span class="n">history_outputs</span><span class="o">=</span><span class="p">[]):</span>
 
         <span class="n">section_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;** ----------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -215,16 +215,12 @@
 
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">section_data</span><span class="p">)</span></div>
 
-<span class="k">class</span> <span class="nc">GeneralStaticRiksStep</span><span class="p">(</span><span class="n">_GeneralStep</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-    <span class="c1"># def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,</span>
-    <span class="c1">#             nlgeom=False, displacements=[], loads=[]):</span>
-    <span class="c1">#     super(GeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time,</span>
-    <span class="c1">#                                 nlgeom, displacements, loads)</span>
-    <span class="c1">#     self.stype = &#39;Static, riks&#39;</span>
-    <span class="c1">#     self.attr_list.extend([&#39;stype&#39;])</span>
 
-    <span class="c1">#     self.data = _generate_data(self)</span>
+<span class="k">class</span> <span class="nc">GeneralStaticRiksStep</span><span class="p">(</span><span class="n">_GeneralStep</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_inc_size</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nlgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="p">[],</span> <span class="n">loads</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralStaticRiksStep</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">max_increments</span><span class="p">,</span> <span class="n">initial_inc_size</span><span class="p">,</span> <span class="n">min_inc_size</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">nlgeom</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
 <span class="k">class</span> <span class="nc">_LinearPertubationStep</span><span class="p">(</span><span class="n">StepBase</span><span class="p">):</span>
@@ -243,11 +239,11 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_LinearPertubationStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>      <span class="o">=</span> <span class="s1">&#39;LinearPerturbationStep&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>          <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span>        <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;LinearPerturbationStep&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span> <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span> <span class="o">=</span> <span class="n">displacements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span>         <span class="o">=</span> <span class="n">loads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="n">loads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;displacements&#39;</span><span class="p">,</span> <span class="s1">&#39;loads&#39;</span><span class="p">,</span> <span class="p">])</span>
 
 
@@ -267,39 +263,40 @@
 <div class="viewcode-block" id="StaticLinearPertubationStep.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.StaticLinearPertubationStep.__init__.html#compas_fea2.backends.abaqus.problem.StaticLinearPertubationStep.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StaticLinearPertubationStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>      <span class="o">=</span> <span class="s1">&#39;StaticPerturbationStep&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>          <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span>        <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>  <span class="c1">#TODO this depends on the previous step -&gt; loop through the steps order and adjust this parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="s1">&#39;StaticPerturbationStep&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span> <span class="o">=</span> <span class="s1">&#39;NO&#39;</span>  <span class="c1"># TODO this depends on the previous step -&gt; loop through the steps order and adjust this parameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span> <span class="o">=</span> <span class="n">displacements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span>         <span class="o">=</span> <span class="n">loads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="n">loads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;displacements&#39;</span><span class="p">,</span> <span class="s1">&#39;loads&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;Static&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;** ----------------------------------------------------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;** STEP: </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, perturbation</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;*</span><span class="si">{2}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">)</span></div></div>
+                     <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                     <span class="s2">&quot;** STEP: </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                     <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span>
+                     <span class="s2">&quot;* Step, name=</span><span class="si">{0}</span><span class="s2">, nlgeom=</span><span class="si">{1}</span><span class="s2">, perturbation</span><span class="se">\n</span><span class="s2">&quot;</span>
+                     <span class="s2">&quot;*</span><span class="si">{2}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                     <span class="s2">&quot;**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlgeom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stype</span><span class="p">)</span></div></div>
+
 
 <span class="k">class</span> <span class="nc">BuckleStep</span><span class="p">(</span><span class="n">_LinearPertubationStep</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-<span class="c1">#     &quot;&quot;&quot;Initialises BuckleStep object for use in a buckling analysis.</span>
 
-<span class="c1">#     Parameters</span>
-<span class="c1">#     ----------</span>
-<span class="c1">#     name : str</span>
-<span class="c1">#         Name of the GeneralStep.</span>
-<span class="c1">#     displacements : list</span>
-<span class="c1">#         Displacement objects.</span>
-<span class="c1">#     loads : list</span>
-<span class="c1">#         Load objects.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Initialises BuckleStep object for use in a buckling analysis.</span>
 
-<span class="c1">#     def __init__(self, name, nmodes, displacements, loads):</span>
-<span class="c1">#         super(BuckleStep).__init__(name=name, displacements=displacements, loads=loads)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the GeneralStep.</span>
+<span class="sd">    displacements : list</span>
+<span class="sd">        Displacement objects.</span>
+<span class="sd">    loads : list</span>
+<span class="sd">        Load objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nmodes</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BuckleStep</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 <span class="c1">#         self.__name__      = &#39;BuckleStep&#39;</span>
 <span class="c1">#         self.name          = name</span>
 <span class="c1">#         self.nlgeom        = &#39;NO&#39;  #TODO this depends on the previous step -&gt; loop through the steps order and adjust this parameter</span>
@@ -318,15 +315,13 @@
 
 
 <span class="k">class</span> <span class="nc">HeatStep</span><span class="p">(</span><span class="n">HeatStepBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-    <span class="c1"># def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):</span>
-    <span class="c1">#     super(HeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">interaction</span><span class="p">,</span> <span class="n">increments</span><span class="p">,</span> <span class="n">temp0</span><span class="p">,</span> <span class="n">dTmax</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HeatStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">interaction</span><span class="p">,</span> <span class="n">increments</span><span class="p">,</span> <span class="n">temp0</span><span class="p">,</span> <span class="n">dTmax</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="ModalStep"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.ModalStep.html#compas_fea2.backends.abaqus.problem.ModalStep">[docs]</a><span class="k">class</span> <span class="nc">ModalStep</span><span class="p">(</span><span class="n">ModalStepBase</span><span class="p">):</span>
 <div class="viewcode-block" id="ModalStep.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.ModalStep.__init__.html#compas_fea2.backends.abaqus.problem.ModalStep.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ModalStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="p">)</span></div>
-
 
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -341,22 +336,23 @@
 
         <span class="k">return</span> <span class="n">data</span></div>
 
-<div class="viewcode-block" id="HarmoniStepBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.HarmoniStepBase.html#compas_fea2.backends.abaqus.problem.HarmoniStepBase">[docs]</a><span class="k">class</span> <span class="nc">HarmoniStepBase</span><span class="p">(</span><span class="n">HarmonicStepBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, freq_list, displacements, loads, factor, damping, type):</span>
-    <span class="c1">#     super(HarmoniStepBase, self).__init__(name, freq_list, displacements, loads, factor, damping, type)</span>
 
+<div class="viewcode-block" id="HarmoniStepBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.HarmoniStepBase.html#compas_fea2.backends.abaqus.problem.HarmoniStepBase">[docs]</a><span class="k">class</span> <span class="nc">HarmoniStepBase</span><span class="p">(</span><span class="n">HarmonicStepBase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HarmoniStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.HarmoniStepBase.__init__.html#compas_fea2.backends.abaqus.problem.HarmoniStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">freq_list</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">damping</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HarmoniStepBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">freq_list</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">damping</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <div class="viewcode-block" id="BucklingStep"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.BucklingStep.html#compas_fea2.backends.abaqus.problem.BucklingStep">[docs]</a><span class="k">class</span> <span class="nc">BucklingStep</span><span class="p">(</span><span class="n">BucklingStepBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, modes, increments, factor, displacements, loads, type,step):</span>
-    <span class="c1">#     super(BucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)</span>
-
+<div class="viewcode-block" id="BucklingStep.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.BucklingStep.__init__.html#compas_fea2.backends.abaqus.problem.BucklingStep.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">increments</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span><span class="n">step</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BucklingStep</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">increments</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <div class="viewcode-block" id="AcoustiStepBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.AcoustiStepBase.html#compas_fea2.backends.abaqus.problem.AcoustiStepBase">[docs]</a><span class="k">class</span> <span class="nc">AcoustiStepBase</span><span class="p">(</span><span class="n">AcousticStepBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):</span>
-    <span class="c1">#     super(AcoustiStepBase, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)</span>
+
+<div class="viewcode-block" id="AcoustiStepBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.AcoustiStepBase.__init__.html#compas_fea2.backends.abaqus.problem.AcoustiStepBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">freq_range</span><span class="p">,</span> <span class="n">freq_step</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">damping</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AcoustiStepBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">freq_range</span><span class="p">,</span> <span class="n">freq_step</span><span class="p">,</span> <span class="n">displacements</span><span class="p">,</span> <span class="n">loads</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">damping</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </code></pre></div>
         
       </main>

@@ -43,7 +43,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'matplotlib.sphinxext.plot_directive',
     'nbsphinx',
-    'sphinxcontrib.gist',
+    'sphinxcontrib.gist'
 ]
 
 # autodoc options

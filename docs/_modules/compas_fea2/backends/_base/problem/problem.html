@@ -126,7 +126,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;C:/temp&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loads</span> <span class="o">=</span> <span class="p">{}</span>
@@ -200,7 +200,7 @@
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">bset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: bc set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bc</span><span class="o">.</span><span class="n">bset</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ERROR: bc set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bc</span><span class="o">.</span><span class="n">bset</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bcs</span><span class="p">[</span><span class="n">bc</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">bc</span>
 
@@ -231,7 +231,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">remove_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc_names</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes multiple boundary conditions from the Problem object.</span>
@@ -245,7 +245,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">remove_all_bcs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes all the boundary conditions from the Problem object.</span>
@@ -277,7 +277,7 @@
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">load</span><span class="o">.</span><span class="n">lset</span> <span class="ow">and</span> <span class="n">load</span><span class="o">.</span><span class="n">lset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sets</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: load set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="o">.</span><span class="n">lset</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ERROR: load set </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="o">.</span><span class="n">lset</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">load</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">[</span><span class="n">load</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">load</span>
 
@@ -308,7 +308,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">remove_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_names</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes multiple loads from the Problem object.</span>
@@ -322,7 +322,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">remove_all_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes all the loads from the Problem object.</span>
@@ -356,21 +356,21 @@
         <span class="c1"># TODO: implement exception handler</span>
         <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">disp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;ERROR: displacement </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disp</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">load</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: load </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ERROR: load </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">fout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">fout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;ERROR: field output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fout</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">hout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">hout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
@@ -407,7 +407,7 @@
 <span class="sd">        ----</span>
 <span class="sd">        Not implemented yet!</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># =========================================================================</span>
     <span class="c1">#                           Field outputs</span>
@@ -668,6 +668,26 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;***** Problem loaded from: </span><span class="si">{0}</span><span class="s1"> *****&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">probelm</span>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1">#                         Analysis methods</span>
+    <span class="c1"># =========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">write_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;this function is not available for the selceted backend&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;this function is not available for the selceted backend&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">optimise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;this function is not available for the selceted backend&quot;</span><span class="p">)</span>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1">#                         Results methods</span>
+    <span class="c1"># =========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;this function is not available for the selceted backend&quot;</span><span class="p">)</span>
 </code></pre></div>
         
       </main>

@@ -112,17 +112,12 @@
     <span class="c1"># &#39;PentahedronElement&#39;,</span>
     <span class="c1"># &#39;TetrahedronElement&#39;,</span>
     <span class="c1"># &#39;HexahedronElement&#39;,</span>
-    <span class="p">]</span>
-
-<span class="c1"># # TODO the key should not be assigned by the user but generated automatically</span>
-
-<span class="c1"># def _generate_keyword(obj):</span>
-<span class="c1">#     return &quot;*Element, type={}, elset={}\n&quot;.format(obj.eltype, obj.elset)</span>
-
+<span class="p">]</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># 0D elements</span>
 <span class="c1"># ==============================================================================</span>
+
 
 <div class="viewcode-block" id="MassElement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.MassElement.html#compas_fea2.backends.abaqus.model.MassElement">[docs]</a><span class="k">class</span> <span class="nc">MassElement</span><span class="p">(</span><span class="n">MassElementBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A 0D element for concentrated point mass.</span>
@@ -138,19 +133,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MassElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.MassElement.__init__.html#compas_fea2.backends.abaqus.model.MassElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">key</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">elset</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">MassElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="n">key</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">elset</span><span class="p">)</span></div>
-
-
+        <span class="nb">super</span><span class="p">(</span><span class="n">MassElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">elset</span><span class="p">)</span></div>
 
     <span class="c1"># TODO: continue</span>
+
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;*ELEMENT, TYPE=MASS, ELSET=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;*MASS, ELSET=</span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="p">)</span></div>
-
-
-
 
 
 <span class="c1"># ==============================================================================</span>
@@ -160,27 +151,26 @@
 <div class="viewcode-block" id="BeamElement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.BeamElement.html#compas_fea2.backends.abaqus.model.BeamElement">[docs]</a><span class="k">class</span> <span class="nc">BeamElement</span><span class="p">(</span><span class="n">BeamElementBase</span><span class="p">):</span>
 
 <div class="viewcode-block" id="BeamElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.BeamElement.__init__.html#compas_fea2.backends.abaqus.model.BeamElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">elset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">BeamElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="n">thermal</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BeamElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="n">elset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eltype</span> <span class="o">=</span> <span class="s1">&#39;B31&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">orientation</span></div>
-        <span class="c1"># self.keyword = _generate_keyword(self)</span>
-        <span class="c1"># self.data    = &#39;{0}, {1}, {2}\n&#39;.format(self.key, self.connectivity[0].key, self.connectivity[1].key)</span>
 
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
-<span class="c1"># class SpringElement(SpringElementBase):</span>
-<span class="c1">#     &quot;&quot;&quot;A 1D spring element.</span>
 
-<span class="c1">#     Parameters</span>
-<span class="c1">#     ----------</span>
-<span class="c1">#     None</span>
+<span class="k">class</span> <span class="nc">SpringElement</span><span class="p">(</span><span class="n">SpringElementBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A 1D spring element.</span>
 
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     pass</span>
-<span class="c1">#     # def __init__(self):</span>
-<span class="c1">#     #     super(SpringElement, self).__init__()</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+    <span class="c1"># def __init__(self):</span>
+    <span class="c1">#     super(SpringElement, self).__init__()</span>
 
 
 <div class="viewcode-block" id="TrussElement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.TrussElement.html#compas_fea2.backends.abaqus.model.TrussElement">[docs]</a><span class="k">class</span> <span class="nc">TrussElement</span><span class="p">(</span><span class="n">TrussElementBase</span><span class="p">):</span>
@@ -191,13 +181,13 @@
 <span class="sd">    None</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="TrussElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.TrussElement.__init__.html#compas_fea2.backends.abaqus.model.TrussElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">elset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TrussElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrussElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="n">elset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eltype</span> <span class="o">=</span> <span class="s1">&#39;T3D2&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="kc">None</span></div>
-        <span class="c1"># self.keyword = _generate_keyword(self)</span>
 
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
@@ -246,8 +236,9 @@
 <span class="sd">    thermal : bool</span>
 <span class="sd">        NotImplemented,</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ShellElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.ShellElement.__init__.html#compas_fea2.backends.abaqus.model.ShellElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">elset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ShellElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ShellElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">elset</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span>
         <span class="k">else</span><span class="p">:</span>
@@ -277,10 +268,9 @@
 
 
 <div class="viewcode-block" id="MembraneElement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.MembraneElement.html#compas_fea2.backends.abaqus.model.MembraneElement">[docs]</a><span class="k">class</span> <span class="nc">MembraneElement</span><span class="p">(</span><span class="n">MembraneElementBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self):</span>
-    <span class="c1">#     super(MembraneElement, self).__init__()</span>
-
+<div class="viewcode-block" id="MembraneElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.MembraneElement.__init__.html#compas_fea2.backends.abaqus.model.MembraneElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MembraneElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># 3D elements</span>
@@ -288,10 +278,10 @@
 
 <div class="viewcode-block" id="SolidElement"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.SolidElement.html#compas_fea2.backends.abaqus.model.SolidElement">[docs]</a><span class="k">class</span> <span class="nc">SolidElement</span><span class="p">(</span><span class="n">SolidElementBase</span><span class="p">):</span>
 
-<div class="viewcode-block" id="SolidElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.SolidElement.__init__.html#compas_fea2.backends.abaqus.model.SolidElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">eltype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SolidElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="viewcode-block" id="SolidElement.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.SolidElement.__init__.html#compas_fea2.backends.abaqus.model.SolidElement.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">eltype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SolidElement</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">thermal</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">elset</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">section</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elset</span> <span class="o">=</span> <span class="n">elset</span>
 
@@ -299,17 +289,10 @@
             <span class="n">eltypes</span> <span class="o">=</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;C3D4&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;C3D6&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;C3D8&#39;</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">eltype</span> <span class="o">=</span> <span class="n">eltypes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">eltype</span> <span class="o">=</span> <span class="n">eltype</span>
-
-        <span class="c1"># self.keyword = _generate_keyword(self)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eltype</span> <span class="o">=</span> <span class="n">eltype</span></div>
 
     <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">nkeys</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">:</span>
-            <span class="n">nkeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nkeys</span><span class="p">))</span></div>
-
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">nk</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">nk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity</span><span class="p">))</span></div>
 
 
 <span class="c1"># class PentahedronElement(PentahedronElementBase):</span>
@@ -349,13 +332,20 @@
 <span class="c1">#     pass</span>
 <span class="c1">#     # def __init__(self):</span>
 <span class="c1">#     #     super(HexahedronElement, self).__init__()</span>
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus</span> <span class="kn">import</span> <span class="n">Node</span>
-    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus</span> <span class="kn">import</span> <span class="n">BeamElement</span>
+    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model.nodes</span> <span class="kn">import</span> <span class="n">Node</span>
+    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model.materials</span> <span class="kn">import</span> <span class="n">ElasticIsotropic</span>
+    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model.sections</span> <span class="kn">import</span> <span class="n">SolidSection</span>
+    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus</span> <span class="kn">import</span> <span class="n">SolidElement</span>
 
-    <span class="n">n</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">BeamElement</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">],</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Node</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">ElasticIsotropic</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;mat_A&#39;</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mi">29000</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mf">0.17</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.5e-9</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">SolidSection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;section_A&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;mat_A&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">())</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">SolidElement</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">())</span>
 </code></pre></div>
         
       </main>

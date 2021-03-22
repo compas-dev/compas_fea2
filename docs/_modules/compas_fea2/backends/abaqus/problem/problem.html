@@ -81,13 +81,13 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends._base.problem</span> <span class="kn">import</span> <span class="n">ProblemBase</span>
 
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.input_file</span> <span class="kn">import</span> <span class="n">InputFile</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.input_file</span> <span class="kn">import</span> <span class="n">ParFile</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.send_job</span> <span class="kn">import</span> <span class="n">launch_process</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.send_job</span> <span class="kn">import</span> <span class="n">launch_optimisation</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.job.read_results</span> <span class="kn">import</span> <span class="n">extract_data</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem.outputs</span> <span class="kn">import</span> <span class="n">FieldOutput</span>
 <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.problem.outputs</span> <span class="kn">import</span> <span class="n">HistoryOutput</span>
@@ -144,12 +144,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">stype</span> <span class="o">==</span> <span class="s1">&#39;modal&#39;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">disp</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">disp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s1">&#39;ERROR: displacement </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disp</span><span class="p">))</span>
 
             <span class="k">for</span> <span class="n">load</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">load</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loads</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR: load </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;ERROR: load </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
                 <span class="n">standard_output</span> <span class="o">=</span> <span class="n">FieldOutput</span><span class="p">(</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
@@ -157,7 +157,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">standard_output</span>
             <span class="k">for</span> <span class="n">fout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">fout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_outputs</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s1">&#39;ERROR: field output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fout</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
@@ -166,16 +166,25 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">standard_output</span>
             <span class="k">for</span> <span class="n">hout</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">hout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_outputs</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s1">&#39;ERROR: history output </span><span class="si">{}</span><span class="s1"> not found in the model!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hout</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span></div>
 
     <span class="c1"># =========================================================================</span>
+    <span class="c1">#                           Optimisation methods</span>
+    <span class="c1"># =========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">set_optimisation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vf</span><span class="p">,</span> <span class="n">iter_max</span><span class="p">,</span> <span class="n">cpus</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vf</span> <span class="o">=</span> <span class="n">vf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter_max</span> <span class="o">=</span> <span class="n">iter_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpus</span> <span class="o">=</span> <span class="n">cpus</span>
+
+    <span class="c1"># =========================================================================</span>
     <span class="c1">#                         Analysis methods</span>
     <span class="c1"># =========================================================================</span>
 
-<div class="viewcode-block" id="Problem.write_input_file"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;C:/temp&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Problem.write_input_file"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.write_input_file.html#compas_fea2.backends.abaqus.problem.Problem.write_input_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Writes the abaqus input file.</span>
 
 <span class="sd">        Parameters</span>
@@ -192,21 +201,53 @@
 <span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_to_cfp</span><span class="p">()</span>
 
         <span class="n">input_file</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">write_parameters_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the abaqus parameters file for the optimisation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to the folder where the input file will be saved.</span>
+<span class="sd">        output : bool</span>
+<span class="sd">            Print terminal output.</span>
+<span class="sd">        save : bool</span>
+<span class="sd">            Save structure to .cfp before file writing.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_to_cfp</span><span class="p">()</span>
+
+        <span class="n">input_file</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">inp</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">par_file</span> <span class="o">=</span> <span class="n">ParFile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">par</span> <span class="o">=</span> <span class="n">par_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+
     <span class="c1"># TODO: try to make this an abstract method of the base class</span>
-<div class="viewcode-block" id="Problem.analyse"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse">[docs]</a>    <span class="k">def</span> <span class="nf">analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">user_mat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Problem.analyse"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.Problem.analyse.html#compas_fea2.backends.abaqus.problem.Problem.analyse">[docs]</a>    <span class="k">def</span> <span class="nf">analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;C:/temp&#39;</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">user_mat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs the analysis through abaqus.</span>
 
 <span class="sd">        Parameters</span>
@@ -230,9 +271,14 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_input_file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="n">save</span><span class="p">)</span>
-        <span class="n">launch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">exe</span><span class="o">=</span><span class="n">exe</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="n">cpus</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
-                       <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">user_mat</span><span class="o">=</span><span class="n">user_mat</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_input_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">save</span><span class="p">)</span>
+        <span class="n">launch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exe</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">user_mat</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">optimise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;C:/temp&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_input_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">save</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_parameters_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">save</span><span class="p">)</span>
+        <span class="n">launch_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
     <span class="c1"># =========================================================================</span>
     <span class="c1">#                         Results methods</span>

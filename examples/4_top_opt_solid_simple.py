@@ -12,6 +12,7 @@ from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 
+from compas_fea2.interfaces.viewer.viewer import OptiViewer
 
 ##### ----------------------------- MODEL ----------------------------- #####
 
@@ -85,3 +86,6 @@ problem.summary()
 # Solve the problem
 problem.optimise()
 
+# Visualie results
+v = OptiViewer(problem)
+v.show()

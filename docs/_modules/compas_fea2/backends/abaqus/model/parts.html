@@ -193,127 +193,12 @@
 
         <span class="n">temp</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;*Part, name=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">temp</span><span class="p">,</span>
-                        <span class="s2">&quot;*End Part</span><span class="se">\n</span><span class="s2">**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span>
+                        <span class="s2">&quot;*End Part</span><span class="se">\n</span><span class="s2">**</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span></div>
 
 
 
 
-<div class="viewcode-block" id="Part.add_element"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Part.add_element.html#compas_fea2.backends.abaqus.model.Part.add_element">[docs]</a>    <span class="k">def</span> <span class="nf">add_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Adds a compas_fea2 Element object to the Part.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        element : obj</span>
-<span class="sd">            compas_fea2 Element object.</span>
-<span class="sd">        check : bool</span>
-<span class="sd">            If True, checks if the element is already present.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-
-        <span class="k">if</span> <span class="n">check</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_element_in_part</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: duplicate element connecting </span><span class="si">{}</span><span class="s1"> skipped!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">connectivity_key</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">connectivity</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;ERROR CREATING ELEMENT: node </span><span class="si">{}</span><span class="s1"> not found. Check the connectivity indices of element: </span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">element</span><span class="p">))</span>
-            <span class="n">element</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-
-            <span class="c1"># add the element key to its type group</span>
-            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">eltype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_type</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_type</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">eltype</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_type</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">eltype</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-
-            <span class="c1"># add the element key to its section group</span>
-            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_section</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-
-            <span class="c1"># add the element orientation to its section group</span>
-            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s1">&#39;orientation&#39;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">orientation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">orientation</span><span class="p">)</span>
-
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">orientations_by_section</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-            <span class="c1"># else:</span>
-            <span class="c1">#     raise ValueError(&quot;ELEMENT ORIENTATION NOT DEFINED&quot;)</span>
-            <span class="c1">#     # sys.exit(&quot;ELEMENT ORIENTATION NOT DEFINED&quot;)</span>
-
-
-
-            <span class="c1"># # add the element key to its material group</span>
-            <span class="c1"># if element.section.material not in self.elements_by_material.keys():</span>
-            <span class="c1">#     self.elements_by_material[element.section.material] = []</span>
-            <span class="c1"># self.elements_by_material[element.section.material].append(element.key)</span>
-
-            <span class="c1"># add the element key to its elset group</span>
-            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">elset</span><span class="p">:</span>
-            <span class="c1">#     element.elset = &#39;elset-{}&#39;.format(len(self.elsets)) #element.section.name</span>
-                <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">elset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_elset</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="kn">from</span> <span class="nn">compas_fea2.backends.abaqus.model</span> <span class="kn">import</span> <span class="n">Set</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">add_element_set</span><span class="p">(</span><span class="n">Set</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">elset</span><span class="p">,</span> <span class="p">[],</span> <span class="s1">&#39;elset&#39;</span><span class="p">))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_elset</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">elset</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">elements_by_elset</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">elset</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_elements_to_set</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">elset</span><span class="p">,</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">key</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="Part.add_elements"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Part.add_elements.html#compas_fea2.backends.abaqus.model.Part.add_elements">[docs]</a>    <span class="k">def</span> <span class="nf">add_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Adds multiple compas_fea2 Element objects to the Part.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        elements : list</span>
-<span class="sd">            List of compas_fea2 Element objects.</span>
-<span class="sd">        check : bool</span>
-<span class="sd">            If True, checks if the elements are already present.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">check</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Part.remove_element"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Part.remove_element.html#compas_fea2.backends.abaqus.model.Part.remove_element">[docs]</a>    <span class="k">def</span> <span class="nf">remove_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_key</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Removes the element from the Part.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        element_key : int</span>
-<span class="sd">            Key number of the element to be removed.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="c1">#TODO check if element key exists</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">element_key</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reorder_elements</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Part.remove_elements"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.model.Part.remove_elements.html#compas_fea2.backends.abaqus.model.Part.remove_elements">[docs]</a>    <span class="k">def</span> <span class="nf">remove_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Removes the elements from the Part.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        elements : list</span>
-<span class="sd">            List with the key numbers of the element to be removed.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-
-        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></div></div>
 
 <span class="c1"># =============================================================================</span>
 <span class="c1">#                               Debugging</span>

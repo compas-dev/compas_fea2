@@ -11,4 +11,5 @@ Examples
    examples/hypar_frame.rst
    examples/hypar_frame_sections.rst
    examples/hypar_shell.rst
+   examples/topopt_solid_simple.rst
 

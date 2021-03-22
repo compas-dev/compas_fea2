@@ -151,16 +151,16 @@
 
 
 <div class="viewcode-block" id="LineLoad"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.LineLoad.html#compas_fea2.backends.abaqus.problem.LineLoad">[docs]</a><span class="k">class</span> <span class="nc">LineLoad</span><span class="p">(</span><span class="n">LineLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):</span>
-    <span class="c1">#     super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)</span>
 
+<div class="viewcode-block" id="LineLoad.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.LineLoad.__init__.html#compas_fea2.backends.abaqus.problem.LineLoad.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LineLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <div class="viewcode-block" id="AreaLoad"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.AreaLoad.html#compas_fea2.backends.abaqus.problem.AreaLoad">[docs]</a><span class="k">class</span> <span class="nc">AreaLoad</span><span class="p">(</span><span class="n">AreaLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, elements, x, y, z, axes):</span>
-    <span class="c1">#     super(AreaLoad, self).__init__(name, elements, x, y, z, axes)</span>
 
+<div class="viewcode-block" id="AreaLoad.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.AreaLoad.__init__.html#compas_fea2.backends.abaqus.problem.AreaLoad.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AreaLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <div class="viewcode-block" id="GravityLoad"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.GravityLoad.html#compas_fea2.backends.abaqus.problem.GravityLoad">[docs]</a><span class="k">class</span> <span class="nc">GravityLoad</span><span class="p">(</span><span class="n">GravityLoadBase</span><span class="p">):</span>
 
@@ -176,33 +176,32 @@
 
 
 <span class="k">class</span> <span class="nc">ThermalLoad</span><span class="p">(</span><span class="n">ThermalLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-    <span class="c1"># def __init__(self, name, elements, temperature):</span>
-    <span class="c1">#     super(ThermalLoad, self).__init__(name, elements, temperature)</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ThermalLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="TributaryLoad"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.TributaryLoad.html#compas_fea2.backends.abaqus.problem.TributaryLoad">[docs]</a><span class="k">class</span> <span class="nc">TributaryLoad</span><span class="p">(</span><span class="n">TributaryLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, structure, name, mesh, x, y, z, axes):</span>
-    <span class="c1">#     super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)</span>
 
+<div class="viewcode-block" id="TributaryLoad.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.TributaryLoad.__init__.html#compas_fea2.backends.abaqus.problem.TributaryLoad.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TributaryLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <div class="viewcode-block" id="HarmoniPointLoadBase"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase.html#compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase">[docs]</a><span class="k">class</span> <span class="nc">HarmoniPointLoadBase</span><span class="p">(</span><span class="n">HarmonicPointLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span></div>
-    <span class="c1"># def __init__(self, name, nodes, x, y, z, xx, yy, zz):</span>
-    <span class="c1">#     super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)</span>
 
+<div class="viewcode-block" id="HarmoniPointLoadBase.__init__"><a class="viewcode-back" href="../../../../../api/generated/compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase.__init__.html#compas_fea2.backends.abaqus.problem.HarmoniPointLoadBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HarmoniPointLoadBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 <span class="k">class</span> <span class="nc">HarmonicPressureLoad</span><span class="p">(</span><span class="n">HarmonicPressureLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-    <span class="c1"># def __init__(self, name, elements, pressure, phase):</span>
-    <span class="c1">#     super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HarmonicPressureLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <span class="k">class</span> <span class="nc">AcousticDiffuseFieldLoad</span><span class="p">(</span><span class="n">AcousticDiffuseFieldLoadBase</span><span class="p">):</span>
-    <span class="bp">NotImplemented</span>
-    <span class="c1"># def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):</span>
-    <span class="c1">#     super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">air_density</span><span class="p">,</span> <span class="n">sound_speed</span><span class="p">,</span> <span class="n">max_inc_angle</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AcousticDiffuseFieldLoad</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">air_density</span><span class="p">,</span> <span class="n">sound_speed</span><span class="p">,</span> <span class="n">max_inc_angle</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </code></pre></div>
         
       </main>

@@ -1,0 +1,218 @@
+!-------------------------------------------------------------------------------
+! 
+! Benachmarks: Bathe Beam with Ansys MPADL
+! 
+! Programmierung:   Marius Weber
+!
+! Datum:            05.03.2021
+!
+!-------------------------------------------------------------------------------
+! Clear & Start New
+!-------------------------------------------------------------------------------
+finish
+/clear
+
+/prep7
+
+!-------------------------------------------------------------------------------
+! Definition of the nodes
+!-------------------------------------------------------------------------------
+
+n,1,0,0,0  
+n,2,200,0,0
+n,3,200,100,0
+n,4,0,100,0
+n,5,400,0,0
+n,6,400,100,0
+n,7,600,0,0
+n,8,600,100,0
+n,9,800,0,0
+n,10,800,100,0
+
+!-------------------------------------------------------------------------------
+! Elements 
+!-------------------------------------------------------------------------------
+et,1,shell181                      ! SHELL181
+!type,1
+e,1,2,3,4
+e,2,5,6,3
+e,5,7,8,6
+e,7,9,10,8
+
+!-------------------------------------------------------------------------------
+! Assign elements to an element set
+!-------------------------------------------------------------------------------
+esel,s,elem,,1,2,3,4
+section_A=1
+CM, section_A, elem   ! Groups geometry items into a component
+allsel
+
+!CMSEL,s,section_A ! Select the elements with the corresponding name
+
+!-------------------------------------------------------------------------------
+! Material
+!-------------------------------------------------------------------------------
+mat_A=1
+Ec=200000
+vc=0.25
+mp,dens,mat_A,0.0000025
+mp,ex,mat_A,Ec
+mp,prxy,mat_A,vc
+
+!-------------------------------------------------------------------------------
+! Specify a shell cross section (element attributes and material) 
+!-------------------------------------------------------------------------------
+
+! Specification for section A
+!-------------------------------------------------------------------------------
+!CMSEL,s,section_A
+type,section_A  
+! Numbers of layers
+nn=10
+
+! Thickness of the beam
+h=200
+
+! Shear stiffness                
+G   = Ec/(2*(1+vc))
+delta_h = h/nn																																	
+h_shear = h
+faktor = 1
+kk  = 5/6
+E111  =  kk*G*h_shear*faktor
+E221  =  kk*G*h_shear*faktor                                   
+E121  =  0
+                   
+keyopt,section_A,1,0                  ! Keyoption, Elementtyp 1, Keyoption 1, Wert 0
+keyopt,section_A,3,2                  ! Keyoption, Elementtyp 1, Keyoption 3, Wert 2
+keyopt,section_A,8,2                  ! Keyoption, Elementtyp 1, Keyoption 8, Wert 2 => Speichert Daten für jeden Layer
+
+! Section-Type
+sectype,section_A,shell                        ! SecID, Type, Name,
+seccontrols,E111,E221,E121,,1,1,1      ! E11, E22, E12, ADDMAS, MEMSCF, BENSCF, DRILLSTIF
+*DO,j,1,nn  
+  secdata,delta_h,mat_A,0,1,j,            
+*ENDDO  
+
+allsel    
+
+/eshape,1,1 
+
+!-------------------------------------------------------------------------------
+! Assembly 
+!-------------------------------------------------------------------------------
+CMGRP,hypar,section_A 
+     
+!-------------------------------------------------------------------------------
+! local coordiante system
+!-------------------------------------------------------------------------------
+cs,11,0,1,2,4		 	 ! 11, 0 (kartesisch), 1 (Nullpkt), 2 (x), 5 (y)
+emodif,all,esys,11   		 ! Anwenden auf alle ausgewählte Elemente
+allsel
+CSYS,0
+
+!-------------------------------------------------------------------------------
+! Constraints
+!------------------------------------------------------------------------------- 
+d,4,all,0
+d,1,all,0
+
+!-------------------------------------------------------------------------------
+! Loads
+!------------------------------------------------------------------------------- 
+F,10,FY,-100
+
+CHECK
+ 	    
+! Solution 1
+! --------------------------------------------------------------------------------------------
+/solu
+! Konvergenzkriterien
+CNVTOL,F,,0.9     
+CNVTOL,U,,0.9
+CNVTOL,m,-1,3
+
+! Solver-Einstellungen
+autots,1                  ! automatische Zeitschritte (substeps) [1=ON ; 0=OFF]
+nsubst,1,1,1        ! Anzahl substeps pro Lastschritt (first,max,min)
+time,1                   ! Zeit am Ende des Lastschrittes
+
+! Speichern von Daten
+outres,erase              ! Zurücksetzen auf Standard-Einstellungen
+outres,nsol,all           ! Nodal DOF solution
+outres,rsol,all           ! Nodal reaction solution
+outres,esol,all           ! Element solution
+outres,svar,all           ! State variables (used by USERMAT)
+                          ! ...,all := für jeden substep
+
+! Solver
+solve
+
+
+!-------------------------------------------------------------------------------	    
+! Outputs 
+!-------------------------------------------------------------------------------
+
+! Enter postprocessor
+/POST1                              
+
+esel,all        ! select all elements
+*GET,Sol_,ACTIVE,0,SOLU,CNVG        ! "CNVG=0" : Not converged
+
+
+! Extract the coordinates of each node AND the nodes correspond. 
+! The following principle can be used for all outputs (standard and user defined). 
+! The output corresponds to the calculated results at the GP and not (!) to the interpolated results at a node 
+
+! Coordinates of the nodes 'coor_nodes.txt'
+*GET,NrN,NODE,0,COUNT               ! NrN: Number of nodes in the list
+*DIM,N_N,ARRAY,NrN,1
+*VGET,N_N,NODE, ,NLIST              ! N_N: Node list array
+*DIM,coor_nodes,ARRAY,NrN,4
+    *DO,ii,1,NrN
+      coor_nodes(ii,1) = N_N(ii)                ! 1. node number
+      *GET,coor_nodes(ii,2),NODE,N_N(ii),LOC,X  ! 2. x-coor of node
+      *GET,coor_nodes(ii,3),NODE,N_N(ii),LOC,Y  ! 3. y-coor of node
+      *GET,coor_nodes(ii,4),NODE,N_N(ii),LOC,Z  ! 4. z-coor of node     
+    *ENDDO    
+        
+ 
+! Macro for coor_nodes - txt
+! -------------------------------------------------------------
+
+! Arg1 is the array name (string)
+! Arg2 is the format descriptor (string)
+! Arg3 is the number of columns to write (integer) 
+! Arg4 is the file name and extention (string)
+
+Arg1 = 'coor_nodes'
+Arg2 = 'f20.5'
+Arg3 = 4
+Arg4 = 'coor_nodes.txt'
+
+    ~eui,'set arrname [ans_getvalue PARM,Arg1,value]'
+    ~eui,'set formatdescriptor [ans_getvalue PARM,Arg2,value]'
+    ~eui,'set numcol [ans_getvalue PARM,Arg3,value]'
+    ~eui,'set filename [ans_getvalue PARM,Arg4,value]'
+    ! Trim up the strings a bit
+    ~eui,'set arrname [string trim $arrname]'
+    ~eui,'set formatdescriptor [string trim $formatdescriptor]'
+    ~eui,'set filename [string trim $filename]' 
+    ~eui,'set cmd "*mwrite,$arrname"'
+    ~eui,'append cmd "(1,1),"'
+    ~eui,'append cmd [file rootname $filename]'
+    ! Put a comma between the filename and extension
+    ~eui,'append cmd ","'
+    ! Pull off the leading period from the extension. Leaving off the
+    ! comma above and forgeting to strip off the leading period in the
+    ! extension is a case of two errors canceling each other out. If 
+    ! only life were always so kind...
+    ~eui,'append cmd [string trimleft [file extension $filename] "."]'
+    ~eui,'append cmd "\n"'
+    ~eui,'append cmd "($numcol$formatdescriptor)"
+    ~eui,'set fid [open mk_mwritehelper.mac w]'
+    ~eui,'puts $fid $cmd'
+    ~eui,'close $fid'
+    ~eui,'ans_sendcommand mk_mwritehelper'
+    ~eui,'file delete mk_mwritehelper.mac'
+                                     

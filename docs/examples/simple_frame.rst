@@ -1,13 +1,8 @@
 ********************************************************************************
-compas_fea2
+Simple frame
 ********************************************************************************
 
-.. toctree::
-   :maxdepth: 3
-   :titlesonly:
+This example works for: **Abaqus**.
 
-   intro
-   gettingstarted
-   examples
-   api
-   license
+.. literalinclude:: /../examples/0_scripting_simple_frame.py
+    :language: python

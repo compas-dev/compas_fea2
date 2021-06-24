@@ -1,5 +1,5 @@
 ********************************************************************************
-Getting Started
+Developer Guide
 ********************************************************************************
 
 .. toctree::
@@ -7,5 +7,5 @@ Getting Started
    :titlesonly:
    :glob:
 
-   gettingstarted/installation.rst
-   gettingstarted/umat.rst
+   devguide/overview
+

@@ -13,6 +13,7 @@ Examples
    examples/0_scripting_simple_shell.rst
    examples/1_scripting_compas_hypar_frame.rst
    examples/1_scripting_compas_hypar_gmsh.rst
+   examples/1_scripting_cantilever_gmsh.rst
    examples/1_scripting_compas_hypar_shell.rst
    examples/1_scripting_compas_hypar_shell_modal.rst
    examples/2_scripting_compas_hypar_sections.rst

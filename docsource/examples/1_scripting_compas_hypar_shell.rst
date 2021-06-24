@@ -2,7 +2,8 @@
 Hypar Shell
 ********************************************************************************
 
-This example works for: **Abaqus**.
+This example imports an `obj` file into a `compas` `Mesh` object and uses it to
+generate a shell from the faces of the mesh.
 
 .. figure:: /_images/examples/hypar_shell.png
     :figclass: figure

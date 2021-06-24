@@ -1,12 +1,13 @@
 ********************************************************************************
-Hypar frame
+Simple shell
 ********************************************************************************
 
-This example works for: **Abaqus**.
+This example it is shown how to generate a simple shell structure and analyse
+the principal stresses.
 
-.. figure:: /_images/examples/hypar_frame.png
+.. figure:: /_images/examples/principal_stress_script.png
     :figclass: figure
     :class: figure-img img-fluid
 
-.. literalinclude:: /../examples/1_scripting_compas_hypar_frame.py
+.. literalinclude:: /../examples/0_scripting_simple_shell.py
     :language: python

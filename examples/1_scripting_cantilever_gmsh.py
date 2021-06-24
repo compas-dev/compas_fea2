@@ -1,17 +1,12 @@
 from compas_fea2.backends.abaqus import Model
-from compas_fea2.backends.abaqus import Part
-from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
-from compas_fea2.backends.abaqus import BoxSection
 from compas_fea2.backends.abaqus import ShellSection
-from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import Set
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import RollerDisplacementXZ
 from compas_fea2.backends.abaqus import PointLoad
-from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 
 from compas_fea2.postprocessor.stresses import principal_stresses
@@ -24,18 +19,17 @@ import sys
 from math import degrees, atan2
 from compas.datastructures import Mesh
 from compas.geometry import centroid_points
-import numpy as np
 import matplotlib.pyplot as plt
 
 
-def gmsh_geometry(lc=50):
+def gmsh_geometry(x, y, lc, path):
     gmsh.initialize(sys.argv)
     gmsh.model.add("t1")
 
     gmsh.model.geo.addPoint(0, 0, 0, lc, 1)
-    gmsh.model.geo.addPoint(1000, 0, 0, lc, 2)
-    gmsh.model.geo.addPoint(1000, 3000, 0, lc, 3)
-    p4 = gmsh.model.geo.addPoint(0, 3000, 0, lc)
+    gmsh.model.geo.addPoint(x, 0, 0, lc, 2)
+    gmsh.model.geo.addPoint(x, y, 0, lc, 3)
+    p4 = gmsh.model.geo.addPoint(0, y, 0, lc)
     gmsh.model.geo.addLine(1, 2, 1)
     gmsh.model.geo.addLine(3, 2, 2)
     gmsh.model.geo.addLine(3, p4, 3)
@@ -56,7 +50,7 @@ def gmsh_geometry(lc=50):
     # print(gmsh.model.mesh.getKeysForElement(1,'Lagrange'))
 
     # ... and save it to disk
-    gmsh.write(DATA+"/t1.stl")
+    gmsh.write(path)
     gmsh.finalize()
 
 
@@ -68,16 +62,19 @@ def plot_vectors(problem, spr, e, scale):
     y = [c[1] for c in centroids]
 
     for stype in ['max', 'min']:
-        color = 'r' if stype == 'max' else 'b'
-        # z = spr[sp][stype]
-        u = np.array(np.split(e[sp][stype][0]*spr['sp1'][stype]/2/scale, 5))
-        v = np.array(np.split(e[sp][stype][1]*spr['sp1'][stype]/2/scale, 5))
+        color = 'gray'  # if stype == 'max' else 'b'
+        u = e[sp][stype][0]*spr['sp1'][stype]/2
+        v = e[sp][stype][1]*spr['sp1'][stype]/2
         plt.quiver(x, y, u, v, color=color, width=1*10**-3)
         plt.quiver(x, y, -u, -v, color=color, width=1*10**-3)
     plt.axis('equal')
     plt.show()
 
 
+# Generate a cantilever beam using gmsh
+lx = 1000
+ly = 3000
+gmsh_geometry(lx, ly, 100, DATA+"/t1.stl")
 mesh = Mesh.from_stl(DATA+"/t1.stl")
 
 ##### ----------------------------- MODEL ----------------------------- #####
@@ -95,8 +92,8 @@ model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
 
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([0, 0, 0, ], 1)
-n_roller = model.get_node_from_coordinates([1000, 0, 0], 1)
-n_load = model.get_node_from_coordinates([1000, 3000, 0, ], 1)
+n_roller = model.get_node_from_coordinates([lx, 0, 0], 1)
+n_load = model.get_node_from_coordinates([lx, ly, 0, ], 1)
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')

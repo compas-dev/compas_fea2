@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 
+=======
+compas>=1.0
+openseespy ; sys_platform != 'darwin'
+openseespymac ; sys_platform == 'darwin'
+>>>>>>> main

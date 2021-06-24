@@ -25,7 +25,7 @@ from compas.datastructures import Mesh
 # Get a Mesh geometry to create the model
 mesh = Mesh.from_obj(DATA + '/hypar.obj')
 # Mesh the geometry in gmesh
-gmesh = compas_to_gmsh(mesh, lc=50, inspect=True)
+gmesh = compas_to_gmsh(mesh, lc=100, inspect=True)
 
 ##### ------------------------------- MODEL ------------------------------ #####
 # Initialise the assembly object

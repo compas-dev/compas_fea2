@@ -4,13 +4,13 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.backends._base.problem import GeneralStepBase
-from compas_fea2.backends._base.problem import LinearPerturbationStepBase
-from compas_fea2.backends._base.problem import HeatStepBase
-from compas_fea2.backends._base.problem import ModalStepBase
-from compas_fea2.backends._base.problem import HarmonicStepBase
-from compas_fea2.backends._base.problem import BucklingStepBase
-from compas_fea2.backends._base.problem import AcousticStepBase
+from compas_fea2.backends._base.problem import GeneralCaseBase
+from compas_fea2.backends._base.problem import LinearPerturbationCaseBase
+from compas_fea2.backends._base.problem import HeatCaseBase
+from compas_fea2.backends._base.problem import ModalCaseBase
+from compas_fea2.backends._base.problem import HarmonicCaseBase
+from compas_fea2.backends._base.problem import BucklingCaseBase
+from compas_fea2.backends._base.problem import AcousticCaseBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -27,7 +27,14 @@ __all__ = [
 # TODO add field and history output requrests
 
 
-class GeneralStaticStep(GeneralStepBase):
+class GeneralStaticStep(GeneralCaseBase):
+    """
+    Notes
+    -----
+    the data for the input file for this object is generated at runtime.
+    """
+    __doc__ += GeneralCaseBase.__doc__
+
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
                  nlgeom=False, displacements=None, loads=None, modify=True, field_outputs=None, history_outputs=None):
         super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time, nlgeom,
@@ -35,11 +42,10 @@ class GeneralStaticStep(GeneralStepBase):
         self.stype = 'Static'
         self.attr_list.extend(['stype'])
 
-        # self.data = self._generate_data()
-
-    # todo: this could be moved outside the class
     def _generate_data(self, problem):
-
+        """generate the data for the input file. Since the `Problem` object is required,
+        the data is generated before just before writing the input file.
+        """
         section_data = []
         line = ("** ----------------------------------------------------------------\n"
                 "**\n"
@@ -81,7 +87,7 @@ class GeneralStaticStep(GeneralStepBase):
         return ''.join(section_data)
 
 
-class GeneralStaticRiksStep(GeneralStepBase):
+class GeneralStaticRiksStep(GeneralCaseBase):
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, displacements=[], loads=[]):
         super(GeneralStaticRiksStep).__init__(name, max_increments,
@@ -89,7 +95,7 @@ class GeneralStaticRiksStep(GeneralStepBase):
         raise NotImplementedError
 
 
-class StaticLinearPertubationStep(LinearPerturbationStepBase):
+class StaticLinearPertubationStep(LinearPerturbationCaseBase):
     """Initialises the StaticLinearPertubationStep object for use in a static analysis.
 
     Parameters
@@ -122,7 +128,7 @@ class StaticLinearPertubationStep(LinearPerturbationStepBase):
                      "**\n").format(self.name, self.nlgeom, self.stype)
 
 
-class BuckleStep(LinearPerturbationStepBase):
+class BuckleStep(LinearPerturbationCaseBase):
 
     """Initialises BuckleStep object for use in a buckling analysis.
 
@@ -156,13 +162,13 @@ class BuckleStep(LinearPerturbationStepBase):
 # **\n""".format(self.name, self.nlgeom, self.stype)
 
 
-class HeatStep(HeatStepBase):
+class HeatStep(HeatCaseBase):
     def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):
         super(HeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
         raise NotImplementedError
 
 
-class ModalStep(ModalStepBase):
+class ModalStep(ModalCaseBase):
     def __init__(self, name, modes):
         super(ModalStep, self).__init__(name, modes)
 
@@ -180,20 +186,20 @@ class ModalStep(ModalStepBase):
         return data
 
 
-class HarmoniStepBase(HarmonicStepBase):
+class HarmoniStepBase(HarmonicCaseBase):
 
     def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
         super(HarmoniStepBase, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
         raise NotImplementedError
 
 
-class BucklingStep(BucklingStepBase):
+class BucklingStep(BucklingCaseBase):
     def __init__(self, name, modes, increments, factor, displacements, loads, type, step):
         super(BucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
         raise NotImplementedError
 
 
-class AcoustiStepBase(AcousticStepBase):
+class AcoustiStepBase(AcousticCaseBase):
 
     def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
         super(AcoustiStepBase, self).__init__(name, freq_range, freq_step,

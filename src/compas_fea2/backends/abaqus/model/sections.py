@@ -28,7 +28,7 @@ from compas_fea2.backends._base.model import SpringSectionBase
 
 __all__ = [
     'MassSection',
-    'AngleSection',
+    'LSection',
     'BoxSection',
     'CircularSection',
     'GeneralSection',
@@ -47,19 +47,36 @@ __all__ = [
 
 labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
 
-def _generate_beam_data(obj):
-    properties = []
-    for l in labels:
-        if l in obj.geometry.keys():
-            properties.append(str(obj.geometry[l]))
-    return """** Section: {}
+
+# def _generate_beam_data(obj):
+#     properties = []
+#     for l in labels:
+#         if l in obj.geometry.keys():
+#             properties.append(str(obj.geometry[l]))
+#     return """** Section: {}
+# *Beam Section, elset={}, material={}, section={}
+# {}\n""".format(obj.name, obj.elset, obj.material.name, obj.stype, ','.join(properties))
+
+
+class AbaqusBeamSection(SectionBase):
+    """Abaqus Beam Section base object. The properties of each section type are
+    automatically computed by Abaqus.
+    """
+
+    def __init__(self, name, material):
+        super(AbaqusBeamSection, self).__init__(name, material)
+
+    def _generate_data(self, set_name, orientation):
+        orientation_line = ', '.join([str(v) for v in orientation])
+        return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
-{}\n""".format(obj.name, obj.elset, obj.material.name, obj.stype, ','.join(properties))
+{}\n{}\n""".format(self.name, set_name, self.material, self._stype, ', '.join([str(v) for v in self.properties]), orientation_line)
 
 
 # ==============================================================================
 # 0D
 # ==============================================================================
+
 
 class MassSection(SectionBase):
     """Section for mass elements.
@@ -85,71 +102,194 @@ class MassSection(SectionBase):
 # 1D
 # ==============================================================================
 
-class AngleSection(AngleSectionBase):
-
-    def __init__(self, name, b, h, t, material):
-        super(AngleSection, self).__init__(name, b, h, t, material)
-        # self.data = _generate_beam_data(self)
-
-
-class BoxSection(SectionBase):
-    """
-    Note: Section properties are computed automatically by Abaqus.
-    """
-    def __init__(self, name, a, b, t1, t2, t3, t4, material):
-        super(BoxSection, self).__init__(name, material)
-        self.stype = 'box'
-        self.properties = [str(a), str(b), str(t1), str(t2), str(t3), str(t4)]
-
-    def _generate_data(self, set_name, orientation):
-        orientation_line = ', '.join([str(v) for v in orientation])
-        return """** Section: {}
-*Beam Section, elset={}, material={}, section={}
-{}\n{}\n""".format(self.name, set_name, self.material, self.stype, ', '.join(self.properties), orientation_line)
-
-
-class CircularSection(CircularSectionBase):
-
-    def __init__(self, name, r, material):
-        super(CircularSection, self).__init__(name, r, material)
-        # self.data = _generate_beam_data(self)
-
 
 class GeneralSection(GeneralSectionBase):
 
     def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
         super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
-        # self.data = _generate_beam_data(self)
 
 
-class ISection(ISectionBase):
+class LSection(AbaqusBeamSection):
+    """L section.
 
-    def __init__(self, name, b, h, tw, tf, material):
-        super(ISection, self).__init__(name, b, h, tw, tf, material)
-        # self.data = _generate_beam_data(self)
+    Parameters
+    ----------
+    a : float
+        base of the section.
+    b : float
+        total height of the section (including the flanges).
+    t : float or list
+        thickness(es) of the section. If the two thicknesses are different,
+        provide a list the two values [t1, t2]
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, a, b, t, material):
+        super(ISection, self).__init__(name, material)
+        self._stype = 'L'
+        if not isinstance(t, list):
+            t = [t]*2
+        self.properties = [a, b, *t]
 
 
-class PipeSection(PipeSectionBase):
+class BoxSection(AbaqusBeamSection):
+    """Box section.
+
+    Parameters
+    ----------
+    a : float
+        base of the section.
+    b : float
+        total height of the section (including the flanges).
+    t : float or list
+        thickness(es) of the section. If the four thicknesses are different,
+        provide a list the four values [t1, t2, t3, t4]
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, a, b, t, material):
+        super(BoxSection, self).__init__(name, material)
+        self._stype = 'box'
+        if not isinstance(t, list):
+            t = [t]*4
+        self.properties = [a, b, *t]
+
+
+class CircularSection(AbaqusBeamSection):
+    """Circular filled section.
+
+    Parameters
+    ----------
+    r : float
+        outside radius
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, r, material):
+        super(CircularSection, self).__init__(name, material)
+        self._stype = 'circ'
+        self.properties = [r]
+
+
+class HexSection(AbaqusBeamSection):
+    """Hexagonal hollow section.
+
+    Parameters
+    ----------
+    r : float
+        outside radius
+    t : float
+        wall thickness
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, d, t, material):
+        super(HexSection, self).__init__(name, r, material)
+        self._stype = 'hex'
+        self.properties = [d, t]
+
+
+class ISection(AbaqusBeamSection):
+    """I or T section.
+
+    Parameters
+    ----------
+    b : float or list
+        base(s) of the section. If the two bases are different, provide a list
+        with the two values [b1, b2]
+    h : float
+        total height of the section (including the flanges).
+    t : float or list
+        thickness(es) of the section. If the three thicknesses are different,
+        provide a list the three values [t1, t2, t3]
+    material : str
+        material name to be assigned to the section.
+    l : float
+        distance of the origin of the local cross-section axis from the origin
+        of the beam axis along the 2-axis, by default 0.
+
+    Notes
+    -----
+    Set b1 and t1 or b2 and t2 to zero to model a T-section
+    """
+
+    def __init__(self, name, b, h, t, material, l=0):
+        super(ISection, self).__init__(name, material)
+        self._stype = 'I'
+        if not isinstance(b, list):
+            b = [b]*2
+        if not isinstance(t, list):
+            t = [t]*3
+        self.properties = [l, h, *b, *t]
+
+
+class PipeSection(AbaqusBeamSection):
+    """Pipe section.
+
+    Parameters
+    ----------
+    r : float
+        outside radius
+    t : float
+        wall thickness
+    material : str
+        material name to be assigned to the section.
+    """
 
     def __init__(self, name, r, t, material):
-        super(PipeSection, self).__init__(name, r, t, material)
-        # self.data = _generate_beam_data(self)
+        super(PipeSection, self).__init__(name, material)
+        self._stype = 'pipe'
+        self.properties = [r, t]
 
 
-class RectangularSection(RectangularSectionBase):
+class RectangularSection(AbaqusBeamSection):
+    """Rectangular filled section.
 
-    def __init__(self, name, b, h, material):
-        super(RectangularSection, self).__init__(name, b, h, material)
-        # self.data = _generate_beam_data(self)
+    Parameters
+    ----------
+    a : float
+        base of the section.
+    b : float
+        height of the section.
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, a, b, material):
+        super(RectangularSection, self).__init__(name, material)
+        self._stype = 'rect'
+        self.properties = [a, b]
 
 
-class TrapezoidalSection(TrapezoidalSectionBase):
+class TrapezoidalSection(AbaqusBeamSection):
+    """Rectangular filled section.
 
-    def __init__(self, name, b1, b2, h, material):
-        super(TrapezoidalSection, self).__init__( name, b1, b2, h, material)
-        # self.data = _generate_beam_data(self)
+    Parameters
+    ----------
+    a : float
+        bottom base of the section.
+    b : float
+        height of the section.
+    c : float
+        top base of the section.
+    d : float
+        distance of the origin of the local cross-section axis from the origin
+        of the beam axis along the 2-axis, by default 0.
+    material : str
+        material name to be assigned to the section.
+    """
+
+    def __init__(self, name, a, b, c, d, material):
+        super(TrapezoidalSection, self).__init__(name, material)
+        self._stype = 'rect'
+        self.properties = [a, b, c, d]
 
 
+# TODO -> check how these sections are implemented in ABAQUS
 class TrussSection(TrussSectionBase):
 
     def __init__(self, name, A, material):
@@ -167,11 +307,13 @@ class StrutSection(StrutSectionBase):
         super(StrutSection, self).__init__(name, A, material)
         self.elset = elset
 
+
 class TieSection(TieSectionBase):
 
     def __init__(self, name, A, material):
         super(TieSection, self).__init__(name, A, material)
         self.elset = elset
+
 
 class SpringSection(SpringSectionBase):
 
@@ -182,6 +324,7 @@ class SpringSection(SpringSectionBase):
 # ==============================================================================
 # 2D
 # ==============================================================================
+
 
 class ShellSection(ShellSectionBase):
 
@@ -224,6 +367,7 @@ class MembraneSection(MembraneSectionBase):
 # 3D
 # ==============================================================================
 
+
 class SolidSection(SolidSectionBase):
 
     def __init__(self, name, material):
@@ -239,7 +383,7 @@ if __name__ == "__main__":
 
     from compas_fea2.backends.abaqus import Concrete
 
-    conc = Concrete('my_mat',1,2,3,4)
-    solid = BoxSection('mysec', 100, 20,1,2,conc)
+    conc = Concrete('my_mat', 1, 2, 3, 4)
+    solid = BoxSection('mysec', 100, 20, 1, 2, conc)
 
     print(solid.data)

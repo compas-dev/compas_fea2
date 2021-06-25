@@ -6,7 +6,6 @@ from __future__ import print_function
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
 
-# TODO: check if stype should be accessible or not
 
 __all__ = [
     'CaseBase',
@@ -254,7 +253,7 @@ class HeatCaseBase(CaseBase):
         Duration of case step.
     """
 
-    def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, stype='heat transfer', duration=1):
+    def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, duration=1):
         CaseBase.__init__(self, name=name)
 
         self.__name__ = 'HeatCase'
@@ -263,9 +262,8 @@ class HeatCaseBase(CaseBase):
         self.increments = increments
         self.temp0 = temp0
         self.dTmax = dTmax
-        self.stype = stype
         self.duration = duration
-        self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'stype', 'duration'])
+        self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'duration'])
 
 
 class ModalCaseBase(CaseBase):
@@ -294,7 +292,6 @@ class ModalCaseBase(CaseBase):
         self.__name__ = 'ModalCase'
         self.name = name
         self.modes = modes
-        self.stype = 'modal'
         self.attr_list.extend(['modes', 'increments', 'displacements', 'stype'])
 
 
@@ -336,7 +333,7 @@ class HarmonicCaseBase(CaseBase):
         'harmonic'.
     """
 
-    def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None, stype='harmonic'):
+    def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None):
         CaseBase.__init__(self, name=name)
 
         if not displacements:
@@ -352,7 +349,6 @@ class HarmonicCaseBase(CaseBase):
         self.loads = loads
         self.factor = factor
         self.damping = damping
-        self.stype = stype
         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
@@ -398,8 +394,7 @@ class BucklingCaseBase(CaseBase):
         Case to copy loads and displacements from.
     """
 
-    def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, stype='buckle',
-                 case=None):
+    def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, case=None):
         CaseBase.__init__(self, name=name)
 
         if not displacements:
@@ -415,9 +410,8 @@ class BucklingCaseBase(CaseBase):
         self.factor = factor
         self.displacements = displacements
         self.loads = loads
-        self.stype = stype
         self.case = case
-        self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'stype', 'case'])
+        self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'case'])
 
 
 class AcousticCaseBase(CaseBase):
@@ -471,7 +465,7 @@ class AcousticCaseBase(CaseBase):
     """
 
     def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,
-                 factor=1.0, damping=None, stype='acoustic'):
+                 factor=1.0, damping=None):
         CaseBase.__init__(self, name=name)
 
         if not displacements:
@@ -493,6 +487,5 @@ class AcousticCaseBase(CaseBase):
         self.loads = loads
         self.factor = factor
         self.damping = damping
-        self.stype = stype
         self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor',
-                               'damping', 'stype'])
+                               'damping'])

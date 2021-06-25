@@ -48,7 +48,7 @@ class Problem(ProblemBase):
     # =========================================================================
 
     def add_step(self, step):
-        """Check if the parameters are correct and add a Step to the Problem.
+        """Check if the Step parameters are correct and add a Step to the Problem.
 
         Parameters
         ----------
@@ -63,7 +63,7 @@ class Problem(ProblemBase):
         # NOTE: the abaqus implementation is slightly different from the _base
         # TODO: simplify and move to _base
 
-        if not step.stype == 'modal':  # todo change stype to __name__
+        if not step.__name__ == 'ModalCase':
             if step.displacements:
                 for disp in step.displacements:
                     if disp not in self.displacements:

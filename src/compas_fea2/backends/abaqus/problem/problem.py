@@ -48,7 +48,7 @@ class Problem(ProblemBase):
     # =========================================================================
 
     def add_step(self, step):
-        """Adds a Step to the Problem.
+        """Check if the parameters are correct and add a Step to the Problem.
 
         Parameters
         ----------
@@ -63,29 +63,29 @@ class Problem(ProblemBase):
         # NOTE: the abaqus implementation is slightly different from the _base
         # TODO: simplify and move to _base
 
-        if not step.stype == 'modal':
-            for disp in step.displacements:
-                if disp not in self.displacements:
-                    raise ValueError(
-                        'ERROR: displacement {} not found in the model!'.format(disp))
+        if not step.stype == 'modal':  # todo change stype to __name__
+            if step.displacements:
+                for disp in step.displacements:
+                    if disp not in self.displacements:
+                        raise ValueError(
+                            'ERROR: displacement {} not found in the model!'.format(disp))
 
-            for load in step.loads:
-                if load not in self.loads:
-                    raise ValueError('ERROR: load {} not found in the model!'.format(load))
+            if step.loads:
+                for load in step.loads:
+                    if load not in self.loads:
+                        raise ValueError('ERROR: load {} not found in the model!'.format(load))
 
             if not step.field_outputs:
-                standard_output = FieldOutput('standard')
-                step.field_outputs.append('standard')
-                self.field_outputs['standard'] = standard_output
+                step.field_outputs = ['standard']
+                self.field_outputs['standard'] = FieldOutput('standard')
             for fout in step.field_outputs:
                 if fout not in self.field_outputs:
                     raise ValueError(
                         'ERROR: field output {} not found in the model!'.format(fout))
 
             if not step.history_outputs:
-                standard_output = HistoryOutput('standard')
-                step.history_outputs.append('standard')
-                self.history_outputs['standard'] = standard_output
+                step.history_outputs = ['standard']
+                self.history_outputs['standard'] = HistoryOutput('standard')
             for hout in step.history_outputs:
                 if hout not in self.history_outputs:
                     raise ValueError(

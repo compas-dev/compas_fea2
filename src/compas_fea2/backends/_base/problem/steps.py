@@ -12,6 +12,7 @@ from __future__ import print_function
 __all__ = [
     'StepBase',
     'GeneralStepBase',
+    'LinearPerturbationStepBase',
     'HeatStepBase',
     'ModalStepBase',
     'HarmonicStepBase',
@@ -36,8 +37,8 @@ class StepBase(object):
 
     def __init__(self, name):
 
-        self.__name__  = 'StepObject'
-        self.name      = name
+        self.__name__ = 'StepObject'
+        self.name = name
         self.attr_list = ['name']
 
     def __str__(self):
@@ -60,77 +61,160 @@ class GeneralStepBase(StepBase):
     ----------
     name : str
         Name of the GeneralStep.
-    increments : int
-        Number of step increments.
-    iterations : int
-        Number of step iterations.
-    tolerance : float
-        A tolerance for analysis solvers.
-    factor : float, dict
-        Proportionality factor(s) on the loads and displacements.
+    max_increments : int
+        Max number of increments to perform during the step.
+        (Typically 100 but you might have to increase it in highly non-linear problems. This might increase the
+        analysis time.).
+    initial_inc_size : float
+        Sets the the size of the increment for the first iteration.
+        (By default is equal to the total time, meaning that the software decrease the size automatically.)
+    min_inc_size : float
+        Minimum increment size before stopping the analysis.
+        (By default is 1e-5, but you can set a smaller size for highly non-linear problems. This might increase the
+        analysis time.)
+    time : float
+        Total time of the step. Note that this not actual 'time' in Abaqus, but rather a proportionality factor.
+        (By default is 1, meaning that the analysis is complete when all the increments sum up to 1)
     nlgeom : bool
         Analyse non-linear geometry effects.
-    nlmat : bool
-        Analyse non-linear material effects.
     displacements : list
-        Displacement object names.
+        Displacement objects.
     loads : list
-        Load object names.
-    stype : str
-        'static','static,riks'.
-    modify : bool
+        Load objects.
+    modify : bool #TODO not implemented yet
         Modify the previously added loads.
+    field_output : list
+        FiledOutputRequest object
+    history_output : list
+        HistoryOutputRequest object
+    """
 
-    Attributes
+    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time,
+                 nlgeom, displacements, loads, modify, field_outputs, history_outputs):
+        super(GeneralStepBase, self).__init__(name=name)
+
+        self.__name__ = 'GeneralStep'
+        self.name = name
+        self.max_increments = max_increments
+        self.initial_inc_size = initial_inc_size
+        self.min_inc_size = min_inc_size
+        self.time = time
+
+        if nlgeom:
+            self.nlgeom = 'YES'
+        else:
+            self.nlgeom = 'NO'
+
+        self.displacements = displacements
+        self.loads = loads
+        self.field_outputs = field_outputs
+        self.history_outputs = history_outputs
+
+        # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
+        #                     'displacements', 'loads'])
+
+# class GeneralStepBase(StepBase):
+#     """Initialises GeneralStep object for use in a static analysis.
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the GeneralStep.
+#     increments : int
+#         Number of step increments.
+#     iterations : int
+#         Number of step iterations.
+#     tolerance : float
+#         A tolerance for analysis solvers.
+#     factor : float, dict
+#         Proportionality factor(s) on the loads and displacements.
+#     nlgeom : bool
+#         Analyse non-linear geometry effects.
+#     nlmat : bool
+#         Analyse non-linear material effects.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     stype : str
+#         'static','static,riks'.
+#     modify : bool
+#         Modify the previously added loads.
+
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the GeneralStep.
+#     increments : int
+#         Number of step increments.
+#     iterations : int
+#         Number of step iterations.
+#     tolerance : float
+#         A tolerance for analysis solvers.
+#     factor : float, dict
+#         Proportionality factor(s) on the loads and displacements.
+#     nlgeom : bool
+#         Analyse non-linear geometry effects.
+#     nlmat : bool
+#         Analyse non-linear material effects.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     stype : str
+#         'static','static,riks'.
+#     modify : bool
+#         Modify the previously added loads.
+#     """
+
+#     def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True,
+#                  displacements=None, loads=None, stype='static', modify=True):
+#         StepBase.__init__(self, name=name)
+
+#         if not displacements:
+#             displacements = []
+
+#         if not loads:
+#             loads = []
+
+#         self.__name__      = 'GeneralStep'
+#         self.name          = name
+#         self.increments    = increments
+#         self.iterations    = iterations
+#         self.tolerance     = tolerance
+#         self.factor        = factor
+#         self.nlgeom        = nlgeom
+#         self.nlmat         = nlmat
+#         self.displacements = displacements
+#         self.loads         = loads
+#         self.modify        = modify
+#         self.stype          = stype
+#         self.attr_list.extend(['increments', 'iterations', 'factor', 'nlgeom', 'nlmat', 'displacements', 'loads',
+#                                'stype', 'tolerance', 'modify'])
+
+
+class LinearPerturbationStepBase(StepBase):
+    """Initialises LinearPertubationStep object for use in a linear analysis.
+
+    Parameters
     ----------
     name : str
         Name of the GeneralStep.
-    increments : int
-        Number of step increments.
-    iterations : int
-        Number of step iterations.
-    tolerance : float
-        A tolerance for analysis solvers.
-    factor : float, dict
-        Proportionality factor(s) on the loads and displacements.
-    nlgeom : bool
-        Analyse non-linear geometry effects.
-    nlmat : bool
-        Analyse non-linear material effects.
     displacements : list
-        Displacement object names.
+        Displacement objects.
     loads : list
-        Load object names.
-    stype : str
-        'static','static,riks'.
-    modify : bool
-        Modify the previously added loads.
+        Load objects.
     """
 
-    def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True,
-                 displacements=None, loads=None, stype='static', modify=True):
-        StepBase.__init__(self, name=name)
+    def __init__(self, name, displacements, loads):
+        super(LinearPerturbationStepBase, self).__init__(name)
 
-        if not displacements:
-            displacements = []
-
-        if not loads:
-            loads = []
-
-        self.__name__      = 'GeneralStep'
-        self.name          = name
-        self.increments    = increments
-        self.iterations    = iterations
-        self.tolerance     = tolerance
-        self.factor        = factor
-        self.nlgeom        = nlgeom
-        self.nlmat         = nlmat
+        self.__name__ = 'LinearPerturbationStep'
+        self.name = name
+        self.nlgeom = 'NO'
         self.displacements = displacements
-        self.loads         = loads
-        self.modify        = modify
-        self.stype          = stype
-        self.attr_list.extend(['increments', 'iterations', 'factor', 'nlgeom', 'nlmat', 'displacements', 'loads',
-                               'stype', 'tolerance', 'modify'])
+        self.loads = loads
+        self.attr_list.extend(['displacements', 'loads', ])
 
 
 class HeatStepBase(StepBase):
@@ -174,14 +258,14 @@ class HeatStepBase(StepBase):
     def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, stype='heat transfer', duration=1):
         StepBase.__init__(self, name=name)
 
-        self.__name__    = 'HeatStep'
-        self.name        = name
+        self.__name__ = 'HeatStep'
+        self.name = name
         self.interaction = interaction
-        self.increments  = increments
-        self.temp0       = temp0
-        self.dTmax       = dTmax
-        self.stype        = stype
-        self.duration    = duration
+        self.increments = increments
+        self.temp0 = temp0
+        self.dTmax = dTmax
+        self.stype = stype
+        self.duration = duration
         self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'stype', 'duration'])
 
 
@@ -208,10 +292,10 @@ class ModalStepBase(StepBase):
     def __init__(self, name, modes=1):
         super(ModalStepBase, self).__init__(name)
 
-        self.__name__      = 'ModalStep'
-        self.name          = name
-        self.modes         = modes
-        self.stype          = 'modal'
+        self.__name__ = 'ModalStep'
+        self.name = name
+        self.modes = modes
+        self.stype = 'modal'
         self.attr_list.extend(['modes', 'increments', 'displacements', 'stype'])
 
 
@@ -262,14 +346,14 @@ class HarmonicStepBase(StepBase):
         if not loads:
             loads = []
 
-        self.__name__      = 'HarmonicStepBase'
-        self.name          = name
-        self.freq_list     = freq_list
+        self.__name__ = 'HarmonicStepBase'
+        self.name = name
+        self.freq_list = freq_list
         self.displacements = displacements
-        self.loads         = loads
-        self.factor        = factor
-        self.damping       = damping
-        self.stype         = stype
+        self.loads = loads
+        self.factor = factor
+        self.damping = damping
+        self.stype = stype
         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
@@ -325,15 +409,15 @@ class BucklingStepBase(StepBase):
         if not loads:
             loads = []
 
-        self.__name__      = 'BucklingStep'
-        self.name          = name
-        self.modes         = modes
-        self.increments    = increments
-        self.factor        = factor
+        self.__name__ = 'BucklingStep'
+        self.name = name
+        self.modes = modes
+        self.increments = increments
+        self.factor = factor
         self.displacements = displacements
-        self.loads         = loads
-        self.stype          = stype
-        self.step          = step
+        self.loads = loads
+        self.stype = stype
+        self.step = step
         self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'stype', 'step'])
 
 
@@ -400,16 +484,16 @@ class AcousticStepBase(StepBase):
         if not sources:
             sources = []
 
-        self.__name__      = 'AcousticStepBase'
-        self.name          = name
-        self.freq_range    = freq_range
-        self.freq_step     = freq_step
+        self.__name__ = 'AcousticStepBase'
+        self.name = name
+        self.freq_range = freq_range
+        self.freq_step = freq_step
         self.displacements = displacements
-        self.sources       = sources
-        self.samples       = samples
-        self.loads         = loads
-        self.factor        = factor
-        self.damping       = damping
-        self.stype          = stype
+        self.sources = sources
+        self.samples = samples
+        self.loads = loads
+        self.factor = factor
+        self.damping = damping
+        self.stype = stype
         self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor',
                                'damping', 'stype'])

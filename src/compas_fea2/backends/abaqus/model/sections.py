@@ -6,29 +6,23 @@ from __future__ import print_function
 from math import pi
 
 from compas_fea2.backends._base.model import SectionBase
-from compas_fea2.backends._base.model import AngleSectionBase
-from compas_fea2.backends._base.model import BoxSectionBase
-from compas_fea2.backends._base.model import CircularSectionBase
 from compas_fea2.backends._base.model import GeneralSectionBase
-from compas_fea2.backends._base.model import ISectionBase
-from compas_fea2.backends._base.model import PipeSectionBase
-from compas_fea2.backends._base.model import RectangularSectionBase
 from compas_fea2.backends._base.model import ShellSectionBase
 from compas_fea2.backends._base.model import MembraneSectionBase
 from compas_fea2.backends._base.model import SolidSectionBase
-from compas_fea2.backends._base.model import TrapezoidalSectionBase
 from compas_fea2.backends._base.model import TrussSectionBase
 from compas_fea2.backends._base.model import StrutSectionBase
 from compas_fea2.backends._base.model import TieSectionBase
 from compas_fea2.backends._base.model import SpringSectionBase
 
 
-# Author(s): Andrew Liew (github.com/andrewliew)
+# Author(s): Francesco Ranaudo (github.com/franaudo)
+#           Andrew Liew (github.com/andrewliew)
 
 
 __all__ = [
     'MassSection',
-    'LSection',
+    'AngleSection',
     'BoxSection',
     'CircularSection',
     'GeneralSection',
@@ -45,22 +39,12 @@ __all__ = [
     'SpringSection',
 ]
 
-labels = ['A', 'Ixx', 'Ixy', 'Iyy', 'J', 'g0', 'gw']
-
-
-# def _generate_beam_data(obj):
-#     properties = []
-#     for l in labels:
-#         if l in obj.geometry.keys():
-#             properties.append(str(obj.geometry[l]))
-#     return """** Section: {}
-# *Beam Section, elset={}, material={}, section={}
-# {}\n""".format(obj.name, obj.elset, obj.material.name, obj.stype, ','.join(properties))
-
 
 class AbaqusBeamSection(SectionBase):
-    """Abaqus Beam Section base object. The properties of each section type are
-    automatically computed by Abaqus.
+    """
+    Notes
+    -----
+    The properties for beam sections are automatically computed by Abaqus.
     """
 
     def __init__(self, name, material):
@@ -109,7 +93,7 @@ class GeneralSection(GeneralSectionBase):
         super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
 
 
-class LSection(AbaqusBeamSection):
+class AngleSection(AbaqusBeamSection):
     """L section.
 
     Parameters
@@ -124,6 +108,7 @@ class LSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, t, material):
         super(ISection, self).__init__(name, material)
@@ -148,6 +133,7 @@ class BoxSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, t, material):
         super(BoxSection, self).__init__(name, material)
@@ -167,6 +153,7 @@ class CircularSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, r, material):
         super(CircularSection, self).__init__(name, material)
@@ -186,6 +173,7 @@ class HexSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, d, t, material):
         super(HexSection, self).__init__(name, r, material)
@@ -216,6 +204,7 @@ class ISection(AbaqusBeamSection):
     -----
     Set b1 and t1 or b2 and t2 to zero to model a T-section
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, b, h, t, material, l=0):
         super(ISection, self).__init__(name, material)
@@ -239,6 +228,7 @@ class PipeSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, r, t, material):
         super(PipeSection, self).__init__(name, material)
@@ -258,6 +248,7 @@ class RectangularSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, material):
         super(RectangularSection, self).__init__(name, material)
@@ -282,6 +273,7 @@ class TrapezoidalSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
+    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, c, d, material):
         super(TrapezoidalSection, self).__init__(name, material)

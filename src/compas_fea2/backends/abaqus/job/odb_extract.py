@@ -7,7 +7,8 @@ try:
 except:
     pass
 
-import json
+import pickle
+import os
 import sys
 
 
@@ -41,7 +42,7 @@ convert = {
     'SMISES': 'smises', 'SMAXP': 'smaxp', 'SMINP': 'sminp',
 }
 
-node_fields    = ['rf', 'rm', 'u', 'ur', 'cf', 'cm']
+node_fields = ['rf', 'rm', 'u', 'ur', 'cf', 'cm']
 element_fields = ['sf', 'sm', 'sk', 'se', 's', 'e', 'pe', 'ctf', 'rbfor']
 
 
@@ -76,7 +77,7 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
         components = set(components)
 
     results = {}
-    info    = {}
+    info = {}
 
     if steps == 'all':
         steps = odb.steps.keys()
@@ -84,7 +85,7 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
     for step in steps:
 
         results[step] = {'nodal': {}, 'element': {}}
-        info[step]    = {}
+        info[step] = {}
 
         description = odb.steps[step].frames[-1].description
 
@@ -215,9 +216,9 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
                                 data = [data]
 
                             element = value.elementLabel - 1
-                            ip      = value.integrationPoint
-                            sp      = value.sectionPoint.number if value.sectionPoint else 0
-                            id      = 'ip{0}_sp{1}'.format(ip, sp)
+                            ip = value.integrationPoint
+                            sp = value.sectionPoint.number if value.sectionPoint else 0
+                            id = 'ip{0}_sp{1}'.format(ip, sp)
 
                             for i, c in enumerate(clabels):
                                 if convert[c] in components:
@@ -285,11 +286,11 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
                     except:
                         pass
 
-    with open('{0}{1}-results.json'.format(temp, name), 'w') as f:
-        json.dump(results, f)
+    with open(os.path.join(temp, '{}-results.pkl'.format(name)), 'wb') as f:
+        pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
 
-    with open('{0}{1}-info.json'.format(temp, name), 'w') as f:
-        json.dump(info, f)
+    with open(os.path.join(temp, '{}-info.pkl'.format(name)), 'wb') as f:
+        pickle.dump(info, f, pickle.HIGHEST_PROTOCOL)
 
 
 # ============================================================================
@@ -298,9 +299,9 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
 
 if __name__ == "__main__":
 
-    temp       = sys.argv[-1]
-    name       = sys.argv[-2]
-    fields     = sys.argv[-3].split(',')
+    temp = sys.argv[-1]
+    name = sys.argv[-2]
+    fields = sys.argv[-3].split(',')
     components = None if sys.argv[-4] == 'None' else sys.argv[-4].split(',')
 
     extract_odb_data(temp=temp, name=name, fields=fields, components=components)

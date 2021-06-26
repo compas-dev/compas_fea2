@@ -185,5 +185,6 @@ Output Requests
 
 from .model import *
 from .problem import *
+from .results import *
 
 __all__ = [name for name in dir() if not name.startswith('_')]

@@ -60,8 +60,7 @@ def launch_process(problem, exe, output, overwrite, user_mat):
         line = p.stdout.readline()
         if not line:
             break
-        line = str(line.strip())
-
+        line = line.strip().decode()
         if output:
             print(line)
 
@@ -71,8 +70,8 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     stdout, stderr = p.communicate()
 
     if output:
-        print(stdout)
-        print(stderr)
+        print(stdout.decode())
+        print(stderr.decode())
 
     toc = time() - tic
 

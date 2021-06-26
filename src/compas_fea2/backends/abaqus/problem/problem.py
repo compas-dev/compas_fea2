@@ -2,15 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-
+from pathlib import Path
 from compas_fea2.backends._base.problem import ProblemBase
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.input_file import ParFile
 from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
-from compas_fea2.backends.abaqus.job.read_results import extract_data
 from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
 from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
 
@@ -106,7 +104,7 @@ class Problem(ProblemBase):
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, output=True, save=False):
+    def write_input_file(self, path, output=True, save=False):
         """Writes the abaqus input file.
 
         Parameters
@@ -116,15 +114,16 @@ class Problem(ProblemBase):
         output : bool
             Print terminal output.
         save : bool
-            Save structure to .cfp before file writing.
+            Save problem to .cfp before file writing.
 
         Returns
         -------
         None
 
         """
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        self.path = Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
 
         if save:
             self.save_to_cfp()
@@ -134,7 +133,7 @@ class Problem(ProblemBase):
         if output:
             print(r)
 
-    def write_parameters_file(self, output=True, save=False):
+    def write_parameters_file(self, path, output=True, save=False):
         """Writes the abaqus parameters file for the optimisation.
 
         Parameters
@@ -151,9 +150,9 @@ class Problem(ProblemBase):
         None
 
         """
-
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        self.path = Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
 
         if save:
             self.save_to_cfp()
@@ -192,51 +191,49 @@ class Problem(ProblemBase):
         None
 
         """
-        self.path = path
-        self.write_input_file(output, save)
+        self.write_input_file(path, output, save)
         launch_process(self, exe, output, overwrite, user_mat)
 
     def optimise(self, path='C:/temp', output=True, save=False):
-        self.path = path
-        self.write_input_file(output, save)
-        self.write_parameters_file(output, save)
+        self.write_input_file(path, output, save)
+        self.write_parameters_file(path, output, save)
         launch_optimisation(self, output)
 
     # =========================================================================
     #                         Results methods
     # =========================================================================
 
-    # TODO: try to make this an abstract method of the base class
-    def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-                return_data=True, components=None):
-        """Extracts data from the analysis output files.
+    # # TODO: try to make this an abstract method of the base class
+    # def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+    #             return_data=True, components=None):
+    #     """Extracts data from the analysis output files.
 
-        Parameters
-        ----------
-        fields : list, str
-            Data field requests.
-        steps : list
-            Loads steps to extract from.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        sets : list
-            -
-        license : str
-            Software license type: 'research', 'student'.
-        output : bool
-            Print terminal output.
-        return_data : bool
-            Return data back into structure.results.
-        components : list
-            Specific components to extract from the fields data.
+    #     Parameters
+    #     ----------
+    #     fields : list, str
+    #         Data field requests.
+    #     steps : list
+    #         Loads steps to extract from.
+    #     exe : str
+    #         Full terminal command to bypass subprocess defaults.
+    #     sets : list
+    #         -
+    #     license : str
+    #         Software license type: 'research', 'student'.
+    #     output : bool
+    #         Print terminal output.
+    #     return_data : bool
+    #         Return data back into structure.results.
+    #     components : list
+    #         Specific components to extract from the fields data.
 
-        Returns
-        -------
-        None
+    #     Returns
+    #     -------
+    #     None
 
-        """
-        extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-                     components=components)
+    #     """
+    #     extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
+    #                  components=components)
 
     # # this should be an abstract method of the base class
     # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,

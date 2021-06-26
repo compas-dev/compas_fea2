@@ -5,6 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import pickle
+from pathlib import Path
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -41,15 +42,14 @@ class ProblemBase(object):
         Dictionary contanining the field output requests.
     history_outputs : dict
         Dictionary contanining the history output requests.
-    results : dict
-        Dictionary contanining the analysis results.
+    results : obj
+        `compas_fea2` Results object contanining the analysis results.
     """
 
     def __init__(self, name, model):
         self.name = name
         self.model = model
-        self.path = 'C:/temp'
-
+        self.path = None
         self.bcs = {}
         self.loads = {}
         self.steps = []
@@ -57,7 +57,7 @@ class ProblemBase(object):
         self.field_outputs = {}
         self.history_outputs = {}
 
-        self.results = {}
+        self.results = {}  # Results(self.name, self.path)
 
     def __str__(self):
         data = [self.bcs,
@@ -398,128 +398,6 @@ History Output Requests
         """
         for hout in houts:
             self.add_history_output(hout)
-
-    # ==============================================================================
-    # Modifiers
-    # ==============================================================================
-
-    # def scale_displacements(self, displacements, factor):
-    #     """Scales displacements by a given factor.
-
-    #     Parameters
-    #     ----------
-    #     displacements : dict
-    #         Dictionary containing the displacements to scale.
-    #     factor : float
-    #         Factor to scale the displacements by.
-
-    #     Returns
-    #     -------
-    #     dict
-    #         The scaled displacements dictionary.
-    #     """
-    #     disp_dic = {}
-
-    #     for key, disp in displacements.items():
-    #         for dkey, dcomp in disp.components.items():
-    #             if dcomp is not None:
-    #                 disp.components[dkey] *= factor
-    #         disp_dic[key] = disp
-
-    #     return disp_dic
-
-    # def scale_loads(self, loads, factor):
-    #     """Scales loads by a given factor.
-
-    #     Parameters
-    #     ----------
-    #     loads : dict
-    #         Dictionary containing the loads to scale.
-    #     factor : float
-    #         Factor to scale the loads by.
-
-    #     Returns
-    #     -------
-    #     dict
-    #         The scaled loads dictionary.
-    #     """
-    #     loads_dic = {}
-
-    #     for key, load in loads.items():
-    #         for lkey, lcomp in load.components.items():
-    #             if lcomp is not None:
-    #                 load.components[lkey] *= factor
-    #         loads_dic[key] = load
-
-    #     return loads_dic
-
-    # ==============================================================================
-    # Results
-    # ==============================================================================
-
-    # def get_nodal_results(self, step, field, nodes='all'):
-    #     """Extract nodal results from self.results.
-
-    #     Parameters
-    #     ----------
-    #     step : str
-    #         Step to extract from.
-    #     field : str
-    #         Data field request.
-    #     nodes : str, list
-    #         Extract 'all' or a node collection/list.
-
-    #     Returns
-    #     -------
-    #     dict
-    #         The nodal results for the requested field.
-    #     """
-    #     data  = {}
-    #     rdict = self.results[step]['nodal']
-
-    #     if nodes == 'all':
-    #         keys = list(self.nodes.keys())
-    #     else:
-    #         keys = nodes
-
-    #     for key in keys:
-    #         data[key] = rdict[field][key]
-
-    #     return data
-
-    # def get_element_results(self, step, field, elements='all'):
-    #     """Extract element results from self.results.
-
-    #     Parameters
-    #     ----------
-    #     step : str
-    #         Step to extract from.
-    #     field : str
-    #         Data field request.
-    #     elements : str, list
-    #         Extract 'all' or an element collection/list.
-
-    #     Returns
-    #     -------
-    #     dict
-    #         The element results for the requested field.
-    #     """
-    #     data  = {}
-    #     rdict = self.results[step]['element']
-
-    #     if elements == 'all':
-    #         keys = list(self.elements.keys())
-
-    #     # elif isinstance(elements, str):              TODO: transfor to 'collection'
-    #     #     keys = self.sets[elements].selection
-
-    #     else:
-    #         keys = elements
-
-    #     for key in keys:
-    #         data[key] = rdict[field][key]
-
-    #     return data
 
     # ==============================================================================
     # Summary

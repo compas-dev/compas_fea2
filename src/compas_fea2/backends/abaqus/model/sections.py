@@ -140,6 +140,8 @@ class BoxSection(AbaqusBeamSection):
         self._stype = 'box'
         if not isinstance(t, list):
             t = [t]*4
+        elif not len(t) == 4:
+            raise ValueError("You must specify a tickness for every side of the box")
         self.properties = [a, b, *t]
 
 

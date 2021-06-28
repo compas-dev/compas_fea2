@@ -11,6 +11,7 @@ from compas_fea2.backends.abaqus import PinnedDisplacement
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
+from compas_fea2.backends.abaqus import Results
 
 from compas_fea2.postprocessor.stresses import principal_stresses
 
@@ -127,11 +128,10 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 # Solve the problem
 problem.summary()
 problem.analyse(path=folder)
-problem.extract(fields=['u', 's'])
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-data = problem.results['gstep']['element']
-spr, e = principal_stresses(data)
+results = Results.from_problem(problem, fields=['s'])
+spr, e = principal_stresses(results.element['gstep'])
 
 sp = 'sp5'
 stype = 'max'

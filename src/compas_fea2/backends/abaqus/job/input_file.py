@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os.path
+from compas_fea2.backends.abaqus.problem.steps import ModalStep
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -188,25 +189,10 @@ class InputFile():
         """
         section_data = []
         for step in problem.steps:
-            # if not step.stype == 'modal':
-            #     displacements = []
-            #     for displacement in step.displacements:
-            #         displacements.append(problem.displacements[displacement])
-            #     loads = []
-            #     for load in step.loads:
-            #         loads.append(problem.loads[load])
-            #     field_outputs = []
-            #     for field_output in step.field_outputs:
-            #         field_outputs.append(problem.field_outputs[field_output])
-            #     history_outputs = []
-            #     for history_output in step.history_outputs:
-            #         history_outputs.append(problem.history_outputs[history_output])
-            #     section_data.append(step._generate_data(displacements,
-            #                                             loads,
-            #                                             field_outputs,
-            #                                             history_outputs))
-            # else:
-            section_data.append(step._generate_data(problem))
+            if isinstance(step, ModalStep):  # TODO too messy - check!
+                section_data.append(step._generate_data())
+            else:
+                section_data.append(step._generate_data(problem))
 
         return ''.join(section_data)
 

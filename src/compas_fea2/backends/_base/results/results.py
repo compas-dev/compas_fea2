@@ -28,65 +28,45 @@ class ResultsBase(FEABase):
         Specific components to extract from the fields data.
     """
 
-    def __init__(self, problem, fields, steps, sets, components, output):
-        self.problem_name = problem.name
-        self.database_path = problem.path
-        self.temp_dump = Path(self.database_path).joinpath(self.problem_name + '-results')
+    def __init__(self, database_name, database_path, fields, steps, sets, components, output):
+        self.database_name = database_name
+        self.database_path = database_path
+        self.temp_dump = Path(self.database_path).joinpath(self.database_name + '-results')
         self._fields = fields
         self._steps = steps
         self._sets = sets
         self._components = components
         self.output = output
-        self._info = {}
-        self._nodal = {}
-        self._element = {}
-        self._modal = {}
-
-    @property
-    def nodal(self):
-        return self._nodal
-
-    @property
-    def element(self):
-        return self._element
-
-    @property
-    def info(self):
-        return self._info
-
-    @property
-    def modal(self):
-        return self._modal
 
     @property
     def fields(self):
         return self._fields
 
-    @fields.setter
-    def fields(self, fields):
-        if not isinstance(fields, list):
-            fields = [fields]
-        for x in fields:
-            if x not in self.problem.field_outputs:
-                print("WARNING: field {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
-                    x, self.problem_name))
-            else:
-                self._fields.append(x)
+    # @fields.setter
+    # def fields(self, fields):
+    #     if not isinstance(fields, list):
+    #         fields = [fields]
+    #     for x in fields:
+    #         if x not in self.problem.field_outputs:
+    #             print("WARNING: field {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
+    #                 x, self.database_name))
+    #         else:
+    #             self._fields.append(x)
 
     @property
     def steps(self):
         return self._steps
 
-    @steps.setter
-    def steps(self, steps):
-        if not isinstance(steps, list):
-            steps = [steps]
-        for x in steps:
-            if x not in self.problem.steps:
-                print("WARNING: step {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
-                    x, self.problem_name))
-            else:
-                self._steps.append(x)
+    # @steps.setter
+    # def steps(self, steps):
+    #     if not isinstance(steps, list):
+    #         steps = [steps]
+    #     for x in steps:
+    #         if x not in self.problem.steps:
+    #             print("WARNING: step {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
+    #                 x, self.problem_name))
+    #         else:
+    #             self._steps.append(x)
 
     @property
     def sets(self):

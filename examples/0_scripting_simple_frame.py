@@ -13,6 +13,8 @@ from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 
+from compas_fea2.backends.abaqus import Results
+
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
 model = Model(name='structural_model')
@@ -35,8 +37,8 @@ model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
 model.add_material(ElasticIsotropic(name='mat_B', E=25000, v=0.17, p=2.5e-9))
 
 # Define sections
-model.add_section(BoxSection(name='section_A', material='mat_A', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
-model.add_section(BoxSection(name='section_B', material='mat_B', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
+model.add_section(BoxSection(name='section_A', material='mat_A', a=20, b=80, t=5))
+model.add_section(BoxSection(name='section_B', material='mat_B', a=20, b=80, t=5))
 
 # Generate elements between nodes
 elements = []
@@ -57,7 +59,7 @@ problem = Problem(name='test_structure', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
-                        FixedDisplacement(name='bc_fix', bset='fixed')])
+                     FixedDisplacement(name='bc_fix', bset='fixed')])
 
 # Assign a point load to the node set
 problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
@@ -70,5 +72,8 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
 problem.summary()
+problem.analyse()
 
-
+##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+results = Results.from_problem(problem, fields=['u'])
+print(results.nodal)

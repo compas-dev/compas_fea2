@@ -57,8 +57,6 @@ class ProblemBase(object):
         self.field_outputs = {}
         self.history_outputs = {}
 
-        self.results = {}  # Results(self.name, self.path)
-
     def __str__(self):
         data = [self.bcs,
                 self.loads,

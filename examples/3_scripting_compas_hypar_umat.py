@@ -36,7 +36,7 @@ umat_path = 'C:/umat/'
 model.add_material(UserMaterial(name='umat', sub_path=umat_path, p=10, v=30, E=20))
 
 # Define sections
-model.add_section(BoxSection(name='section_A', material='umat', a=20, b=80, t1=5, t2=5, t3=5, t4=5))
+model.add_section(BoxSection(name='section_A', material='umat', a=20, b=80, t=5))
 
 # Generate elements between nodes
 key_index = mesh.key_index()
@@ -50,9 +50,9 @@ for e in edges:
     # add element to the model
     model.add_element(BeamElement(connectivity=[e[0], e[1]], section='section_A', orientation=v), part='part-1')
 
-n_fixed = model.get_node_from_coordinates([5000, 0, 0,], 10)
-n_roller = model.get_node_from_coordinates([0, 3000, 0,], 10)
-n_load  = model.get_node_from_coordinates([0, 0, -5000], 10)
+n_fixed = model.get_node_from_coordinates([5000, 0, 0, ], 10)
+n_roller = model.get_node_from_coordinates([0, 3000, 0, ], 10)
+n_load = model.get_node_from_coordinates([0, 0, -5000], 10)
 
 # Define sets for boundary conditions and loads
 model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
@@ -67,7 +67,7 @@ problem = Problem(name='compas_test', model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
-                        FixedDisplacement(name='bc_fix', bset='fixed')])
+                     FixedDisplacement(name='bc_fix', bset='fixed')])
 
 # Assign a point load to the node set
 problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))

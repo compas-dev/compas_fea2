@@ -8,6 +8,7 @@ from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import RollerDisplacementXZ
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import GeneralStaticStep
+from compas_fea2.backends.abaqus import Results
 
 from compas_fea2.postprocessor.stresses import principal_stresses
 
@@ -120,11 +121,11 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 problem.summary()
 
 # Solve the problem
-problem.analyse(path=TEMP + '/cantilever_gmsh')
-problem.extract(fields=['s'])
+problem.analyse(path='C:/temp/')
 
-data = problem.results['gstep']['element']
-spr, e = principal_stresses(data)
+##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+results = Results.from_problem(problem, fields=['u', 's'])
+spr, e = principal_stresses(results.element['gstep'])
 
 sp = 'sp5'
 stype = 'max'

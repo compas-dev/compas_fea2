@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import os
 import pickle
-import sys
-import json
 
 from time import time
 from subprocess import Popen
@@ -20,9 +18,9 @@ from compas_fea2.backends.abaqus.job import odb_extract
 
 class Results(ResultsBase):
 
-    def __init__(self, problem, fields, steps='all', sets=None, output=True,
+    def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True,
                  components=None, exe=None, license='research',):
-        super(Results, self).__init__(problem, fields, steps, sets, components, output)
+        super(Results, self).__init__(database_name, database_path, fields, steps, sets, components, output)
         self.exe = exe
         self.license = license
 
@@ -31,9 +29,9 @@ class Results(ResultsBase):
     # ==========================================================================
 
     @classmethod
-    def from_problem(cls, problem, fields, steps='all', sets=None, output=True, components=None,
+    def from_problem(cls, problem, fields='all', steps='all', sets=None, output=True, components=None,
                      exe=None, license='research'):
-        results = cls(problem, fields, steps, sets, output, components, exe, license)
+        results = cls(problem.name, problem.path, fields, steps, sets, output, components, exe, license)
         results.extract_data()
         return results
 
@@ -73,10 +71,9 @@ class Results(ResultsBase):
         subprocess = 'noGUI={0}'.format(odb_extract.__file__.replace('\\', '/'))
 
         if not self.exe:
-            args = ['abaqus', 'cae', subprocess, '--', components, fields, self.problem_name, temp]
+            args = ['abaqus', 'cae', subprocess, '--', components, fields, self.database_name, temp]
             p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
             while True:
-                # TODO decode line
                 line = p.stdout.readline()
                 if not line:
                     break
@@ -90,7 +87,7 @@ class Results(ResultsBase):
         else:
             os.chdir(temp)
             os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
-                                                         components, fields, self.problem_name, temp))
+                                                         components, fields, self.database_name, temp))
 
         toc1 = time() - tic1
         if self.output:
@@ -99,24 +96,23 @@ class Results(ResultsBase):
         # Save results back into the Results object
         tic2 = time()
 
-        with open(os.path.join(temp, '{}-results.pkl'.format(self.problem_name)), 'rb') as f:
-            results = pickle.load(f)
-        for step in results:
-            for dtype in results[step]:
-                if dtype in ['nodal', 'element']:
-                    for field in results[step][dtype]:
-                        data = {}
-                        for key in results[step][dtype][field]:
-                            data[int(key)] = results[step][dtype][field][key]
-                        results[step][dtype][field] = data
-
-            self._nodal[step] = results[step]['nodal']
-            self._element[step] = results[step]['element']
-
-        with open(os.path.join(temp, '{}-info.pkl'.format(self.problem_name)), 'rb') as f:
-            info = pickle.load(f)
-        for step in info:
-            self._info[step] = info[step]
+        for result_type in ['results', 'info']:
+            file = os.path.join(temp, '{}-{}.pkl'.format(self.database_name, result_type))
+            with open(file, 'rb') as f:
+                results = pickle.load(f)
+            if result_type == 'results':
+                for step in results:
+                    for dtype in results[step]:
+                        if not hasattr(self, dtype):
+                            self.__setattr__(dtype, {})
+                        self.__getattribute__(dtype)[step] = {field: {int(
+                            k): v for k, v in results[step][dtype][field].items()} for field in results[step][dtype]}
+            else:
+                if not hasattr(self, result_type):
+                    self.__setattr__(result_type, {})
+                for step in results:
+                    self.__getattribute__(result_type)[step] = results[step]
+            os.remove(file)
 
         toc2 = time() - tic2
 

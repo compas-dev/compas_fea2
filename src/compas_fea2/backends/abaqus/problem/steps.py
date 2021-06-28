@@ -44,7 +44,7 @@ class GeneralStaticStep(GeneralCaseBase):
 
     def _generate_data(self, problem):
         """generate the data for the input file. Since the `Problem` object is required,
-        the data is generated before just before writing the input file.
+        the data is generated just before writing the input file.
         """
         section_data = []
         line = ("** ----------------------------------------------------------------\n"

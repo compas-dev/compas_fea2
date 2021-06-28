@@ -12,7 +12,7 @@ from pathlib import Path
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-class ResultsBase(FEABase):
+class ResultsBase():
     """`compas_fea2` ResultsBase object. This ensures that the results from all
     the backends are consistent.
 
@@ -31,7 +31,7 @@ class ResultsBase(FEABase):
     def __init__(self, database_name, database_path, fields, steps, sets, components, output):
         self.database_name = database_name
         self.database_path = database_path
-        self.temp_dump = Path(self.database_path).joinpath(self.database_name + '-results')
+        self.temp_dump = Path(self.database_path).joinpath(self.database_name + '.cfr')
         self._fields = fields
         self._steps = steps
         self._sets = sets
@@ -140,9 +140,6 @@ class ResultsBase(FEABase):
         if elements == 'all':
             keys = list(self.elements.keys())
 
-        # elif isinstance(elements, str):              TODO: transfor to 'collection'
-        #     keys = self.sets[elements].selection
-
         else:
             keys = elements
 
@@ -155,12 +152,13 @@ class ResultsBase(FEABase):
     # Serialization
     # ==========================================================================
 
-    def serialize(self):
-        with open(self.temp_dump+'.pkl', 'wb') as f:
+    def save_cfr(self):
+        with open(self.temp_dump, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        print("***** .cfr file successfully saved! *****")
 
-    @classmethod
-    def deserialize(cls, path):
+    @ classmethod
+    def load_cfr(cls, path):
         with open(path, 'rb') as f:
             cls = pickle.load(f)
         return cls
@@ -168,9 +166,7 @@ class ResultsBase(FEABase):
     # ==========================================================================
     # Save results
     # ==========================================================================
-    def save_to_json(self, path=None):
-        if not path:
-            path = self.temp_dump+'.json'
+    def save_to_json(self, path):
         with open(path, 'w') as f:
             json.dump(self, f)
 
@@ -199,11 +195,9 @@ class CaseResultsBase(FEABase):
         self.modal = {}
 
     def serialize(self):
-        with open(self.temp_dump+'.pkl', 'wb') as f:
+        with open(self.temp_dump, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     def save_to_json(self, path=None):
-        if not path:
-            path = self.temp_dump+'.json'
         with open(path, 'w') as f:
             json.dump(self, f)

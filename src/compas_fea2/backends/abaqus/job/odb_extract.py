@@ -46,28 +46,28 @@ node_fields = ['rf', 'rm', 'u', 'ur', 'cf', 'cm']
 element_fields = ['sf', 'sm', 'sk', 'se', 's', 'e', 'pe', 'ctf', 'rbfor']
 
 
-def extract_odb_data(temp, name, fields, components, steps='all'):
+def extract_odb_data(database_path, database_name, fields=None, components=None, steps=None):
     """Extracts data from the .odb file for the requested steps and fields.
 
     Parameters
     ----------
-    temp : str
+    database_path : str
         Folder path containing the analysis .odb file.
-    name : str
-        Name of the Structure object.
+    database_name : str
+        Name of the database.
     fields : list
         Data field requests.
     components : list
         Specific components to extract from the fields data.
     steps : list, str
-        Step names to extract data for, or 'all' for all steps.
+        Step names to extract data for, by default all steps.
 
     Returns
     -------
     None
 
     """
-    odb = openOdb(path='{0}{1}.odb'.format(temp, name))
+    odb = openOdb(os.path.join(database_path, '{}.odb'.format(database_name)))
 
     if not components:
         components = set()
@@ -79,7 +79,7 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
     results = {}
     info = {}
 
-    if steps == 'all':
+    if not steps:
         steps = odb.steps.keys()
 
     for step in steps:
@@ -286,10 +286,10 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
                     except:
                         pass
 
-    with open(os.path.join(temp, '{}-results.pkl'.format(name)), 'wb') as f:
+    with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
 
-    with open(os.path.join(temp, '{}-info.pkl'.format(name)), 'wb') as f:
+    with open(os.path.join(database_path, '{}-info.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(info, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -299,9 +299,11 @@ def extract_odb_data(temp, name, fields, components, steps='all'):
 
 if __name__ == "__main__":
 
-    temp = sys.argv[-1]
-    name = sys.argv[-2]
+    database_path = sys.argv[-1]
+    database_name = sys.argv[-2]
     fields = sys.argv[-3].split(',')
     components = None if sys.argv[-4] == 'None' else sys.argv[-4].split(',')
+    steps = None if sys.argv[-5] == 'None' else sys.argv[-5].split(',')
 
-    extract_odb_data(temp=temp, name=name, fields=fields, components=components)
+    extract_odb_data(database_path=database_path, database_name=database_name,
+                     steps=steps, fields=fields, components=components)

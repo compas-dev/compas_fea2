@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os
 import pickle
-
+from pathlib import Path
 from time import time
 from subprocess import Popen
 from subprocess import PIPE
@@ -29,7 +29,7 @@ class Results(ResultsBase):
     # ==========================================================================
 
     @classmethod
-    def from_problem(cls, problem, fields='all', steps='all', sets=None, output=True, components=None,
+    def from_problem(cls, problem, fields='all', steps=None, sets=None, components=None, output=True,
                      exe=None, license='research'):
         results = cls(problem.name, problem.path, fields, steps, sets, output, components, exe, license)
         results.extract_data()
@@ -60,19 +60,18 @@ class Results(ResultsBase):
         None
 
         """
-
-        temp = str(self.database_path)+'/'
-        fields = ','.join(self.fields)
-        components = ','.join(self.components) if self.components else 'None'
-
         # TODO create a timer decorator
         tic1 = time()
 
-        subprocess = 'noGUI={0}'.format(odb_extract.__file__.replace('\\', '/'))
+        odb_args = []
+        for arg in [self.steps, self.components, self.fields]:
+            odb_args.append(','.join(arg if isinstance(arg, list) else [arg]) if arg else 'None')
+
+        subprocess = 'noGUI={0}'.format(Path(odb_extract.__file__))
 
         if not self.exe:
-            args = ['abaqus', 'cae', subprocess, '--', components, fields, self.database_name, temp]
-            p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=temp, shell=True)
+            args = ['abaqus', 'cae', subprocess, '--', *odb_args, self.database_name, self.database_path]
+            p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=self.database_path, shell=True)
             while True:
                 line = p.stdout.readline()
                 if not line:
@@ -85,9 +84,10 @@ class Results(ResultsBase):
                 print(stdout.decode())
                 print(stderr.decode())
         else:
-            os.chdir(temp)
+            raise NotImplementedError
+            os.chdir(self.database_path)
             os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
-                                                         components, fields, self.database_name, temp))
+                                                         odb_args, self.database_name, self.database_path))
 
         toc1 = time() - tic1
         if self.output:
@@ -95,9 +95,8 @@ class Results(ResultsBase):
 
         # Save results back into the Results object
         tic2 = time()
-
         for result_type in ['results', 'info']:
-            file = os.path.join(temp, '{}-{}.pkl'.format(self.database_name, result_type))
+            file = Path(self.database_path).joinpath('{}-{}.pkl'.format(self.database_name, result_type))
             with open(file, 'rb') as f:
                 results = pickle.load(f)
             if result_type == 'results':
@@ -113,7 +112,6 @@ class Results(ResultsBase):
                 for step in results:
                     self.__getattribute__(result_type)[step] = results[step]
             os.remove(file)
-
         toc2 = time() - tic2
 
         if self.output:

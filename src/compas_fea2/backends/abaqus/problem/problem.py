@@ -121,7 +121,7 @@ class Problem(ProblemBase):
         None
 
         """
-        self.path = Path(path)
+        self.path = path if isinstance(path, Path) else Path(path)
         if not self.path.exists():
             self.path.mkdir()
 
@@ -150,7 +150,7 @@ class Problem(ProblemBase):
         None
 
         """
-        self.path = Path(path)
+        self.path = path if isinstance(path, Path) else Path(path)
         if not self.path.exists():
             self.path.mkdir()
 

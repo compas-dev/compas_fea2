@@ -11,6 +11,7 @@ __all__ = [
     'PartBase',
 ]
 
+
 class PartBase():
     """Base Part object.
 
@@ -54,20 +55,21 @@ class PartBase():
     """
 
     def __init__(self, name):
-        self.__name__                   = 'Part'
-        self.name                       = name
-        self.nodes                      = [] #self._sort(nodes)
-        self.elements                   = [] #self._sort(elements)
-        self.nsets                      = []
-        self.elsets                     = []
-        self.nodes_gkeys                = []
-        self.sections                   = {}
+        self.__name__ = 'Part'
+        self.name = name
+        self.nodes = []  # self._sort(nodes)
+        self.elements = []  # self._sort(elements)
+        self.nsets = []
+        self.elsets = []
+        self.nodes_gkeys = []
+        self.sections = {}
+        self.releases = []
 
-        self.elements_by_type           = {}
-        self.elements_by_section        = {}
-        self.orientations_by_section    = {}
-        self.elements_by_elset          = {}
-        self.elsets_by_section          = {}
+        self.elements_by_type = {}
+        self.elements_by_section = {}
+        self.orientations_by_section = {}
+        self.elements_by_elset = {}
+        self.elsets_by_section = {}
         # self.elements_by_material   = {}
 
     def __str__(self):
@@ -223,7 +225,7 @@ class PartBase():
         for gkey in self.nodes_gkeys:
             if gkey == node.gkey:
                 indices.append(index)
-            index +=1
+            index += 1
         return indices
 
     def find_duplicate_nodes(self):
@@ -244,7 +246,7 @@ class PartBase():
         duplicates = dict()
         for node in self.nodes:
             indices = self.check_node_in_part(node)
-            if len(indices)>=2:
+            if len(indices) >= 2:
                 if not node.gkey in duplicates:
                     duplicates[node.gkey] = node.key
         return duplicates
@@ -293,14 +295,14 @@ class PartBase():
         None
         """
 
-
         if check and self.check_element_in_part(element):
             print('WARNING: duplicate element connecting {} skipped!'.format(element.connectivity_key))
         else:
             element.key = len(self.elements)
             for c in element.connectivity:
                 if c > len(self.nodes)-1:
-                    raise ValueError('ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
+                    raise ValueError(
+                        'ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
             self.elements.append(element)
 
             # add the element key to its type group
@@ -320,14 +322,11 @@ class PartBase():
                 if element.orientation not in self.orientations_by_section[element.section]:
                     self.orientations_by_section[element.section].append(element.orientation)
 
-
             else:
                 if None not in self.orientations_by_section[element.section]:
                     self.orientations_by_section[element.section].append(None)
             # else:
             #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
-
-
 
             # # add the element key to its material group
             # if element.section.material not in self.elements_by_material.keys():
@@ -336,7 +335,7 @@ class PartBase():
 
             # add the element key to its elset group
             if element.elset:
-            #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
+                #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
                 if element.elset not in self.elements_by_elset.keys():
 
                     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
@@ -375,7 +374,7 @@ class PartBase():
         -------
         None
         '''
-        #TODO check if element key exists
+        # TODO check if element key exists
         del self.elements[element_key]
         self._reorder_elements()
 
@@ -394,7 +393,6 @@ class PartBase():
 
         for element in elements:
             self.remove_node(element)
-
 
     def check_element_in_part(self, element):
         '''Checks if an element with the same connectivity already exists
@@ -448,7 +446,7 @@ class PartBase():
         None
         '''
 
-        el_dict={}
+        el_dict = {}
         for el in self.elements:
             el_dict[el.key] = (el.eltype, el.section, el.elset, el.orientation)
 
@@ -480,6 +478,17 @@ class PartBase():
         # for s in self.elsets:
         #     if not s:
         #         del self.elsets[s]
+
+    # =========================================================================
+    #                           Releases methods
+    # =========================================================================
+
+    def add_release(self, release):
+        self.releases.append(release)
+
+    def add_releases(self, releases):
+        for release in releases:
+            self.add_release(release)
 
     # =========================================================================
     #                           Materials methods

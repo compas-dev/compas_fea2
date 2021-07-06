@@ -50,6 +50,7 @@ class ModelBase():
         self.parts = {}
         self.surfaces = []
         self.constraints = []
+        self.releases = []
         self.interactions = []
         self.materials = {}
         self.sections = {}
@@ -487,6 +488,48 @@ class ModelBase():
 
         for element in elements:
             self.remove_node(element, part)
+
+    # =========================================================================
+    #                           Releases methods
+    # =========================================================================
+
+    def add_release(self, release, part):
+        '''Add an Element End Release to the Model.
+
+        Parameters
+        ----------
+        release : obj
+            `EndRelase` object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+
+        if part in self.parts:
+            self.parts[part].add_release(release)
+        else:
+            raise ValueError('ERROR: part {} not found in the Model!'.format(part))
+        self.releases.append(release)
+
+    def add_releases(self, releases, part):
+        '''Add multiple Element End Release to the Model.
+
+        Parameters
+        ----------
+        release : list
+            list of `EndRelase` object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        '''
+        for release in releases:
+            self.add_release(release, part)
 
     # =========================================================================
     #                               Sets methods

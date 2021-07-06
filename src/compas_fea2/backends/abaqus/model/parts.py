@@ -14,6 +14,7 @@ __all__ = [
     'Part',
 ]
 
+
 class Part(PartBase):
     """Initialises a Part object.
 
@@ -85,10 +86,10 @@ class Part(PartBase):
 
         # Write sets
         for section in self.elements_by_section:
-            #TODO this part is messy and needs to be rewritten
+            # TODO this part is messy and needs to be rewritten
             # the main problem is that beam elements require orientations
             # while other elements (such shells) don't
-            o=1
+            o = 1
             for orientation in self.orientations_by_section[section]:
 
                 elements = []
@@ -98,34 +99,34 @@ class Part(PartBase):
                     elif not hasattr(self.elements[element], 'orientation'):
                         elements.append(element)
                 self.add_element_set(Set('_{}-{}'.format(section, o), elements, 'elset'))
-                o+=1
+                o += 1
 
         for elset in self.elsets:
             part_data.append(elset._generate_data())
 
         # Write sections
         for section in self.sections.values():
-            o=1
+            o = 1
             for orientation in self.orientations_by_section[section.name]:
                 if orientation:
                     part_data.append(section._generate_data('_{}-{}'.format(section.name, o), orientation))
-                    o+=1
+                    o += 1
                 else:
                     part_data.append(section._generate_data('_{}-{}'.format(section.name, o)))
+
+        # Write releases
+        part_data.append('\n*Release\n')
+        for release in self.releases:
+            part_data.append(release._generate_data())
 
         temp = ''.join(part_data)
         return ''.join(["*Part, name={}\n".format(self.name), temp,
                         "*End Part\n**\n"])
 
 
-
-
-
-
 # =============================================================================
 #                               Debugging
 # =============================================================================
-
 if __name__ == "__main__":
 
     from compas_fea2.backends.abaqus import Node
@@ -148,7 +149,6 @@ if __name__ == "__main__":
         part1.add_node(Node([x, y, 0.0]))
     for y in range(400, 0, -100):
         part1.add_node(Node([x, y, 0.0]))
-
 
     # Define materials
     mat1 = ElasticIsotropic(name='mat1', E=29000, v=0.17, p=2.5e-9)
@@ -173,4 +173,3 @@ if __name__ == "__main__":
     # print(my_part.check_for_duplicate_nodes())
 
     # # print(type(my_part.elements_by_section[section_A]))
-

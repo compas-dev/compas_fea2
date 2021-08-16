@@ -2,11 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from  compas_fea2.backends._base.model import InstanceBase
+from compas_fea2.backends._base.model import InstanceBase
 
 __all__ = [
     'Instance',
 ]
+
+# FIXME this does not make much sense: why the iset are called like that?
 
 
 class Instance(InstanceBase):
@@ -31,7 +33,9 @@ class Instance(InstanceBase):
             iset.data = iset._generate_data()
 
     def _generate_data(self):
-        return """*Instance, name={}, part={}\n*End Instance\n**\n""".format(self.name, self.part.name)
+        section_data = ['*Instance, name={}, part={}\n'.format(self.name, self.part.name)]
+        section_data.append('*End Instance\n**\n')
+        return ''.join(section_data)
 
 
 # =============================================================================

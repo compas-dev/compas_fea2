@@ -537,12 +537,12 @@ class ModelBase():
     def add_part_node_set(self, part, nset):
         raise NotImplementedError()
 
-    def add_assembly_set(self, set, instance):
-        '''Adds a Set object to the Model.
+    def add_instance_set(self, iset, instance):
+        '''Adds a Set object to the Model at the instance level.
 
         Parameters
         ----------
-        set : obj
+        iset : obj
             node set object.
         instance : str
             Name of the instance where the set belongs to.
@@ -553,11 +553,27 @@ class ModelBase():
         '''
         if instance not in self.instances:
             raise ValueError('ERROR: instance {} not found in the Model!'.format(instance))
-        set.instance = instance
-        self.instances[instance].sets.append(set)
+        iset.instance = instance
 
-        self.sets[set.name] = set
+        self.instances[instance].sets.append(iset)
+        self.sets[iset.name] = iset
 
+    # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
+    # are applied to part level sets. Since in FEA2 there is no distinction,
+    # this must be taken into account from the `add_set` method
+    # def add_set(self, set):
+    #     '''Adds a Set object to the Model.
+
+    #     Parameters
+    #     ----------
+    #     set : obj
+    #         node set object.
+
+    #     Returns
+    #     -------
+    #     None
+    #     '''
+    #     self.sets[set.name] = set
     # =========================================================================
     #                           Materials methods
     # =========================================================================
@@ -639,18 +655,6 @@ class ModelBase():
 
     def add_constraint(self, constraint):
         self.constraints.append(constraint)
-
-    def add_instance_set(self, iset, instance):
-        """ Adds a set to a previously defined Instance.
-
-        Parameters
-        ----------
-        part : obj
-            Part object from which the Instance is created.
-        transformation : matrix
-            Trasformation matrix to apply to the Part before creating the Instance.
-        """
-        self.instances[instance].sets.append(iset)
 
     # =========================================================================
     #                        Interaction methods

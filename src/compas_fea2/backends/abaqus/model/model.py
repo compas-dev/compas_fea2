@@ -47,18 +47,17 @@ class Model(ModelBase):
         self._backend = 'abaqus'
 
     def _generate_data(self):
-        line = '*Assembly, name={}\n**\n'.format(self.name)
-        section_data = [line]
+        section_data = ['*Assembly, name={}\n**\n'.format(self.name)]
         for instance in self.instances.values():
             section_data.append(instance._generate_data())
-            for iset in instance.sets:
-                section_data.append(iset._generate_data())
         # for surface in self.surfaces:
         #     section_data.append(surface.data)
         # for constraint in self.constraints:
         #     section_data.append(constraint.data)
-        line = '*End Assembly\n**'
-        section_data.append(line)
+        section_data.append('*End Assembly\n**\n')
+
+        for iset in self.sets.values():
+            section_data.append(iset._generate_data())
         return ''.join(section_data)
 
 

@@ -115,9 +115,10 @@ class Part(PartBase):
                     part_data.append(section._generate_data('_{}-{}'.format(section.name, o)))
 
         # Write releases
-        part_data.append('\n*Release\n')
-        for release in self.releases:
-            part_data.append(release._generate_data())
+        if self.releases:
+            part_data.append('\n*Release\n')
+            for release in self.releases:
+                part_data.append(release._generate_data())
 
         temp = ''.join(part_data)
         return ''.join(["*Part, name={}\n".format(self.name), temp,

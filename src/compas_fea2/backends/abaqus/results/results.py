@@ -11,7 +11,7 @@ from subprocess import PIPE
 
 from compas_fea2.backends._base.results import ResultsBase
 from compas_fea2.backends._base.results import CaseResultsBase
-from compas_fea2.backends.abaqus.job import odb_extract
+from compas_fea2.backends.abaqus.results import odb_extract
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -23,17 +23,6 @@ class Results(ResultsBase):
         super(Results, self).__init__(database_name, database_path, fields, steps, sets, components, output)
         self.exe = exe
         self.license = license
-
-    # ==========================================================================
-    # Constructors
-    # ==========================================================================
-
-    @classmethod
-    def from_problem(cls, problem, fields='all', steps=None, sets=None, components=None, output=True,
-                     exe=None, license='research'):
-        results = cls(problem.name, problem.path, fields, steps, sets, output, components, exe, license)
-        results.extract_data()
-        return results
 
      # ==========================================================================
     # Extract results
@@ -50,8 +39,6 @@ class Results(ResultsBase):
             Abaqus exe path to bypass defaults.
         output : bool
             Print terminal output.
-        return_data : bool
-            Return data back into structure.results.
         components : list
             Specific components to extract from the fields data.
 
@@ -84,7 +71,7 @@ class Results(ResultsBase):
                 print(stdout.decode())
                 print(stderr.decode())
         else:
-            raise NotImplementedError
+            raise NotImplementedError("custom abaqus.exe location not implemented")
             os.chdir(self.database_path)
             os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
                                                          odb_args, self.database_name, self.database_path))

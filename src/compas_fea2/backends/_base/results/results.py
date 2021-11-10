@@ -77,6 +77,17 @@ class ResultsBase():
         return self._components
 
     # ==========================================================================
+    # Constructors
+    # ==========================================================================
+
+    @classmethod
+    def from_problem(cls, problem, fields='all', steps=None, sets=None, components=None, output=True,
+                     exe=None, license='research'):
+        results = cls(problem.name, problem.path, fields, steps, sets, output, components, exe, license)
+        results.extract_data()
+        return results
+
+    # ==========================================================================
     # Extract results
     # ==========================================================================
 

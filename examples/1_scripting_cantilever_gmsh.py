@@ -106,6 +106,8 @@ model.add_instance_set(Set(name='pload', selection=[n_load['part-1']], stype='ns
 model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
+folder = 'C:/temp/'
+name = 'principal_stresses'
 
 # Create the Problem object
 problem = Problem(name='cantilever_gmsh', model=model)
@@ -125,11 +127,11 @@ problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 problem.summary()
 # Solve the problem
-problem.analyse()
+problem.analyse(path=folder)
 # print(os.path.join(problem.path, '{}-results.pkl'.format(problem.name)))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'], output=True)
+results = Results.from_problem(problem, fields=['s'], output=True)
 spr, e = principal_stresses(results.element['gstep'])
 
 sp = 'sp5'

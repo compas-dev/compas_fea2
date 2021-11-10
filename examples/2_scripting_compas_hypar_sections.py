@@ -1,3 +1,6 @@
+from pathlib import Path
+from pprint import pprint
+
 from compas.datastructures import Mesh
 from compas.geometry import normalize_vector
 
@@ -77,9 +80,8 @@ problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 # Solve the problem
-# problem.write_input_file(path='C:/temp/test_structure')
-problem.analyse(path=TEMP + '/hypar_frame_sections')
+problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-print(results.nodal)
+results = Results.from_problem(problem, fields=['u', 's'])
+pprint(results.nodal)

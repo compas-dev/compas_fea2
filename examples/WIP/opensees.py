@@ -1,19 +1,19 @@
-from compas_fea2.backends.abaqus import Model
-from compas_fea2.backends.abaqus import Part
-from compas_fea2.backends.abaqus import Node
-from compas_fea2.backends.abaqus import ElasticIsotropic
-from compas_fea2.backends.abaqus import BoxSection
-from compas_fea2.backends.abaqus import BeamElement
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.opensees import Model
+from compas_fea2.backends.opensees import Part
+from compas_fea2.backends.opensees import Node
+from compas_fea2.backends.opensees import ElasticIsotropic
+from compas_fea2.backends.opensees import BoxSection
+from compas_fea2.backends.opensees import BeamElement
+from compas_fea2.backends.opensees import Set
 
-from compas_fea2.backends.abaqus import Problem
-from compas_fea2.backends.abaqus import FixedDisplacement
-from compas_fea2.backends.abaqus import RollerDisplacementXZ
-from compas_fea2.backends.abaqus import PointLoad
-from compas_fea2.backends.abaqus import FieldOutput
-from compas_fea2.backends.abaqus import GeneralStaticStep
+from compas_fea2.backends.opensees import Problem
+from compas_fea2.backends.opensees import FixedDisplacement
+from compas_fea2.backends.opensees import RollerDisplacementXZ
+from compas_fea2.backends.opensees import PointLoad
+from compas_fea2.backends.opensees import FieldOutput
+from compas_fea2.backends.opensees import GeneralStaticStep
 
-from compas_fea2.backends.abaqus import Results
+from compas_fea2.backends.opensees import Results
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object

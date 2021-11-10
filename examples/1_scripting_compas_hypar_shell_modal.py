@@ -1,3 +1,6 @@
+from pathlib import Path
+from pprint import pprint
+
 from compas.datastructures import Mesh
 
 from compas_fea2.backends.abaqus.model import Model
@@ -62,9 +65,8 @@ problem.add_step(step=ModalStep(name='modal', modes=3))
 problem.summary()
 
 # Solve the problem
-problem.analyse(path=TEMP+'/hypar_shell')
+problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem, fields=['u', 's'])
-
-print(list(results.nodal['modal'].keys()))
+pprint(results.nodal['modal'])

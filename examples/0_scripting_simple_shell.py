@@ -12,6 +12,7 @@ from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 from compas_fea2.backends.abaqus import Results
+from compas_fea2.backends.abaqus.problem import outputs
 
 from compas_fea2.postprocessor.stresses import principal_stresses
 
@@ -111,7 +112,7 @@ folder = 'C:/temp/'
 name = 'principal_stresses'
 
 # Create the Problem object
-problem = Problem(name='principal_stresses', model=model)
+problem = Problem(name=name, model=model)
 
 # Assign boundary conditions to the node stes
 problem.add_bcs(bcs=[PinnedDisplacement(name='bc_roller', bset='pinned')])
@@ -130,7 +131,7 @@ problem.summary()
 problem.analyse(path=folder)
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['s'])
+results = Results.from_problem(problem, fields=['s'], output=True)
 spr, e = principal_stresses(results.element['gstep'])
 
 sp = 'sp5'

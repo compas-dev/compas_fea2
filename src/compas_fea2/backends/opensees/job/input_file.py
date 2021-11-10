@@ -34,7 +34,21 @@ class InputFile(InputFileBase):
         super(InputFile, self).__init__(problem)
         self._input_file_type = "Input File"
         self.name = '{}.tcl'.format(problem.name)
-        self.data = self._generate_data(problem)
+        self._jobdata = self._generate_data(problem)
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     # ==============================================================================
     # Constructor methods
@@ -171,7 +185,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for material in problem.model.materials.values():
-            section_data.append(material.data)
+            section_data.append(material.jobdata)
         return ''.join(section_data)
 
     def _generate_int_props_section(self, problem):

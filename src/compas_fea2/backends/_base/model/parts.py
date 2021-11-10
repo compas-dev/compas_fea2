@@ -5,6 +5,8 @@ from __future__ import print_function
 import sys
 import importlib
 
+from compas_fea2.backends._base.base import FEABase
+
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -12,7 +14,7 @@ __all__ = [
 ]
 
 
-class PartBase():
+class PartBase(FEABase):
     """Base Part object.
 
     Parameters
@@ -71,16 +73,6 @@ class PartBase():
         self.elements_by_elset = {}
         self.elsets_by_section = {}
         # self.elements_by_material   = {}
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in ['name']:
-            l.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
-        l.append('{0:<15} : {1}'.format('# of nodes', len(self.nodes)))
-        l.append('{0:<15} : {1}'.format('# of elements', len(self.elements)))
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
     def __repr__(self):
 

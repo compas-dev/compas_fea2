@@ -55,7 +55,21 @@ class PointLoad(PointLoadBase):
         else:
             self.follow = ''
 
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -78,11 +92,13 @@ class LineLoad(LineLoadBase):
         super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
         raise NotImplementedError
 
+
 class AreaLoad(AreaLoadBase):
 
     def __init__(self, name, elements, x, y, z, axes):
         super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
         raise NotImplementedError
+
 
 class GravityLoad(GravityLoadBase):
 
@@ -103,11 +119,13 @@ class ThermalLoad(ThermalLoadBase):
         super(ThermalLoad, self).__init__(name, elements, temperature)
         raise NotImplementedError
 
+
 class TributaryLoad(TributaryLoadBase):
 
     def __init__(self, structure, name, mesh, x, y, z, axes):
         super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
         raise NotImplementedError
+
 
 class HarmoniPointLoadBase(HarmonicPointLoadBase):
 
@@ -115,10 +133,12 @@ class HarmoniPointLoadBase(HarmonicPointLoadBase):
         super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
         raise NotImplementedError
 
+
 class HarmonicPressureLoad(HarmonicPressureLoadBase):
     def __init__(self, name, elements, pressure, phase):
         super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
         raise NotImplementedError
+
 
 class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
     def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):

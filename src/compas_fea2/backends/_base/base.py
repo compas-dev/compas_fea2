@@ -48,7 +48,16 @@ class FEABase(Base):
         >>> p
         None
         """
-        raise NotImplementedError
+        title = 'compas_fea2 {0} object'.format(self.__name__)
+        separator = '-' * (len(title))
+        data_extended = []
+        for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_'), dir(self))):
+            try:
+                if not callable(getattr(self, a)):
+                    data_extended.append('{0:<15} : {1}'.format(a, getattr(self, a)))
+            except:
+                pass
+        return """\n{}\n{}\n{}\n""".format(title, separator, '\n'.join(data_extended))
 
     def __repr__(self):
         """Code representation of object.

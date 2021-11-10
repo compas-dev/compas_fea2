@@ -7,6 +7,8 @@ import sys
 import pickle
 from pathlib import Path
 
+from compas_fea2.backends._base.base import FEABase
+
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -14,7 +16,7 @@ __all__ = [
 ]
 
 
-class ProblemBase(object):
+class ProblemBase(FEABase):
     """Initialises the Problem object.
 
     Parameters
@@ -56,52 +58,6 @@ class ProblemBase(object):
         self.steps_order = []
         self.field_outputs = {}
         self.history_outputs = {}
-
-    def __str__(self):
-        data = [self.bcs,
-                self.loads,
-                # self.steps,
-                # self.steps_order,
-                self.field_outputs,
-                self.history_outputs]
-        d = []
-        for entry in data:
-            if entry:
-                d.append('\n'.join(['  {0} : {1}'.format(
-                    i, j.__name__) for i, j in entry.items()]))
-            else:
-                d.append('n/a')
-
-        return """
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea2 Problem: {}
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Boundary Conditions
--------------------
-{}
-
-Loads
------
-{}
-
-Steps
------
-{}
-
-Steps Order
------------
-{}
-
-Field Output Requests
----------------------
-{}
-
-History Output Requests
------------------------
-{}
-
-""".format(self.name, d[0], d[1], d[2], d[3], d[3], d[3])
 
     # =========================================================================
     #                           BCs methods
@@ -412,7 +368,50 @@ History Output Requests
         -------
         None
         """
-        print(self)
+        data = [self.bcs,
+                self.loads,
+                # self.steps,
+                # self.steps_order,
+                self.field_outputs,
+                self.history_outputs]
+        d = []
+        for entry in data:
+            if entry:
+                d.append('\n'.join(['  {0} : {1}'.format(
+                    i, j.__name__) for i, j in entry.items()]))
+            else:
+                d.append('n/a')
+
+        return """
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+compas_fea2 Problem: {}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Boundary Conditions
+-------------------
+{}
+
+Loads
+-----
+{}
+
+Steps
+-----
+{}
+
+Steps Order
+-----------
+{}
+
+Field Output Requests
+---------------------
+{}
+
+History Output Requests
+-----------------------
+{}
+
+""".format(self.name, d[0], d[1], d[2], d[3], d[3], d[3])
 
     # ==============================================================================
     # Save

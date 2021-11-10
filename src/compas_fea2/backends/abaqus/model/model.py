@@ -51,9 +51,9 @@ class Model(ModelBase):
         for instance in self.instances.values():
             section_data.append(instance._generate_data())
         # for surface in self.surfaces:
-        #     section_data.append(surface.data)
+        #     section_data.append(surface.jobdata)
         # for constraint in self.constraints:
-        #     section_data.append(constraint.data)
+        #     section_data.append(constraint.jobdata)
         section_data.append('*End Assembly\n**\n')
 
         for iset in self.sets.values():

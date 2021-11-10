@@ -34,7 +34,6 @@ __all__ = [
 ]
 
 
-
 # ==============================================================================
 # linear elastic
 # ==============================================================================
@@ -44,17 +43,32 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, unilateral=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
-        n=''
+        n = ''
         if self.unilateral:
             if self.unilateral == 'nc':
                 n = '\n*NO COMPRESSION'
             elif self.unilateral == 'nt':
                 n = '\n*NO TENSION'
             else:
-                raise Exception('keyword {} for unilateral parameter not recognised. Please review the documentation'.format(self.unilateral))
+                raise Exception(
+                    'keyword {} for unilateral parameter not recognised. Please review the documentation'.format(self.unilateral))
 
         return ("*Material, name={}\n"
                 "*Density\n"
@@ -67,7 +81,21 @@ class Stiff(StiffBase):
 
     def __init__(self, name, E):
         super(Stiff, self).__init__(name, E)
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         return ("*Material, name={}\n"
@@ -91,7 +119,21 @@ class ElasticPlastic(ElasticPlasticBase):
 
     def __init__(self, name, E, v, p, f, e):
         super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
-        self.data = self._generate_data()
+        self._data = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -117,7 +159,21 @@ class Steel(SteelBase):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
         super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -152,7 +208,21 @@ class Concrete(ConcreteBase):
 
     def __init__(self, name, fck, v, p, fr):
         super(Concrete, self).__init__(name, fck, v, p, fr)
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -185,7 +255,21 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
         super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -213,11 +297,26 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
         data_section.append(line)
         return '\n'.join(data_section)
 
+
 class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
         super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data_section = []
@@ -244,6 +343,7 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 # thermal
 # ==============================================================================
 
+
 class ThermalMaterial(ThermalMaterialBase):
     def __init__(self, name, conductivity, p, sheat):
         super(ThermalMaterial).__init__(name, conductivity, p, sheat)
@@ -268,15 +368,30 @@ class UserMaterial(MaterialBase):
     def __init__(self, name, sub_path, p=None, **kwargs):
         MaterialBase.__init__(self, name=name)
 
-        self.__name__    = 'UserMaterial'
+        self.__name__ = 'UserMaterial'
         self.__dict__.update(kwargs)
-        self.name        = name
-        self.sub_path    = sub_path #os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
-        self.p           = p
+        self.name = name
+        # os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
+        self.sub_path = sub_path
+        self.p = p
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
 
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def get_constants(self):
         constants = []
@@ -301,6 +416,6 @@ class UserMaterial(MaterialBase):
 if __name__ == "__main__":
 
     material = ElasticIsotropic(name='test', E=1, v=2, p=3)
-    plastic = ElasticPlastic('plastic', 1,2,3,[4,5],[6,7])
+    plastic = ElasticPlastic('plastic', 1, 2, 3, [4, 5], [6, 7])
     umat = UserMaterial(name='my_umat', sub_path='C:/', p=10, v=30, E=20)
-    print(umat.data)
+    print(umat.jobata)

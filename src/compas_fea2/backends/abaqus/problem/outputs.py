@@ -22,7 +22,21 @@ class FieldOutput():
         self.element_outputs = element_outputs
         self.frequency = frequency
 
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         data = ['** FIELD OUTPUT: {}\n**'.format(self.name)]
@@ -45,7 +59,21 @@ class HistoryOutput():
         # self.domain    = domain
         # self.frequency = frequency
         # self.variables = variables
-        self.data = """** HISTORY OUTPUT: {}
+        self._jobdata = """** HISTORY OUTPUT: {}
 **
 *Output, history, variable=PRESELECT
 **\n""".format(self.name)
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata

@@ -6,13 +6,14 @@ from __future__ import print_function
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
+from compas_fea2.backends._base.base import FEABase
 
 __all__ = [
     'BeamEndReleaseBase',
 ]
 
 
-class BeamEndReleaseBase(object):
+class BeamEndReleaseBase(FEABase):
     """Initialises base Constraint object.
 
     Parameters
@@ -28,12 +29,3 @@ class BeamEndReleaseBase(object):
 
     def __init__(self):
         self.__name__ = 'ReleaseObject'
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in self.attr_list:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))

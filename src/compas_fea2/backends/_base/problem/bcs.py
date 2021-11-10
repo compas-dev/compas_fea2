@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.base import FEABase
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
@@ -22,7 +23,7 @@ __all__ = [
 ]
 
 
-class GeneralDisplacementBase(object):
+class GeneralDisplacementBase(FEABase):
     """Initialises the base GeneralDisplacement object.
 
     Parameters
@@ -66,15 +67,6 @@ class GeneralDisplacementBase(object):
         self.components = {'x': x, 'y': y,
                            'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
         self.axes = axes
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in ['name', 'nodes', 'components', 'axes']:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
 
     def __repr__(self):
 

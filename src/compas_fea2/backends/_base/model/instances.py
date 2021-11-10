@@ -2,13 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.base import FEABase
 
 __all__ = [
     'InstanceBase',
 ]
 
 
-class InstanceBase():
+class InstanceBase(FEABase):
     """Initialises a base Instance object.
 
     Parameters
@@ -29,24 +30,12 @@ class InstanceBase():
         self.part = part
         self.sets = sets
 
-    def __str__(self):
-        print('\n')
-        print('compas_fea2 {0} object'.format(self.__name__))
-        print('-' * (len(self.__name__) + 18))
-
-        for attr in ['name']:
-            print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return ''
-
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.part.name)
-
 
 
 # =============================================================================
 #                               Debugging
 # =============================================================================
-
 if __name__ == "__main__":
     pass

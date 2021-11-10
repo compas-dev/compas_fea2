@@ -34,7 +34,21 @@ class InputFile(InputFileBase):
         super(InputFile, self).__init__(problem)
         self._input_file_type = "Input File"
         self.name = '{}.inp'.format(problem.name)
-        self.data = self._generate_data(problem)
+        self._jobdata = self._generate_data(problem)
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     # ==============================================================================
     # Constructor methods
@@ -140,7 +154,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for material in problem.model.materials.values():
-            section_data.append(material.data)
+            section_data.append(material.jobdata)
         return ''.join(section_data)
 
     def _generate_int_props_section(self, problem):
@@ -229,7 +243,21 @@ class ParFile(InputFileBase):
         self.vf = problem.vf
         self.iter_max = problem.iter_max
 
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     def _generate_data(self):
         """Generate the content of the parameter file from the optimisation

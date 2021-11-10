@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.base import FEABase
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -22,7 +23,7 @@ __all__ = [
 ]
 
 
-class ElementBase(object):
+class ElementBase(FEABase):
     """Initialises a base Element object.
 
     Parameters
@@ -54,16 +55,6 @@ class ElementBase(object):
         self.thermal = thermal
         self.etype = None
         self.axes = None
-
-    def __str__(self):
-
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        data = []
-        for attr in ['key', 'etype', 'connectivity']:
-            data.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.key)

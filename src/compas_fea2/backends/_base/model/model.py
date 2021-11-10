@@ -8,12 +8,14 @@ import pickle
 import os
 import importlib
 
+from compas_fea2.backends._base.base import FEABase
+
 __all__ = [
     'ModelBase',
 ]
 
 
-class ModelBase():
+class ModelBase(FEABase):
     """Initialises a base Model object.
 
     Parameters
@@ -55,20 +57,6 @@ class ModelBase():
         self.materials = {}
         self.sections = {}
         self.sets = {}
-        # self.materials      = self._get_materials()
-        # self.data           = self._generate_data()
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        data = []
-        for attr in ['name']:
-            data.append('{0:<15} : {1}'.format(attr, getattr(self, attr)))
-
-        data.append('{0:<15} : {1}'.format('# of parts', len(self.parts)))
-        data.append('{0:<15} : {1}'.format(
-            '# of instances', len(self.instances)))
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(data))
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -718,7 +706,24 @@ class ModelBase():
         -------
         None
         """
-        print(self)
+        data = """
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+compas_fea2 Model: {}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Parts
+-----
+{}
+
+Instances
+---------
+{}
+
+""".format(self.name,
+           '\n'.join([e for e in self.parts]),
+           '\n'.join([e for e in self.instances]))
+        print(data)
+        return data
 
     # ==============================================================================
     # Save model file

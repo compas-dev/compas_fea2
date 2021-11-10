@@ -111,7 +111,7 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
                 if 'um' in components:
                     refn['um' + str(counter)] = {}
                 for value in fieldoutputs['U'].values:
-                    data = value.data
+                    data = value.jobdata
                     node = value.nodeLabel - 1
                     for i, c in enumerate(clabels):
                         if convert[c] in components:

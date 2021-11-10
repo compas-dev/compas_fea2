@@ -25,7 +25,7 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, unilateral=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
-        # self.data = self._generate_data()
+        # self._jobdata = self._generate_data()
 
     def _generate_data(self, m_index):
         line = []

@@ -79,9 +79,9 @@ class GeneralStaticStep(GeneralCaseBase):
         section_data.append(line)
 
         for foutput in self.field_outputs:
-            section_data.append(problem.field_outputs[foutput].data)
+            section_data.append(problem.field_outputs[foutput].jobdata)
         for houtput in self.history_outputs:
-            section_data.append(problem.history_outputs[houtput].data)
+            section_data.append(problem.history_outputs[houtput].jobdata)
         section_data.append('*End Step\n')
 
         return ''.join(section_data)
@@ -119,13 +119,27 @@ class StaticLinearPertubationStep(LinearPerturbationCaseBase):
         self.attr_list.extend(['displacements', 'loads'])
         self.type = 'Static'
 
-        self.data = ("** ----------------------------------------------------------------\n"
-                     "**\n"
-                     "** STEP: {0}\n"
-                     "**\n"
-                     "* Step, name={0}, nlgeom={1}, perturbation\n"
-                     "*{2}\n"
-                     "**\n").format(self.name, self.nlgeom, self.stype)
+        self._jobdata = ("** ----------------------------------------------------------------\n"
+                         "**\n"
+                         "** STEP: {0}\n"
+                         "**\n"
+                         "* Step, name={0}, nlgeom={1}, perturbation\n"
+                         "*{2}\n"
+                         "**\n").format(self.name, self.nlgeom, self.stype)
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
 
 class BuckleStep(LinearPerturbationCaseBase):
@@ -153,7 +167,7 @@ class BuckleStep(LinearPerturbationCaseBase):
 #         self.attr_list.extend(['displacements', 'loads'])
 #         self.type = 'Buckle'
 
-#         self.data = """** ----------------------------------------------------------------
+#         self._jobdata = """** ----------------------------------------------------------------
 # **
 # ** STEP: {0}
 # **

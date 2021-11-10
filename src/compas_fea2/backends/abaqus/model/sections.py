@@ -380,4 +380,4 @@ if __name__ == "__main__":
     conc = Concrete('my_mat', 1, 2, 3, 4)
     solid = BoxSection('mysec', 100, 20, 1, 2, conc)
 
-    print(solid.data)
+    print(solid.jobdata)

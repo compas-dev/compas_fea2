@@ -5,6 +5,7 @@ import compas
 import compas_fea2
 
 from compas.utilities.maps import geometric_key
+from compas_fea2.backends._base.base import FEABase
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
@@ -12,7 +13,7 @@ __all__ = [
 ]
 
 
-class NodeBase(object):
+class NodeBase(FEABase):
     """Initialises base Node object.
 
     Parameters
@@ -62,26 +63,18 @@ class NodeBase(object):
 
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
         self.__name__ = 'Node'
-        self.key      = 0
-        self.xyz      = [float(x) for x in xyz]
-        self.x        = self.xyz[0]
-        self.y        = self.xyz[1]
-        self.z        = self.xyz[2]
-        self.ex       = ex
-        self.ey       = ey
-        self.ez       = ez
-        self.mass     = mass
-        self.label    = label
-        self.gkey     = geometric_key(self.xyz, precision=compas_fea2.precision, sanitize=False) #'{}_{}_{}'.format(self.x, self.y, self.z)
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in ['label', 'key', 'x', 'y', 'z', 'ex', 'ey', 'ez', 'mass']:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
+        self.key = 0
+        self.xyz = [float(x) for x in xyz]
+        self.x = self.xyz[0]
+        self.y = self.xyz[1]
+        self.z = self.xyz[2]
+        self.ex = ex
+        self.ey = ey
+        self.ez = ez
+        self.mass = mass
+        self.label = label
+        self.gkey = geometric_key(self.xyz, precision=compas_fea2.precision,
+                                  sanitize=False)  # '{}_{}_{}'.format(self.x, self.y, self.z)
 
     def __repr__(self):
 

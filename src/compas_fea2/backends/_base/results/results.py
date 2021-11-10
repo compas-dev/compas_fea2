@@ -12,7 +12,7 @@ from pathlib import Path
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-class ResultsBase():
+class ResultsBase(FEABase):
     """`compas_fea2` ResultsBase object. This ensures that the results from all
     the backends are consistent.
 

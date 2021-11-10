@@ -30,10 +30,9 @@ class Set(SetBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    #TODO generate option might not be a good idea!
+    # TODO generate option might not be a good idea!
     def __init__(self, name, selection, stype, generate=False):
         super(Set, self).__init__(name, selection, stype, generate)
-
 
     def _generate_data(self):
         data_section = []
@@ -68,11 +67,25 @@ class Surface(SurfaceBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    #TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
+    # TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
     def __init__(self, name, set, generate=False):
         super(Surface, self).__init__(name, set, generate)
 
-        self.data = self._generate_data()
+        self._jobdata = self._generate_data()
+
+    @property
+    def jobdata(self):
+        """This property is the representation of the object in a software-specific inout file.
+
+        Returns
+        -------
+        str
+
+        Examples
+        --------
+        >>>
+        """
+        return self._jobdata
 
     # TODO: old ---> change
     def _generate_data(self):

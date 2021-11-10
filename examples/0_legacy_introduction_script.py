@@ -1,3 +1,4 @@
+import inspect
 from pathlib import Path
 from pprint import pprint
 from compas_fea2.backends.abaqus import Model
@@ -27,12 +28,10 @@ model = Model(name='structural_model')
 
 # Add a Part to the model
 model.add_part(Part(name='part-1'))
-
 # Add nodes to the part
 model.add_node(Node(xyz=[-5., -5., 0.]), part='part-1')
 for node in [[5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [0., 0., 5.]]:
     model.add_node(Node(xyz=node), part='part-1')
-
 # Define materials
 model.add_material(ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, p=1500))
 

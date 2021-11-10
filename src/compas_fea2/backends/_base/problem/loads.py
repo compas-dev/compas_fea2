@@ -2,10 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.base import FEABase
+
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
 
-#TODO: make units independent using the utilities function
+# TODO: make units independent using the utilities function
 
 
 __all__ = [
@@ -24,7 +26,7 @@ __all__ = [
 ]
 
 
-class LoadBase(object):
+class LoadBase(FEABase):
     """Initialises base Load object.
 
     Parameters
@@ -55,26 +57,20 @@ class LoadBase(object):
     """
 
     def __init__(self, name, axes='global', components={}, nodes=[], elements=[]):
-        self.__name__   = 'LoadObject'
-        self.name       = name
-        self.axes       = axes
+        self.__name__ = 'LoadObject'
+        self.name = name
+        self.axes = axes
         self.components = components
-        self.nodes      = nodes
-        self.elements   = elements
-        self.attr_list  = ['name', 'axes', 'components', 'nodes', 'elements']
-
-
-    def __str__(self):
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(self.__name__) + 19)
-        l = []
-        for attr in self.attr_list:
-            l.append('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-
-        return """\n{}\n{}\n{}""".format(title, separator, '\n'.join(l))
+        self.nodes = nodes
+        self.elements = elements
+        self.attr_list = ['name', 'axes', 'components', 'nodes', 'elements']
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
+
+    @property
+    def data(self):
+        return self._data
 
 
 class PrestressLoadBase(LoadBase):
@@ -103,7 +99,7 @@ class PrestressLoadBase(LoadBase):
 
     def __init__(self, name, elements, sxx=0):
         LoadBase.__init__(self, name=name, elements=elements, axes='local')
-        self.__name__   = 'PrestressLoad'
+        self.__name__ = 'PrestressLoad'
         self.components = {'sxx': sxx}
 
 
@@ -143,7 +139,7 @@ class PointLoadBase(LoadBase):
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
         LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
-        self.__name__   = 'PointLoad'
+        self.__name__ = 'PointLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 # TODO check
@@ -210,7 +206,7 @@ class LineLoadBase(LoadBase):
 
     def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='local'):
         LoadBase.__init__(self, name=name, elements=elements, axes=axes)
-        self.__name__   = 'LineLoad'
+        self.__name__ = 'LineLoad'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
@@ -244,7 +240,7 @@ class AreaLoadBase(LoadBase):
 
     def __init__(self, name, elements, x=0, y=0, z=0, axes='local'):
         LoadBase.__init__(self, name=name, elements=elements, axes=axes)
-        self.__name__   = 'AreaLoad'
+        self.__name__ = 'AreaLoad'
         self.components = {'x': x, 'y': y, 'z': z}
 
 
@@ -281,8 +277,8 @@ class GravityLoadBase(LoadBase):
 
     def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
         LoadBase.__init__(self, name=name, axes='global')
-        self.__name__   = 'GravityLoad'
-        self.g          = g
+        self.__name__ = 'GravityLoad'
+        self.g = g
         self.components = {'x': x, 'y': y, 'z': z}
         self.attr_list.append('g')
 
@@ -310,12 +306,14 @@ class ThermalLoadBase(object):
     """
 
     def __init__(self, name, elements, temperature):
-        self.__name__    = 'ThermalLoad'
-        self.name        = name
-        self.elements    = elements
+        self.__name__ = 'ThermalLoad'
+        self.name = name
+        self.elements = elements
         self.temperature = temperature
 
-#TODO: this should be a method of the Model object...or something in that direction
+# TODO: this should be a method of the Model object...or something in that direction
+
+
 class TributaryLoadBase(LoadBase):
     """Tributary area loads applied to nodes.
 
@@ -358,7 +356,7 @@ class TributaryLoadBase(LoadBase):
         self.__name__ = 'TributaryLoad'
         self.attr_list.append('mesh')
 
-        nodes      = []
+        nodes = []
         components = {}
 
         for key in mesh.vertices():
@@ -371,7 +369,7 @@ class TributaryLoadBase(LoadBase):
                 components[node] = {'x': x * A, 'y': y * A, 'z': z * A}
 
         self.components = components
-        self.nodes      = nodes
+        self.nodes = nodes
 
 
 class HarmonicPointLoadBase(LoadBase):
@@ -399,7 +397,7 @@ class HarmonicPointLoadBase(LoadBase):
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
         LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
-        self.__name__   = 'HarmoniPointLoadBase'
+        self.__name__ = 'HarmoniPointLoadBase'
         self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
@@ -431,7 +429,7 @@ class HarmonicPressureLoadBase(LoadBase):
 
     def __init__(self, name, elements, pressure=0, phase=None):
         LoadBase.__init__(self, name=name, elements=elements, axes='global')
-        self.__name__   = 'HarmonicPressureLoad'
+        self.__name__ = 'HarmonicPressureLoad'
         self.components = {'pressure': pressure, 'phase': phase}
 
 
@@ -465,7 +463,7 @@ class AcousticDiffuseFieldLoadBase(LoadBase):
 
     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
         LoadBase.__init__(self, name=name, elements=elements, axes='global')
-        self.__name__   = 'AcousticDiffuseFieldLoad'
+        self.__name__ = 'AcousticDiffuseFieldLoad'
         self.components = {'air_density':   air_density,
                            'sound_speed':   sound_speed,
                            'max_inc_angle': max_inc_angle}

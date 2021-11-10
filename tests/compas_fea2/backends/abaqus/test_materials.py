@@ -5,7 +5,7 @@ from compas_fea2.backends._base.model import ConcreteBase
 
 from compas_fea2.backends.abaqus.model import materials
 from compas_fea2.backends.abaqus.model.materials import Concrete, ElasticIsotropic, Stiff, Steel, UserMaterial,\
-                                                        UserMaterial
+    UserMaterial
 
 young_mod = 1000
 poisson_ratio = 0.3
@@ -80,7 +80,7 @@ def test_Stiff_generate_data():
                     "*Density\n"
                     "{},\n"
                     "*Elastic\n"
-                    "{}, {}\n").format(name, init_stiff.p , young_mod, init_stiff.v['v'])
+                    "{}, {}\n").format(name, init_stiff.p, young_mod, init_stiff.v['v'])
     assert function_out == expected_out
 
 
@@ -99,7 +99,7 @@ def test_Steel_generate_data():
     material_input = Steel("steely", fy, fu, eu, E, 0.3, 1.0)
     function_out = material_input._generate_data()
     # Expected
-    # Materials are units dependent - (E, f<y,u>) 
+    # Materials are units dependent - (E, f<y,u>)
     expected_out = ("*Material, name={}\n"
                     "*Density\n"
                     "{},\n"
@@ -127,13 +127,14 @@ def test_Concrete_generate_data():
     # function_out = material_input._generate_data()
     # print(function_out)
     # # Expected
-    # # Materials are units dependent - (E, f<y,u>) 
+    # # Materials are units dependent - (E, f<y,u>)
     # TODO: to complicated to test yet
     pass
 
 # ==============================================================================
 # Tests - UserMaterial
 # ==============================================================================
+
 
 def test_UserMaterial_constructor_1():
     """ Without any constants """
@@ -143,6 +144,7 @@ def test_UserMaterial_constructor_1():
     material_input = UserMaterial('user', sub_path, p)
 
     assert material_input.get_constants() == [[], material_input.data]
+
 
 def test_UserMaterial_constructor_2():
     """
@@ -169,5 +171,5 @@ def test_UserMaterial_constructor_2():
 
     # Test get_constants()
 
-    expected_res = [*extra_args.values(), [*extra_args.values()], material_input.data]
+    expected_res = [*extra_args.values(), [*extra_args.values()], material_input.jobdata]
     assert material_input.get_constants() == expected_res

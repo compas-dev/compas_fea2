@@ -39,7 +39,7 @@ class InputFileBase():
         try:
             filepath = os.path.join(path, self.name)
             with open(filepath, 'w') as f:
-                f.writelines(self.data)
+                f.writelines(self._jobdata)
             r = '***** {} generated in: {} *****\n'.format(self._input_file_type, filepath)
         except:
             r = '***** ERROR: Input file not generated ****'

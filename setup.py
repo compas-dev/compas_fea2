@@ -62,7 +62,8 @@ setup(
     python_requires='>=2.7',
     extras_require=optional_requirements,
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            "fea2=compas_fea2.cli:main"],
     },
     ext_modules=[],
 )

@@ -170,6 +170,10 @@ class ResultsBase():
         with open(path, 'w') as f:
             json.dump(self, f)
 
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
 
 class CaseResultsBase(FEABase):
     """`compas_fea2` ResultsCaseBase object. This ensures that the results from

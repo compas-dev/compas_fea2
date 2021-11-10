@@ -97,7 +97,7 @@ from __future__ import print_function
 
 
 # additional software-based classes
-from .set import * #TODO remove
+from .nodes import *
 from .constraints import *
 from .elements import *
 from .materials import *

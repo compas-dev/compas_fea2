@@ -13,7 +13,7 @@ from compas_fea2.backends._base.model import StrutElementBase
 from compas_fea2.backends._base.model import TieElementBase
 from compas_fea2.backends._base.model import ShellElementBase
 from compas_fea2.backends._base.model import MembraneElementBase
-from compas_fea2.backends._base.model import FaceElementBase
+# from compas_fea2.backends._base.model import FaceElementBase
 from compas_fea2.backends._base.model import SolidElementBase
 from compas_fea2.backends._base.model import PentahedronElementBase
 from compas_fea2.backends._base.model import TetrahedronElementBase
@@ -25,21 +25,7 @@ from compas_fea2.backends._base.model import HexahedronElementBase
 # TODO add the property class here
 
 __all__ = [
-    'Node',
-    'Element',
-    'MassElement',
     'BeamElement',
-    'SpringElement',
-    'TrussElement',
-    'StrutElement',
-    'TieElement',
-    'ShellElement',
-    'MembraneElement',
-    'FaceElement',
-    'SolidElement',
-    'PentahedronElement',
-    'TetrahedronElement',
-    'HexahedronElement',
 ]
 
 
@@ -47,96 +33,10 @@ __all__ = [
 # General
 # ==============================================================================
 
-class Node(NodeBase):
-    """Initialises base Node object.
-
-    Parameters
-    ----------
-    key : int
-        Node key number.
-    xyz : list
-        [x, y, z] co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    Attributes
-    ----------
-    key : int
-        Node key number.
-    x : float
-        x co-ordinates of the node.
-    y : float
-        y co-ordinates of the node.
-    z : float
-        z co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    """
-    def __init__(self, key, xyz, ex, ey, ez, mass):
-        super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
-
-
-class Element(ElementBase):
-    """Initialises base Element object.
-
-    Parameters
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-
-    Attributes
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-    element_property : str
-        Element property name
-
-    """
-    pass
-    # def __init__(self, nodes, number, thermal, axes):
-    #     super(Element, self).__init__(nodes, number, thermal, axes)
-
 
 # ==============================================================================
 # 0D elements
 # ==============================================================================
-
-class MassElement(MassElementBase):
-    """A 0D element for concentrated point mass.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(MassElement, self).__init__()
 
 
 # ==============================================================================
@@ -151,164 +51,42 @@ class BeamElement(BeamElementBase):
     None
 
     """
-    pass
-    # def __init__(self):
-    #     super(BeamElement, self).__init__()
+
+    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
+        super(BeamElement, self).__init__(connectivity, section, thermal)
+        self.elset = elset
+        self.eltype = 'element elasticBeamColumn'
+        self.orientation = orientation
+
+    def _generate_data(self):
+        line = []
+        line.append('geomTransf Corotational {0} {1}\n'.format(
+            self.eltype, ' '.join([str(i) for i in self.orientation])))
+        line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self.eltype,
+                                                              self.key,
+                                                              self.connectivity[0],
+                                                              self.connectivity[1],
+                                                              self.section.A,
+                                                              self.section.E,
+                                                              self.section.G,
+                                                              self.section.J,
+                                                              self.section.Ixx,
+                                                              self.section.Iyy,
+                                                              self.key))
+        return ''.join(line)
 
 
-class SpringElement(SpringElementBase):
-    """A 1D spring element.
+if __name__ == "__main__":
+    from compas_fea2.backends.opensees.model.nodes import Node
+    from compas_fea2.backends.opensees.model.materials import ElasticIsotropic
+    from compas_fea2.backends.opensees.model.sections import SolidSection
+    from compas_fea2.backends.opensees.model.elements import BeamElement
 
-    Parameters
-    ----------
-    None
+    nodes = [Node([i, 3, 4]) for i in range(4)]
+    mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
+    sec = SolidSection(name='section_A', material='mat_A')
+    print(sec._generate_data())
+    b = BeamElement(connectivity=nodes, section=sec)
 
-    """
-    pass
-    # def __init__(self):
-    #     super(SpringElement, self).__init__()
-
-
-class TrussElement(TrussElementBase):
-    """A 1D element that resists axial loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(TrussElement, self).__init__()
-
-
-class StrutElement(StrutElementBase):
-    """A truss element that resists axial compressive loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(StrutElement, self).__init__()
-
-
-class TieElement(TieElementBase):
-    """A truss element that resists axial tensile loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(TieElement, self).__init__()
-
-
-# ==============================================================================
-# 2D elements
-# ==============================================================================
-
-class ShellElement(ShellElementBase):
-
-    """ A 2D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(ShellElement, self).__init__()
-
-
-class FaceElement(FaceElementBase):
-
-    """ A 2D Face element used for special loading cases.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(FaceElement, self).__init__()
-
-
-class MembraneElement(MembraneElementBase):
-
-    """ A shell element that resists only axial loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(MembraneElement, self).__init__()
-
-
-# ==============================================================================
-# 3D elements
-# ==============================================================================
-
-class SolidElement(SolidElementBase):
-
-    """ A 3D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(SolidElement, self).__init__()
-
-
-class PentahedronElement(PentahedronElementBase):
-
-    """ A Solid element with 5 faces (extruded triangle).
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(PentahedronElement, self).__init__()
-
-
-class TetrahedronElement(TetrahedronElementBase):
-
-    """ A Solid element with 4 faces.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(TetrahedronElement, self).__init__()
-
-
-class HexahedronElement(HexahedronElementBase):
-
-    """ A Solid cuboid element with 6 faces (extruded rectangle).
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(HexahedronElement, self).__init__()
+    print(b)
+    print(b._generate_data())

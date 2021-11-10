@@ -88,7 +88,7 @@ class ElasticIsotropicBase(MaterialBase):
         MaterialBase.__init__(self, name=name)
         self.__name__    = 'ElasticIsotropic'
         self.name        = name
-        self.E           = {'E': E}
+        self.E           = {'E': E} #TODO remove dictionary...
         self.v           = {'v': v}
         self.G           = {'G': 0.5 * E / (1 + v)}
         self.p           = p

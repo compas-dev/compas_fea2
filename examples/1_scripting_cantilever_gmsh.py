@@ -1,3 +1,4 @@
+import os
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ShellSection
@@ -7,6 +8,7 @@ from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import FixedDisplacement
 from compas_fea2.backends.abaqus import RollerDisplacementXZ
 from compas_fea2.backends.abaqus import PointLoad
+from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 from compas_fea2.backends.abaqus import Results
 
@@ -97,9 +99,9 @@ n_roller = model.get_node_from_coordinates([lx, 0, 0], 1)
 n_load = model.get_node_from_coordinates([lx, ly, 0, ], 1)
 
 # Define sets for boundary conditions and loads
-model.add_assembly_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
 model.summary()
 
@@ -115,16 +117,19 @@ problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
 # Assign a point load to the node set
 problem.add_load(load=PointLoad(name='pload', lset='pload', x=1000))
 
+# Define the field outputs required
+problem.add_field_output(fout=FieldOutput(name='fout'))
+
 # Define the analysis step
 problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 problem.summary()
-
 # Solve the problem
-problem.analyse(path='C:/temp/')
+problem.analyse()
+# print(os.path.join(problem.path, '{}-results.pkl'.format(problem.name)))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u', 's'])
+results = Results.from_problem(problem, fields=['u'], output=True)
 spr, e = principal_stresses(results.element['gstep'])
 
 sp = 'sp5'

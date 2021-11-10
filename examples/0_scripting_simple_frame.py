@@ -48,9 +48,9 @@ model.add_elements(elements=elements, part='part-1')
 model.add_element(element=BeamElement(connectivity=[29, 0], section='section_B'), part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_assembly_set(Set(name='fixed', selection=[0], stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='roller', selection=[10], stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='fixed', selection=[0], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='roller', selection=[10], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####

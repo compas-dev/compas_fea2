@@ -40,7 +40,7 @@ for z in range(n):
             model.add_node(Node(xyz=[x*s, y*s, z*s]), part='part-1')
 
 # Generate elements between nodes
-elements=[]
+elements = []
 for z in range(n-1):
     for y in range(n-1):
         for x in range(n-1):
@@ -52,12 +52,12 @@ for z in range(n-1):
             f = (x+1)+y*n+(z+1)*n**2
             g = (x+1)+(y+1)*n+(z+1)*n**2
             h = x+(y+1)*n+(z+1)*n**2
-            elements.append((SolidElement(connectivity=[a,b,c,d,e,f,g,h], section='section_A')))
+            elements.append((SolidElement(connectivity=[a, b, c, d, e, f, g, h], section='section_A')))
 model.add_elements(elements=elements, part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_assembly_set(Set(name='pinned', selection=[x for x in range(n**2)], stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='pload', selection=[944,945,964,965], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='pinned', selection=[x for x in range(n**2)], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='pload', selection=[944, 945, 964, 965], stype='nset'), instance='part-1-1')
 
 model.summary()
 

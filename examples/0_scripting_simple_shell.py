@@ -102,9 +102,9 @@ for j in range(dis):
                           part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_assembly_set(Set(name='pinned', selection=[0, dis, (dis+1)*(dis), (dis+1)**2-1],
+model.add_instance_set(Set(name='pinned', selection=[0, dis, (dis+1)*(dis), (dis+1)**2-1],
                            stype='nset'), instance='part-1-1')
-model.add_assembly_set(Set(name='pload', selection=[((dis+1)//2)*(dis+1)], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='pload', selection=[((dis+1)//2)*(dis+1)], stype='nset'), instance='part-1-1')
 
 ##### ----------------------------- PROBLEM ------------------------------ #####
 folder = 'C:/temp/'

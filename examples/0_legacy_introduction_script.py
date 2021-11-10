@@ -50,7 +50,7 @@ model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shel
 model.add_instance_set(Set(name='nset_base', selection=[0, 1, 2, 3], stype='nset'), instance='part-1-1')
 model.add_instance_set(Set(name='nset_top', selection=[4], stype='nset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
-# model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
+model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
 model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -63,12 +63,13 @@ problem.add_bc(PinnedDisplacement(name='disp_pinned', bset='nset_base'))
 
 # Assign a point load to the node set
 problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000))
+problem.add_load(GravityLoad(name='load_gravity'))
 
 # Define the field outputs required
 problem.add_field_output(fout=FieldOutput(name='fout'))
 
 # Define the analysis step
-problem.add_step(GeneralStaticStep(name='gstep', loads=['load_point']))
+problem.add_step(GeneralStaticStep(name='gstep', loads=['load_point', 'load_gravity']))
 
 # Solve the problem
 problem.summary()

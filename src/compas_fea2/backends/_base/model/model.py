@@ -694,7 +694,7 @@ class ModelBase(FEABase):
     # ==============================================================================
     # Summary
     # ==============================================================================
-
+    # TODO continue the summary
     def summary(self):
         """Prints a summary of the Model object.
 
@@ -714,14 +714,34 @@ compas_fea2 Model: {}
 Parts
 -----
 {}
+    # of nodes:     {}
+    # of elements:  {}
 
 Instances
 ---------
 {}
 
+Materials
+---------
+{}
+
+Sections
+--------
+{}
+
+Sets
+----
+{}
+
 """.format(self.name,
            '\n'.join([e for e in self.parts]),
-           '\n'.join([e for e in self.instances]))
+           '\n'.join([str(len(e)) for e in [p.nodes for p in self.parts.values()]]),
+           '\n'.join([str(len(e)) for e in [p.elements for p in self.parts.values()]]),
+           '\n'.join([e for e in self.instances]),
+           '\n'.join([e for e in self.materials]),
+           '\n'.join([e for e in self.sections]),
+           '\n'.join([e for e in self.sets]),
+           )
         print(data)
         return data
 

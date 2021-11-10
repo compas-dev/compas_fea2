@@ -275,7 +275,7 @@ class GravityLoadBase(LoadBase):
         Value of gravitational acceleration.
     """
 
-    def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
+    def __init__(self, name, g, x, y, z):
         LoadBase.__init__(self, name=name, axes='global')
         self.__name__ = 'GravityLoad'
         self.g = g

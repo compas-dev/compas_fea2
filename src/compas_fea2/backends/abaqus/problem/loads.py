@@ -102,7 +102,7 @@ class AreaLoad(AreaLoadBase):
 
 class GravityLoad(GravityLoadBase):
 
-    def __init__(self, name, g, x, y, z):
+    def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
         super(GravityLoad, self).__init__(name, g, x, y, z)
         self.lset = None
 

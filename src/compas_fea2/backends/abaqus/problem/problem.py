@@ -104,7 +104,7 @@ class Problem(ProblemBase):
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, path, output=True, save=False):
+    def write_input_file(self, output=True):
         """Writes the abaqus input file.
 
         Parameters
@@ -121,19 +121,13 @@ class Problem(ProblemBase):
         None
 
         """
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
 
         input_file = InputFile(self)
         r = input_file.write_to_file(self.path)
         if output:
             print(r)
 
-    def write_parameters_file(self, path, output=True, save=False):
+    def write_parameters_file(self, output=True):
         """Writes the abaqus parameters file for the optimisation.
 
         Parameters
@@ -150,12 +144,6 @@ class Problem(ProblemBase):
         None
 
         """
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
 
         input_file = InputFile(self)
         inp = input_file.write_to_file(self.path)
@@ -191,12 +179,26 @@ class Problem(ProblemBase):
         None
 
         """
-        self.write_input_file(path, output, save)
+        self.path = path if isinstance(path, Path) else Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
+
+        if save:
+            self.save_to_cfp()
+
+        self.write_input_file(output)
         launch_process(self, exe, output, overwrite, user_mat)
 
     def optimise(self, path='C:/temp', output=True, save=False):
-        self.write_input_file(path, output, save)
-        self.write_parameters_file(path, output, save)
+        self.path = path if isinstance(path, Path) else Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
+
+        if save:
+            self.save_to_cfp()
+
+        self.write_input_file(output)
+        self.write_parameters_file(output)
         launch_optimisation(self, output)
 
     # =========================================================================

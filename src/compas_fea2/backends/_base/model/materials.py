@@ -38,7 +38,6 @@ class MaterialBase(FEABase):
     def __init__(self, name):
         self.__name__ = 'Material'
         self.name = name
-        self.attr_list = ['name']
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -80,11 +79,10 @@ class ElasticIsotropicBase(MaterialBase):
         MaterialBase.__init__(self, name=name)
         self.__name__ = 'ElasticIsotropic'
         self.name = name
-        self.E = {'E': E}  # TODO remove dictionary...
-        self.v = {'v': v}
-        self.G = {'G': 0.5 * E / (1 + v)}
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
         self.p = p
-        self.attr_list.extend(['E', 'v', 'G', 'p'])
 
 
 class StiffBase(ElasticIsotropicBase):
@@ -157,11 +155,16 @@ class ElasticOrthotropicBase(MaterialBase):
         MaterialBase.__init__(self, name=name)
         self.__name__ = 'ElasticOrthotropic'
         self.name = name
-        self.E = {'Ex': Ex, 'Ey': Ey, 'Ez': Ez}
-        self.v = {'vxy': vxy, 'vyz': vyz, 'vzx': vzx}
-        self.G = {'Gxy': Gxy, 'Gyz': Gyz, 'Gzx': Gzx}
+        self.Ex = Ex
+        self.Ey = Ey
+        self.Ez = Ez
+        self.vxy = vxy
+        self.vyz = vyz
+        self.vzx = vzx
+        self.Gxy = Gxy
+        self.Gyz = Gyz
+        self.Gzx = Gzx
         self.p = p
-        self.attr_list.extend(['E', 'v', 'G', 'p'])
 
 
 # ==============================================================================

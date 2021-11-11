@@ -74,7 +74,7 @@ class ElasticIsotropic(ElasticIsotropicBase):
                 "*Density\n"
                 "{},\n"
                 "*Elastic\n"
-                "{}, {}{}\n").format(self.name, self.p, self.E['E'], self.v['v'], n)
+                "{}, {}{}\n").format(self.name, self.p, self.E, self.v, n)
 
 
 class Stiff(StiffBase):

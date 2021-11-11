@@ -60,11 +60,12 @@ class PartBase(FEABase):
         self.__name__ = 'Part'
         self.name = name
         self.nodes = []  # self._sort(nodes)
+        self.materials = {}
+        self.sections = {}
         self.elements = []  # self._sort(elements)
         self.nsets = []
         self.elsets = []
         self.nodes_gkeys = []
-        self.sections = {}
         self.releases = []
 
         self.elements_by_type = {}
@@ -292,9 +293,9 @@ class PartBase(FEABase):
         else:
             element.key = len(self.elements)
             for c in element.connectivity:
-                if c > len(self.nodes)-1:
+                if c not in [node.key for node in self.nodes]:
                     raise ValueError(
-                        'ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element))
+                        'ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element.__repr__()))
             self.elements.append(element)
 
             # add the element key to its type group
@@ -528,21 +529,41 @@ class PartBase(FEABase):
 
         Parameters
         ----------
-        element : obj
-            compas_fea2 Element object.
-        part : str
-            Name of the part where the nodes will be removed from.
+        section : obj
+            compas_fea2 Section object.
 
         Returns
         -------
         None
         """
-
+        from compas_fea2.backends._base.model.materials import MaterialBase
         if section.name not in self.sections:
+            if not isinstance(section.material, MaterialBase) and isinstance(section.material, str):
+                if section.material not in self.materials.keys():
+                    raise ValueError('ERROR: material {} not found in the Part!'.format(
+                        section.material.__repr__()))
+            else:
+                if section.material.name not in self.materials.keys():
+                    raise ValueError('ERROR: material {} not found in the Part!'.format(
+                        section.material.__repr__()))
             self.sections[section.name] = section
-            self.add_material(self.materials[section.material])
         else:
-            print('WARNING - {} already defined and it has been skipped! Note: the section name must be unique.')
+            print('WARNING: {} already added to the Part. skipped!')
+
+    def add_sections(self, sections):
+        """Add multiple compas_fea2 Section objects to the Part.
+
+        Parameters
+        ----------
+        sections : list
+            list of compas_fea2 Section objects.
+
+        Returns
+        -------
+        None
+        """
+        for section in sections:
+            self.add_section(section)
 
     # =========================================================================
     #                           Sets methods

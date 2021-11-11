@@ -5,10 +5,10 @@ from __future__ import print_function
 
 
 from compas_fea2.backends._base.model import SectionBase
+from compas_fea2.backends._base.model import MassSectionBase
 from compas_fea2.backends._base.model import AngleSectionBase
 from compas_fea2.backends._base.model import BoxSectionBase
 from compas_fea2.backends._base.model import CircularSectionBase
-from compas_fea2.backends._base.model import GeneralSectionBase
 from compas_fea2.backends._base.model import ISectionBase
 from compas_fea2.backends._base.model import PipeSectionBase
 from compas_fea2.backends._base.model import RectangularSectionBase
@@ -20,3 +20,9 @@ from compas_fea2.backends._base.model import TrussSectionBase
 from compas_fea2.backends._base.model import StrutSectionBase
 from compas_fea2.backends._base.model import TieSectionBase
 from compas_fea2.backends._base.model import SpringSectionBase
+
+
+class RectangularSection(RectangularSectionBase):
+
+    def __init__(self, name, b, h, material):
+        super(RectangularSection, self).__init__(name, b, h, material)

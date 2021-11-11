@@ -5,7 +5,8 @@ from __future__ import print_function
 from math import pi
 
 from compas_fea2.backends._base.model import SectionBase
-from compas_fea2.backends._base.model import GeneralSectionBase
+from compas_fea2.backends._base.model import MassSectionBase
+# from compas_fea2.backends._base.model import GeneralSectionBase
 from compas_fea2.backends._base.model import ShellSectionBase
 from compas_fea2.backends._base.model import MembraneSectionBase
 from compas_fea2.backends._base.model import SolidSectionBase
@@ -18,13 +19,14 @@ from compas_fea2.backends._base.model import SpringSectionBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 #           Andrew Liew (github.com/andrewliew)
 
+# NOTE: these classes are sometimes overwriting the _base ones because Abaqus
+# offers internal ways of computing beam sections' properties
 
 __all__ = [
     'MassSection',
     'AngleSection',
     'BoxSection',
     'CircularSection',
-    'GeneralSection',
     'ISection',
     'PipeSection',
     'RectangularSection',
@@ -37,6 +39,35 @@ __all__ = [
     'TieSection',
     'SpringSection',
 ]
+
+
+# ==============================================================================
+# 0D
+# ==============================================================================
+
+
+class MassSection(MassSectionBase):
+    """Section for mass elements.
+
+    Parameters
+    ----------
+    name : str
+        Section name.
+    mass : float
+        Point mass value.
+    """
+
+    def __init__(self, name, mass):
+        super(MassSection, self).__init__(name, mass)
+
+    def _generate_jobdata(self, set_name, orientation):
+        return """** Section: {}
+*Mass, elset={}
+{}\n""".format(self.name, set_name, self.mass)
+
+# ==============================================================================
+# 1D
+# ==============================================================================
 
 
 class AbaqusBeamSection(SectionBase):
@@ -54,42 +85,6 @@ class AbaqusBeamSection(SectionBase):
         return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
 {}\n{}\n""".format(self.name, set_name, self.material, self._stype, ', '.join([str(v) for v in self.properties]), orientation_line)
-
-
-# ==============================================================================
-# 0D
-# ==============================================================================
-
-
-class MassSection(SectionBase):
-    """Section for mass elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    mass : float
-        Point mass value.
-    """
-
-    def __init__(self, name, mass):
-        super(MassSection, self).__init__(name)
-        self.mass = mass
-
-    def _generate_jobdata(self, set_name, orientation):
-        return """** Section: {}
-*Mass, elset={}
-{}\n""".format(self.name, set_name, self.mass)
-
-# ==============================================================================
-# 1D
-# ==============================================================================
-
-
-class GeneralSection(GeneralSectionBase):
-
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw, material):
-        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw, material)
 
 
 class AngleSection(AbaqusBeamSection):

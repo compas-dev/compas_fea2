@@ -17,50 +17,6 @@ __all__ = [
 # =============================================================================
 
 class Node(NodeBase):
-    """ Node class
-
-    Parameters
-    ----------
-    xyz : list
-        [description]
-    ex : [type], optional
-        [description], by default None
-    ey : [type], optional
-        [description], by default None
-    ez : [type], optional
-        [description], by default None
-    mass : [type], optional
-        [description], by default None
-    label : [type], optional
-        [description], by default Non
-
-    Attributes
-    ----------
-    xyz : list
-        [description]
-    ex : [type], optional
-        [description], by default None
-    ey : [type], optional
-        [description], by default None
-    ez : [type], optional
-        [description], by default None
-    mass : [type], optional
-        [description], by default None
-    label : [type], optional
-        [description], by default None
-
-    Example
-    -------
-    >>> n = Node([2,3,4])
-    >>> n.key=300
-    >>> print(n.key)
-
-    Note
-    ----
-    The nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts
-    from 1. The conversion in automatically resolved by compas_fea2.
-    """
-
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, label=label)
 

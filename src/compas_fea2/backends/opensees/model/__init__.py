@@ -5,6 +5,50 @@ opensees.model
 
 .. currentmodule:: compas_fea2.backends.opensees.model
 
+Model
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Model
+
+Instances
+=========
+
+.. autosummary::
+    :toctree: generated/
+
+    Instance
+
+Parts
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Part
+
+Nodes
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Node
+
+Elements
+========
+
+.. autosummary::
+    :toctree: generated/
+
+    MassElement
+    BeamElement
+    TrussElement
+    ShellElement
+    MembraneElement
+    SolidElement
 
 Constraints
 ===========
@@ -15,38 +59,13 @@ Constraints
     Constraint
     TieConstraint
 
-
-Elements
-========
+Interactions
+============
 
 .. autosummary::
     :toctree: generated/
 
-    Node
-    Element
-    MassElement
-    BeamElement
-    SpringElement
-    TrussElement
-    StrutElement
-    TieElement
-    ShellElement
-    MembraneElement
-    FaceElement
-    SolidElement
-    PentahedronElement
-    TetrahedronElement
-    HexahedronElement
-
-
-Properties
-==========
-.. autosummary::
-    :toctree: generated/
-
-    ElementProperties
-
-
+    Interaction
 
 Materials
 =========
@@ -54,15 +73,15 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    Material
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    Stiff
     ElasticIsotropic
+    Stiff
     ElasticOrthotropic
     ElasticPlastic
     Steel
+    Concrete
+    ConcreteSmearedCrack
+    ConcreteDamagedPlasticity
+    UserMaterial
 
 
 Sections
@@ -71,7 +90,7 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    Section
+    MassSection
     AngleSection
     BoxSection
     CircularSection
@@ -88,6 +107,14 @@ Sections
     TieSection
     SpringSection
 
+Sets
+====
+
+.. autosummary::
+    :toctree: generated/
+
+    Set
+    Surface
 
 """
 
@@ -95,9 +122,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 
 # additional software-based classes
+from .model import *
+from .instances import *
+from .parts import *
 from .nodes import *
+# from .interactions import *
+# from .sets import *
 from .constraints import *
 from .elements import *
 from .materials import *

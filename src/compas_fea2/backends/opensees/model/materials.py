@@ -29,14 +29,14 @@ class ElasticIsotropic(ElasticIsotropicBase):
 
     def _generate_jobdata(self, m_index):
         line = []
-        line.append('uniaxialMaterial Elastic {0} {1}\n'.format(m_index, self.E['E']))
+        line.append('uniaxialMaterial Elastic {0} {1}\n'.format(m_index, self.E))
         line.append('nDMaterial ElasticIsotropic {0} {1} {2} {3}'.format(
-            m_index + 1000, self.E['E'], self.v['v'], self.p))
+            m_index + 1000, self.E, self.v, self.p))
         return ''.join(line)
 
 
 ### -------------------------------- DEBUG ------------------------------- ###
 if __name__ == "__main__":
 
-    material = ElasticIsotropic(name='test', E=1, v=2, p=3)
+    material = ElasticIsotropic(name='test', E=10000, v=0.3, p=3000)
     print(material._generate_jobdata(1))

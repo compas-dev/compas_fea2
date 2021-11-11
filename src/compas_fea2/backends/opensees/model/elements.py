@@ -60,15 +60,15 @@ class BeamElement(BeamElementBase):
 
     def _generate_jobdata(self):
         line = []
-        line.append('geomTransf Corotational {0} {1}\n'.format(
-            self.eltype, ' '.join([str(i) for i in self.orientation])))
+        line.append('geomTransf Corotational {1}\n'.format(
+            self.key, ' '.join([str(i) for i in self.orientation])))
         line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self.eltype,
                                                               self.key,
                                                               self.connectivity[0],
                                                               self.connectivity[1],
                                                               self.section.A,
-                                                              self.section.E,
-                                                              self.section.G,
+                                                              self.section.material.E,
+                                                              self.section.material.G,
                                                               self.section.J,
                                                               self.section.Ixx,
                                                               self.section.Iyy,
@@ -77,16 +77,4 @@ class BeamElement(BeamElementBase):
 
 
 if __name__ == "__main__":
-    from compas_fea2.backends.opensees.model.nodes import Node
-    from compas_fea2.backends.opensees.model.materials import ElasticIsotropic
-    from compas_fea2.backends.opensees.model.sections import SolidSection
-    from compas_fea2.backends.opensees.model.elements import BeamElement
-
-    nodes = [Node([i, 3, 4]) for i in range(4)]
-    mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
-    sec = SolidSection(name='section_A', material='mat_A')
-    print(sec._generate_jobdata())
-    b = BeamElement(connectivity=nodes, section=sec)
-
-    print(b)
-    print(b._generate_jobdata())
+    pass

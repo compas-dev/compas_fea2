@@ -44,11 +44,11 @@ def _generate_jobdata(obj):
     data_section.append(line)
     c = 1
     for dof in dofs:
-        if dof in obj.components.keys() and obj.components[dof] != None:
+        if dof in obj._components.keys() and obj._components[dof] != None:
             if not obj.components[dof]:
                 line = """{}, {}, {}""".format(obj.bset, c, c)
             else:
-                line = """{}, {}, {}, {}""".format(obj.bset, c, c, obj.components[dof])
+                line = """{}, {}, {}, {}""".format(obj.bset, c, c, obj._components[dof])
             data_section.append(line)
         c += 1
     return '\n'.join(data_section) + '\n'

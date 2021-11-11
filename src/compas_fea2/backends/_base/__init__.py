@@ -8,9 +8,24 @@ inherit from.
 
 .. currentmodule:: compas_fea2.backends._base.model
 
+MODEL
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    ModelBase
+
+Nodes
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    NodeBase
 
 Elements
-========
+--------
 
 .. autosummary::
     :toctree: generated/
@@ -22,7 +37,7 @@ Elements
     SolidElementBase
 
 Constraints
-===========
+-----------
 
 .. autosummary::
     :toctree: generated/
@@ -31,7 +46,7 @@ Constraints
     TieConstraintBase
 
 Materials
-=========
+---------
 
 .. autosummary::
     :toctree: generated/
@@ -49,7 +64,7 @@ Materials
 
 
 Sections
-========
+--------
 
 .. autosummary::
     :toctree: generated/
@@ -74,8 +89,34 @@ Sections
 
 .. currentmodule:: compas_fea2.backends._base.problem
 
+PROBLEM
+=======
+
+.. autosummary::
+    :toctree: generated/
+
+    ProblemBase
+
+Loads
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    LoadBase
+    PointLoadBase
+    PrestressLoadBase
+    LineLoadBase
+    AreaLoadBase
+    GravityLoadBase
+    ThermalLoadBase
+    TributaryLoadBase
+    HarmonicPointLoadBase
+    HarmonicPressureLoadBase
+    AcousticDiffuseFieldLoadBase
+
 Boundary Conditions
-===================
+-------------------
 
 .. autosummary::
     :toctree: generated/
@@ -93,26 +134,9 @@ Boundary Conditions
     RollerDisplacementYZBase
     RollerDisplacementXZBase
 
-Loads
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    LoadBase
-    PointLoadBase
-    PrestressLoadBase
-    LineLoadBase
-    AreaLoadBase
-    GravityLoadBase
-    ThermalLoadBase
-    TributaryLoadBase
-    HarmonicPointLoadBase
-    HarmonicPressureLoadBase
-    AcousticDiffuseFieldLoadBase
 
 Steps
-=====
+-----
 
 .. autosummary::
     :toctree: generated/
@@ -124,7 +148,6 @@ Steps
     HarmonicStepBase
     BucklingStepBase
     AcousticStepBase
-
 """
 
 from __future__ import absolute_import
@@ -133,5 +156,3 @@ from __future__ import print_function
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]
-
-

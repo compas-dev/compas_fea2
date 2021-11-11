@@ -25,36 +25,12 @@ class ModelBase(FEABase):
     description : str
         Some description of the Model. This will be added to the input file and
         can be useful for future reference.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Model.
-    description : str
-        Some description of the Model. This will be added to the input file and
-        can be useful for future reference.
-    parts : list
-        A list with the `Part` objects referenced in the Model.
-    instances : dict
-        A dictionary with the `Instance` objects belonging to the Model.
-    surfaces : list
-        A list with the `Surface` objects belonging to the Model.
-    constraints : list
-        A list with the `Constrain`t objects belonging to the Model.
-    interactions : list
-        A list with the `Interaction` objects belonging to the Model.
-    materials : dict
-        A dictionary of all the materials defined in the Model.
-    sections : dict
-        A dictionary of all the sections defined in the Model.
-    sets : dict
-        A dictionary of all the sets defined in the Model.
     """
 
     def __init__(self, name, description):
         self.__name__ = 'Model'
-        self.name = name
-        self.description = description
+        self._name = name
+        self._description = description
         self._instances = {}
         self._parts = {}
         self._surfaces = []
@@ -66,12 +42,36 @@ class ModelBase(FEABase):
         self._sets = {}
 
     @property
+    def name(self):
+        """str : Name of the Model."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def description(self):
+        """str : Some description of the Model. This will be added to the input file and
+        can be useful for future reference."""
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
+
+    @property
     def instances(self):
+        """dict: A dictionary with the `Instance` objects belonging to the Model."""
         return self._instances
+
+    @instances.setter
+    def instances(self, value):
+        self._instances = value
 
     @property
     def parts(self):
-        """The parts property."""
+        """dict: A dictionary with the `Part` objects referenced in the Model."""
         return self._parts
 
     @parts.setter
@@ -80,7 +80,7 @@ class ModelBase(FEABase):
 
     @property
     def surfaces(self):
-        """The surfaces property."""
+        """list : A list with the `Surface` objects belonging to the Model."""
         return self._surfaces
 
     @surfaces.setter
@@ -89,7 +89,7 @@ class ModelBase(FEABase):
 
     @property
     def constraits(self):
-        """The constraits property."""
+        """list : A list with the `Constraint` objects belonging to the Model."""
         return self._constraits
 
     @constraits.setter
@@ -98,7 +98,7 @@ class ModelBase(FEABase):
 
     @property
     def releases(self):
-        """The releases property."""
+        """list : A list with the `Release` objects belonging to the Model."""
         return self._releases
 
     @releases.setter
@@ -107,7 +107,7 @@ class ModelBase(FEABase):
 
     @property
     def interactions(self):
-        """The interactions property."""
+        """list : A list with the `Interaction` objects belonging to the Model."""
         return self._interactions
 
     @interactions.setter
@@ -116,7 +116,7 @@ class ModelBase(FEABase):
 
     @property
     def materials(self):
-        """The materials property."""
+        """dict : A dictionary of all the materials defined in the Model."""
         return self._materials
 
     @materials.setter
@@ -125,7 +125,7 @@ class ModelBase(FEABase):
 
     @property
     def sections(self):
-        """The sections property."""
+        """dict :  A dictionary of all the sections defined in the Model."""
         return self._sections
 
     @sections.setter
@@ -134,7 +134,7 @@ class ModelBase(FEABase):
 
     @property
     def sets(self):
-        """The sets property."""
+        """dict : A dictionary of all the sets defined in the Model."""
         return self._sets
 
     @sets.setter

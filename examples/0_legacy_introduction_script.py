@@ -52,6 +52,7 @@ model.add_instance_set(Set(name='nset_top', selection=[4], stype='nset'), instan
 model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
 model.summary()
+print(model)
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 

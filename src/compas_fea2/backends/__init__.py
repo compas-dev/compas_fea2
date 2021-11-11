@@ -8,8 +8,8 @@ backends
 
     compas_fea2.backends._base
     compas_fea2.backends.abaqus
-    compas_fea2.backends.ansys
     compas_fea2.backends.opensees
+    compas_fea2.backends.ansys
 
 
 """

@@ -74,8 +74,7 @@ class NodeBase(FEABase):
         self.mass = mass
         self.label = label
         self.gkey = geometric_key(self.xyz, precision=compas_fea2.precision,
-                                  sanitize=False)  # '{}_{}_{}'.format(self.x, self.y, self.z)
+                                  sanitize=False)
 
     def __repr__(self):
-
         return '{0}({1} - {2})'.format(self.__name__, self.key, self.label)

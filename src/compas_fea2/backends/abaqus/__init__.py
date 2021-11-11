@@ -11,25 +11,16 @@ Abaqus
 .. currentmodule:: compas_fea2.backends.abaqus.model
 
 
-Model
+MODEL
 =====
 
 .. autosummary::
     :toctree: generated/
 
     Model
-    Instance
-
-Parts
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Part
 
 Nodes
-=====
+-----
 
 .. autosummary::
     :toctree: generated/
@@ -37,12 +28,11 @@ Nodes
     Node
 
 Elements
-========
+--------
 
 .. autosummary::
     :toctree: generated/
 
-    MassElement
     BeamElement
     TrussElement
     ShellElement
@@ -50,7 +40,7 @@ Elements
     SolidElement
 
 Constraints
-===========
+-----------
 
 .. autosummary::
     :toctree: generated/
@@ -58,38 +48,29 @@ Constraints
     Constraint
     TieConstraint
 
-Interactions
-============
-
-.. autosummary::
-    :toctree: generated/
-
-    Interaction
-
 Materials
-=========
+---------
 
 .. autosummary::
     :toctree: generated/
 
+    Concrete
+    ConcreteSmearedCrack
+    ConcreteDamagedPlasticity
     ElasticIsotropic
     Stiff
     ElasticOrthotropic
     ElasticPlastic
+    ThermalMaterial
     Steel
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    UserMaterial
 
 
 Sections
-========
+--------
 
 .. autosummary::
     :toctree: generated/
 
-    MassSection
     AngleSection
     BoxSection
     CircularSection
@@ -106,28 +87,36 @@ Sections
     TieSection
     SpringSection
 
-Sets
-====
-
-.. autosummary::
-    :toctree: generated/
-
-    Set
-    Surface
-
-The following classes are used to set up the analysis problem
 
 .. currentmodule:: compas_fea2.backends.abaqus.problem
 
-Problem
+PROBLEM
 =======
+
 .. autosummary::
     :toctree: generated/
 
     Problem
 
+Loads
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    PointLoad
+    PrestressLoad
+    LineLoad
+    AreaLoad
+    GravityLoad
+    ThermalLoad
+    TributaryLoad
+    HarmonicPointLoad
+    HarmonicPressureLoad
+    AcousticDiffuseFieldLoad
+
 Boundary Conditions
-===================
+-------------------
 
 .. autosummary::
     :toctree: generated/
@@ -145,42 +134,19 @@ Boundary Conditions
     RollerDisplacementYZ
     RollerDisplacementXZ
 
-Loads
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    PointLoad
-    LineLoad
-    AreaLoad
-    GravityLoad
-    TributaryLoad
-    HarmoniPointLoadBase
 
 Steps
-=====
+-----
 
 .. autosummary::
     :toctree: generated/
 
-    GeneralStaticStep
-    StaticLinearPertubationStep
+    GeneralStep
+    HeatStep
     ModalStep
-    HarmoniStepBase
+    HarmonicStep
     BucklingStep
-    AcoustiStepBase
-
-
-Output Requests
-===============
-
-.. autosummary::
-    :toctree: generated/
-
-    FieldOutput
-    HistoryOutput
-
+    AcousticStep
 """
 
 from .model import *

@@ -2,164 +2,92 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import pickle
+from pathlib import Path
+from compas_fea2.backends._base.problem import ProblemBase
 
-# # from compas_fea.utilities import combine_all_sets
-# from compas_fea2.utilities import group_keys_by_attribute
-# from compas_fea2.utilities import group_keys_by_attributes
+from compas_fea2.backends.abaqus.job.input_file import InputFile
+from compas_fea2.backends.abaqus.job.input_file import ParFile
+from compas_fea2.backends.abaqus.job.send_job import launch_process
+from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
+from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
+from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
 
-# from compas_fea2.backends._base import StructureBase
-
-# from compas_fea2.backends.opensees.components import Set
-# # from compas_fea2.backends.opensees.components.elements import *
-
-# from compas_fea2.backends.opensees.job.send_job import input_generate
-# from compas_fea2.backends.opensees.job.send_job import launch_process
-# from compas_fea2.backends.opensees.job.read_results import get_data
-
-
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez)
-
+# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
-    'Structure',
+    'Problem',
 ]
 
 
-# ETYPES = {
-#     'BeamElement':        BeamElement,
-#     'SpringElement':      SpringElement,
-#     'TrussElement':       TrussElement,
-#     'StrutElement':       StrutElement,
-#     'TieElement':         TieElement,
-#     'ShellElement':       ShellElement,
-#     'MembraneElement':    MembraneElement,
-#     'FaceElement':        FaceElement,
-#     'SolidElement':       SolidElement,
-#     'TetrahedronElement': TetrahedronElement,
-#     'PentahedronElement': PentahedronElement,
-#     'HexahedronElement':  HexahedronElement,
-#     'MassElement':        MassElement
-# }
+class Problem(ProblemBase):
+    """Initialises the Problem object.
 
+    Parameters
+    ----------
+    name : str
+        Name of the Structure.
+    model : obj
+        model object.
+    """
 
-class Structure(StructureBase):
+    def __init__(self, name, model):
+        super(Problem, self).__init__(name=name, model=model)
 
-    def __init__(self, path, name='opensees-Structure'):
-        super(Structure, self).__init__(path, name)
-        self.sets = {}
+    # =========================================================================
+    #                           Optimisation methods
+    # =========================================================================
 
-    # ==============================================================================
-    # Elements
-    # ==============================================================================
+    # =========================================================================
+    #                         Analysis methods
+    # =========================================================================
 
-    # ==============================================================================
-    # Nodes and Elements
-    # ==============================================================================
+    # TODO: try to make this an abstract method of the base class
 
-    # ==============================================================================
-    # Sets
-    # ==============================================================================
+    def analyse(self, path='C:/temp', exe=None, cpus=1, output=True, overwrite=True, user_mat=False, save=False):
+        """Runs the analysis through abaqus.
 
-    # def add_set(self, name, type, selection):
-    #     """Adds a node, element or surface set to structure.sets.
+        Parameters
+        ----------
+        path : str
+            Path to the folder where the input file is saved.
+        exe : str
+            Full terminal command to bypass subprocess defaults.
+        cpus : int
+            Number of CPU cores to use.
+        output : bool
+            Print terminal output.
+        user_mat : str TODO: REMOVE!
+            Name of the material defined through a subroutine (currently only one material is supported)
+        save : bool
+            Save structure to .cfp before file writing.
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         Name of the Set.
-    #     type : str
-    #         'node', 'element', 'surface_node', surface_element'.
-    #     selection : list, dict
-    #         The integer keys of the nodes, elements or the element numbers and sides.
+        Returns
+        -------
+        None
 
-    #     Returns
-    #     -------
-    #     None
+        """
+        self.path = path if isinstance(path, Path) else Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
 
-    #     """
-    #     if isinstance(selection, int):
-    #         selection = [selection]
-    #     self.sets[name] = Set(name=name, type=type, selection=selection, index=len(self.sets))
+        if save:
+            self.save_to_cfp()
 
-    # # ==============================================================================
-    # # Results
-    # # ==============================================================================
+        self.write_input_file(output)
+        launch_process(self, exe, output, overwrite, user_mat)
 
-    # def write_input_file(self, fields='u', output=True, save=False, ndof=6):
-    #     """Writes opensees input file.
+    def optimise(self, path='C:/temp', output=True, save=False):
+        self.path = path if isinstance(path, Path) else Path(path)
+        if not self.path.exists():
+            self.path.mkdir()
 
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests.
-    #     output : bool
-    #         Print terminal output.
-    #     save : bool
-    #         Save structure to .obj before file writing.
+        if save:
+            self.save_to_cfp()
 
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     if save:
-    #         self.save_to_cfea()
-    #     input_generate(self, fields=fields, output=output, ndof=ndof)
+        self.write_input_file(output)
+        self.write_parameters_file(output)
+        launch_optimisation(self, output)
 
-    # def analyse(self, exe=None, output=True):
-    #     """Runs the analysis through opensees.
-
-    #     Parameters
-    #     ----------
-
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-
-    #     output : bool
-    #         Print terminal output.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     launch_process(self, exe=exe, output=output)
-
-    # def extract_data(self, fields='u'):
-    #     """Extracts data from the analysis output files.
-
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     get_data(self, fields=fields)
-
-    # def analyse_and_extract(self, fields='u', exe=None, output=True, save=False, ndof=6):
-    #     """Runs the analysis through opensees and extracts data.
-
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     output : bool
-    #         Print terminal output.
-    #     save : bool
-    #         Save the structure to .cfea before writing.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     self.write_input_file(fields=fields, output=output, save=save, ndof=ndof)
-
-    #     self.analyse(exe=exe, output=output)
-
-    #     self.extract_data(fields=fields)
-
+    # =========================================================================
+    #                         Results methods
+    # =========================================================================

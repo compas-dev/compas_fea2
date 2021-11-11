@@ -89,7 +89,7 @@ class Problem(ProblemBase):
                     raise ValueError(
                         'ERROR: history output {} not found in the model!'.format(hout))
 
-        self.steps.append(step)
+        self.steps[step.name] = step
 
     # =========================================================================
     #                           Optimisation methods

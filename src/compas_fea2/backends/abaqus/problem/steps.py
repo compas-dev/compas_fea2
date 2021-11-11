@@ -4,8 +4,8 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.backends._base.problem import GeneralCaseBase
-from compas_fea2.backends._base.problem import LinearPerturbationCaseBase
+from compas_fea2.backends._base.problem import GeneralStaticCaseBase
+from compas_fea2.backends._base.problem import StaticLinearPerturbationCaseBase
 from compas_fea2.backends._base.problem import HeatCaseBase
 from compas_fea2.backends._base.problem import ModalCaseBase
 from compas_fea2.backends._base.problem import HarmonicCaseBase
@@ -27,20 +27,19 @@ __all__ = [
 # TODO add field and history output requrests
 
 
-class GeneralStaticStep(GeneralCaseBase):
+class GeneralStaticStep(GeneralStaticCaseBase):
     """
     Notes
     -----
     the data for the input file for this object is generated at runtime.
     """
-    __doc__ += GeneralCaseBase.__doc__
+    __doc__ += GeneralStaticCaseBase.__doc__
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
                  nlgeom=False, displacements=None, loads=None, modify=True, field_outputs=None, history_outputs=None):
         super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time, nlgeom,
                                                 displacements, loads, modify, field_outputs, history_outputs)
         self.stype = 'Static'
-        self.attr_list.extend(['stype'])
 
     def _generate_jobdata(self, problem):
         """generate the data for the input file. Since the `Problem` object is required,
@@ -51,7 +50,7 @@ class GeneralStaticStep(GeneralCaseBase):
                 "**\n"
                 "** STEP: {0}\n"
                 "**\n"
-                "* Step, name={0}, nlgeom={1}, inc={2}\n"
+                "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
                 "{4}, {5}, {6}, {5}\n"
                 "**\n"
@@ -87,7 +86,7 @@ class GeneralStaticStep(GeneralCaseBase):
         return ''.join(section_data)
 
 
-class GeneralStaticRiksStep(GeneralCaseBase):
+class GeneralStaticRiksStep(GeneralStaticCaseBase):
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, displacements=[], loads=[]):
         super(GeneralStaticRiksStep).__init__(name, max_increments,
@@ -95,7 +94,7 @@ class GeneralStaticRiksStep(GeneralCaseBase):
         raise NotImplementedError
 
 
-class StaticLinearPertubationStep(LinearPerturbationCaseBase):
+class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
     """Initialises the StaticLinearPertubationStep object for use in a static analysis.
 
     Parameters
@@ -123,7 +122,7 @@ class StaticLinearPertubationStep(LinearPerturbationCaseBase):
                          "**\n"
                          "** STEP: {0}\n"
                          "**\n"
-                         "* Step, name={0}, nlgeom={1}, perturbation\n"
+                         "*Step, name={0}, nlgeom={1}, perturbation\n"
                          "*{2}\n"
                          "**\n").format(self.name, self.nlgeom, self.stype)
 
@@ -142,7 +141,7 @@ class StaticLinearPertubationStep(LinearPerturbationCaseBase):
         return self._jobdata
 
 
-class BuckleStep(LinearPerturbationCaseBase):
+class BuckleStep(StaticLinearPerturbationCaseBase):
 
     """Initialises BuckleStep object for use in a buckling analysis.
 

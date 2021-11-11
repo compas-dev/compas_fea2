@@ -8,6 +8,7 @@ import pickle
 from pathlib import Path
 
 from compas_fea2.backends._base.base import FEABase
+from compas_fea2.backends._base.problem.outputs import FieldOutputBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -22,42 +23,103 @@ class ProblemBase(FEABase):
     Parameters
     ----------
     name : str
-        Name of the Structure.
+        Name of the Problem.
     model : obj
         model object.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Structure.
-    model : obj
-        model object.
-    bcs : dict
-        Dictionary containing the boundary conditions objects.
-    loads : dict
-        Dictionary containing the loads objects.
-    steps : list
-        List containing the Steps objects.
-    steps_order : list
-        List containing the Steps names in the sequence they are applied.
-    field_outputs : dict
-        Dictionary contanining the field output requests.
-    history_outputs : dict
-        Dictionary contanining the history output requests.
-    results : obj
-        `compas_fea2` Results object contanining the analysis results.
     """
 
     def __init__(self, name, model):
-        self.name = name
-        self.model = model
-        self.path = None
-        self.bcs = {}
-        self.loads = {}
-        self.steps = []
-        self.steps_order = []
-        self.field_outputs = {}
-        self.history_outputs = {}
+        self.__name__ = 'Problem'
+        self._name = name
+        self._model = model
+        self._path = None
+        self._bcs = {}
+        self._loads = {}
+        self._steps = {}
+        self._steps_order = []
+        self._field_outputs = {}
+        self._history_outputs = {}
+
+    @property
+    def name(self):
+        """str : Name of the Problem"""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def model(self):
+        """obj : compas_fea2 Model object."""
+        return self._model
+
+    @model.setter
+    def model(self, value):
+        self._model = value
+
+    @property
+    def path(self):
+        """str, path obj : str or `pathlib.Path` object to the analysis folder."""
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        self._path = value
+
+    @property
+    def bcs(self):
+        """dict : Dictionary containing the boundary conditions objects."""
+        return self._bcs
+
+    @bcs.setter
+    def bcs(self, value):
+        self._bcs = value
+
+    @property
+    def loads(self):
+        """dict : Dictionary containing the loads objects."""
+        return self._loads
+
+    @loads.setter
+    def loads(self, value):
+        self._loads = value
+
+    @property
+    def steps(self):
+        """dict : dict containing the Steps objects."""
+        return self._steps
+
+    @steps.setter
+    def steps(self, value):
+        self._steps = value
+
+    @property
+    def steps_order(self):
+        """list : List containing the Steps names in the sequence they are applied."""
+        return self._steps_order
+
+    @steps_order.setter
+    def steps_order(self, value):
+        self._steps_order = value
+
+    @property
+    def field_outputs(self):
+        """dict : Dictionary contanining the field output requests."""
+        return self._field_outputs
+
+    @field_outputs.setter
+    def field_outputs(self, value):
+        self._field_outputs = value
+
+    @property
+    def history_outputs(self):
+        """dict : Dictionary contanining the history output requests."""
+        return self._history_outputs
+
+    @history_outputs.setter
+    def history_outputs(self, value):
+        self._history_outputs = value
 
     # =========================================================================
     #                           BCs methods
@@ -75,10 +137,10 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        if bc.bset not in self.model.sets.keys():
-            raise ValueError('ERROR: bc set {} not found in the model!'.format(bc.bset))
-        if bc.name not in self.bcs.keys():
+        if bc.name not in self.bcs:
             self.bcs[bc.name] = bc
+        else:
+            print('WARNING: {} already present in the Problem. skipped!'.format(bc.__repr__()))
 
     def add_bcs(self, bcs):
         """Adds multiple boundary conditions to the Problem object.
@@ -141,7 +203,7 @@ class ProblemBase(FEABase):
     # =========================================================================
 
     def add_load(self, load):
-        """Adds multiple loads to the Problem object.
+        """Adds a load to the Problem object.
 
         Parameters
         ----------
@@ -152,10 +214,10 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        if load.lset and load.lset not in self.model.sets:
-            raise ValueError('ERROR: load set {} not found in the model!'.format(load.lset))
-        if load.name not in self.loads.keys():
+        if load.name not in self.loads:
             self.loads[load.name] = load
+        else:
+            print('WARNING: {} already present in the Problem. skipped!'.format(load.__repr__()))
 
     def add_loads(self, loads):
         """Adds multiple loads to the Problem object.
@@ -214,6 +276,85 @@ class ProblemBase(FEABase):
         self.loads = {}
 
     # =========================================================================
+    #                           Outputs methods
+    # =========================================================================
+
+    def add_output(self, output):
+        """Adds an output to the Problem object.
+
+        Parameters
+        ----------
+        output : obj
+            `compas_fea2` Output objects.
+
+        Returns
+        -------
+        None
+        """
+        attrb_name = 'field_outputs' if isinstance(output, FieldOutputBase) else 'history_output'
+        if output.name not in getattr(self, attrb_name):
+            getattr(self, attrb_name)[output.name] = output
+        else:
+            print('WARNING: {} already present in the Problem. skipped!'.format(output.__repr__()))
+
+    def add_outputs(self, outputs):
+        """Adds multiple outputs to the Problem object.
+
+        Parameters
+        ----------
+        outputs : list
+            List of `compas_fea2` output objects.
+
+        Returns
+        -------
+        None
+        """
+        for output in outputs:
+            self.add_output(output)
+
+    def remove_output(self, load_name):
+        """Removes a load from the Problem object.
+
+        Parameters
+        ----------
+        load_name : list
+            Name of the load to remove.
+
+        Returns
+        -------
+        None
+        """
+        raise NotImplementedError
+
+    def remove_outputs(self, load_names):
+        """Removes multiple loads from the Problem object.
+
+        Parameters
+        ----------
+        load_names : list
+            List of the names of the loads to remove.
+
+        Returns
+        -------
+        None
+        """
+        raise NotImplementedError
+
+    def remove_all_output(self):
+        """Removes all the loads from the Problem object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self._field_outputs = {}
+        self._history_outputs = {}
+
+    # =========================================================================
     #                           Step methods
     # =========================================================================
 
@@ -229,27 +370,25 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        # TODO: implement exception handler
-        for disp in step.displacements:
-            if disp not in self.displacements:
-                raise ValueError(
-                    'ERROR: displacement {} not found in the model!'.format(disp))
 
-        for load in step.loads:
-            if load not in self.loads:
-                raise ValueError('ERROR: load {} not found in the model!'.format(load))
+        if step.name in self.steps:
+            print('WARNING: {} already present in the Problem. skipped!'.format(step.__repr__()))
+        else:
+            for disp in step.displacements:
+                if disp not in self.displacements:
+                    self.add_bc(disp)
 
-        for fout in step.field_outputs:
-            if fout not in self.field_outputs:
-                raise ValueError(
-                    'ERROR: field output {} not found in the model!'.format(fout))
+            for load in step.loads:
+                if load not in self.loads:
+                    self.add_load(load)
 
-        for hout in step.history_outputs:
-            if hout not in self.history_outputs:
-                raise ValueError(
-                    'ERROR: history output {} not found in the model!'.format(hout))
+            if step.field_outputs not in self.field_outputs:
+                self.add_field_output(step.field_outputs)
 
-        self.steps.append(step)
+            if step.history_outputs not in self.history_outputs:
+                self.add_history_output(step.history_outputs)
+            self._steps[step.name] = step
+            self._steps_order.append(step.name)
 
     def add_steps(self, steps):
         """Adds multiple steps to the Problem object.
@@ -257,14 +396,14 @@ class ProblemBase(FEABase):
         Parameters
         ----------
         steps : list
-            List of `compas_fea2` Step objects.
+            List of `compas_fea2` Step objects in the order they will be applied.
 
         Returns
         -------
         None
         """
         for step in steps:
-            self.add_step
+            self.add_step(step)
 
     def define_steps_order(self, order):
         """Defines the order in which the steps are applied during the analysis.

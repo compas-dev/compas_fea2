@@ -10,8 +10,8 @@ from compas_fea2.backends._base.base import FEABase
 
 __all__ = [
     'CaseBase',
-    'GeneralCaseBase',
-    'LinearPerturbationCaseBase',
+    'GeneralStaticCaseBase',
+    'StaticLinearPerturbationCaseBase',
     'HeatCaseBase',
     'ModalCaseBase',
     'HarmonicCaseBase',
@@ -32,19 +32,48 @@ class CaseBase(FEABase):
     ----------
     name : str
         Name of the Case object.
+
     """
 
-    def __init__(self, name):
+    def __init__(self, name, field_outputs, history_outputs):
 
         self.__name__ = 'CaseBase'
-        self.name = name
-        self.attr_list = ['name']
+        self._name = name
+        self._field_outputs = field_outputs
+        self._history_outputs = history_outputs
+
+    @property
+    def name(self):
+        """str : Name of the Case object."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def field_outputs(self):
+        """obj : `compas_fea2` FieldOutput object"""
+        return self._field_outputs
+
+    @field_outputs.setter
+    def field_outputs(self, value):
+        self._field_outputs = value
+
+    @property
+    def history_outputs(self):
+        """obj : `compas_fea2` HistoryOutput object"""
+        return self._history_outputs
+
+    @history_outputs.setter
+    def history_outputs(self, value):
+        self._history_outputs = value
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class GeneralCaseBase(CaseBase):
+class GeneralStaticCaseBase(CaseBase):
     """Initialises GeneralCase object for use in a static analysis.
 
     Parameters
@@ -81,10 +110,9 @@ class GeneralCaseBase(CaseBase):
 
     def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time,
                  nlgeom, displacements, loads, modify, field_outputs, history_outputs):
-        super(GeneralCaseBase, self).__init__(name=name)
+        super(GeneralStaticCaseBase, self).__init__(name, field_outputs, history_outputs)
 
         self.__name__ = 'GeneralCase'
-        self.name = name
         self.max_increments = max_increments
         self.initial_inc_size = initial_inc_size
         self.min_inc_size = min_inc_size
@@ -97,93 +125,9 @@ class GeneralCaseBase(CaseBase):
 
         self.displacements = displacements
         self.loads = loads
-        self.field_outputs = field_outputs
-        self.history_outputs = history_outputs
-
-        # self.attr_list.extend(['increments', 'max_increments', 'initial_inc_size', 'min_inc_size', 'time', 'nlgeom',
-        #                     'displacements', 'loads'])
-
-# class GeneralStepBase(StepBase):
-#     """Initialises GeneralStep object for use in a static analysis.
-
-#     Parameters
-#     ----------
-#     name : str
-#         Name of the GeneralStep.
-#     increments : int
-#         Number of step increments.
-#     iterations : int
-#         Number of step iterations.
-#     tolerance : float
-#         A tolerance for analysis solvers.
-#     factor : float, dict
-#         Proportionality factor(s) on the loads and displacements.
-#     nlgeom : bool
-#         Analyse non-linear geometry effects.
-#     nlmat : bool
-#         Analyse non-linear material effects.
-#     displacements : list
-#         Displacement object names.
-#     loads : list
-#         Load object names.
-#     stype : str
-#         'static','static,riks'.
-#     modify : bool
-#         Modify the previously added loads.
-
-#     Attributes
-#     ----------
-#     name : str
-#         Name of the GeneralStep.
-#     increments : int
-#         Number of step increments.
-#     iterations : int
-#         Number of step iterations.
-#     tolerance : float
-#         A tolerance for analysis solvers.
-#     factor : float, dict
-#         Proportionality factor(s) on the loads and displacements.
-#     nlgeom : bool
-#         Analyse non-linear geometry effects.
-#     nlmat : bool
-#         Analyse non-linear material effects.
-#     displacements : list
-#         Displacement object names.
-#     loads : list
-#         Load object names.
-#     stype : str
-#         'static','static,riks'.
-#     modify : bool
-#         Modify the previously added loads.
-#     """
-
-#     def __init__(self, name, increments=100, iterations=100, tolerance=0.01, factor=1.0, nlgeom=False, nlmat=True,
-#                  displacements=None, loads=None, stype='static', modify=True):
-#         StepBase.__init__(self, name=name)
-
-#         if not displacements:
-#             displacements = []
-
-#         if not loads:
-#             loads = []
-
-#         self.__name__      = 'GeneralStep'
-#         self.name          = name
-#         self.increments    = increments
-#         self.iterations    = iterations
-#         self.tolerance     = tolerance
-#         self.factor        = factor
-#         self.nlgeom        = nlgeom
-#         self.nlmat         = nlmat
-#         self.displacements = displacements
-#         self.loads         = loads
-#         self.modify        = modify
-#         self.stype          = stype
-#         self.attr_list.extend(['increments', 'iterations', 'factor', 'nlgeom', 'nlmat', 'displacements', 'loads',
-#                                'stype', 'tolerance', 'modify'])
 
 
-class LinearPerturbationCaseBase(CaseBase):
+class StaticLinearPerturbationCaseBase(CaseBase):
     """Initialises LinearPertubationCase object for use in a linear analysis.
 
     Parameters
@@ -196,15 +140,12 @@ class LinearPerturbationCaseBase(CaseBase):
         Load objects.
     """
 
-    def __init__(self, name, displacements, loads):
-        super(LinearPerturbationCaseBase, self).__init__(name)
+    def __init__(self, name, displacements, loads, field_outputs, history_outputs):
+        super(StaticLinearPerturbationCaseBase, self).__init__(name, field_outputs, history_outputs)
 
-        self.__name__ = 'LinearPerturbationCase'
-        self.name = name
-        self.nlgeom = 'NO'
+        self.__name__ = 'StaticLinearPerturbationCase'
         self.displacements = displacements
         self.loads = loads
-        self.attr_list.extend(['displacements', 'loads', ])
 
 
 class HeatCaseBase(CaseBase):
@@ -245,17 +186,15 @@ class HeatCaseBase(CaseBase):
         Duration of case step.
     """
 
-    def __init__(self, name, interaction, increments=100, temp0=20, dTmax=1, duration=1):
-        CaseBase.__init__(self, name=name)
+    def __init__(self, name, interaction, field_outputs, history_outputs, increments=100, temp0=20, dTmax=1, duration=1):
+        super(HeatCaseBase, self).__init__(name, field_outputs, history_outputs)
 
         self.__name__ = 'HeatCase'
-        self.name = name
         self.interaction = interaction
         self.increments = increments
         self.temp0 = temp0
         self.dTmax = dTmax
         self.duration = duration
-        self.attr_list.extend(['interaction', 'increments', 'temp0', 'dTmax', 'duration'])
 
 
 class ModalCaseBase(CaseBase):
@@ -267,24 +206,22 @@ class ModalCaseBase(CaseBase):
         Name of the ModalCase.
     modes : int
         Number of modes to analyse.
-
-    Attributes
-    ----------
-    name : str
-        Name of the ModalCase.
-    modes : int
-        Number of modes to analyse.
-    stype : str
-        'modal'.
     """
 
     def __init__(self, name, modes=1):
         super(ModalCaseBase, self).__init__(name)
 
         self.__name__ = 'ModalCase'
-        self.name = name
-        self.modes = modes
-        self.attr_list.extend(['modes', 'increments', 'displacements', 'stype'])
+        self._modes = modes
+
+    @property
+    def modes(self):
+        """int : Number of modes to analyse."""
+        return self._modes
+
+    @modes.setter
+    def modes(self, value):
+        self._modes = value
 
 
 class HarmonicCaseBase(CaseBase):

@@ -204,7 +204,7 @@ class InputFile(InputFileBase):
             text section for the input file.
         """
         section_data = []
-        for step in problem.steps:
+        for step in problem.steps.values():
             if isinstance(step, ModalStep):  # TODO too messy - check!
                 section_data.append(step._generate_jobdata())
             else:

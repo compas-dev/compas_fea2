@@ -9,6 +9,7 @@ import os
 import importlib
 
 from compas_fea2.backends._base.base import FEABase
+from compas_fea2.backends._base.model.materials import MaterialBase
 
 __all__ = [
     'ModelBase',
@@ -307,6 +308,10 @@ class ModelBase(FEABase):
         else:
             self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
 
+        # Add part's properties to the model
+        self.add_materials(part.materials.values())
+        self.add_sections(part.sections.values())
+
     def remove_part(self, part):
         """ Removes the part from the Model and all the referenced instances
         of that part.
@@ -498,7 +503,7 @@ class ModelBase(FEABase):
         if part in self.parts:
             self.parts[part].add_element(element)
             if element.section not in self.sections:
-                raise ValueError('ERROR: section {} not found in the Model!'.format(element.section))
+                raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
             elif element.section not in self.parts[part].sections:
                 self.parts[part].sections[element.section] = self.sections[element.section]
         else:
@@ -704,11 +709,33 @@ class ModelBase(FEABase):
         """
 
         if section.name not in self.sections:
+            if not isinstance(section.material, MaterialBase) and isinstance(section.material, str):
+                if section.material not in self.materials.keys():
+                    raise ValueError('ERROR: material {} not found in the Model!'.format(
+                        section.material.__repr__()))
+            else:
+                if section.material.name not in self.materials.keys():
+                    raise ValueError('ERROR: material {} not found in the Model!'.format(
+                        section.material.__repr__()))
             self.sections[section.name] = section
-            if section.material not in self.materials.keys():
-                raise ValueError('ERROR: material {} not found in the Model!'.format(
-                    section.material))
-            self.add_material(self.materials[section.material])
+        else:
+            print('WARNING: {} already added to the model. skipped!')
+            # self.add_material(self.materials[section.material])
+
+    def add_sections(self, sections):
+        """Add multiple compas_fea2 Section objects to the Model.
+
+        Parameters
+        ----------
+        sections : list
+            list of compas_fea2 Section objects.
+
+        Returns
+        -------
+        None
+        """
+        for section in sections:
+            self.add_section(section)
 
     def assign_section_to_element(self, material, part, element):
         raise NotImplementedError()
@@ -862,7 +889,7 @@ Sets
     # Load model file
     # ==============================================================================
 
-    @staticmethod
+    @ staticmethod
     def load_from_cfm(filename, output=True):
         """Imports a Model object from an .cfm file through Pickle.
 

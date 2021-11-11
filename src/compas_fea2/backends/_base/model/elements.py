@@ -45,15 +45,16 @@ class ElementBase(FEABase):
         Element type identifier. Each software has a different way of identifying the elements.
     """
 
-    def __init__(self, connectivity, section, thermal=None):
+    def __init__(self, connectivity, section, thermal=None, name=None):
         self.__name__ = 'Element'
         self.key = 0
+        self.name = str(self.key)
+        # TODO add find node method to get the connectivity from the Node object
         self.connectivity = connectivity
         self.connectivity_key = '_'.join(
             sorted([str(c) for c in self.connectivity]))
         self.section = section
         self.thermal = thermal
-        self.etype = None
         self.axes = None
 
     def __repr__(self):

@@ -51,7 +51,7 @@ class FEABase(Base):
         title = 'compas_fea2 {0} object'.format(self.__name__)
         separator = '-' * (len(title))
         data_extended = []
-        for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_'), dir(self))):
+        for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_') and a != 'jsondefinitions', dir(self))):
             try:
                 if not callable(getattr(self, a)):
                     data_extended.append('{0:<15} : {1}'.format(a, getattr(self, a)))

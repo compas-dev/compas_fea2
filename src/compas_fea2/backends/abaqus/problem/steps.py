@@ -42,7 +42,7 @@ class GeneralStaticStep(GeneralCaseBase):
         self.stype = 'Static'
         self.attr_list.extend(['stype'])
 
-    def _generate_data(self, problem):
+    def _generate_jobdata(self, problem):
         """generate the data for the input file. Since the `Problem` object is required,
         the data is generated just before writing the input file.
         """
@@ -62,14 +62,14 @@ class GeneralStaticStep(GeneralCaseBase):
 
         if self.displacements:
             for displacement in self.displacements:
-                section_data.append(problem.displacements[displacement]._generate_data())
+                section_data.append(problem.displacements[displacement]._generate_jobdata())
 
         line = """**\n** LOADS\n**\n"""
         section_data.append(line)
 
         if self.loads:
             for load in self.loads:
-                section_data.append(problem.loads[load]._generate_data())
+                section_data.append(problem.loads[load]._generate_jobdata())
 
         line = ("**\n"
                 "** OUTPUT REQUESTS\n"
@@ -186,7 +186,7 @@ class ModalStep(ModalCaseBase):
     def __init__(self, name, modes):
         super(ModalStep, self).__init__(name, modes)
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
 
         data = ("** ----------------------------------------------------------------\n"
                 "**\n"

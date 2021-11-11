@@ -34,7 +34,7 @@ class InputFile(InputFileBase):
         super(InputFile, self).__init__(problem)
         self._input_file_type = "Input File"
         self.name = '{}.inp'.format(problem.name)
-        self._jobdata = self._generate_data(problem)
+        self._jobdata = self._generate_jobdata(problem)
 
     @property
     def jobdata(self):
@@ -54,7 +54,7 @@ class InputFile(InputFileBase):
     # Constructor methods
     # ==============================================================================
 
-    def _generate_data(self, problem):
+    def _generate_jobdata(self, problem):
         """Generate the content of the input fileself from the Problem object.
 
         Parameters
@@ -114,7 +114,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for part in problem.model.parts.values():
-            data = part._generate_data()
+            data = part._generate_jobdata()
             section_data.append(data)
         return ''.join(section_data)
 
@@ -136,7 +136,7 @@ class InputFile(InputFileBase):
         str
             text section for the input file.
         """
-        return problem.model._generate_data()
+        return problem.model._generate_jobdata()
 
     def _generate_material_section(self, problem):
         """Generate the content relatitive to the material section for the input
@@ -186,7 +186,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for bc in problem.bcs.values():
-            section_data.append(bc._generate_data())
+            section_data.append(bc._generate_jobdata())
         return ''.join(section_data)
 
     def _generate_steps_section(self, problem):
@@ -206,9 +206,9 @@ class InputFile(InputFileBase):
         section_data = []
         for step in problem.steps:
             if isinstance(step, ModalStep):  # TODO too messy - check!
-                section_data.append(step._generate_data())
+                section_data.append(step._generate_jobdata())
             else:
-                section_data.append(step._generate_data(problem))
+                section_data.append(step._generate_jobdata(problem))
 
         return ''.join(section_data)
 
@@ -243,7 +243,7 @@ class ParFile(InputFileBase):
         self.vf = problem.vf
         self.iter_max = problem.iter_max
 
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -259,7 +259,7 @@ class ParFile(InputFileBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         """Generate the content of the parameter file from the optimisation
         settings of the Problem object.
 

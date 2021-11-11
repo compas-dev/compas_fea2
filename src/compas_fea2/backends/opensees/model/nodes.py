@@ -64,7 +64,7 @@ class Node(NodeBase):
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, label=label)
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         '''Generates the string information for the input file.
 
         Parameters
@@ -88,4 +88,4 @@ if __name__ == "__main__":
 
     n = Node([2, 3, 4])
     n.key = 300
-    print(n._generate_data())
+    print(n._generate_jobdata())

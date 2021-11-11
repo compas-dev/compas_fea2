@@ -30,9 +30,9 @@ class Instance(InstanceBase):
         super(Instance, self).__init__(name, part, sets)
         for iset in sets:
             iset.instance = self.name
-            iset._jobdata = iset._generate_data()
+            iset._jobdata = iset._generate_jobdata()
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         section_data = ['*Instance, name={}, part={}\n'.format(self.name, self.part.name)]
         section_data.append('*End Instance\n**\n')
         return ''.join(section_data)

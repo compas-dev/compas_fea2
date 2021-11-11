@@ -20,10 +20,10 @@ class Model(ModelBase):
         super(Model, self).__init__(name, description)
         self._backend = 'abaqus'
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         section_data = ['*Assembly, name={}\n**\n'.format(self.name)]
         for instance in self.instances.values():
-            section_data.append(instance._generate_data())
+            section_data.append(instance._generate_jobdata())
         # for surface in self.surfaces:
         #     section_data.append(surface.jobdata)
         # for constraint in self.constraints:
@@ -31,7 +31,7 @@ class Model(ModelBase):
         section_data.append('*End Assembly\n**\n')
 
         for iset in self.sets.values():
-            section_data.append(iset._generate_data())
+            section_data.append(iset._generate_jobdata())
         return ''.join(section_data)
 
 

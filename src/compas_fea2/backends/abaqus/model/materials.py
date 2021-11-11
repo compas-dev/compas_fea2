@@ -43,7 +43,7 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, unilateral=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -59,7 +59,7 @@ class ElasticIsotropic(ElasticIsotropicBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         n = ''
         if self.unilateral:
             if self.unilateral == 'nc':
@@ -81,7 +81,7 @@ class Stiff(StiffBase):
 
     def __init__(self, name, E):
         super(Stiff, self).__init__(name, E)
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -97,7 +97,7 @@ class Stiff(StiffBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return ("*Material, name={}\n"
                 "*Density\n"
                 "{},\n"
@@ -119,7 +119,7 @@ class ElasticPlastic(ElasticPlasticBase):
 
     def __init__(self, name, E, v, p, f, e):
         super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
-        self._data = self._generate_data()
+        self._data = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -135,7 +135,7 @@ class ElasticPlastic(ElasticPlasticBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -159,7 +159,7 @@ class Steel(SteelBase):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
         super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -175,7 +175,7 @@ class Steel(SteelBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -208,7 +208,7 @@ class Concrete(ConcreteBase):
 
     def __init__(self, name, fck, v, p, fr):
         super(Concrete, self).__init__(name, fck, v, p, fr)
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -224,7 +224,7 @@ class Concrete(ConcreteBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -255,7 +255,7 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
         super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -271,7 +271,7 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -302,7 +302,7 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
         super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -318,7 +318,7 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -377,7 +377,7 @@ class UserMaterial(MaterialBase):
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
 
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -401,7 +401,7 @@ class UserMaterial(MaterialBase):
                 constants.append(self.__dict__[k])
         return constants
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         k = [str(i) for i in self.constants]
         return ("*Material, name={}\n"
                 "*Density\n"

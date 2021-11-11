@@ -58,7 +58,7 @@ class BeamElement(BeamElementBase):
         self.eltype = 'element elasticBeamColumn'
         self.orientation = orientation
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         line = []
         line.append('geomTransf Corotational {0} {1}\n'.format(
             self.eltype, ' '.join([str(i) for i in self.orientation])))
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     nodes = [Node([i, 3, 4]) for i in range(4)]
     mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
     sec = SolidSection(name='section_A', material='mat_A')
-    print(sec._generate_data())
+    print(sec._generate_jobdata())
     b = BeamElement(connectivity=nodes, section=sec)
 
     print(b)
-    print(b._generate_data())
+    print(b._generate_jobdata())

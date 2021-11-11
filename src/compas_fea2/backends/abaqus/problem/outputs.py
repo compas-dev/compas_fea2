@@ -22,7 +22,7 @@ class FieldOutput():
         self.element_outputs = element_outputs
         self.frequency = frequency
 
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -38,7 +38,7 @@ class FieldOutput():
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data = ['** FIELD OUTPUT: {}\n**'.format(self.name)]
         if not (self.node_outputs and self.element_outputs):
             data.append('*Output, field, variable=PRESELECT\n**\n')

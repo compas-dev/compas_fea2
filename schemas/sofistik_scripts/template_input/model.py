@@ -43,7 +43,7 @@ class Material:
     shear_ratio: float
     name: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return "mat no {0:>7}  e {1:>12}  mue {2:>6}  {3}".format(
             self.nr, self.elasticity_modulus, self.shear_ratio,
             ("titl '" + self.name + "'" if self.name else ""))
@@ -51,8 +51,9 @@ class Material:
 
 @dataclass
 class Section:
-    def _generate_data(self):
+    def _generate_jobdata(self):
         raise NotImplementedError
+
 
 @dataclass
 class RectangularSection(Section):
@@ -62,7 +63,7 @@ class RectangularSection(Section):
     material_nr: int
     name: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return "srec no {0:>6}  h {1:>8}[mm]  b {2:>8}[mm]  mno {3:>6}  {4}".format(
             self.nr, self.height, self.width, self.material_nr,
             ("titl '" + self.name + "'" if self.name else ""))
@@ -75,7 +76,7 @@ class Node:
     y: float
     z: float
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return "node no {0:>8}  x {1:>12}  y {2:>12}  z {3:>12}".format(
             self.nr, self.x, self.y, self.z)
 
@@ -90,9 +91,9 @@ class Beam:
     start_hinge: str = None
     end_hinge: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return "beam no {0}  na {1:>8}  ne {2:>8}  ncs {3:>8}  div {4}".format(
-                self.nr, self.start_node, self.end_node, self.section_nr, self.division)
+            self.nr, self.start_node, self.end_node, self.section_nr, self.division)
 
 
 @dataclass
@@ -105,19 +106,18 @@ class BoundaryCondition:
     ry: bool = False
     rz: bool = False
 
-
-    def _generate_data(self):
-        flags = {"px" : self.tx, "py" : self.ty, "pz" : self.tz,
-                "mx" : self.rx, "my" : self.ry, "mz" : self.rz}
+    def _generate_jobdata(self):
+        flags = {"px": self.tx, "py": self.ty, "pz": self.tz,
+                 "mx": self.rx, "my": self.ry, "mz": self.rz}
         fixity = "".join((k if v else "") for k, v in flags.items())
         return "node no {0}  fix {1}".format(self.nr, fixity)
 
 
-
 @dataclass
 class Load:
-    def _generate_data(self):
+    def _generate_jobdata(self):
         raise NotImplementedError
+
 
 @dataclass
 class NodeLoad(Load):
@@ -126,11 +126,14 @@ class NodeLoad(Load):
     py: float = 0.0
     pz: float = 0.0
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         node_loads = []
-        if self.px: node_loads.append("node no {0:>8}  type px  p1 {1}".format(self.node_nr, self.px))
-        if self.py: node_loads.append("node no {0:>8}  type py  p1 {1}".format(self.node_nr, self.py))
-        if self.pz: node_loads.append("node no {0:>8}  type pz  p1 {1}".format(self.node_nr, self.pz))
+        if self.px:
+            node_loads.append("node no {0:>8}  type px  p1 {1}".format(self.node_nr, self.px))
+        if self.py:
+            node_loads.append("node no {0:>8}  type py  p1 {1}".format(self.node_nr, self.py))
+        if self.pz:
+            node_loads.append("node no {0:>8}  type pz  p1 {1}".format(self.node_nr, self.pz))
         return "\n".join(node_loads)
 
 
@@ -140,10 +143,10 @@ class LoadCase:
     loads: List[Load]
     name: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         load_case = "lc no {0:>7}  {1}".format(self.nr,
-            ("titl '" + self.name + "'" if self.name else ""))
-        loads = "\n".join(load._generate_data() for load in self.loads)
+                                               ("titl '" + self.name + "'" if self.name else ""))
+        loads = "\n".join(load._generate_jobdata() for load in self.loads)
         return "\n".join((load_case, loads))
 
 
@@ -155,9 +158,9 @@ class LoadCombination:
     dead_load_factor: float = 1.0
     name: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         factored_cases = ["lcc no {0:>6}  fact {1:>5}".format(lc_nr, lf)
-            for lc_nr, lf in zip(list(lc.nr for lc in self.load_cases), self.load_case_factors)]
+                          for lc_nr, lf in zip(list(lc.nr for lc in self.load_cases), self.load_case_factors)]
         return "\n".join(factored_cases)
 
 
@@ -172,17 +175,17 @@ class Analysis:
     # (linear, 2nd order, 3rd order, material nonl, buckling eigenvalues, dynamic eigenvalues, stress interpolation, ...)
     @property
     def analysis_types(self):
-        return {0 : "syst prob line",
-                1 : "syst prob th2  nmat no",
-                2 : "syst prob th3  nmat no",
-                5 : "syst prob th2  nmat yes",
-                6 : "syst prob th3  nmat yes"}
+        return {0: "syst prob line",
+                1: "syst prob th2  nmat no",
+                2: "syst prob th3  nmat no",
+                5: "syst prob th2  nmat yes",
+                6: "syst prob th3  nmat yes"}
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         analysis_settings = self.analysis_types[self.analysis_type]
         base_case = "lc no {0:>7}  dlz {1:>6}  {2}".format(self.nr, self.load_combination.dead_load_factor,
-            ("titl '" + self.name + "'" if self.name else ""))
-        factored_cases = self.load_combination._generate_data()
+                                                           ("titl '" + self.name + "'" if self.name else ""))
+        factored_cases = self.load_combination._generate_jobdata()
         return "\n".join((analysis_settings + "\n", base_case, factored_cases))
 
 
@@ -192,9 +195,9 @@ class StressInterpolation:
     analyses: List[Analysis]
     name: str = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return "lc no {0:>7}  {1}".format(",".join(str(a.nr) for a in self.analyses),
-            ("titl '" + self.name + "'" if self.name else ""))
+                                          ("titl '" + self.name + "'" if self.name else ""))
 
 
 @dataclass
@@ -205,13 +208,13 @@ class Envelope:
     # set (bit) flags for different envelope types
     # (nodal displacements, internal forces, ...)
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         raise NotImplementedError
-
 
 
 class Model:
     """Placeholder for model class."""
+
     def __init__(self, name):
         self.name = name
 
@@ -226,7 +229,6 @@ class Model:
         self._load_combinations = ModelData(LoadCombination)
         self._analyses = ModelData(Analysis)
         self._stresses = ModelData(StressInterpolation)
-
 
     # ----- Alternative Constructors -----
 
@@ -247,12 +249,12 @@ class Model:
     def from_json(cls, in_file, geometry_only=False):
         raise NotImplementedError
 
-
     # ----- getters and setters -----
 
     @property
     def materials(self):
         return self._materials
+
     @materials.setter
     def materials(self, value):
         self._materials._dict = value._dict
@@ -260,6 +262,7 @@ class Model:
     @property
     def sections(self):
         return self._sections
+
     @sections.setter
     def sections(self, value):
         self._sections._dict = value._dict
@@ -267,6 +270,7 @@ class Model:
     @property
     def nodes(self):
         return self._nodes
+
     @nodes.setter
     def nodes(self, value):
         self._nodes._dict = value._dict
@@ -274,6 +278,7 @@ class Model:
     @property
     def beams(self):
         return self._beams
+
     @beams.setter
     def beams(self, value):
         self._beams._dict = value._dict
@@ -281,6 +286,7 @@ class Model:
     @property
     def boundary_conditions(self):
         return self._boundary_conditions
+
     @boundary_conditions.setter
     def boundary_conditions(self, value):
         self._boundary_conditions._dict = value._dict
@@ -288,6 +294,7 @@ class Model:
     @property
     def load_cases(self):
         return self._load_cases
+
     @load_cases.setter
     def load_cases(self, value):
         self._load_cases._dict = value._dict
@@ -295,6 +302,7 @@ class Model:
     @property
     def load_combinations(self):
         return self._load_combinations
+
     @load_combinations.setter
     def load_combinations(self, value):
         self._load_combinations._dict = value._dict
@@ -302,6 +310,7 @@ class Model:
     @property
     def analyses(self):
         return self._analyses
+
     @analyses.setter
     def analyses(self, value):
         self._analyses._dict = value._dict
@@ -309,14 +318,15 @@ class Model:
     @property
     def stresses(self):
         return self._stresses
+
     @stresses.setter
     def stresses(self, value):
         self._stresses._dict = value._dict
 
 
-
 class ModelData:
     """Placeholder custom container class to internally map model data ids onto model data."""
+
     def __init__(self, data_type):
         self._dict = dict()
         self.data_type = data_type
@@ -334,22 +344,23 @@ class ModelData:
             return combined_data
         elif isinstance(other, Iterable):
             for val in other:
-                if not isinstance(val, self.data_type): continue
+                if not isinstance(val, self.data_type):
+                    continue
                 self._dict[val.nr] = val
         elif isinstance(other, self.data_type):
-                self._dict[other.nr] = other
-        else: raise TypeError
+            self._dict[other.nr] = other
+        else:
+            raise TypeError
         return self
 
     def __len__(self):
         return len(self._dict)
-    
+
     def __str__(self):
         return "\n".join(str(val) for val in self._dict.values())
-    
+
     def clear(self):
         self._dict.clear()
-
 
 
 if __name__ == "__main__":

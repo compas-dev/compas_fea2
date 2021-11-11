@@ -64,25 +64,25 @@ class Part(PartBase):
     #                       Generate input file data
     # =========================================================================
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
 
         from compas_fea2.backends.abaqus.model import Set
 
         # Write nodes
         part_data = ['*Node\n']
         for node in self.nodes:
-            part_data.append(node._generate_data())
+            part_data.append(node._generate_jobdata())
 
         # Write elements
         for eltype in self.elements_by_type:
             part_data.append("*Element, type={}\n".format(eltype))
             # data = []
             for key in self.elements_by_type[eltype]:
-                part_data.append(self.elements[key]._generate_data())
+                part_data.append(self.elements[key]._generate_jobdata())
 
         # Write user-defined nsets
         for nset in self.nsets:
-            part_data.append(nset._generate_data())
+            part_data.append(nset._generate_jobdata())
 
         # Write sets
         for section in self.elements_by_section:
@@ -102,23 +102,23 @@ class Part(PartBase):
                 o += 1
 
         for elset in self.elsets:
-            part_data.append(elset._generate_data())
+            part_data.append(elset._generate_jobdata())
 
         # Write sections
         for section in self.sections.values():
             o = 1
             for orientation in self.orientations_by_section[section.name]:
                 if orientation:
-                    part_data.append(section._generate_data('_{}-{}'.format(section.name, o), orientation))
+                    part_data.append(section._generate_jobdata('_{}-{}'.format(section.name, o), orientation))
                     o += 1
                 else:
-                    part_data.append(section._generate_data('_{}-{}'.format(section.name, o)))
+                    part_data.append(section._generate_jobdata('_{}-{}'.format(section.name, o)))
 
         # Write releases
         if self.releases:
             part_data.append('\n*Release\n')
             for release in self.releases:
-                part_data.append(release._generate_data())
+                part_data.append(release._generate_jobdata())
 
         temp = ''.join(part_data)
         return ''.join(["*Part, name={}\n".format(self.name), temp,
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     part1.add_elements(elements)
     part1.add_element(BeamElement([29, 0], section_A, elset='test'))
     print(part1.elements_by_type)
-    print(part1._generate_data())
+    print(part1._generate_jobdata())
 
     # nset = Set('test_neset', my_part.nodes)
     # my_part = Part(name='test', nodes=my_part.nodes, elements=[el_one, el_two, el_three, el_4], sets=[nset])

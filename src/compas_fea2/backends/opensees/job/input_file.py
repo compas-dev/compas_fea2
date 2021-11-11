@@ -34,7 +34,7 @@ class InputFile(InputFileBase):
         super(InputFile, self).__init__(problem)
         self._input_file_type = "Input File"
         self.name = '{}.tcl'.format(problem.name)
-        self._jobdata = self._generate_data(problem)
+        self._jobdata = self._generate_jobdata(problem)
 
     @property
     def jobdata(self):
@@ -54,7 +54,7 @@ class InputFile(InputFileBase):
     # Constructor methods
     # ==============================================================================
 
-    def _generate_data(self, problem):
+    def _generate_jobdata(self, problem):
         """Generate the content of the input fileself from the Problem object.
 
         Parameters
@@ -62,8 +62,8 @@ class InputFile(InputFileBase):
         problem : obj
             Problem object.
 
-        Resturn
-        -------
+        Return
+        ------
         str
             content of the input file
         """
@@ -71,7 +71,8 @@ class InputFile(InputFileBase):
 # Heading
 #------------------------------------------------------------------
 #
-{}
+wipe
+model basic -ndm {0} -ndf {0}
 #
 #
 #------------------------------------------------------------------
@@ -124,7 +125,7 @@ class InputFile(InputFileBase):
 #
 #
 {}
-""".format()
+""".format(problem.ndof)
 # """.format(self.name, self.job_name, self._generate_part_section(problem), self._generate_assembly_section(problem),
 #            self._generate_material_section(problem), self._generate_int_props_section(problem),
 #            self._generate_interactions_section(problem), self._generate_bcs_section(problem),
@@ -145,7 +146,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for part in problem.model.parts.values():
-            data = part._generate_data()
+            data = part._generate_jobdata()
             section_data.append(data)
         return ''.join(section_data)
 
@@ -167,7 +168,7 @@ class InputFile(InputFileBase):
         str
             text section for the input file.
         """
-        return problem.model._generate_data()
+        return problem.model._generate_jobdata()
 
     def _generate_material_section(self, problem):
         """Generate the content relatitive to the material section for the input
@@ -217,7 +218,7 @@ class InputFile(InputFileBase):
         """
         section_data = []
         for bc in problem.bcs.values():
-            section_data.append(bc._generate_data())
+            section_data.append(bc._generate_jobdata())
         return ''.join(section_data)
 
     def _generate_steps_section(self, problem):
@@ -237,9 +238,9 @@ class InputFile(InputFileBase):
         section_data = []
         for step in problem.steps:
             if isinstance(step, ModalStep):  # TODO too messy - check!
-                section_data.append(step._generate_data())
+                section_data.append(step._generate_jobdata())
             else:
-                section_data.append(step._generate_data(problem))
+                section_data.append(step._generate_jobdata(problem))
 
         return ''.join(section_data)
 

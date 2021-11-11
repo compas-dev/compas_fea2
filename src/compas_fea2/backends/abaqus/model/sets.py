@@ -34,7 +34,7 @@ class Set(SetBase):
     def __init__(self, name, selection, stype, generate=False):
         super(Set, self).__init__(name, selection, stype, generate)
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = '*{}, {}={}'.format(self.stype, self.stype, self.name)
         if self.instance:
@@ -71,7 +71,7 @@ class Surface(SurfaceBase):
     def __init__(self, name, set, generate=False):
         super(Surface, self).__init__(name, set, generate)
 
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -88,7 +88,7 @@ class Surface(SurfaceBase):
         return self._jobdata
 
     # TODO: old ---> change
-    def _generate_data(self):
+    def _generate_jobdata(self):
         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
         self.write_line('** ELEMENT, SIDE')
 

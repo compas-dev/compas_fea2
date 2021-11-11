@@ -59,7 +59,7 @@ class MassElement(MassElementBase):
 
     # TODO: continue
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         line = ("*ELEMENT, TYPE=MASS, ELSET={}\n"
                 "{}, {}\n"
                 "*MASS, ELSET={0}\n"
@@ -78,7 +78,7 @@ class BeamElement(BeamElementBase):
         self.eltype = 'B31'
         self.orientation = orientation
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 
@@ -111,7 +111,7 @@ class TrussElement(TrussElementBase):
         self.eltype = 'T3D2'
         self.orientation = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 # class StrutElement(StrutElementBase):
@@ -173,7 +173,7 @@ class ShellElement(ShellElementBase):
         else:
             raise NotImplementedError
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 # class FaceElement(FaceElementBase):
@@ -198,6 +198,7 @@ class MembraneElement(MembraneElementBase):
 # 3D elements
 # ==============================================================================
 
+
 class SolidElement(SolidElementBase):
 
     def __init__(self, connectivity, section, eltype=None, elset=None, thermal=None):
@@ -213,7 +214,7 @@ class SolidElement(SolidElementBase):
         else:
             self.eltype = eltype
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 
@@ -263,8 +264,8 @@ if __name__ == "__main__":
     nodes = [Node([i, 3, 4]) for i in range(4)]
     mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
     sec = SolidSection(name='section_A', material='mat_A')
-    print(sec._generate_data())
+    print(sec._generate_jobdata())
     b = SolidElement(connectivity=nodes, section=sec)
 
     print(b)
-    print(b._generate_data())
+    print(b._generate_jobdata())

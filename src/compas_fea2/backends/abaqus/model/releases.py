@@ -18,7 +18,7 @@ class BeamEndRelease(BeamEndReleaseBase):
         super(BeamEndRelease).__init__()
         self.elem_end_dof = elem_end_dof
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data = ''
         for k, v in self.elem_end_dof.items():
             for end, dofs in v.items():

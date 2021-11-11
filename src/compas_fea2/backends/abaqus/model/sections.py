@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -50,7 +49,7 @@ class AbaqusBeamSection(SectionBase):
     def __init__(self, name, material):
         super(AbaqusBeamSection, self).__init__(name, material)
 
-    def _generate_data(self, set_name, orientation):
+    def _generate_jobdata(self, set_name, orientation):
         orientation_line = ', '.join([str(v) for v in orientation])
         return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
@@ -77,7 +76,7 @@ class MassSection(SectionBase):
         super(MassSection, self).__init__(name)
         self.mass = mass
 
-    def _generate_data(self, set_name, orientation):
+    def _generate_jobdata(self, set_name, orientation):
         return """** Section: {}
 *Mass, elset={}
 {}\n""".format(self.name, set_name, self.mass)
@@ -289,7 +288,7 @@ class TrussSection(TrussSectionBase):
     def __init__(self, name, A, material):
         super(TrussSection, self).__init__(name, A, material)
 
-    def _generate_data(self, set_name):
+    def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
 {},\n""".format(self.name, set_name, self.material, self.geometry['A'])
@@ -341,7 +340,7 @@ class ShellSection(ShellSectionBase):
         self.__doc__ += ShellSection.__doc__
         self.int_points = int_points
 
-    def _generate_data(self, set_name):
+    def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Shell Section, elset={}, material={}
 {}, {}\n""".format(self.name, set_name, self.material, self.t, self.int_points)
@@ -352,7 +351,7 @@ class MembraneSection(MembraneSectionBase):
     def __init__(self, name, t, material):
         super(MembraneSection, self).__init__(name, t, material)
 
-    def _generate_data(self, set_name):
+    def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Membrane Section, elset={}, material={}
 {},\n""".format(self.name, set_name, self.material.name, self.t)
@@ -367,7 +366,7 @@ class SolidSection(SolidSectionBase):
     def __init__(self, name, material):
         super(SolidSectionBase, self).__init__(name, material)
 
-    def _generate_data(self, set_name):
+    def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
 ,\n""".format(self.name, set_name, self.material)

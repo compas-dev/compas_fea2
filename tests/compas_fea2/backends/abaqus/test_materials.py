@@ -21,7 +21,7 @@ unilateral = ["nc", "nt", "junk"]
 def test_ElasticIsotropic_generate_data_1():
     material_input = ElasticIsotropic(name, young_mod, poisson_ratio, density,
                                       unilateral=unilateral[0])
-    function_out = material_input._generate_data()
+    function_out = material_input._generate_jobdata()
     expected_out = ("*Material, name={}\n"
                     "*Density\n"
                     "{},\n"
@@ -34,7 +34,7 @@ def test_ElasticIsotropic_generate_data_1():
 def test_ElasticIsotropic_generate_data_2():
     material_input = ElasticIsotropic(name, young_mod, poisson_ratio, density,
                                       unilateral=unilateral[1])
-    function_out = material_input._generate_data()
+    function_out = material_input._generate_jobdata()
     expected_out = ("*Material, name={}\n"
                     "*Density\n"
                     "{},\n"
@@ -48,7 +48,7 @@ def test_ElasticIsotropic_generate_data_3():
     # FIXME: don't leave this in the future. It's here only to show an example of a badly designed test.
     material_input = ElasticIsotropic(name, young_mod, poisson_ratio, density,
                                       unilateral=unilateral[0])
-    function_out = material_input._generate_data()
+    function_out = material_input._generate_jobdata()
     expected_out = ("*Material, name={}\n"
                     "*Density\n"
                     "{},\n"
@@ -75,7 +75,7 @@ def test_Stiff_generate_data():
     init_stiff = Stiff("def", 100)
     # My material
     material_input = Stiff(name, young_mod)
-    function_out = material_input._generate_data()
+    function_out = material_input._generate_jobdata()
     expected_out = ("*Material, name={}\n"
                     "*Density\n"
                     "{},\n"
@@ -97,7 +97,7 @@ def test_Steel_generate_data():
     ep = eu * 1E-2 - (fy * 1E6) / (E * 1E9)
     # My material
     material_input = Steel("steely", fy, fu, eu, E, 0.3, 1.0)
-    function_out = material_input._generate_data()
+    function_out = material_input._generate_jobdata()
     # Expected
     # Materials are units dependent - (E, f<y,u>)
     expected_out = ("*Material, name={}\n"
@@ -124,7 +124,7 @@ def test_Concrete_generate_data():
     # material_base = ConcreteBase(name, fck, v, p, fr)
     # # My material
     # material_input = Concrete(name, fck, v, p, fr)
-    # function_out = material_input._generate_data()
+    # function_out = material_input._generate_jobdata()
     # print(function_out)
     # # Expected
     # # Materials are units dependent - (E, f<y,u>)
@@ -159,7 +159,7 @@ def test_UserMaterial_constructor_2():
                       key=1)
     material_input = UserMaterial('user', sub_path, p, **extra_args)
 
-    # Test _generate_data()
+    # Test _generate_jobdata()
 
     expected_res = '*Material, name={}\n*Density\n{},'\
                    '\n*User Material, constants={}\n{}, xyz, {}'.format(name, p,

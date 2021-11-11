@@ -17,7 +17,7 @@ from compas_fea2.backends._base.problem import RollerDisplacementXZBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-#TODO: add the possibility to add bcs to nodes/elements and not only to sets
+# TODO: add the possibility to add bcs to nodes/elements and not only to sets
 
 __all__ = [
     'GeneralDisplacement',
@@ -34,23 +34,24 @@ __all__ = [
     'RollerDisplacementXZ'
 ]
 
-dofs    = ['x',  'y',  'z',  'xx', 'yy', 'zz']
+dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-def _generate_data(obj):
+
+def _generate_jobdata(obj):
     data_section = []
     line = ("** Name: {} Type: Displacement/Rotation\n"
             "*Boundary").format(obj.name)
     data_section.append(line)
-    c=1
+    c = 1
     for dof in dofs:
-        if dof in obj.components.keys() and obj.components[dof]!=None:
+        if dof in obj.components.keys() and obj.components[dof] != None:
             if not obj.components[dof]:
                 line = """{}, {}, {}""".format(obj.bset, c, c)
             else:
                 line = """{}, {}, {}, {}""".format(obj.bset, c, c, obj.components[dof])
             data_section.append(line)
-        c+=1
-    return '\n'.join(data_section) +'\n'
+        c += 1
+    return '\n'.join(data_section) + '\n'
 
 
 class GeneralDisplacement(GeneralDisplacementBase):
@@ -88,12 +89,13 @@ class GeneralDisplacement(GeneralDisplacementBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class FixedDisplacement(FixedDisplacementBase):
@@ -119,12 +121,13 @@ class FixedDisplacement(FixedDisplacementBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class PinnedDisplacement(PinnedDisplacementBase):
@@ -150,12 +153,13 @@ class PinnedDisplacement(PinnedDisplacementBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(PinnedDisplacement, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class FixedDisplacementXX(FixedDisplacementXXBase):
@@ -181,12 +185,13 @@ class FixedDisplacementXX(FixedDisplacementXXBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementXX, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class FixedDisplacementYY(FixedDisplacementYYBase):
@@ -212,12 +217,13 @@ class FixedDisplacementYY(FixedDisplacementYYBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementYY, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class FixedDisplacementZZ(FixedDisplacementZZBase):
@@ -243,12 +249,13 @@ class FixedDisplacementZZ(FixedDisplacementZZBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(FixedDisplacementZZ, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementX(RollerDisplacementXBase):
@@ -274,12 +281,13 @@ class RollerDisplacementX(RollerDisplacementXBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementX, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementY(RollerDisplacementYBase):
@@ -305,12 +313,13 @@ class RollerDisplacementY(RollerDisplacementYBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementY, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementZ(RollerDisplacementZBase):
@@ -336,12 +345,13 @@ class RollerDisplacementZ(RollerDisplacementZBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementZ, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementXY(RollerDisplacementXYBase):
@@ -367,12 +377,13 @@ class RollerDisplacementXY(RollerDisplacementXYBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXY, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementYZ(RollerDisplacementYZBase):
@@ -398,12 +409,13 @@ class RollerDisplacementYZ(RollerDisplacementYZBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementYZ, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class RollerDisplacementXZ(RollerDisplacementXZBase):
@@ -429,16 +441,15 @@ class RollerDisplacementXZ(RollerDisplacementXZBase):
     axes : str
         'local' or 'global' coordinate axes.
     """
+
     def __init__(self, name, bset, axes='global'):
         super(RollerDisplacementXZ, self).__init__(name, None, axes)
         self.bset = bset
 
-    def _generate_data(self):
-        return _generate_data(self)
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 if __name__ == "__main__":
     d = RollerDisplacementXZ(name='bc_roller', bset='roller')
-    print(d._generate_data())
-
-
+    print(d._generate_jobdata())

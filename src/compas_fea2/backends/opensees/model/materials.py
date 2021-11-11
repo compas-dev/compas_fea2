@@ -25,9 +25,9 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, unilateral=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
-        # self._jobdata = self._generate_data()
+        # self._jobdata = self._generate_jobdata()
 
-    def _generate_data(self, m_index):
+    def _generate_jobdata(self, m_index):
         line = []
         line.append('uniaxialMaterial Elastic {0} {1}\n'.format(m_index, self.E['E']))
         line.append('nDMaterial ElasticIsotropic {0} {1} {2} {3}'.format(
@@ -39,4 +39,4 @@ class ElasticIsotropic(ElasticIsotropicBase):
 if __name__ == "__main__":
 
     material = ElasticIsotropic(name='test', E=1, v=2, p=3)
-    print(material._generate_data(1))
+    print(material._generate_jobdata(1))

@@ -55,7 +55,7 @@ class PointLoad(PointLoadBase):
         else:
             self.follow = ''
 
-        self._jobdata = self._generate_data()
+        self._jobdata = self._generate_jobdata()
 
     @property
     def jobdata(self):
@@ -71,7 +71,7 @@ class PointLoad(PointLoadBase):
         """
         return self._jobdata
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         data_section = []
         line = ("** Name: {} Type: Concentrated Force\n"
                 "*Cload, OP={}{}").format(self.name, self.op, self.follow)
@@ -106,7 +106,7 @@ class GravityLoad(GravityLoadBase):
         super(GravityLoad, self).__init__(name, g, x, y, z)
         self.lset = None
 
-    def _generate_data(self):
+    def _generate_jobdata(self):
         return ("** Name: {} Type: Gravity\n"
                 "*Dload\n"
                 ", GRAV, {}, {}, {}, {}\n").format(self.name, self.g, self.components['x'],

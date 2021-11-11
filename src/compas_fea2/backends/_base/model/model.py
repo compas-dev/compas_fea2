@@ -22,11 +22,17 @@ class ModelBase(FEABase):
     ----------
     name : str
         Name of the Model.
+    description : str
+        Some description of the Model. This will be added to the input file and
+        can be useful for future reference.
 
     Attributes
     ----------
     name : str
         Name of the Model.
+    description : str
+        Some description of the Model. This will be added to the input file and
+        can be useful for future reference.
     parts : list
         A list with the `Part` objects referenced in the Model.
     instances : dict
@@ -45,18 +51,95 @@ class ModelBase(FEABase):
         A dictionary of all the sets defined in the Model.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, description):
         self.__name__ = 'Model'
         self.name = name
-        self.instances = {}
-        self.parts = {}
-        self.surfaces = []
-        self.constraints = []
-        self.releases = []
-        self.interactions = []
-        self.materials = {}
-        self.sections = {}
-        self.sets = {}
+        self.description = description
+        self._instances = {}
+        self._parts = {}
+        self._surfaces = []
+        self._constraints = []
+        self._releases = []
+        self._interactions = []
+        self._materials = {}
+        self._sections = {}
+        self._sets = {}
+
+    @property
+    def instances(self):
+        return self._instances
+
+    @property
+    def parts(self):
+        """The parts property."""
+        return self._parts
+
+    @parts.setter
+    def parts(self, value):
+        self._parts = value
+
+    @property
+    def surfaces(self):
+        """The surfaces property."""
+        return self._surfaces
+
+    @surfaces.setter
+    def surfaces(self, value):
+        self._surfaces = value
+
+    @property
+    def constraits(self):
+        """The constraits property."""
+        return self._constraits
+
+    @constraits.setter
+    def constraits(self, value):
+        self._constraits = value
+
+    @property
+    def releases(self):
+        """The releases property."""
+        return self._releases
+
+    @releases.setter
+    def releases(self, value):
+        self._releases = value
+
+    @property
+    def interactions(self):
+        """The interactions property."""
+        return self._interactions
+
+    @interactions.setter
+    def interactions(self, value):
+        self._interactions = value
+
+    @property
+    def materials(self):
+        """The materials property."""
+        return self._materials
+
+    @materials.setter
+    def materials(self, value):
+        self._materials = value
+
+    @property
+    def sections(self):
+        """The sections property."""
+        return self._sections
+
+    @sections.setter
+    def sections(self, value):
+        self._sections = value
+
+    @property
+    def sets(self):
+        """The sets property."""
+        return self._sets
+
+    @sets.setter
+    def sets(self, value):
+        self._sets = value
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)

@@ -2,13 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._base.problem import LoadBase
 from compas_fea2.backends._base.problem import PrestressLoadBase
 from compas_fea2.backends._base.problem import PointLoadBase
 from compas_fea2.backends._base.problem import LineLoadBase
 from compas_fea2.backends._base.problem import AreaLoadBase
 from compas_fea2.backends._base.problem import GravityLoadBase
-from compas_fea2.backends._base.problem import ThermalLoadBase
+# from compas_fea2.backends._base.problem import ThermalLoadBase
 from compas_fea2.backends._base.problem import TributaryLoadBase
 from compas_fea2.backends._base.problem import HarmonicPointLoadBase
 from compas_fea2.backends._base.problem import HarmonicPressureLoadBase
@@ -24,7 +23,7 @@ __all__ = [
     'LineLoad',
     'AreaLoad',
     'GravityLoad',
-    'ThermalLoad',
+    # 'ThermalLoad',
     'TributaryLoad',
     'HarmoniPointLoadBase',
     'HarmonicPressureLoad',
@@ -113,11 +112,11 @@ class GravityLoad(GravityLoadBase):
                                                    self.components['y'], self.components['z'])
 
 
-class ThermalLoad(ThermalLoadBase):
+# class ThermalLoad(ThermalLoadBase):
 
-    def __init__(self, name, elements, temperature):
-        super(ThermalLoad, self).__init__(name, elements, temperature)
-        raise NotImplementedError
+#     def __init__(self, name, elements, temperature):
+#         super(ThermalLoad, self).__init__(name, elements, temperature)
+#         raise NotImplementedError
 
 
 class TributaryLoad(TributaryLoadBase):

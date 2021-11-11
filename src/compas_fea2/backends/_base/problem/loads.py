@@ -18,7 +18,7 @@ __all__ = [
     'LineLoadBase',
     'AreaLoadBase',
     'GravityLoadBase',
-    'ThermalLoadBase',
+    # 'ThermalLoadBase',
     'TributaryLoadBase',
     'HarmonicPointLoadBase',
     'HarmonicPressureLoadBase',
@@ -58,19 +58,67 @@ class LoadBase(FEABase):
 
     def __init__(self, name, axes='global', components={}, nodes=[], elements=[]):
         self.__name__ = 'LoadObject'
-        self.name = name
-        self.axes = axes
-        self.components = components
-        self.nodes = nodes
-        self.elements = elements
-        self.attr_list = ['name', 'axes', 'components', 'nodes', 'elements']
+        self._name = name
+        self._axes = axes
+        self._components = components
+        self._nodes = nodes
+        self._elements = elements
+        for c, a in self._components.items():
+            setattr(self, '_'+c, a)
+        # self._x = None
+        # self._y = None
+        # self._z = None
+        # self._xx = None
+        # self._yy = None
+        # self._zz = None
+
+    @property
+    def name(self):
+        """str : Name of the Load object."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def axes(self):
+        """str : Load applied via 'local' or 'global' axes."""
+        return self._axes
+
+    @axes.setter
+    def axes(self, value):
+        self._axes = value
+
+    @property
+    def components(self):
+        """dict : Load components."""
+        return self._components
+
+    @components.setter
+    def components(self, value):
+        self._components = value
+
+    @property
+    def nodes(self):
+        """str, list : Node set or node keys the load is applied to."""  # TODO change
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, value):
+        self._nodes = value
+
+    @property
+    def elements(self):
+        """str, list : Element set or element keys the load is applied to."""  # TODO change
+        return self._elements
+
+    @elements.setter
+    def elements(self, value):
+        self._elements = value
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
-
-    @property
-    def data(self):
-        return self._data
 
 
 class PrestressLoadBase(LoadBase):
@@ -84,23 +132,11 @@ class PrestressLoadBase(LoadBase):
         Element set or element keys the prestress is applied to.
     sxx : float
         Value of prestress for axial stress component sxx.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    elements : str, list
-        Element set or element keys the load is applied to.
     """
 
     def __init__(self, name, elements, sxx=0):
-        LoadBase.__init__(self, name=name, elements=elements, axes='local')
+        super(PrestressLoadBase).__init__(self, name=name, components={'sxx': sxx}, elements=elements, axes='local')
         self.__name__ = 'PrestressLoad'
-        self.components = {'sxx': sxx}
 
 
 class PointLoadBase(LoadBase):
@@ -124,52 +160,15 @@ class PointLoadBase(LoadBase):
         yy component of moment.
     zz : float
         zz component of moment.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    nodes : str, list #TODO check
-        Node set or node keys the load is applied to.
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
-        LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
+        LoadBase.__init__(self, name=name, components={'x': x, 'y': y,
+                                                       'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, nodes=nodes, axes='global')
         self.__name__ = 'PointLoad'
-        self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
-
-# TODO check
-# class PointLoadsBase(LoadBase):
-#     """Concentrated forces and moments [units:N, Nm] applied to different nodes.
-
-#     Parameters
-#     ----------
-#     name : str
-#         Name of the PointLoads object.
-#     components : dict
-#         Node key : components dictionary data.
-
-#     Attributes
-#     ----------
-#     name : str
-#         Name of the Load object.
-#     axes : str
-#         Load applied via 'local' or 'global' axes.
-#     components : dict
-#         Load components.
-#     nodes : str, list
-#         Node set or node keys the load is applied to.
-#     """
-
-#     def __init__(self, name, components):
-#         LoadBase.__init__(self, name=name, components=components, axes='global')
-#         self.__name__ = 'PointLoads'
 
 
+# TODO prevent the user from assigning to a point
 class LineLoadBase(LoadBase):
     """Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
 
@@ -191,23 +190,12 @@ class LineLoadBase(LoadBase):
         yy component of moment / length.
     zz : float
         zz component of moment / length.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    elements : str, list
-        Element set or element keys the load is applied to.
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='local'):
-        LoadBase.__init__(self, name=name, elements=elements, axes=axes)
+        LoadBase.__init__(self, name=name, components={'x': x, 'y': y, 'z': z,
+                                                       'xx': xx, 'yy': yy, 'zz': zz}, elements=elements, axes=axes)
         self.__name__ = 'LineLoad'
-        self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
 class AreaLoadBase(LoadBase):
@@ -239,9 +227,8 @@ class AreaLoadBase(LoadBase):
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, axes='local'):
-        LoadBase.__init__(self, name=name, elements=elements, axes=axes)
+        LoadBase.__init__(self, name=name, components={'x': x, 'y': y, 'z': z}, elements=elements, axes=axes)
         self.__name__ = 'AreaLoad'
-        self.components = {'x': x, 'y': y, 'z': z}
 
 
 class GravityLoadBase(LoadBase):
@@ -261,57 +248,43 @@ class GravityLoadBase(LoadBase):
         Factor to apply to y direction.
     z : float
         Factor to apply to z direction.
-
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    g : float
-        Value of gravitational acceleration.
     """
 
     def __init__(self, name, g, x, y, z):
-        LoadBase.__init__(self, name=name, axes='global')
+        LoadBase.__init__(self, components={'x': x, 'y': y, 'z': z}, name=name, axes='global')
         self.__name__ = 'GravityLoad'
         self.g = g
-        self.components = {'x': x, 'y': y, 'z': z}
-        self.attr_list.append('g')
 
 
-class ThermalLoadBase(object):
-    """Thermal load.
+# class ThermalLoadBase(object):
+#     """Thermal load.
 
-    Parameters
-    ----------
-    name : str
-        Name of the ThermalLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
-    temperature : float
-        Temperature to apply to elements.
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the ThermalLoad object.
+#     elements : str, list
+#         Element set or element keys the load is applied to.
+#     temperature : float
+#         Temperature to apply to elements.
 
-    Attributes
-    ----------
-    name : str
-        Name of the ThermalLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
-    temperature : float
-        Temperature to apply to elements.
-    """
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the ThermalLoad object.
+#     elements : str, list
+#         Element set or element keys the load is applied to.
+#     temperature : float
+#         Temperature to apply to elements.
+#     """
 
-    def __init__(self, name, elements, temperature):
-        self.__name__ = 'ThermalLoad'
-        self.name = name
-        self.elements = elements
-        self.temperature = temperature
+#     def __init__(self, name, elements, temperature):
+#         self.__name__ = 'ThermalLoad'
+#         self.name = name
+#         self.elements = elements
+#         self.temperature = temperature
 
-# TODO: this should be a method of the Model object...or something in that direction
+# # TODO: this should be a method of the Model object...or something in that direction
 
 
 class TributaryLoadBase(LoadBase):
@@ -334,17 +307,6 @@ class TributaryLoadBase(LoadBase):
     axes : str
         TributaryLoad applied via 'local' or 'global' axes.
 
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    elements : str, list
-        Element set or element keys the load is applied to.
-
     Note
     ----
     - The load components are loads per unit area [N/m2].
@@ -352,24 +314,16 @@ class TributaryLoadBase(LoadBase):
     """
 
     def __init__(self, structure, name, mesh, x=0, y=0, z=0, axes='global'):
-        LoadBase.__init__(self, name=name, axes=axes)
-        self.__name__ = 'TributaryLoad'
-        self.attr_list.append('mesh')
-
         nodes = []
         components = {}
-
         for key in mesh.vertices():
-
             node = structure.check_node_exists(mesh.vertex_coordinates(key))
-
             if node is not None:
                 A = mesh.vertex_area(key)
                 nodes.append(node)
                 components[node] = {'x': x * A, 'y': y * A, 'z': z * A}
-
-        self.components = components
-        self.nodes = nodes
+        LoadBase.__init__(self, name=name, components=components, nodes=nodes, axes=axes)
+        self.__name__ = 'TributaryLoad'
 
 
 class HarmonicPointLoadBase(LoadBase):
@@ -396,9 +350,9 @@ class HarmonicPointLoadBase(LoadBase):
     """
 
     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
-        LoadBase.__init__(self, name=name, nodes=nodes, axes='global')
+        LoadBase.__init__(self, name=name, components={'x': x, 'y': y,
+                                                       'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, nodes=nodes, axes='global')
         self.__name__ = 'HarmoniPointLoadBase'
-        self.components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
 
 
 class HarmonicPressureLoadBase(LoadBase):
@@ -414,23 +368,12 @@ class HarmonicPressureLoadBase(LoadBase):
         Normal acting pressure to be applied to the elements.
     phase : float
         Phase angle in radians.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    elements : str, list
-        Element set or element keys the load is applied to.
     """
 
     def __init__(self, name, elements, pressure=0, phase=None):
-        LoadBase.__init__(self, name=name, elements=elements, axes='global')
+        LoadBase.__init__(self, name=name, components={'pressure': pressure,
+                                                       'phase': phase}, elements=elements, axes='global')
         self.__name__ = 'HarmonicPressureLoad'
-        self.components = {'pressure': pressure, 'phase': phase}
 
 
 class AcousticDiffuseFieldLoadBase(LoadBase):
@@ -448,22 +391,10 @@ class AcousticDiffuseFieldLoadBase(LoadBase):
         Speed of sound (defaults to air at 20 degrees)
     max_inc_angle: float
         Maximum angle with the positive z axis for the randon incident plane waves
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    elements : str, list
-        Element set or element keys the load is applied to.
     """
 
     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
-        LoadBase.__init__(self, name=name, elements=elements, axes='global')
+        LoadBase.__init__(self, name=name, components={
+                          'air_density': air_density, 'sound_speed': sound_speed, 'max_inc_angle': max_inc_angle},
+                          elements=elements, axes='global')
         self.__name__ = 'AcousticDiffuseFieldLoad'
-        self.components = {'air_density':   air_density,
-                           'sound_speed':   sound_speed,
-                           'max_inc_angle': max_inc_angle}

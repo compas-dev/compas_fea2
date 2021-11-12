@@ -33,7 +33,7 @@ def write_elements(structure, output_path, filename):
 
     # write sorted elements ----------------------------------------------------
     for ekeys in ekey_lists:
-        etype = elements[ekeys[0]].__name__
+        eltype = elements[ekeys[0]].__name__
         ep = elements[ekeys[0]].element_property
 
         if ep:
@@ -42,17 +42,17 @@ def write_elements(structure, output_path, filename):
             section = ep.section
             material = ep.material
 
-        if etype == 'ShellElement':
+        if eltype == 'ShellElement':
             write_shell4_elements(structure, output_path, filename, ekeys, section, material)
-        if etype == 'BeamElement':
+        if eltype == 'BeamElement':
             write_beam_elements(structure, output_path, filename, ekeys, section, material)
-        if etype == 'TieElement' or etype == 'StrutElement' or etype == 'TrussElement':
-            write_tie_elements(structure, output_path, filename, ekeys, section, material, etype)
-        if etype == 'SpringElement':
+        if eltype == 'TieElement' or eltype == 'StrutElement' or eltype == 'TrussElement':
+            write_tie_elements(structure, output_path, filename, ekeys, section, material, eltype)
+        if eltype == 'SpringElement':
             write_spring_elements_nodal(structure, output_path, filename, ekeys, section)
-        if etype == 'FaceElement':
+        if eltype == 'FaceElement':
             write_surface_elements(structure, output_path, filename, ekeys)
-        if etype == 'SolidElement':
+        if eltype == 'SolidElement':
             write_solid_elements(structure, output_path, filename, ekeys, material)
 
 
@@ -60,7 +60,7 @@ def write_virtual_elements(structure, output_path, filename):
     # TODO: DELETE THIS FUNCTION???
     # TODO: this function only works for surface elements, they are they only virtual elements at the moment.
     ekeys = structure.sets['virtual_elements']['selection']
-    etypes = {'ShellElement': [], 'BeamElement': [], 'TieElement': [], 'StrutElement': [],
+    eltypes = {'ShellElement': [], 'BeamElement': [], 'TieElement': [], 'StrutElement': [],
               'TrussElement': [], 'FaceElement': []}
     func_dict = {'ShellElement': write_shell4_elements,
                  'BeamElement': write_beam_elements,
@@ -71,12 +71,12 @@ def write_virtual_elements(structure, output_path, filename):
                  'FaceElement': write_surface_elements}
 
     for ekey in ekeys:
-        etypes[structure.virtual_elements[ekey].__name__].append(ekey)
+        eltypes[structure.virtual_elements[ekey].__name__].append(ekey)
 
-    for etype in etypes:
-        ekeys = etypes[etype]
+    for eltype in eltypes:
+        ekeys = eltypes[eltype]
         if ekeys:
-            func_dict[etype](structure, output_path, filename, ekeys, None, None)
+            func_dict[eltype](structure, output_path, filename, ekeys, None, None)
 
 
 def write_nodes(structure, output_path, filename):
@@ -330,7 +330,7 @@ def write_pipe_section(output_path, filename, in_radius, thickness, sec_index):
     cFile.close()
 
 
-def write_tie_elements(structure, output_path, filename, ekeys, section, material, etype):
+def write_tie_elements(structure, output_path, filename, ekeys, section, material, eltype):
 
     ekeys = sorted(ekeys, key=int)
     mat_index = structure.materials[material].index
@@ -340,13 +340,13 @@ def write_tie_elements(structure, output_path, filename, ekeys, section, materia
     write_set_element_material(output_path, filename, mat_index, 'LINK180', etkey)
 
     # axial_force =  0 for tension and compression, 1 tension only, 2 compression only
-    if etype == 'TieElement':
+    if eltype == 'TieElement':
         sec_area = structure.sections[section].geometry['A']
         write_tie_section(output_path, filename, sec_area, sec_index, axial_force=2)
-    elif etype == 'StrutElement':
+    elif eltype == 'StrutElement':
         sec_area = structure.sections[section].geometry['A']
         write_tie_section(output_path, filename, sec_area, sec_index, axial_force=1)
-    elif etype == 'TrussElement':
+    elif eltype == 'TrussElement':
         sec_area = structure.sections[section].geometry['A']
         write_tie_section(output_path, filename, sec_area, sec_index, axial_force=0)
 

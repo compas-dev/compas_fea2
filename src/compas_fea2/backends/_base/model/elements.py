@@ -34,28 +34,89 @@ class ElementBase(FEABase):
         Ordered nodes keys the element connects to.
     section : Section Object
         Section Object assigned to the element.
-    thermal : bool
-        Thermal properties on or off.
+    thermal : bool, optional
+        Thermal properties on or off, by default None
+    name : str, optional
+        The name of the Element, by default the element key.
 
-    Attributes
-    ----------
-    axes : dict
-        The local element axes.
-    etype : str
-        Element type identifier. Each software has a different way of identifying the elements.
+    Warnings
+    --------
+    The connectivity of the element must be provided in the correct order!
     """
 
     def __init__(self, connectivity, section, thermal=None, name=None):
         self.__name__ = 'Element'
-        self.key = 0
-        self.name = str(self.key)
-        # TODO add find node method to get the connectivity from the Node object
-        self.connectivity = connectivity
-        self.connectivity_key = '_'.join(
-            sorted([str(c) for c in self.connectivity]))
-        self.section = section
-        self.thermal = thermal
-        self.axes = None
+        self._key = None
+        self._name = str(self.key)
+        self._connectivity = connectivity  # TODO add find node method to get the connectivity from the Node object
+        self._connectivity_key = '_'.join(sorted([str(c) for c in self.connectivity]))
+        self._section = section
+        self._thermal = thermal
+        self._axes = None
+
+    @property
+    def name(self):
+        """str : The name of the Element."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def key(self):
+        """int : Key number of the element."""
+        return self._key
+
+    # @key.setter
+    # def key(self, value):
+    #     self._key = value
+
+    @property
+    def connectivity(self):
+        """list : list of nodes keys the element connects to."""
+        return self._connectivity
+
+    @connectivity.setter
+    def connectivity(self, value):
+        self._connectivity = value
+
+    @property
+    def connectivity_key(self):
+        """str : string identifier of the conntected nodes"""
+        return self._connectivity_key
+
+    # @connectivity_key.setter
+    # def connectivity_key(self, value):
+    #     self._connectivity_key = value
+
+    @property
+    def section(self):
+        """obj or str: compas_fea2 `Section` object or name of a Section previously
+        added to the model."""
+        return self._section
+
+    @section.setter
+    def section(self, value):
+        self._section = value
+
+    @property
+    def thermal(self):
+        """The thermal property."""
+        return self._thermal
+
+    @thermal.setter
+    def thermal(self, value):
+        self._thermal = value
+
+    @property
+    def axes(self):
+        """The axes property."""
+        return self._axes
+
+    @axes.setter
+    def axes(self, value):
+        self._axes = value
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.key)
@@ -108,7 +169,7 @@ class BeamElementBase(ElementBase):
     def __init__(self, connectivity, section, thermal=None):
         super(BeamElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'BeamElement'
-        self.etype = 'beam'
+        self.eltype = 'beam'
 
 
 class SpringElementBase(ElementBase):
@@ -123,7 +184,7 @@ class SpringElementBase(ElementBase):
         super(SpringElementBase, self).__init__(
             key, connectivity, section, thermal)
         self.__name__ = 'SpringElement'
-        self.etype = 'spring'
+        self.eltype = 'spring'
 
 
 class TrussElementBase(ElementBase):
@@ -140,8 +201,7 @@ class TrussElementBase(ElementBase):
 
     def _checks(self):
         if self.section.__name__ in []:
-            raise TypeError(
-                "The chosen section cannot be applied to Truss elements")
+            raise TypeError("The chosen section cannot be applied to Truss elements")
 
 
 class StrutElementBase(TrussElementBase):
@@ -153,10 +213,9 @@ class StrutElementBase(TrussElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(StrutElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(StrutElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'StrutElement'
-        self.etype = 'strut'
+        self.eltype = 'strut'
 
 
 class TieElementBase(TrussElementBase):
@@ -168,10 +227,9 @@ class TieElementBase(TrussElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(TieElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(TieElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'TieElement'
-        self.etype = 'tie'
+        self.eltype = 'tie'
 
 # ==============================================================================
 # 2D elements
@@ -194,7 +252,7 @@ class ShellElementBase(ElementBase):
     def __init__(self, connectivity, section, thermal=None):
         super(ShellElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'ShellElement'
-        self.etype = 'shell'
+        self.eltype = 'shell'
 
 # class FaceElementBase(ElementBase):
 #     """A 2D Face element used for special loading cases.
@@ -207,7 +265,7 @@ class ShellElementBase(ElementBase):
 #     def __init__(self,key, connectivity, section, thermal):
 #         super(ElementBase, self).__init__(key, connectivity, section, thermal)
 #         self.__name__ = 'FaceElement'
-#         self.etype = 'beam'
+#         self.eltype = 'beam'
 
 
 class MembraneElementBase(ShellElementBase):
@@ -219,10 +277,9 @@ class MembraneElementBase(ShellElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(MembraneElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(MembraneElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'MembraneElement'
-        self.etype = 'membrane'
+        self.eltype = 'membrane'
 
 # ==============================================================================
 # 3D elements
@@ -240,7 +297,7 @@ class SolidElementBase(ElementBase):
     def __init__(self, connectivity, section, thermal=None):
         super(SolidElementBase, self).__init__(connectivity, section, thermal)
         self.__name__ = 'SolidElement'
-        self.etype = 'solid'
+        self.eltype = 'solid'
 
 
 class TetrahedronElementBase(SolidElementBase):
@@ -252,10 +309,9 @@ class TetrahedronElementBase(SolidElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(TetrahedronElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(TetrahedronElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'TetrahedronElement'
-        self.etype = 'solid4'
+        self.eltype = 'solid4'
 
 
 class PentahedronElementBase(SolidElementBase):
@@ -267,10 +323,9 @@ class PentahedronElementBase(SolidElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(PentahedronElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(PentahedronElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'PentahedronElement'
-        self.etype = 'solid5'
+        self.eltype = 'solid5'
 
 
 class HexahedronElementBase(SolidElementBase):
@@ -282,10 +337,9 @@ class HexahedronElementBase(SolidElementBase):
     """
 
     def __init__(self, key, connectivity, section, thermal=None):
-        super(HexahedronElementBase, self).__init__(
-            key, connectivity, section, thermal)
+        super(HexahedronElementBase, self).__init__(key, connectivity, section, thermal)
         self.__name__ = 'HexahedronElement'
-        self.etype = 'solid6'
+        self.eltype = 'solid6'
 
 
 if __name__ == "__main__":

@@ -271,10 +271,10 @@ class ModelBase(FEABase):
         for _, coords in zip(node_tags, node_coords):
             self.add_node(m.Node(coords.tolist()), 'part-1', check=False)
         elements = gmshModel.mesh.getElements()
-        for etype, etags, ntags in zip(*elements):
-            if etype == 2:
+        for eltype, etags, ntags in zip(*elements):
+            if eltype == 2:
                 for i, _ in enumerate(etags):
-                    n = gmshModel.mesh.getElementProperties(etype)[3]
+                    n = gmshModel.mesh.getElementProperties(eltype)[3]
                     triangle = ntags[i * n: i * n + n]  # NOTE: seems pretty much useless
                     triangle = [x-1 for x in triangle]
                     self.add_element(m.ShellElement(connectivity=triangle, section=shell_section.name), part='part-1')

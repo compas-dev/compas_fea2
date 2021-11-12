@@ -1,6 +1,7 @@
 import gmsh
 import sys
 
+
 def compas_to_gmsh(mesh, lc=100, write_path=None, inspect=False):
     gmsh.initialize(sys.argv)
     gmsh.model.add("mesh")
@@ -11,16 +12,16 @@ def compas_to_gmsh(mesh, lc=100, write_path=None, inspect=False):
     # Generate elements between nodes
     key_index = mesh.key_index()
     faces = [[key_index[key]
-                for key in mesh.face_vertices(face)] for face in mesh.faces()]
+              for key in mesh.face_vertices(face)] for face in mesh.faces()]
 
-    c=1
+    c = 1
     for n, f in enumerate(faces):
-        n=n+1
+        n = n+1
         for i in range(len(f)):
             p1 = f[i]
             p2 = f[(i + 1) % len(f)]
             gmsh.model.geo.addLine(p1, p2, c)
-            c+=1
+            c += 1
         gmsh.model.geo.addCurveLoop([c-4, c-3, c-2, c-1], n)
         # gmsh.model.geo.addPlaneSurface([n], n)
         gmsh.model.geo.addSurfaceFilling([n], n)
@@ -152,9 +153,9 @@ def compas_to_gmsh(mesh, lc=100, write_path=None, inspect=False):
 
 #             if blocks_name:
 
-#                 etype  = 'PentahedronElement' if len(vs) == 3 else 'HexahedronElement'
+#                 eltype  = 'PentahedronElement' if len(vs) == 3 else 'HexahedronElement'
 #                 nodes  = [ki[j] for j in bot + top]
-#                 ekey   = structure.add_element(nodes=nodes, etype=etype, thermal=False)
+#                 ekey   = structure.add_element(nodes=nodes, eltype=eltype, thermal=False)
 #                 blocks.append(ekey)
 #                 slices[i].append(ekey)
 

@@ -170,9 +170,9 @@ class PartBase(FEABase):
             print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
         else:
             k = len(self.nodes)
-            node.key = k
-            if not node.label:
-                node.label = 'n-{}'.format(k)
+            node._key = k
+            if not node._name:
+                node._name = 'n-{}'.format(k)
             self._nodes.append(node)
             self._nodes_gkeys.append(node.gkey)
 
@@ -348,11 +348,11 @@ class PartBase(FEABase):
         """
 
         if check and self.check_element_in_part(element):
-            print('WARNING: duplicate element connecting {} skipped!'.format(element.connectivity_key))
+            print('WARNING: duplicate element connecting {} skipped!'.format(element._connectivity_key))
         else:
-            element.key = len(self.elements)
-            for c in element.connectivity:
-                if c not in [node.key for node in self.nodes]:
+            element._key = len(self.elements)
+            for c in element._connectivity:
+                if c not in [node._key for node in self.nodes]:
                     raise ValueError(
                         'ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element.__repr__()))
             self._elements.append(element)

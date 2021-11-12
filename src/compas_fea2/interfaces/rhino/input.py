@@ -215,7 +215,7 @@ def add_nodes_elements_from_layers(structure, layers, line_type=None, mesh_type=
 
                 axes = {'ex': ex, 'ey': ey, 'ez': ez}
 
-                ekey = structure.add_element(nodes=[sp, ep], etype=line_type, thermal=thermal, axes=axes)
+                ekey = structure.add_element(nodes=[sp, ep], eltype=line_type, thermal=thermal, axes=axes)
 
                 if (line_type == 'BeamElement') and (ex is None):
 

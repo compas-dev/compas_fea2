@@ -257,20 +257,20 @@ class Steps(object):
 
                 for ekey, element in self.structure.elements.items():
 
-                    etype = element.__name__
+                    eltype = element.__name__
                     n = '{0} '.format(ekey + 1)
 
-                    if etype == 'TrussElement':
+                    if eltype == 'TrussElement':
 
                         truss_elements += n
                         truss_ekeys.append(ekey)
 
-                    elif etype == 'BeamElement':
+                    elif eltype == 'BeamElement':
 
                         beam_elements += n
                         beam_ekeys.append(ekey)
 
-                    elif etype == 'SpringElement':
+                    elif eltype == 'SpringElement':
 
                         spring_elements += n
                         spring_ekeys.append(ekey)

@@ -26,3 +26,9 @@ class RectangularSection(RectangularSectionBase):
 
     def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, b, h, material)
+
+    # NOTE in opensees the sectional properties are assigned directly to the element UNLESS it is a nonliner thing...in
+    # that case there is a tag for the section....aaaaarrrrhhhh
+
+    def _generate_jobdata(self):
+        return f'section Elastic {self._name} {self.material._E} {self._A} {self._Iyy} {self._Ixx} {self._material.G} {self._J}'

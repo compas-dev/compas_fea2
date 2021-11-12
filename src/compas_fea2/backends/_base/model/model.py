@@ -290,7 +290,7 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def _check_part_in_model(self, part, add=True):
-        if not part in self.parts and not isinstance(part, PartBase):
+        if not part in self._parts and not isinstance(part, PartBase):
             raise ValueError('** ERROR! **: part {} not found in the Model or instance of a Part!'.format(part))
         if isinstance(part, PartBase) and add:
             self.add_part(part)
@@ -337,8 +337,16 @@ class ModelBase(FEABase):
             self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
 
         # Add part's properties to the model
-        self._update_part_nodes_to_model(part)
-        self._update_part_elements_to_model(part)
+
+        self._nodes[part._name] = part._nodes
+        self._elements[part._name] = part._elements
+
+        for attr in ['_materials', '_sections']:
+            for k, v in getattr(part, attr).items():
+                if not k in self._materials:
+                    getattr(self, attr)[k] = v
+                else:
+                    print('{} already in Model, skipped!'.format(v.__repr__()))
 
     def remove_part(self, part):
         """ Removes the part from the Model and all the referenced instances
@@ -449,12 +457,12 @@ class ModelBase(FEABase):
         -------
         None
         """
-
-        self._check_part_in_model(part)
-        self.parts[part].add_node(node, check)
+        if check:
+            self._check_part_in_model(part)
+        self._parts[part].add_node(node, check)
         self._update_part_nodes_to_model(self.parts[part])  # TODO this happens at every iteration...change!
 
-    def add_nodes(self, nodes, part):
+    def add_nodes(self, nodes, part, check=True):
         """Add multiple compas_fea2 Node objects a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
         nodes are automatically excluded.
@@ -473,7 +481,7 @@ class ModelBase(FEABase):
         """
 
         for node in nodes:
-            self.add_node(node, part)
+            self.add_node(node, part, check)
 
     def remove_node(self, node_key, part):
         '''Remove the node from a Part in the Model. If there are duplicate nodes,
@@ -623,7 +631,7 @@ class ModelBase(FEABase):
     def _check_element_in_model(self, element, add=True):
         self._check_material_in_model(element)
 
-    def add_element(self, element, part):
+    def add_element(self, element, part, check=True):
         """Add a compas_fea2 `Element` object to a `Part` in the `Model`.
 
         Parameters
@@ -637,8 +645,8 @@ class ModelBase(FEABase):
         -------
         None
         """
-
-        self._check_part_in_model(part)
+        if check:
+            self._check_part_in_model(part)
         self._check_section_in_model(element.section)
         if element.section not in self.sections:
             raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
@@ -647,7 +655,7 @@ class ModelBase(FEABase):
         self.parts[part].add_element(element)
         self._update_part_elements_to_model(self.parts[part])  # TODO this happens at every iteration...change!
 
-    def add_elements(self, elements, part):
+    def add_elements(self, elements, part, check=True):
         """Adds multiple compas_fea2 Element objects to a Part in the Model.
 
         Parameters
@@ -663,7 +671,7 @@ class ModelBase(FEABase):
         """
 
         for element in elements:
-            self.add_element(element, part)
+            self.add_element(element, part, check)
 
     def remove_element(self, element_key, part):
         '''Removes the element from a Part in the Model.

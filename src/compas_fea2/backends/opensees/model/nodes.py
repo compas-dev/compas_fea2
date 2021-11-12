@@ -17,8 +17,8 @@ __all__ = [
 # =============================================================================
 
 class Node(NodeBase):
-    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, label=None):
-        super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, label=label)
+    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
+        super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)
 
     def _generate_jobdata(self):
         '''Generates the string information for the input file.

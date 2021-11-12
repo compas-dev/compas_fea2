@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os.path
+from datetime import datetime
 from compas_fea2.backends._base.job.input_file import InputFileBase
 # from compas_fea2.backends.opensees.problem.steps import ModalStep
 # Author(s): Francesco Ranaudo (github.com/franaudo)
@@ -67,43 +68,38 @@ class InputFile(InputFileBase):
         str
             content of the input file
         """
-        return """#------------------------------------------------------------------
-# Heading
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        return f"""# ------------------------
+# {problem.model.name}
+# ------------------------
+#
+# {problem.model.description}
+#
+# Units: kips, in, sec CHANGE
+#
+# Author: GLF/MHS/fmk CHANGE
+# Date: {now}
+#
+#------------------------------------------------------------------
+#------------------------------------------------------------------
+# Model
+#------------------------------------------------------------------
 #------------------------------------------------------------------
 #
-wipe
-model basic -ndm {0} -ndf {0}
+#{problem.model._jobdata}
 #
-#
-#------------------------------------------------------------------
-# Nodes
-#------------------------------------------------------------------
-#
-{}
-#
-#
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
+# PROBLEM
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
 #
 #------------------------------------------------------------------
 # Boundary conditions
 #------------------------------------------------------------------
 #
-{}
-#
-#
-#
-#------------------------------------------------------------------
-# Materials
-#------------------------------------------------------------------
-#
-{}
-#
-#
-#
-#------------------------------------------------------------------
-# Elements
-#------------------------------------------------------------------
-#
-{}
+#    tag   DX   DY   RZ   MX   MY   MZ
+{problem}
 #
 #
 #
@@ -111,21 +107,74 @@ model basic -ndm {0} -ndf {0}
 # Steps
 #------------------------------------------------------------------
 #
-{}
+{problem}
 #
+#------------------------------------------------------------------
+#------------------------------------------------------------------
+# Solver
+#------------------------------------------------------------------
+#------------------------------------------------------------------
 #
+# initialize Model in case an initial stiffness iteration is required
+initialize
+#
+# Create the system of equation
+system ProfileSPD
+#
+# Create the constraint handler, the transformation method
+constraints Transformation
+#
+# Create the DOF numberer, the reverse Cuthill-McKee algorithm
+numberer RCM
+#
+# Create the convergence test
+test NormUnbalance {problem.tolerance} {problem.iterations} 5'
+#
+# Create the solution algorithm, a Newton-Raphson algorithm
+algorithm NewtonLineSearch
+#
+# Create the integration scheme, the LoadControl scheme using steps of 0.1
+integrator LoadControl {1./problem.increments}
+#
+# Create the analysis object
+analysis Static
+
+
+# ------------------------------
+# Start of recorder generation
+# ------------------------------
+
+# Create a recorder to monitor nodal displacements
+recorder Node -xml nodeGravity.out -time -node 3 4 -dof 1 2 3 disp
+
+# --------------------------------
+# End of recorder generation
+# ---------------------------------
+
+
+# ------------------------------
+# Finally perform the analysis
+# ------------------------------
+
+# perform the gravity load analysis, requires 10 steps to reach the load level
+analyze 10
+
+puts "Node 3 after Gravity Analysis:"
+print node 3
+
+remove recorders
 #
 # Output
 #-------
 #
-{}
+{problem}
 #
 # Solver
 #-------
 #
 #
-{}
-""".format(problem.ndof)
+{problem}
+"""
 # """.format(self.name, self.job_name, self._generate_part_section(problem), self._generate_assembly_section(problem),
 #            self._generate_material_section(problem), self._generate_int_props_section(problem),
 #            self._generate_interactions_section(problem), self._generate_bcs_section(problem),

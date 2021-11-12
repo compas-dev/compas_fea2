@@ -75,63 +75,63 @@ class PartBase(FEABase):
         """list : Sorted list (by Node key) with the `Nodes` objects belonging to the Part."""
         return self._nodes
 
-    @nodes.setter
-    def nodes(self, value):
-        self._nodes = value
+    # @nodes.setter
+    # def nodes(self, value):
+    #     self._nodes = self.add_nodes(value)  # TODO complete this also for the other setters (tricky with dictionaries)
 
     @property
     def materials(self):
         """dict : Dictionary with the `Material` objects belonging to the Part."""
         return self._materials
 
-    @materials.setter
-    def materials(self, value):
-        self._materials = value
+    # @materials.setter
+    # def materials(self, value):
+    #     self._materials = value
 
     @property
     def sections(self):
         """dict : Dictionary with the `Section` objects belonging to the Part."""
         return self._sections
 
-    @sections.setter
-    def sections(self, value):
-        self._sections = value
+    # @sections.setter
+    # def sections(self, value):
+    #     self._sections = value
 
     @property
     def elements(self):
         """dict : Sorted list (by `Element key`) with the `Element` objects belonging to the Part."""
         return self._elements
 
-    @elements.setter
-    def elements(self, value):
-        self._elements = value
+    # @elements.setter
+    # def elements(self, value):
+    #     self._elements = value
 
     @property
     def nsets(self):
         """list : List with the `NodeSet` objects belonging to the `Part`."""
         return self._nsets
 
-    @nsets.setter
-    def nsets(self, value):
-        self._nsets = value
+    # @nsets.setter
+    # def nsets(self, value):
+    #     self._nsets = value
 
     @property
     def elsets(self):
         """list : List with the `ElementSet` objects belonging to the `Part`."""
         return self._elsets
 
-    @elsets.setter
-    def elsets(self, value):
-        self._elsets = value
+    # @elsets.setter
+    # def elsets(self, value):
+    #     self._elsets = value
 
     @property
     def releases(self):
         """The releases property."""
         return self._releases
 
-    @releases.setter
-    def releases(self, value):
-        self._releases = value
+    # @releases.setter
+    # def releases(self, value):
+    #     self._releases = value
 
     def __repr__(self):
 
@@ -173,7 +173,7 @@ class PartBase(FEABase):
             node.key = k
             if not node.label:
                 node.label = 'n-{}'.format(k)
-            self.nodes.append(node)
+            self._nodes.append(node)
             self._nodes_gkeys.append(node.gkey)
 
     def add_nodes(self, nodes, check=True):
@@ -323,8 +323,8 @@ class PartBase(FEABase):
                     all_duplicates.append(duplicates[key][i+1])
 
         for index in sorted(all_duplicates, reverse=True):
-            del self.nodes[index]
-            del self.nodes_gkeys[index]
+            del self._nodes[index]
+            del self._nodes_gkeys[index]
 
         self._reorder_nodes()
 
@@ -355,7 +355,7 @@ class PartBase(FEABase):
                 if c not in [node.key for node in self.nodes]:
                     raise ValueError(
                         'ERROR CREATING ELEMENT: node {} not found. Check the connectivity indices of element: \n {}!'.format(c, element.__repr__()))
-            self.elements.append(element)
+            self._elements.append(element)
 
             # add the element key to its type group
             if element.eltype not in self._elements_by_type.keys():
@@ -444,7 +444,7 @@ class PartBase(FEABase):
         '''
 
         for element in elements:
-            self.remove_node(element)
+            self.remove_element(element)
 
     def check_element_in_part(self, element):
         '''Checks if an element with the same connectivity already exists
@@ -463,7 +463,7 @@ class PartBase(FEABase):
         '''
 
         keys = []
-        for e in self.elements:
+        for e in self._elements:
             if e.connectivity_key == element.connectivity_key:
                 keys.append(e.key)
         return keys
@@ -481,7 +481,7 @@ class PartBase(FEABase):
         '''
 
         k = 0
-        for element in self.elements:
+        for element in self._elements:
             element.key = k
             k += 1
         self._group_elements()
@@ -499,7 +499,7 @@ class PartBase(FEABase):
         '''
 
         el_dict = {}
-        for el in self.elements:
+        for el in self._elements:
             el_dict[el.key] = (el.eltype, el.section, el.elset, el.orientation)
 
         type_elements = {}
@@ -559,8 +559,8 @@ class PartBase(FEABase):
         -------
         None
         '''
-        if material.name not in self.materials:
-            self.materials[material.name] = material
+        if material.name not in self._materials:
+            self._materials[material.name] = material
         else:
             print('WARNING - {} already defined and it has been skipped! Note: the material name must be unique.')
 
@@ -596,16 +596,16 @@ class PartBase(FEABase):
         None
         """
         from compas_fea2.backends._base.model.materials import MaterialBase
-        if section.name not in self.sections:
+        if section.name not in self._sections:
             if not isinstance(section.material, MaterialBase) and isinstance(section.material, str):
-                if section.material not in self.materials.keys():
+                if section.material not in self._materials:
                     raise ValueError('ERROR: material {} not found in the Part!'.format(
                         section.material.__repr__()))
             else:
-                if section.material.name not in self.materials.keys():
+                if section.material.name not in self._materials:
                     raise ValueError('ERROR: material {} not found in the Part!'.format(
                         section.material.__repr__()))
-            self.sections[section.name] = section
+            self._sections[section.name] = section
         else:
             print('WARNING: {} already added to the Part. skipped!')
 
@@ -629,10 +629,10 @@ class PartBase(FEABase):
     # =========================================================================
 
     def add_element_set(self, elset):
-        self.elsets.append(elset)
+        self._elsets.append(elset)
 
     def add_elements_to_set(self, set_name, element_keys):
-        for elset in self.elsets:
+        for elset in self._elsets:
             if elset.name == set_name:
                 for key in element_keys:
                     if key not in elset.selection:

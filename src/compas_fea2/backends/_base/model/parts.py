@@ -20,24 +20,10 @@ class PartBase(FEABase):
     Parameters
     ----------
     name : str
-        Name of the set.
+        Name of the `Part`.
 
     Attributes
     ----------
-    name : str
-        Name of the set.
-    nodes : list
-        Sorted list (by Node key) with the Nodes objects belonging to the Part.
-    nodes_gkeys : list
-        List with the geometric keys (x_y_z) of the Nodes objects belonging to the Part.
-    elements : list
-        Sorted list (by Element key) with the Element objects belonging to the Part.
-    nsets : list
-        A list with the Set objects belonging to the Part.
-    elsets : list
-        [DOC]   # TODO: complete doc
-    sections: dict
-        [DOC]   # TODO: complete doc
     elements_by_type : dict
         Dictionary sorting the elements by unique element types.
         key: element type
@@ -58,22 +44,94 @@ class PartBase(FEABase):
 
     def __init__(self, name):
         self.__name__ = 'Part'
-        self.name = name
-        self.nodes = []  # self._sort(nodes)
-        self.materials = {}
-        self.sections = {}
-        self.elements = []  # self._sort(elements)
-        self.nsets = []
-        self.elsets = []
-        self.nodes_gkeys = []
-        self.releases = []
+        self._name = name
+        self._nodes = []  # self._sort(nodes)
+        self._materials = {}
+        self._sections = {}
+        self._elements = []  # self._sort(elements)
+        self._nsets = []
+        self._elsets = []
+        self._releases = []
 
-        self.elements_by_type = {}
-        self.elements_by_section = {}
-        self.orientations_by_section = {}
-        self.elements_by_elset = {}
-        self.elsets_by_section = {}
+        self._nodes_gkeys = []
+        self._elements_by_type = {}
+        self._elements_by_section = {}
+        self._orientations_by_section = {}
+        self._elements_by_elset = {}
+        self._elsets_by_section = {}
         # self.elements_by_material   = {}
+
+    @property
+    def name(self):
+        """str : Name of the `Part`"""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def nodes(self):
+        """list : Sorted list (by Node key) with the `Nodes` objects belonging to the Part."""
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, value):
+        self._nodes = value
+
+    @property
+    def materials(self):
+        """dict : Dictionary with the `Material` objects belonging to the Part."""
+        return self._materials
+
+    @materials.setter
+    def materials(self, value):
+        self._materials = value
+
+    @property
+    def sections(self):
+        """dict : Dictionary with the `Section` objects belonging to the Part."""
+        return self._sections
+
+    @sections.setter
+    def sections(self, value):
+        self._sections = value
+
+    @property
+    def elements(self):
+        """dict : Sorted list (by `Element key`) with the `Element` objects belonging to the Part."""
+        return self._elements
+
+    @elements.setter
+    def elements(self, value):
+        self._elements = value
+
+    @property
+    def nsets(self):
+        """list : List with the `NodeSet` objects belonging to the `Part`."""
+        return self._nsets
+
+    @nsets.setter
+    def nsets(self, value):
+        self._nsets = value
+
+    @property
+    def elsets(self):
+        """list : List with the `ElementSet` objects belonging to the `Part`."""
+        return self._elsets
+
+    @elsets.setter
+    def elsets(self, value):
+        self._elsets = value
+
+    @property
+    def releases(self):
+        """The releases property."""
+        return self._releases
+
+    @releases.setter
+    def releases(self, value):
+        self._releases = value
 
     def __repr__(self):
 
@@ -116,7 +174,7 @@ class PartBase(FEABase):
             if not node.label:
                 node.label = 'n-{}'.format(k)
             self.nodes.append(node)
-            self.nodes_gkeys.append(node.gkey)
+            self._nodes_gkeys.append(node.gkey)
 
     def add_nodes(self, nodes, check=True):
         """Add multiple compas_fea2 Node objects to the Part.
@@ -213,9 +271,10 @@ class PartBase(FEABase):
             Part.
         '''
 
+        # TODO change to use the list.index(#) function
         indices = []
         index = 0
-        for gkey in self.nodes_gkeys:
+        for gkey in self._nodes_gkeys:
             if gkey == node.gkey:
                 indices.append(index)
             index += 1
@@ -299,25 +358,25 @@ class PartBase(FEABase):
             self.elements.append(element)
 
             # add the element key to its type group
-            if element.eltype not in self.elements_by_type.keys():
-                self.elements_by_type[element.eltype] = []
-            self.elements_by_type[element.eltype].append(element.key)
+            if element.eltype not in self._elements_by_type.keys():
+                self._elements_by_type[element.eltype] = []
+            self._elements_by_type[element.eltype].append(element.key)
 
             # add the element key to its section group
-            if element.section not in self.elements_by_section.keys():
-                self.elements_by_section[element.section] = []
-            self.elements_by_section[element.section].append(element.key)
+            if element.section not in self._elements_by_section.keys():
+                self._elements_by_section[element.section] = []
+            self._elements_by_section[element.section].append(element.key)
 
             # add the element orientation to its section group
-            if element.section not in self.orientations_by_section.keys():
-                self.orientations_by_section[element.section] = []
+            if element.section not in self._orientations_by_section.keys():
+                self._orientations_by_section[element.section] = []
             if hasattr(element, 'orientation'):
-                if element.orientation not in self.orientations_by_section[element.section]:
-                    self.orientations_by_section[element.section].append(element.orientation)
+                if element.orientation not in self._orientations_by_section[element.section]:
+                    self._orientations_by_section[element.section].append(element.orientation)
 
             else:
-                if None not in self.orientations_by_section[element.section]:
-                    self.orientations_by_section[element.section].append(None)
+                if None not in self._orientations_by_section[element.section]:
+                    self._orientations_by_section[element.section].append(None)
             # else:
             #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
 
@@ -329,12 +388,12 @@ class PartBase(FEABase):
             # add the element key to its elset group
             if element.elset:
                 #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
-                if element.elset not in self.elements_by_elset.keys():
+                if element.elset not in self._elements_by_elset.keys():
 
                     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
                     self.add_element_set(m.Set(element.elset, [], 'elset'))
-                    self.elements_by_elset[element.elset] = []
-                self.elements_by_elset[element.elset].append(element.key)
+                    self._elements_by_elset[element.elset] = []
+                self._elements_by_elset[element.elset].append(element.key)
                 self.add_elements_to_set(element.elset, [element.key])
 
     def add_elements(self, elements, check=True):

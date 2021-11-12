@@ -25,20 +25,6 @@ class Part(PartBase):
 
     Attributes
     ----------
-    name : str
-        Name of the set.
-    nodes : list
-        Sorted list (by Node key) with the Nodes objects belonging to the Part.
-    nodes_gkeys : list
-        List with the geometric keys (x_y_z) of the Nodes objects belonging to the Part.
-    elements : list
-        Sorted list (by Element key) with the Element objects belonging to the Part.
-    nsets : list
-        A list with the Set objects belonging to the Part.
-    elsets : list
-        [DOC]   # TODO: complete doc
-    sections: dict
-        [DOC]   # TODO: complete doc
     elements_by_type : dict
         Dictionary sorting the elements by unique element types.
         key: element type
@@ -74,10 +60,10 @@ class Part(PartBase):
             part_data.append(node._generate_jobdata())
 
         # Write elements
-        for eltype in self.elements_by_type:
+        for eltype in self._elements_by_type:
             part_data.append("*Element, type={}\n".format(eltype))
             # data = []
-            for key in self.elements_by_type[eltype]:
+            for key in self._elements_by_type[eltype]:
                 part_data.append(self.elements[key]._generate_jobdata())
 
         # Write user-defined nsets
@@ -85,16 +71,16 @@ class Part(PartBase):
             part_data.append(nset._generate_jobdata())
 
         # Write sets
-        for section in self.elements_by_section:
+        for section in self._elements_by_section:
             # TODO this part is messy and needs to be rewritten
             # the main problem is that beam elements require orientations
             # while other elements (such shells) don't
             o = 1
-            for orientation in self.orientations_by_section[section]:
+            for orientation in self._orientations_by_section[section]:
 
                 elements = []
-                for element in self.elements_by_section[section]:
-                    if hasattr(self.elements[element], 'orientation') and self.elements[element].orientation == orientation:
+                for element in self._elements_by_section[section]:
+                    if hasattr(self._elements[element], 'orientation') and self.elements[element].orientation == orientation:
                         elements.append(element)
                     elif not hasattr(self.elements[element], 'orientation'):
                         elements.append(element)
@@ -107,7 +93,7 @@ class Part(PartBase):
         # Write sections
         for section in self.sections.values():
             o = 1
-            for orientation in self.orientations_by_section[section.name]:
+            for orientation in self._orientations_by_section[section.name]:
                 if orientation:
                     part_data.append(section._generate_jobdata('_{}-{}'.format(section.name, o), orientation))
                     o += 1

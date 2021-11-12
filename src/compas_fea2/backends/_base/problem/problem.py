@@ -375,7 +375,7 @@ class ProblemBase(FEABase):
             print('WARNING: {} already present in the Problem. skipped!'.format(step.__repr__()))
         else:
             for disp in step.displacements:
-                if disp not in self.displacements:
+                if disp not in self.bcs:
                     self.add_bc(disp)
 
             for load in step.loads:

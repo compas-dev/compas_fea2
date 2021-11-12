@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 MaterialBase
 =============================================
@@ -14,6 +14,7 @@ MaterialBase
 
     .. autosummary::
     
+        ~MaterialBase.name
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +30,6 @@ MaterialBase
         ~MaterialBase.jsondefinitions
         ~MaterialBase.jsonstring
         ~MaterialBase.jsonvalidator
-        ~MaterialBase.name
 
     
     

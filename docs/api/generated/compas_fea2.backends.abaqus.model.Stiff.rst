@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 Stiff
 =======================================
@@ -21,6 +21,8 @@ Stiff
     .. autosummary::
     
         ~Stiff.DATASCHEMA
+        ~Stiff.E
+        ~Stiff.G
         ~Stiff.JSONSCHEMA
         ~Stiff.JSONSCHEMANAME
         ~Stiff.data
@@ -30,6 +32,8 @@ Stiff
         ~Stiff.jsonstring
         ~Stiff.jsonvalidator
         ~Stiff.name
+        ~Stiff.p
+        ~Stiff.v
 
     
     

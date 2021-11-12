@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 FixedDisplacementXX
 =======================================================
@@ -22,6 +22,8 @@ FixedDisplacementXX
         ~FixedDisplacementXX.DATASCHEMA
         ~FixedDisplacementXX.JSONSCHEMA
         ~FixedDisplacementXX.JSONSCHEMANAME
+        ~FixedDisplacementXX.axes
+        ~FixedDisplacementXX.components
         ~FixedDisplacementXX.data
         ~FixedDisplacementXX.dtype
         ~FixedDisplacementXX.guid
@@ -30,6 +32,13 @@ FixedDisplacementXX
         ~FixedDisplacementXX.jsonstring
         ~FixedDisplacementXX.jsonvalidator
         ~FixedDisplacementXX.name
+        ~FixedDisplacementXX.nodes
+        ~FixedDisplacementXX.x
+        ~FixedDisplacementXX.xx
+        ~FixedDisplacementXX.y
+        ~FixedDisplacementXX.yy
+        ~FixedDisplacementXX.z
+        ~FixedDisplacementXX.zz
 
     
     

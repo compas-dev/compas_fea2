@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticOrthotropic
 ====================================================
@@ -20,6 +20,12 @@ ElasticOrthotropic
     .. autosummary::
     
         ~ElasticOrthotropic.DATASCHEMA
+        ~ElasticOrthotropic.Ex
+        ~ElasticOrthotropic.Ey
+        ~ElasticOrthotropic.Ez
+        ~ElasticOrthotropic.Gxy
+        ~ElasticOrthotropic.Gyz
+        ~ElasticOrthotropic.Gzx
         ~ElasticOrthotropic.JSONSCHEMA
         ~ElasticOrthotropic.JSONSCHEMANAME
         ~ElasticOrthotropic.data
@@ -30,6 +36,10 @@ ElasticOrthotropic
         ~ElasticOrthotropic.jsonstring
         ~ElasticOrthotropic.jsonvalidator
         ~ElasticOrthotropic.name
+        ~ElasticOrthotropic.p
+        ~ElasticOrthotropic.vxy
+        ~ElasticOrthotropic.vyx
+        ~ElasticOrthotropic.vzx
 
     
     

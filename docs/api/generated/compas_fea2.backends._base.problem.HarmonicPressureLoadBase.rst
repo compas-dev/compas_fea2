@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 HarmonicPressureLoadBase
 ===========================================================
@@ -22,14 +22,18 @@ HarmonicPressureLoadBase
         ~HarmonicPressureLoadBase.DATASCHEMA
         ~HarmonicPressureLoadBase.JSONSCHEMA
         ~HarmonicPressureLoadBase.JSONSCHEMANAME
+        ~HarmonicPressureLoadBase.axes
+        ~HarmonicPressureLoadBase.components
         ~HarmonicPressureLoadBase.data
         ~HarmonicPressureLoadBase.dtype
+        ~HarmonicPressureLoadBase.elements
         ~HarmonicPressureLoadBase.guid
         ~HarmonicPressureLoadBase.jobdata
         ~HarmonicPressureLoadBase.jsondefinitions
         ~HarmonicPressureLoadBase.jsonstring
         ~HarmonicPressureLoadBase.jsonvalidator
         ~HarmonicPressureLoadBase.name
+        ~HarmonicPressureLoadBase.nodes
 
     
     

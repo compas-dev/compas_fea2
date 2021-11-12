@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 AngleSection
 ==============================================
@@ -29,6 +29,7 @@ AngleSection
         ~AngleSection.jsondefinitions
         ~AngleSection.jsonstring
         ~AngleSection.jsonvalidator
+        ~AngleSection.material
         ~AngleSection.name
 
     

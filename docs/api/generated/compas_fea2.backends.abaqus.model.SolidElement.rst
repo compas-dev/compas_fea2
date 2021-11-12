@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 SolidElement
 ==============================================
@@ -22,6 +22,9 @@ SolidElement
         ~SolidElement.DATASCHEMA
         ~SolidElement.JSONSCHEMA
         ~SolidElement.JSONSCHEMANAME
+        ~SolidElement.axes
+        ~SolidElement.connectivity
+        ~SolidElement.connectivity_key
         ~SolidElement.data
         ~SolidElement.dtype
         ~SolidElement.guid
@@ -29,7 +32,10 @@ SolidElement
         ~SolidElement.jsondefinitions
         ~SolidElement.jsonstring
         ~SolidElement.jsonvalidator
+        ~SolidElement.key
         ~SolidElement.name
+        ~SolidElement.section
+        ~SolidElement.thermal
 
     
     

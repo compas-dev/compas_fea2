@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 RectangularSection
 ====================================================
@@ -29,6 +29,7 @@ RectangularSection
         ~RectangularSection.jsondefinitions
         ~RectangularSection.jsonstring
         ~RectangularSection.jsonvalidator
+        ~RectangularSection.material
         ~RectangularSection.name
 
     

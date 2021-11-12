@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticIsotropic
 ==================================================
@@ -21,6 +21,8 @@ ElasticIsotropic
     .. autosummary::
     
         ~ElasticIsotropic.DATASCHEMA
+        ~ElasticIsotropic.E
+        ~ElasticIsotropic.G
         ~ElasticIsotropic.JSONSCHEMA
         ~ElasticIsotropic.JSONSCHEMANAME
         ~ElasticIsotropic.data
@@ -30,6 +32,8 @@ ElasticIsotropic
         ~ElasticIsotropic.jsonstring
         ~ElasticIsotropic.jsonvalidator
         ~ElasticIsotropic.name
+        ~ElasticIsotropic.p
+        ~ElasticIsotropic.v
 
     
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 PipeSection
 =============================================
@@ -29,6 +29,7 @@ PipeSection
         ~PipeSection.jsondefinitions
         ~PipeSection.jsonstring
         ~PipeSection.jsonvalidator
+        ~PipeSection.material
         ~PipeSection.name
 
     

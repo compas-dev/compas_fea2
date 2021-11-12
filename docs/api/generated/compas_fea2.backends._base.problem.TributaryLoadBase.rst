@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TributaryLoadBase
 ====================================================
@@ -22,14 +22,18 @@ TributaryLoadBase
         ~TributaryLoadBase.DATASCHEMA
         ~TributaryLoadBase.JSONSCHEMA
         ~TributaryLoadBase.JSONSCHEMANAME
+        ~TributaryLoadBase.axes
+        ~TributaryLoadBase.components
         ~TributaryLoadBase.data
         ~TributaryLoadBase.dtype
+        ~TributaryLoadBase.elements
         ~TributaryLoadBase.guid
         ~TributaryLoadBase.jobdata
         ~TributaryLoadBase.jsondefinitions
         ~TributaryLoadBase.jsonstring
         ~TributaryLoadBase.jsonvalidator
         ~TributaryLoadBase.name
+        ~TributaryLoadBase.nodes
 
     
     

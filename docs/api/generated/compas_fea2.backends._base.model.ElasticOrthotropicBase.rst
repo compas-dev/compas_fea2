@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticOrthotropicBase
 =======================================================
@@ -14,6 +14,16 @@ ElasticOrthotropicBase
 
     .. autosummary::
     
+        ~ElasticOrthotropicBase.Ex
+        ~ElasticOrthotropicBase.Ey
+        ~ElasticOrthotropicBase.Ez
+        ~ElasticOrthotropicBase.Gxy
+        ~ElasticOrthotropicBase.Gyz
+        ~ElasticOrthotropicBase.Gzx
+        ~ElasticOrthotropicBase.p
+        ~ElasticOrthotropicBase.vxy
+        ~ElasticOrthotropicBase.vyx
+        ~ElasticOrthotropicBase.vzx
 
     .. rubric:: Inherited Attributes
 

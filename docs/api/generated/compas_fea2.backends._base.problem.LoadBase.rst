@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 LoadBase
 ===========================================
@@ -14,7 +14,11 @@ LoadBase
 
     .. autosummary::
     
-        ~LoadBase.data
+        ~LoadBase.axes
+        ~LoadBase.components
+        ~LoadBase.elements
+        ~LoadBase.name
+        ~LoadBase.nodes
 
     .. rubric:: Inherited Attributes
 
@@ -23,13 +27,13 @@ LoadBase
         ~LoadBase.DATASCHEMA
         ~LoadBase.JSONSCHEMA
         ~LoadBase.JSONSCHEMANAME
+        ~LoadBase.data
         ~LoadBase.dtype
         ~LoadBase.guid
         ~LoadBase.jobdata
         ~LoadBase.jsondefinitions
         ~LoadBase.jsonstring
         ~LoadBase.jsonvalidator
-        ~LoadBase.name
 
     
     

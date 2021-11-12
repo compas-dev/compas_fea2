@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 BoxSectionBase
 ===============================================
@@ -19,16 +19,26 @@ BoxSectionBase
 
     .. autosummary::
     
+        ~BoxSectionBase.A
+        ~BoxSectionBase.Avx
+        ~BoxSectionBase.Avy
         ~BoxSectionBase.DATASCHEMA
+        ~BoxSectionBase.Ixx
+        ~BoxSectionBase.Ixy
+        ~BoxSectionBase.Iyy
+        ~BoxSectionBase.J
         ~BoxSectionBase.JSONSCHEMA
         ~BoxSectionBase.JSONSCHEMANAME
         ~BoxSectionBase.data
         ~BoxSectionBase.dtype
+        ~BoxSectionBase.g0
         ~BoxSectionBase.guid
+        ~BoxSectionBase.gw
         ~BoxSectionBase.jobdata
         ~BoxSectionBase.jsondefinitions
         ~BoxSectionBase.jsonstring
         ~BoxSectionBase.jsonvalidator
+        ~BoxSectionBase.material
         ~BoxSectionBase.name
 
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 Node
 ======================================
@@ -24,12 +24,22 @@ Node
         ~Node.JSONSCHEMANAME
         ~Node.data
         ~Node.dtype
+        ~Node.ex
+        ~Node.ey
+        ~Node.ez
+        ~Node.gkey
         ~Node.guid
         ~Node.jobdata
         ~Node.jsondefinitions
         ~Node.jsonstring
         ~Node.jsonvalidator
+        ~Node.key
+        ~Node.mass
         ~Node.name
+        ~Node.x
+        ~Node.xyz
+        ~Node.y
+        ~Node.z
 
     
     
@@ -55,6 +65,8 @@ Node
         ~Node.from_data
         ~Node.from_json
         ~Node.from_jsonstring
+        ~Node.move_node
+        ~Node.rotate_node_axes
         ~Node.to_data
         ~Node.to_json
         ~Node.to_jsonstring

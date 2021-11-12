@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ShellElementBase
 =================================================
@@ -22,6 +22,9 @@ ShellElementBase
         ~ShellElementBase.DATASCHEMA
         ~ShellElementBase.JSONSCHEMA
         ~ShellElementBase.JSONSCHEMANAME
+        ~ShellElementBase.axes
+        ~ShellElementBase.connectivity
+        ~ShellElementBase.connectivity_key
         ~ShellElementBase.data
         ~ShellElementBase.dtype
         ~ShellElementBase.guid
@@ -29,7 +32,10 @@ ShellElementBase
         ~ShellElementBase.jsondefinitions
         ~ShellElementBase.jsonstring
         ~ShellElementBase.jsonvalidator
+        ~ShellElementBase.key
         ~ShellElementBase.name
+        ~ShellElementBase.section
+        ~ShellElementBase.thermal
 
     
     

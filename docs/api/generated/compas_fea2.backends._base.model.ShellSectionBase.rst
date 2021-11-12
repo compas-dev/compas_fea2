@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ShellSectionBase
 =================================================
@@ -14,6 +14,7 @@ ShellSectionBase
 
     .. autosummary::
     
+        ~ShellSectionBase.t
 
     .. rubric:: Inherited Attributes
 
@@ -29,6 +30,7 @@ ShellSectionBase
         ~ShellSectionBase.jsondefinitions
         ~ShellSectionBase.jsonstring
         ~ShellSectionBase.jsonvalidator
+        ~ShellSectionBase.material
         ~ShellSectionBase.name
 
     

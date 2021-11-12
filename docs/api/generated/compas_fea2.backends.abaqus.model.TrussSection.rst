@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TrussSection
 ==============================================
@@ -19,16 +19,26 @@ TrussSection
 
     .. autosummary::
     
+        ~TrussSection.A
+        ~TrussSection.Avx
+        ~TrussSection.Avy
         ~TrussSection.DATASCHEMA
+        ~TrussSection.Ixx
+        ~TrussSection.Ixy
+        ~TrussSection.Iyy
+        ~TrussSection.J
         ~TrussSection.JSONSCHEMA
         ~TrussSection.JSONSCHEMANAME
         ~TrussSection.data
         ~TrussSection.dtype
+        ~TrussSection.g0
         ~TrussSection.guid
+        ~TrussSection.gw
         ~TrussSection.jobdata
         ~TrussSection.jsondefinitions
         ~TrussSection.jsonstring
         ~TrussSection.jsonvalidator
+        ~TrussSection.material
         ~TrussSection.name
 
     

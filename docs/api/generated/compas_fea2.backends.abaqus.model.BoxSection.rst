@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 BoxSection
 ============================================
@@ -29,6 +29,7 @@ BoxSection
         ~BoxSection.jsondefinitions
         ~BoxSection.jsonstring
         ~BoxSection.jsonvalidator
+        ~BoxSection.material
         ~BoxSection.name
 
     

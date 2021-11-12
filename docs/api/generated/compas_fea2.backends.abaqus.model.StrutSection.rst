@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 StrutSection
 ==============================================
@@ -19,16 +19,26 @@ StrutSection
 
     .. autosummary::
     
+        ~StrutSection.A
+        ~StrutSection.Avx
+        ~StrutSection.Avy
         ~StrutSection.DATASCHEMA
+        ~StrutSection.Ixx
+        ~StrutSection.Ixy
+        ~StrutSection.Iyy
+        ~StrutSection.J
         ~StrutSection.JSONSCHEMA
         ~StrutSection.JSONSCHEMANAME
         ~StrutSection.data
         ~StrutSection.dtype
+        ~StrutSection.g0
         ~StrutSection.guid
+        ~StrutSection.gw
         ~StrutSection.jobdata
         ~StrutSection.jsondefinitions
         ~StrutSection.jsonstring
         ~StrutSection.jsonvalidator
+        ~StrutSection.material
         ~StrutSection.name
 
     

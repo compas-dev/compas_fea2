@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 GeneralDisplacementBase
 ==========================================================
@@ -14,6 +14,16 @@ GeneralDisplacementBase
 
     .. autosummary::
     
+        ~GeneralDisplacementBase.axes
+        ~GeneralDisplacementBase.components
+        ~GeneralDisplacementBase.name
+        ~GeneralDisplacementBase.nodes
+        ~GeneralDisplacementBase.x
+        ~GeneralDisplacementBase.xx
+        ~GeneralDisplacementBase.y
+        ~GeneralDisplacementBase.yy
+        ~GeneralDisplacementBase.z
+        ~GeneralDisplacementBase.zz
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +39,6 @@ GeneralDisplacementBase
         ~GeneralDisplacementBase.jsondefinitions
         ~GeneralDisplacementBase.jsonstring
         ~GeneralDisplacementBase.jsonvalidator
-        ~GeneralDisplacementBase.name
 
     
     

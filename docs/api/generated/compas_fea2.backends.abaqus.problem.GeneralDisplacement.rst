@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 GeneralDisplacement
 =======================================================
@@ -22,6 +22,8 @@ GeneralDisplacement
         ~GeneralDisplacement.DATASCHEMA
         ~GeneralDisplacement.JSONSCHEMA
         ~GeneralDisplacement.JSONSCHEMANAME
+        ~GeneralDisplacement.axes
+        ~GeneralDisplacement.components
         ~GeneralDisplacement.data
         ~GeneralDisplacement.dtype
         ~GeneralDisplacement.guid
@@ -30,6 +32,13 @@ GeneralDisplacement
         ~GeneralDisplacement.jsonstring
         ~GeneralDisplacement.jsonvalidator
         ~GeneralDisplacement.name
+        ~GeneralDisplacement.nodes
+        ~GeneralDisplacement.x
+        ~GeneralDisplacement.xx
+        ~GeneralDisplacement.y
+        ~GeneralDisplacement.yy
+        ~GeneralDisplacement.z
+        ~GeneralDisplacement.zz
 
     
     

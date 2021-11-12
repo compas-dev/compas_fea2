@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 MembraneElementBase
 ====================================================
@@ -22,6 +22,9 @@ MembraneElementBase
         ~MembraneElementBase.DATASCHEMA
         ~MembraneElementBase.JSONSCHEMA
         ~MembraneElementBase.JSONSCHEMANAME
+        ~MembraneElementBase.axes
+        ~MembraneElementBase.connectivity
+        ~MembraneElementBase.connectivity_key
         ~MembraneElementBase.data
         ~MembraneElementBase.dtype
         ~MembraneElementBase.guid
@@ -29,7 +32,10 @@ MembraneElementBase
         ~MembraneElementBase.jsondefinitions
         ~MembraneElementBase.jsonstring
         ~MembraneElementBase.jsonvalidator
+        ~MembraneElementBase.key
         ~MembraneElementBase.name
+        ~MembraneElementBase.section
+        ~MembraneElementBase.thermal
 
     
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 MembraneSectionBase
 ====================================================
@@ -14,6 +14,7 @@ MembraneSectionBase
 
     .. autosummary::
     
+        ~MembraneSectionBase.t
 
     .. rubric:: Inherited Attributes
 
@@ -29,6 +30,7 @@ MembraneSectionBase
         ~MembraneSectionBase.jsondefinitions
         ~MembraneSectionBase.jsonstring
         ~MembraneSectionBase.jsonvalidator
+        ~MembraneSectionBase.material
         ~MembraneSectionBase.name
 
     

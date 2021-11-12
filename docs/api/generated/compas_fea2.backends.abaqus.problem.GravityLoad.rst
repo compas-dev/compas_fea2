@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 GravityLoad
 ===============================================
@@ -22,14 +22,18 @@ GravityLoad
         ~GravityLoad.DATASCHEMA
         ~GravityLoad.JSONSCHEMA
         ~GravityLoad.JSONSCHEMANAME
+        ~GravityLoad.axes
+        ~GravityLoad.components
         ~GravityLoad.data
         ~GravityLoad.dtype
+        ~GravityLoad.elements
         ~GravityLoad.guid
         ~GravityLoad.jobdata
         ~GravityLoad.jsondefinitions
         ~GravityLoad.jsonstring
         ~GravityLoad.jsonvalidator
         ~GravityLoad.name
+        ~GravityLoad.nodes
 
     
     

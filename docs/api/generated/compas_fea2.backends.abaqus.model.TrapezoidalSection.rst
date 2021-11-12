@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TrapezoidalSection
 ====================================================
@@ -29,6 +29,7 @@ TrapezoidalSection
         ~TrapezoidalSection.jsondefinitions
         ~TrapezoidalSection.jsonstring
         ~TrapezoidalSection.jsonvalidator
+        ~TrapezoidalSection.material
         ~TrapezoidalSection.name
 
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 HarmonicPointLoadBase
 ========================================================
@@ -22,14 +22,18 @@ HarmonicPointLoadBase
         ~HarmonicPointLoadBase.DATASCHEMA
         ~HarmonicPointLoadBase.JSONSCHEMA
         ~HarmonicPointLoadBase.JSONSCHEMANAME
+        ~HarmonicPointLoadBase.axes
+        ~HarmonicPointLoadBase.components
         ~HarmonicPointLoadBase.data
         ~HarmonicPointLoadBase.dtype
+        ~HarmonicPointLoadBase.elements
         ~HarmonicPointLoadBase.guid
         ~HarmonicPointLoadBase.jobdata
         ~HarmonicPointLoadBase.jsondefinitions
         ~HarmonicPointLoadBase.jsonstring
         ~HarmonicPointLoadBase.jsonvalidator
         ~HarmonicPointLoadBase.name
+        ~HarmonicPointLoadBase.nodes
 
     
     

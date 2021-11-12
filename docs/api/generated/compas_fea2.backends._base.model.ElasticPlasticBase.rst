@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticPlasticBase
 ===================================================
@@ -14,12 +14,16 @@ ElasticPlasticBase
 
     .. autosummary::
     
+        ~ElasticPlasticBase.compression
+        ~ElasticPlasticBase.tension
 
     .. rubric:: Inherited Attributes
 
     .. autosummary::
     
         ~ElasticPlasticBase.DATASCHEMA
+        ~ElasticPlasticBase.E
+        ~ElasticPlasticBase.G
         ~ElasticPlasticBase.JSONSCHEMA
         ~ElasticPlasticBase.JSONSCHEMANAME
         ~ElasticPlasticBase.data
@@ -30,6 +34,8 @@ ElasticPlasticBase
         ~ElasticPlasticBase.jsonstring
         ~ElasticPlasticBase.jsonvalidator
         ~ElasticPlasticBase.name
+        ~ElasticPlasticBase.p
+        ~ElasticPlasticBase.v
 
     
     

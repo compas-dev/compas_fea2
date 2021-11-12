@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 AreaLoadBase
 ===============================================
@@ -22,14 +22,18 @@ AreaLoadBase
         ~AreaLoadBase.DATASCHEMA
         ~AreaLoadBase.JSONSCHEMA
         ~AreaLoadBase.JSONSCHEMANAME
+        ~AreaLoadBase.axes
+        ~AreaLoadBase.components
         ~AreaLoadBase.data
         ~AreaLoadBase.dtype
+        ~AreaLoadBase.elements
         ~AreaLoadBase.guid
         ~AreaLoadBase.jobdata
         ~AreaLoadBase.jsondefinitions
         ~AreaLoadBase.jsonstring
         ~AreaLoadBase.jsonvalidator
         ~AreaLoadBase.name
+        ~AreaLoadBase.nodes
 
     
     

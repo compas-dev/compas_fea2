@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 AngleSectionBase
 =================================================
@@ -19,16 +19,26 @@ AngleSectionBase
 
     .. autosummary::
     
+        ~AngleSectionBase.A
+        ~AngleSectionBase.Avx
+        ~AngleSectionBase.Avy
         ~AngleSectionBase.DATASCHEMA
+        ~AngleSectionBase.Ixx
+        ~AngleSectionBase.Ixy
+        ~AngleSectionBase.Iyy
+        ~AngleSectionBase.J
         ~AngleSectionBase.JSONSCHEMA
         ~AngleSectionBase.JSONSCHEMANAME
         ~AngleSectionBase.data
         ~AngleSectionBase.dtype
+        ~AngleSectionBase.g0
         ~AngleSectionBase.guid
+        ~AngleSectionBase.gw
         ~AngleSectionBase.jobdata
         ~AngleSectionBase.jsondefinitions
         ~AngleSectionBase.jsonstring
         ~AngleSectionBase.jsonvalidator
+        ~AngleSectionBase.material
         ~AngleSectionBase.name
 
     

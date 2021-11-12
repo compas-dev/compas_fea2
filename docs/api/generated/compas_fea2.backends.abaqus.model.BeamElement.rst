@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 BeamElement
 =============================================
@@ -22,6 +22,9 @@ BeamElement
         ~BeamElement.DATASCHEMA
         ~BeamElement.JSONSCHEMA
         ~BeamElement.JSONSCHEMANAME
+        ~BeamElement.axes
+        ~BeamElement.connectivity
+        ~BeamElement.connectivity_key
         ~BeamElement.data
         ~BeamElement.dtype
         ~BeamElement.guid
@@ -29,7 +32,10 @@ BeamElement
         ~BeamElement.jsondefinitions
         ~BeamElement.jsonstring
         ~BeamElement.jsonvalidator
+        ~BeamElement.key
         ~BeamElement.name
+        ~BeamElement.section
+        ~BeamElement.thermal
 
     
     

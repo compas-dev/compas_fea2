@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TrussElement
 ==============================================
@@ -22,6 +22,9 @@ TrussElement
         ~TrussElement.DATASCHEMA
         ~TrussElement.JSONSCHEMA
         ~TrussElement.JSONSCHEMANAME
+        ~TrussElement.axes
+        ~TrussElement.connectivity
+        ~TrussElement.connectivity_key
         ~TrussElement.data
         ~TrussElement.dtype
         ~TrussElement.guid
@@ -29,7 +32,10 @@ TrussElement
         ~TrussElement.jsondefinitions
         ~TrussElement.jsonstring
         ~TrussElement.jsonvalidator
+        ~TrussElement.key
         ~TrussElement.name
+        ~TrussElement.section
+        ~TrussElement.thermal
 
     
     

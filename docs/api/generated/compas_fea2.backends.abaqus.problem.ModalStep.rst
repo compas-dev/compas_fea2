@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ModalStep
 =============================================
@@ -24,11 +24,14 @@ ModalStep
         ~ModalStep.JSONSCHEMANAME
         ~ModalStep.data
         ~ModalStep.dtype
+        ~ModalStep.field_outputs
         ~ModalStep.guid
+        ~ModalStep.history_outputs
         ~ModalStep.jobdata
         ~ModalStep.jsondefinitions
         ~ModalStep.jsonstring
         ~ModalStep.jsonvalidator
+        ~ModalStep.modes
         ~ModalStep.name
 
     

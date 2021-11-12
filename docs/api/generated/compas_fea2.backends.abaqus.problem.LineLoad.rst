@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 LineLoad
 ============================================
@@ -22,14 +22,18 @@ LineLoad
         ~LineLoad.DATASCHEMA
         ~LineLoad.JSONSCHEMA
         ~LineLoad.JSONSCHEMANAME
+        ~LineLoad.axes
+        ~LineLoad.components
         ~LineLoad.data
         ~LineLoad.dtype
+        ~LineLoad.elements
         ~LineLoad.guid
         ~LineLoad.jobdata
         ~LineLoad.jsondefinitions
         ~LineLoad.jsonstring
         ~LineLoad.jsonvalidator
         ~LineLoad.name
+        ~LineLoad.nodes
 
     
     

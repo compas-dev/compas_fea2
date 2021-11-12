@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticPlastic
 ================================================
@@ -21,8 +21,11 @@ ElasticPlastic
     .. autosummary::
     
         ~ElasticPlastic.DATASCHEMA
+        ~ElasticPlastic.E
+        ~ElasticPlastic.G
         ~ElasticPlastic.JSONSCHEMA
         ~ElasticPlastic.JSONSCHEMANAME
+        ~ElasticPlastic.compression
         ~ElasticPlastic.data
         ~ElasticPlastic.dtype
         ~ElasticPlastic.guid
@@ -30,6 +33,9 @@ ElasticPlastic
         ~ElasticPlastic.jsonstring
         ~ElasticPlastic.jsonvalidator
         ~ElasticPlastic.name
+        ~ElasticPlastic.p
+        ~ElasticPlastic.tension
+        ~ElasticPlastic.v
 
     
     

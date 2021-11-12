@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TrussSectionBase
 =================================================
@@ -19,16 +19,26 @@ TrussSectionBase
 
     .. autosummary::
     
+        ~TrussSectionBase.A
+        ~TrussSectionBase.Avx
+        ~TrussSectionBase.Avy
         ~TrussSectionBase.DATASCHEMA
+        ~TrussSectionBase.Ixx
+        ~TrussSectionBase.Ixy
+        ~TrussSectionBase.Iyy
+        ~TrussSectionBase.J
         ~TrussSectionBase.JSONSCHEMA
         ~TrussSectionBase.JSONSCHEMANAME
         ~TrussSectionBase.data
         ~TrussSectionBase.dtype
+        ~TrussSectionBase.g0
         ~TrussSectionBase.guid
+        ~TrussSectionBase.gw
         ~TrussSectionBase.jobdata
         ~TrussSectionBase.jsondefinitions
         ~TrussSectionBase.jsonstring
         ~TrussSectionBase.jsonvalidator
+        ~TrussSectionBase.material
         ~TrussSectionBase.name
 
     

@@ -28,33 +28,9 @@ class NodeBase(FEABase):
         Node's local z axis.
     mass : float
         Mass in kg associated with the node.
-    label : string
+    name : string
         Node's label. If no label is specified, it is automatically generated
         when a node is added. The label does not need to be unique.
-
-    Attributes
-    ----------
-    xyz : list
-        [x, y, z] co-ordinates of the node.
-    x : float
-        x co-ordinates of the node.
-    y : float
-        y co-ordinates of the node.
-    z : float
-        z co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-    label : string
-        Node's label. If no label is specified, it is automatically generated
-        when a node is added. The label does not need to be unique.
-    key : int
-        Node key number. The key number is unique.
 
     Examples
     --------
@@ -169,3 +145,9 @@ class NodeBase(FEABase):
 
     def __repr__(self):
         return '{0}({1} - {2})'.format(self.__name__, self._key, self._name)
+
+    def move_node(self):
+        raise NotImplementedError
+
+    def rotate_node_axes(self):
+        raise NotImplementedError

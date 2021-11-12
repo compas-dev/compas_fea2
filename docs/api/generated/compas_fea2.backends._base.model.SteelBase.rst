@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 SteelBase
 ==========================================
@@ -20,6 +20,8 @@ SteelBase
     .. autosummary::
     
         ~SteelBase.DATASCHEMA
+        ~SteelBase.E
+        ~SteelBase.G
         ~SteelBase.JSONSCHEMA
         ~SteelBase.JSONSCHEMANAME
         ~SteelBase.data
@@ -30,6 +32,8 @@ SteelBase
         ~SteelBase.jsonstring
         ~SteelBase.jsonvalidator
         ~SteelBase.name
+        ~SteelBase.p
+        ~SteelBase.v
 
     
     

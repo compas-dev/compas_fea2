@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 SpringSection
 ===============================================
@@ -29,6 +29,7 @@ SpringSection
         ~SpringSection.jsondefinitions
         ~SpringSection.jsonstring
         ~SpringSection.jsonvalidator
+        ~SpringSection.material
         ~SpringSection.name
 
     

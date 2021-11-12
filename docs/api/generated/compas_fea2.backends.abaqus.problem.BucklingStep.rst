@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 BucklingStep
 ================================================
@@ -24,7 +24,9 @@ BucklingStep
         ~BucklingStep.JSONSCHEMANAME
         ~BucklingStep.data
         ~BucklingStep.dtype
+        ~BucklingStep.field_outputs
         ~BucklingStep.guid
+        ~BucklingStep.history_outputs
         ~BucklingStep.jobdata
         ~BucklingStep.jsondefinitions
         ~BucklingStep.jsonstring

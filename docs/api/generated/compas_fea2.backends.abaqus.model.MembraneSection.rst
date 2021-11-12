@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 MembraneSection
 =================================================
@@ -29,7 +29,9 @@ MembraneSection
         ~MembraneSection.jsondefinitions
         ~MembraneSection.jsonstring
         ~MembraneSection.jsonvalidator
+        ~MembraneSection.material
         ~MembraneSection.name
+        ~MembraneSection.t
 
     
     

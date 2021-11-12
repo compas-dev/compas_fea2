@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 CircularSection
 =================================================
@@ -29,6 +29,7 @@ CircularSection
         ~CircularSection.jsondefinitions
         ~CircularSection.jsonstring
         ~CircularSection.jsonvalidator
+        ~CircularSection.material
         ~CircularSection.name
 
     

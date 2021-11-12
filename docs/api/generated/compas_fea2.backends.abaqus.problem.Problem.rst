@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 Problem
 ===========================================
@@ -22,14 +22,22 @@ Problem
         ~Problem.DATASCHEMA
         ~Problem.JSONSCHEMA
         ~Problem.JSONSCHEMANAME
+        ~Problem.bcs
         ~Problem.data
         ~Problem.dtype
+        ~Problem.field_outputs
         ~Problem.guid
+        ~Problem.history_outputs
         ~Problem.jobdata
         ~Problem.jsondefinitions
         ~Problem.jsonstring
         ~Problem.jsonvalidator
+        ~Problem.loads
+        ~Problem.model
         ~Problem.name
+        ~Problem.path
+        ~Problem.steps
+        ~Problem.steps_order
 
     
     
@@ -65,6 +73,8 @@ Problem
         ~Problem.add_history_outputs
         ~Problem.add_load
         ~Problem.add_loads
+        ~Problem.add_output
+        ~Problem.add_outputs
         ~Problem.add_steps
         ~Problem.copy
         ~Problem.define_steps_order
@@ -75,10 +85,13 @@ Problem
         ~Problem.load_from_cfp
         ~Problem.remove_all_bcs
         ~Problem.remove_all_loads
+        ~Problem.remove_all_output
         ~Problem.remove_bc
         ~Problem.remove_bcs
         ~Problem.remove_load
         ~Problem.remove_loads
+        ~Problem.remove_output
+        ~Problem.remove_outputs
         ~Problem.save_to_cfp
         ~Problem.summary
         ~Problem.to_data

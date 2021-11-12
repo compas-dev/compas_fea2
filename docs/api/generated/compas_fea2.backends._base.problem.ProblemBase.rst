@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ProblemBase
 ==============================================
@@ -14,6 +14,15 @@ ProblemBase
 
     .. autosummary::
     
+        ~ProblemBase.bcs
+        ~ProblemBase.field_outputs
+        ~ProblemBase.history_outputs
+        ~ProblemBase.loads
+        ~ProblemBase.model
+        ~ProblemBase.name
+        ~ProblemBase.path
+        ~ProblemBase.steps
+        ~ProblemBase.steps_order
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +38,6 @@ ProblemBase
         ~ProblemBase.jsondefinitions
         ~ProblemBase.jsonstring
         ~ProblemBase.jsonvalidator
-        ~ProblemBase.name
 
     
     
@@ -52,6 +60,8 @@ ProblemBase
         ~ProblemBase.add_history_outputs
         ~ProblemBase.add_load
         ~ProblemBase.add_loads
+        ~ProblemBase.add_output
+        ~ProblemBase.add_outputs
         ~ProblemBase.add_step
         ~ProblemBase.add_steps
         ~ProblemBase.analyse
@@ -61,10 +71,13 @@ ProblemBase
         ~ProblemBase.optimise
         ~ProblemBase.remove_all_bcs
         ~ProblemBase.remove_all_loads
+        ~ProblemBase.remove_all_output
         ~ProblemBase.remove_bc
         ~ProblemBase.remove_bcs
         ~ProblemBase.remove_load
         ~ProblemBase.remove_loads
+        ~ProblemBase.remove_output
+        ~ProblemBase.remove_outputs
         ~ProblemBase.save_to_cfp
         ~ProblemBase.summary
         ~ProblemBase.write_input_file

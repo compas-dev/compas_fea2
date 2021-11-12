@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 CircularSectionBase
 ====================================================
@@ -19,16 +19,26 @@ CircularSectionBase
 
     .. autosummary::
     
+        ~CircularSectionBase.A
+        ~CircularSectionBase.Avx
+        ~CircularSectionBase.Avy
         ~CircularSectionBase.DATASCHEMA
+        ~CircularSectionBase.Ixx
+        ~CircularSectionBase.Ixy
+        ~CircularSectionBase.Iyy
+        ~CircularSectionBase.J
         ~CircularSectionBase.JSONSCHEMA
         ~CircularSectionBase.JSONSCHEMANAME
         ~CircularSectionBase.data
         ~CircularSectionBase.dtype
+        ~CircularSectionBase.g0
         ~CircularSectionBase.guid
+        ~CircularSectionBase.gw
         ~CircularSectionBase.jobdata
         ~CircularSectionBase.jsondefinitions
         ~CircularSectionBase.jsonstring
         ~CircularSectionBase.jsonvalidator
+        ~CircularSectionBase.material
         ~CircularSectionBase.name
 
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TieSectionBase
 ===============================================
@@ -19,16 +19,26 @@ TieSectionBase
 
     .. autosummary::
     
+        ~TieSectionBase.A
+        ~TieSectionBase.Avx
+        ~TieSectionBase.Avy
         ~TieSectionBase.DATASCHEMA
+        ~TieSectionBase.Ixx
+        ~TieSectionBase.Ixy
+        ~TieSectionBase.Iyy
+        ~TieSectionBase.J
         ~TieSectionBase.JSONSCHEMA
         ~TieSectionBase.JSONSCHEMANAME
         ~TieSectionBase.data
         ~TieSectionBase.dtype
+        ~TieSectionBase.g0
         ~TieSectionBase.guid
+        ~TieSectionBase.gw
         ~TieSectionBase.jobdata
         ~TieSectionBase.jsondefinitions
         ~TieSectionBase.jsonstring
         ~TieSectionBase.jsonvalidator
+        ~TieSectionBase.material
         ~TieSectionBase.name
 
     

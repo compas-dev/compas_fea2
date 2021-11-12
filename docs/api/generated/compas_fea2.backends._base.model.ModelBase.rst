@@ -16,10 +16,12 @@ ModelBase
     
         ~ModelBase.constraits
         ~ModelBase.description
+        ~ModelBase.elements
         ~ModelBase.instances
         ~ModelBase.interactions
         ~ModelBase.materials
         ~ModelBase.name
+        ~ModelBase.nodes
         ~ModelBase.parts
         ~ModelBase.releases
         ~ModelBase.sections
@@ -69,6 +71,7 @@ ModelBase
         ~ModelBase.add_release
         ~ModelBase.add_releases
         ~ModelBase.add_section
+        ~ModelBase.add_sections
         ~ModelBase.add_surface
         ~ModelBase.assign_material_to_element
         ~ModelBase.assign_section_to_element

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 RectangularSectionBase
 =======================================================
@@ -19,16 +19,26 @@ RectangularSectionBase
 
     .. autosummary::
     
+        ~RectangularSectionBase.A
+        ~RectangularSectionBase.Avx
+        ~RectangularSectionBase.Avy
         ~RectangularSectionBase.DATASCHEMA
+        ~RectangularSectionBase.Ixx
+        ~RectangularSectionBase.Ixy
+        ~RectangularSectionBase.Iyy
+        ~RectangularSectionBase.J
         ~RectangularSectionBase.JSONSCHEMA
         ~RectangularSectionBase.JSONSCHEMANAME
         ~RectangularSectionBase.data
         ~RectangularSectionBase.dtype
+        ~RectangularSectionBase.g0
         ~RectangularSectionBase.guid
+        ~RectangularSectionBase.gw
         ~RectangularSectionBase.jobdata
         ~RectangularSectionBase.jsondefinitions
         ~RectangularSectionBase.jsonstring
         ~RectangularSectionBase.jsonvalidator
+        ~RectangularSectionBase.material
         ~RectangularSectionBase.name
 
     

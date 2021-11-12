@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 Steel
 =======================================
@@ -21,6 +21,8 @@ Steel
     .. autosummary::
     
         ~Steel.DATASCHEMA
+        ~Steel.E
+        ~Steel.G
         ~Steel.JSONSCHEMA
         ~Steel.JSONSCHEMANAME
         ~Steel.data
@@ -30,6 +32,8 @@ Steel
         ~Steel.jsonstring
         ~Steel.jsonvalidator
         ~Steel.name
+        ~Steel.p
+        ~Steel.v
 
     
     

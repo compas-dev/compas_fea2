@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 SolidSectionBase
 =================================================
@@ -29,6 +29,7 @@ SolidSectionBase
         ~SolidSectionBase.jsondefinitions
         ~SolidSectionBase.jsonstring
         ~SolidSectionBase.jsonvalidator
+        ~SolidSectionBase.material
         ~SolidSectionBase.name
 
     

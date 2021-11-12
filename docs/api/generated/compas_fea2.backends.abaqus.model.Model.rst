@@ -26,6 +26,7 @@ Model
         ~Model.data
         ~Model.description
         ~Model.dtype
+        ~Model.elements
         ~Model.guid
         ~Model.instances
         ~Model.interactions
@@ -35,6 +36,7 @@ Model
         ~Model.jsonvalidator
         ~Model.materials
         ~Model.name
+        ~Model.nodes
         ~Model.parts
         ~Model.releases
         ~Model.sections
@@ -76,6 +78,7 @@ Model
         ~Model.add_release
         ~Model.add_releases
         ~Model.add_section
+        ~Model.add_sections
         ~Model.add_surface
         ~Model.assign_material_to_element
         ~Model.assign_section_to_element

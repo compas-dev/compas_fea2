@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 RollerDisplacementXY
 ========================================================
@@ -22,6 +22,8 @@ RollerDisplacementXY
         ~RollerDisplacementXY.DATASCHEMA
         ~RollerDisplacementXY.JSONSCHEMA
         ~RollerDisplacementXY.JSONSCHEMANAME
+        ~RollerDisplacementXY.axes
+        ~RollerDisplacementXY.components
         ~RollerDisplacementXY.data
         ~RollerDisplacementXY.dtype
         ~RollerDisplacementXY.guid
@@ -30,6 +32,13 @@ RollerDisplacementXY
         ~RollerDisplacementXY.jsonstring
         ~RollerDisplacementXY.jsonvalidator
         ~RollerDisplacementXY.name
+        ~RollerDisplacementXY.nodes
+        ~RollerDisplacementXY.x
+        ~RollerDisplacementXY.xx
+        ~RollerDisplacementXY.y
+        ~RollerDisplacementXY.yy
+        ~RollerDisplacementXY.z
+        ~RollerDisplacementXY.zz
 
     
     

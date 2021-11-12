@@ -14,6 +14,17 @@ NodeBase
 
     .. autosummary::
     
+        ~NodeBase.ex
+        ~NodeBase.ey
+        ~NodeBase.ez
+        ~NodeBase.gkey
+        ~NodeBase.key
+        ~NodeBase.mass
+        ~NodeBase.name
+        ~NodeBase.x
+        ~NodeBase.xyz
+        ~NodeBase.y
+        ~NodeBase.z
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +40,6 @@ NodeBase
         ~NodeBase.jsondefinitions
         ~NodeBase.jsonstring
         ~NodeBase.jsonvalidator
-        ~NodeBase.name
 
     
     
@@ -44,6 +54,8 @@ NodeBase
 
     
         ~NodeBase.__init__
+        ~NodeBase.move_node
+        ~NodeBase.rotate_node_axes
 
     .. rubric:: Inherited Methods
 

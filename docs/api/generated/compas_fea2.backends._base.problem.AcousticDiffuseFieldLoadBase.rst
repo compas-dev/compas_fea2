@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 AcousticDiffuseFieldLoadBase
 ===============================================================
@@ -22,14 +22,18 @@ AcousticDiffuseFieldLoadBase
         ~AcousticDiffuseFieldLoadBase.DATASCHEMA
         ~AcousticDiffuseFieldLoadBase.JSONSCHEMA
         ~AcousticDiffuseFieldLoadBase.JSONSCHEMANAME
+        ~AcousticDiffuseFieldLoadBase.axes
+        ~AcousticDiffuseFieldLoadBase.components
         ~AcousticDiffuseFieldLoadBase.data
         ~AcousticDiffuseFieldLoadBase.dtype
+        ~AcousticDiffuseFieldLoadBase.elements
         ~AcousticDiffuseFieldLoadBase.guid
         ~AcousticDiffuseFieldLoadBase.jobdata
         ~AcousticDiffuseFieldLoadBase.jsondefinitions
         ~AcousticDiffuseFieldLoadBase.jsonstring
         ~AcousticDiffuseFieldLoadBase.jsonvalidator
         ~AcousticDiffuseFieldLoadBase.name
+        ~AcousticDiffuseFieldLoadBase.nodes
 
     
     

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ElasticIsotropicBase
 =====================================================
@@ -14,6 +14,10 @@ ElasticIsotropicBase
 
     .. autosummary::
     
+        ~ElasticIsotropicBase.E
+        ~ElasticIsotropicBase.G
+        ~ElasticIsotropicBase.p
+        ~ElasticIsotropicBase.v
 
     .. rubric:: Inherited Attributes
 

@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TrapezoidalSectionBase
 =======================================================
@@ -19,16 +19,26 @@ TrapezoidalSectionBase
 
     .. autosummary::
     
+        ~TrapezoidalSectionBase.A
+        ~TrapezoidalSectionBase.Avx
+        ~TrapezoidalSectionBase.Avy
         ~TrapezoidalSectionBase.DATASCHEMA
+        ~TrapezoidalSectionBase.Ixx
+        ~TrapezoidalSectionBase.Ixy
+        ~TrapezoidalSectionBase.Iyy
+        ~TrapezoidalSectionBase.J
         ~TrapezoidalSectionBase.JSONSCHEMA
         ~TrapezoidalSectionBase.JSONSCHEMANAME
         ~TrapezoidalSectionBase.data
         ~TrapezoidalSectionBase.dtype
+        ~TrapezoidalSectionBase.g0
         ~TrapezoidalSectionBase.guid
+        ~TrapezoidalSectionBase.gw
         ~TrapezoidalSectionBase.jobdata
         ~TrapezoidalSectionBase.jsondefinitions
         ~TrapezoidalSectionBase.jsonstring
         ~TrapezoidalSectionBase.jsonvalidator
+        ~TrapezoidalSectionBase.material
         ~TrapezoidalSectionBase.name
 
     

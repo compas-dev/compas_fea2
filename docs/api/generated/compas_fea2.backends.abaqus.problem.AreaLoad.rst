@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 AreaLoad
 ============================================
@@ -22,14 +22,18 @@ AreaLoad
         ~AreaLoad.DATASCHEMA
         ~AreaLoad.JSONSCHEMA
         ~AreaLoad.JSONSCHEMANAME
+        ~AreaLoad.axes
+        ~AreaLoad.components
         ~AreaLoad.data
         ~AreaLoad.dtype
+        ~AreaLoad.elements
         ~AreaLoad.guid
         ~AreaLoad.jobdata
         ~AreaLoad.jsondefinitions
         ~AreaLoad.jsonstring
         ~AreaLoad.jsonvalidator
         ~AreaLoad.name
+        ~AreaLoad.nodes
 
     
     

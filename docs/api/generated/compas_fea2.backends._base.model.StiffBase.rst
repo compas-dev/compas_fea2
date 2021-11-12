@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 StiffBase
 ==========================================
@@ -20,6 +20,8 @@ StiffBase
     .. autosummary::
     
         ~StiffBase.DATASCHEMA
+        ~StiffBase.E
+        ~StiffBase.G
         ~StiffBase.JSONSCHEMA
         ~StiffBase.JSONSCHEMANAME
         ~StiffBase.data
@@ -30,6 +32,8 @@ StiffBase
         ~StiffBase.jsonstring
         ~StiffBase.jsonvalidator
         ~StiffBase.name
+        ~StiffBase.p
+        ~StiffBase.v
 
     
     

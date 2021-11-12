@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ISectionBase
 =============================================
@@ -19,16 +19,26 @@ ISectionBase
 
     .. autosummary::
     
+        ~ISectionBase.A
+        ~ISectionBase.Avx
+        ~ISectionBase.Avy
         ~ISectionBase.DATASCHEMA
+        ~ISectionBase.Ixx
+        ~ISectionBase.Ixy
+        ~ISectionBase.Iyy
+        ~ISectionBase.J
         ~ISectionBase.JSONSCHEMA
         ~ISectionBase.JSONSCHEMANAME
         ~ISectionBase.data
         ~ISectionBase.dtype
+        ~ISectionBase.g0
         ~ISectionBase.guid
+        ~ISectionBase.gw
         ~ISectionBase.jobdata
         ~ISectionBase.jsondefinitions
         ~ISectionBase.jsonstring
         ~ISectionBase.jsonvalidator
+        ~ISectionBase.material
         ~ISectionBase.name
 
     

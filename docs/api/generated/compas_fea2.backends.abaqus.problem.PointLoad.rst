@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 PointLoad
 =============================================
@@ -23,13 +23,17 @@ PointLoad
         ~PointLoad.DATASCHEMA
         ~PointLoad.JSONSCHEMA
         ~PointLoad.JSONSCHEMANAME
+        ~PointLoad.axes
+        ~PointLoad.components
         ~PointLoad.data
         ~PointLoad.dtype
+        ~PointLoad.elements
         ~PointLoad.guid
         ~PointLoad.jsondefinitions
         ~PointLoad.jsonstring
         ~PointLoad.jsonvalidator
         ~PointLoad.name
+        ~PointLoad.nodes
 
     
     

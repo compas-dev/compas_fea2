@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 PinnedDisplacement
 ======================================================
@@ -22,6 +22,8 @@ PinnedDisplacement
         ~PinnedDisplacement.DATASCHEMA
         ~PinnedDisplacement.JSONSCHEMA
         ~PinnedDisplacement.JSONSCHEMANAME
+        ~PinnedDisplacement.axes
+        ~PinnedDisplacement.components
         ~PinnedDisplacement.data
         ~PinnedDisplacement.dtype
         ~PinnedDisplacement.guid
@@ -30,6 +32,13 @@ PinnedDisplacement
         ~PinnedDisplacement.jsonstring
         ~PinnedDisplacement.jsonvalidator
         ~PinnedDisplacement.name
+        ~PinnedDisplacement.nodes
+        ~PinnedDisplacement.x
+        ~PinnedDisplacement.xx
+        ~PinnedDisplacement.y
+        ~PinnedDisplacement.yy
+        ~PinnedDisplacement.z
+        ~PinnedDisplacement.zz
 
     
     

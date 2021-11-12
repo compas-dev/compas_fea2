@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 SectionBase
 ============================================
@@ -14,6 +14,8 @@ SectionBase
 
     .. autosummary::
     
+        ~SectionBase.material
+        ~SectionBase.name
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +31,6 @@ SectionBase
         ~SectionBase.jsondefinitions
         ~SectionBase.jsonstring
         ~SectionBase.jsonvalidator
-        ~SectionBase.name
 
     
     

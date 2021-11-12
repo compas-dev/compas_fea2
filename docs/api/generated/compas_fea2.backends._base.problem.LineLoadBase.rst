@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 LineLoadBase
 ===============================================
@@ -22,14 +22,18 @@ LineLoadBase
         ~LineLoadBase.DATASCHEMA
         ~LineLoadBase.JSONSCHEMA
         ~LineLoadBase.JSONSCHEMANAME
+        ~LineLoadBase.axes
+        ~LineLoadBase.components
         ~LineLoadBase.data
         ~LineLoadBase.dtype
+        ~LineLoadBase.elements
         ~LineLoadBase.guid
         ~LineLoadBase.jobdata
         ~LineLoadBase.jsondefinitions
         ~LineLoadBase.jsonstring
         ~LineLoadBase.jsonvalidator
         ~LineLoadBase.name
+        ~LineLoadBase.nodes
 
     
     

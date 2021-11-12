@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ShellSection
 ==============================================
@@ -29,7 +29,9 @@ ShellSection
         ~ShellSection.jsondefinitions
         ~ShellSection.jsonstring
         ~ShellSection.jsonvalidator
+        ~ShellSection.material
         ~ShellSection.name
+        ~ShellSection.t
 
     
     

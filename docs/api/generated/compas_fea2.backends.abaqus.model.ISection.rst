@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ISection
 ==========================================
@@ -29,6 +29,7 @@ ISection
         ~ISection.jsondefinitions
         ~ISection.jsonstring
         ~ISection.jsonvalidator
+        ~ISection.material
         ~ISection.name
 
     

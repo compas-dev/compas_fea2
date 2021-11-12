@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 PipeSectionBase
 ================================================
@@ -19,16 +19,26 @@ PipeSectionBase
 
     .. autosummary::
     
+        ~PipeSectionBase.A
+        ~PipeSectionBase.Avx
+        ~PipeSectionBase.Avy
         ~PipeSectionBase.DATASCHEMA
+        ~PipeSectionBase.Ixx
+        ~PipeSectionBase.Ixy
+        ~PipeSectionBase.Iyy
+        ~PipeSectionBase.J
         ~PipeSectionBase.JSONSCHEMA
         ~PipeSectionBase.JSONSCHEMANAME
         ~PipeSectionBase.data
         ~PipeSectionBase.dtype
+        ~PipeSectionBase.g0
         ~PipeSectionBase.guid
+        ~PipeSectionBase.gw
         ~PipeSectionBase.jobdata
         ~PipeSectionBase.jsondefinitions
         ~PipeSectionBase.jsonstring
         ~PipeSectionBase.jsonvalidator
+        ~PipeSectionBase.material
         ~PipeSectionBase.name
 
     

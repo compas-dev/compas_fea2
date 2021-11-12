@@ -49,7 +49,6 @@ class GeneralDisplacementBase(FEABase):
     """
 
     def __init__(self, name, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-
         self.__name__ = 'GeneralDisplacement'
         self._name = name
         self._nodes = nodes
@@ -147,7 +146,7 @@ class FixedDisplacementBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacementBase.__init__(self, name=name, nodes=nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes=axes)
+        super(FixedDisplacementBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes=axes)
         self.__name__ = 'FixedDisplacement'
 
 
@@ -163,11 +162,11 @@ class PinnedDisplacementBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        GeneralDisplacementBase.__init__(self, name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
+        super(PinnedDisplacementBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
         self.__name__ = 'PinnedDisplacement'
 
 
-class FixedDisplacementXXBase(PinnedDisplacementBase):
+class FixedDisplacementXXBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition clamped in XX.
 
     Parameters
@@ -181,11 +180,11 @@ class FixedDisplacementXXBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, xx=0, axes=axes)
+        super(FixedDisplacementXXBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, axes=axes)
         self.__name__ = 'FixedDisplacementXX'
 
 
-class FixedDisplacementYYBase(PinnedDisplacementBase):
+class FixedDisplacementYYBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition clamped in YY.
 
     Parameters
@@ -199,11 +198,11 @@ class FixedDisplacementYYBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, yy=0, axes=axes)
+        super(FixedDisplacementYYBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, yy=0, axes=axes)
         self.__name__ = 'FixedDisplacementYY'
 
 
-class FixedDisplacementZZBase(PinnedDisplacementBase):
+class FixedDisplacementZZBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition clamped in ZZ.
 
     Parameters
@@ -217,11 +216,11 @@ class FixedDisplacementZZBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, zz=0, axes=axes)
+        super(FixedDisplacementZZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, zz=0, axes=axes)
         self.__name__ = 'FixedDisplacementZZ'
 
 
-class RollerDisplacementXBase(PinnedDisplacementBase):
+class RollerDisplacementXBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in X.
 
     Parameters
@@ -235,11 +234,11 @@ class RollerDisplacementXBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, x=None, axes=axes)
+        super(RollerDisplacementXBase, self).__init__(name=name, nodes=nodes, y=0, z=0, axes=axes)
         self.__name__ = 'RollerDisplacementX'
 
 
-class RollerDisplacementYBase(PinnedDisplacementBase):
+class RollerDisplacementYBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in Y.
 
     Parameters
@@ -253,11 +252,11 @@ class RollerDisplacementYBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, y=None, axes=axes)
+        super(RollerDisplacementYBase, self).__init__(name=name, nodes=nodes, x=0, z=0, zz=0, axes=axes)
         self.__name__ = 'RollerDisplacementY'
 
 
-class RollerDisplacementZBase(PinnedDisplacementBase):
+class RollerDisplacementZBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in Z.
 
     Parameters
@@ -271,12 +270,11 @@ class RollerDisplacementZBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(
-            self, name=name, nodes=nodes, z=None, axes=axes)
+        super(RollerDisplacementZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, axes=axes)
         self.__name__ = 'RollerDisplacementZ'
 
 
-class RollerDisplacementXYBase(PinnedDisplacementBase):
+class RollerDisplacementXYBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in X and Y.
 
     Parameters
@@ -290,13 +288,12 @@ class RollerDisplacementXYBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(
-            self, name=name, nodes=nodes, x=None, y=None, axes=axes)
+        super(RollerDisplacementXYBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
 
         self.__name__ = 'RollerDisplacementXY'
 
 
-class RollerDisplacementYZBase(PinnedDisplacementBase):
+class RollerDisplacementYZBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in Y and Z.
 
     Parameters
@@ -310,11 +307,11 @@ class RollerDisplacementYZBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, y=None, z=None, axes=axes)
+        super(RollerDisplacementYZBase, self).__init__(name=name, nodes=nodes, x=0, axes=axes)
         self.__name__ = 'RollerDisplacementYZ'
 
 
-class RollerDisplacementXZBase(PinnedDisplacementBase):
+class RollerDisplacementXZBase(GeneralDisplacementBase):
     """A pinned nodal displacement boundary condition released in X and Z.
 
     Parameters
@@ -328,5 +325,5 @@ class RollerDisplacementXZBase(PinnedDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        PinnedDisplacementBase.__init__(self, name=name, nodes=nodes, x=None, z=None, axes=axes)
+        super(RollerDisplacementXZBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
         self.__name__ = 'RollerDisplacementXZ'

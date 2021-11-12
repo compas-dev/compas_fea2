@@ -9,7 +9,9 @@ import os
 import importlib
 
 from compas_fea2.backends._base.base import FEABase
+from compas_fea2.backends._base.model.parts import PartBase
 from compas_fea2.backends._base.model.materials import MaterialBase
+from compas_fea2.backends._base.model.sections import SectionBase
 
 __all__ = [
     'ModelBase',
@@ -28,18 +30,21 @@ class ModelBase(FEABase):
         can be useful for future reference.
     """
 
-    def __init__(self, name, description):
+    def __init__(self, name, description, author):
         self.__name__ = 'Model'
         self._name = name
         self._description = description
+        self._author = author
         self._instances = {}
         self._parts = {}
+        self._nodes = {}
+        self._materials = {}
+        self._sections = {}
+        self._elements = {}
         self._surfaces = []
         self._constraints = []
         self._releases = []
         self._interactions = []
-        self._materials = {}
-        self._sections = {}
         self._sets = {}
 
     @property
@@ -78,6 +83,15 @@ class ModelBase(FEABase):
     @parts.setter
     def parts(self, value):
         self._parts = value
+
+    @property
+    def nodes(self):
+        """The nodes property."""
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, value):
+        self._nodes = value
 
     @property
     def surfaces(self):
@@ -132,6 +146,15 @@ class ModelBase(FEABase):
     @sections.setter
     def sections(self, value):
         self._sections = value
+
+    @property
+    def elements(self):
+        """The elements property."""
+        return self._elements
+
+    @elements.setter
+    def elements(self, value):
+        self._elements = value
 
     @property
     def sets(self):
@@ -266,6 +289,12 @@ class ModelBase(FEABase):
     #                             Parts methods
     # =========================================================================
 
+    def _check_part_in_model(self, part, add=True):
+        if not part in self.parts and not isinstance(part, PartBase):
+            raise ValueError('** ERROR! **: part {} not found in the Model or instance of a Part!'.format(part))
+        if isinstance(part, PartBase) and add:
+            self.add_part(part)
+
     def add_part(self, part, transformation={}):
         """Adds a Part to the Model and creates an Instance object from the
         specified Part and adds it to the Assembly. If a transformation matrix
@@ -293,10 +322,8 @@ class ModelBase(FEABase):
         >>> part = Part('mypart')
         >>> model.add_part(part=part, transformation=[M1, M2])
         """
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        if part.name in self.parts:
-            print(
-                "WARNING: Part {} already in the Model. Part not added!".format(part.name))
+        if part._name in self.parts:
+            print("WARNING: Part {} already in the Model. Part not added!".format(part.name))
         else:
             self.parts[part.name] = part
 
@@ -306,11 +333,12 @@ class ModelBase(FEABase):
                 instance = self._instance_from_part(part, i, transformation[i])
                 self.add_instance(instance)
         else:
+            m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
             self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
 
         # Add part's properties to the model
-        self.add_materials(part.materials.values())
-        self.add_sections(part.sections.values())
+        self._update_part_nodes_to_model(part)
+        self._update_part_elements_to_model(part)
 
     def remove_part(self, part):
         """ Removes the part from the Model and all the referenced instances
@@ -326,6 +354,8 @@ class ModelBase(FEABase):
         None
         """
 
+        raise NotImplementedError()
+        # TODO remove nodes, elements and sections
         self.parts.pop(part)
 
         for instance in self.instances:
@@ -391,21 +421,28 @@ class ModelBase(FEABase):
     #                           Nodes methods
     # =========================================================================
 
-    def add_node(self, node, part, check=True):
+    def _update_part_nodes_to_model(self, part, check=True):
+        self._nodes[part._name] = part._nodes
+
+    def _check_node_in_model(self, node, add=True):
+        pass
+
+    def add_node(self, node, part='hidden_part', check=True):
         """Add a compas_fea2 `Node` object to a `Part` in the `Model`.
         If the `Node` object has no label, one is automatically assigned.
         Duplicate nodes are automatically excluded.
 
         Warning
         -------
-        The part must have been previously added to the Model.
+        For the backends that do not have the concept of a `Part`, a hidden_part
+        is automatically created to keep things consistent. The user can ignore it.
 
 
         Parameters
         ----------
         node : obj
             compas_fea2 Node object.
-        part : str
+        part : str, optional
             Name of the part where the node will be added.
 
         Returns
@@ -413,11 +450,9 @@ class ModelBase(FEABase):
         None
         """
 
-        if part in self.parts:
-            self.parts[part].add_node(node, check)
-        else:
-            raise ValueError(
-                '** ERROR! **: part {} not found in the Model!'.format(part))
+        self._check_part_in_model(part)
+        self.parts[part].add_node(node, check)
+        self._update_part_nodes_to_model(self.parts[part])  # TODO this happens at every iteration...change!
 
     def add_nodes(self, nodes, part):
         """Add multiple compas_fea2 Node objects a Part in the Model.
@@ -458,6 +493,7 @@ class ModelBase(FEABase):
 
         if part in self.parts:
             self.parts[part].remove_node(node_key)
+            self._update_part_nodes_to_model(part)  # TODO this happens at every iteration...
         else:
             raise ValueError(
                 '** ERROR! **: part {} not found in the Model!'.format(part))
@@ -482,8 +518,110 @@ class ModelBase(FEABase):
             self.remove_node(node, part)
 
     # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def _check_material_in_model(self, material, add=True):
+        if not material in self._materials and not isinstance(material, MaterialBase):
+            raise ValueError('** ERROR! **: section {} not found in the Model or instance of a Section!'.format(material))
+        elif isinstance(material, MaterialBase) and add:
+            self.add_material(material)
+
+    def add_material(self, material):
+        '''Adds a Material object to the Model so that it can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : obj
+            compas_fea2 material object.
+
+        Returns
+        -------
+        None
+        '''
+        if material._name not in self._materials:
+            self._materials[material._name] = material
+        else:
+            print('WARNING: {} already added to the model. skipped!'.format(material))
+
+    def add_materials(self, materials):
+        '''Adds multiple Material objects to the Model so that they can be later refernced
+        and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : list
+            List of compas_fea2 material objects.
+
+        Returns
+        -------
+        None
+        '''
+        for material in materials:
+            self.add_material(material)
+
+    def assign_material_to_element(self, material, part, element):
+        raise NotImplementedError()
+
+    # =========================================================================
+    #                           Sections methods
+    # =========================================================================
+
+    def _check_section_in_model(self, section, add=True):
+        if not section in self._sections and not isinstance(section, SectionBase):
+            raise ValueError('** ERROR! **: section {} not found in the Model or instance of a Section!'.format(section))
+        elif isinstance(section, SectionBase) and add:
+            self.add_section(section)
+
+    def add_section(self, section):
+        """Adds a compas_fea2 Section object to the Model.
+
+        Parameters
+        ----------
+        element : obj
+            compas_fea2 Element object.
+        part : str
+            Name of the part where the nodes will be removed from.
+
+        Returns
+        -------
+        None
+        """
+
+        self._check_material_in_model(section.material)
+        if section._name not in self._sections:
+            self._sections[section._name] = section
+        else:
+            print('WARNING: {} already added to the model. skipped!'.format(section))
+
+    def add_sections(self, sections):
+        """Add multiple compas_fea2 Section objects to the Model.
+
+        Parameters
+        ----------
+        sections : list
+            list of compas_fea2 Section objects.
+
+        Returns
+        -------
+        None
+        """
+        for section in sections:
+            self.add_section(section)
+
+    def assign_section_to_element(self, material, part, element):
+        raise NotImplementedError()
+
+    # =========================================================================
     #                           Elements methods
     # =========================================================================
+
+    def _update_part_elements_to_model(self, part, check=True):
+        self._elements[part._name] = part._elements
+
+    def _check_element_in_model(self, element, add=True):
+        self._check_material_in_model(element)
 
     def add_element(self, element, part):
         """Add a compas_fea2 `Element` object to a `Part` in the `Model`.
@@ -500,14 +638,14 @@ class ModelBase(FEABase):
         None
         """
 
-        if part in self.parts:
-            self.parts[part].add_element(element)
-            if element.section not in self.sections:
-                raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
-            elif element.section not in self.parts[part].sections:
-                self.parts[part].sections[element.section] = self.sections[element.section]
-        else:
-            raise ValueError('** ERROR! **: part {} not found in the Model!'.format(part))
+        self._check_part_in_model(part)
+        self._check_section_in_model(element.section)
+        if element.section not in self.sections:
+            raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
+        elif element.section not in self.parts[part].sections:
+            self.parts[part].sections[element.section] = self.sections[element.section]
+        self.parts[part].add_element(element)
+        self._update_part_elements_to_model(self.parts[part])  # TODO this happens at every iteration...change!
 
     def add_elements(self, elements, part):
         """Adds multiple compas_fea2 Element objects to a Part in the Model.
@@ -584,10 +722,9 @@ class ModelBase(FEABase):
         None
         '''
 
-        if part in self.parts:
-            self.parts[part].add_release(release)
-        else:
-            raise ValueError('ERROR: part {} not found in the Model!'.format(part))
+        self._check_part_in_model(part)
+
+        self.parts[part].add_release(release)
         self.releases.append(release)
 
     def add_releases(self, releases, part):
@@ -650,95 +787,6 @@ class ModelBase(FEABase):
     #     None
     #     '''
     #     self.sets[set.name] = set
-    # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def add_material(self, material):
-        '''Adds a Material object to the Model so that it can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : obj
-            compas_fea2 material object.
-
-        Returns
-        -------
-        None
-        '''
-        if material.name not in self.materials:
-            self.materials[material.name] = material
-
-    def add_materials(self, materials):
-        '''Adds multiple Material objects to the Model so that they can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : list
-            List of compas_fea2 material objects.
-
-        Returns
-        -------
-        None
-        '''
-        for material in materials:
-            self.add_material(material)
-
-    def assign_material_to_element(self, material, part, element):
-        raise NotImplementedError()
-
-    # =========================================================================
-    #                           Sections methods
-    # =========================================================================
-
-    def add_section(self, section):
-        """Adds a compas_fea2 Section object to the Model.
-
-        Parameters
-        ----------
-        element : obj
-            compas_fea2 Element object.
-        part : str
-            Name of the part where the nodes will be removed from.
-
-        Returns
-        -------
-        None
-        """
-
-        if section.name not in self.sections:
-            if not isinstance(section.material, MaterialBase) and isinstance(section.material, str):
-                if section.material not in self.materials.keys():
-                    raise ValueError('ERROR: material {} not found in the Model!'.format(
-                        section.material.__repr__()))
-            else:
-                if section.material.name not in self.materials.keys():
-                    raise ValueError('ERROR: material {} not found in the Model!'.format(
-                        section.material.__repr__()))
-            self.sections[section.name] = section
-        else:
-            print('WARNING: {} already added to the model. skipped!')
-            # self.add_material(self.materials[section.material])
-
-    def add_sections(self, sections):
-        """Add multiple compas_fea2 Section objects to the Model.
-
-        Parameters
-        ----------
-        sections : list
-            list of compas_fea2 Section objects.
-
-        Returns
-        -------
-        None
-        """
-        for section in sections:
-            self.add_section(section)
-
-    def assign_section_to_element(self, material, part, element):
-        raise NotImplementedError()
 
     # =========================================================================
     #                        Surfaces methods

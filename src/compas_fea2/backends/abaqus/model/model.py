@@ -16,8 +16,8 @@ class Model(ModelBase):
     `Assembly` in Abaqus.
     """
 
-    def __init__(self, name, description=None):
-        super(Model, self).__init__(name, description)
+    def __init__(self, name, description=None, author=None):
+        super(Model, self).__init__(name, description, author)
         self._backend = 'abaqus'
 
     def _generate_jobdata(self):

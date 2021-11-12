@@ -35,6 +35,7 @@ class ProblemBase(FEABase):
         self._path = None
         self._bcs = {}
         self._loads = {}
+        self._displacements = {}
         self._steps = {}
         self._steps_order = []
         self._field_outputs = {}

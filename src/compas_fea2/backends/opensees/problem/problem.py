@@ -43,51 +43,6 @@ class Problem(ProblemBase):
 
     # TODO: try to make this an abstract method of the base class
 
-    def analyse(self, path='C:/temp', exe=None, cpus=1, output=True, overwrite=True, user_mat=False, save=False):
-        """Runs the analysis through abaqus.
-
-        Parameters
-        ----------
-        path : str
-            Path to the folder where the input file is saved.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        cpus : int
-            Number of CPU cores to use.
-        output : bool
-            Print terminal output.
-        user_mat : str TODO: REMOVE!
-            Name of the material defined through a subroutine (currently only one material is supported)
-        save : bool
-            Save structure to .cfp before file writing.
-
-        Returns
-        -------
-        None
-
-        """
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
-
-        self.write_input_file(output)
-        launch_process(self, exe, output, overwrite, user_mat)
-
-    def optimise(self, path='C:/temp', output=True, save=False):
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
-
-        self.write_input_file(output)
-        self.write_parameters_file(output)
-        launch_optimisation(self, output)
-
     # =========================================================================
     #                         Results methods
     # =========================================================================

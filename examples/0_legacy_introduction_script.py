@@ -52,30 +52,30 @@ model.add_instance_set(Set(name='nset_top', selection=[4], stype='nset'), instan
 model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
 model.summary()
-print(model)
+print(model.nodes)
 
-##### ----------------------------- PROBLEM ----------------------------- #####
+# ##### ----------------------------- PROBLEM ----------------------------- #####
 
-# Create the Problem object
-problem = Problem(name='test_structure', model=model)
+# # Create the Problem object
+# problem = Problem(name='test_structure', model=model)
 
-# Assign boundary conditions to the node stes
-problem.add_bc(PinnedDisplacement(name='disp_pinned', bset='nset_base'))
+# # Assign boundary conditions to the node stes
+# problem.add_bc(PinnedDisplacement(name='disp_pinned', bset='nset_base'))
 
-# Assign a point load to the node set
-problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000))
-problem.add_load(GravityLoad(name='load_gravity'))
+# # Assign a point load to the node set
+# problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000))
+# problem.add_load(GravityLoad(name='load_gravity'))
 
-# Define the field outputs required
-problem.add_field_output(fout=FieldOutput(name='fout'))
+# # Define the field outputs required
+# problem.add_field_output(fout=FieldOutput(name='fout'))
 
-# Define the analysis step
-problem.add_step(GeneralStaticStep(name='gstep', loads=['load_point', 'load_gravity']))
+# # Define the analysis step
+# problem.add_step(GeneralStaticStep(name='gstep', loads=['load_point', 'load_gravity']))
 
-# Solve the problem
-problem.summary()
-problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# # Solve the problem
+# problem.summary()
+# problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-pprint(results.nodal)
+# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# results = Results.from_problem(problem, fields=['u'])
+# pprint(results.nodal)

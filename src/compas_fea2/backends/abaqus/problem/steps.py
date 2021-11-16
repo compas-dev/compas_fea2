@@ -36,11 +36,11 @@ class GeneralStaticStep(GeneralStaticCaseBase):
     # __doc__ += GeneralStaticCaseBase.__doc__
 
     def __init__(self, name, loads=None, displacements=None, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-                 nlgeom='NO',   modify=True, field_outputs=None, history_outputs=None):
+                 field_outputs=None, history_outputs=None, nlgeom=False, modify=True,):
         super(GeneralStaticStep, self).__init__(name, loads, displacements, max_increments, initial_inc_size, min_inc_size, time,
                                                 field_outputs, history_outputs)
         self._stype = 'Static'
-        self._nlgeom = nlgeom
+        self._nlgeom = 'YES' if nlgeom else 'NO'
         self._modify = modify
 
         @property
@@ -50,7 +50,7 @@ class GeneralStaticStep(GeneralStaticCaseBase):
 
         @nlgeometry.setter
         def nlgeometry(self, value):
-            self.nlgeom = value
+            self._nlgeom = 'YES' if value else 'NO'
 
         @property
         def modify(self):
@@ -72,21 +72,19 @@ class GeneralStaticStep(GeneralStaticCaseBase):
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
-                "{4}, {5}, {6}, {5}\n"
-                "**\n"
-                "** DISPLACEMENTS\n"
-                "**\n").format(self._name, self._nlgeom, self._max_increments, self._stype, self._initial_inc_size, self._time,
-                               self._min_inc_size)
+                "{4}, {5}, {6}, {5}\n").format(self._name, self._nlgeom, self._max_increments, self._stype,
+                                               self._initial_inc_size, self._time, self._min_inc_size)
         section_data.append(line)
 
         if self._displacements:
+            line = """**\n** DISPLACEMENTS\n**\n"""
+            section_data.append(line)
             for displacement in self._displacements.values():
                 section_data.append(displacement._generate_jobdata())
 
-        line = """**\n** LOADS\n**\n"""
-        section_data.append(line)
-
         if self._loads:
+            line = """**\n** LOADS\n**\n"""
+            section_data.append(line)
             for load in self._loads.values():
                 section_data.append(load._generate_jobdata())
 

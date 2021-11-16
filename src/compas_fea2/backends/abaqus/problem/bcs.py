@@ -40,7 +40,7 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 def _generate_jobdata(obj):
     data_section = []
     line = ("** Name: {} Type: Displacement/Rotation\n"
-            "*Boundary").format(obj.name)
+            "*Boundary, op=NEW").format(obj.name)
     data_section.append(line)
     c = 1
     for dof in dofs:
@@ -82,6 +82,7 @@ class GeneralDisplacement(GeneralDisplacementBase):
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
         self.bset = bset
+        self._modify = True
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)

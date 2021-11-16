@@ -20,7 +20,7 @@ class InputFileBase():
     """
 
     def __init__(self, problem):
-        self.job_name = problem.name
+        self._job_name = problem.name
 
     # ==============================================================================
     # General methods

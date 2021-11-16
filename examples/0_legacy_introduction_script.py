@@ -22,6 +22,7 @@ from compas_fea2.backends.abaqus import Results
 
 from compas_fea2 import TEMP
 from compas_fea2.backends.abaqus.model import nodes
+from compas_fea2.backends.abaqus.problem.bcs import GeneralDisplacement
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
@@ -49,6 +50,8 @@ model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shel
 
 # Define sets for boundary conditions and loads
 model.add_instance_set(Set(name='nset_base', selection=[0, 1, 2, 3], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='nset_a', selection=[0], stype='nset'), instance='part-1-1')
+model.add_instance_set(Set(name='nset_bcd', selection=[1, 2, 3], stype='nset'), instance='part-1-1')
 model.add_instance_set(Set(name='nset_top', selection=[4], stype='nset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
@@ -64,16 +67,20 @@ pin = PinnedDisplacement(name='bc_pinned', bset='nset_base')
 problem.add_bc(pin)
 
 # Assign a point load to the node set
-step = GeneralStaticStep(name='gstep')
-problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000), step)
-problem.add_load(GravityLoad(name='load_gravity'), step)
+step_0 = GeneralStaticStep(name='step_gravity')
+step_1 = GeneralStaticStep(name='step_pload')
+problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000), step_0)
+problem.add_load(GravityLoad(name='load_gravity'), step_0)
+problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05),
+                           PinnedDisplacement(name='bc_pinned', bset='nset_bcd')], step_1)
 
 # Define the field outputs required
 fout = FieldOutput(name='fout')
-problem.add_output(fout, step)
+problem.add_output(fout, step_0)
+problem.add_output(fout, step_1)
 
-# Define the analysis step
-problem.add_step(step)
+# Define the analysis step (there should be a message skipping the step, since they were already added)
+problem.add_steps([step_0, step_1])
 
 # Solve the problem
 problem.summary()

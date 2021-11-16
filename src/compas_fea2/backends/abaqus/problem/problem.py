@@ -11,6 +11,7 @@ from compas_fea2.backends.abaqus.job.send_job import launch_process
 from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
 from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
 from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
+from compas_fea2.backends.abaqus.problem.steps import ModalStep
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -201,144 +202,205 @@ class Problem(ProblemBase):
         self.write_parameters_file(output)
         launch_optimisation(self, output)
 
-    # =========================================================================
-    #                         Results methods
-    # =========================================================================
 
-    # # TODO: try to make this an abstract method of the base class
-    # def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
-    #             return_data=True, components=None):
-    #     """Extracts data from the analysis output files.
+# =============================================================================
+#                               Job data
+# =============================================================================
 
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests.
-    #     steps : list
-    #         Loads steps to extract from.
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     sets : list
-    #         -
-    #     license : str
-    #         Software license type: 'research', 'student'.
-    #     output : bool
-    #         Print terminal output.
-    #     return_data : bool
-    #         Return data back into structure.results.
-    #     components : list
-    #         Specific components to extract from the fields data.
 
-    #     Returns
-    #     -------
-    #     None
+    def _generate_jobdata(self):
+        return f"""**
+** BOUNDARY
+**
+{self._generate_bcs_section()}**
+** STEPS
+{self._generate_steps_section()}"""
 
-    #     """
-    #     extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
-    #                  components=components)
+    def _generate_bcs_section(self):
+        """Generate the content relatitive to the boundary conditions section
+        for the input file.
 
-    # # this should be an abstract method of the base class
-    # def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
-    #                         return_data=True, components=None, user_mat=False, overwrite=True):
-    #     """Runs the analysis through the chosen FEA software / library and extracts data.
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
 
-    #     Parameters
-    #     ----------
-    #     fields : list, str
-    #         Data field requests.
-    #     exe : str
-    #         Full terminal command to bypass subprocess defaults.
-    #     cpus : int
-    #         Number of CPU cores to use.
-    #     license : str
-    #         Software license type: 'research', 'student'.
-    #     output : bool
-    #         Print terminal output.
-    #     save : bool
-    #         Save the structure to .obj before writing.
-    #     return_data : bool
-    #         Return data back into structure.results.
-    #     components : list
-    #         Specific components to extract from the fields data.
-    #     user_sub : bool
-    #         Specify the user subroutine if needed.
-    #     delete : bool
-    #         If True, the analysis results are deleted after being read. [Not Implemented yet]
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
+        section_data = []
+        for bc in self.bcs.values():
+            section_data.append(bc._generate_jobdata())
+        return ''.join(section_data)
 
-    #     Returns
-    #     -------
-    #     None
+    def _generate_steps_section(self):
+        """Generate the content relatitive to the steps section for the input
+        file.
 
-    #     """
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
 
-    #     self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,
-    #                 overwrite=overwrite, save=save)
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
+        section_data = []
+        for step in self.steps.values():
+            if isinstance(step, ModalStep):  # TODO too messy - check!
+                section_data.append(step._generate_jobdata())
+            else:
+                section_data.append(step._generate_jobdata(self))
 
-    #     self.extract(fields=fields, exe=exe, license=license, output=output,
-    #                 return_data=return_data, components=components)
+        return ''.join(section_data)
 
-    # # this should be stored in a more generic way
-    # def get_nodal_results(self, step, field, nodes='all'):
-    #     """Extract nodal results from self.results.
 
-    #     Parameters
-    #     ----------
-    #     step : str
-    #         Step to extract from.
-    #     field : str
-    #         Data field request.
-    #     nodes : str, list
-    #         Extract 'all' or a node set/list.
+"""TODO: add cpu parallelization option
+Parallel execution requested but no parallel feature present in the setup
+"""
 
-    #     Returns
-    #     -------
-    #     dict
-    #         The nodal results for the requested field.
-    #     """
-    #     data  = {}
-    #     rdict = self.results[step]['nodal']
+# =========================================================================
+#                         Results methods
+# =========================================================================
 
-    #     if nodes == 'all':
-    #         keys = list(self.nodes.keys())
-    #     elif isinstance(nodes, str):
-    #         keys = self.sets[nodes].selection
-    #     else:
-    #         keys = nodes
+# # TODO: try to make this an abstract method of the base class
+# def extract(self, fields='u', steps='all', exe=None, sets=None, license='research', output=True,
+#             return_data=True, components=None):
+#     """Extracts data from the analysis output files.
 
-    #     for key in keys:
-    #         data[key] = rdict[field][key]
+#     Parameters
+#     ----------
+#     fields : list, str
+#         Data field requests.
+#     steps : list
+#         Loads steps to extract from.
+#     exe : str
+#         Full terminal command to bypass subprocess defaults.
+#     sets : list
+#         -
+#     license : str
+#         Software license type: 'research', 'student'.
+#     output : bool
+#         Print terminal output.
+#     return_data : bool
+#         Return data back into structure.results.
+#     components : list
+#         Specific components to extract from the fields data.
 
-    #     return data
+#     Returns
+#     -------
+#     None
 
-    # def get_element_results(self, step, field, elements='all'):
-    #     """Extract element results from self.results.
+#     """
+#     extract_data(self, fields=fields, exe=exe, output=output, return_data=return_data,
+#                  components=components)
 
-    #     Parameters
-    #     ----------
-    #     step : str
-    #         Step to extract from.
-    #     field : str
-    #         Data field request.
-    #     elements : str, list
-    #         Extract 'all' or an element set/list.
+# # this should be an abstract method of the base class
+# def analyse_and_extract(self, fields='u', exe=None, cpus=4, license='research', output=True, save=False,
+#                         return_data=True, components=None, user_mat=False, overwrite=True):
+#     """Runs the analysis through the chosen FEA software / library and extracts data.
 
-    #     Returns
-    #     -------
-    #     dict
-    #         The element results for the requested field.
+#     Parameters
+#     ----------
+#     fields : list, str
+#         Data field requests.
+#     exe : str
+#         Full terminal command to bypass subprocess defaults.
+#     cpus : int
+#         Number of CPU cores to use.
+#     license : str
+#         Software license type: 'research', 'student'.
+#     output : bool
+#         Print terminal output.
+#     save : bool
+#         Save the structure to .obj before writing.
+#     return_data : bool
+#         Return data back into structure.results.
+#     components : list
+#         Specific components to extract from the fields data.
+#     user_sub : bool
+#         Specify the user subroutine if needed.
+#     delete : bool
+#         If True, the analysis results are deleted after being read. [Not Implemented yet]
 
-    #     """
-    #     data  = {}
-    #     rdict = self.results[step]['element']
+#     Returns
+#     -------
+#     None
 
-    #     if elements == 'all':
-    #         keys = list(self.elements.keys())
-    #     elif isinstance(elements, str):
-    #         keys = self.sets[elements].selection
-    #     else:
-    #         keys = elements
+#     """
 
-    #     for key in keys:
-    #         data[key] = rdict[field][key]
+#     self.analyse(exe=exe, fields=fields, cpus=cpus, license=license, output=output, user_mat=user_mat,
+#                 overwrite=overwrite, save=save)
 
-    #     return data
+#     self.extract(fields=fields, exe=exe, license=license, output=output,
+#                 return_data=return_data, components=components)
+
+# # this should be stored in a more generic way
+# def get_nodal_results(self, step, field, nodes='all'):
+#     """Extract nodal results from self.results.
+
+#     Parameters
+#     ----------
+#     step : str
+#         Step to extract from.
+#     field : str
+#         Data field request.
+#     nodes : str, list
+#         Extract 'all' or a node set/list.
+
+#     Returns
+#     -------
+#     dict
+#         The nodal results for the requested field.
+#     """
+#     data  = {}
+#     rdict = self.results[step]['nodal']
+
+#     if nodes == 'all':
+#         keys = list(self.nodes.keys())
+#     elif isinstance(nodes, str):
+#         keys = self.sets[nodes].selection
+#     else:
+#         keys = nodes
+
+#     for key in keys:
+#         data[key] = rdict[field][key]
+
+#     return data
+
+# def get_element_results(self, step, field, elements='all'):
+#     """Extract element results from self.results.
+
+#     Parameters
+#     ----------
+#     step : str
+#         Step to extract from.
+#     field : str
+#         Data field request.
+#     elements : str, list
+#         Extract 'all' or an element set/list.
+
+#     Returns
+#     -------
+#     dict
+#         The element results for the requested field.
+
+#     """
+#     data  = {}
+#     rdict = self.results[step]['element']
+
+#     if elements == 'all':
+#         keys = list(self.elements.keys())
+#     elif isinstance(elements, str):
+#         keys = self.sets[elements].selection
+#     else:
+#         keys = elements
+
+#     for key in keys:
+#         data[key] = rdict[field][key]
+
+#     return data

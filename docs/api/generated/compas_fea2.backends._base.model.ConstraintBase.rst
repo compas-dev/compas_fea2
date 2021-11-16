@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ConstraintBase
 ===============================================
@@ -14,6 +14,7 @@ ConstraintBase
 
     .. autosummary::
     
+        ~ConstraintBase.name
 
     .. rubric:: Inherited Attributes
 
@@ -29,7 +30,6 @@ ConstraintBase
         ~ConstraintBase.jsondefinitions
         ~ConstraintBase.jsonstring
         ~ConstraintBase.jsonvalidator
-        ~ConstraintBase.name
 
     
     

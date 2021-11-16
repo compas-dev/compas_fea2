@@ -1,0 +1,8 @@
+.. rst-class:: detail
+
+Results.get_element_results
+===============================================================
+
+.. currentmodule:: compas_fea2.backends.abaqus.results
+
+.. automethod:: Results.get_element_results

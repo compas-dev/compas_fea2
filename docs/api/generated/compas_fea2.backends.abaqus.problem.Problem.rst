@@ -24,6 +24,7 @@ Problem
         ~Problem.JSONSCHEMANAME
         ~Problem.bcs
         ~Problem.data
+        ~Problem.displacements
         ~Problem.dtype
         ~Problem.field_outputs
         ~Problem.guid
@@ -52,7 +53,6 @@ Problem
 
     
         ~Problem.__init__
-        ~Problem.add_step
         ~Problem.analyse
         ~Problem.optimise
         ~Problem.set_optimisation_parameters
@@ -67,6 +67,8 @@ Problem
     
         ~Problem.add_bc
         ~Problem.add_bcs
+        ~Problem.add_displacement
+        ~Problem.add_displacements
         ~Problem.add_field_output
         ~Problem.add_field_outputs
         ~Problem.add_history_output
@@ -75,6 +77,7 @@ Problem
         ~Problem.add_loads
         ~Problem.add_output
         ~Problem.add_outputs
+        ~Problem.add_step
         ~Problem.add_steps
         ~Problem.copy
         ~Problem.define_steps_order
@@ -84,10 +87,13 @@ Problem
         ~Problem.from_jsonstring
         ~Problem.load_from_cfp
         ~Problem.remove_all_bcs
+        ~Problem.remove_all_displacement
         ~Problem.remove_all_loads
         ~Problem.remove_all_output
         ~Problem.remove_bc
         ~Problem.remove_bcs
+        ~Problem.remove_displacement
+        ~Problem.remove_displacements
         ~Problem.remove_load
         ~Problem.remove_loads
         ~Problem.remove_output

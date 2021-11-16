@@ -53,6 +53,8 @@ BucklingStep
         :toctree:
 
     
+        ~BucklingStep.add_output
+        ~BucklingStep.add_outputs
         ~BucklingStep.copy
         ~BucklingStep.from_data
         ~BucklingStep.from_json

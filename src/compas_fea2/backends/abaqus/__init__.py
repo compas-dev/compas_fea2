@@ -98,6 +98,19 @@ PROBLEM
 
     Problem
 
+Steps
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    GeneralStep
+    HeatStep
+    ModalStep
+    HarmonicStep
+    BucklingStep
+    AcousticStep
+
 Loads
 -----
 
@@ -115,8 +128,8 @@ Loads
     HarmonicPressureLoad
     AcousticDiffuseFieldLoad
 
-Boundary Conditions
--------------------
+Displacements
+-------------
 
 .. autosummary::
     :toctree: generated/
@@ -134,19 +147,15 @@ Boundary Conditions
     RollerDisplacementYZ
     RollerDisplacementXZ
 
+.. currentmodule:: compas_fea2.backends.abaqus.results
 
-Steps
------
+RESULTS
+=======
 
 .. autosummary::
     :toctree: generated/
 
-    GeneralStep
-    HeatStep
-    ModalStep
-    HarmonicStep
-    BucklingStep
-    AcousticStep
+    Results
 """
 
 from .model import *

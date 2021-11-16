@@ -15,6 +15,7 @@ ProblemBase
     .. autosummary::
     
         ~ProblemBase.bcs
+        ~ProblemBase.displacements
         ~ProblemBase.field_outputs
         ~ProblemBase.history_outputs
         ~ProblemBase.loads
@@ -54,6 +55,8 @@ ProblemBase
         ~ProblemBase.__init__
         ~ProblemBase.add_bc
         ~ProblemBase.add_bcs
+        ~ProblemBase.add_displacement
+        ~ProblemBase.add_displacements
         ~ProblemBase.add_field_output
         ~ProblemBase.add_field_outputs
         ~ProblemBase.add_history_output
@@ -70,10 +73,13 @@ ProblemBase
         ~ProblemBase.load_from_cfp
         ~ProblemBase.optimise
         ~ProblemBase.remove_all_bcs
+        ~ProblemBase.remove_all_displacement
         ~ProblemBase.remove_all_loads
         ~ProblemBase.remove_all_output
         ~ProblemBase.remove_bc
         ~ProblemBase.remove_bcs
+        ~ProblemBase.remove_displacement
+        ~ProblemBase.remove_displacements
         ~ProblemBase.remove_load
         ~ProblemBase.remove_loads
         ~ProblemBase.remove_output

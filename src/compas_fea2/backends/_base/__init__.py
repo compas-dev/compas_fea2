@@ -97,6 +97,20 @@ PROBLEM
 
     ProblemBase
 
+Steps
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    StepBase
+    GeneralStepBase
+    HeatStepBase
+    ModalStepBase
+    HarmonicStepBase
+    BucklingStepBase
+    AcousticStepBase
+
 Loads
 -----
 
@@ -115,8 +129,8 @@ Loads
     HarmonicPressureLoadBase
     AcousticDiffuseFieldLoadBase
 
-Boundary Conditions
--------------------
+Displacements
+-------------
 
 .. autosummary::
     :toctree: generated/
@@ -134,20 +148,15 @@ Boundary Conditions
     RollerDisplacementYZBase
     RollerDisplacementXZBase
 
+.. currentmodule:: compas_fea2.backends._base.results
 
-Steps
------
+RESULTS
+=======
 
 .. autosummary::
     :toctree: generated/
 
-    StepBase
-    GeneralStepBase
-    HeatStepBase
-    ModalStepBase
-    HarmonicStepBase
-    BucklingStepBase
-    AcousticStepBase
+    ResultsBase
 """
 
 from __future__ import absolute_import

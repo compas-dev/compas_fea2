@@ -54,6 +54,8 @@ ModalStep
         :toctree:
 
     
+        ~ModalStep.add_output
+        ~ModalStep.add_outputs
         ~ModalStep.copy
         ~ModalStep.from_data
         ~ModalStep.from_json

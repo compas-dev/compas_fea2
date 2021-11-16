@@ -30,8 +30,19 @@ class ConstraintBase(FEABase):
 
     def __init__(self, name):
         self.__name__ = 'ConstraintObject'
-        self.name = name
-        self.attr_list = ['name']
+        self._name = name
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
+
+    @property
+    def name(self):
+        """The name property."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
 
 class TieConstraintBase(ConstraintBase):
@@ -61,9 +72,8 @@ class TieConstraintBase(ConstraintBase):
     """
 
     def __init__(self, name, master, slave, tol):
-        ConstraintBase.__init__(self, name=name)
+        super(ConstraintBase, self).__init__(self, name=name)
         self.__name__ = 'TieConstraint'
-        self.master = master
-        self.slave = slave
-        self.tol = tol
-        self.attr_list.extend(['master', 'slave', 'tol'])
+        self._master = master
+        self._slave = slave
+        self._tol = tol

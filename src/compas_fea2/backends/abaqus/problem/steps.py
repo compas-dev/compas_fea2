@@ -33,18 +33,38 @@ class GeneralStaticStep(GeneralStaticCaseBase):
     -----
     the data for the input file for this object is generated at runtime.
     """
-    __doc__ += GeneralStaticCaseBase.__doc__
+    # __doc__ += GeneralStaticCaseBase.__doc__
 
-    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-                 nlgeom=False, displacements=None, loads=None, modify=True, field_outputs=None, history_outputs=None):
-        super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time, nlgeom,
-                                                displacements, loads, modify, field_outputs, history_outputs)
-        self.stype = 'Static'
+    def __init__(self, name, loads=None, displacements=None, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
+                 nlgeom='NO',   modify=True, field_outputs=None, history_outputs=None):
+        super(GeneralStaticStep, self).__init__(name, loads, displacements, max_increments, initial_inc_size, min_inc_size, time,
+                                                field_outputs, history_outputs)
+        self._stype = 'Static'
+        self._nlgeom = nlgeom
+        self._modify = modify
 
-    def _generate_jobdata(self, problem):
-        """generate the data for the input file. Since the `Problem` object is required,
-        the data is generated just before writing the input file.
+        @property
+        def nlgeometry(self):
+            """The nlgeometry property."""
+            return self.nlgeom
+
+        @nlgeometry.setter
+        def nlgeometry(self, value):
+            self.nlgeom = value
+
+        @property
+        def modify(self):
+            """The modify property."""
+            return self._modify
+
+        @modify.setter
+        def modify(self, value):
+            self._modify = value
+
+    def _generate_jobdata(self):
+        """generate the data for the input file.
         """
+
         section_data = []
         line = ("** ----------------------------------------------------------------\n"
                 "**\n"
@@ -55,20 +75,20 @@ class GeneralStaticStep(GeneralStaticCaseBase):
                 "{4}, {5}, {6}, {5}\n"
                 "**\n"
                 "** DISPLACEMENTS\n"
-                "**\n").format(self.name, self.nlgeom, self.max_increments, self.stype, self.initial_inc_size, self.time,
-                               self.min_inc_size)
+                "**\n").format(self._name, self._nlgeom, self._max_increments, self._stype, self._initial_inc_size, self._time,
+                               self._min_inc_size)
         section_data.append(line)
 
-        if self.displacements:
-            for displacement in self.displacements:
-                section_data.append(problem.displacements[displacement]._generate_jobdata())
+        if self._displacements:
+            for displacement in self._displacements.values():
+                section_data.append(displacement._generate_jobdata())
 
         line = """**\n** LOADS\n**\n"""
         section_data.append(line)
 
-        if self.loads:
-            for load in self.loads:
-                section_data.append(problem.loads[load]._generate_jobdata())
+        if self._loads:
+            for load in self._loads.values():
+                section_data.append(load._generate_jobdata())
 
         line = ("**\n"
                 "** OUTPUT REQUESTS\n"
@@ -77,13 +97,22 @@ class GeneralStaticStep(GeneralStaticCaseBase):
                 "**\n")
         section_data.append(line)
 
-        for foutput in self.field_outputs:
-            section_data.append(problem.field_outputs[foutput].jobdata)
-        for houtput in self.history_outputs:
-            section_data.append(problem.history_outputs[houtput].jobdata)
+        if self._field_outputs:
+            for foutput in self._field_outputs.values():
+                section_data.append(foutput._generate_jobdata())
+        if self._history_outputs:
+            for houtput in self._history_outputs.values():
+                section_data.append(houtput._generate_jobdata())
         section_data.append('*End Step\n')
 
         return ''.join(section_data)
+
+    def _generate_displacement_section(self):
+        pass
+
+    def _generate_load_section(self):
+        pass
+# TODO fix also the steps below
 
 
 class GeneralStaticRiksStep(GeneralStaticCaseBase):

@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.backends._base.problem.outputs import FieldOutputBase, HistoryOutputBase
+
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -11,7 +13,7 @@ __all__ = [
 ]
 
 
-class FieldOutput():
+class FieldOutput(FieldOutputBase):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
         self.__name__ = 'FieldOutputRequst'
         self.name = name
@@ -52,7 +54,7 @@ class FieldOutput():
         return '\n'.join(data)
 
 
-class HistoryOutput():
+class HistoryOutput(HistoryOutputBase):
     def __init__(self, name):
         self.__name__ = 'FieldOutputRequst'
         self.name = name

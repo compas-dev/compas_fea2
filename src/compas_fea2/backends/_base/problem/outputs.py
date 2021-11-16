@@ -23,6 +23,9 @@ class FieldOutputBase(FEABase):
         self.element_outputs = element_outputs
         self.frequency = frequency
 
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
+
 
 class HistoryOutputBase():
     def __init__(self, name):
@@ -32,3 +35,6 @@ class HistoryOutputBase():
         # self.domain    = domain
         # self.frequency = frequency
         # self.variables = variables
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)

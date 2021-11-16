@@ -77,17 +77,6 @@ class GeneralDisplacement(GeneralDisplacementBase):
         Value of zz rotation.
     axes : str
         'local' or 'global' co-ordinate axes.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Displacement object.
-    bset : obj
-        `compas_fea2` NodeSet object where the displacement is applied to.
-    components : dict
-        Values of x, y, z, xx, yy, zz degrees-of-freedom.
-    axes : str
-        'local' or 'global' coordinate axes.
     """
 
     def __init__(self, name, bset, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):

@@ -54,6 +54,9 @@ class ElementBase(FEABase):
         self._thermal = thermal
         self._axes = None
 
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.key)
+
     @property
     def name(self):
         """str : The name of the Element."""
@@ -117,9 +120,6 @@ class ElementBase(FEABase):
     @axes.setter
     def axes(self, value):
         self._axes = value
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.key)
 
 # ==============================================================================
 # 0D elements

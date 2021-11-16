@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.backends._base.base import FEABase
+from compas_fea2.backends._base.problem.loads import LoadBase
+from compas_fea2.backends._base.problem.outputs import FieldOutputBase
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
@@ -27,20 +29,21 @@ class CaseBase(FEABase):
     ----------
     name : str
         Name of the Case object.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Case object.
-
+    field_outputs : obj
+        `compas_fea2` FieldOutput object.
+    History_outputs : obj
+        `compas_fea2` HistiryOutput object.
     """
 
     def __init__(self, name, field_outputs, history_outputs):
-
+        super(CaseBase, self).__init__(name)
         self.__name__ = 'CaseBase'
         self._name = name
         self._field_outputs = field_outputs
         self._history_outputs = history_outputs
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
 
     @property
     def name(self):
@@ -53,7 +56,7 @@ class CaseBase(FEABase):
 
     @property
     def field_outputs(self):
-        """obj : `compas_fea2` FieldOutput object"""
+        """dict : dictionary containing the `compas_fea2` FieldOutput objects"""
         return self._field_outputs
 
     @field_outputs.setter
@@ -62,24 +65,142 @@ class CaseBase(FEABase):
 
     @property
     def history_outputs(self):
-        """obj : `compas_fea2` HistoryOutput object"""
+        """dict : dictionary containing the `compas_fea2` HistoryOutput objects"""
         return self._history_outputs
 
     @history_outputs.setter
     def history_outputs(self, value):
         self._history_outputs = value
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
+    def add_output(self, output):
+        """Add an output to the Step object.
+
+        Parameters
+        ----------
+        output : obj
+            `compas_fea2` Output objects. Can be either a FieldOutput or a HistoryOutput
+
+        Returns
+        -------
+        None
+        """
+        attrb_name = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_output'
+        if not getattr(self, attrb_name):
+            setattr(self, attrb_name, {})
+        if output.name not in getattr(self, attrb_name):
+            getattr(self, attrb_name)[output.name] = output
+        else:
+            print('WARNING: {} already present in the Problem. skipped!'.format(output.__repr__()))
+
+    def add_outputs(self, outputs):
+        """Add multiple outputs to the Step object.
+
+        Parameters
+        ----------
+        outputs : list
+            list of `compas_fea2` Output objects. Can be both FieldOutput and HistoryOutput objects
+
+        Returns
+        -------
+        None
+        """
+        for output in outputs:
+            self.add_output(output)
 
 
-class GeneralStaticCaseBase(CaseBase):
+class StaticCaseBase(CaseBase):
+    """Initialises base Case object.
+
+    Parameters
+    ----------
+    name : str
+        Name of the Case object.
+    loads : list
+        `compas_fea2` Load objects.
+    displacements : list
+        `compas_fea2` Displacement objects.
+    field_outputs : obj
+        `compas_fea2` FieldOutput object.
+    History_outputs : obj
+        `compas_fea2` HistiryOutput object.
+    """
+
+    def __init__(self, name, loads, displacements, field_outputs, history_outputs):
+        super(StaticCaseBase, self).__init__(name, field_outputs, history_outputs)
+        self.__name__ = 'StaticCaseBase'
+        self._loads = loads
+        self._displacements = displacements
+
+    @property
+    def loads(self):
+        """list : list of `compas_fea2` Load objects."""
+        return self._loads
+
+    @loads.setter
+    def loads(self, value):
+        self._loads = value
+
+    @property
+    def displacements(self):
+        """list : list of `compas_fea2` Displacement objects."""
+        return self._displacements
+
+    @displacements.setter
+    def displacements(self, value):
+        self._displacements = value
+
+    def add_load(self, load):
+        """Add a load to Step object.
+
+        Parameters
+        ----------
+        load : obj
+            `compas_fea2` Load objects
+
+        Returns
+        -------
+        None
+        """
+        if not self._loads:
+            self._loads = {}
+        if load._name not in self._loads:
+            self._loads[load._name] = load
+            print(f'{load.__repr__()} added to {self.__repr__()}')
+        else:
+            print(f'{load.__repr__()} already defined within {self.__repr__()}, skipped!')
+
+    def add_displacement(self, displacement):
+        """Add a displacement to Step object.
+
+        Parameters
+        ----------
+        displacement : obj
+            `compas_fea2` Displacement object.
+
+        Returns
+        -------
+        None
+        """
+        if not self._displacements:
+            self._displacements = {}
+        if displacement._name not in self._displacements:
+            self._displacements[displacement._name] = displacement
+            print(f'{displacement.__repr__()} added to {self.__repr__()}')
+        else:
+            print(f'{displacement.__repr__()} already defined within {self.__repr__()}, skipped!')
+
+
+class GeneralStaticCaseBase(StaticCaseBase):
     """Initialises GeneralCase object for use in a static analysis.
 
     Parameters
     ----------
     name : str
         Name of the GeneralCase.
+    loads : list
+        `compas_fea2` Load objects.
+    displacements : list
+        `compas_fea2` Displacement objects.
     max_increments : int
         Max number of increments to perform during the case step.
         (Typically 100 but you might have to increase it in highly non-linear problems. This might increase the
@@ -94,37 +215,64 @@ class GeneralStaticCaseBase(CaseBase):
     time : float
         Total time of the case step. Note that this not actual 'time' in Abaqus, but rather a proportionality factor.
         (By default is 1, meaning that the analysis is complete when all the increments sum up to 1)
-    nlgeom : bool
-        Analyse non-linear geometry effects.
-    displacements : list
-        Displacement objects.
-    loads : list
-        Load objects.
-    modify : bool #TODO not implemented yet
-        Modify the previously added loads.
     field_output : list
         FiledOutputRequest object
     history_output : list
         HistoryOutputRequest object
     """
 
-    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time,
-                 nlgeom, displacements, loads, modify, field_outputs, history_outputs):
-        super(GeneralStaticCaseBase, self).__init__(name, field_outputs, history_outputs)
+    def __init__(self, name, loads, displacements, max_increments, initial_inc_size, min_inc_size, time,
+                 field_outputs, history_outputs):
+        super(GeneralStaticCaseBase, self).__init__(name, loads, displacements, field_outputs, history_outputs)
 
         self.__name__ = 'GeneralCase'
-        self.max_increments = max_increments
-        self.initial_inc_size = initial_inc_size
-        self.min_inc_size = min_inc_size
-        self.time = time
 
-        if nlgeom:
-            self.nlgeom = 'YES'
-        else:
-            self.nlgeom = 'NO'
+        self._max_increments = max_increments
+        self._initial_inc_size = initial_inc_size
+        self._min_inc_size = min_inc_size
+        self._time = time
 
-        self.displacements = displacements
-        self.loads = loads
+    @property
+    def max_increments(self):
+        """int : Max number of increments to perform during the case step.
+        (Typically 100 but you might have to increase it in highly non-linear problems. This might increase the
+        analysis time.)."""
+        return self._max_increments
+
+    @max_increments.setter
+    def max_increments(self, value):
+        self._max_increments = value
+
+    @property
+    def initial_inc_size(self):
+        """float : Sets the the size of the increment for the first iteration.
+        (By default is equal to the total time, meaning that the software decrease the size automatically.)"""
+        return self._initial_inc_size
+
+    @initial_inc_size.setter
+    def initial_inc_size(self, value):
+        self._initial_inc_size = value
+
+    @property
+    def min_inc_size(self):
+        """float : Minimum increment size before stopping the analysis.
+        (By default is 1e-5, but you can set a smaller size for highly non-linear problems. This might increase the
+        analysis time.)"""
+        return self._min_inc_size
+
+    @min_inc_size.setter
+    def min_inc_size(self, value):
+        self._min_inc_size = value
+
+    @property
+    def time(self):
+        """float : Total time of the case step. Note that this not actual 'time' in Abaqus, but rather a proportionality factor.
+        (By default is 1, meaning that the analysis is complete when all the increments sum up to 1)"""
+        return self._time
+
+    @time.setter
+    def time(self, value):
+        self._time = value
 
 
 class StaticLinearPerturbationCaseBase(CaseBase):

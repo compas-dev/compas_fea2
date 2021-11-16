@@ -62,6 +62,9 @@ class GeneralDisplacementBase(FEABase):
         self._components = {a: getattr(self, '_'+a) for a in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
         self._axes = axes
 
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
+
     @property
     def name(self):
         """str :  Name of the Displacement object."""
@@ -129,9 +132,6 @@ class GeneralDisplacementBase(FEABase):
         """
         for c, a in self.components:
             setattr(self, c, a)
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
 
 
 class FixedDisplacementBase(GeneralDisplacementBase):

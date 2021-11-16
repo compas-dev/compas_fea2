@@ -39,58 +39,58 @@ class Problem(ProblemBase):
 
     def __init__(self, name, model):
         super(Problem, self).__init__(name=name, model=model)
-        self.parts = model.parts.values()  # TODO remove
+        # self.parts = model.parts.values()  # TODO remove
         # self.interactions       = model.interactions
 
     # =========================================================================
     #                           Step methods
     # =========================================================================
 
-    def add_step(self, step):
-        """Check if the Step parameters are correct and add a Step to the Problem.
+    # def add_step(self, step):
+    #     """Check if the Step parameters are correct and add a Step to the Problem.
 
-        Parameters
-        ----------
-        step : obj
-            compas_fea2 Step object.
+    #     Parameters
+    #     ----------
+    #     step : obj
+    #         compas_fea2 Step object.
 
-        Returns
-        -------
-        None
-        """
+    #     Returns
+    #     -------
+    #     None
+    #     """
 
-        # NOTE: the abaqus implementation is slightly different from the _base
-        # TODO: simplify and move to _base
+    #     # NOTE: the abaqus implementation is slightly different from the _base
+    #     # TODO: simplify and move to _base
 
-        if not step.__name__ == 'ModalCase':
-            if step.displacements:
-                for disp in step.displacements:
-                    if disp not in self.displacements:
-                        raise ValueError(
-                            'ERROR: displacement {} not found in the model!'.format(disp))
+    #     if not step.__name__ == 'ModalCase':
+    #         if step.displacements:
+    #             for disp in step.displacements:
+    #                 if disp not in self.displacements:
+    #                     raise ValueError(
+    #                         'ERROR: displacement {} not found in the model!'.format(disp))
 
-            if step.loads:
-                for load in step.loads:
-                    if load not in self.loads:
-                        raise ValueError('ERROR: load {} not found in the model!'.format(load))
+    #         if step.loads:
+    #             for load in step.loads:
+    #                 if load not in self.loads:
+    #                     raise ValueError('ERROR: load {} not found in the model!'.format(load))
 
-            if not step.field_outputs:
-                step.field_outputs = ['standard']
-                self.field_outputs['standard'] = FieldOutput('standard')
-            for fout in step.field_outputs:
-                if fout not in self.field_outputs:
-                    raise ValueError(
-                        'ERROR: field output {} not found in the model!'.format(fout))
+    #         if not step.field_outputs:
+    #             step.field_outputs = ['standard']
+    #             self.field_outputs['standard'] = FieldOutput('standard')
+    #         for fout in step.field_outputs:
+    #             if fout not in self.field_outputs:
+    #                 raise ValueError(
+    #                     'ERROR: field output {} not found in the model!'.format(fout))
 
-            if not step.history_outputs:
-                step.history_outputs = ['standard']
-                self.history_outputs['standard'] = HistoryOutput('standard')
-            for hout in step.history_outputs:
-                if hout not in self.history_outputs:
-                    raise ValueError(
-                        'ERROR: history output {} not found in the model!'.format(hout))
+    #         if not step.history_outputs:
+    #             step.history_outputs = ['standard']
+    #             self.history_outputs['standard'] = HistoryOutput('standard')
+    #         for hout in step.history_outputs:
+    #             if hout not in self.history_outputs:
+    #                 raise ValueError(
+    #                     'ERROR: history output {} not found in the model!'.format(hout))
 
-        self.steps[step.name] = step
+    #     self.steps[step.name] = step
 
     # =========================================================================
     #                           Optimisation methods
@@ -251,10 +251,7 @@ class Problem(ProblemBase):
         """
         section_data = []
         for step in self.steps.values():
-            if isinstance(step, ModalStep):  # TODO too messy - check!
-                section_data.append(step._generate_jobdata())
-            else:
-                section_data.append(step._generate_jobdata(self))
+            section_data.append(step._generate_jobdata())
 
         return ''.join(section_data)
 

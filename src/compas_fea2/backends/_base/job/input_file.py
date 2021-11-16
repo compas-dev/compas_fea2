@@ -1,5 +1,9 @@
 import os
 
+__all__ = [
+    'InputFileBase',
+]
+
 
 class InputFileBase():
     """Input file object for standard analysis.

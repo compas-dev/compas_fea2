@@ -20,10 +20,11 @@ class FieldOutput(FieldOutputBase):
     @property
     def jobdata(self):
         """This property is the representation of the object in a software-specific inout file."""
-        return self._jobdata
+        return self._generate_jobdata()
 
     def _generate_jobdata(self):
-        pass
+        # for no
+        "recorder Node -file C:/temp/introduction/step_loads_u.out -time -nodeRange 1 5 -dof 1 2 3 disp"
 
 
 class HistoryOutput(HistoryOutputBase):

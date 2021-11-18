@@ -720,8 +720,8 @@ class ProblemBase(FEABase):
         None
         """
         data = [self._name,
-                '\n'.join([f'{name}' for name in self.bcs]),
-                '\n'.join([f'{name}' for name in self.steps]),
+                '\n'.join([f'{name.__repr__()}' for name in self.bcs.values()]),
+                '\n'.join([f'{name.__repr__()}' for name in self.steps.values()]),
                 '\n'.join([f'{name}' for name in self.steps_order])
                 ]
 

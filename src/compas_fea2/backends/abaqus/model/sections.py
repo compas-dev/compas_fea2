@@ -22,23 +22,23 @@ from compas_fea2.backends._base.model import SpringSectionBase
 # NOTE: these classes are sometimes overwriting the _base ones because Abaqus
 # offers internal ways of computing beam sections' properties
 
-__all__ = [
-    'MassSection',
-    'AngleSection',
-    'BoxSection',
-    'CircularSection',
-    'ISection',
-    'PipeSection',
-    'RectangularSection',
-    'ShellSection',
-    'MembraneSection',
-    'SolidSection',
-    'TrapezoidalSection',
-    'TrussSection',
-    'StrutSection',
-    'TieSection',
-    'SpringSection',
-]
+# __all__ = [
+#     'MassSection',
+#     'AngleSection',
+#     'BoxSection',
+#     'CircularSection',
+#     'ISection',
+#     'PipeSection',
+#     'RectangularSection',
+#     'ShellSection',
+#     'MembraneSection',
+#     'SolidSection',
+#     'TrapezoidalSection',
+#     'TrussSection',
+#     'StrutSection',
+#     'TieSection',
+#     'SpringSection',
+# ]
 
 
 # ==============================================================================
@@ -84,7 +84,7 @@ class AbaqusBeamSection(SectionBase):
         orientation_line = ', '.join([str(v) for v in orientation])
         return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
-{}\n{}\n""".format(self.name, set_name, self.material, self._stype, ', '.join([str(v) for v in self.properties]), orientation_line)
+{}\n{}\n""".format(self.name, set_name, self.material.name, self._stype, ', '.join([str(v) for v in self.properties]), orientation_line)
 
 
 class AngleSection(AbaqusBeamSection):
@@ -246,10 +246,10 @@ class RectangularSection(AbaqusBeamSection):
     """
     __doc__ += AbaqusBeamSection.__doc__
 
-    def __init__(self, name, a, b, material):
+    def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, material)
         self._stype = 'rect'
-        self.properties = [a, b]
+        self.properties = [b, h]
 
 
 class TrapezoidalSection(AbaqusBeamSection):
@@ -286,7 +286,7 @@ class TrussSection(TrussSectionBase):
     def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
-{},\n""".format(self.name, set_name, self.material, self.geometry['A'])
+{},\n""".format(self.name, set_name, self.material.name, self.geometry['A'])
 
 
 class StrutSection(StrutSectionBase):
@@ -338,7 +338,7 @@ class ShellSection(ShellSectionBase):
     def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Shell Section, elset={}, material={}
-{}, {}\n""".format(self.name, set_name, self.material, self.t, self.int_points)
+{}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
 
 
 class MembraneSection(MembraneSectionBase):
@@ -364,7 +364,7 @@ class SolidSection(SolidSectionBase):
     def _generate_jobdata(self, set_name):
         return """** Section: {}
 *Solid Section, elset={}, material={}
-,\n""".format(self.name, set_name, self.material)
+,\n""".format(self.name, set_name, self.material.name)
 
 
 if __name__ == "__main__":

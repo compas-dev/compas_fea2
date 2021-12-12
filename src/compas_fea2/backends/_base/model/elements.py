@@ -50,6 +50,7 @@ class ElementBase(FEABase):
         self._name = str(self.key)
         self._connectivity = connectivity  # TODO add find node method to get the connectivity from the Node object
         self._connectivity_key = '_'.join(sorted([str(c) for c in self.connectivity]))
+        self._connected_nodes = []
         self._section = section
         self._thermal = thermal
         self._axes = None

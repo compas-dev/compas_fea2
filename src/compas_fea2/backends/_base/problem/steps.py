@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.problem.loads import LoadBase
+from compas_fea2.backends._base.problem.bcs import GeneralDisplacementBase
 from compas_fea2.backends._base.problem.outputs import FieldOutputBase
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
@@ -35,12 +36,12 @@ class CaseBase(FEABase):
         `compas_fea2` HistiryOutput object.
     """
 
-    def __init__(self, name, field_outputs, history_outputs):
+    def __init__(self, name):
         super(CaseBase, self).__init__(name)
         self.__name__ = 'CaseBase'
         self._name = name
-        self._field_outputs = field_outputs
-        self._history_outputs = history_outputs
+        self._field_outputs = {}
+        self._history_outputs = {}
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -125,11 +126,11 @@ class StaticCaseBase(CaseBase):
         `compas_fea2` HistiryOutput object.
     """
 
-    def __init__(self, name, loads, displacements, field_outputs, history_outputs):
-        super(StaticCaseBase, self).__init__(name, field_outputs, history_outputs)
+    def __init__(self, name):
+        super(StaticCaseBase, self).__init__(name)
         self.__name__ = 'StaticCaseBase'
-        self._loads = loads
-        self._displacements = displacements
+        self._loads = {}
+        self._displacements = {}
 
     @property
     def loads(self):
@@ -161,13 +162,18 @@ class StaticCaseBase(CaseBase):
         -------
         None
         """
-        if not self._loads:
-            self._loads = {}
-        if load._name not in self._loads:
-            self._loads[load._name] = load
-            print(f'{load.__repr__()} added to {self.__repr__()}')
+        if isinstance(load, LoadBase):
+            if load._name not in self._loads:
+                self._loads[load._name] = load
+                print(f'{load.__repr__()} added to {self.__repr__()}')
+            else:
+                print(f'{load.__repr__()} already defined within {self.__repr__()}, skipped!')
         else:
-            print(f'{load.__repr__()} already defined within {self.__repr__()}, skipped!')
+            ValueError('you must provide a Load object')
+
+    def add_loads(self, loads):
+        for load in loads:
+            self.add_load(load)
 
     def add_displacement(self, displacement):
         """Add a displacement to Step object.
@@ -181,49 +187,24 @@ class StaticCaseBase(CaseBase):
         -------
         None
         """
-        if not self._displacements:
-            self._displacements = {}
-        if displacement._name not in self._displacements:
-            self._displacements[displacement._name] = displacement
-            print(f'{displacement.__repr__()} added to {self.__repr__()}')
+        if isinstance(displacement, GeneralDisplacementBase):
+            if not self._displacements:
+                self._displacements = {}
+            if displacement._name not in self._displacements:
+                self._displacements[displacement._name] = displacement
+                print(f'{displacement.__repr__()} added to {self.__repr__()}')
+            else:
+                print(f'{displacement.__repr__()} already defined within {self.__repr__()}, skipped!')
         else:
-            print(f'{displacement.__repr__()} already defined within {self.__repr__()}, skipped!')
+            ValueError('you must provide a Displacement object')
 
 
 class GeneralStaticCaseBase(StaticCaseBase):
     """Initialises GeneralCase object for use in a static analysis.
-
-    Parameters
-    ----------
-    name : str
-        Name of the GeneralCase.
-    loads : list
-        `compas_fea2` Load objects.
-    displacements : list
-        `compas_fea2` Displacement objects.
-    max_increments : int
-        Max number of increments to perform during the case step.
-        (Typically 100 but you might have to increase it in highly non-linear problems. This might increase the
-        analysis time.).
-    initial_inc_size : float
-        Sets the the size of the increment for the first iteration.
-        (By default is equal to the total time, meaning that the software decrease the size automatically.)
-    min_inc_size : float
-        Minimum increment size before stopping the analysis.
-        (By default is 1e-5, but you can set a smaller size for highly non-linear problems. This might increase the
-        analysis time.)
-    time : float
-        Total time of the case step. Note that this not actual 'time' in Abaqus, but rather a proportionality factor.
-        (By default is 1, meaning that the analysis is complete when all the increments sum up to 1)
-    field_output : list
-        FiledOutputRequest object
-    history_output : list
-        HistoryOutputRequest object
     """
 
-    def __init__(self, name, loads, displacements, max_increments, initial_inc_size, min_inc_size, time,
-                 field_outputs, history_outputs):
-        super(GeneralStaticCaseBase, self).__init__(name, loads, displacements, field_outputs, history_outputs)
+    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time):
+        super(GeneralStaticCaseBase, self).__init__(name)
 
         self.__name__ = 'GeneralCase'
 
@@ -275,7 +256,8 @@ class GeneralStaticCaseBase(StaticCaseBase):
         self._time = value
 
 
-class StaticLinearPerturbationCaseBase(CaseBase):
+# TODO CHECK this sis a duplicate of StaticCaseBase
+class StaticLinearPerturbationCaseBase(StaticCaseBase):
     """Initialises LinearPertubationCase object for use in a linear analysis.
 
     Parameters
@@ -288,12 +270,9 @@ class StaticLinearPerturbationCaseBase(CaseBase):
         Load objects.
     """
 
-    def __init__(self, name, displacements, loads, field_outputs, history_outputs):
-        super(StaticLinearPerturbationCaseBase, self).__init__(name, field_outputs, history_outputs)
-
+    def __init__(self,  name):
+        super(StaticLinearPerturbationCaseBase, self).__init__()
         self.__name__ = 'StaticLinearPerturbationCase'
-        self.displacements = displacements
-        self.loads = loads
 
 
 class HeatCaseBase(CaseBase):

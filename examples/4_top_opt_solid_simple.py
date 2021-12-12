@@ -14,6 +14,7 @@ from compas_fea2.backends.abaqus import GeneralStaticStep
 
 from compas_fea2.interfaces.viewer.viewer import OptiViewer
 
+from compas_fea2 import TEMP
 ##### ----------------------------- MODEL ----------------------------- #####
 
 # NOTE: units are in mm ton s
@@ -56,35 +57,36 @@ for z in range(n-1):
 model.add_elements(elements=elements, part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(Set(name='pinned', selection=[x for x in range(n**2)], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='pload', selection=[944, 945, 964, 965], stype='nset'), instance='part-1-1')
+bset_pinned = Set(name='bset_pinned', selection=[x for x in range(n**2)], stype='nset')
+model.add_instance_set(bset_pinned, instance='part-1-1')
+lset_pload = Set(name='pload', selection=[944, 945, 964, 965], stype='nset')
+model.add_instance_set(lset_pload, instance='part-1-1')
 
 model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
-problem = Problem(name='test_solid_structure', model=model)
+problem = Problem(name='test_solid_structure_viewer', model=model)
 
 # Assign boundary conditions to the node stes
-problem.add_bcs(bcs=[PinnedDisplacement(name='bc_fix', bset='pinned')])
+problem.add_bcs(bcs=[PinnedDisplacement(name='bc_fix', bset=bset_pinned)])
 
 # Assign a point load to the node set
-problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
+pload = PointLoad(name='pload', lset=lset_pload, y=-1000)
 
 # Define the field outputs required
-problem.add_field_output(fout=FieldOutput(name='fout'))
-
+fout = FieldOutput(name='fout')
 # Define the analysis step
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
+problem.add_step(step=GeneralStaticStep(name='gstep', loads=[pload]))
 
 # Define the optimisation parameters
 problem.set_optimisation_parameters(0.2, 40, 10)
 
 # Get a summary
 problem.summary()
-
+problem.path = 'C:/temp'
 # Solve the problem
-problem.optimise()
+# problem.optimise()
 
 # Visualie results
 v = OptiViewer(problem)

@@ -4,9 +4,9 @@ from __future__ import print_function
 
 from compas_fea2.backends._base.model import InstanceBase
 
-__all__ = [
-    'Instance',
-]
+# __all__ = [
+#     'Instance',
+# ]
 
 # FIXME this does not make much sense: why the iset are called like that?
 

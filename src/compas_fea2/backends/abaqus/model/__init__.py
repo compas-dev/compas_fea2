@@ -5,16 +5,52 @@ from __future__ import print_function
 import os
 
 # additional software-based classes
-from .model import *
-from .instances import *
-from .parts import *
-from .nodes import *
+from .model import Model
+from .instances import Instance
+from .parts import Part
+from .nodes import Node
 from .interactions import *
-from .sets import *
+from .sets import (
+    Set,
+    Surface
+)
 from .constraints import *
-from .elements import *
-from .materials import *
-from .sections import *
+from .elements import (
+    MassElement,
+    BeamElement,
+    TrussElement,
+    ShellElement,
+    MembraneElement,
+    SolidElement,
+)
+from .materials import (
+    ElasticIsotropic,
+    Stiff,
+    ElasticOrthotropic,
+    ElasticPlastic,
+    Steel,
+    Concrete,
+    ConcreteSmearedCrack,
+    ConcreteDamagedPlasticity,
+    UserMaterial
+)
+from .sections import (
+    MassSection,
+    AngleSection,
+    BoxSection,
+    CircularSection,
+    ISection,
+    PipeSection,
+    RectangularSection,
+    ShellSection,
+    MembraneSection,
+    SolidSection,
+    TrapezoidalSection,
+    TrussSection,
+    StrutSection,
+    TieSection,
+    SpringSection,
+)
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

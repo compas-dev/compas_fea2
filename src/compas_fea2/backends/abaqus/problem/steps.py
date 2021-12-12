@@ -14,15 +14,15 @@ from compas_fea2.backends._base.problem import AcousticCaseBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'GeneralStaticStep',
-    'StaticLinearPertubationStep',
-    # 'HeatStepBase',
-    'ModalStep',
-    'HarmoniStepBase',
-    'BucklingStep',
-    'AcoustiStepBase'
-]
+# __all__ = [
+#     'GeneralStaticStep',
+#     'StaticLinearPertubationStep',
+#     # 'HeatStepBase',
+#     'ModalStep',
+#     'HarmoniStepBase',
+#     'BucklingStep',
+#     'AcoustiStepBase'
+# ]
 
 # TODO add field and history output requrests
 
@@ -35,10 +35,8 @@ class GeneralStaticStep(GeneralStaticCaseBase):
     """
     # __doc__ += GeneralStaticCaseBase.__doc__
 
-    def __init__(self, name, loads=None, displacements=None, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1,
-                 field_outputs=None, history_outputs=None, nlgeom=False, modify=True,):
-        super(GeneralStaticStep, self).__init__(name, loads, displacements, max_increments, initial_inc_size, min_inc_size, time,
-                                                field_outputs, history_outputs)
+    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True,):
+        super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
         self._stype = 'Static'
         self._nlgeom = 'YES' if nlgeom else 'NO'
         self._modify = modify
@@ -115,9 +113,8 @@ class GeneralStaticStep(GeneralStaticCaseBase):
 
 class GeneralStaticRiksStep(GeneralStaticCaseBase):
 
-    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, displacements=[], loads=[]):
-        super(GeneralStaticRiksStep).__init__(name, max_increments,
-                                              initial_inc_size, min_inc_size, time, nlgeom, displacements, loads)
+    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
+        super(GeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
         raise NotImplementedError
 
 
@@ -134,24 +131,20 @@ class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
         Load objects.
     """
 
-    def __init__(self, name, displacements, loads):
-        super(StaticLinearPertubationStep, self).__init__(name, displacements, loads)
+    def __init__(self, name, nlgeom=False):
+        super(StaticLinearPertubationStep, self).__init__(name)
 
         self.__name__ = 'StaticPerturbationStep'
-        self.name = name
-        self.nlgeom = 'NO'  # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
-        self.displacements = displacements
-        self.loads = loads
-        self.attr_list.extend(['displacements', 'loads'])
-        self.type = 'Static'
-
+        # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
+        self._nlgeom = 'NO' if not nlgeom else 'YES'
+        self._stype = 'Static'
         self._jobdata = ("** ----------------------------------------------------------------\n"
                          "**\n"
                          "** STEP: {0}\n"
                          "**\n"
                          "*Step, name={0}, nlgeom={1}, perturbation\n"
                          "*{2}\n"
-                         "**\n").format(self.name, self.nlgeom, self.stype)
+                         "**\n").format(self._name, self._nlgeom, self._stype)
 
     @property
     def jobdata(self):
@@ -182,8 +175,8 @@ class BuckleStep(StaticLinearPerturbationCaseBase):
         Load objects.
     """
 
-    def __init__(self, name, nmodes, displacements, loads):
-        super(BuckleStep).__init__(name, displacements, loads)
+    def __init__(self, name, nmodes):
+        super(BuckleStep).__init__(name)
         raise NotImplementedError
 #         self.__name__      = 'BuckleStep'
 #         self.name          = name

@@ -15,15 +15,8 @@ __all__ = [
 
 class FieldOutput(FieldOutputBase):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
+        super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
         self.__name__ = 'FieldOutputRequst'
-        self.name = name
-        # self.domain    = domain
-        # self.frequency = frequency
-        # self.variables = variables
-        self.node_outputs = node_outputs
-        self.element_outputs = element_outputs
-        self.frequency = frequency
-
         self._jobdata = self._generate_jobdata()
 
     @property
@@ -41,8 +34,8 @@ class FieldOutput(FieldOutputBase):
         return self._jobdata
 
     def _generate_jobdata(self):
-        data = ['** FIELD OUTPUT: {}\n**'.format(self.name)]
-        if not (self.node_outputs and self.element_outputs):
+        data = ['** FIELD OUTPUT: {}\n**'.format(self._name)]
+        if not (self._node_outputs and self._element_outputs):
             data.append('*Output, field, variable=PRESELECT\n**\n')
         else:
             data.append("""*Output, field, frequency={}
@@ -56,15 +49,12 @@ class FieldOutput(FieldOutputBase):
 
 class HistoryOutput(HistoryOutputBase):
     def __init__(self, name):
+        super(HistoryOutput, self).__init__(name)
         self.__name__ = 'FieldOutputRequst'
-        self.name = name
-        # self.domain    = domain
-        # self.frequency = frequency
-        # self.variables = variables
         self._jobdata = """** HISTORY OUTPUT: {}
 **
 *Output, history, variable=PRESELECT
-**\n""".format(self.name)
+**\n""".format(self._name)
 
     @property
     def jobdata(self):

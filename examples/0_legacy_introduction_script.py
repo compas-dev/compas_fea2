@@ -20,6 +20,10 @@ from compas_fea2.backends.abaqus import GeneralStaticStep
 
 from compas_fea2.backends.abaqus import Results
 
+from compas_fea2.interfaces.viewer import ModelViewer
+from compas_fea2.interfaces.viewer import ProblemViewer
+
+
 from compas_fea2 import TEMP
 from compas_fea2.backends.abaqus.model import nodes
 from compas_fea2.backends.abaqus.problem.bcs import GeneralDisplacement
@@ -49,30 +53,33 @@ model.add_elements(elements=elements, part='part-1')
 model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(Set(name='nset_base', selection=[0, 1, 2, 3], stype='nset'), instance='part-1-1')
+bset_base = Set(name='nset_base', selection=[0, 1, 2, 3], stype='nset')
+model.add_instance_set(bset_base, instance='part-1-1')
 model.add_instance_set(Set(name='nset_a', selection=[0], stype='nset'), instance='part-1-1')
 model.add_instance_set(Set(name='nset_bcd', selection=[1, 2, 3], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='nset_top', selection=[4], stype='nset'), instance='part-1-1')
+nset_top = Set(name='nset_top', selection=[4], stype='nset')
+model.add_instance_set(nset_top, instance='part-1-1')
 model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
 model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
-model.summary()
+# model.summary()
+
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
 problem = Problem(name='test_structure', model=model)
 
-pin = PinnedDisplacement(name='bc_pinned', bset='nset_base')
+pin = PinnedDisplacement(name='bc_pinned', bset=bset_base)
 # Assign boundary conditions to the node stes
 problem.add_bc(pin)
 
 # Assign a point load to the node set
 step_0 = GeneralStaticStep(name='step_gravity')
 step_1 = GeneralStaticStep(name='step_pload')
-problem.add_load(PointLoad(name='load_point', lset='nset_top', x=10000, z=-10000), step_0)
+problem.add_load(PointLoad(name='load_point', lset=nset_top, x=10000, z=-10000), step_0)
 problem.add_load(GravityLoad(name='load_gravity'), step_0)
 problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05),
-                           PinnedDisplacement(name='bc_pinned', bset='nset_bcd')], step_1)
+                           pin], step_1)
 
 # Define the field outputs required
 fout = FieldOutput(name='fout')
@@ -82,10 +89,14 @@ problem.add_output(fout, step_1)
 # Define the analysis step (there should be a message skipping the step, since they were already added)
 problem.add_steps([step_0, step_1])
 
+# problem.summary()
+# v = ProblemViewer(problem)
+# v.show()
+
 # Solve the problem
-problem.summary()
+
 problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-pprint(results.nodal)
+# # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# results = Results.from_problem(problem, fields=['u'])
+# pprint(results.nodal)

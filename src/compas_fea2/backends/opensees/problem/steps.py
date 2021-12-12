@@ -38,8 +38,8 @@ class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
         Load objects.
     """
 
-    def __init__(self, name, displacements, loads, field_outputs, history_outputs):
-        super(StaticLinearPertubationStep, self).__init__(name, displacements, loads, field_outputs, history_outputs)
+    def __init__(self, name, loads=None, displacements=None, field_outputs=None, history_outputs=None):
+        super(StaticLinearPertubationStep, self).__init__(name, loads, displacements, field_outputs, history_outputs)
 
     def _generate_jobdata(self, problem):
         pass

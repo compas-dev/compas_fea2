@@ -17,18 +17,18 @@ from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-__all__ = [
-    # 'PrestressLoad',
-    'PointLoad',
-    'LineLoad',
-    'AreaLoad',
-    'GravityLoad',
-    # 'ThermalLoad',
-    'TributaryLoad',
-    'HarmoniPointLoadBase',
-    'HarmonicPressureLoad',
-    'AcousticDiffuseFieldLoad'
-]
+# __all__ = [
+#     # 'PrestressLoad',
+#     'PointLoad',
+#     'LineLoad',
+#     'AreaLoad',
+#     'GravityLoad',
+#     # 'ThermalLoad',
+#     'TributaryLoad',
+#     'HarmoniPointLoadBase',
+#     'HarmonicPressureLoad',
+#     'AcousticDiffuseFieldLoad'
+# ]
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
@@ -40,11 +40,17 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 class PointLoad(PointLoadBase):
     # TODO: add the possibility to apply the load to a node and not just to a node set
-    def __init__(self, name, lset, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
-        super(PointLoad, self).__init__(
-            name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
+    def __init__(self, name, lset=None, nodes=None, x=0., y=0., z=0., xx=0., yy=0., zz=0., modify=False, follow=False):
+        super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
 
-        self.lset = lset
+        if not lset and not nodes:
+            raise ValueError('You must specify either a node or a set')
+        if lset and nodes:
+            raise ValueError('You cannot specify both a node and a set')
+        if lset:
+            self.lset = lset.name  # TODO change
+            self.nodes = lset.selection
+
         if modify:
             self.op = 'NEW'
         else:

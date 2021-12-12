@@ -7,9 +7,9 @@ from compas_fea2.backends._base.model import NodeBase
 
 # Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'Node',
-]
+# __all__ = [
+#     'Node',
+# ]
 
 
 # =============================================================================

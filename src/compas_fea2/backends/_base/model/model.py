@@ -37,14 +37,14 @@ class ModelBase(FEABase):
         self._author = author
         self._instances = {}
         self._parts = {}
-        self._nodes = {}
+        self._nodes = []
         self._materials = {}
         self._sections = {}
         self._elements = {}
-        self._surfaces = []
-        self._constraints = []
-        self._releases = []
-        self._interactions = []
+        self._surfaces = {}
+        self._constraints = {}
+        self._releases = {}
+        self._interactions = {}
         self._sets = {}
 
     @property
@@ -338,7 +338,7 @@ class ModelBase(FEABase):
 
         # Add part's properties to the model
 
-        self._nodes[part._name] = part._nodes
+        self._nodes.append(part._nodes)
         self._elements[part._name] = part._elements
 
         for attr in ['_materials', '_sections']:
@@ -429,8 +429,11 @@ class ModelBase(FEABase):
     #                           Nodes methods
     # =========================================================================
 
+    def _renumber_model_nodes():
+        pass
+
     def _update_part_nodes_to_model(self, part, check=True):
-        self._nodes[part._name] = part._nodes
+        self._nodes.append(part._nodes)
 
     def _check_node_in_model(self, node, add=True):
         pass
@@ -460,7 +463,7 @@ class ModelBase(FEABase):
         if check:
             self._check_part_in_model(part)
         self._parts[part].add_node(node, check)
-        self._update_part_nodes_to_model(self.parts[part])  # TODO this happens at every iteration...change!
+        self._update_part_nodes_to_model(self.parts[part])
 
     def add_nodes(self, nodes, part, check=True):
         """Add multiple compas_fea2 Node objects a Part in the Model.
@@ -479,9 +482,11 @@ class ModelBase(FEABase):
         -------
         None
         """
-
+        if check:
+            self._check_part_in_model(part)
         for node in nodes:
-            self.add_node(node, part, check)
+            self._parts[part].add_node(node, check)
+        self._update_part_nodes_to_model(self.parts[part])
 
     def remove_node(self, node_key, part):
         '''Remove the node from a Part in the Model. If there are duplicate nodes,
@@ -597,11 +602,19 @@ class ModelBase(FEABase):
         None
         """
 
-        self._check_material_in_model(section.material)
-        if section._name not in self._sections:
-            self._sections[section._name] = section
+        if isinstance(section.material, str):
+            if section.material not in self.materials:
+                raise ValueError(f'** ERROR! **: section {section.material} not found in the Model!')
+            else:
+                section._material = self.materials[section.material]
+
+        if isinstance(section, SectionBase):
+            if section._name not in self._sections:
+                self._sections[section._name] = section
+            else:
+                print('WARNING: {} already added to the model. skipped!'.format(section))
         else:
-            print('WARNING: {} already added to the model. skipped!'.format(section))
+            raise ValueError('Provide a valid Section object')
 
     def add_sections(self, sections):
         """Add multiple compas_fea2 Section objects to the Model.
@@ -647,11 +660,15 @@ class ModelBase(FEABase):
         """
         if check:
             self._check_part_in_model(part)
-        self._check_section_in_model(element.section)
-        if element.section not in self.sections:
-            raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
-        elif element.section not in self.parts[part].sections:
-            self.parts[part].sections[element.section] = self.sections[element.section]
+        # self._check_section_in_model(element.section)
+        if isinstance(element.section, str):
+            if element.section not in self.sections:
+                if element.section in self.parts[part].sections:
+                    self.sections[element.section] = self.parts[part].sections[element.section]
+                else:
+                    raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
+            else:
+                element._section = self.sections[element.section]
         self.parts[part].add_element(element)
         self._update_part_elements_to_model(self.parts[part])  # TODO this happens at every iteration...change!
 
@@ -779,6 +796,9 @@ class ModelBase(FEABase):
         self.instances[instance].sets.append(iset)
         self.sets[iset.name] = iset
 
+    def add_instance_sets(self, sets, instance):
+        for iset in sets:
+            self.add_instance_set(iset, instance)
     # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
     # are applied to part level sets. Since in FEA2 there is no distinction,
     # this must be taken into account from the `add_set` method

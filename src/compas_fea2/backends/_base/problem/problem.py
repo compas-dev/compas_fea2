@@ -365,7 +365,7 @@ class ProblemBase(FEABase):
                 load_name = load._name
             else:
                 if load not in self._loads:
-                    raise ValueError("ERROR : dispalcement not found!")
+                    raise ValueError("ERROR : load not found!")
                 load_name = load
 
             self._steps[step_name].add_load(self._loads[load_name])
@@ -373,7 +373,7 @@ class ProblemBase(FEABase):
 
         else:
             if not isinstance(load, LoadBase):
-                raise ValueError('You must provide a Displacement object.')
+                raise ValueError('You must provide a Load object.')
             if load._name not in self._loads:
                 self._loads[load._name] = load
                 print(f'{load.__repr__()} added to {self.__repr__()}')
@@ -564,43 +564,48 @@ class ProblemBase(FEABase):
         -------
         None
         """
+        if isinstance(step, CaseBase):
+            if step._name in self._steps:
+                print('WARNING: {} already defined in the Problem. skipped!'.format(step.__repr__()))
+            else:
+                self._steps[step._name] = step
 
-        if step._name in self._steps:
-            print('WARNING: {} already defined in the Problem. skipped!'.format(step.__repr__()))
+                if step._displacements:
+                    for displacement in step._displacements.values():
+                        if isinstance(displacement, GeneralDisplacementBase):
+                            if displacement._name not in self._displacements:
+                                self._displacements[displacement._name] = displacement
+                        else:
+                            raise ValueError(f'{displacement}')
+
+                if step._loads:
+                    for load in step._loads.values():
+                        if isinstance(load, LoadBase):
+                            if load._name not in self._loads:
+                                self._loads[load._name] = load
+                        else:
+                            raise ValueError(f'{load}')
+
+                if step._field_outputs:
+                    for field_output in step._field_outputs.values():
+                        if isinstance(field_output, FieldOutputBase):
+                            if field_output._name not in self._field_outputs:
+                                self._field_outputs[field_output._name] = field_output
+                        else:
+                            raise ValueError(f'{field_output}')
+
+                if step._history_outputs:
+                    for history_output in step._history_outputs.values():
+                        if isinstance(history_output, HistoryOutputBase):
+                            if history_output._name not in self._history_outputs:
+                                self._history_outputs[history_output._name] = history_output
+                        else:
+                            raise ValueError(f'{history_output}')
+
+                if append:
+                    self._steps_order.append(step._name)
         else:
-            self._steps[step._name] = step
-            if step._displacements:
-                for displacement in step._displacements:
-                    if isinstance(displacement, GeneralDisplacementBase):
-                        if displacement._name not in self._displacements:
-                            self._displacements[displacement._name] = displacement
-                    else:
-                        raise ValueError()
-            if step._loads:
-                for load in step._loads:
-                    if isinstance(load, LoadBase):
-                        if load._name not in self._loads:
-                            self._loads[load._name] = load
-                    else:
-                        raise ValueError()
-
-            if step._field_outputs:
-                for field_output in step._field_outputs:
-                    if isinstance(displacement, FieldOutputBase) or isinstance(displacement, FieldOutputBase):
-                        if field_output._name not in self._field_outputs:
-                            self._field_outputs[field_output._name] = field_output
-                    else:
-                        raise ValueError()
-
-            if step._history_outputs:
-                for history_output in step._history_outputs:
-                    if isinstance(displacement, GeneralDisplacementBase):
-                        if history_output._name not in self._history_outputs:
-                            self._history_outputs[history_output._name] = history_output
-                    else:
-                        raise ValueError()
-            if append:
-                self._steps_order.append(step._name)
+            raise ValueError('You must provide a Step/Case object')
 
     def add_steps(self, steps):
         """Adds multiple steps to the Problem object.

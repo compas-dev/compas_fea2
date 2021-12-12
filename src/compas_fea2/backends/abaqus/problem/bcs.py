@@ -19,20 +19,20 @@ from compas_fea2.backends._base.problem import RollerDisplacementXZBase
 
 # TODO: add the possibility to add bcs to nodes/elements and not only to sets
 
-__all__ = [
-    'GeneralDisplacement',
-    'FixedDisplacement',
-    'PinnedDisplacement',
-    'FixedDisplacementXX',
-    'FixedDisplacementYY',
-    'FixedDisplacementZZ',
-    'RollerDisplacementX',
-    'RollerDisplacementY',
-    'RollerDisplacementZ',
-    'RollerDisplacementXY',
-    'RollerDisplacementYZ',
-    'RollerDisplacementXZ'
-]
+# __all__ = [
+#     'GeneralDisplacement',
+#     'FixedDisplacement',
+#     'PinnedDisplacement',
+#     'FixedDisplacementXX',
+#     'FixedDisplacementYY',
+#     'FixedDisplacementZZ',
+#     'RollerDisplacementX',
+#     'RollerDisplacementY',
+#     'RollerDisplacementZ',
+#     'RollerDisplacementXY',
+#     'RollerDisplacementYZ',
+#     'RollerDisplacementXZ'
+# ]
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
@@ -144,9 +144,15 @@ class PinnedDisplacement(PinnedDisplacementBase):
         'local' or 'global' coordinate axes.
     """
 
-    def __init__(self, name, bset, axes='global'):
+    def __init__(self, name, bset=None, nodes=None, axes='global'):
         super(PinnedDisplacement, self).__init__(name, None, axes)
-        self.bset = bset
+        if not bset and nodes:
+            raise ValueError('You must specify either a node or a set')
+        if bset and nodes:
+            raise ValueError('You cannot specify both a node and a set')
+        if bset:
+            self.bset = bset.name  # TODO change
+            self.nodes = bset.selection
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)

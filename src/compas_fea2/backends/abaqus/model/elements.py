@@ -20,21 +20,21 @@ from compas_fea2.backends._base.model import SolidElementBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'MassElement',
-    'BeamElement',
-    # 'SpringElement',
-    'TrussElement',
-    # 'StrutElement',
-    # 'TieElement',
-    'ShellElement',
-    'MembraneElement',
-    # 'FaceElement',
-    'SolidElement',
-    # 'PentahedronElement',
-    # 'TetrahedronElement',
-    # 'HexahedronElement',
-]
+# __all__ = [
+#     'MassElement',
+#     'BeamElement',
+#     # 'SpringElement',
+#     'TrussElement',
+#     # 'StrutElement',
+#     # 'TieElement',
+#     'ShellElement',
+#     'MembraneElement',
+#     # 'FaceElement',
+#     'SolidElement',
+#     # 'PentahedronElement',
+#     # 'TetrahedronElement',
+#     # 'HexahedronElement',
+# ]
 
 # ==============================================================================
 # 0D elements
@@ -79,6 +79,7 @@ class BeamElement(BeamElementBase):
         self.orientation = orientation
 
     def _generate_jobdata(self):
+        # note: the string `*Element, type=B31` is generated in the part section to group elements with the same type
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 

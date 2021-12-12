@@ -8,10 +8,10 @@ from compas_fea2.backends._base.model import SurfaceBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'Set',
-    'Surface',
-]
+# __all__ = [
+#     'Set',
+#     'Surface',
+# ]
 
 
 class Set(SetBase):

@@ -20,18 +20,18 @@ from compas_fea2.backends._base.model import ThermalMaterialBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-__all__ = [
-    'ElasticIsotropic',
-    'Stiff',
-    'ElasticOrthotropic',
-    'ElasticPlastic',
-    # 'ThermalMaterial',
-    'Steel',
-    'Concrete',
-    'ConcreteSmearedCrack',
-    'ConcreteDamagedPlasticity',
-    'UserMaterial'
-]
+# __all__ = [
+#     'ElasticIsotropic',
+#     'Stiff',
+#     'ElasticOrthotropic',
+#     'ElasticPlastic',
+#     # 'ThermalMaterial',
+#     'Steel',
+#     'Concrete',
+#     'ConcreteSmearedCrack',
+#     'ConcreteDamagedPlasticity',
+#     'UserMaterial'
+# ]
 
 
 # ==============================================================================

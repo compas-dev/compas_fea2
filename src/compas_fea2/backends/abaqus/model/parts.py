@@ -46,59 +46,90 @@ class Part(PartBase):
     def __init__(self, name):
         super(Part, self).__init__(name)
 
+    def _group_elements(self):
+        '''Group the elements.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict
+            {eltype:{section:{orientation: [elements]},},}
+        '''
+
+        # group elements by type and section
+        eltypes = set(map(lambda x: x.eltype, self.elements.values()))
+        # group by type
+        grouped_elements = {eltype: [el for el in self.elements.values() if el.eltype == eltype] for eltype in eltypes}
+        # subgroup by section
+        for eltype, elements in grouped_elements.items():
+            sections = set(map(lambda x: x.section, elements))
+            elements = {section: [el for el in elements if el.section == section] for section in sections}
+            # subgroup by orientation
+            for section, sub_elements in elements.items():
+                orientations = set(map(lambda x: '_'.join(str(i) for i in x.orientation)
+                                       if hasattr(x, 'orientation') else None, sub_elements))
+                elements_by_orientation = {}
+                for orientation in orientations:
+                    elements_by_orientation.setdefault(orientation, set())
+                    for el in sub_elements:
+                        if hasattr(el, 'orientation'):
+                            if '_'.join(str(i) for i in el.orientation) == orientation:
+                                elements_by_orientation[orientation].add(el)
+                        else:
+                            elements_by_orientation[None].add(el)
+                elements[section] = elements_by_orientation
+            grouped_elements[eltype] = elements
+
+        return grouped_elements
+
     # =========================================================================
     #                       Generate input file data
     # =========================================================================
 
     def _generate_jobdata(self):
-
         from compas_fea2.backends.abaqus.model import Set
-
         # Write nodes
         part_data = ['*Node\n']
         for node in self.nodes:
             part_data.append(node._generate_jobdata())
 
-        # Write elements
-        for eltype in self._elements_by_type:
+        # Write elements, elsets and sections
+        grouped_elements = self._group_elements()
+        for eltype, sections in grouped_elements.items():
             part_data.append("*Element, type={}\n".format(eltype))
-            # data = []
-            for key in self._elements_by_type[eltype]:
-                part_data.append(self.elements[key]._generate_jobdata())
+            for section, orientations in sections.items():
+                for orientation, elements in orientations.items():
+                    # Write elements
+                    for element in elements:
+                        part_data.append(element._generate_jobdata())
+
+                    # create and write aux set to assign the section
+                    selection = [element.key for element in elements]
+                    selection.sort()
+                    if orientation:
+                        aux_elset = Set(
+                            f'_aux_{eltype}_{section.name}_{orientation.replace(".", "")}', selection, 'elset')
+                        self.add_element_set(aux_elset)
+                        part_data.append(aux_elset._generate_jobdata())
+                        # Write section
+                        part_data.append(section._generate_jobdata(aux_elset.name, orientation.split('_')))
+                    else:
+                        aux_elset = Set(f'_aux_{eltype}_{section.name}', selection, 'elset')
+                        self.add_element_set(aux_elset)
+                        part_data.append(aux_elset._generate_jobdata())
+                        part_data.append(section._generate_jobdata(aux_elset.name))
 
         # Write user-defined nsets
-        for nset in self.nsets:
-            part_data.append(nset._generate_jobdata())
+        # for nset in self.nsets:
+        #     part_data.append(nset._generate_jobdata())
 
-        # Write sets
-        for section in self._elements_by_section:
-            # TODO this part is messy and needs to be rewritten
-            # the main problem is that beam elements require orientations
-            # while other elements (such shells) don't
-            o = 1
-            for orientation in self._orientations_by_section[section]:
-
-                elements = []
-                for element in self._elements_by_section[section]:
-                    if hasattr(self._elements[element], 'orientation') and self.elements[element].orientation == orientation:
-                        elements.append(element)
-                    elif not hasattr(self.elements[element], 'orientation'):
-                        elements.append(element)
-                self.add_element_set(Set('_{}-{}'.format(section, o), elements, 'elset'))
-                o += 1
-
-        for elset in self.elsets:
-            part_data.append(elset._generate_jobdata())
-
-        # Write sections
-        for section in self.sections.values():
-            o = 1
-            for orientation in self._orientations_by_section[section.name]:
-                if orientation:
-                    part_data.append(section._generate_jobdata('_{}-{}'.format(section.name, o), orientation))
-                    o += 1
-                else:
-                    part_data.append(section._generate_jobdata('_{}-{}'.format(section.name, o)))
+        # # todo : maybe remove because it can generate a duplicate with the elsets automatically generated
+        # # Write user-defined elsets
+        # for elset in self.elsets:
+        #     part_data.append(elset._generate_jobdata())
 
         # Write releases
         if self.releases:

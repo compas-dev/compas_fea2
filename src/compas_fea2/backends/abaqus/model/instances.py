@@ -33,19 +33,16 @@ class Instance(InstanceBase):
             iset._jobdata = iset._generate_jobdata()
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         section_data = ['*Instance, name={}, part={}\n'.format(self.name, self.part.name)]
         section_data.append('*End Instance\n**\n')
         return ''.join(section_data)
-
-
-# =============================================================================
-#                               Debugging
-# =============================================================================
-
-if __name__ == "__main__":
-    from compas_fea2.backends.abaqus import Part
-
-    part = Part('pname')
-    i = Instance('name', part)
-
-    print(i)

@@ -35,6 +35,16 @@ class Set(SetBase):
         super(Set, self).__init__(name, selection, stype, generate)
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         data_section = []
         line = '*{}, {}={}'.format(self.stype, self.stype, self.name)
         if self.instance:
@@ -71,24 +81,18 @@ class Surface(SurfaceBase):
     def __init__(self, name, set, generate=False):
         super(Surface, self).__init__(name, set, generate)
 
-        self._jobdata = self._generate_jobdata()
+    # TODO: old ---> change
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    # TODO: old ---> change
-    def _generate_jobdata(self):
         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
         self.write_line('** ELEMENT, SIDE')
 

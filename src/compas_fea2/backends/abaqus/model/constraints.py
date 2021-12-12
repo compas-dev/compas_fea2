@@ -26,7 +26,16 @@ class NodeTieConstraint(TieConstraintBase):
         super(NodeTieConstraint, self).__init__(name, master, slave, tol=None)
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return ''.join([
             f'** Constraint: {self.name}\n',
             '*MPC\n',

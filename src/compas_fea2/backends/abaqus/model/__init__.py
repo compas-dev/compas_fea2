@@ -51,6 +51,19 @@ from .sections import (
     TieSection,
     SpringSection,
 )
-
+from .bcs import (
+    GeneralBC,
+    FixedBC,
+    PinnedBC,
+    FixedBCXX,
+    FixedBCYY,
+    FixedBCZZ,
+    RollerBCX,
+    RollerBCY,
+    RollerBCZ,
+    RollerBCXY,
+    RollerBCYZ,
+    RollerBCXZ
+)
 
 __all__ = [name for name in dir() if not name.startswith('_')]

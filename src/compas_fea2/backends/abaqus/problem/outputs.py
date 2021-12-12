@@ -17,23 +17,18 @@ class FieldOutput(FieldOutputBase):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
         super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
         self.__name__ = 'FieldOutputRequst'
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data = ['** FIELD OUTPUT: {}\n**'.format(self._name)]
         if not (self._node_outputs and self._element_outputs):
             data.append('*Output, field, variable=PRESELECT\n**\n')
@@ -51,21 +46,19 @@ class HistoryOutput(HistoryOutputBase):
     def __init__(self, name):
         super(HistoryOutput, self).__init__(name)
         self.__name__ = 'FieldOutputRequst'
-        self._jobdata = """** HISTORY OUTPUT: {}
-**
-*Output, history, variable=PRESELECT
-**\n""".format(self._name)
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
+        return """** HISTORY OUTPUT: {}
+**
+*Output, history, variable=PRESELECT
+**\n""".format(self._name)

@@ -12,6 +12,7 @@ from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.model.parts import PartBase
 from compas_fea2.backends._base.model.materials import MaterialBase
 from compas_fea2.backends._base.model.sections import SectionBase
+from compas_fea2.backends._base.model.bcs import GeneralBCBase
 
 __all__ = [
     'ModelBase',
@@ -46,15 +47,12 @@ class ModelBase(FEABase):
         self._releases = {}
         self._interactions = {}
         self._sets = {}
+        self._bcs = {}
 
     @property
     def name(self):
         """str : Name of the Model."""
         return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def description(self):
@@ -71,99 +69,60 @@ class ModelBase(FEABase):
         """dict: A dictionary with the `Instance` objects belonging to the Model."""
         return self._instances
 
-    @instances.setter
-    def instances(self, value):
-        self._instances = value
-
     @property
     def parts(self):
         """dict: A dictionary with the `Part` objects referenced in the Model."""
         return self._parts
-
-    @parts.setter
-    def parts(self, value):
-        self._parts = value
 
     @property
     def nodes(self):
         """The nodes property."""
         return self._nodes
 
-    @nodes.setter
-    def nodes(self, value):
-        self._nodes = value
-
     @property
     def surfaces(self):
         """list : A list with the `Surface` objects belonging to the Model."""
         return self._surfaces
-
-    @surfaces.setter
-    def surfaces(self, value):
-        self._surfaces = value
 
     @property
     def constraints(self):
         """list : A list with the `Constraint` objects belonging to the Model."""
         return self._constraints
 
-    @constraints.setter
-    def constraints(self, value):
-        self._constraints = value
-
     @property
     def releases(self):
         """list : A list with the `Release` objects belonging to the Model."""
         return self._releases
-
-    @releases.setter
-    def releases(self, value):
-        self._releases = value
 
     @property
     def interactions(self):
         """list : A list with the `Interaction` objects belonging to the Model."""
         return self._interactions
 
-    @interactions.setter
-    def interactions(self, value):
-        self._interactions = value
-
     @property
     def materials(self):
         """dict : A dictionary of all the materials defined in the Model."""
         return self._materials
-
-    @materials.setter
-    def materials(self, value):
-        self._materials = value
 
     @property
     def sections(self):
         """dict :  A dictionary of all the sections defined in the Model."""
         return self._sections
 
-    @sections.setter
-    def sections(self, value):
-        self._sections = value
-
     @property
     def elements(self):
         """The elements property."""
         return self._elements
-
-    @elements.setter
-    def elements(self, value):
-        self._elements = value
 
     @property
     def sets(self):
         """dict : A dictionary of all the sets defined in the Model."""
         return self._sets
 
-    @sets.setter
-    def sets(self, value):
-        self._sets = value
+    @property
+    def bcs(self):
+        """The bcs property."""
+        return self._bcs
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -842,6 +801,86 @@ class ModelBase(FEABase):
         raise NotImplementedError()
 
     # =========================================================================
+    #                           BCs methods
+    # =========================================================================
+
+    def add_bc(self, bc):
+        """Adds a boundary condition to the Problem object.
+
+        Parameters
+        ----------
+        bc : obj
+            `compas_fea2` BoundaryCondtion object.
+
+        Returns
+        -------
+        None
+        """
+
+        if bc._name not in self._bcs:
+            if not isinstance(bc, GeneralBCBase):
+                raise ValueError(f'{bc} not instance of a BC class')
+            self.bcs[bc._name] = bc
+        else:
+            print('WARNING: {} already present in the Problem. skipped!'.format(bc.__repr__()))
+
+    def add_bcs(self, bcs):
+        """Adds multiple boundary conditions to the Problem object.
+
+        Parameters
+        ----------
+        bcs : list
+            List of `compas_fea2` BoundaryCondtion objects.
+
+        Returns
+        -------
+        None
+        """
+        for bc in bcs:
+            self.add_bc(bc)
+
+    def remove_bc(self, bc_name):
+        """Removes a boundary condition from the Problem object.
+
+        Parameters
+        ----------
+        bc_name : str
+            Name of thedisplacement to remove.
+
+        Returns
+        -------
+        None
+        """
+        raise NotImplementedError
+
+    def remove_bcs(self, bc_names):
+        """Removes multiple boundary conditions from the Problem object.
+
+        Parameters
+        ----------
+        bc_names : list
+            List of names of the boundary conditions to remove.
+
+        Returns
+        -------
+        None
+        """
+        raise NotImplementedError
+
+    def remove_all_bcs(self):
+        """Removes all the boundary conditions from the Problem object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self.bcs = {}
+
+    # =========================================================================
     #                          Helper methods
     # =========================================================================
 
@@ -869,13 +908,11 @@ class ModelBase(FEABase):
         node_dict = {}
         for part in self.parts.values():
             for node in part.nodes:
-
                 a = [tol * round(i/tol) for i in node.xyz]
                 b = [tol * round(i/tol) for i in xyz]
                 # if math.isclose(node.xyz, xyz, tol):
                 if a == b:
                     node_dict[part.name] = node.key
-
         if not node_dict:
             print("WARNING: Node at {} not found!".format(b))
 
@@ -923,6 +960,18 @@ Sets
 ----
 {}
 
+Interactions
+------------
+{}
+
+Constraints
+-----------
+{}
+
+Boundary Conditions
+-------------------
+{}
+
 """.format(self.name,
            '\n'.join([e for e in self.parts]),
            '\n'.join([str(len(e)) for e in [p.nodes for p in self.parts.values()]]),
@@ -931,6 +980,9 @@ Sets
            '\n'.join([e for e in self.materials]),
            '\n'.join([e for e in self.sections]),
            '\n'.join([e for e in self.sets]),
+           '\n'.join([e for e in self.interactions]),
+           '\n'.join([e for e in self.constraints]),
+           '\n'.join([e for e in self.bcs]),
            )
         print(data)
         return data

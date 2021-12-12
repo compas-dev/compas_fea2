@@ -22,24 +22,6 @@ from compas_fea2.backends._base.model import SpringSectionBase
 # NOTE: these classes are sometimes overwriting the _base ones because Abaqus
 # offers internal ways of computing beam sections' properties
 
-# __all__ = [
-#     'MassSection',
-#     'AngleSection',
-#     'BoxSection',
-#     'CircularSection',
-#     'ISection',
-#     'PipeSection',
-#     'RectangularSection',
-#     'ShellSection',
-#     'MembraneSection',
-#     'SolidSection',
-#     'TrapezoidalSection',
-#     'TrussSection',
-#     'StrutSection',
-#     'TieSection',
-#     'SpringSection',
-# ]
-
 
 # ==============================================================================
 # 0D
@@ -61,6 +43,16 @@ class MassSection(MassSectionBase):
         super(MassSection, self).__init__(name, mass)
 
     def _generate_jobdata(self, set_name, orientation):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return """** Section: {}
 *Mass, elset={}
 {}\n""".format(self.name, set_name, self.mass)
@@ -81,6 +73,16 @@ class AbaqusBeamSection(SectionBase):
         super(AbaqusBeamSection, self).__init__(name, material)
 
     def _generate_jobdata(self, set_name, orientation):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         orientation_line = ', '.join([str(v) for v in orientation])
         return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
@@ -284,6 +286,16 @@ class TrussSection(TrussSectionBase):
         super(TrussSection, self).__init__(name, A, material)
 
     def _generate_jobdata(self, set_name):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return """** Section: {}
 *Solid Section, elset={}, material={}
 {},\n""".format(self.name, set_name, self.material.name, self.geometry['A'])
@@ -336,6 +348,16 @@ class ShellSection(ShellSectionBase):
         self.int_points = int_points
 
     def _generate_jobdata(self, set_name):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return """** Section: {}
 *Shell Section, elset={}, material={}
 {}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
@@ -347,6 +369,16 @@ class MembraneSection(MembraneSectionBase):
         super(MembraneSection, self).__init__(name, t, material)
 
     def _generate_jobdata(self, set_name):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return """** Section: {}
 *Membrane Section, elset={}, material={}
 {},\n""".format(self.name, set_name, self.material.name, self.t)
@@ -362,16 +394,16 @@ class SolidSection(SolidSectionBase):
         super(SolidSectionBase, self).__init__(name, material)
 
     def _generate_jobdata(self, set_name):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return """** Section: {}
 *Solid Section, elset={}, material={}
 ,\n""".format(self.name, set_name, self.material.name)
-
-
-if __name__ == "__main__":
-
-    from compas_fea2.backends.abaqus import Concrete
-
-    conc = Concrete('my_mat', 1, 2, 3, 4)
-    solid = BoxSection('mysec', 100, 20, 1, 2, conc)
-
-    print(solid.jobdata)

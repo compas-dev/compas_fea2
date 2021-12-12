@@ -90,6 +90,16 @@ class Part(PartBase):
     # =========================================================================
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         from compas_fea2.backends.abaqus.model import Set
         # Write nodes
         part_data = ['*Node\n']

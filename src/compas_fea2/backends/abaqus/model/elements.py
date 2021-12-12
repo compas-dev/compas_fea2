@@ -60,7 +60,17 @@ class MassElement(MassElementBase):
     # TODO: continue
 
     def _generate_jobdata(self):
-        line = ("*ELEMENT, TYPE=MASS, ELSET={}\n"
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
+        return ("*ELEMENT, TYPE=MASS, ELSET={}\n"
                 "{}, {}\n"
                 "*MASS, ELSET={0}\n"
                 "{}\n").format(self.elset, self.node, )
@@ -79,6 +89,16 @@ class BeamElement(BeamElementBase):
         self.orientation = orientation
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         # note: the string `*Element, type=B31` is generated in the part section to group elements with the same type
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
@@ -113,6 +133,16 @@ class TrussElement(TrussElementBase):
         self.orientation = None
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
 
 # class StrutElement(StrutElementBase):
@@ -175,6 +205,16 @@ class ShellElement(ShellElementBase):
             raise NotImplementedError
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 # class FaceElement(FaceElementBase):
@@ -216,6 +256,16 @@ class SolidElement(SolidElementBase):
             self.eltype = eltype
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
 
 
@@ -256,17 +306,3 @@ class SolidElement(SolidElementBase):
 #     pass
 #     # def __init__(self):
 #     #     super(HexahedronElement, self).__init__()
-if __name__ == "__main__":
-    from compas_fea2.backends.abaqus.model.nodes import Node
-    from compas_fea2.backends.abaqus.model.materials import ElasticIsotropic
-    from compas_fea2.backends.abaqus.model.sections import SolidSection
-    from compas_fea2.backends.abaqus import SolidElement
-
-    nodes = [Node([i, 3, 4]) for i in range(4)]
-    mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
-    sec = SolidSection(name='section_A', material='mat_A')
-    print(sec._generate_jobdata())
-    b = SolidElement(connectivity=nodes, section=sec)
-
-    print(b)
-    print(b._generate_jobdata())

@@ -25,15 +25,11 @@ class Model(ModelBase):
 #                               Job data
 # =============================================================================
 
-
     def _generate_jobdata(self):
-        return f"""** PARTS
+        return f"""**
+** PARTS
 **
 {self._generate_part_section()}**
-** ASSEMBLY
-**
-{self._generate_assembly_section()}**
-**
 ** MATERIALS
 **
 {self._generate_material_section()}**
@@ -42,7 +38,14 @@ class Model(ModelBase):
 {self._generate_int_props_section()}**
 ** INTERACTIONS
 **
-{self._generate_interactions_section()}**"""
+{self._generate_interactions_section()}**
+** ASSEMBLY
+**
+{self._generate_assembly_section()}**
+** BOUNDARY CONDITIONS
+**
+{self._generate_bcs_section()}**
+"""
 
     def _generate_part_section(self):
         """Generate the content relatitive the each Part for the input file.
@@ -110,7 +113,7 @@ class Model(ModelBase):
         """
         section_data = []
         for material in self.materials.values():
-            section_data.append(material.jobdata)
+            section_data.append(material._generate_jobdata())
         return ''.join(section_data)
 
     def _generate_int_props_section(self):
@@ -118,6 +121,25 @@ class Model(ModelBase):
 
     def _generate_interactions_section(self):
         return ''
+
+    def _generate_bcs_section(self):
+        """Generate the content relatitive to the boundary conditions section
+        for the input file.
+
+        Parameters
+        ----------
+        problem : obj
+            compas_fea2 Problem object.
+
+        Returns
+        -------
+        str
+            text section for the input file.
+        """
+        section_data = []
+        for bc in self.bcs.values():
+            section_data.append(bc._generate_jobdata())
+        return ''.join(section_data)
 
 
 # =============================================================================

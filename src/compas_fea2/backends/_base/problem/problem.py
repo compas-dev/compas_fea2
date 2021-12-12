@@ -8,7 +8,7 @@ import pickle
 from pathlib import Path
 
 from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.problem.bcs import GeneralDisplacementBase
+from compas_fea2.backends._base.problem.displacements import GeneralDisplacementBase
 from compas_fea2.backends._base.problem.loads import LoadBase
 from compas_fea2.backends._base.problem.outputs import FieldOutputBase, HistoryOutputBase
 from compas_fea2.backends._base.problem.steps import CaseBase
@@ -31,12 +31,12 @@ class ProblemBase(FEABase):
         model object.
     """
 
-    def __init__(self, name, model):
+    def __init__(self, name, model, descritpion=None):
         self.__name__ = 'ProblemBase'
         self._name = name
+        self._descritpion = descritpion if descritpion else f'Problem for {model}'
         self._model = model
         self._path = None
-        self._bcs = {}
         self._loads = {}
         self._displacements = {}
         self._steps = {}
@@ -52,18 +52,19 @@ class ProblemBase(FEABase):
         """str : Name of the Problem"""
         return self._name
 
-    @name.setter
-    def name(self, value):
-        self._name = value
+    @property
+    def description(self):
+        """The description property."""
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
 
     @property
     def model(self):
         """obj : compas_fea2 Model object."""
         return self._model
-
-    @model.setter
-    def model(self, value):
-        self._model = value
 
     @property
     def path(self):
@@ -75,147 +76,39 @@ class ProblemBase(FEABase):
         self._path = value
 
     @property
-    def bcs(self):
+    def displacements(self):
         """dict : Dictionary containing the boundary conditions objects."""
         return self._bcs
-
-    @bcs.setter
-    def bcs(self, value):
-        self._bcs = value
 
     @property
     def loads(self):
         """dict : Dictionary containing the load objects."""
         return self._loads
 
-    @loads.setter
-    def loads(self, value):
-        self._loads = value
-
     @property
     def displacements(self):
         """"dict : Dictionary containing the displacement objects."""
         return self._displacements
-
-    @displacements.setter
-    def displacements(self, value):
-        self._displacements = value
 
     @property
     def steps(self):
         """dict : dict containing the Steps objects."""
         return self._steps
 
-    @steps.setter
-    def steps(self, value):
-        self._steps = value
-
     @property
     def steps_order(self):
         """list : List containing the Steps names in the sequence they are applied."""
         return self._steps_order
-
-    @steps_order.setter
-    def steps_order(self, value):
-        self._steps_order = value
 
     @property
     def field_outputs(self):
         """dict : Dictionary contanining the field output requests."""
         return self._field_outputs
 
-    @field_outputs.setter
-    def field_outputs(self, value):
-        self._field_outputs = value
-
     @property
     def history_outputs(self):
         """dict : Dictionary contanining the history output requests."""
         return self._history_outputs
-
-    @history_outputs.setter
-    def history_outputs(self, value):
-        self._history_outputs = value
-
-    # =========================================================================
-    #                           BCs methods
-    # =========================================================================
-
-    def add_bc(self, bc):
-        """Adds a boundary condition to the Problem object.
-
-        Parameters
-        ----------
-        bc : obj
-            `compas_fea2` BoundaryCondtion object.
-
-        Returns
-        -------
-        None
-        """
-
-        if bc._name not in self._bcs:
-            if not isinstance(bc, GeneralDisplacementBase):
-                raise ValueError(f'{bc} not instance of a Displacement class')
-            self.bcs[bc._name] = bc
-        else:
-            print('WARNING: {} already present in the Problem. skipped!'.format(bc.__repr__()))
-
-    def add_bcs(self, bcs):
-        """Adds multiple boundary conditions to the Problem object.
-
-        Parameters
-        ----------
-        bcs : list
-            List of `compas_fea2` BoundaryCondtion objects.
-
-        Returns
-        -------
-        None
-        """
-        for bc in bcs:
-            self.add_bc(bc)
-
-    def remove_bc(self, bc_name):
-        """Removes a boundary condition from the Problem object.
-
-        Parameters
-        ----------
-        bc_name : str
-            Name of thedisplacement to remove.
-
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError
-
-    def remove_bcs(self, bc_names):
-        """Removes multiple boundary conditions from the Problem object.
-
-        Parameters
-        ----------
-        bc_names : list
-            List of names of the boundary conditions to remove.
-
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError
-
-    def remove_all_bcs(self):
-        """Removes all the boundary conditions from the Problem object.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        self.bcs = {}
 
     # =========================================================================
     #                           Displacements methods
@@ -725,7 +618,6 @@ class ProblemBase(FEABase):
         None
         """
         data = [self._name,
-                '\n'.join([f'{name.__repr__()}' for name in self.bcs.values()]),
                 '\n'.join([f'{name.__repr__()}' for name in self.steps.values()]),
                 '\n'.join([f'{name}' for name in self.steps_order])
                 ]
@@ -734,10 +626,6 @@ class ProblemBase(FEABase):
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 compas_fea2 Problem: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Boundary Conditions
--------------------
-{}
 
 Steps
 -----

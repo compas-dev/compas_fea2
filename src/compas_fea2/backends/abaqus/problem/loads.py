@@ -17,19 +17,6 @@ from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-# __all__ = [
-#     # 'PrestressLoad',
-#     'PointLoad',
-#     'LineLoad',
-#     'AreaLoad',
-#     'GravityLoad',
-#     # 'ThermalLoad',
-#     'TributaryLoad',
-#     'HarmoniPointLoadBase',
-#     'HarmonicPressureLoad',
-#     'AcousticDiffuseFieldLoad'
-# ]
-
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 # class PrestressLoad(PrestressLoadBase):
@@ -60,23 +47,17 @@ class PointLoad(PointLoadBase):
         else:
             self.follow = ''
 
-        self._jobdata = self._generate_jobdata()
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("** Name: {} Type: Concentrated Force\n"
                 "*Cload, OP={}{}").format(self.name, self.op, self.follow)
@@ -112,6 +93,16 @@ class GravityLoad(GravityLoadBase):
         self.lset = None
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return ("** Name: {} Type: Gravity\n"
                 "*Dload\n"
                 ", GRAV, {}, {}, {}, {}\n").format(self.name, self.g, self.components['x'],

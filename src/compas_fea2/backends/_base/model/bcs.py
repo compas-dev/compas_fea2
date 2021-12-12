@@ -8,28 +8,28 @@ from compas_fea2.backends._base.base import FEABase
 
 
 __all__ = [
-    'GeneralDisplacementBase',
-    'FixedDisplacementBase',
-    'PinnedDisplacementBase',
-    'FixedDisplacementXXBase',
-    'FixedDisplacementYYBase',
-    'FixedDisplacementZZBase',
-    'RollerDisplacementXBase',
-    'RollerDisplacementYBase',
-    'RollerDisplacementZBase',
-    'RollerDisplacementXYBase',
-    'RollerDisplacementYZBase',
-    'RollerDisplacementXZBase'
+    'GeneralBCBase',
+    'FixedBCBase',
+    'PinnedBCBase',
+    'FixedBCXXBase',
+    'FixedBCYYBase',
+    'FixedBCZZBase',
+    'RollerBCXBase',
+    'RollerBCYBase',
+    'RollerBCZBase',
+    'RollerBCXYBase',
+    'RollerBCYZBase',
+    'RollerBCXZBase'
 ]
 
 
-class GeneralDisplacementBase(FEABase):
-    """Initialises the base GeneralDisplacement object.
+class GeneralBCBase(FEABase):
+    """Initialises the base GeneralBC object.
 
     Parameters
     ----------
     name : str
-        Name of the Displacement object.
+        Name of the BC object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to. #TODO change
     x : float
@@ -49,7 +49,7 @@ class GeneralDisplacementBase(FEABase):
     """
 
     def __init__(self, name, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-        self.__name__ = 'GeneralDisplacement'
+        self.__name__ = 'GeneralBC'
         self._name = name
         self._nodes = nodes
         self._x = x
@@ -67,12 +67,8 @@ class GeneralDisplacementBase(FEABase):
 
     @property
     def name(self):
-        """str :  Name of the Displacement object."""
+        """str :  Name of the BC object."""
         return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def nodes(self):
@@ -134,45 +130,45 @@ class GeneralDisplacementBase(FEABase):
             setattr(self, c, a)
 
 
-class FixedDisplacementBase(GeneralDisplacementBase):
+class FixedBCBase(GeneralBCBase):
     """A fixed nodal displacement boundary condition.
 
     Parameters
     ----------
     name : str
-        Name of the FixedDisplacement object.
+        Name of the FixedBC object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(FixedDisplacementBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes=axes)
-        self.__name__ = 'FixedDisplacement'
+        super(FixedBCBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes=axes)
+        self.__name__ = 'FixedBC'
 
 
-class PinnedDisplacementBase(GeneralDisplacementBase):
+class PinnedBCBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition.
 
     Parameters
     ----------
     name : str
-        Name of the PinnedDisplacement object.
+        Name of the PinnedBC object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(PinnedDisplacementBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
-        self.__name__ = 'PinnedDisplacement'
+        super(PinnedBCBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, axes=axes)
+        self.__name__ = 'PinnedBC'
 
 
-class FixedDisplacementXXBase(GeneralDisplacementBase):
+class FixedBCXXBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition clamped in XX.
 
     Parameters
     ----------
     name : str
-        Name of the FixedDisplacementXX object.
+        Name of the FixedBCXX object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -180,17 +176,17 @@ class FixedDisplacementXXBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(FixedDisplacementXXBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, axes=axes)
-        self.__name__ = 'FixedDisplacementXX'
+        super(FixedBCXXBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, xx=0, axes=axes)
+        self.__name__ = 'FixedBCXX'
 
 
-class FixedDisplacementYYBase(GeneralDisplacementBase):
+class FixedBCYYBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition clamped in YY.
 
     Parameters
     ----------
     name : str
-        Name of the FixedDisplacementYY object.
+        Name of the FixedBCYY object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -198,17 +194,17 @@ class FixedDisplacementYYBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(FixedDisplacementYYBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, yy=0, axes=axes)
-        self.__name__ = 'FixedDisplacementYY'
+        super(FixedBCYYBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, yy=0, axes=axes)
+        self.__name__ = 'FixedBCYY'
 
 
-class FixedDisplacementZZBase(GeneralDisplacementBase):
+class FixedBCZZBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition clamped in ZZ.
 
     Parameters
     ----------
     name : str
-        Name of the FixedDisplacementZZ object.
+        Name of the FixedBCZZ object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -216,17 +212,17 @@ class FixedDisplacementZZBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(FixedDisplacementZZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, zz=0, axes=axes)
-        self.__name__ = 'FixedDisplacementZZ'
+        super(FixedBCZZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, z=0, zz=0, axes=axes)
+        self.__name__ = 'FixedBCZZ'
 
 
-class RollerDisplacementXBase(GeneralDisplacementBase):
+class RollerBCXBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in X.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementX object.
+        Name of the RollerBCX object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -234,17 +230,17 @@ class RollerDisplacementXBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementXBase, self).__init__(name=name, nodes=nodes, y=0, z=0, axes=axes)
-        self.__name__ = 'RollerDisplacementX'
+        super(RollerBCXBase, self).__init__(name=name, nodes=nodes, y=0, z=0, axes=axes)
+        self.__name__ = 'RollerBCX'
 
 
-class RollerDisplacementYBase(GeneralDisplacementBase):
+class RollerBCYBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in Y.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementY object.
+        Name of the RollerBCY object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -252,17 +248,17 @@ class RollerDisplacementYBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementYBase, self).__init__(name=name, nodes=nodes, x=0, z=0, zz=0, axes=axes)
-        self.__name__ = 'RollerDisplacementY'
+        super(RollerBCYBase, self).__init__(name=name, nodes=nodes, x=0, z=0, zz=0, axes=axes)
+        self.__name__ = 'RollerBCY'
 
 
-class RollerDisplacementZBase(GeneralDisplacementBase):
+class RollerBCZBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in Z.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementZ object.
+        Name of the RollerBCZ object.
     nodes : str
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -270,17 +266,17 @@ class RollerDisplacementZBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, axes=axes)
-        self.__name__ = 'RollerDisplacementZ'
+        super(RollerBCZBase, self).__init__(name=name, nodes=nodes, x=0, y=0, axes=axes)
+        self.__name__ = 'RollerBCZ'
 
 
-class RollerDisplacementXYBase(GeneralDisplacementBase):
+class RollerBCXYBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in X and Y.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementXY object.
+        Name of the RollerBCXY object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -288,18 +284,18 @@ class RollerDisplacementXYBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementXYBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
+        super(RollerBCXYBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
 
-        self.__name__ = 'RollerDisplacementXY'
+        self.__name__ = 'RollerBCXY'
 
 
-class RollerDisplacementYZBase(GeneralDisplacementBase):
+class RollerBCYZBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in Y and Z.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementYZ object.
+        Name of the RollerBCYZ object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -307,17 +303,17 @@ class RollerDisplacementYZBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementYZBase, self).__init__(name=name, nodes=nodes, x=0, axes=axes)
-        self.__name__ = 'RollerDisplacementYZ'
+        super(RollerBCYZBase, self).__init__(name=name, nodes=nodes, x=0, axes=axes)
+        self.__name__ = 'RollerBCYZ'
 
 
-class RollerDisplacementXZBase(GeneralDisplacementBase):
+class RollerBCXZBase(GeneralBCBase):
     """A pinned nodal displacement boundary condition released in X and Z.
 
     Parameters
     ----------
     name : str
-        Name of the RollerDisplacementXZ object.
+        Name of the RollerBCXZ object.
     nodes : str, list
         Node set string or nodes list the displacement is applied to.
     axes : str
@@ -325,5 +321,5 @@ class RollerDisplacementXZBase(GeneralDisplacementBase):
     """
 
     def __init__(self, name, nodes, axes='global'):
-        super(RollerDisplacementXZBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
-        self.__name__ = 'RollerDisplacementXZ'
+        super(RollerBCXZBase, self).__init__(name=name, nodes=nodes, z=0, axes=axes)
+        self.__name__ = 'RollerBCXZ'

@@ -13,9 +13,9 @@ from compas.geometry import Box
 from compas_fea2.backends._base.model.elements import ShellElementBase
 from compas_fea2.backends._base.model.elements import SolidElementBase
 from compas_fea2.backends._base.model.elements import BeamElementBase
+from compas_fea2.backends._base.model.bcs import PinnedBCBase
 
 from compas_fea2.backends._base.problem.loads import PointLoadBase
-from compas_fea2.backends._base.problem.bcs import PinnedDisplacementBase
 
 
 # class Viewer():
@@ -105,7 +105,7 @@ class ModelViewer():
 
     def _add_elements(self):
         for part in self.model.parts.values():
-            for element in part.elements:
+            for element in part.elements.values():
                 pts = [Point(*part.nodes[node].xyz) for node in element.connectivity]
                 if isinstance(element, ShellElementBase):
                     if len(element.connectivity) == 4:

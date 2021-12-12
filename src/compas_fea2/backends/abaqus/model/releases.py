@@ -19,6 +19,16 @@ class BeamEndRelease(BeamEndReleaseBase):
         self.elem_end_dof = elem_end_dof
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         data = ''
         for k, v in self.elem_end_dof.items():
             for end, dofs in v.items():

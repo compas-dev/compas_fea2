@@ -60,7 +60,15 @@ class GeneralStaticStep(GeneralStaticCaseBase):
             self._modify = value
 
     def _generate_jobdata(self):
-        """generate the data for the input file.
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
         """
 
         section_data = []
@@ -138,27 +146,26 @@ class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
         # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
         self._nlgeom = 'NO' if not nlgeom else 'YES'
         self._stype = 'Static'
-        self._jobdata = ("** ----------------------------------------------------------------\n"
-                         "**\n"
-                         "** STEP: {0}\n"
-                         "**\n"
-                         "*Step, name={0}, nlgeom={1}, perturbation\n"
-                         "*{2}\n"
-                         "**\n").format(self._name, self._nlgeom, self._stype)
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
+
+        return ("** ----------------------------------------------------------------\n"
+                "**\n"
+                "** STEP: {0}\n"
+                "**\n"
+                "*Step, name={0}, nlgeom={1}, perturbation\n"
+                "*{2}\n"
+                "**\n").format(self._name, self._nlgeom, self._stype)
 
 
 class BuckleStep(StaticLinearPerturbationCaseBase):
@@ -185,8 +192,18 @@ class BuckleStep(StaticLinearPerturbationCaseBase):
 #         self.loads         = loads
 #         self.attr_list.extend(['displacements', 'loads'])
 #         self.type = 'Buckle'
+    # def _generate_jobdata(self):
+    #     """Generates the string information for the input file.
 
-#         self._jobdata = """** ----------------------------------------------------------------
+    #     Parameters
+    #     ----------
+    #     None
+
+    #     Returns
+    #     -------
+    #     input file data line (str).
+    #     """
+#         return """** ----------------------------------------------------------------
 # **
 # ** STEP: {0}
 # **
@@ -206,8 +223,17 @@ class ModalStep(ModalCaseBase):
         super(ModalStep, self).__init__(name, modes)
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
 
-        data = ("** ----------------------------------------------------------------\n"
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
+        return ("** ----------------------------------------------------------------\n"
                 "**\n"
                 "** STEP: {0}\n"
                 "**\n"
@@ -215,8 +241,6 @@ class ModalStep(ModalCaseBase):
                 "*FREQUENCY, EIGENSOLVER=LANCZOS, NORMALIZATION=DISPLACEMENT\n"
                 "{1}\n"
                 "*END STEP").format(self.name, self.modes)
-
-        return data
 
 
 class HarmoniStepBase(HarmonicCaseBase):

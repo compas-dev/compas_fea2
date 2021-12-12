@@ -19,42 +19,6 @@ from compas_fea2.backends._base.model import NodeBase
 class Node(NodeBase):
     """ Node class
 
-    Parameters
-    ----------
-    xyz : list
-        [description]
-    ex : [type], optional
-        [description], by default None
-    ey : [type], optional
-        [description], by default None
-    ez : [type], optional
-        [description], by default None
-    mass : [type], optional
-        [description], by default None
-    label : [type], optional
-        [description], by default Non
-
-    Attributes
-    ----------
-    xyz : list
-        [description]
-    ex : [type], optional
-        [description], by default None
-    ey : [type], optional
-        [description], by default None
-    ez : [type], optional
-        [description], by default None
-    mass : [type], optional
-        [description], by default None
-    label : [type], optional
-        [description], by default None
-
-    Example
-    -------
-    >>> n = Node([2,3,4])
-    >>> n.key=300
-    >>> print(n.key)
-
     Note
     ----
     The nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts
@@ -65,7 +29,7 @@ class Node(NodeBase):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)
 
     def _generate_jobdata(self):
-        '''Generates the string information for the input file.
+        """Generates the string information for the input file.
 
         Parameters
         ----------
@@ -74,18 +38,6 @@ class Node(NodeBase):
         Returns
         -------
         input file data line (str).
-        '''
+        """
         x, y, z = self.xyz
-        return ' {0},    {1:.3f},    {2:.3f},    {3:.3f}\n'.format(self.key+1, x, y, z)
-
-
-# =============================================================================
-# Debugging
-# =============================================================================
-
-if __name__ == "__main__":
-    from compas_fea2.backends.abaqus import Node
-
-    n = Node([2, 3, 4])
-    n.key = 300
-    print(n.key)
+        return f'{self.key+1:>10}, {x:>10.3f}, {y:>10.3f}, {z:>10.3f}\n'

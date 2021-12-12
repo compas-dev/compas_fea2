@@ -210,30 +210,8 @@ class Problem(ProblemBase):
 
     def _generate_jobdata(self):
         return f"""**
-** BOUNDARY
-**
-{self._generate_bcs_section()}**
 ** STEPS
 {self._generate_steps_section()}"""
-
-    def _generate_bcs_section(self):
-        """Generate the content relatitive to the boundary conditions section
-        for the input file.
-
-        Parameters
-        ----------
-        problem : obj
-            compas_fea2 Problem object.
-
-        Returns
-        -------
-        str
-            text section for the input file.
-        """
-        section_data = []
-        for bc in self.bcs.values():
-            section_data.append(bc._generate_jobdata())
-        return ''.join(section_data)
 
     def _generate_steps_section(self):
         """Generate the content relatitive to the steps section for the input

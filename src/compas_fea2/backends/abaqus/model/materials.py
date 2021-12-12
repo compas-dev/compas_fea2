@@ -43,23 +43,18 @@ class ElasticIsotropic(ElasticIsotropicBase):
     def __init__(self, name, E, v, p, unilateral=None):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         n = ''
         if self.unilateral:
             if self.unilateral == 'nc':
@@ -81,23 +76,18 @@ class Stiff(StiffBase):
 
     def __init__(self, name, E):
         super(Stiff, self).__init__(name, E)
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         return ("*Material, name={}\n"
                 "*Density\n"
                 "{},\n"
@@ -119,23 +109,18 @@ class ElasticPlastic(ElasticPlasticBase):
 
     def __init__(self, name, E, v, p, f, e):
         super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
-        self._data = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -159,23 +144,18 @@ class Steel(SteelBase):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
         super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -208,23 +188,18 @@ class Concrete(ConcreteBase):
 
     def __init__(self, name, fck, v, p, fr):
         super(Concrete, self).__init__(name, fck, v, p, fr)
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -255,23 +230,18 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
         super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -302,23 +272,18 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
         super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
-        self._jobdata = self._generate_jobdata()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        input file data line (str).
         """
-        return self._jobdata
-
-    def _generate_jobdata(self):
         data_section = []
         line = ("*Material, name={}\n"
                 "*Density\n"
@@ -377,22 +342,6 @@ class UserMaterial(MaterialBase):
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
 
-        self._jobdata = self._generate_jobdata()
-
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        return self._jobdata
-
     def get_constants(self):
         constants = []
         for k in self.__dict__:
@@ -402,20 +351,19 @@ class UserMaterial(MaterialBase):
         return constants
 
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         k = [str(i) for i in self.constants]
         return ("*Material, name={}\n"
                 "*Density\n"
                 "{},\n"
                 "*User Material, constants={}\n"
                 "{}").format(self.name, self.p, len(k), ', '.join(reversed(k)))
-
-
-### -------------------------------- DEBUG ------------------------------- ###
-
-
-if __name__ == "__main__":
-
-    material = ElasticIsotropic(name='test', E=1, v=2, p=3)
-    plastic = ElasticPlastic('plastic', 1, 2, 3, [4, 5], [6, 7])
-    umat = UserMaterial(name='my_umat', sub_path='C:/', p=10, v=30, E=20)
-    print(umat.jobata)

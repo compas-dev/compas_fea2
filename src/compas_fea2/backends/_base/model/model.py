@@ -103,13 +103,13 @@ class ModelBase(FEABase):
         self._surfaces = value
 
     @property
-    def constraits(self):
+    def constraints(self):
         """list : A list with the `Constraint` objects belonging to the Model."""
-        return self._constraits
+        return self._constraints
 
-    @constraits.setter
-    def constraits(self, value):
-        self._constraits = value
+    @constraints.setter
+    def constraints(self, value):
+        self._constraints = value
 
     @property
     def releases(self):
@@ -828,7 +828,11 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_constraint(self, constraint):
-        self.constraints.append(constraint)
+        self._constraints[constraint.name] = constraint
+
+    def add_constraints(self, constraints):
+        for constraint in constraints:
+            self.add_constraint(constraint)
 
     # =========================================================================
     #                        Interaction methods

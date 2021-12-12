@@ -11,7 +11,7 @@ from compas_fea2.backends._base.model import TieConstraintBase
 
 __all__ = [
     'Constraint',
-    'TieConstraint',
+    'NodeTieConstraint',
 ]
 
 
@@ -21,7 +21,14 @@ class Constraint(ConstraintBase):
         raise NotImplementedError
 
 
-class TieConstraint(TieConstraintBase):
-    def __init__(self, name, master, slave, tol):
-        super(TieConstraint).__init__(name, master, slave, tol)
-        raise NotImplementedError
+class NodeTieConstraint(TieConstraintBase):
+    def __init__(self, name, master, slave):
+        super(NodeTieConstraint, self).__init__(name, master, slave, tol=None)
+
+    def _generate_jobdata(self):
+
+        return ''.join([
+            f'** Constraint: {self.name}\n',
+            '*MPC\n',
+            f'TIE, {self.slave}, {self.master}\n'
+        ])

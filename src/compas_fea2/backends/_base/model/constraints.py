@@ -72,8 +72,23 @@ class TieConstraintBase(ConstraintBase):
     """
 
     def __init__(self, name, master, slave, tol):
-        super(ConstraintBase, self).__init__(self, name=name)
+        super(ConstraintBase, self).__init__(name=name)
         self.__name__ = 'TieConstraint'
         self._master = master
         self._slave = slave
         self._tol = tol
+
+    @property
+    def master(self):
+        """The master property."""
+        return self._master
+
+    @property
+    def slave(self):
+        """The slave property."""
+        return self._slave
+
+    @property
+    def tol(self):
+        """The tol property."""
+        return self._tol

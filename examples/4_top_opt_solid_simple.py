@@ -4,7 +4,7 @@ from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import SolidSection
 from compas_fea2.backends.abaqus import SolidElement
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus.problem import Problem
 from compas_fea2.backends.abaqus import PinnedDisplacement
@@ -57,9 +57,9 @@ for z in range(n-1):
 model.add_elements(elements=elements, part='part-1')
 
 # Define sets for boundary conditions and loads
-bset_pinned = Set(name='bset_pinned', selection=[x for x in range(n**2)], stype='nset')
+bset_pinned = NodesGroup(name='bset_pinned', selection=[x for x in range(n**2)], stype='nset')
 model.add_instance_set(bset_pinned, instance='part-1-1')
-lset_pload = Set(name='pload', selection=[944, 945, 964, 965], stype='nset')
+lset_pload = NodesGroup(name='pload', selection=[944, 945, 964, 965], stype='nset')
 model.add_instance_set(lset_pload, instance='part-1-1')
 
 model.summary()

@@ -7,7 +7,7 @@ from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import BoxSection
 from compas_fea2.backends.abaqus import BeamElement
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import FixedDisplacement
@@ -52,9 +52,9 @@ model.add_elements(elements=elements, part='part-1')
 model.add_element(element=BeamElement(connectivity=[29, 0], section='section_B'), part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(Set(name='fixed', selection=[0], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='roller', selection=[10], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='pload', selection=[20], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='fixed', selection=[0], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='roller', selection=[10], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='pload', selection=[20], stype='nset'), instance='part-1-1')
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####

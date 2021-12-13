@@ -4,7 +4,7 @@ from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ShellSection
 from compas_fea2.backends.abaqus import ShellElement
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import PinnedDisplacement
@@ -103,9 +103,9 @@ for j in range(dis):
                           part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(Set(name='pinned', selection=[0, dis, (dis+1)*(dis), (dis+1)**2-1],
-                           stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='pload', selection=[((dis+1)//2)*(dis+1)], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='pinned', selection=[0, dis, (dis+1)*(dis), (dis+1)**2-1],
+                                  stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='pload', selection=[((dis+1)//2)*(dis+1)], stype='nset'), instance='part-1-1')
 
 ##### ----------------------------- PROBLEM ------------------------------ #####
 folder = 'C:/temp/'

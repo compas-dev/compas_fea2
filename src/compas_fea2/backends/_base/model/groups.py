@@ -7,45 +7,57 @@ from compas_fea2.backends._base.base import FEABase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'SetBase',
-    'SurfaceBase',
-]
 
-
-class SetBase(FEABase):
+class GroupBase(FEABase):
 
     """Initialises a base Set object.
 
     Parameters
     ----------
     name : str
-        Name of the set.
+        Name of the group.
     selection : list
         A list with either the Node or Element objects belonging to the set.
-    stype : str
-        Node or Element set identifier. It can be either 'nset' or 'elset'
-    generate : bool
-        Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    # TODO generate option might not be a good idea!
-    def __init__(self, name, selection, stype, generate=False):
+    def __init__(self, name, selection):
 
         self.__name__ = 'Set'
-        self.name = name
-        self.selection = selection
-        self.generate = generate
-        self.stype = stype
-        # if self.selection[0].__name__ == 'Node':
-        #     self.stype = 'nset'
-        # else:
-        #     self.stype = 'elset'
-        self.instance = None
+        self._name = name
+        self._selection = selection
+        self._instance = None
+
+    @property
+    def name(self):
+        """The name property."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def selection(self):
+        """The selection property."""
+        return self._selection
+
+    @property
+    def instance(self):
+        """The instance property."""
+        return self._instance
 
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
+
+
+class NodesGroupBase(GroupBase):
+    def __init__(self, name, selection):
+        super(NodesGroupBase, self).__init__(name, selection)
+
+
+class ElementsGroupBase(GroupBase):
+    def __init__(self, name, selection):
+        super(ElementsGroupBase, self).__init__(name, selection)
 
 
 class SurfaceBase(FEABase):

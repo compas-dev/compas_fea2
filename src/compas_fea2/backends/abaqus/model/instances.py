@@ -20,17 +20,10 @@ class Instance(InstanceBase):
         Name of the set.
     part : obj
         The Part from which the instance is created.
-    sets : list
-        A list with the Set objects belonging to the instance.
-    data : str
-        The data block for the generation of the input file.
     """
 
-    def __init__(self, name, part, sets=[]):
-        super(Instance, self).__init__(name, part, sets)
-        for iset in sets:
-            iset.instance = self.name
-            iset._jobdata = iset._generate_jobdata()
+    def __init__(self, name, part):
+        super(Instance, self).__init__(name, part)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -43,6 +36,5 @@ class Instance(InstanceBase):
         -------
         input file data line (str).
         """
-        section_data = ['*Instance, name={}, part={}\n'.format(self.name, self.part.name)]
-        section_data.append('*End Instance\n**\n')
-        return ''.join(section_data)
+        return ''.join([f'*Instance, name={self.name}, part={self.part.name}\n',
+                        '*End Instance\n**\n'])

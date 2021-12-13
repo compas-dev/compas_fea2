@@ -4,7 +4,7 @@ from compas_fea2.backends.abaqus.model import Model
 
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ShellSection
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import FixedDisplacement
@@ -43,9 +43,9 @@ n_fixed_2 = model.get_node_from_coordinates([0, 0, -5000], 10)
 n_load = model.get_node_from_coordinates([0, 3000, 0, ], 10)
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(Set(name='fixed_1', selection=[n_fixed_1['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='fixed_2', selection=[n_fixed_2['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='fixed_1', selection=[n_fixed_1['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='fixed_2', selection=[n_fixed_2['part-1']], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
 model.summary()
 

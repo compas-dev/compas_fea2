@@ -24,18 +24,34 @@ class InstanceBase(FEABase):
         The data block for the generation of the input file.
     """
 
-    def __init__(self, name, part, sets):
+    def __init__(self, name, part):
         self.__name__ = 'Instance'
-        self.name = name
-        self.part = part
-        self.sets = sets
+        self._name = name
+        self._part = part
+        self._sets = {}
+
+    @property
+    def name(self):
+        """The name property."""
+        return self._name
+
+    @property
+    def part(self):
+        """The part property."""
+        return self._part
+
+    @property
+    def sets(self):
+        """The sets property."""
+        return self._sets
+
+    def add_group(self, group):
+        if group not in self.sets:
+            self._sets[group] = group
+
+    def add_groups(self, groups):
+        for group in groups:
+            self.add_group(group)
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.part.name)
-
-
-# =============================================================================
-#                               Debugging
-# =============================================================================
-if __name__ == "__main__":
-    pass

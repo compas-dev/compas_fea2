@@ -8,7 +8,7 @@ from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import CircularSection
 from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import ShellElement
-from compas_fea2.backends.abaqus import Set
+from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import PinnedDisplacement
@@ -53,14 +53,14 @@ model.add_elements(elements=elements, part='part-1')
 model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
 
 # Define sets for boundary conditions and loads
-bset_base = Set(name='nset_base', selection=[0, 1, 2, 3], stype='nset')
+bset_base = NodesGroup(name='nset_base', selection=[0, 1, 2, 3], stype='nset')
 model.add_instance_set(bset_base, instance='part-1-1')
-model.add_instance_set(Set(name='nset_a', selection=[0], stype='nset'), instance='part-1-1')
-model.add_instance_set(Set(name='nset_bcd', selection=[1, 2, 3], stype='nset'), instance='part-1-1')
-nset_top = Set(name='nset_top', selection=[4], stype='nset')
+model.add_instance_set(NodesGroup(name='nset_a', selection=[0], stype='nset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='nset_bcd', selection=[1, 2, 3], stype='nset'), instance='part-1-1')
+nset_top = NodesGroup(name='nset_top', selection=[4], stype='nset')
 model.add_instance_set(nset_top, instance='part-1-1')
-model.add_instance_set(Set(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
-model.add_instance_set(Set(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
+model.add_instance_set(NodesGroup(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
 # model.summary()
 
 

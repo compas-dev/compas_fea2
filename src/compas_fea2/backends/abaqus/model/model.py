@@ -87,10 +87,10 @@ class Model(ModelBase):
         section_data = ['*Assembly, name={}\n**\n'.format(self.name)]
         for instance in self.instances.values():
             section_data.append(instance._generate_jobdata())
-        for iset in self.sets.values():
-            section_data.append(iset._generate_jobdata())
-        # for surface in self.surfaces:
-        #     section_data.append(surface.jobdata)
+            for iset in instance.sets.values():
+                section_data.append(iset._generate_jobdata())
+            # for surface in self.surfaces:
+            #     section_data.append(surface.jobdata)
         for constraint in self.constraints.values():
             section_data.append(constraint._generate_jobdata())
         section_data.append('*End Assembly\n**\n')

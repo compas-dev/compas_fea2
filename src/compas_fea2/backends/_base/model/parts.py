@@ -8,6 +8,8 @@ import importlib
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.model.materials import MaterialBase
 from compas_fea2.backends._base.model.sections import SectionBase
+from compas_fea2.backends._base.model.groups import NodesGroupBase
+from compas_fea2.backends._base.model.groups import ElementsGroupBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -54,66 +56,37 @@ class PartBase(FEABase):
         """list : Sorted list (by Node key) with the `Nodes` objects belonging to the Part."""
         return self._nodes
 
-    # @nodes.setter
-    # def nodes(self, value):
-    #     self._nodes = self.add_nodes(value)  # TODO complete this also for the other setters (tricky with dictionaries)
-
     @property
     def materials(self):
         """dict : Dictionary with the `Material` objects belonging to the Part."""
         return self._materials
-
-    # @materials.setter
-    # def materials(self, value):
-    #     self._materials = value
 
     @property
     def sections(self):
         """dict : Dictionary with the `Section` objects belonging to the Part."""
         return self._sections
 
-    # @sections.setter
-    # def sections(self, value):
-    #     self._sections = value
-
     @property
     def elements(self):
         """dict : Sorted list (by `Element key`) with the `Element` objects belonging to the Part."""
         return self._elements
-
-    # @elements.setter
-    # def elements(self, value):
-    #     self._elements = value
 
     @property
     def nsets(self):
         """list : List with the `NodeSet` objects belonging to the `Part`."""
         return self._nsets
 
-    # @nsets.setter
-    # def nsets(self, value):
-    #     self._nsets = value
-
     @property
     def elsets(self):
         """list : List with the `ElementSet` objects belonging to the `Part`."""
         return self._elsets
-
-    # @elsets.setter
-    # def elsets(self, value):
-    #     self._elsets = value
 
     @property
     def releases(self):
         """The releases property."""
         return self._releases
 
-    # @releases.setter
-    # def releases(self, value):
-    #     self._releases = value
-
     def __repr__(self):
-
         return '{0}({1})'.format(self.__name__, self.name)
 
     # =========================================================================
@@ -377,44 +350,6 @@ class PartBase(FEABase):
             else:
                 raise ValueError('You must provide a Section object or the name of a previously added section')
 
-            # TODO review
-            # # add the element key to its type group
-            # if element.eltype not in self._elements_by_type.keys():
-            #     self._elements_by_type[element.eltype] = []
-            # self._elements_by_type[element.eltype].append(element.key)
-
-            # # add the element key to its section group
-            # if element.section not in self._elements_by_section.keys():
-            #     self._elements_by_section[element.section] = []
-            # self._elements_by_section[element.section].append(element.key)
-
-            # # add the element orientation to its section group
-            # if element.section not in self._orientations_by_section.keys():
-            #     self._orientations_by_section[element.section] = []
-            # if hasattr(element, 'orientation'):
-            #     if element.orientation not in self._orientations_by_section[element.section]:
-            #         self._orientations_by_section[element.section].append(element.orientation)
-            # else:
-            #     if None not in self._orientations_by_section[element.section]:
-            #         self._orientations_by_section[element.section].append(None)
-            # # else:
-            # #     raise ValueError("ELEMENT ORIENTATION NOT DEFINED")
-
-            # # # add the element key to its material group
-            # # if element.section.material not in self.elements_by_material.keys():
-            # #     self.elements_by_material[element.section.material] = []
-            # # self.elements_by_material[element.section.material].append(element.key)
-            # # add the element key to its elset group
-            # if element.elset:
-            #     #     element.elset = 'elset-{}'.format(len(self.elsets)) #element.section.name
-            #     if element.elset not in self._elements_by_elset.keys():
-
-            #         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-            #         self.add_element_set(m.Set(element.elset, [], 'elset'))
-            #         self._elements_by_elset[element.elset] = []
-            #     self._elements_by_elset[element.elset].append(element.key)
-            #     self.add_elements_to_set(element.elset, [element.key])
-
     def add_elements(self, elements, check=True):
         """Adds multiple compas_fea2 Element objects to the Part.
 
@@ -564,12 +499,19 @@ class PartBase(FEABase):
     # =========================================================================
     #                           Sets methods
     # =========================================================================
-    def add_node_set(self, nset):
-        raise NotImplementedError()
+    def add_group(self, group):
+        if isinstance(group, NodesGroupBase):
+            if group.name not in self.nsets:
+                self._nsets[group.name] = group
+        elif isinstance(group, ElementsGroupBase):
+            if group.name not in self.elsets:
+                self._elsets[group.name] = group
+        else:
+            raise ValueError('You must provide either a NodesGroup or an ElementsGroup object')
 
-    def add_element_set(self, elset):
-        if elset.name not in self._elsets:
-            self._elsets[elset.name] = elset
+    def add_groups(self, groups):
+        for group in groups:
+            self.add_group(group)
 
     def add_elements_to_set(self, set_name, element_keys):
         raise NotADirectoryError()

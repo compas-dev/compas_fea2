@@ -11,7 +11,7 @@ from .elements import *
 from .materials import *
 from .sections import *
 from .constraints import *
-from .sets import *
+from .groups import *
 from .releases import *
 from .bcs import *
 

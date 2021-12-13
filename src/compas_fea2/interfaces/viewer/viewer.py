@@ -83,14 +83,15 @@ from compas_fea2.backends._base.problem.loads import PointLoadBase
 
 class ModelViewer():
 
-    def __init__(self, model, width=800, height=500, scale_factor=.001):
+    def __init__(self, model, width, height, scale_factor):
         self.model = model
         self.width = width
         self.height = height
         self.scale_factor = scale_factor
         self.app = app.App(width=width, height=height)
-        # self._add_nodes()
+        self._add_nodes()
         self._add_elements()
+        self._add_bcs()
 
     def _scale_mesh(self, mesh):
         S = Scale.from_factors([self.scale_factor]*3)
@@ -127,6 +128,23 @@ class ModelViewer():
                 else:
                     raise print(f'{element} is not supported byt the viewer')
 
+    def _add_bcs(self):
+        for bc in self.model.bcs.values():
+            # TODO remove 'part-1'
+            pts = [Point(*self.model.parts['part-1'].nodes[node].xyz) for node in bc.nodes]
+            if isinstance(bc, PinnedBCBase):
+                cone_height = 0.4
+                cone_diameter = 0.2
+                plane = Plane([0, 0, 0], [0, 0, 1])
+                circle = Circle(plane, cone_diameter)
+                cone = Cone(circle, cone_height)
+                for pt in pts:
+                    obj = self.app.add(cone, facecolor=(1, 0, 0))
+                    obj.translation = (pt.x, pt.y, pt.z-cone_height)
+        # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
+        # obj1 = self.app.add(box, color=(1, 0, 0))
+        # obj1.translation = (0, 0, -5.2)
+
     def show(self):
         self.app.show()
 
@@ -138,7 +156,7 @@ class ProblemViewer(ModelViewer):
     def __init__(self, problem, width=800, height=500, scale_factor=.001):
         super(ProblemViewer, self).__init__(problem.model, width, height, scale_factor)
         self.problem = problem
-        self._add_bcs()
+
         self._add_loads()
 
     def _add_loads(self):  # TODO split the steps
@@ -153,22 +171,9 @@ class ProblemViewer(ModelViewer):
                                   head_portion=0.2, head_width=0.07, body_width=0.02)
                     self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
 
-    def _add_bcs(self):
-        for bc in self.problem.bcs.values():
-            # TODO remove 'part-1'
-            pts = [Point(*self.problem.model.parts['part-1'].nodes[node].xyz) for node in bc.nodes]
-            if isinstance(bc, PinnedDisplacementBase):
-                cone_height = 0.4/10
-                cone_diameter = 0.2/10
-                plane = Plane([0, 0, 0], [0, 0, 1])
-                circle = Circle(plane, cone_diameter)
-                cone = Cone(circle, cone_height)
-                for pt in pts:
-                    obj = self.app.add(cone, facecolor=(1, 0, 0))
-                    obj.translation = (pt.x, pt.y, pt.z-cone_height)
-        # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
-        # obj1 = self.app.add(box, color=(1, 0, 0))
-        # obj1.translation = (0, 0, -5.2)
+
+class ResultsViewer(ProblemViewer):
+    pass
 
 
 class BeamViewer():

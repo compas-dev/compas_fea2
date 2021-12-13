@@ -46,7 +46,7 @@ class ModelBase(FEABase):
         self._constraints = {}
         self._releases = {}
         self._interactions = {}
-        self._sets = {}
+        self._groupups = {}
         self._bcs = {}
 
     @property
@@ -115,9 +115,9 @@ class ModelBase(FEABase):
         return self._elements
 
     @property
-    def sets(self):
-        """dict : A dictionary of all the sets defined in the Model."""
-        return self._sets
+    def groups(self):
+        """dict : A dictionary of all the groups defined in the Model."""
+        return self._groupups
 
     @property
     def bcs(self):
@@ -281,8 +281,8 @@ class ModelBase(FEABase):
         >>> part = Part('mypart')
         >>> model.add_part(part=part, transformation=[M1, M2])
         """
-        if part._name in self.parts:
-            print("WARNING: Part {} already in the Model. Part not added!".format(part.name))
+        if part.name in self.parts:
+            print(f"WARNING: {part.__repr__()} already in the Model. skipped!")
         else:
             self.parts[part.name] = part
 
@@ -296,16 +296,19 @@ class ModelBase(FEABase):
             self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
 
         # Add part's properties to the model
+        self._nodes.append(part.nodes)
+        # self._elements[part._name] = part.elements
 
-        self._nodes.append(part._nodes)
-        self._elements[part._name] = part._elements
-
-        for attr in ['_materials', '_sections']:
+        for attr in ['elements', 'materials', 'sections']:
             for k, v in getattr(part, attr).items():
-                if not k in self._materials:
+                if not k in getattr(self, attr):
                     getattr(self, attr)[k] = v
                 else:
                     print('{} already in Model, skipped!'.format(v.__repr__()))
+
+    def add_parts(self, parts):
+        for part in parts:
+            self.add_part(part)
 
     def remove_part(self, part):
         """ Removes the part from the Model and all the referenced instances
@@ -731,18 +734,18 @@ class ModelBase(FEABase):
     # =========================================================================
     #                               Sets methods
     # =========================================================================
-    def add_part_node_set(self, part, nset):
-        raise NotImplementedError()
-
-    def add_instance_set(self, iset, instance):
+    # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
+    # are applied to part level sets. Since in FEA2 there is no distinction,
+    # this must be taken into account from the `add_group` method
+    def add_group(self, group, instance):
         '''Adds a Set object to the Model at the instance level.
 
         Parameters
         ----------
-        iset : obj
-            node set object.
+        group : obj
+            group object. Can be either a NodesGroup or an ElementsGroup.
         instance : str
-            Name of the instance where the set belongs to.
+            Name of the instance where the group belongs to.
 
         Returns
         -------
@@ -750,30 +753,13 @@ class ModelBase(FEABase):
         '''
         if instance not in self.instances:
             raise ValueError('ERROR: instance {} not found in the Model!'.format(instance))
-        iset.instance = instance
+        group._instance = instance
+        self.instances[instance].add_group(group)
+        self._groupups[group.name] = group
 
-        self.instances[instance].sets.append(iset)
-        self.sets[iset.name] = iset
-
-    def add_instance_sets(self, sets, instance):
-        for iset in sets:
-            self.add_instance_set(iset, instance)
-    # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
-    # are applied to part level sets. Since in FEA2 there is no distinction,
-    # this must be taken into account from the `add_set` method
-    # def add_set(self, set):
-    #     '''Adds a Set object to the Model.
-
-    #     Parameters
-    #     ----------
-    #     set : obj
-    #         node set object.
-
-    #     Returns
-    #     -------
-    #     None
-    #     '''
-    #     self.sets[set.name] = set
+    def add_groups(self, groups, instance):
+        for group in groups:
+            self.add_group(group, instance)
 
     # =========================================================================
     #                        Surfaces methods
@@ -979,13 +965,23 @@ Boundary Conditions
            '\n'.join([e for e in self.instances]),
            '\n'.join([e for e in self.materials]),
            '\n'.join([e for e in self.sections]),
-           '\n'.join([e for e in self.sets]),
+           '\n'.join([e for e in self.groups]),
            '\n'.join([e for e in self.interactions]),
            '\n'.join([e for e in self.constraints]),
            '\n'.join([e for e in self.bcs]),
            )
         print(data)
         return data
+
+    # ==============================================================================
+    # Viewer
+    # ==============================================================================
+
+    def show(self, width=800, height=500, scale_factor=.001):
+        from compas_fea2.interfaces.viewer import ModelViewer
+
+        v = ModelViewer(self, width, height, scale_factor)
+        v.show()
 
     # ==============================================================================
     # Save model file
@@ -1044,10 +1040,3 @@ Boundary Conditions
             print('***** Model loaded from: {0} *****'.format(filename))
 
         return mdl
-
-
-# =============================================================================
-#                               Debugging
-# =============================================================================
-if __name__ == "__main__":
-    pass

@@ -10,8 +10,9 @@ from .instances import Instance
 from .parts import Part
 from .nodes import Node
 from .interactions import *
-from .sets import (
-    Set,
+from .groups import (
+    NodesGroup,
+    ElementsGroup,
     Surface
 )
 from .constraints import *

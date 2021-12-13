@@ -1,8 +1,8 @@
 .. rst-class:: detail
 
-AngleSectionBase.__init__
+ModelBase.add_constraints
 ==========================================================
 
 .. currentmodule:: compas_fea2.backends._base.model
 
-.. automethod:: AngleSectionBase.__init__
+.. automethod:: ModelBase.add_constraints

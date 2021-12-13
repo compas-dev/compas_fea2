@@ -14,7 +14,6 @@ Stiff
 
     .. autosummary::
     
-        ~Stiff.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -28,6 +27,7 @@ Stiff
         ~Stiff.data
         ~Stiff.dtype
         ~Stiff.guid
+        ~Stiff.jobdata
         ~Stiff.jsondefinitions
         ~Stiff.jsonstring
         ~Stiff.jsonvalidator

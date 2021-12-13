@@ -26,14 +26,12 @@ GravityLoad
         ~GravityLoad.components
         ~GravityLoad.data
         ~GravityLoad.dtype
-        ~GravityLoad.elements
         ~GravityLoad.guid
         ~GravityLoad.jobdata
         ~GravityLoad.jsondefinitions
         ~GravityLoad.jsonstring
         ~GravityLoad.jsonvalidator
         ~GravityLoad.name
-        ~GravityLoad.nodes
 
     
     

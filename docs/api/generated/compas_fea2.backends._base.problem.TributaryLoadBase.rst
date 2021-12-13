@@ -26,14 +26,12 @@ TributaryLoadBase
         ~TributaryLoadBase.components
         ~TributaryLoadBase.data
         ~TributaryLoadBase.dtype
-        ~TributaryLoadBase.elements
         ~TributaryLoadBase.guid
         ~TributaryLoadBase.jobdata
         ~TributaryLoadBase.jsondefinitions
         ~TributaryLoadBase.jsonstring
         ~TributaryLoadBase.jsonvalidator
         ~TributaryLoadBase.name
-        ~TributaryLoadBase.nodes
 
     
     

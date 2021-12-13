@@ -14,9 +14,11 @@ ModelBase
 
     .. autosummary::
     
-        ~ModelBase.constraits
+        ~ModelBase.bcs
+        ~ModelBase.constraints
         ~ModelBase.description
         ~ModelBase.elements
+        ~ModelBase.groups
         ~ModelBase.instances
         ~ModelBase.interactions
         ~ModelBase.materials
@@ -25,7 +27,6 @@ ModelBase
         ~ModelBase.parts
         ~ModelBase.releases
         ~ModelBase.sections
-        ~ModelBase.sets
         ~ModelBase.surfaces
 
     .. rubric:: Inherited Attributes
@@ -56,18 +57,22 @@ ModelBase
 
     
         ~ModelBase.__init__
+        ~ModelBase.add_bc
+        ~ModelBase.add_bcs
         ~ModelBase.add_constraint
+        ~ModelBase.add_constraints
         ~ModelBase.add_element
         ~ModelBase.add_elements
+        ~ModelBase.add_group
+        ~ModelBase.add_groups
         ~ModelBase.add_instance
-        ~ModelBase.add_instance_set
         ~ModelBase.add_interactions
         ~ModelBase.add_material
         ~ModelBase.add_materials
         ~ModelBase.add_node
         ~ModelBase.add_nodes
         ~ModelBase.add_part
-        ~ModelBase.add_part_node_set
+        ~ModelBase.add_parts
         ~ModelBase.add_release
         ~ModelBase.add_releases
         ~ModelBase.add_section
@@ -82,6 +87,9 @@ ModelBase
         ~ModelBase.from_volmesh
         ~ModelBase.get_node_from_coordinates
         ~ModelBase.load_from_cfm
+        ~ModelBase.remove_all_bcs
+        ~ModelBase.remove_bc
+        ~ModelBase.remove_bcs
         ~ModelBase.remove_element
         ~ModelBase.remove_elements
         ~ModelBase.remove_instance
@@ -91,6 +99,7 @@ ModelBase
         ~ModelBase.save_to_cfm
         ~ModelBase.shell_from_gmesh
         ~ModelBase.shell_from_mesh
+        ~ModelBase.show
         ~ModelBase.summary
 
     .. rubric:: Inherited Methods

@@ -22,11 +22,13 @@ Model
         ~Model.DATASCHEMA
         ~Model.JSONSCHEMA
         ~Model.JSONSCHEMANAME
-        ~Model.constraits
+        ~Model.bcs
+        ~Model.constraints
         ~Model.data
         ~Model.description
         ~Model.dtype
         ~Model.elements
+        ~Model.groups
         ~Model.guid
         ~Model.instances
         ~Model.interactions
@@ -40,7 +42,6 @@ Model
         ~Model.parts
         ~Model.releases
         ~Model.sections
-        ~Model.sets
         ~Model.surfaces
 
     
@@ -63,18 +64,22 @@ Model
         :toctree:
 
     
+        ~Model.add_bc
+        ~Model.add_bcs
         ~Model.add_constraint
+        ~Model.add_constraints
         ~Model.add_element
         ~Model.add_elements
+        ~Model.add_group
+        ~Model.add_groups
         ~Model.add_instance
-        ~Model.add_instance_set
         ~Model.add_interactions
         ~Model.add_material
         ~Model.add_materials
         ~Model.add_node
         ~Model.add_nodes
         ~Model.add_part
-        ~Model.add_part_node_set
+        ~Model.add_parts
         ~Model.add_release
         ~Model.add_releases
         ~Model.add_section
@@ -93,6 +98,9 @@ Model
         ~Model.from_volmesh
         ~Model.get_node_from_coordinates
         ~Model.load_from_cfm
+        ~Model.remove_all_bcs
+        ~Model.remove_bc
+        ~Model.remove_bcs
         ~Model.remove_element
         ~Model.remove_elements
         ~Model.remove_instance
@@ -102,6 +110,7 @@ Model
         ~Model.save_to_cfm
         ~Model.shell_from_gmesh
         ~Model.shell_from_mesh
+        ~Model.show
         ~Model.summary
         ~Model.to_data
         ~Model.to_json

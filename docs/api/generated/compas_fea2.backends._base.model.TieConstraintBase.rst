@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 TieConstraintBase
 ==================================================
@@ -14,6 +14,9 @@ TieConstraintBase
 
     .. autosummary::
     
+        ~TieConstraintBase.master
+        ~TieConstraintBase.slave
+        ~TieConstraintBase.tol
 
     .. rubric:: Inherited Attributes
 

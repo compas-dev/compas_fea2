@@ -1,8 +1,8 @@
 .. rst-class:: detail
 
-AngleSectionBase.to_json
+ModelBase.remove_all_bcs
 =========================================================
 
 .. currentmodule:: compas_fea2.backends._base.model
 
-.. automethod:: AngleSectionBase.to_json
+.. automethod:: ModelBase.remove_all_bcs

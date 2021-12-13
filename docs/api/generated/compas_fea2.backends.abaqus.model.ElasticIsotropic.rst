@@ -14,7 +14,6 @@ ElasticIsotropic
 
     .. autosummary::
     
-        ~ElasticIsotropic.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -28,6 +27,7 @@ ElasticIsotropic
         ~ElasticIsotropic.data
         ~ElasticIsotropic.dtype
         ~ElasticIsotropic.guid
+        ~ElasticIsotropic.jobdata
         ~ElasticIsotropic.jsondefinitions
         ~ElasticIsotropic.jsonstring
         ~ElasticIsotropic.jsonvalidator

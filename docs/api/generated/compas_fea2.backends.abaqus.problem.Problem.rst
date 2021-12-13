@@ -22,8 +22,8 @@ Problem
         ~Problem.DATASCHEMA
         ~Problem.JSONSCHEMA
         ~Problem.JSONSCHEMANAME
-        ~Problem.bcs
         ~Problem.data
+        ~Problem.description
         ~Problem.displacements
         ~Problem.dtype
         ~Problem.field_outputs
@@ -65,8 +65,6 @@ Problem
         :toctree:
 
     
-        ~Problem.add_bc
-        ~Problem.add_bcs
         ~Problem.add_displacement
         ~Problem.add_displacements
         ~Problem.add_field_output
@@ -86,12 +84,9 @@ Problem
         ~Problem.from_json
         ~Problem.from_jsonstring
         ~Problem.load_from_cfp
-        ~Problem.remove_all_bcs
         ~Problem.remove_all_displacement
         ~Problem.remove_all_loads
         ~Problem.remove_all_output
-        ~Problem.remove_bc
-        ~Problem.remove_bcs
         ~Problem.remove_displacement
         ~Problem.remove_displacements
         ~Problem.remove_load
@@ -99,6 +94,7 @@ Problem
         ~Problem.remove_output
         ~Problem.remove_outputs
         ~Problem.save_to_cfp
+        ~Problem.show
         ~Problem.summary
         ~Problem.to_data
         ~Problem.to_json

@@ -26,14 +26,12 @@ AreaLoadBase
         ~AreaLoadBase.components
         ~AreaLoadBase.data
         ~AreaLoadBase.dtype
-        ~AreaLoadBase.elements
         ~AreaLoadBase.guid
         ~AreaLoadBase.jobdata
         ~AreaLoadBase.jsondefinitions
         ~AreaLoadBase.jsonstring
         ~AreaLoadBase.jsonvalidator
         ~AreaLoadBase.name
-        ~AreaLoadBase.nodes
 
     
     

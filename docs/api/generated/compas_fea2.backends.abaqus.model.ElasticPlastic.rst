@@ -14,7 +14,6 @@ ElasticPlastic
 
     .. autosummary::
     
-        ~ElasticPlastic.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -29,6 +28,7 @@ ElasticPlastic
         ~ElasticPlastic.data
         ~ElasticPlastic.dtype
         ~ElasticPlastic.guid
+        ~ElasticPlastic.jobdata
         ~ElasticPlastic.jsondefinitions
         ~ElasticPlastic.jsonstring
         ~ElasticPlastic.jsonvalidator

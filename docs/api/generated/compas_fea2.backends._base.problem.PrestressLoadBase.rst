@@ -26,14 +26,12 @@ PrestressLoadBase
         ~PrestressLoadBase.components
         ~PrestressLoadBase.data
         ~PrestressLoadBase.dtype
-        ~PrestressLoadBase.elements
         ~PrestressLoadBase.guid
         ~PrestressLoadBase.jobdata
         ~PrestressLoadBase.jsondefinitions
         ~PrestressLoadBase.jsonstring
         ~PrestressLoadBase.jsonvalidator
         ~PrestressLoadBase.name
-        ~PrestressLoadBase.nodes
 
     
     

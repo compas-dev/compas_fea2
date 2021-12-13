@@ -26,14 +26,12 @@ HarmonicPointLoadBase
         ~HarmonicPointLoadBase.components
         ~HarmonicPointLoadBase.data
         ~HarmonicPointLoadBase.dtype
-        ~HarmonicPointLoadBase.elements
         ~HarmonicPointLoadBase.guid
         ~HarmonicPointLoadBase.jobdata
         ~HarmonicPointLoadBase.jsondefinitions
         ~HarmonicPointLoadBase.jsonstring
         ~HarmonicPointLoadBase.jsonvalidator
         ~HarmonicPointLoadBase.name
-        ~HarmonicPointLoadBase.nodes
 
     
     

@@ -16,9 +16,7 @@ LoadBase
     
         ~LoadBase.axes
         ~LoadBase.components
-        ~LoadBase.elements
         ~LoadBase.name
-        ~LoadBase.nodes
 
     .. rubric:: Inherited Attributes
 

@@ -26,14 +26,12 @@ HarmonicPressureLoad
         ~HarmonicPressureLoad.components
         ~HarmonicPressureLoad.data
         ~HarmonicPressureLoad.dtype
-        ~HarmonicPressureLoad.elements
         ~HarmonicPressureLoad.guid
         ~HarmonicPressureLoad.jobdata
         ~HarmonicPressureLoad.jsondefinitions
         ~HarmonicPressureLoad.jsonstring
         ~HarmonicPressureLoad.jsonvalidator
         ~HarmonicPressureLoad.name
-        ~HarmonicPressureLoad.nodes
 
     
     

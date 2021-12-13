@@ -14,16 +14,6 @@ GeneralDisplacementBase
 
     .. autosummary::
     
-        ~GeneralDisplacementBase.axes
-        ~GeneralDisplacementBase.components
-        ~GeneralDisplacementBase.name
-        ~GeneralDisplacementBase.nodes
-        ~GeneralDisplacementBase.x
-        ~GeneralDisplacementBase.xx
-        ~GeneralDisplacementBase.y
-        ~GeneralDisplacementBase.yy
-        ~GeneralDisplacementBase.z
-        ~GeneralDisplacementBase.zz
 
     .. rubric:: Inherited Attributes
 
@@ -32,6 +22,8 @@ GeneralDisplacementBase
         ~GeneralDisplacementBase.DATASCHEMA
         ~GeneralDisplacementBase.JSONSCHEMA
         ~GeneralDisplacementBase.JSONSCHEMANAME
+        ~GeneralDisplacementBase.axes
+        ~GeneralDisplacementBase.components
         ~GeneralDisplacementBase.data
         ~GeneralDisplacementBase.dtype
         ~GeneralDisplacementBase.guid
@@ -39,6 +31,14 @@ GeneralDisplacementBase
         ~GeneralDisplacementBase.jsondefinitions
         ~GeneralDisplacementBase.jsonstring
         ~GeneralDisplacementBase.jsonvalidator
+        ~GeneralDisplacementBase.name
+        ~GeneralDisplacementBase.nodes
+        ~GeneralDisplacementBase.x
+        ~GeneralDisplacementBase.xx
+        ~GeneralDisplacementBase.y
+        ~GeneralDisplacementBase.yy
+        ~GeneralDisplacementBase.z
+        ~GeneralDisplacementBase.zz
 
     
     

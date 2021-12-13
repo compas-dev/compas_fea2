@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ConcreteDamagedPlasticity
 ===========================================================
@@ -14,7 +14,6 @@ ConcreteDamagedPlasticity
 
     .. autosummary::
     
-        ~ConcreteDamagedPlasticity.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -26,6 +25,7 @@ ConcreteDamagedPlasticity
         ~ConcreteDamagedPlasticity.data
         ~ConcreteDamagedPlasticity.dtype
         ~ConcreteDamagedPlasticity.guid
+        ~ConcreteDamagedPlasticity.jobdata
         ~ConcreteDamagedPlasticity.jsondefinitions
         ~ConcreteDamagedPlasticity.jsonstring
         ~ConcreteDamagedPlasticity.jsonvalidator

@@ -14,7 +14,6 @@ PointLoad
 
     .. autosummary::
     
-        ~PointLoad.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -27,8 +26,8 @@ PointLoad
         ~PointLoad.components
         ~PointLoad.data
         ~PointLoad.dtype
-        ~PointLoad.elements
         ~PointLoad.guid
+        ~PointLoad.jobdata
         ~PointLoad.jsondefinitions
         ~PointLoad.jsonstring
         ~PointLoad.jsonvalidator

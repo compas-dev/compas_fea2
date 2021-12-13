@@ -14,6 +14,7 @@ PointLoadBase
 
     .. autosummary::
     
+        ~PointLoadBase.nodes
 
     .. rubric:: Inherited Attributes
 
@@ -26,14 +27,12 @@ PointLoadBase
         ~PointLoadBase.components
         ~PointLoadBase.data
         ~PointLoadBase.dtype
-        ~PointLoadBase.elements
         ~PointLoadBase.guid
         ~PointLoadBase.jobdata
         ~PointLoadBase.jsondefinitions
         ~PointLoadBase.jsonstring
         ~PointLoadBase.jsonvalidator
         ~PointLoadBase.name
-        ~PointLoadBase.nodes
 
     
     

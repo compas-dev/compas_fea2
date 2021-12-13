@@ -26,14 +26,12 @@ AcousticDiffuseFieldLoad
         ~AcousticDiffuseFieldLoad.components
         ~AcousticDiffuseFieldLoad.data
         ~AcousticDiffuseFieldLoad.dtype
-        ~AcousticDiffuseFieldLoad.elements
         ~AcousticDiffuseFieldLoad.guid
         ~AcousticDiffuseFieldLoad.jobdata
         ~AcousticDiffuseFieldLoad.jsondefinitions
         ~AcousticDiffuseFieldLoad.jsonstring
         ~AcousticDiffuseFieldLoad.jsonvalidator
         ~AcousticDiffuseFieldLoad.name
-        ~AcousticDiffuseFieldLoad.nodes
 
     
     

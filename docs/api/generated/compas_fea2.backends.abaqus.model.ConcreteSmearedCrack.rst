@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 ConcreteSmearedCrack
 ======================================================
@@ -14,7 +14,6 @@ ConcreteSmearedCrack
 
     .. autosummary::
     
-        ~ConcreteSmearedCrack.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -26,6 +25,7 @@ ConcreteSmearedCrack
         ~ConcreteSmearedCrack.data
         ~ConcreteSmearedCrack.dtype
         ~ConcreteSmearedCrack.guid
+        ~ConcreteSmearedCrack.jobdata
         ~ConcreteSmearedCrack.jsondefinitions
         ~ConcreteSmearedCrack.jsonstring
         ~ConcreteSmearedCrack.jsonvalidator

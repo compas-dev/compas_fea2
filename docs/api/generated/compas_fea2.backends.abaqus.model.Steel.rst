@@ -14,7 +14,6 @@ Steel
 
     .. autosummary::
     
-        ~Steel.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -28,6 +27,7 @@ Steel
         ~Steel.data
         ~Steel.dtype
         ~Steel.guid
+        ~Steel.jobdata
         ~Steel.jsondefinitions
         ~Steel.jsonstring
         ~Steel.jsonvalidator

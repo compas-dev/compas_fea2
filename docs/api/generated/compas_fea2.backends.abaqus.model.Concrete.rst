@@ -1,4 +1,4 @@
-.. rst-class:: detail
+﻿.. rst-class:: detail
 
 Concrete
 ==========================================
@@ -14,7 +14,6 @@ Concrete
 
     .. autosummary::
     
-        ~Concrete.jobdata
 
     .. rubric:: Inherited Attributes
 
@@ -26,6 +25,7 @@ Concrete
         ~Concrete.data
         ~Concrete.dtype
         ~Concrete.guid
+        ~Concrete.jobdata
         ~Concrete.jsondefinitions
         ~Concrete.jsonstring
         ~Concrete.jsonvalidator

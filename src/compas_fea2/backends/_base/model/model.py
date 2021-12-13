@@ -20,7 +20,7 @@ __all__ = [
 
 
 class ModelBase(FEABase):
-    """Initialises a base Model object.
+    """Initialise the Model object.
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ class ModelBase(FEABase):
         self._constraints = {}
         self._releases = {}
         self._interactions = {}
-        self._groupups = {}
+        self._groups = {}
         self._bcs = {}
 
     @property
@@ -738,12 +738,13 @@ class ModelBase(FEABase):
     # are applied to part level sets. Since in FEA2 there is no distinction,
     # this must be taken into account from the `add_group` method
     def add_group(self, group, instance):
-        '''Adds a Set object to the Model at the instance level.
+        '''Add a Group object to the Model at the instance level. Can be either
+        a NodesGroup or an ElementsGroup.
 
         Parameters
         ----------
         group : obj
-            group object. Can be either a NodesGroup or an ElementsGroup.
+            group object.
         instance : str
             Name of the instance where the group belongs to.
 
@@ -755,9 +756,23 @@ class ModelBase(FEABase):
             raise ValueError('ERROR: instance {} not found in the Model!'.format(instance))
         group._instance = instance
         self.instances[instance].add_group(group)
-        self._groupups[group.name] = group
+        self._groups[group.name] = group
 
     def add_groups(self, groups, instance):
+        '''Add multiple Group objects to the Model at the instance level. Can be
+        a list of NodesGroup or ElementsGroup objects, also mixed.
+
+        Parameters
+        ----------
+        group : obj
+            group object.
+        instance : str
+            Name of the instance where the group belongs to.
+
+        Returns
+        -------
+        None
+        '''
         for group in groups:
             self.add_group(group, instance)
 
@@ -942,8 +957,8 @@ Sections
 --------
 {}
 
-Sets
-----
+Groups
+------
 {}
 
 Interactions

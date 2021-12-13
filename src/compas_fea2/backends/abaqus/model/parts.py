@@ -132,14 +132,9 @@ class Part(PartBase):
                         part_data.append(aux_elset._generate_jobdata())
                         part_data.append(section._generate_jobdata(aux_elset.name))
 
-        # Write user-defined nsets
-        # for nset in self.nsets:
-        #     part_data.append(nset._generate_jobdata())
-
-        # # todo : maybe remove because it can generate a duplicate with the elsets automatically generated
-        # # Write user-defined elsets
-        # for elset in self.elsets:
-        #     part_data.append(elset._generate_jobdata())
+        # Write user-defined groups
+        for group in self.groups.values():
+            part_data.append(group._generate_jobdata())
 
         # Write releases
         if self.releases:

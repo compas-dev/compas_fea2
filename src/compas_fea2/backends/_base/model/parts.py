@@ -31,15 +31,14 @@ class PartBase(FEABase):
         self.__name__ = 'Part'
         self._name = name
 
-        self._nodes = []  # self._sort(nodes)
+        self._nodes = []
         self._nodes_gkeys = []
 
         self._materials = {}
         self._sections = {}
 
-        self._elements = {}  # self._sort(elements)
-        self._nsets = {}
-        self._elsets = {}
+        self._elements = {}
+        self._groups = {}
         self._releases = {}
 
     @property
@@ -72,14 +71,9 @@ class PartBase(FEABase):
         return self._elements
 
     @property
-    def nsets(self):
-        """list : List with the `NodeSet` objects belonging to the `Part`."""
-        return self._nsets
-
-    @property
-    def elsets(self):
-        """list : List with the `ElementSet` objects belonging to the `Part`."""
-        return self._elsets
+    def groups(self):
+        """list : List with the `NodesGroup` or `ElementsGroup` objects belonging to the `Part`."""
+        return self._groups
 
     @property
     def releases(self):
@@ -500,12 +494,9 @@ class PartBase(FEABase):
     #                           Sets methods
     # =========================================================================
     def add_group(self, group):
-        if isinstance(group, NodesGroupBase):
-            if group.name not in self.nsets:
-                self._nsets[group.name] = group
-        elif isinstance(group, ElementsGroupBase):
-            if group.name not in self.elsets:
-                self._elsets[group.name] = group
+        if isinstance(group, (NodesGroupBase, ElementsGroupBase)):
+            if group.name not in self.groups:
+                self._groups[group.name] = group
         else:
             raise ValueError('You must provide either a NodesGroup or an ElementsGroup object')
 
@@ -513,18 +504,13 @@ class PartBase(FEABase):
         for group in groups:
             self.add_group(group)
 
-    def add_elements_to_set(self, set_name, element_keys):
+    def add_elements_to_group(self, group_name, element_keys):
         raise NotADirectoryError()
-        # for elset in self._elsets:
-        #     if elset.name == set_name:
-        #         for key in element_keys:
-        #             if key not in elset.selection:
-        #                 elset.selection.append(key)
 
-    def remove_element_set(self, set_name):
+    def remove_element_group(self, group_name):
         raise NotImplementedError()
 
-    def remove_element_from_set(self, set_name, element):
+    def remove_element_from_group(self, group_name, element):
         raise NotImplementedError()
 
 

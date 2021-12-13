@@ -12,9 +12,15 @@ __all__ = [
 
 
 class Model(ModelBase):
-    """Initialises the Model object. This is in many aspects equivalent to an
-    `Assembly` in Abaqus.
+    """ Abaqus Model object
+
+    Note
+    ----
+    This is in many aspects equivalent to an `Assembly` in Abaqus.
+
+
     """
+    __doc__ += ModelBase.__doc__
 
     def __init__(self, name, description=None, author=None):
         super(Model, self).__init__(name, description, author)
@@ -87,8 +93,8 @@ class Model(ModelBase):
         section_data = ['*Assembly, name={}\n**\n'.format(self.name)]
         for instance in self.instances.values():
             section_data.append(instance._generate_jobdata())
-            for iset in instance.sets.values():
-                section_data.append(iset._generate_jobdata())
+            for group in instance.groups.values():
+                section_data.append(group._generate_jobdata())
             # for surface in self.surfaces:
             #     section_data.append(surface.jobdata)
         for constraint in self.constraints.values():

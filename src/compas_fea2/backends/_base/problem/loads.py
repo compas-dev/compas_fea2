@@ -33,36 +33,17 @@ class LoadBase(FEABase):
     ----------
     name : str
         Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
     components : dict
         Load components.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    elements : str, list
-        Element set or element keys the load is applied to.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    elements : str, list
-        Element set or element keys the load is applied to.
+    axes : str, optional
+        Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, name, axes='global', components={}, nodes=[], elements=[]):
+    def __init__(self, name, components, axes='global'):
         self.__name__ = 'LoadObject'
         self._name = name
         self._axes = axes
         self._components = components
-        self._nodes = nodes
-        self._elements = elements
         for c, a in self._components.items():
             setattr(self, '_'+c, a)
         # self._x = None
@@ -71,6 +52,9 @@ class LoadBase(FEABase):
         # self._xx = None
         # self._yy = None
         # self._zz = None
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
 
     @property
     def name(self):
@@ -92,33 +76,18 @@ class LoadBase(FEABase):
 
     @property
     def components(self):
-        """dict : Load components."""
+        """dict : Load components. These differ according to each Load type"""
         return self._components
 
-    @components.setter
-    def components(self, value):
-        self._components = value
+    # @property
+    # def nodes(self):
+    #     """str, list : Node set or node keys the load is applied to."""  # TODO change
+    #     return self._nodes
 
-    @property
-    def nodes(self):
-        """str, list : Node set or node keys the load is applied to."""  # TODO change
-        return self._nodes
-
-    @nodes.setter
-    def nodes(self, value):
-        self._nodes = value
-
-    @property
-    def elements(self):
-        """str, list : Element set or element keys the load is applied to."""  # TODO change
-        return self._elements
-
-    @elements.setter
-    def elements(self, value):
-        self._elements = value
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
+    # @property
+    # def elements(self):
+    #     """str, list : Element set or element keys the load is applied to."""  # TODO change
+    #     return self._elements
 
 
 class PrestressLoadBase(LoadBase):
@@ -146,8 +115,9 @@ class PointLoadBase(LoadBase):
     ----------
     name : str
         Name of the PointLoad object.
-    nodes : str, list
-        Node set or node keys the load is applied to.
+    nodes : int or list(int), obj
+        It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
+        apllied.
     x : float
         x component of force.
     y : float
@@ -160,12 +130,20 @@ class PointLoadBase(LoadBase):
         yy component of moment.
     zz : float
         zz component of moment.
+    axes : str
+        Load applied via 'local' or 'global' axes.
     """
 
-    def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
-        LoadBase.__init__(self, name=name, components={'x': x, 'y': y,
-                                                       'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, nodes=nodes, axes='global')
+    def __init__(self, name, nodes, x, y, z, xx, yy, zz, axes):
+        LoadBase.__init__(self, name=name, components={'x': x, 'y': y, 'z': z,
+                                                       'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
         self.__name__ = 'PointLoad'
+        self._nodes = nodes
+
+    @property
+    def nodes(self):
+        """The nodes property."""
+        return self._nodes
 
 
 # TODO prevent the user from assigning to a point
@@ -176,8 +154,9 @@ class LineLoadBase(LoadBase):
     ----------
     name : str
         Name of the LineLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
+    nodes : int or list(int), obj
+        It can be either a key or a list of keys, or a ElementsGroup of the elements
+        where the load is apllied.
     x : float
         x component of force / length.
     y : float
@@ -190,12 +169,20 @@ class LineLoadBase(LoadBase):
         yy component of moment / length.
     zz : float
         zz component of moment / length.
+    axes : str, optional
+        Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='local'):
+    def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global'):
         LoadBase.__init__(self, name=name, components={'x': x, 'y': y, 'z': z,
                                                        'xx': xx, 'yy': yy, 'zz': zz}, elements=elements, axes=axes)
         self.__name__ = 'LineLoad'
+        self._elements = elements
+
+        @property
+        def elements(self):
+            """The elements property."""
+            return self._elements
 
 
 class AreaLoadBase(LoadBase):

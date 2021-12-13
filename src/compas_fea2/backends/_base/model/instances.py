@@ -28,7 +28,10 @@ class InstanceBase(FEABase):
         self.__name__ = 'Instance'
         self._name = name
         self._part = part
-        self._sets = {}
+        self._groups = {}
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.part.name)
 
     @property
     def name(self):
@@ -41,17 +44,14 @@ class InstanceBase(FEABase):
         return self._part
 
     @property
-    def sets(self):
+    def groups(self):
         """The sets property."""
-        return self._sets
+        return self._groups
 
     def add_group(self, group):
-        if group not in self.sets:
-            self._sets[group] = group
+        if group not in self.groups:
+            self._groups[group] = group
 
     def add_groups(self, groups):
         for group in groups:
             self.add_group(group)
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.part.name)

@@ -13,39 +13,68 @@ from compas_fea2.backends._base.problem import HarmonicPointLoadBase
 from compas_fea2.backends._base.problem import HarmonicPressureLoadBase
 from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
 
+from compas_fea2.backends._base.model import NodesGroupBase
+from compas_fea2.backends._base.model import ElementsGroupBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-# class PrestressLoad(PrestressLoadBase):
-#     NotImplemented
-#     # def __init__(self, name, elements, sxx):
-#     #     super(PrestressLoad, self).__init__(name, elements, sxx)
+
+class PrestressLoad(PrestressLoadBase):
+    NotImplemented
 
 
 class PointLoad(PointLoadBase):
-    # TODO: add the possibility to apply the load to a node and not just to a node set
-    def __init__(self, name, lset=None, nodes=None, x=0., y=0., z=0., xx=0., yy=0., zz=0., modify=False, follow=False):
-        super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
+    """PointLoad class for Abaqus.
 
-        if not lset and not nodes:
-            raise ValueError('You must specify either a node or a set')
-        if lset and nodes:
-            raise ValueError('You cannot specify both a node and a set')
-        if lset:
-            self.lset = lset.name  # TODO change
-            self.nodes = lset.selection
+    Parameters
+    ----------
+    name : str
+        Name of the PointLoad object.
+    nodes : int or list(int), obj
+        It can be either a key or a list of keys, or a NodesGroup of the nodes
+        where the load is apllied.
+    instance : str
+        Instance where the load is applied.
+    x : float, optional
+        x component of force, by default `0.`.
+    y : float, optional
+        y component of force, by default `0.`.
+    z : float, optional
+        z component of force, by default `0.`.
+    xx : float, optional
+        xx component of moment, by default `0.`.
+    yy : float, optional
+        yy component of moment, by default `0.`.
+    zz : float, optional
+        zz component of moment, by default `0.`.
+    axes : str, optional
+        Load applied via 'local' or 'global' axes, by default 'global'.
+    modify : bool, optional
+        if `True`
+    follow : bool, optional
+        if `True` the load follows the deformation of the element.
+    """
 
-        if modify:
-            self.op = 'NEW'
-        else:
-            self.op = 'MOD'
-        if follow:
-            self.follow = ', follower'
-        else:
-            self.follow = ''
+    def __init__(self, name, nodes, instance, x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global', modify=False, follow=False):
+        super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
+
+        self._nodes = []
+        if not isinstance(nodes, list):
+            nodes = [nodes]
+        for node in nodes:
+            if isinstance(node, NodesGroupBase):
+                self._nodes += [key+1 for key in node._selection]
+            elif isinstance(node, int):
+                self._nodes.append(node+1)
+            else:
+                raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup')
+
+        self._instance = instance
+        self._op = 'NEW' if modify else 'MOD'
+        self._follow = ', follower' if follow else ''
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -58,17 +87,10 @@ class PointLoad(PointLoadBase):
         -------
         input file data line (str).
         """
-        data_section = []
-        line = ("** Name: {} Type: Concentrated Force\n"
-                "*Cload, OP={}{}").format(self.name, self.op, self.follow)
-        data_section.append(line)
-        c = 1
-        for dof in dofs:
-            if self.components[dof]:
-                line = """{}, {}, {}""".format(
-                    self.lset, c, self.components[dof])
-                data_section.append(line)
-            c += 1
+        data_section = [f'** Name: {self.name} Type: Concentrated Force\n',
+                        f'*Cload, OP={self._op}{self._follow}']
+        for comp, dof in enumerate(dofs, 1):
+            data_section += [f'{self._instance}.{node}, {comp}, {self.components[dof]}' for node in self.nodes if self.components[dof]]
         return '\n'.join(data_section) + '\n'
 
 

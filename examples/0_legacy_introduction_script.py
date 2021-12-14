@@ -30,39 +30,35 @@ model = Model(name='structural_model')
 
 # Add a Part to the model
 model.add_part(Part(name='part-1'))
+
 # Add nodes to the part
 model.add_node(Node(xyz=[-5., -5., 0.]), part='part-1')
-for node in [[5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [0., 0., 5.]]:
-    model.add_node(Node(xyz=node), part='part-1')
+nodes = [[5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [0., 0., 5.]]
+model.add_nodes([Node(xyz=node) for node in nodes], part='part-1')
+
 # Define materials
 model.add_material(ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, p=1500))
 
 # Define sections
-model.add_section(CircularSection(name='sec_circ', material='mat_elastic', r=0.010))
-model.add_section(ShellSection(name='sec_shell', material='mat_elastic', t=0.005))
+model.add_section(CircularSection(name='sec_circ',    material='mat_elastic', r=0.010))
+model.add_section(ShellSection(name='sec_shell',   material='mat_elastic', t=0.005))
 
 # Generate elements between nodes
-elements = []
-for conn in [[0, 4], [1, 4], [2, 4], [3, 4]]:
-    elements.append((BeamElement(connectivity=conn, section='sec_circ')))
-model.add_elements(elements=elements, part='part-1')
-model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
+connectivity = [[0, 4], [1, 4], [2, 4], [3, 4]]
+model.add_elements([BeamElement(connectivity=conn, section='sec_circ') for conn in connectivity], part='part-1')
+model.add_element(ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
 
 # Define sets for boundary conditions and loads
-bset_base = NodesGroup(name='nset_base', selection=[0, 1, 2, 3], part='part-1')
-model.add_group(bset_base)
-model.add_group(NodesGroup(name='nset_a', selection=[0], part='part-1'))
-model.add_group(NodesGroup(name='nset_bcd', selection=[1, 2, 3], part='part-1'))
-nset_top = NodesGroup(name='nset_top', selection=[4], part='part-1')
-model.add_group(nset_top)
-model.add_group(NodesGroup(name='elset_beams', selection=[0, 1, 2, 3], part='part-1'))
-model.add_group(NodesGroup(name='elset_shell', selection=[4], part='part-1'))
+model.add_group(NodesGroup(name='nset_base',    selection=[0, 1, 2, 3], part='part-1'))
+model.add_group(NodesGroup(name='nset_top',     selection=[4],          part='part-1'))
+model.add_group(NodesGroup(name='nset_a',       selection=[0],          part='part-1'))
+model.add_group(NodesGroup(name='nset_bcd',     selection=[1, 2, 3],    part='part-1'))
+model.add_group(NodesGroup(name='elset_beams',  selection=[0, 1, 2, 3], part='part-1'))
+model.add_group(NodesGroup(name='elset_shell',  selection=[4],          part='part-1'))
 # model.summary()
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
-
-
 pin = PinnedBC(name='bc_pinned')
 # Assign boundary conditions to the node stes
 model.add_bc(pin, part='part-1', nodes=[0, 1, 2, 3])
@@ -74,8 +70,7 @@ step_0 = GeneralStaticStep(name='step_gravity')
 step_1 = GeneralStaticStep(name='step_pload')
 problem.add_load(PointLoad(name='load_point', x=10000, z=-10000), where=[5], part='part-1', step=step_1)
 # problem.add_load(GravityLoad(name='load_gravity'), None, None, step_0)
-# problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05),
-#                            pin], step_1)
+# problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05), pin], step_1)
 
 # Define the field outputs required
 fout = FieldOutput(name='fout')
@@ -87,8 +82,7 @@ problem.add_output(fout, step_0)
 problem.add_steps([step_0])
 
 # problem.summary()
-# v = ProblemViewer(problem)
-# v.show()
+problem.show()
 
 # Solve the problem
 problem.path = Path(TEMP).joinpath(problem.name)

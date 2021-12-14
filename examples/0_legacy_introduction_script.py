@@ -9,24 +9,20 @@ from compas_fea2.backends.abaqus import CircularSection
 from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import ShellElement
 from compas_fea2.backends.abaqus import NodesGroup
+from compas_fea2.backends.abaqus import PinnedBC
 
 from compas_fea2.backends.abaqus import Problem
-from compas_fea2.backends.abaqus import PinnedDisplacement
 from compas_fea2.backends.abaqus import ShellSection
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import GravityLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
+from compas_fea2.backends.abaqus import GeneralDisplacement
 
 from compas_fea2.backends.abaqus import Results
 
-from compas_fea2.interfaces.viewer import ModelViewer
-from compas_fea2.interfaces.viewer import ProblemViewer
-
-
 from compas_fea2 import TEMP
 from compas_fea2.backends.abaqus.model import nodes
-from compas_fea2.backends.abaqus.problem.bcs import GeneralDisplacement
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
@@ -53,49 +49,51 @@ model.add_elements(elements=elements, part='part-1')
 model.add_element(element=ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
 
 # Define sets for boundary conditions and loads
-bset_base = NodesGroup(name='nset_base', selection=[0, 1, 2, 3], stype='nset')
-model.add_instance_set(bset_base, instance='part-1-1')
-model.add_instance_set(NodesGroup(name='nset_a', selection=[0], stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='nset_bcd', selection=[1, 2, 3], stype='nset'), instance='part-1-1')
-nset_top = NodesGroup(name='nset_top', selection=[4], stype='nset')
-model.add_instance_set(nset_top, instance='part-1-1')
-model.add_instance_set(NodesGroup(name='elset_beams', selection=[0, 1, 2, 3], stype='elset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='elset_shell', selection=[4], stype='elset'), instance='part-1-1')
+bset_base = NodesGroup(name='nset_base', selection=[0, 1, 2, 3], part='part-1')
+model.add_group(bset_base)
+model.add_group(NodesGroup(name='nset_a', selection=[0], part='part-1'))
+model.add_group(NodesGroup(name='nset_bcd', selection=[1, 2, 3], part='part-1'))
+nset_top = NodesGroup(name='nset_top', selection=[4], part='part-1')
+model.add_group(nset_top)
+model.add_group(NodesGroup(name='elset_beams', selection=[0, 1, 2, 3], part='part-1'))
+model.add_group(NodesGroup(name='elset_shell', selection=[4], part='part-1'))
 # model.summary()
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
+
+pin = PinnedBC(name='bc_pinned')
+# Assign boundary conditions to the node stes
+model.add_bc(pin, part='part-1', nodes=[0, 1, 2, 3])
+
 # Create the Problem object
 problem = Problem(name='test_structure', model=model)
-
-pin = PinnedDisplacement(name='bc_pinned', bset=bset_base)
-# Assign boundary conditions to the node stes
-problem.add_bc(pin)
-
 # Assign a point load to the node set
 step_0 = GeneralStaticStep(name='step_gravity')
 step_1 = GeneralStaticStep(name='step_pload')
-problem.add_load(PointLoad(name='load_point', lset=nset_top, x=10000, z=-10000), step_0)
-problem.add_load(GravityLoad(name='load_gravity'), step_0)
-problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05),
-                           pin], step_1)
+problem.add_load(PointLoad(name='load_point', x=10000, z=-10000), where=[5], part='part-1', step=step_1)
+# problem.add_load(GravityLoad(name='load_gravity'), None, None, step_0)
+# problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05),
+#                            pin], step_1)
 
 # Define the field outputs required
 fout = FieldOutput(name='fout')
 problem.add_output(fout, step_0)
-problem.add_output(fout, step_1)
+# problem.add_output(fout, step_1)
 
 # Define the analysis step (there should be a message skipping the step, since they were already added)
-problem.add_steps([step_0, step_1])
+# problem.add_steps([step_0, step_1])
+problem.add_steps([step_0])
 
 # problem.summary()
 # v = ProblemViewer(problem)
 # v.show()
 
 # Solve the problem
-
-problem.analyse(path=Path(TEMP).joinpath(problem.name))
+problem.path = Path(TEMP).joinpath(problem.name)
+problem.write_input_file()
+# problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
 # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 # results = Results.from_problem(problem, fields=['u'])

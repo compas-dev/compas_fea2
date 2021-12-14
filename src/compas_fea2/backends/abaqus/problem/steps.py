@@ -100,24 +100,27 @@ class GeneralStaticStep(GeneralStaticCaseBase):
         return ''.join(data_section)
 
     def _generate_displacements_section(self):
-
-        data_section = [self.displacements[displacement]._generate_jobdata(*location)
-                        for displacement, location in self.applied_displacements.items()]
+        data_section = []
+        for part in self.displacements:
+            for node in self.loads[part]:
+                data_section += [displacement._generate_jobdata(f'{part}-1', [node])
+                                 for node, displacement in self.displacements[part].items()]
         return '\n'.join(data_section)
 
     def _generate_loads_section(self):
-
-        data_section = [self.loads[load]._generate_jobdata(*location)
-                        for load, location in self.applied_loads.items()]
+        data_section = []
+        for part in self.loads:
+            for node in self.loads[part]:
+                data_section += [load._generate_jobdata(f'{part}-1', [node])
+                                 for node, load in self.loads[part].items()]
         return '\n'.join(data_section)
 
     def _generate_output_section(self):
-        line = ("**\n"
-                "** OUTPUT REQUESTS\n"
-                "**\n"
-                "*Restart, write, frequency=0\n"
-                "**\n")
-        data_section.append(line)
+        data_section = ["**\n"
+                        "** OUTPUT REQUESTS\n"
+                        "**\n"
+                        "*Restart, write, frequency=0\n"
+                        "**\n"]
 
         if self._field_outputs:
             for foutput in self._field_outputs.values():

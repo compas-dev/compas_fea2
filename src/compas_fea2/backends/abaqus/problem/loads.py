@@ -54,7 +54,7 @@ class PointLoad(PointLoadBase):
     """
 
     def __init__(self, name, x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global', modify=False, follow=False):
-        super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
+        super(PointLoad, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
         self._op = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''

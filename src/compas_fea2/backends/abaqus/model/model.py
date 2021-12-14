@@ -118,7 +118,7 @@ class Model(ModelBase):
     # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
     # are applied to part level sets. Since in FEA2 there is no distinction,
     # this must be taken into account from the `add_group` method
-    def add_group(self, group, part):
+    def add_group(self, group):
         '''Add a Group object to the Model at the instance level. Can be either
         a NodesGroup or an ElementsGroup.
 
@@ -133,11 +133,11 @@ class Model(ModelBase):
         -------
         None
         '''
-        super().add_group(group, part)
+        super().add_group(group)
 
-        if f'{part}-1' not in self._instances:
+        if f'{group.part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
-        self._instances[f'{part}-1'].add_group(group)
+        self._instances[f'{group.part}-1'].add_group(group)
     # # =========================================================================
     # #                           BCs methods
     # # =========================================================================
@@ -281,8 +281,8 @@ class Model(ModelBase):
         data_section = []
         for part in self.bcs:
             for node in self.bcs[part]:
-                data_section.append(self.bcs[part][node]._generate_jobdata(f'{part}-1', [node])
-                                    for bc, location in self.bcs.items())
+                data_section += [bc._generate_jobdata(f'{part}-1', [node])
+                                 for node, bc in self.bcs[part].items()]
         return '\n'.join(data_section)
 
 

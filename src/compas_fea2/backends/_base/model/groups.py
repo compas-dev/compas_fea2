@@ -20,7 +20,7 @@ class GroupBase(FEABase):
 
     def __init__(self, name, selection):
 
-        self.__name__ = 'Set'
+        self.__name__ = 'Group'
         self._name = name
         self._selection = selection
 
@@ -43,9 +43,9 @@ class GroupBase(FEABase):
 
 
 class PartLevelGroup(GroupBase):
-    def __init__(self, name, selection):
+    def __init__(self, name, selection, part):
         super(PartLevelGroup, self).__init__(name, selection)
-        self._part = None
+        self._part = part
 
     @property
     def part(self):
@@ -54,13 +54,13 @@ class PartLevelGroup(GroupBase):
 
 
 class NodesGroupBase(PartLevelGroup):
-    def __init__(self, name, selection):
-        super(NodesGroupBase, self).__init__(name, selection)
+    def __init__(self, name, selection, part):
+        super(NodesGroupBase, self).__init__(name, selection, part)
 
 
 class ElementsGroupBase(PartLevelGroup):
     def __init__(self, name, selection, part):
-        super(ElementsGroupBase, self).__init__(name, selection)
+        super(ElementsGroupBase, self).__init__(name, selection, part)
 
 
 class PartsGroup(GroupBase):

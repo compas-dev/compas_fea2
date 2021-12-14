@@ -668,7 +668,7 @@ class ModelBase(FEABase):
         '''
         if group.part not in self.parts:
             raise ValueError(f'ERROR: part {part} not found in the Model!')
-        self.parts[part].add_group(group)
+        self.parts[group.part].add_group(group)
 
     def add_groups(self, groups):
         '''Add multiple Group objects to a part in the Model. Can be

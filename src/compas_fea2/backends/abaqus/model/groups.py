@@ -82,7 +82,7 @@ class ElementsGroup(ElementsGroupBase):
     """
 
     def __init__(self, name, selection, part, generate=False):
-        super(ElementsGroup, self).__init__(name, selection)
+        super(ElementsGroup, self).__init__(name, selection, part)
         self._generate = generate
         self._set_type = 'elset'
 

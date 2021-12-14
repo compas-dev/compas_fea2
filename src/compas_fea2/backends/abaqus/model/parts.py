@@ -121,13 +121,13 @@ class Part(PartBase):
                     selection.sort()
                     if orientation:
                         aux_elset = ElementsGroup(
-                            f'_aux_{eltype}_{section.name}_{orientation.replace(".", "")}', selection)
+                            f'_aux_{eltype}_{section.name}_{orientation.replace(".", "")}', selection, self.name)
                         self.add_group(aux_elset)
                         part_data.append(aux_elset._generate_jobdata())
                         # Write section
                         part_data.append(section._generate_jobdata(aux_elset.name, orientation.split('_')))
                     else:
-                        aux_elset = ElementsGroup(f'_aux_{eltype}_{section.name}', selection)
+                        aux_elset = ElementsGroup(f'_aux_{eltype}_{section.name}', selection, self.name)
                         self.add_group(aux_elset)
                         part_data.append(aux_elset._generate_jobdata())
                         part_data.append(section._generate_jobdata(aux_elset.name))

@@ -37,7 +37,7 @@ def _generate_jobdata(obj, instance, nodes):
     data_section = [f'** Name: {obj.name} Type: BC/Rotation\n',
                     '*Boundary, op=NEW']
     for comp, dof in enumerate(dofs, 1):
-        data_section += [f'{instance}.{node}, {comp}, {self.components[dof]}' for node in nodes if self.components[dof]]
+        data_section += [f'{instance}.{node}, {comp}, {obj.components[dof]}' for node in nodes if dof in obj.components]
     return '\n'.join(data_section) + '\n'
 
 
@@ -56,8 +56,8 @@ class FixedBC(FixedBCBase):
     def __init__(self, name, axes='global'):
         super(FixedBC, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class PinnedBC(PinnedBCBase):
@@ -65,8 +65,8 @@ class PinnedBC(PinnedBCBase):
     def __init__(self, name, axes='global'):
         super(PinnedBC, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class FixedBCXX(FixedBCXXBase):
@@ -74,8 +74,8 @@ class FixedBCXX(FixedBCXXBase):
     def __init__(sself, name, axes='global'):
         super(FixedBCXX, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class FixedBCYY(FixedBCYYBase):
@@ -83,8 +83,8 @@ class FixedBCYY(FixedBCYYBase):
     def __init__(self, name, axes='global'):
         super(FixedBCYY, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class FixedBCZZ(FixedBCZZBase):
@@ -92,8 +92,8 @@ class FixedBCZZ(FixedBCZZBase):
     def __init__(self, name, axes='global'):
         super(FixedBCZZ, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCX(RollerBCXBase):
@@ -101,8 +101,8 @@ class RollerBCX(RollerBCXBase):
     def __init__(self, name, axes='global'):
         super(RollerBCX, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCY(RollerBCYBase):
@@ -110,8 +110,8 @@ class RollerBCY(RollerBCYBase):
     def __init__(self, name, axes='global'):
         super(RollerBCY, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCZ(RollerBCZBase):
@@ -119,8 +119,8 @@ class RollerBCZ(RollerBCZBase):
     def __init__(self, name, axes='global'):
         super(RollerBCZ, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCXY(RollerBCXYBase):
@@ -128,8 +128,8 @@ class RollerBCXY(RollerBCXYBase):
     def __init__(self, name, axes='global'):
         super(RollerBCXY, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCYZ(RollerBCYZBase):
@@ -137,8 +137,8 @@ class RollerBCYZ(RollerBCYZBase):
     def __init__(self, name, axes='global'):
         super(RollerBCYZ, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class RollerBCXZ(RollerBCXZBase):
@@ -146,10 +146,5 @@ class RollerBCXZ(RollerBCXZBase):
     def __init__(self, name, axes='global'):
         super(RollerBCXZ, self).__init__(name, axes)
 
-    def _generate_jobdata(self):
-        return _generate_jobdata(self)
-
-
-if __name__ == "__main__":
-    d = RollerBCXZ(name='bc_roller', group='roller')
-    print(d._generate_jobdata())
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)

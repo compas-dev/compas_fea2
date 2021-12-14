@@ -208,7 +208,7 @@ class ProblemBase(FEABase):
     # =========================================================================
 
     # TODO differenciate by type of load
-    def add_load(self, load, where, step):
+    def add_load(self, load, where, part, step):
         """Add a load to the Problem object and optionally to a Step.
 
         Parameters
@@ -238,7 +238,7 @@ class ProblemBase(FEABase):
             raise ValueError(
                 f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
 
-        self.steps[step_name].add_load(load)
+        self.steps[step_name].add_load(load, where, part)
 
     def add_loads(self, loads, step=None):
         """Adds multiple loads to the Problem object.
@@ -329,18 +329,19 @@ class ProblemBase(FEABase):
                 step_name = step
 
             attrb_name = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_outputs'
-            if isinstance(output, FieldOutputBase) or isinstance(output, HistoryOutputBase):
-                if output._name not in getattr(self, attrb_name):
-                    getattr(self, attrb_name)[output._name] = output
-                    print(f'{output.__repr__()} added to {self.__repr__()}')
-                output_name = output._name
-            else:
-                if output not in getattr(self, attrb_name):
-                    raise ValueError("ERROR : output not found!")
-                output_name = output
+            # if isinstance(output, FieldOutputBase) or isinstance(output, HistoryOutputBase):
+            #     if output._name not in getattr(self, attrb_name):
+            #         getattr(self, attrb_name)[output._name] = output
+            #         print(f'{output.__repr__()} added to {self.__repr__()}')
+            #     output_name = output._name
+            # else:
+            #     if output not in getattr(self, attrb_name):
+            #         raise ValueError("ERROR : output not found!")
+            #     output_name = output
 
-            self._steps[step_name].add_output(getattr(self, attrb_name)[output_name])
-            print(f'{getattr(self, attrb_name)[output_name].__repr__()} added to {self._steps[step_name].__repr__()}')
+            # self.steps[step_name].add_output(getattr(self, attrb_name)[output_name])
+            self.steps[step_name].add_output(output)
+            # print(f'{getattr(self, attrb_name)[output_name].__repr__()} added to {self._steps[step_name].__repr__()}')
 
         else:
             if not isinstance(output, GeneralDisplacementBase):

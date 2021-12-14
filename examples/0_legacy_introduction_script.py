@@ -56,6 +56,7 @@ model.add_group(NodesGroup(name='nset_bcd',     selection=[1, 2, 3],    part='pa
 model.add_group(NodesGroup(name='elset_beams',  selection=[0, 1, 2, 3], part='part-1'))
 model.add_group(NodesGroup(name='elset_shell',  selection=[4],          part='part-1'))
 # model.summary()
+# model.show()
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -68,7 +69,7 @@ problem = Problem(name='test_structure', model=model)
 # Assign a point load to the node set
 step_0 = GeneralStaticStep(name='step_gravity')
 step_1 = GeneralStaticStep(name='step_pload')
-problem.add_load(PointLoad(name='load_point', x=10000, z=-10000), where=[5], part='part-1', step=step_1)
+problem.add_load(PointLoad(name='load_point', x=10000, z=-10000), where=[4], part='part-1', step=step_1)
 # problem.add_load(GravityLoad(name='load_gravity'), None, None, step_0)
 # problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05), pin], step_1)
 

@@ -158,17 +158,18 @@ class ProblemViewer(ModelViewer):
 
         self._add_loads()
 
-    def _add_loads(self):  # TODO split the steps
-        for load in self.problem.loads.values():
-            # TODO remove 'part-1'
-            pts = [Point(*self.problem.model.parts['part-1'].nodes[node].xyz) for node in load.nodes]
-            if isinstance(load, PointLoadBase):
-                for pt in pts:
-                    # TODO add moment components xx, yy, zz
-                    # TODO add scale forces
-                    arrow = Arrow(pt, [load.components['x']/10000, load.components['y']/10000, load.components['z']/10000],
-                                  head_portion=0.2, head_width=0.07, body_width=0.02)
-                    self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
+    def _add_loads(self):
+        for step in self.problem.steps.values():  # TODO split the steps
+            for part, location in step.loads.items():
+                for node, load in location.items():
+                    # print(node, load)
+                    pt = Point(*self.problem.model.parts[part].nodes[node].xyz)
+                    if isinstance(load, PointLoadBase):
+                        # TODO add moment components xx, yy, zz
+                        # TODO add scale forces
+                        arrow = Arrow(pt, [load.components['x']/10000, load.components['y']/10000, load.components['z']/10000],
+                                      head_portion=0.2, head_width=0.07, body_width=0.02)
+                        self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
 
 
 class ResultsViewer(ProblemViewer):

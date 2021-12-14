@@ -13,6 +13,8 @@ from compas_fea2.backends._base.model.parts import PartBase
 from compas_fea2.backends._base.model.materials import MaterialBase
 from compas_fea2.backends._base.model.sections import SectionBase
 from compas_fea2.backends._base.model.bcs import GeneralBCBase
+from compas_fea2.backends._base.model.groups import NodesGroupBase
+from compas_fea2.backends._base.model.groups import ElementsGroupBase
 
 __all__ = [
     'ModelBase',
@@ -36,17 +38,15 @@ class ModelBase(FEABase):
         self._name = name
         self._description = description
         self._author = author
-        self._instances = {}
         self._parts = {}
         self._nodes = []
         self._materials = {}
         self._sections = {}
         self._elements = {}
-        self._surfaces = {}
         self._constraints = {}
         self._releases = {}
         self._interactions = {}
-        self._groups = {}
+        self._surfaces = {}
         self._bcs = {}
 
     @property
@@ -63,11 +63,6 @@ class ModelBase(FEABase):
     @description.setter
     def description(self, value):
         self._description = value
-
-    @property
-    def instances(self):
-        """dict: A dictionary with the `Instance` objects belonging to the Model."""
-        return self._instances
 
     @property
     def parts(self):
@@ -115,9 +110,9 @@ class ModelBase(FEABase):
         return self._elements
 
     @property
-    def groups(self):
+    def parts_groups(self):
         """dict : A dictionary of all the groups defined in the Model."""
-        return self._groupups
+        return self._parts_groups
 
     @property
     def bcs(self):
@@ -254,20 +249,13 @@ class ModelBase(FEABase):
         if isinstance(part, PartBase) and add:
             self.add_part(part)
 
-    def add_part(self, part, transformation={}):
-        """Adds a Part to the Model and creates an Instance object from the
-        specified Part and adds it to the Assembly. If a transformation matrix
-        is specified, the instance is created in the transformed location.
+    def add_part(self, part):
+        """Adds a Part to the Model.
 
         Parameters
         ----------
         part : obj
             Part object from which the Instance is created.
-        transformation : dict
-            Dictionary containing the transformation matrices to apply to the Part
-            before creating the Instances.
-            key: (str) instance name
-            value: (matrix) transformation matrix
 
         Returns
         -------
@@ -275,29 +263,16 @@ class ModelBase(FEABase):
 
         Examples
         --------
-        In this example a part is added to the model and two instances are created
-        using two transformation matrices.
         >>> model = Assembly('mymodel')
         >>> part = Part('mypart')
-        >>> model.add_part(part=part, transformation=[M1, M2])
         """
         if part.name in self.parts:
             print(f"WARNING: {part.__repr__()} already in the Model. skipped!")
         else:
             self.parts[part.name] = part
 
-        # TODO: implement transfromation operations
-        if transformation:
-            for i in transformation.keys():
-                instance = self._instance_from_part(part, i, transformation[i])
-                self.add_instance(instance)
-        else:
-            m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-            self.add_instance(m.Instance('{}-{}'.format(part.name, 1), part))
-
         # Add part's properties to the model
-        self._nodes.append(part.nodes)
-        # self._elements[part._name] = part.elements
+        self._nodes.append(part.nodes)  # TODO check
 
         for attr in ['elements', 'materials', 'sections']:
             for k, v in getattr(part, attr).items():
@@ -325,67 +300,7 @@ class ModelBase(FEABase):
         """
 
         raise NotImplementedError()
-        # TODO remove nodes, elements and sections
-        self.parts.pop(part)
-
-        for instance in self.instances:
-            if self.instances[instance].part.name == part:
-                self.instances.pop(instance)
-
-    # =========================================================================
-    #                          Instances methods
-    # =========================================================================
-    def add_instance(self, instance):
-        """Adds a compas_fea2 Instance object to the Model. If the Part to
-        which the instance is referred to does not exist, it is automatically
-        created.
-
-        Warning
-        -------
-        Currently deprecated, because the creation of instances from the same
-        part is less useful in a scripting context (where it is easy to generate
-        already the parts in their correct locations). Maybe it will be useful in
-        the future.
-
-        Parameters
-        ----------
-        instance : obj
-            compas_fea2 Instance object.
-
-        Returns
-        -------
-        None
-        """
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-
-        if instance.name not in self.instances:
-            self.instances[instance.name] = instance
-            if instance.part.name not in self.parts:
-                self.parts[part.name] = instance.part
-        else:
-            print('Duplicate instance {} will be ignored!'.format(instance.name))
-
-    def remove_instance(self, instance):
-        """ Removes the part from the Model and all the referenced instances.
-
-        Warning
-        -------
-        Currently deprecated. See `add_instance` for more details.
-
-        Parameters
-        ----------
-        instace : str
-            Name of the Instance object to remove.
-
-        Returns
-        -------
-        None
-        """
-
-        self.instances.pop(instance)
-
-    def _instance_from_part(self, part, instance_name, transformation):
-        raise NotImplementedError()
+        # # TODO remove nodes, elements and sections
 
     # =========================================================================
     #                           Nodes methods
@@ -732,49 +647,49 @@ class ModelBase(FEABase):
             self.add_release(release, part)
 
     # =========================================================================
-    #                               Sets methods
+    #                           Groups methods
     # =========================================================================
-    # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
-    # are applied to part level sets. Since in FEA2 there is no distinction,
-    # this must be taken into account from the `add_group` method
-    def add_group(self, group, instance):
-        '''Add a Group object to the Model at the instance level. Can be either
-        a NodesGroup or an ElementsGroup.
+    def create_group(self, group_type, part, keys):
+        # TODO import module dynamically
+        raise NotImplementedError()
+
+    def add_group(self, group):
+        '''Add a Group object to a part in the Model at the instance level. Can
+        be either a NodesGroup or an ElementsGroup.
 
         Parameters
         ----------
         group : obj
             group object.
-        instance : str
-            Name of the instance where the group belongs to.
 
         Returns
         -------
         None
         '''
-        if instance not in self.instances:
-            raise ValueError('ERROR: instance {} not found in the Model!'.format(instance))
-        group._instance = instance
-        self.instances[instance].add_group(group)
-        self._groups[group.name] = group
+        if group.part not in self.parts:
+            raise ValueError(f'ERROR: part {part} not found in the Model!')
+        self.parts[part].add_group(group)
 
-    def add_groups(self, groups, instance):
-        '''Add multiple Group objects to the Model at the instance level. Can be
+    def add_groups(self, groups):
+        '''Add multiple Group objects to a part in the Model. Can be
         a list of NodesGroup or ElementsGroup objects, also mixed.
 
         Parameters
         ----------
         group : obj
             group object.
-        instance : str
-            Name of the instance where the group belongs to.
+        part : str
+            Name of the part the group belongs to.
 
         Returns
         -------
         None
         '''
         for group in groups:
-            self.add_group(group, instance)
+            self.add_group(group, part)
+
+    def remove_group(self, group, part):
+        raise NotImplementedError()
 
     # =========================================================================
     #                        Surfaces methods
@@ -805,25 +720,30 @@ class ModelBase(FEABase):
     #                           BCs methods
     # =========================================================================
 
-    def add_bc(self, bc):
+    def add_bc(self, bc, nodes, part):
         """Adds a boundary condition to the Problem object.
 
         Parameters
         ----------
         bc : obj
             `compas_fea2` BoundaryCondtion object.
+        part : str
+            part in the model where the BoundaryCondtion is applied.
 
         Returns
         -------
         None
         """
-
-        if bc._name not in self._bcs:
-            if not isinstance(bc, GeneralBCBase):
-                raise ValueError(f'{bc} not instance of a BC class')
-            self.bcs[bc._name] = bc
+        if not isinstance(bc, GeneralBCBase):
+            raise TypeError(f'{bc} not instance of a BC class')
+        if part not in self.bcs:
+            self._bcs[part] = {node: bc for node in nodes}
         else:
-            print('WARNING: {} already present in the Problem. skipped!'.format(bc.__repr__()))
+            for node in nodes:
+                if node in self.bcs[part]:
+                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[node]}")
+                else:
+                    self._bcs[part][node] = bc
 
     def add_bcs(self, bcs):
         """Adds multiple boundary conditions to the Problem object.
@@ -922,7 +842,7 @@ class ModelBase(FEABase):
     # ==============================================================================
     # Summary
     # ==============================================================================
-    # TODO continue the summary
+    # TODO continue the summary # FIXME
     def summary(self):
         """Prints a summary of the Model object.
 
@@ -945,20 +865,12 @@ Parts
     # of nodes:     {}
     # of elements:  {}
 
-Instances
----------
-{}
-
 Materials
 ---------
 {}
 
 Sections
 --------
-{}
-
-Groups
-------
 {}
 
 Interactions
@@ -977,13 +889,11 @@ Boundary Conditions
            '\n'.join([e for e in self.parts]),
            '\n'.join([str(len(e)) for e in [p.nodes for p in self.parts.values()]]),
            '\n'.join([str(len(e)) for e in [p.elements for p in self.parts.values()]]),
-           '\n'.join([e for e in self.instances]),
            '\n'.join([e for e in self.materials]),
            '\n'.join([e for e in self.sections]),
-           '\n'.join([e for e in self.groups]),
            '\n'.join([e for e in self.interactions]),
            '\n'.join([e for e in self.constraints]),
-           '\n'.join([e for e in self.bcs]),
+           '\n'.join([f'{part}: {node}' for part, node in self.bcs.items()]),
            )
         print(data)
         return data

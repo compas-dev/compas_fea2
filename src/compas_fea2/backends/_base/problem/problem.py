@@ -37,12 +37,8 @@ class ProblemBase(FEABase):
         self._descritpion = descritpion if descritpion else f'Problem for {model}'
         self._model = model
         self._path = None
-        self._loads = {}
-        self._displacements = {}
         self._steps = {}
         self._steps_order = []
-        self._field_outputs = {}
-        self._history_outputs = {}
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -76,21 +72,6 @@ class ProblemBase(FEABase):
         self._path = value
 
     @property
-    def displacements(self):
-        """dict : Dictionary containing the boundary conditions objects."""
-        return self._bcs
-
-    @property
-    def loads(self):
-        """dict : Dictionary containing the load objects."""
-        return self._loads
-
-    @property
-    def displacements(self):
-        """"dict : Dictionary containing the displacement objects."""
-        return self._displacements
-
-    @property
     def steps(self):
         """dict : dict containing the Steps objects."""
         return self._steps
@@ -99,16 +80,6 @@ class ProblemBase(FEABase):
     def steps_order(self):
         """list : List containing the Steps names in the sequence they are applied."""
         return self._steps_order
-
-    @property
-    def field_outputs(self):
-        """dict : Dictionary contanining the field output requests."""
-        return self._field_outputs
-
-    @property
-    def history_outputs(self):
-        """dict : Dictionary contanining the history output requests."""
-        return self._history_outputs
 
     # =========================================================================
     #                           Displacements methods
@@ -173,8 +144,22 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        for displacement in displacements:
-            self.add_displacement(displacement, step)
+        # check if step is valid
+        if isinstance(step, str):
+            if step not in self._steps:
+                raise ValueError(f'{step} not found in the Problem')
+            step_name = step
+            # step = self.steps[step]
+        elif isinstance(step, CaseBase):
+            if step.name not in self.steps:
+                self.add_step(step)
+                print(f'{step.__repr__()} added to the Problem')
+            step_name = step.name
+        else:
+            raise ValueError(
+                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+
+        self.steps[step_name].add_displacement(displacement)
 
     def remove_displacement(self, displacement_name, step_name):
         """Removes a boundary condition from the Problem object.
@@ -222,7 +207,8 @@ class ProblemBase(FEABase):
     #                           Loads methods
     # =========================================================================
 
-    def add_load(self, load, step=None):
+    # TODO differenciate by type of load
+    def add_load(self, load, where, step):
         """Add a load to the Problem object and optionally to a Step.
 
         Parameters
@@ -237,39 +223,22 @@ class ProblemBase(FEABase):
         None
         """
 
-        if step:
-            if isinstance(step, CaseBase):
-                if step._name not in self._steps:
-                    self.add_step(step)
-                    print(f'{step.__repr__()} added to the Problem')
-                step_name = step._name
-            elif isinstance(step, str):
-                if step not in self._steps:
-                    raise ValueError(
-                        'The step provided is either not an instance of a `compas_fea2` Step class or not found in the Problem')
-                step_name = step
-            else:
-                raise ValueError()
-
-            if isinstance(load, LoadBase):
-                if load._name not in self._loads:
-                    self._loads[load._name] = load
-                    print(f'{load.__repr__()} added to {self.__repr__()}')
-                load_name = load._name
-            else:
-                if load not in self._loads:
-                    raise ValueError("ERROR : load not found!")
-                load_name = load
-
-            self._steps[step_name].add_load(self._loads[load_name])
-            print(f'{self._loads[load_name].__repr__()} added to {self._steps[step_name].__repr__()}')
-
+        # check if step is valid
+        if isinstance(step, str):
+            if step not in self._steps:
+                raise ValueError(f'{step} not found in the Problem')
+            step_name = step
+            # step = self.steps[step]
+        elif isinstance(step, CaseBase):
+            if step.name not in self.steps:
+                self.add_step(step)
+                print(f'{step.__repr__()} added to the Problem')
+            step_name = step.name
         else:
-            if not isinstance(load, LoadBase):
-                raise ValueError('You must provide a Load object.')
-            if load._name not in self._loads:
-                self._loads[load._name] = load
-                print(f'{load.__repr__()} added to {self.__repr__()}')
+            raise ValueError(
+                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+
+        self.steps[step_name].add_load(load)
 
     def add_loads(self, loads, step=None):
         """Adds multiple loads to the Problem object.

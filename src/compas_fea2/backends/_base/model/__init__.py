@@ -4,7 +4,6 @@ from __future__ import print_function
 
 
 from .model import *
-from .instances import *
 from .parts import *
 from .nodes import *
 from .elements import *

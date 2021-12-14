@@ -6,7 +6,6 @@ import os
 
 # additional software-based classes
 from .model import Model
-from .instances import Instance
 from .parts import Part
 from .nodes import Node
 from .interactions import *
@@ -53,7 +52,6 @@ from .sections import (
     SpringSection,
 )
 from .bcs import (
-    GeneralBC,
     FixedBC,
     PinnedBC,
     FixedBCXX,

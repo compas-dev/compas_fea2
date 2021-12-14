@@ -33,11 +33,6 @@ class PointLoad(PointLoadBase):
     ----------
     name : str
         Name of the PointLoad object.
-    nodes : int or list(int), obj
-        It can be either a key or a list of keys, or a NodesGroup of the nodes
-        where the load is apllied.
-    instance : str
-        Instance where the load is applied.
     x : float, optional
         x component of force, by default `0.`.
     y : float, optional
@@ -58,25 +53,13 @@ class PointLoad(PointLoadBase):
         if `True` the load follows the deformation of the element.
     """
 
-    def __init__(self, name, nodes, instance, x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global', modify=False, follow=False):
+    def __init__(self, name, x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global', modify=False, follow=False):
         super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
-        self._nodes = []
-        if not isinstance(nodes, list):
-            nodes = [nodes]
-        for node in nodes:
-            if isinstance(node, NodesGroupBase):
-                self._nodes += [key+1 for key in node._selection]
-            elif isinstance(node, int):
-                self._nodes.append(node+1)
-            else:
-                raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup')
-
-        self._instance = instance
         self._op = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''
 
-    def _generate_jobdata(self):
+    def _generate_jobdata(self, instance, nodes):
         """Generates the string information for the input file.
 
         Parameters
@@ -90,7 +73,7 @@ class PointLoad(PointLoadBase):
         data_section = [f'** Name: {self.name} Type: Concentrated Force\n',
                         f'*Cload, OP={self._op}{self._follow}']
         for comp, dof in enumerate(dofs, 1):
-            data_section += [f'{self._instance}.{node}, {comp}, {self.components[dof]}' for node in self.nodes if self.components[dof]]
+            data_section += [f'{instance}.{node}, {comp}, {self.components[dof]}' for node in nodes if self.components[dof]]
         return '\n'.join(data_section) + '\n'
 
 
@@ -112,7 +95,6 @@ class GravityLoad(GravityLoadBase):
 
     def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
         super(GravityLoad, self).__init__(name, g, x, y, z)
-        self.lset = None
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

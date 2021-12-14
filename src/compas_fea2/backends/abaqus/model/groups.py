@@ -10,21 +10,24 @@ from compas_fea2.backends._base.model.groups import SurfaceBase
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-def _generate_jobdata(self):
+def _generate_jobdata(self, instance):
     """Generates the string information for the input file.
 
     Parameters
     ----------
-    None
+    instance: bool
+        if `True` the set is generated at the instance level, otherwise only
+        at the part level
 
     Returns
     -------
     input file data line (str).
     """
     data_section = []
-    line = f'*{self._set_type}, {self._set_type}={self.name}'
-    if self.instance:
-        line = ', instance='.join([line, self.instance])
+    name = self.name if not instance else f'{self.name}_{instance}'
+    line = f'*{self._set_type}, {self._set_type}={name}'
+    if instance:
+        line = ', instance='.join([line, f'{self.part}-1'])
     if self.generate:
         data_section.append(', '.join([line, 'generate']))
         data_section.append(f'{self.selection[0].key}, {self.selection[-1].key}, 1')
@@ -38,7 +41,6 @@ def _generate_jobdata(self):
 
 
 class NodesGroup(NodesGroupBase):
-
     """Initialises the Set object.
 
     Notes
@@ -51,8 +53,8 @@ class NodesGroup(NodesGroupBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    def __init__(self, name, selection, generate=False):
-        super(NodesGroup, self).__init__(name, selection)
+    def __init__(self, name, selection, part, generate=False):
+        super(NodesGroup, self).__init__(name, selection, part)
         self._generate = generate
         self._set_type = 'nset'
 
@@ -61,18 +63,8 @@ class NodesGroup(NodesGroupBase):
         """The generate property."""
         return self._generate
 
-    def _generate_jobdata(self):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-        """
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance=None):
+        return _generate_jobdata(self, instance)
 
 
 class ElementsGroup(ElementsGroupBase):
@@ -89,7 +81,7 @@ class ElementsGroup(ElementsGroupBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    def __init__(self, name, selection, generate=False):
+    def __init__(self, name, selection, part, generate=False):
         super(ElementsGroup, self).__init__(name, selection)
         self._generate = generate
         self._set_type = 'elset'
@@ -99,18 +91,8 @@ class ElementsGroup(ElementsGroupBase):
         """The generate property."""
         return self._generate
 
-    def _generate_jobdata(self):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-        """
-        return _generate_jobdata(self)
+    def _generate_jobdata(self, instance=None):
+        return _generate_jobdata(self, instance)
 
 
 class Surface(SurfaceBase):

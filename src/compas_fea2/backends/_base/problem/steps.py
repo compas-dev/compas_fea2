@@ -6,6 +6,7 @@ from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.problem.loads import LoadBase
 from compas_fea2.backends._base.problem.displacements import GeneralDisplacementBase
 from compas_fea2.backends._base.problem.outputs import FieldOutputBase
+from compas_fea2.backends._base.model.parts import PartBase
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
@@ -40,6 +41,10 @@ class CaseBase(FEABase):
         super(CaseBase, self).__init__(name)
         self.__name__ = 'CaseBase'
         self._name = name
+        self._loads = {}
+        self._applied_loads = {}
+        self._displacements = {}
+        self._applied_displacements = {}
         self._field_outputs = {}
         self._history_outputs = {}
 
@@ -60,18 +65,14 @@ class CaseBase(FEABase):
         """dict : dictionary containing the `compas_fea2` FieldOutput objects"""
         return self._field_outputs
 
-    @field_outputs.setter
-    def field_outputs(self, value):
-        self._field_outputs = value
-
     @property
     def history_outputs(self):
         """dict : dictionary containing the `compas_fea2` HistoryOutput objects"""
         return self._history_outputs
 
-    @history_outputs.setter
-    def history_outputs(self, value):
-        self._history_outputs = value
+    # =========================================================================
+    #                           Outputs methods
+    # =========================================================================
 
     def add_output(self, output):
         """Add an output to the Step object.
@@ -107,6 +108,100 @@ class CaseBase(FEABase):
         """
         for output in outputs:
             self.add_output(output)
+
+    # =========================================================================
+    #                           Loads methods
+    # =========================================================================
+
+    def add_load(self, load, where, part):
+        """Add a load to Step object.
+
+        Parameters
+        ----------
+        load : obj
+            `compas_fea2` Load objects
+
+        Returns
+        -------
+        None
+        """
+        # check if where is valid
+        keys = []
+        if not isinstance(where, list):
+            where = [where]
+        for i in where:
+            if isinstance(i, (NodesGroupBase, ElementsGroupBase)):
+                keys += [key+1 for key in i._selection]
+            elif isinstance(i, int):
+                keys.append(i+1)
+            else:
+                raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup/ElementsGroup')
+
+        # check if load is valid
+        if not isinstance(load, LoadBase):
+            raise ValueError(f'{load} is not a `compas_fea2` Load object')
+
+        # check if part is valid
+        if isinstance(part, PartBase):
+            part = part.name
+        elif not isinstance(part, str):
+            raise ValueError(f'{part} is not valid')
+
+        if load.name not in self.loads:
+            self.loads[load.name] = load
+
+        if load.name not in self._applied_loads:
+            self._applied_loads[load.name] = [(part, where)]
+        else:
+            self._applied_load[load.name].append((part, where))
+
+        print(f'{load.__repr__()} added to {self.__repr__()}')
+
+    def add_loads(self, loads):
+        for load in loads:
+            self.add_load(load)
+
+    def add_displacement(self, displacement, where, part):
+        """Add a displacement to Step object.
+
+        Parameters
+        ----------
+        displacement : obj
+            `compas_fea2` Displacement object.
+
+        Returns
+        -------
+        None
+        """
+        # check if where is valid
+        keys = []
+        if not isinstance(where, list):
+            where = [where]
+        for i in where:
+            if isinstance(i, (NodesGroupBase)):
+                keys += [key+1 for key in i._selection]
+            elif isinstance(i, int):
+                keys.append(i+1)
+            else:
+                raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup')
+
+        # check if load is valid
+        if not isinstance(displacement, GeneralDisplacementBase):
+            raise ValueError(f'{load} is not a `compas_fea2` GeneralDisplacement object')
+
+        # check if part is valid
+        if isinstance(part, PartBase):
+            part = part.name
+        elif not isinstance(part, str):
+            raise ValueError(f'{part} is not valid')
+
+        if displacement.name not in self.displacements:
+            self.displacements[displacement.name] = displacement
+
+        if displacement.name not in self._applied_displacements:
+            self._applied_displacements[displacement.name] = [(part, where)]
+        else:
+            self._applied_displacement[displacement.name].append((part, where))
 
 
 class StaticCaseBase(CaseBase):
@@ -145,58 +240,6 @@ class StaticCaseBase(CaseBase):
     def displacements(self):
         """list : list of `compas_fea2` Displacement objects."""
         return self._displacements
-
-    @displacements.setter
-    def displacements(self, value):
-        self._displacements = value
-
-    def add_load(self, load):
-        """Add a load to Step object.
-
-        Parameters
-        ----------
-        load : obj
-            `compas_fea2` Load objects
-
-        Returns
-        -------
-        None
-        """
-        if isinstance(load, LoadBase):
-            if load._name not in self._loads:
-                self._loads[load._name] = load
-                print(f'{load.__repr__()} added to {self.__repr__()}')
-            else:
-                print(f'{load.__repr__()} already defined within {self.__repr__()}, skipped!')
-        else:
-            ValueError('you must provide a Load object')
-
-    def add_loads(self, loads):
-        for load in loads:
-            self.add_load(load)
-
-    def add_displacement(self, displacement):
-        """Add a displacement to Step object.
-
-        Parameters
-        ----------
-        displacement : obj
-            `compas_fea2` Displacement object.
-
-        Returns
-        -------
-        None
-        """
-        if isinstance(displacement, GeneralDisplacementBase):
-            if not self._displacements:
-                self._displacements = {}
-            if displacement._name not in self._displacements:
-                self._displacements[displacement._name] = displacement
-                print(f'{displacement.__repr__()} added to {self.__repr__()}')
-            else:
-                print(f'{displacement.__repr__()} already defined within {self.__repr__()}, skipped!')
-        else:
-            ValueError('you must provide a Displacement object')
 
 
 class GeneralStaticCaseBase(StaticCaseBase):

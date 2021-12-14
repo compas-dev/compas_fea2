@@ -4,13 +4,13 @@ from __future__ import print_function
 
 from compas_fea2.backends._base.base import FEABase
 
-__all__ = [
-    'InstanceBase',
-]
 
-
-class InstanceBase(FEABase):
+class _Instance(FEABase):
     """Initialises a base Instance object.
+
+    Note
+    ----
+    This is a abaqus specific class.
 
     Parameters
     ----------
@@ -18,10 +18,6 @@ class InstanceBase(FEABase):
         Name of the set.
     part : obj
         The Part from which the instance is created.
-    sets : list
-        A list with the Set objects belonging to the instance.
-    data : str
-        The data block for the generation of the input file.
     """
 
     def __init__(self, name, part):
@@ -55,3 +51,17 @@ class InstanceBase(FEABase):
     def add_groups(self, groups):
         for group in groups:
             self.add_group(group)
+
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
+        return ''.join([f'*Instance, name={self.name}, part={self.part.name}\n',
+                        '*End Instance\n**\n'])

@@ -129,21 +129,20 @@ class ModelViewer():
                     raise print(f'{element} is not supported byt the viewer')
 
     def _add_bcs(self):
-        for bc in self.model.bcs.values():
-            # TODO remove 'part-1'
-            pts = [Point(*self.model.parts['part-1'].nodes[node].xyz) for node in bc.nodes]
-            if isinstance(bc, PinnedBCBase):
-                cone_height = 0.4
-                cone_diameter = 0.2
-                plane = Plane([0, 0, 0], [0, 0, 1])
-                circle = Circle(plane, cone_diameter)
-                cone = Cone(circle, cone_height)
-                for pt in pts:
+        for part, node_bc in self.model.bcs.items():
+            for node, bc in node_bc.items():
+                pt = Point(*self.model.parts[part].nodes[node].xyz)
+                if isinstance(bc, PinnedBCBase):
+                    cone_height = 0.4
+                    cone_diameter = 0.2
+                    plane = Plane([0, 0, 0], [0, 0, 1])
+                    circle = Circle(plane, cone_diameter)
+                    cone = Cone(circle, cone_height)
                     obj = self.app.add(cone, facecolor=(1, 0, 0))
                     obj.translation = (pt.x, pt.y, pt.z-cone_height)
-        # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
-        # obj1 = self.app.add(box, color=(1, 0, 0))
-        # obj1.translation = (0, 0, -5.2)
+            # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
+            # obj1 = self.app.add(box, color=(1, 0, 0))
+            # obj1.translation = (0, 0, -5.2)
 
     def show(self):
         self.app.show()

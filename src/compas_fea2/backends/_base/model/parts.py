@@ -491,7 +491,7 @@ class PartBase(FEABase):
             self.add_section(section)
 
     # =========================================================================
-    #                           Sets methods
+    #                           Groups methods
     # =========================================================================
     def add_group(self, group):
         if isinstance(group, (NodesGroupBase, ElementsGroupBase)):

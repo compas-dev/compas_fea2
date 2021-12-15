@@ -7,8 +7,6 @@ from compas_fea2.backends.abaqus import ShellElement
 from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
-from compas_fea2.backends.abaqus import PinnedDisplacement
-from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 from compas_fea2.backends.abaqus import Results
@@ -102,10 +100,13 @@ for j in range(dis):
                                                section='section_A'),
                           part='part-1')
 
-# Define sets for boundary conditions and loads
-model.add_instance_set(NodesGroup(name='pinned', selection=[0, dis, (dis+1)*(dis), (dis+1)**2-1],
-                                  stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='pload', selection=[((dis+1)//2)*(dis+1)], stype='nset'), instance='part-1-1')
+# # Define sets for boundary conditions and loads
+# model.add_nodes_group(name='pinned', nodes=[0, dis, (dis+1)*(dis), (dis+1)**2-1], part='part-1')
+# model.add_nodes_group(name='pload', nodes=[((dis+1)//2)*(dis+1)], part='part-1')
+
+# Assign boundary conditions
+model.add_pin_bc(name='bc_roller', part='part-1', nodes=[0, dis, (dis+1)*(dis), (dis+1)**2-1])
+
 
 ##### ----------------------------- PROBLEM ------------------------------ #####
 folder = 'C:/temp/'
@@ -114,20 +115,18 @@ name = 'principal_stresses'
 # Create the Problem object
 problem = Problem(name=name, model=model)
 
-# Assign boundary conditions to the node stes
-problem.add_bcs(bcs=[PinnedDisplacement(name='bc_roller', bset='pinned')])
+# Define the analysis step
+problem.add_step(GeneralStaticStep(name='gstep'))
 
 # Assign a point load to the node set
-problem.add_load(load=PointLoad(name='pload', lset='pload', z=-1000))
+problem.add_point_load(name='pload', step='gstep', part='part-1', nodes=[((dis+1)//2)*(dis+1)],  z=-1000)
 
-# Define the field outputs required
-problem.add_field_output(fout=FieldOutput(name='fout'))
+# # Define the field outputs required
+# problem.add_field_output(fout=FieldOutput(name='fout'))
 
-# Define the analysis step
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
-
-# Solve the problem
 problem.summary()
+problem.show()
+# Solve the problem
 problem.analyse(path=folder)
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####

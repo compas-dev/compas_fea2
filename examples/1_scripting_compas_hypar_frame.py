@@ -9,9 +9,6 @@ from compas_fea2.backends.abaqus.model import BoxSection
 from compas_fea2.backends.abaqus.model import NodesGroup
 
 from compas_fea2.backends.abaqus.problem import Problem
-from compas_fea2.backends.abaqus.problem import FixedDisplacement
-from compas_fea2.backends.abaqus.problem import RollerDisplacementXZ
-from compas_fea2.backends.abaqus.problem import PointLoad
 from compas_fea2.backends.abaqus.problem import FieldOutput
 from compas_fea2.backends.abaqus.problem import GeneralStaticStep
 from compas_fea2.backends.abaqus import Results
@@ -41,24 +38,26 @@ n_roller = model.get_node_from_coordinates([0, 0, -5000], 10)
 n_load = model.get_node_from_coordinates([0, 3000, 0, ], 10)
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(NodesGroup(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
+# model.add_instance_set(NodesGroup(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
+# model.add_instance_set(NodesGroup(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
+# model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
+
+# Assign boundary conditions to the node stes
+model.add_rollerXZ_bc(name='bc_roller', part='part-1', nodes=[n_roller['part-1']])
+model.add_fix_bc(name='bc_fix', part='part-1', nodes=[n_fixed['part-1']])
+
+# model.show()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 
 # Create the Problem object
 problem = Problem(name='hypar', model=model)
 
-# Assign boundary conditions to the node stes
-problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
-                     FixedDisplacement(name='bc_fix', bset='fixed')])
+# Define the analysis step
+problem.add_step(GeneralStaticStep(name='gstep'))
 
 # Assign a point load to the node set
-problem.add_load(load=PointLoad(name='pload', lset='pload', y=-1000))
-
-# Define the analysis step
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
+problem.add_point_load(name='pload', step='gstep', part='part-1', nodes=[n_load['part-1']], y=-1000)
 
 # Solve the problem
 problem.analyse(path=Path(TEMP).joinpath(problem.name))

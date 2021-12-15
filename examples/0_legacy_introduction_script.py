@@ -8,6 +8,7 @@ from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import CircularSection
 from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import ShellElement
+from compas_fea2.backends.abaqus import RollerBCXY
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import ShellSection
@@ -45,8 +46,12 @@ connectivity = [[0, i] for i in range(1, 5)]
 model.add_elements([BeamElement(connectivity=conn, section='sec_circ') for conn in connectivity], part='part-1')
 
 # Assign boundary conditions (3 pins and a rollerXY)
-model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[1, 2, 3])
-model.add_rollerXY_bc(name='bc_roller', part='part-1', nodes=[4])
+# approach 1: driectly from model
+model.add_bc_type(name='bc_pinned', bc_type='pin', part='part-1', nodes=[1])
+model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[2, 3])
+# approach 2: using a class
+roller = RollerBCXY(name='bc_roller')  # TODO in this case it would be better to assing nodes and part to the object...
+model.add_bc(roller, part='part-1', nodes=[4])
 
 # Review
 model.summary()

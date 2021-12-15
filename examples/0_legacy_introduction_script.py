@@ -47,15 +47,15 @@ model.add_elements([BeamElement(connectivity=conn, section='sec_circ') for conn 
 
 # Assign boundary conditions (3 pins and a rollerXY)
 # approach 1: driectly from model
-model.add_bc_type(name='bc_pinned', bc_type='pin', part='part-1', nodes=[1])
-model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[2, 3])
+model.add_bc_type(name='bc_pinned', bc_type='fix', part='part-1', nodes=[1])
+model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[2, 3, 4])
 # approach 2: using a class
-roller = RollerBCXY(name='bc_roller')  # TODO in this case it would be better to assing nodes and part to the object...
-model.add_bc(roller, part='part-1', nodes=[4])
+# roller = RollerBCXY(name='bc_roller')  # TODO in this case it would be better to assing nodes and part to the object...
+# model.add_bc(roller, part='part-1', nodes=[4])
 
 # Review
 model.summary()
-model.show()
+# model.show()
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -79,9 +79,9 @@ problem.add_output(fout, step_0)
 problem.summary()
 problem.show()
 
-# Solve the problem
-problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# # Solve the problem
+# problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-pprint(results.nodal)
+# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# results = Results.from_problem(problem, fields=['u'])
+# pprint(results.nodal)

@@ -10,10 +10,13 @@ from compas.geometry import Line
 from compas.geometry import Plane
 from compas.geometry import Box
 
+from compas_fea2.interfaces.viewer.shapes import PinBCShape
+from compas_fea2.interfaces.viewer.shapes import FixBCShape
 from compas_fea2.backends._base.model.elements import ShellElementBase
 from compas_fea2.backends._base.model.elements import SolidElementBase
 from compas_fea2.backends._base.model.elements import BeamElementBase
 from compas_fea2.backends._base.model.bcs import PinnedBCBase
+from compas_fea2.backends._base.model.bcs import FixedBCBase
 
 from compas_fea2.backends._base.problem.loads import PointLoadBase
 
@@ -133,17 +136,11 @@ class ModelViewer():
             for bc, nodes in bc_node.items():
                 pts = [Point(*self.model.parts[part].nodes[node].xyz) for node in nodes]
                 for pt in pts:
+                    xyz = [pt.x, pt.y, pt.z]
                     if isinstance(bc, PinnedBCBase):
-                        cone_height = 0.4
-                        cone_diameter = 0.2
-                        plane = Plane([0, 0, 0], [0, 0, 1])
-                        circle = Circle(plane, cone_diameter)
-                        cone = Cone(circle, cone_height)
-                        obj = self.app.add(cone, facecolor=(1, 0, 0))
-                        obj.translation = (pt.x, pt.y, pt.z-cone_height)
-            # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
-            # obj1 = self.app.add(box, color=(1, 0, 0))
-            # obj1.translation = (0, 0, -5.2)
+                        obj = self.app.add(PinBCShape(xyz).shape, facecolor=(1, 0, 0))
+                    if isinstance(bc, FixedBCBase):
+                        obj1 = self.app.add(FixBCShape(xyz).shape, color=(1, 0, 0))
 
     def show(self):
         self.app.show()

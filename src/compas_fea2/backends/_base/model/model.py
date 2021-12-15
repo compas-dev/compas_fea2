@@ -48,6 +48,7 @@ class ModelBase(FEABase):
         self._interactions = {}
         self._surfaces = {}
         self._bcs = {}
+        self._problems = {}
 
     @property
     def name(self):

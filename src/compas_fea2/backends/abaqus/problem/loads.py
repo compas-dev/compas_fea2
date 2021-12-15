@@ -59,7 +59,7 @@ class PointLoad(PointLoadBase):
         self._op = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''
 
-    def _generate_jobdata(self, instance, nodes):
+    def _generate_jobdata(self, instance, node):
         """Generates the string information for the input file.
 
         Parameters
@@ -73,7 +73,8 @@ class PointLoad(PointLoadBase):
         data_section = [f'** Name: {self.name} Type: Concentrated Force\n',
                         f'*Cload, OP={self._op}{self._follow}']
         for comp, dof in enumerate(dofs, 1):
-            data_section += [f'{instance}.{node}, {comp}, {self.components[dof]}' for node in nodes if self.components[dof]]
+            if self.components[dof]:
+                data_section += [f'{instance}.{node+1}, {comp}, {self.components[dof]}']
         return '\n'.join(data_section) + '\n'
 
 

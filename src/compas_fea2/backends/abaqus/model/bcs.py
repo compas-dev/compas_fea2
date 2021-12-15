@@ -23,7 +23,7 @@ from compas_fea2.backends._base.model import RollerBCXZBase
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-def _generate_jobdata(obj, instance, nodes):
+def _generate_jobdata(obj, instance, node):
     """Generates the string information for the input file.
 
     Parameters
@@ -37,7 +37,8 @@ def _generate_jobdata(obj, instance, nodes):
     data_section = [f'** Name: {obj.name} Type: BC/Rotation\n',
                     '*Boundary, op=NEW']
     for comp, dof in enumerate(dofs, 1):
-        data_section += [f'{instance}.{node}, {comp}, {obj.components[dof]}' for node in nodes if dof in obj.components]
+        if dof in obj.components:
+            data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
     return '\n'.join(data_section) + '\n'
 
 

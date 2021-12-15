@@ -102,17 +102,15 @@ class GeneralStaticStep(GeneralStaticCaseBase):
     def _generate_displacements_section(self):
         data_section = []
         for part in self.displacements:
-            for node in self.loads[part]:
-                data_section += [displacement._generate_jobdata(f'{part}-1', [node])
-                                 for node, displacement in self.displacements[part].items()]
+            data_section += [displacement._generate_jobdata(f'{part}-1', node)
+                             for node, displacement in self.displacements[part].items()]
         return '\n'.join(data_section)
 
     def _generate_loads_section(self):
         data_section = []
         for part in self.loads:
-            for node in self.loads[part]:
-                data_section += [load._generate_jobdata(f'{part}-1', [node])
-                                 for node, load in self.loads[part].items()]
+            data_section += [load._generate_jobdata(f'{part}-1', node)
+                             for node, load in self.loads[part].items()]
         return '\n'.join(data_section)
 
     def _generate_output_section(self):

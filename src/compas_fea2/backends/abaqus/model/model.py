@@ -280,14 +280,6 @@ class Model(ModelBase):
         # bctypes = set(map(lambda x: x.eltype, self.elements.values()))
         data_section = []
         for part in self.bcs:
-            for node in self.bcs[part]:
-                data_section += [bc._generate_jobdata(f'{part}-1', [node])
-                                 for node, bc in self.bcs[part].items()]
+            data_section += [bc._generate_jobdata(f'{part}-1', node)
+                             for node, bc in self.bcs[part].items()]
         return '\n'.join(data_section)
-
-
-# =============================================================================
-#                               Debugging
-# =============================================================================
-if __name__ == "__main__":
-    pass

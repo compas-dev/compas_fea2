@@ -138,6 +138,19 @@ class Model(ModelBase):
         if f'{group.part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
         self._instances[f'{group.part}-1'].add_group(group)
+
+    def add_nodes_group(self, name, part, nodes):
+        super().add_nodes_group(name, part, nodes)
+        if f'{part}-1' not in self._instances:
+            raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
+        self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
+
+    def add_elements_group(self, name, part, elements):
+        super().add_elements_group(name, part, elements)
+        if f'{part}-1' not in self._instances:
+            raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
+        self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
+
     # # =========================================================================
     # #                           BCs methods
     # # =========================================================================

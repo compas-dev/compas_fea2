@@ -18,11 +18,11 @@ class GroupBase(FEABase):
         A list with either the Node or Element objects belonging to the set.
     """
 
-    def __init__(self, name, selection):
+    def __init__(self, name, keys):
 
         self.__name__ = 'Group'
         self._name = name
-        self._selection = selection
+        self._keys = keys
 
     @property
     def name(self):
@@ -34,38 +34,27 @@ class GroupBase(FEABase):
         self._name = value
 
     @property
-    def selection(self):
+    def keys(self):
         """The selection property."""
-        return self._selection
+        return self._keys
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
 
 
-class PartLevelGroup(GroupBase):
-    def __init__(self, name, selection, part):
-        super(PartLevelGroup, self).__init__(name, selection)
-        self._part = part
-
-    @property
-    def part(self):
-        """The part property."""
-        return self._part
+class NodesGroupBase(GroupBase):
+    def __init__(self, name, nodes_keys):
+        super(NodesGroupBase, self).__init__(name, nodes_keys)
 
 
-class NodesGroupBase(PartLevelGroup):
-    def __init__(self, name, selection, part):
-        super(NodesGroupBase, self).__init__(name, selection, part)
-
-
-class ElementsGroupBase(PartLevelGroup):
-    def __init__(self, name, selection, part):
-        super(ElementsGroupBase, self).__init__(name, selection, part)
+class ElementsGroupBase(GroupBase):
+    def __init__(self, name, elements_keys):
+        super(ElementsGroupBase, self).__init__(name, elements_keys)
 
 
 class PartsGroup(GroupBase):
-    def __init__(self, name, selection):
-        super(PartsGroup, self).__init__(name, selection)
+    def __init__(self, name, parts_names):
+        super(PartsGroup, self).__init__(name, parts_names)
         raise NotImplementedError()
 
 

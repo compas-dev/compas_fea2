@@ -45,8 +45,8 @@ class _Instance(FEABase):
         return self._groups
 
     def add_group(self, group):
-        if group not in self.groups:
-            self._groups[group] = group
+        if group.name not in self.groups:
+            self._groups[group.name] = group
 
     def add_groups(self, groups):
         for group in groups:

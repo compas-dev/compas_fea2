@@ -649,11 +649,7 @@ class ModelBase(FEABase):
     # =========================================================================
     #                           Groups methods
     # =========================================================================
-    def create_group(self, group_type, part, keys):
-        # TODO import module dynamically
-        raise NotImplementedError()
-
-    def add_group(self, group):
+    def add_group(self, group, part=None):
         '''Add a Group object to a part in the Model at the instance level. Can
         be either a NodesGroup or an ElementsGroup.
 
@@ -666,11 +662,15 @@ class ModelBase(FEABase):
         -------
         None
         '''
-        if group.part not in self.parts:
-            raise ValueError(f'ERROR: part {part} not found in the Model!')
-        self.parts[group.part].add_group(group)
+        if not part and isinstance(group, PartsGroupBase):
+            self._check_part_in_model(part)
+            self.parts[part].add_group(group)
+        elif isinstance(group, PartsGroupBase):
+            self._groups[group.name] = group
+        else:
+            TypeError
 
-    def add_groups(self, groups):
+    def add_groups(self, groups, part=None):
         '''Add multiple Group objects to a part in the Model. Can be
         a list of NodesGroup or ElementsGroup objects, also mixed.
 
@@ -686,7 +686,21 @@ class ModelBase(FEABase):
         None
         '''
         for group in groups:
-            self.add_group(group)
+            self.add_group(group, part)
+
+    def add_nodes_group(self, name, part, nodes):
+        self._check_part_in_model(part)
+        self.parts[part].add_nodes_group(name, nodes)
+
+    def add_elements_group(self, name, part, elements):
+        self._check_part_in_model(part)
+        self.parts[part].add_elements_group(name, elements)
+
+    def add_parts_group(self, name, parts):
+        raise NotImplementedError()
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        group = m.PartsGroup(name, parts)
+        self._groups[group.name] = group
 
     def remove_group(self, group):
         raise NotImplementedError()
@@ -847,6 +861,10 @@ class ModelBase(FEABase):
     # =========================================================================
     #                          Helper methods
     # =========================================================================
+
+    def _check_part_in_model(self, part_name):
+        if part_name not in self.parts:
+            raise ValueError(f'ERROR: part {part_name} not found in the Model!')
 
     # TODO change to check through the instance
 

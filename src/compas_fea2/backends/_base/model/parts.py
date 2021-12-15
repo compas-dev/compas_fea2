@@ -504,6 +504,18 @@ class PartBase(FEABase):
         for group in groups:
             self.add_group(group)
 
+    def add_nodes_group(self, name, nodes_keys):
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        group = m.NodesGroup(name, nodes_keys)
+        self._groups[name] = group
+        # return group
+
+    def add_elements_group(self, name, elements_keys):
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        group = m.ElementsGroup(name, elements_keys)
+        self._groups[name] = group
+        # return group
+
     def add_elements_to_group(self, group_name, element_keys):
         raise NotADirectoryError()
 

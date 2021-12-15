@@ -8,8 +8,6 @@ from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import CircularSection
 from compas_fea2.backends.abaqus import BeamElement
 from compas_fea2.backends.abaqus import ShellElement
-from compas_fea2.backends.abaqus import NodesGroup
-from compas_fea2.backends.abaqus import PinnedBC
 
 from compas_fea2.backends.abaqus import Problem
 from compas_fea2.backends.abaqus import ShellSection
@@ -49,13 +47,12 @@ model.add_elements([BeamElement(connectivity=conn, section='sec_circ') for conn 
 # model.add_element(ShellElement(connectivity=[0, 1, 4], section='sec_shell'), part='part-1')
 
 # Define sets for boundary conditions and loads
-model.add_group(NodesGroup(name='nset_base',    selection=[1, 2, 3, 4], part='part-1'))
-model.add_group(NodesGroup(name='nset_top',     selection=[0],          part='part-1'))
-model.add_group(NodesGroup(name='elset_beams',  selection=[0, 1, 2, 3], part='part-1'))
+model.add_nodes_group(name='nset_base', nodes=[1, 2, 3, 4], part='part-1')
+model.add_nodes_group(name='nset_top', nodes=[0], part='part-1')
+model.add_elements_group(name='elset_beams',  elements=[0, 1, 2, 3], part='part-1')
 # Assign boundary conditions
 model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[1, 2, 3])
 model.add_rollerXY_bc(name='bc_roller', part='part-1', nodes=[4])
-# model.add_group(NodesGroup(name='elset_shell',  selection=[4],          part='part-1'))
 # model.summary()
 # model.show()
 

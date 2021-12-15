@@ -27,13 +27,14 @@ def _generate_jobdata(self, instance):
     name = self.name if not instance else f'{self.name}_{instance}'
     line = f'*{self._set_type}, {self._set_type}={name}'
     if instance:
-        line = ', instance='.join([line, f'{self.part}-1'])
+        line = ', instance='.join([line, instance])
+
     if self.generate:
         data_section.append(', '.join([line, 'generate']))
-        data_section.append(f'{self.selection[0].key}, {self.selection[-1].key}, 1')
+        data_section.append(f'{self.keys[0]}, {self.keys[-1]}, 1')
     else:
         data_section.append(line)
-        data = [str(s+1) for s in self.selection]
+        data = [str(s+1) for s in self.keys]
         chunks = [data[x:x+15] for x in range(0, len(data), 15)]  # split data for readibility
         for chunk in chunks:
             data_section.append(', '.join(chunk))
@@ -53,8 +54,9 @@ class NodesGroup(NodesGroupBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    def __init__(self, name, selection, part, generate=False):
-        super(NodesGroup, self).__init__(name, selection, part)
+    def __init__(self, name, nodes_keys, generate=False):
+        super(NodesGroup, self).__init__(name, nodes_keys)
+        self.__name__ = 'NodesGroup'
         self._generate = generate
         self._set_type = 'nset'
 
@@ -81,8 +83,9 @@ class ElementsGroup(ElementsGroupBase):
         Automatically generates a set of elements/nodes between the two keys specified.
     """
 
-    def __init__(self, name, selection, part, generate=False):
-        super(ElementsGroup, self).__init__(name, selection, part)
+    def __init__(self, name, elements_keys, generate=False):
+        super(ElementsGroup, self).__init__(name, elements_keys)
+        self.__name__ = 'ElementsGroup'
         self._generate = generate
         self._set_type = 'elset'
 
@@ -102,7 +105,7 @@ class Surface(SurfaceBase):
     ----------
     name : str
         Name of the set.
-    selection : list
+    keys : list
         A list with either the Node or Element objects belonging to the set.
     generate : bool
         Automatically generates a set of elements/nodes between the two keys specified.
@@ -127,7 +130,7 @@ class Surface(SurfaceBase):
         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
         self.write_line('** ELEMENT, SIDE')
 
-        for element, sides in element_set.selection.items():
+        for element, sides in element_set.keys.items():
             for side in sides:
                 self.write_line('{0}, {1}'.format(element + 1, side))
                 self.blank_line()

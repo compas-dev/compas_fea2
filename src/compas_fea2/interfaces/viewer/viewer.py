@@ -1,6 +1,9 @@
 import os
 from compas_view2 import app
 from compas_view2.shapes import Arrow
+from compas_view2.collections import Collection
+from compas_view2.shapes import Text
+
 from compas.datastructures import Mesh
 from compas.geometry import Scale
 from compas.geometry import Point
@@ -132,15 +135,18 @@ class ModelViewer():
                     raise print(f'{element} is not supported byt the viewer')
 
     def _add_bcs(self):
+        bcs_collection = []
         for part, bc_node in self.model.bcs.items():
             for bc, nodes in bc_node.items():
                 pts = [Point(*self.model.parts[part].nodes[node].xyz) for node in nodes]
                 for pt in pts:
                     xyz = [pt.x, pt.y, pt.z]
                     if isinstance(bc, PinnedBCBase):
-                        obj = self.app.add(PinBCShape(xyz).shape, facecolor=(1, 0, 0))
+                        bcs_collection.append(PinBCShape(xyz).shape)
                     if isinstance(bc, FixedBCBase):
-                        obj1 = self.app.add(FixBCShape(xyz).shape, color=(1, 0, 0))
+                        bcs_collection.append(FixBCShape(xyz).shape)
+
+        self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0))
 
     def show(self):
         self.app.show()
@@ -166,9 +172,11 @@ class ProblemViewer(ModelViewer):
                         # TODO add moment components xx, yy, zz
                         # TODO add scale forces
                         for pt in pts:
-                            arrow = Arrow(pt, [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')],
-                                          head_portion=0.2, head_width=0.07, body_width=0.02)
+                            comp = [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')]
+                            arrow = Arrow(pt, comp, head_portion=0.2, head_width=0.07, body_width=0.02)
                             self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
+                            t = Text(str(comp), pt, height=100)
+                            self.app.add(t, color=(1, 0, 0))
 
 
 class ResultsViewer(ProblemViewer):
@@ -223,26 +231,26 @@ class OptiViewer(ProblemViewer):
         self.app.add(mesh, show_vertices=False, hide_coplanaredges=False, facecolor=(0.7, 0.7, 0.7))
 
 
-if __name__ == '__main__':
-    from compas_fea2.backends.abaqus.model import Model
-    from compas_fea2.backends.abaqus.model import ShellSection
-    from compas_fea2.backends.abaqus.model import ElasticIsotropic
-    from compas_fea2.backends.abaqus.problem import Problem
-    from compas.datastructures import Mesh
-    from compas_fea2 import DATA
+# if __name__ == '__main__':
+#     from compas_fea2.backends.abaqus.model import Model
+#     from compas_fea2.backends.abaqus.model import ShellSection
+#     from compas_fea2.backends.abaqus.model import ElasticIsotropic
+#     from compas_fea2.backends.abaqus.problem import Problem
+#     from compas.datastructures import Mesh
+#     from compas_fea2 import DATA
 
-    # mesh = Mesh.from_obj(DATA + '/hypar.obj')
-    # S = Scale.from_factors([0.001]*3)
-    # mesh.transform(S)
-    model = Model(name='structural_model')
-    # section = ShellSection('section', 10, ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
-    # model.shell_from_mesh(mesh, section)
+#     # mesh = Mesh.from_obj(DATA + '/hypar.obj')
+#     # S = Scale.from_factors([0.001]*3)
+#     # mesh.transform(S)
+#     model = Model(name='structural_model')
+#     # section = ShellSection('section', 10, ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+#     # model.shell_from_mesh(mesh, section)
 
-    # problem = Problem('simple_load', model)
-    # v = ProblemViewer(problem)
-    # v.show()
+#     # problem = Problem('simple_load', model)
+#     # v = ProblemViewer(problem)
+#     # v.show()
 
-    problem = Problem(name='test_solid_structure_viewer', model=model)
-    problem.path = 'C:/temp'
-    v = OptiViewer(problem)
-    v.show()
+#     problem = Problem(name='test_solid_structure_viewer', model=model)
+#     problem.path = 'C:/temp'
+#     v = OptiViewer(problem)
+#     v.show()

@@ -53,22 +53,24 @@ model.add_group(NodesGroup(name='nset_base',    selection=[1, 2, 3, 4], part='pa
 model.add_group(NodesGroup(name='nset_top',     selection=[0],          part='part-1'))
 model.add_group(NodesGroup(name='elset_beams',  selection=[0, 1, 2, 3], part='part-1'))
 # Assign boundary conditions
-pin = PinnedBC(name='bc_pinned')
-model.add_bc(pin, part='part-1', nodes=[1, 2, 3, 4])
+model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[1, 2, 3])
+model.add_rollerXY_bc(name='bc_roller', part='part-1', nodes=[4])
 # model.add_group(NodesGroup(name='elset_shell',  selection=[4],          part='part-1'))
 # model.summary()
 # model.show()
 
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
-
 # Create the Problem object
 problem = Problem(name='test_structure', model=model)
 # Assign a point load to the node set
 # step_0 = GeneralStaticStep(name='step_gravity')
-step_0 = GeneralStaticStep(name='step_pload')
-problem.add_load(PointLoad(name='load_point', x=10000, z=-10000), where=[0], part='part-1', step=step_0)
-# problem.add_load(GravityLoad(name='load_gravity'), None, None, step_0)
+step_0 = GeneralStaticStep(name='step_pload_0')
+step_0.add_gravity_load()
+problem.add_step(step_0)
+
+problem.add_step(GeneralStaticStep(name='step_pload_1'))
+problem.add_point_load(name='load_point', x=10000, z=-10000, nodes=[0], part='part-1', step='step_pload_1')
 # problem.add_displacements([GeneralDisplacement('disp_pinned', 'nset_a', x=0, y=0, z=-0.05), pin], step_1)
 
 # Define the field outputs required
@@ -78,10 +80,9 @@ problem.add_output(fout, step_0)
 
 # Define the analysis step (there should be a message skipping the step, since they were already added)
 # problem.add_steps([step_0, step_1])
-problem.add_steps([step_0])
 
 # problem.summary()
-problem.show()
+# problem.show()
 
 # Solve the problem
 # problem.path = Path(TEMP).joinpath(problem.name)

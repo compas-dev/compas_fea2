@@ -206,54 +206,35 @@ class ProblemBase(FEABase):
     # =========================================================================
     #                           Loads methods
     # =========================================================================
-
     # TODO differenciate by type of load
-    def add_load(self, load, where, part, step):
-        """Add a load to the Problem object and optionally to a Step.
+    def add_point_load(self, name, step, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        self._check_step_in_problem(step)
+        self.steps[step].add_point_load(name, part, nodes, x, y, z, xx, yy, zz, axes)
 
-        Parameters
-        ----------
-        load : obj, str
-            `compas_fea2` Load object or name of the object.
-        step : obj or str, optional
-            `compas_fea2` Step object or name of the object, by default None.
+    def add_gravity_load(self, name, step, g=9.81, x=0., y=0., z=-1.):
+        self._check_step_in_problem(step)
+        self.steps[step].add_gravity_load(name, g, x, y, z)
 
-        Returns
-        -------
-        None
-        """
+    def add_prestress_load(self):
+        raise NotImplemented
 
-        # check if step is valid
-        if isinstance(step, str):
-            if step not in self._steps:
-                raise ValueError(f'{step} not found in the Problem')
-            step_name = step
-            # step = self.steps[step]
-        elif isinstance(step, CaseBase):
-            if step.name not in self.steps:
-                self.add_step(step)
-                print(f'{step.__repr__()} added to the Problem')
-            step_name = step.name
-        else:
-            raise ValueError(
-                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+    def add_line_load(self):
+        raise NotImplemented
 
-        self.steps[step_name].add_load(load, where, part)
+    def add_area_load(self):
+        raise NotImplemented
 
-    def add_loads(self, loads, step=None):
-        """Adds multiple loads to the Problem object.
+    def add_tributary_load(self):
+        raise NotImplemented
 
-        Parameters
-        ----------
-        loads : list
-            List of `compas_fea2` Load objects.
+    def add_harmonic_point_load(self):
+        raise NotImplemented
 
-        Returns
-        -------
-        None
-        """
-        for load in loads:
-            self.add_load(load, step)
+    def add_harmonic_preassure_load(self):
+        raise NotImplemented
+
+    def add_acoustic_diffuse_field_load(self):
+        raise NotImplemented
 
     def remove_load(self, load_name, step_name):
         """Removes a Load from the Problem object.
@@ -412,6 +393,10 @@ class ProblemBase(FEABase):
     # =========================================================================
     #                           Step methods
     # =========================================================================
+    def _check_step_in_problem(self, step):
+        if step not in self.steps:
+            raise ValueError(
+                f'{step} is not defined in {self.__repr__()}')
 
     def add_step(self, step, append=True):
         """Adds a Step to the Problem object.
@@ -429,46 +414,44 @@ class ProblemBase(FEABase):
         """
         if isinstance(step, CaseBase):
             if step._name in self._steps:
-                print('WARNING: {} already defined in the Problem. skipped!'.format(step.__repr__()))
+                print(f'WARNING: {step.__repr__()} already defined in the Problem. skipped!')
             else:
                 self._steps[step._name] = step
 
-                if step._displacements:
-                    for displacement in step._displacements.values():
-                        if isinstance(displacement, GeneralDisplacementBase):
-                            if displacement._name not in self._displacements:
-                                self._displacements[displacement._name] = displacement
-                        else:
-                            raise ValueError(f'{displacement}')
+                # for displacement in step._displacements.values():
+                #     if displacement._name not in self._displacements:
+                #         self._displacements[displacement._name] = displacement
+                #     else:
+                #         raise ValueError(f'{displacement}')
 
-                if step._loads:
-                    for load in step._loads.values():
-                        if isinstance(load, LoadBase):
-                            if load._name not in self._loads:
-                                self._loads[load._name] = load
-                        else:
-                            raise ValueError(f'{load}')
+                # if step._loads:
+                #     for load in step._loads.values():
+                #         if isinstance(load, LoadBase):
+                #             if load._name not in self._loads:
+                #                 self._loads[load._name] = load
+                #         else:
+                #             raise ValueError(f'{load}')
 
-                if step._field_outputs:
-                    for field_output in step._field_outputs.values():
-                        if isinstance(field_output, FieldOutputBase):
-                            if field_output._name not in self._field_outputs:
-                                self._field_outputs[field_output._name] = field_output
-                        else:
-                            raise ValueError(f'{field_output}')
+                # if step._field_outputs:
+                #     for field_output in step._field_outputs.values():
+                #         if isinstance(field_output, FieldOutputBase):
+                #             if field_output._name not in self._field_outputs:
+                #                 self._field_outputs[field_output._name] = field_output
+                #         else:
+                #             raise ValueError(f'{field_output}')
 
-                if step._history_outputs:
-                    for history_output in step._history_outputs.values():
-                        if isinstance(history_output, HistoryOutputBase):
-                            if history_output._name not in self._history_outputs:
-                                self._history_outputs[history_output._name] = history_output
-                        else:
-                            raise ValueError(f'{history_output}')
+                # if step._history_outputs:
+                #     for history_output in step._history_outputs.values():
+                #         if isinstance(history_output, HistoryOutputBase):
+                #             if history_output._name not in self._history_outputs:
+                #                 self._history_outputs[history_output._name] = history_output
+                #         else:
+                #             raise ValueError(f'{history_output}')
 
                 if append:
                     self._steps_order.append(step._name)
         else:
-            raise ValueError('You must provide a Step/Case object')
+            raise TypeError('You must provide a Step/Case object')
 
     def add_steps(self, steps):
         """Adds multiple steps to the Problem object.

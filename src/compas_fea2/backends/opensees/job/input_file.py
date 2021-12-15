@@ -293,7 +293,3 @@ remove recorders
                 section_data.append(step._generate_jobdata(problem))
 
         return ''.join(section_data)
-
-
-if __name__ == "__main__":
-    pass

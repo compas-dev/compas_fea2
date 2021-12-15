@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import importlib
+
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.problem.loads import LoadBase
 from compas_fea2.backends._base.problem.displacements import GeneralDisplacementBase
@@ -43,6 +45,7 @@ class CaseBase(FEABase):
         super(CaseBase, self).__init__(name)
         self.__name__ = 'CaseBase'
         self._name = name
+        self._gravity = None
         self._loads = {}
         self._applied_loads = {}
         self._displacements = {}
@@ -61,6 +64,11 @@ class CaseBase(FEABase):
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def gravity(self):
+        """The gravity property."""
+        return self._gravity
 
     @property
     def field_outputs(self):
@@ -115,13 +123,17 @@ class CaseBase(FEABase):
     #                           Loads methods
     # =========================================================================
 
-    def add_load(self, load, where, part):
+    def add_load(self, load, keys, part):
         """Add a load to Step object.
 
         Parameters
         ----------
         load : obj
             `compas_fea2` Load objects
+        key : int
+            node or element key
+        part : str
+            part name
 
         Returns
         -------
@@ -132,13 +144,15 @@ class CaseBase(FEABase):
         if not isinstance(load, LoadBase):
             raise TypeError(f'{load} is not a `compas_fea2` Load object')
         if part not in self.loads:
-            self._loads[part] = {node: load for node in where}
+            self._loads[part] = {key: load for key in keys}
         else:
-            for node in where:
-                if node in self.loads[part]:
-                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[node]}")
+            # TODO this wrong because a node can have more than one load applied to it
+            # restructure the way the information is stored
+            for key in keys:
+                if key in self.loads[part]:
+                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[key]}")
                 else:
-                    self._loads[part][node] = load
+                    self._loads[part][key] = load
         # if load.name not in self._applied_loads:
         #     self._applied_loads[load.name] = [(part, where)]
         # else:
@@ -180,6 +194,41 @@ class CaseBase(FEABase):
     def add_loads(self, loads):
         for load in loads:
             self.add_load(load)
+
+    def add_point_load(self, name, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        load = m.PointLoad(name, x, y, z, xx, yy, zz, axes)
+        self._loads.setdefault(part, {})[load] = nodes
+
+    def add_gravity_load(self, name='gravity', g=9.81, x=0., y=0., z=-1.):
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        load = m.GravityLoad(name, g, x, y, z)
+        self._gravity = load
+
+    def add_prestress_load(self):
+        raise NotImplemented
+
+    def add_line_load(self):
+        raise NotImplemented
+
+    def add_area_load(self):
+        raise NotImplemented
+
+    def add_tributary_load(self):
+        raise NotImplemented
+
+    def add_harmonic_point_load(self):
+        raise NotImplemented
+
+    def add_harmonic_preassure_load(self):
+        raise NotImplemented
+
+    def add_acoustic_diffuse_field_load(self):
+        raise NotImplemented
+
+    # =========================================================================
+    #                       Displacement methods
+    # =========================================================================
 
     def add_displacement(self, displacement, where, part):
         """Add a displacement to Step object.

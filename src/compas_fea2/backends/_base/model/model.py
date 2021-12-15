@@ -686,9 +686,9 @@ class ModelBase(FEABase):
         None
         '''
         for group in groups:
-            self.add_group(group, part)
+            self.add_group(group)
 
-    def remove_group(self, group, part):
+    def remove_group(self, group):
         raise NotImplementedError()
 
     # =========================================================================
@@ -719,7 +719,7 @@ class ModelBase(FEABase):
     # =========================================================================
     #                           BCs methods
     # =========================================================================
-
+    # TODO missing axes
     def add_bc(self, bc, nodes, part):
         """Adds a boundary condition to the Problem object.
 
@@ -744,6 +744,49 @@ class ModelBase(FEABase):
                     raise ValueError(f"overconstrained node: {self.parts[part].nodes[node]}")
                 else:
                     self._bcs[part][node] = bc
+
+    def add_bc_type(self, name, bc_type, part, nodes, axes='global'):
+        types = {'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
+                 'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
+                 'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
+                 'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
+                 }
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        bc = getattr(m, types[bc_type])(name, axes)
+        self._bcs.setdefault(part, {})[bc] = nodes
+
+    def add_fix_bc(self, name, part, nodes, axes='global'):
+        self.add_bc_type(name, 'fix', part, nodes)
+
+    def add_fixXX_bc(self, name, part, nodes, axes='global'):
+        self.add_bc_type(name, 'fixXX', part, nodes)
+
+    def add_fixYY_bc(self, name, part, nodes, axes='global'):
+        self.add_bc_type(name, 'fixYY', part, nodes)
+
+    def add_fixZZ_bc(self, name, part, nodes, axes='global'):
+        self.add_bc_type(name, 'fixZZ', part, nodes)
+
+    def add_pin_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'pin', part, nodes)
+
+    def add_rollerX_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerX', part, nodes)
+
+    def add_rollerY_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerY', part, nodes)
+
+    def add_rollerZ_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerZ', part, nodes)
+
+    def add_rollerXY_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerXY', part, nodes)
+
+    def add_rollerXZ_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerXZ', part, nodes)
+
+    def add_rollerYZ_bc(self, name, part, nodes):
+        self.add_bc_type(name, 'rollerYZ', part, nodes)
 
     def add_bcs(self, bcs):
         """Adds multiple boundary conditions to the Problem object.

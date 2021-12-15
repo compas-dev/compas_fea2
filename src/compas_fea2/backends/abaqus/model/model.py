@@ -184,7 +184,8 @@ class Model(ModelBase):
 {self._generate_assembly_section()}**
 ** BOUNDARY CONDITIONS
 **
-{self._generate_bcs_section()}**
+{self._generate_bcs_section()}
+**
 """
 
     def _generate_part_section(self):
@@ -276,10 +277,8 @@ class Model(ModelBase):
         str
             text section for the input file.
         """
-        # # group elements by type and section
-        # bctypes = set(map(lambda x: x.eltype, self.elements.values()))
         data_section = []
         for part in self.bcs:
-            data_section += [bc._generate_jobdata(f'{part}-1', node)
-                             for node, bc in self.bcs[part].items()]
+            data_section += [bc._generate_jobdata(f'{part}-1', nodes)
+                             for bc, nodes in self.bcs[part].items()]
         return '\n'.join(data_section)

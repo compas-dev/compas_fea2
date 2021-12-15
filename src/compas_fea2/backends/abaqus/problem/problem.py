@@ -39,6 +39,7 @@ class Problem(ProblemBase):
 
     def __init__(self, name, model):
         super(Problem, self).__init__(name=name, model=model)
+        self.__name__ = 'AbaqusProblem'
         # self.parts = model.parts.values()  # TODO remove
         # self.interactions       = model.interactions
 

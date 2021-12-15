@@ -108,9 +108,11 @@ class GeneralStaticStep(GeneralStaticCaseBase):
 
     def _generate_loads_section(self):
         data_section = []
+        if self.gravity:
+            data_section.append(self._gravity._generate_jobdata())
         for part in self.loads:
-            data_section += [load._generate_jobdata(f'{part}-1', node)
-                             for node, load in self.loads[part].items()]
+            data_section += [load._generate_jobdata(f'{part}-1', nodes)
+                             for load, nodes in self.loads[part].items()]
         return '\n'.join(data_section)
 
     def _generate_output_section(self):

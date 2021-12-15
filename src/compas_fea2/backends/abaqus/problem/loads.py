@@ -53,13 +53,13 @@ class PointLoad(PointLoadBase):
         if `True` the load follows the deformation of the element.
     """
 
-    def __init__(self, name, x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global', modify=False, follow=False):
+    def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False):
         super(PointLoad, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
         self._op = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''
 
-    def _generate_jobdata(self, instance, node):
+    def _generate_jobdata(self, instance, nodes):
         """Generates the string information for the input file.
 
         Parameters
@@ -72,10 +72,11 @@ class PointLoad(PointLoadBase):
         """
         data_section = [f'** Name: {self.name} Type: Concentrated Force\n',
                         f'*Cload, OP={self._op}{self._follow}']
-        for comp, dof in enumerate(dofs, 1):
-            if self.components[dof]:
-                data_section += [f'{instance}.{node+1}, {comp}, {self.components[dof]}']
-        return '\n'.join(data_section) + '\n'
+        for node in nodes:
+            for comp, dof in enumerate(dofs, 1):
+                if self.components[dof]:
+                    data_section += [f'{instance}.{node+1}, {comp}, {self.components[dof]}']
+            return '\n'.join(data_section) + '\n'
 
 
 class LineLoad(LineLoadBase):

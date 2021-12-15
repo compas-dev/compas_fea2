@@ -129,17 +129,18 @@ class ModelViewer():
                     raise print(f'{element} is not supported byt the viewer')
 
     def _add_bcs(self):
-        for part, node_bc in self.model.bcs.items():
-            for node, bc in node_bc.items():
-                pt = Point(*self.model.parts[part].nodes[node].xyz)
-                if isinstance(bc, PinnedBCBase):
-                    cone_height = 0.4
-                    cone_diameter = 0.2
-                    plane = Plane([0, 0, 0], [0, 0, 1])
-                    circle = Circle(plane, cone_diameter)
-                    cone = Cone(circle, cone_height)
-                    obj = self.app.add(cone, facecolor=(1, 0, 0))
-                    obj.translation = (pt.x, pt.y, pt.z-cone_height)
+        for part, bc_node in self.model.bcs.items():
+            for bc, nodes in bc_node.items():
+                pts = [Point(*self.model.parts[part].nodes[node].xyz) for node in nodes]
+                for pt in pts:
+                    if isinstance(bc, PinnedBCBase):
+                        cone_height = 0.4
+                        cone_diameter = 0.2
+                        plane = Plane([0, 0, 0], [0, 0, 1])
+                        circle = Circle(plane, cone_diameter)
+                        cone = Cone(circle, cone_height)
+                        obj = self.app.add(cone, facecolor=(1, 0, 0))
+                        obj.translation = (pt.x, pt.y, pt.z-cone_height)
             # box = Box(([0, 0, 0], [1, 0, 0], [0, 1, 0]), 0.4, 0.4, 0.4)
             # obj1 = self.app.add(box, color=(1, 0, 0))
             # obj1.translation = (0, 0, -5.2)
@@ -160,16 +161,17 @@ class ProblemViewer(ModelViewer):
 
     def _add_loads(self):
         for step in self.problem.steps.values():  # TODO split the steps
-            for part, location in step.loads.items():
-                for node, load in location.items():
+            for part, lode_node in step.loads.items():
+                for load, nodes in lode_node.items():
                     # print(node, load)
-                    pt = Point(*self.problem.model.parts[part].nodes[node].xyz)
+                    pts = [Point(*self.problem.model.parts[part].nodes[node].xyz) for node in nodes]
                     if isinstance(load, PointLoadBase):
                         # TODO add moment components xx, yy, zz
                         # TODO add scale forces
-                        arrow = Arrow(pt, [load.components['x']/10000, load.components['y']/10000, load.components['z']/10000],
-                                      head_portion=0.2, head_width=0.07, body_width=0.02)
-                        self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
+                        for pt in pts:
+                            arrow = Arrow(pt, [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')],
+                                          head_portion=0.2, head_width=0.07, body_width=0.02)
+                            self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
 
 
 class ResultsViewer(ProblemViewer):

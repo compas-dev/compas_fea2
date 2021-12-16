@@ -8,6 +8,7 @@ except:
     pass
 
 import pickle
+import json
 import os
 import sys
 
@@ -279,14 +280,20 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
     with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
 
+
     with open(os.path.join(database_path, '{}-info.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(info, f, pickle.HIGHEST_PROTOCOL)
 
+    with open(os.path.join(database_path, '{}-results.json'.format(database_name)), 'wb') as f:
+        json.dump(results, f)
+
+    with open(os.path.join(database_path, '{}-info.json'.format(database_name)), 'wb') as f:
+        json.dump(results, f)
 
 # ============================================================================
 # Main
 # ============================================================================
-
+# NOTE: this is used while calling the module through abaqus -> DON'T DELETE!
 if __name__ == "__main__":
 
     database_path = sys.argv[-1]

@@ -31,17 +31,6 @@ class Results(ResultsBase):
     def extract_data(self):
         """Extract data from the Abaqus .odb file.
 
-        Parameters
-        ----------
-        fields : list
-            Data field requests.
-        exe : str
-            Abaqus exe path to bypass defaults.
-        output : bool
-            Print terminal output.
-        components : list
-            Specific components to extract from the fields data.
-
         Returns
         -------
         None

@@ -107,8 +107,9 @@ class ModelViewer():
     def _add_nodes(self):
         for part in self.model.parts.values():
             for node in part.nodes:
-                point = Point(node.x, node.y, node.z)
-                self.app.add(point, size=10)
+                pt = Point(node.x, node.y, node.z)
+                self.app.add(pt, size=10)
+                self.app.add(Text(str(node.key), pt, height=50), color=(0, 0, 0))
 
     def _add_elements(self):
         for part in self.model.parts.values():
@@ -175,12 +176,23 @@ class ProblemViewer(ModelViewer):
                             comp = [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')]
                             arrow = Arrow(pt, comp, head_portion=0.2, head_width=0.07, body_width=0.02)
                             self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
-                            t = Text(str(comp), pt, height=100)
-                            self.app.add(t, color=(1, 0, 0))
+                            # t = Text(str(comp), pt, height=200)
+                            # self.app.add(t, color=(1, 0, 0))
 
 
 class ResultsViewer(ProblemViewer):
-    pass
+    def __init__(self, results, width=800, height=500, scale_factor=.001, results_scale_factor=100):
+        super(ProblemViewer, self).__init__(results.problem, width, height, scale_factor)
+        self.results = results
+
+    # def show_deformed_shape(self):
+        # def _add_nodes(self):
+        #     for part in self.model.parts.values():
+        #         for node in part.nodes:
+        #             point = Point(node.x, node.y, node.z)
+        #             obj = self.app.add(point, size=10)
+        #             obj.translation = (5, 0, 0)
+        #             results.nodal
 
 
 class BeamViewer():

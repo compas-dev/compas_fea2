@@ -18,14 +18,20 @@ class ResultsBase(FEABase):
 
     Parameters
     ----------
+    database_name : str
+        name of the backend database containing the results
+    database_path : str
+        path to the backend database containing the results
     fields : list
-        Data field requests.
-    exe : str
-        Abaqus exe path to bypass defaults.
-    output : bool
-        Print terminal output.
+        Data fields requested.
+    steps : list
+        Steps requested.
+    sets : list
+        Groups requested.
     components : list
         Specific components to extract from the fields data.
+    output : bool
+        Print terminal output.
     """
 
     def __init__(self, database_name, database_path, fields, steps, sets, components, output):

@@ -79,9 +79,9 @@ problem.add_output(fout, step_0)
 problem.summary()
 problem.show()
 
-# # Solve the problem
-# problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# Solve the problem
+problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-# results = Results.from_problem(problem, fields=['u'])
-# pprint(results.nodal)
+##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+results = Results.from_problem(problem, fields=['u'])
+pprint(results.nodal)

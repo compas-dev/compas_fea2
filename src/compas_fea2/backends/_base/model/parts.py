@@ -218,79 +218,52 @@ class PartBase(FEABase):
         # for node in nodes:
         #     self.remove_node(node)
 
-    # def find_duplicate_nodes(self):
-    #     '''Finds duplicate nodes in the Part.
-
-    #     Parameters
-    #     ----------
-    #     None
-
-    #     Returns
-    #     -------
-    #     duplicates : dict
-    #         Dictionary with the key numbers of the duplicate nodes
-    #         keys: node geometric key
-    #         values: node index
-    #     '''
-
-    #     duplicates = dict()
-    #     for node in self.nodes:
-    #         indices = self.check_node_in_part(node)
-    #         if len(indices) >= 2:
-    #             if not node.gkey in duplicates:
-    #                 duplicates[node.gkey] = node.key
-    #     return duplicates
-
-    # def remove_duplicate_nodes(self):
-    #     '''Removes duplicate nodes. Note that this alters the nodes indexing.
-
-    #     Parameters
-    #     ----------
-    #     None
-
-    #     Returns
-    #     -------
-    #     None
-    #     '''
-
-    #     duplicates = self.find_duplicate_nodes()
-    #     if duplicates:
-    #         all_duplicates = []
-    #         for key in duplicates.keys():
-    #             for i in range(len(duplicates[key])-1):
-    #                 all_duplicates.append(duplicates[key][i+1])
-
-    #     for index in sorted(all_duplicates, reverse=True):
-    #         del self._nodes[index]
-    #         del self._nodes_gkeys[index]
-
-    #     self._reorder_nodes()
-
     # =========================================================================
     #                           Elements methods
     # =========================================================================
+    # def _check_element_in_part(self, element):
+    #     """Check if the element is already in the model and in case add it.
+    #     If `element` is of type `str`, check if the element is already defined.
+    #     If `element` is of type `ElementBase`, add the element to the Part if not
+    #     already defined.
 
-    def check_element_in_part(self, element):
-        '''Checks if an element with the same connectivity already exists
-        in the Part.
+    #     Warning
+    #     -------
+    #     the function does not check the elements connectivity. This could generate
+    #     duplicate elements.
 
-        Parameters
-        ----------
-        element : obj
-            compas_fea2 Element object.
+    #     Parameters
+    #     ----------
+    #     element : str or obj
+    #         Name of the Part or Part object to check.
 
-        Returns
-        -------
-        keys : list
-            List with the key numbers of all the instances of the element already
-            in the Part.
-        '''
-        # keys = []
-        # for e in self._elements:
-        #     if e.connectivity_key == element.connectivity_key:
-        #         keys.append(e.key)
-        # return keys
-        return False
+    #     Returns
+    #     -------
+    #     obj
+    #         Part object
+
+    #     Raises
+    #     ------
+    #     ValueError
+    #         if `element` is a string and the element is not defined in the Part
+    #     TypeError
+    #         `element` must be either an instance of a `compas_fea2` Part class or the
+    #         name of a Part already defined in the Problem.
+    #     """
+    #     if isinstance(element, str):
+    #         if element not in self.elements:
+    #             raise ValueError(f'{element} not found in the Part')
+    #         element_name = element
+    #     elif isinstance(element, PartBase):
+    #         if element.name not in self.elements:
+    #             self.add_element(element)
+    #             print(f'{element.__repr__()} added to the Part')
+    #         element_name = element.name
+    #     else:
+    #         raise TypeError(
+    #             f'{element} is either not an instance of a `compas_fea2` ElementBase class or not found in the Model')
+
+    #     return self.elements[element_name]
 
     def _reorder_elements(self):
         '''Reorders the elements to have consecutive keys.
@@ -309,40 +282,35 @@ class PartBase(FEABase):
             element.key = k
             k += 1
 
-    def add_element(self, element, check=True):
+    def add_element(self, element):
         """Adds a compas_fea2 Element object to the Part.
 
         Parameters
         ----------
         element : obj
             compas_fea2 Element object.
-        check : bool
-            If True, checks if the element is already present.
 
         Returns
         -------
         None
         """
 
-        if check and self.check_element_in_part(element):
-            print('WARNING: duplicate element connecting {} skipped!'.format(element._connectivity_key))
-        else:
-            element._key = len(self.elements)
-            for c in element._connectivity:
-                if c not in [node._key for node in self.nodes]:
-                    raise ValueError(
-                        f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
-            self._elements[element._key] = element
+        element._key = len(self.elements)
+        for c in element.connectivity:
+            if c not in [node.key for node in self.nodes]:
+                raise ValueError(
+                    f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
+        self._elements[element._key] = element
 
-            if isinstance(element.section, str):
-                if element.section in self._sections:
-                    element._section = self._sections[element.section]
-                else:
-                    raise ValueError(f'{element.section} not found in {self}')
-            elif isinstance(element.section, SectionBase):
-                self.add_section(element.section)
+        if isinstance(element.section, str):
+            if element.section in self._sections:
+                element._section = self._sections[element.section]
             else:
-                raise ValueError('You must provide a Section object or the name of a previously added section')
+                raise ValueError(f'{element.section} not found in {self}')
+        elif isinstance(element.section, SectionBase):
+            self.add_section(element.section)
+        else:
+            raise ValueError('You must provide a Section object or the name of a previously added section')
 
     def add_elements(self, elements, check=True):
         """Adds multiple compas_fea2 Element objects to the Part.
@@ -472,8 +440,6 @@ class PartBase(FEABase):
                     raise ValueError(f'Material {section.material} not found in {self}')
             else:
                 raise ValueError()
-        # else:
-        #     print('WARNING: {} already added to the Part. skipped!')
 
     def add_sections(self, sections):
         """Add multiple compas_fea2 Section objects to the Part.
@@ -505,16 +471,34 @@ class PartBase(FEABase):
             self.add_group(group)
 
     def add_nodes_group(self, name, nodes_keys):
+        """Add a NodeGroup object to the the part .
+
+        Parameters
+        ----------
+        name : str
+            name of the group.
+        nodes : list
+            list of nodes keys to group
+        """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         group = m.NodesGroup(name, nodes_keys)
         self._groups[name] = group
-        # return group
 
     def add_elements_group(self, name, elements_keys):
+        """Add a ElementGroup object to the the part.
+
+        Parameters
+        ----------
+        name : str
+            name of the group.
+        part : str
+            name of the part
+        elements : list
+            list of elements keys to group
+        """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         group = m.ElementsGroup(name, elements_keys)
         self._groups[name] = group
-        # return group
 
     def add_elements_to_group(self, group_name, element_keys):
         raise NotADirectoryError()
@@ -524,12 +508,3 @@ class PartBase(FEABase):
 
     def remove_element_from_group(self, group_name, element):
         raise NotImplementedError()
-
-
-# =============================================================================
-#                               Debugging
-# =============================================================================
-
-if __name__ == "__main__":
-
-    pass

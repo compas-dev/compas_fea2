@@ -8,9 +8,6 @@ from math import pi
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.model.materials import MaterialBase
 
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
-
-
 __all__ = [
     'SectionBase',
     'MassSectionBase',
@@ -90,6 +87,7 @@ class MassSectionBase(FEABase):
 
     def __init__(self, name, mass):
         super(SectionBase, self).__init__()
+        self.__name__ = 'MassSection'
         self._name = name
         self._mass = mass
 

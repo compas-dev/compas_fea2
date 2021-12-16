@@ -145,20 +145,7 @@ class ProblemBase(FEABase):
         None
         """
         # check if step is valid
-        if isinstance(step, str):
-            if step not in self._steps:
-                raise ValueError(f'{step} not found in the Problem')
-            step_name = step
-            # step = self.steps[step]
-        elif isinstance(step, CaseBase):
-            if step.name not in self.steps:
-                self.add_step(step)
-                print(f'{step.__repr__()} added to the Problem')
-            step_name = step.name
-        else:
-            raise ValueError(
-                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
-
+        self._check_step_in_problem(step)
         self.steps[step_name].add_displacement(displacement)
 
     def remove_displacement(self, displacement_name, step_name):
@@ -206,14 +193,13 @@ class ProblemBase(FEABase):
     # =========================================================================
     #                           Loads methods
     # =========================================================================
-    # TODO differenciate by type of load
     def add_point_load(self, name, step, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-        self._check_step_in_problem(step)
-        self.steps[step].add_point_load(name, part, nodes, x, y, z, xx, yy, zz, axes)
+        step = self._check_step_in_problem(step)
+        step.add_point_load(name, part, nodes, x, y, z, xx, yy, zz, axes)
 
     def add_gravity_load(self, name, step, g=9.81, x=0., y=0., z=-1.):
-        self._check_step_in_problem(step)
-        self.steps[step].add_gravity_load(name, g, x, y, z)
+        step = self._check_step_in_problem(step)
+        step.add_gravity_load(name, g, x, y, z)
 
     def add_prestress_load(self):
         raise NotImplemented
@@ -394,9 +380,43 @@ class ProblemBase(FEABase):
     #                           Step methods
     # =========================================================================
     def _check_step_in_problem(self, step):
-        if step not in self.steps:
-            raise ValueError(
-                f'{step} is not defined in {self.__repr__()}')
+        """Check if a step is defined in the Problem. If `step` is of type `str`,
+        check if the step is already defined. If `step` is of type `CaseBase`,
+        add the step to the Problem if not already defined.
+
+        Parameters
+        ----------
+        step : str, obj
+            Name of the step (must be already defined) or Step object.
+
+        Returns
+        -------
+        obj
+            Step object
+
+        Raises
+        ------
+        ValueError
+            if `step` is a string and the step is not defined in the problem
+        TypeError
+            `step` must be either an instance of a `compas_fea2` Step class or the
+            name of a Step already defined in the Problem.
+        """
+        if isinstance(step, str):
+            if step not in self._steps:
+                raise ValueError(f'{step} not found in the Problem')
+            step_name = step
+            # step = self.steps[step]
+        elif isinstance(step, CaseBase):
+            if step.name not in self.steps:
+                self.add_step(step)
+                print(f'{step.__repr__()} added to the Problem')
+            step_name = step.name
+        else:
+            raise TypeError(
+                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+
+        return self.steps[step_name]
 
     def add_step(self, step, append=True):
         """Adds a Step to the Problem object.

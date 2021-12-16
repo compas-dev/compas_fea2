@@ -24,12 +24,20 @@ __all__ = [
 class ModelBase(FEABase):
     """Initialise the Model object.
 
+    Note
+    ----
+    For the backends that do not have the concept of a `Part`, a model with only
+    one part should be created.
+
     Parameters
     ----------
     name : str
         Name of the Model.
     description : str
         Some description of the Model. This will be added to the input file and
+        can be useful for future reference.
+    author : str
+        The name of the author of the Model. This will be added to the input file and
         can be useful for future reference.
     """
 
@@ -39,16 +47,12 @@ class ModelBase(FEABase):
         self._description = description
         self._author = author
         self._parts = {}
-        self._nodes = []
         self._materials = {}
         self._sections = {}
-        self._elements = {}
-        self._constraints = {}
-        self._releases = {}
-        self._interactions = {}
-        self._surfaces = {}
         self._bcs = {}
-        self._problems = {}
+        self._constraints = {}
+        self._interactions = {}
+        self._parts_groups = {}
 
     @property
     def name(self):
@@ -66,33 +70,28 @@ class ModelBase(FEABase):
         self._description = value
 
     @property
+    def author(self):
+        """The author of the Model. This will be added to the input file and
+        can be useful for future reference."""
+        return self._author
+
+    @author.setter
+    def author(self, value):
+        self._author = value
+
+    @property
     def parts(self):
         """dict: A dictionary with the `Part` objects referenced in the Model."""
         return self._parts
 
     @property
-    def nodes(self):
-        """The nodes property."""
-        return self._nodes
-
-    @property
-    def surfaces(self):
-        """list : A list with the `Surface` objects belonging to the Model."""
-        return self._surfaces
-
-    @property
     def constraints(self):
-        """list : A list with the `Constraint` objects belonging to the Model."""
+        """dict : A dictionary with the `Constraint` objects between the parts of the model."""
         return self._constraints
 
     @property
-    def releases(self):
-        """list : A list with the `Release` objects belonging to the Model."""
-        return self._releases
-
-    @property
     def interactions(self):
-        """list : A list with the `Interaction` objects belonging to the Model."""
+        """dict : A dictionary with the `Interaction` objects between the parts of the model."""
         return self._interactions
 
     @property
@@ -102,33 +101,21 @@ class ModelBase(FEABase):
 
     @property
     def sections(self):
-        """dict :  A dictionary of all the sections defined in the Model."""
+        """dict :  A dictionary with all the sections defined in the Model."""
         return self._sections
 
     @property
-    def elements(self):
-        """The elements property."""
-        return self._elements
-
-    @property
     def parts_groups(self):
-        """dict : A dictionary of all the groups defined in the Model."""
+        """dict : A dictionary of the groups of parts."""
         return self._parts_groups
 
     @property
     def bcs(self):
-        """The bcs property."""
+        """dict : A dictionary with the boundary conditions assigned to the parts in the Model."""
         return self._bcs
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
-
-    def _get_materials(self):
-        materials = []
-        for i in self.instances:
-            for mat in i.part.elements_by_material.keys():
-                materials.append(mat)
-        return list(set(materials))
 
     # =========================================================================
     #                       Constructor methods
@@ -243,12 +230,44 @@ class ModelBase(FEABase):
     # =========================================================================
     #                             Parts methods
     # =========================================================================
+    def _check_part_in_model(self, part):
+        """Check if the part is already in the model and in case add it.
+        If `part` is of type `str`, check if the part is already defined.
+        If `part` is of type `PartBase`, add the part to the Model if not
+        already defined.
 
-    def _check_part_in_model(self, part, add=True):
-        if not part in self._parts and not isinstance(part, PartBase):
-            raise ValueError('** ERROR! **: part {} not found in the Model or instance of a Part!'.format(part))
-        if isinstance(part, PartBase) and add:
-            self.add_part(part)
+        Parameters
+        ----------
+        part : str or obj
+            Name of the Part or Part object to check.
+
+        Returns
+        -------
+        obj
+            Part object
+
+        Raises
+        ------
+        ValueError
+            if `part` is a string and the part is not defined in the model
+        TypeError
+            `part` must be either an instance of a `compas_fea2` Part class or the
+            name of a Part already defined in the Model.
+        """
+        if isinstance(part, str):
+            if part not in self.parts:
+                raise ValueError(f'{part} not found in the Model')
+            part_name = part
+        elif isinstance(part, PartBase):
+            if part.name not in self.parts:
+                self.add_part(part)
+                print(f'{part.__repr__()} added to the Model')
+            part_name = part.name
+        else:
+            raise TypeError(
+                f'{part} is either not an instance of a `compas_fea2` Part class or not found in the Model')
+
+        return self.parts[part_name]
 
     def add_part(self, part):
         """Adds a Part to the Model.
@@ -272,10 +291,7 @@ class ModelBase(FEABase):
         else:
             self.parts[part.name] = part
 
-        # Add part's properties to the model
-        self._nodes.append(part.nodes)  # TODO check
-
-        for attr in ['elements', 'materials', 'sections']:
+        for attr in ['materials', 'sections']:
             for k, v in getattr(part, attr).items():
                 if not k in getattr(self, attr):
                     getattr(self, attr)[k] = v
@@ -283,6 +299,13 @@ class ModelBase(FEABase):
                     print('{} already in Model, skipped!'.format(v.__repr__()))
 
     def add_parts(self, parts):
+        """Add multiple parts to the Model.
+
+        Parameters
+        ----------
+        parts : list
+            List of the Part objects to add.
+        """
         for part in parts:
             self.add_part(part)
 
@@ -299,55 +322,35 @@ class ModelBase(FEABase):
         -------
         None
         """
-
         raise NotImplementedError()
-        # # TODO remove nodes, elements and sections
 
     # =========================================================================
     #                           Nodes methods
     # =========================================================================
 
-    def _renumber_model_nodes():
-        pass
-
-    def _update_part_nodes_to_model(self, part, check=True):
-        self._nodes.append(part._nodes)
-
-    def _check_node_in_model(self, node, add=True):
-        pass
-
-    def add_node(self, node, part='hidden_part', check=True):
+    def add_node(self, node, part):
         """Add a compas_fea2 `Node` object to a `Part` in the `Model`.
         If the `Node` object has no label, one is automatically assigned.
         Duplicate nodes are automatically excluded.
-
-        Warning
-        -------
-        For the backends that do not have the concept of a `Part`, a hidden_part
-        is automatically created to keep things consistent. The user can ignore it.
-
 
         Parameters
         ----------
         node : obj
             compas_fea2 Node object.
-        part : str, optional
-            Name of the part where the node will be added.
+        part : str, obj
+            Name of the part or Part object where the node will be added.
 
         Returns
         -------
         None
         """
-        if check:
-            self._check_part_in_model(part)
-        self._parts[part].add_node(node, check)
-        self._update_part_nodes_to_model(self.parts[part])
+        part = self._check_part_in_model(part)
+        part.add_node(node)
 
-    def add_nodes(self, nodes, part, check=True):
+    def add_nodes(self, nodes, part):
         """Add multiple compas_fea2 Node objects a Part in the Model.
         If the Node object has no label, one is automatically assigned. Duplicate
         nodes are automatically excluded.
-        The part must have been previously added to the Model.
 
         Parameters
         ----------
@@ -360,15 +363,11 @@ class ModelBase(FEABase):
         -------
         None
         """
-        if check:
-            self._check_part_in_model(part)
         for node in nodes:
-            self._parts[part].add_node(node, check)
-        self._update_part_nodes_to_model(self.parts[part])
+            self.add_node(node, part)
 
     def remove_node(self, node_key, part):
-        '''Remove the node from a Part in the Model. If there are duplicate nodes,
-        it removes also all the duplicates.
+        '''Remove the node from a Part in the Model.
 
         Parameters
         ----------
@@ -381,13 +380,7 @@ class ModelBase(FEABase):
         -------
         None
         '''
-
-        if part in self.parts:
-            self.parts[part].remove_node(node_key)
-            self._update_part_nodes_to_model(part)  # TODO this happens at every iteration...
-        else:
-            raise ValueError(
-                '** ERROR! **: part {} not found in the Model!'.format(part))
+        raise NotImplementedError()
 
     def remove_nodes(self, nodes, part):
         '''Remove the nodes from a Part in the Model. If there are duplicate nodes,
@@ -404,22 +397,14 @@ class ModelBase(FEABase):
         -------
         None
         '''
-
-        for node in nodes:
-            self.remove_node(node, part)
+        raise NotImplementedError()
 
     # =========================================================================
     #                           Materials methods
     # =========================================================================
 
-    def _check_material_in_model(self, material, add=True):
-        if not material in self._materials and not isinstance(material, MaterialBase):
-            raise ValueError('** ERROR! **: section {} not found in the Model or instance of a Section!'.format(material))
-        elif isinstance(material, MaterialBase) and add:
-            self.add_material(material)
-
     def add_material(self, material):
-        '''Adds a Material object to the Model so that it can be later refernced
+        '''Add a Material object to the Model so that it can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -431,13 +416,13 @@ class ModelBase(FEABase):
         -------
         None
         '''
-        if material._name not in self._materials:
+        if material.name not in self.materials:
             self._materials[material._name] = material
         else:
             print('WARNING: {} already added to the model. skipped!'.format(material))
 
     def add_materials(self, materials):
-        '''Adds multiple Material objects to the Model so that they can be later refernced
+        '''Add multiple Material objects to the Model so that they can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -459,21 +444,14 @@ class ModelBase(FEABase):
     #                           Sections methods
     # =========================================================================
 
-    def _check_section_in_model(self, section, add=True):
-        if not section in self._sections and not isinstance(section, SectionBase):
-            raise ValueError('** ERROR! **: section {} not found in the Model or instance of a Section!'.format(section))
-        elif isinstance(section, SectionBase) and add:
-            self.add_section(section)
-
     def add_section(self, section):
-        """Adds a compas_fea2 Section object to the Model.
+        """Add a compas_fea2 Section object to the Model o that it can be later
+        refernced and used in an Element definitions
 
         Parameters
         ----------
-        element : obj
-            compas_fea2 Element object.
-        part : str
-            Name of the part where the nodes will be removed from.
+        section : obj
+            compas_fea2 Section object.
 
         Returns
         -------
@@ -516,14 +494,8 @@ class ModelBase(FEABase):
     #                           Elements methods
     # =========================================================================
 
-    def _update_part_elements_to_model(self, part, check=True):
-        self._elements[part._name] = part._elements
-
-    def _check_element_in_model(self, element, add=True):
-        self._check_material_in_model(element)
-
-    def add_element(self, element, part, check=True):
-        """Add a compas_fea2 `Element` object to a `Part` in the `Model`.
+    def add_element(self, element, part):
+        """Add a compas_fea2 Element object to a Part in the Model.
 
         Parameters
         ----------
@@ -536,21 +508,18 @@ class ModelBase(FEABase):
         -------
         None
         """
-        if check:
-            self._check_part_in_model(part)
-        # self._check_section_in_model(element.section)
+        part = self._check_part_in_model(part)
         if isinstance(element.section, str):
             if element.section not in self.sections:
-                if element.section in self.parts[part].sections:
-                    self.sections[element.section] = self.parts[part].sections[element.section]
+                if element.section in part.sections:
+                    self.sections[element.section] = part.sections[element.section]
                 else:
                     raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
             else:
                 element._section = self.sections[element.section]
-        self.parts[part].add_element(element)
-        self._update_part_elements_to_model(self.parts[part])  # TODO this happens at every iteration...change!
+        part.add_element(element)
 
-    def add_elements(self, elements, part, check=True):
+    def add_elements(self, elements, part):
         """Adds multiple compas_fea2 Element objects to a Part in the Model.
 
         Parameters
@@ -566,7 +535,7 @@ class ModelBase(FEABase):
         """
 
         for element in elements:
-            self.add_element(element, part, check)
+            self.add_element(element, part)
 
     def remove_element(self, element_key, part):
         '''Removes the element from a Part in the Model.
@@ -582,14 +551,11 @@ class ModelBase(FEABase):
         -------
         None
         '''
-
-        if part in self.parts:
-            self.parts[part].remove_element(element_key)
-        else:
-            raise ValueError('ERROR: part {} not found in the Model!'.format(part))
+        part = self._check_part_in_model(part)
+        part.remove_element(element_key)
 
     def remove_elements(self, elements, part):
-        '''Removes the elements from a Part in the Model.
+        '''Removes several elements from a Part in the Model.
 
         Parameters
         ----------
@@ -602,7 +568,6 @@ class ModelBase(FEABase):
         -------
         None
         '''
-
         for element in elements:
             self.remove_node(element, part)
 
@@ -611,7 +576,7 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_release(self, release, part):
-        '''Add an Element End Release to the Model.
+        '''Add an Element EndRelease object to the Model.
 
         Parameters
         ----------
@@ -624,18 +589,15 @@ class ModelBase(FEABase):
         -------
         None
         '''
-
-        self._check_part_in_model(part)
-
-        self.parts[part].add_release(release)
-        self.releases.append(release)
+        part = self._check_part_in_model(part)
+        part.add_release(release)
 
     def add_releases(self, releases, part):
-        '''Add multiple Element End Release to the Model.
+        '''Add multiple Element EndRelease objects to the Model.
 
         Parameters
         ----------
-        release : list
+        releases : list
             list of `EndRelase` object.
         part : str
             Name of the part where the nodes will be removed from.
@@ -650,7 +612,21 @@ class ModelBase(FEABase):
     # =========================================================================
     #                           Groups methods
     # =========================================================================
-    def add_group(self, group, part=None):
+    def group_parts(self, name, parts):
+        """Group parts together
+
+        Parameters
+        ----------
+        name : str
+            name of the group
+        parts : list
+            list containing the parts names to group
+        """
+        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        group = m.PartsGroup(name=name, parts=parts)
+        self._parts_groups[group.name] = group
+
+    def add_group(self, group, part):
         '''Add a Group object to a part in the Model at the instance level. Can
         be either a NodesGroup or an ElementsGroup.
 
@@ -658,20 +634,17 @@ class ModelBase(FEABase):
         ----------
         group : obj
             group object.
+        part : str, obj
+            Part name or Part object.
 
         Returns
         -------
         None
         '''
-        if not part and isinstance(group, PartsGroupBase):
-            self._check_part_in_model(part)
-            self.parts[part].add_group(group)
-        elif isinstance(group, PartsGroupBase):
-            self._groups[group.name] = group
-        else:
-            TypeError
+        part = self._check_part_in_model(part)
+        part.add_group(group)
 
-    def add_groups(self, groups, part=None):
+    def add_groups(self, groups, part):
         '''Add multiple Group objects to a part in the Model. Can be
         a list of NodesGroup or ElementsGroup objects, also mixed.
 
@@ -690,18 +663,34 @@ class ModelBase(FEABase):
             self.add_group(group, part)
 
     def add_nodes_group(self, name, part, nodes):
-        self._check_part_in_model(part)
-        self.parts[part].add_nodes_group(name, nodes)
+        """Add a NodeGroup object to the the part in the model.
+
+        Parameters
+        ----------
+        name : str
+            name of the group.
+        part : str
+            name of the part
+        nodes : list
+            list of nodes keys to group
+        """
+        part = self._check_part_in_model(part)
+        part.add_nodes_group(name, nodes)
 
     def add_elements_group(self, name, part, elements):
-        self._check_part_in_model(part)
-        self.parts[part].add_elements_group(name, elements)
+        """Add a ElementGroup object to the the part in the model.
 
-    def add_parts_group(self, name, parts):
-        raise NotImplementedError()
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        group = m.PartsGroup(name, parts)
-        self._groups[group.name] = group
+        Parameters
+        ----------
+        name : str
+            name of the group.
+        part : str
+            name of the part
+        elements : list
+            list of elements keys to group
+        """
+        part = self._check_part_in_model(part)
+        part.add_elements_group(name, elements)
 
     def remove_group(self, group):
         raise NotImplementedError()
@@ -711,16 +700,30 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_surface(self, surface):
-        self.surfaces.append(surface)
+        raise NotImplementedError()
 
     # =========================================================================
     #                       Constraints methods
     # =========================================================================
 
     def add_constraint(self, constraint):
+        """Add a Constraint object to the Model.
+
+        Parameters
+        ----------
+        constraint : obj
+            compas_fea2 Contraint object
+        """
         self._constraints[constraint.name] = constraint
 
     def add_constraints(self, constraints):
+        """Add multiple Constraint objects to the Model.
+
+        Parameters
+        ----------
+        constraints : list
+            list of Constraint objects to add.
+        """
         for constraint in constraints:
             self.add_constraint(constraint)
 
@@ -749,6 +752,7 @@ class ModelBase(FEABase):
         -------
         None
         """
+        part = self._check_part_in_model(part)
         if not isinstance(bc, GeneralBCBase):
             raise TypeError(f'{bc} not instance of a BC class')
         if part not in self.bcs:
@@ -761,6 +765,28 @@ class ModelBase(FEABase):
                     self._bcs[part][node] = bc
 
     def add_bc_type(self, name, bc_type, part, nodes, axes='global'):
+        """Add a BoundaryCondition to nodes in a part by type.
+
+        Note
+        ----
+        'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
+        'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
+        'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
+        'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        bc_type : str
+            one of the boundary condition types specified above
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         types = {'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
                  'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
                  'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
@@ -771,36 +797,179 @@ class ModelBase(FEABase):
         self._bcs.setdefault(part, {})[bc] = nodes
 
     def add_fix_bc(self, name, part, nodes, axes='global'):
+        """Add a fixed boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'fix', part, nodes)
 
     def add_fixXX_bc(self, name, part, nodes, axes='global'):
+        """Add a fixed boundary condition type free about XX to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'fixXX', part, nodes)
 
     def add_fixYY_bc(self, name, part, nodes, axes='global'):
+        """Add a fixed boundary condition free about YY type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'fixYY', part, nodes)
 
     def add_fixZZ_bc(self, name, part, nodes, axes='global'):
+        """Add a fixed boundary condition free about ZZ type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'fixZZ', part, nodes)
 
     def add_pin_bc(self, name, part, nodes):
+        """Add a pinned boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'pin', part, nodes)
 
     def add_rollerX_bc(self, name, part, nodes):
+        """Add a roller free on X boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerX', part, nodes)
 
     def add_rollerY_bc(self, name, part, nodes):
+        """Add a roller free on Y boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerY', part, nodes)
 
     def add_rollerZ_bc(self, name, part, nodes):
+        """Add a roller free on Z boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerZ', part, nodes)
 
     def add_rollerXY_bc(self, name, part, nodes):
+        """Add a roller free on XY boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerXY', part, nodes)
 
     def add_rollerXZ_bc(self, name, part, nodes):
+        """Add a roller free on XZ boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerXZ', part, nodes)
 
     def add_rollerYZ_bc(self, name, part, nodes):
+        """Add a roller free on YZ boundary condition type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        part : str
+            name of the part where the boundary condition is applied
+        nodes : list
+            list of nodes where to apply the boundary condition
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
         self.add_bc_type(name, 'rollerYZ', part, nodes)
 
     def add_bcs(self, bcs):
@@ -857,17 +1026,11 @@ class ModelBase(FEABase):
         -------
         None
         """
-        self.bcs = {}
+        raise NotImplementedError()
 
     # =========================================================================
     #                          Helper methods
     # =========================================================================
-
-    def _check_part_in_model(self, part_name):
-        if part_name not in self.parts:
-            raise ValueError(f'ERROR: part {part_name} not found in the Model!')
-
-    # TODO change to check through the instance
 
     def get_node_from_coordinates(self, xyz, tol):
         """Finds (if any) the Node object in the model with the specified coordinates.
@@ -904,7 +1067,6 @@ class ModelBase(FEABase):
     # ==============================================================================
     # Summary
     # ==============================================================================
-    # TODO continue the summary # FIXME
     def summary(self):
         """Prints a summary of the Model object.
 
@@ -916,47 +1078,46 @@ class ModelBase(FEABase):
         -------
         None
         """
-        data = """
+        parts_info = ['\n'.join([f'{part.name}',
+                                 f'    # of nodes: {len(part.nodes)}',
+                                 f'    # of elements: {len(part.elements)}']) for part in self.parts.values()]
+        materials_info = '\n'.join([e.__repr__() for e in self.materials.values()])
+        sections_info = '\n'.join([e.__repr__() for e in self.sections.values()])
+        interactions_info = '\n'.join([e.__repr__() for e in self.interactions.values()])
+        constraints_info = '\n'.join([e.__repr__() for e in self.constraints.values()])
+        bc_info = '\n'.join([f'{part}: {node}' for part, node in self.bcs.items()])
+        data = f"""
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea2 Model: {}
+compas_fea2 Model: {self.name}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+description: {self.description or 'N/A'}
+author: {self.author or 'N/A'}
 
 Parts
 -----
-{}
-    # of nodes:     {}
-    # of elements:  {}
+{''.join(parts_info)}
 
 Materials
 ---------
-{}
+{materials_info}
 
 Sections
 --------
-{}
+{sections_info}
 
 Interactions
 ------------
-{}
+{interactions_info}
 
 Constraints
 -----------
-{}
+{constraints_info}
 
 Boundary Conditions
 -------------------
-{}
-
-""".format(self.name,
-           '\n'.join([e for e in self.parts]),
-           '\n'.join([str(len(e)) for e in [p.nodes for p in self.parts.values()]]),
-           '\n'.join([str(len(e)) for e in [p.elements for p in self.parts.values()]]),
-           '\n'.join([e for e in self.materials]),
-           '\n'.join([e for e in self.sections]),
-           '\n'.join([e for e in self.interactions]),
-           '\n'.join([e for e in self.constraints]),
-           '\n'.join([f'{part}: {node}' for part, node in self.bcs.items()]),
-           )
+{bc_info}
+"""
         print(data)
         return data
 
@@ -964,9 +1125,8 @@ Boundary Conditions
     # Viewer
     # ==============================================================================
 
-    def show(self, width=800, height=500, scale_factor=.001):
+    def show(self, width=800, height=500, scale_factor=1):
         from compas_fea2.interfaces.viewer import ModelViewer
-
         v = ModelViewer(self, width, height, scale_factor)
         v.show()
 

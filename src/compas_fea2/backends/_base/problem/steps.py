@@ -383,7 +383,7 @@ class StaticLinearPerturbationCaseBase(StaticCaseBase):
     """
 
     def __init__(self,  name):
-        super(StaticLinearPerturbationCaseBase, self).__init__()
+        super(StaticLinearPerturbationCaseBase, self).__init__(name)
         self.__name__ = 'StaticLinearPerturbationCase'
 
 

@@ -71,7 +71,7 @@ class ModelBase(FEABase):
 
     @property
     def author(self):
-        """The author of the Model. This will be added to the input file and
+        """str : The author of the Model. This will be added to the input file and
         can be useful for future reference."""
         return self._author
 

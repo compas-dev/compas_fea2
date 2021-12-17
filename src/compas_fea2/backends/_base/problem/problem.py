@@ -31,9 +31,10 @@ class ProblemBase(FEABase):
         model object.
     """
 
-    def __init__(self, name, model, descritpion=None):
-        self.__name__ = 'ProblemBase'
+    def __init__(self, name, model, author=None, descritpion=None):
+        self.__name__ = 'Problem'
         self._name = name
+        self._author = author
         self._descritpion = descritpion if descritpion else f'Problem for {model}'
         self._model = model
         self._path = None
@@ -49,8 +50,15 @@ class ProblemBase(FEABase):
         return self._name
 
     @property
+    def author(self):
+        """str : The author of the Model. This will be added to the input file and
+        can be useful for future reference."""
+        return self._author
+
+    @property
     def description(self):
-        """The description property."""
+        """str : Some description of the Problem. This will be added to the input file and
+        can be useful for future reference."""
         return self._description
 
     @description.setter
@@ -64,7 +72,7 @@ class ProblemBase(FEABase):
 
     @property
     def path(self):
-        """str, path obj : str or `pathlib.Path` object to the analysis folder."""
+        """str, Path obj : str or `pathlib.Path` object to the analysis folder."""
         return self._path
 
     @path.setter
@@ -590,28 +598,26 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        data = [self._name,
-                '\n'.join([f'{name.__repr__()}' for name in self.steps.values()]),
-                '\n'.join([f'{name}' for name in self.steps_order])
-                ]
+        steps_data = '\n'.join([f'{name.__repr__()}' for name in self.steps.values()])
+        steps_order_data = '\n'.join([f'{name}' for name in self.steps_order])
 
-        summary = """
+        summary = f"""
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea2 Problem: {}
+compas_fea2 Problem: {self._name}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+description: {self.description or 'N/A'}
+author: {self.author or 'N/A'}
 
 Steps
 -----
-{}
+{steps_data}
 
 Steps Order
 -----------
-{}
-
-""".format(*data)
-
+{steps_order_data}
+"""
         print(summary)
-
         return summary
 
     # ==============================================================================

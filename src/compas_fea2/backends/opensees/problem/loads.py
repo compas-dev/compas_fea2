@@ -30,16 +30,8 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
 class PointLoad(PointLoadBase):
-    # TODO: add the possibility to apply the load to a node and not just to a node set
-    def __init__(self, name, nodes, x=0., y=0., z=0., xx=0., yy=0., zz=0.):
-        super(PointLoad, self).__init__(name=name, nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
-
-        self._jobdata = self._generate_jobdata()
-
-    @property
-    def jobdata(self):
-        """str : representation of the object in a software-specific inout file."""
-        return self._jobdata
+    def __init__(self, name,  x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global'):
+        super(PointLoad, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
     def _generate_jobdata(self):
         jobdata = []

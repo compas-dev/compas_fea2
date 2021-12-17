@@ -126,7 +126,6 @@ import os
 
 # additional software-based classes
 from .model import *
-from .instances import *
 from .parts import *
 from .nodes import *
 # from .interactions import *
@@ -135,6 +134,7 @@ from .constraints import *
 from .elements import *
 from .materials import *
 from .sections import *
+from .bcs import *
 
 
 __all__ = [name for name in dir() if not name.startswith('_')]

@@ -312,7 +312,7 @@ class PartBase(FEABase):
         else:
             raise ValueError('You must provide a Section object or the name of a previously added section')
 
-    def add_elements(self, elements, check=True):
+    def add_elements(self, elements):
         """Adds multiple compas_fea2 Element objects to the Part.
 
         Parameters
@@ -328,7 +328,7 @@ class PartBase(FEABase):
         """
 
         for element in elements:
-            self.add_element(element, check)
+            self.add_element(element)
 
     def remove_element(self, element_key):
         '''Removes the element from the Part.

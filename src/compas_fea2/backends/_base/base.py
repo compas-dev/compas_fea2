@@ -53,8 +53,12 @@ class FEABase(Base):
         data_extended = []
         for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_') and a != 'jsondefinitions', dir(self))):
             try:
-                if not callable(getattr(self, a)):
-                    data_extended.append('{0:<15} : {1}'.format(a, getattr(self, a)))
+                attr = getattr(self, a)
+                if not callable(attr):
+                    if not isinstance(attr, (list, dict, tuple)):
+                        data_extended.append('{0:<15} : {1}'.format(a, attr.__repr__()))
+                    else:
+                        data_extended.append('{0:<15} : {1}'.format(a, attr))
             except:
                 pass
         return """\n{}\n{}\n{}\n""".format(title, separator, '\n'.join(data_extended))
@@ -76,7 +80,7 @@ class FEABase(Base):
         """
         raise NotImplementedError
 
-    @property
+    @ property
     def jobdata(self):
         """This property is the representation of the object in a software-specific inout file.
 

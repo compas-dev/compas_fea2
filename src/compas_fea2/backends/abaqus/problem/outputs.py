@@ -15,8 +15,13 @@ __all__ = [
 
 class FieldOutput(FieldOutputBase):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
-        super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
-        self.__name__ = 'FieldOutputRequst'
+        super(FieldOutput, self).__init__(name, node_outputs, element_outputs)
+        self._frequency = frequency
+
+    @property
+    def frequency(self):
+        """????"""
+        return self._frequency
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -29,16 +34,17 @@ class FieldOutput(FieldOutputBase):
         -------
         input file data line (str).
         """
-        data = ['** FIELD OUTPUT: {}\n**'.format(self._name)]
-        if not (self._node_outputs and self._element_outputs):
+        data = [f'** FIELD OUTPUT: {self.name}\n**']
+        if not self.node_outputs and not self.element_outputs:
             data.append('*Output, field, variable=PRESELECT\n**\n')
         else:
-            data.append("""*Output, field, frequency={}
-*Node Output
-{}
-*Element output, direction=YES
-{}\n""".format(self.frequency, ', '.join(self.node_outputs), ', '.join(self.element_outputs)))
-
+            data.append(f'*Output, field, frequency={self.frequency}')
+            if self.node_outputs:
+                data.append('\n'.join([f'*Node Output',
+                                       f'{", ".join(self.node_outputs)}']))
+            if self.element_outputs:
+                data.append('\n'.join([f'*Element output, direction=YES',
+                                       f'{", ".join(self.element_outputs)}']))
         return '\n'.join(data)
 
 

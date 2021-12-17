@@ -72,8 +72,6 @@ class GeneralStaticStep(GeneralStaticCaseBase):
         """
 
         return f"""**
-** ----------------------------------------------------------------
-**
 {self._generate_header_section()}**
 ** DISPLACEMENTS
 **
@@ -90,7 +88,7 @@ class GeneralStaticStep(GeneralStaticCaseBase):
         data_section = []
         line = ("** ----------------------------------------------------------------\n"
                 "**\n"
-                "** STEP: {0}\n"
+                f"** STEP: {0}\n"
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
@@ -116,11 +114,10 @@ class GeneralStaticStep(GeneralStaticCaseBase):
         return '\n'.join(data_section)
 
     def _generate_output_section(self):
+        # TODO check restart option
         data_section = ["**\n"
-                        "** OUTPUT REQUESTS\n"
-                        "**\n"
                         "*Restart, write, frequency=0\n"
-                        "**\n"]
+                        "**"]
 
         if self._field_outputs:
             for foutput in self._field_outputs.values():
@@ -130,7 +127,7 @@ class GeneralStaticStep(GeneralStaticCaseBase):
                 data_section.append(houtput._generate_jobdata())
         data_section.append('*End Step\n')
 
-        return ''.join(data_section)
+        return '\n'.join(data_section)
 
 
 # TODO fix also the steps below

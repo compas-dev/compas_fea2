@@ -96,11 +96,10 @@ class CaseBase(FEABase):
         -------
         None
         """
-        attrb_name = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_output'
-        if not getattr(self, attrb_name):
-            setattr(self, attrb_name, {})
-        if output.name not in getattr(self, attrb_name):
-            getattr(self, attrb_name)[output.name] = output
+        attrb = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_output'
+
+        if output.name not in getattr(self, attrb):
+            getattr(self, attrb)[output.name] = output
         else:
             print('WARNING: {} already present in the Problem. skipped!'.format(output.__repr__()))
 

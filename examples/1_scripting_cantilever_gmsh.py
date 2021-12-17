@@ -1,12 +1,13 @@
 import os
+from pathlib import Path
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ShellSection
 from compas_fea2.backends.abaqus import NodesGroup
 
 from compas_fea2.backends.abaqus import Problem
-from compas_fea2.backends.abaqus import FixedDisplacement
-from compas_fea2.backends.abaqus import RollerDisplacementXZ
+from compas_fea2.backends.abaqus import FixedBC
+from compas_fea2.backends.abaqus import RollerBCXZ
 from compas_fea2.backends.abaqus import PointLoad
 from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
@@ -99,10 +100,13 @@ n_roller = model.get_node_from_coordinates([lx, 0, 0], 1)
 n_load = model.get_node_from_coordinates([lx, ly, 0, ], 1)
 
 # Define sets for boundary conditions and loads
-model.add_instance_set(NodesGroup(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
-model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
+model.add_nodes_group(name='fixed', nodes=[n_fixed['part-1']], part='part-1')
+model.add_nodes_group(name='roller', nodes=[n_roller['part-1']], part='part-1')
+model.add_nodes_group(name='pload', nodes=[n_load['part-1']], part='part-1')
 
+# Assign boundary conditions to the node stes
+model.add_rollerXZ_bc('bc_roller', nodes=[n_roller['part-1']], part='part-1')
+model.add_fix_bc(name='bc_fix', nodes=[n_fixed['part-1']], part='part-1')
 model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -112,23 +116,21 @@ name = 'principal_stresses'
 # Create the Problem object
 problem = Problem(name='cantilever_gmsh', model=model)
 
-# Assign boundary conditions to the node stes
-problem.add_bcs(bcs=[RollerDisplacementXZ(name='bc_roller', bset='roller'),
-                     FixedDisplacement(name='bc_fix', bset='fixed')])
+# Define the analysis step
+problem.add_step(GeneralStaticStep(name='gstep'))
 
 # Assign a point load to the node set
-problem.add_load(load=PointLoad(name='pload', lset='pload', x=1000))
+problem.add_point_load(name='pload', step='gstep', nodes=[n_load['part-1']], part='part-1', x=1000)
 
 # Define the field outputs required
-problem.add_field_output(fout=FieldOutput(name='fout'))
+# problem.add_field_output(fout=FieldOutput(name='fout'))
 
-# Define the analysis step
-problem.add_step(step=GeneralStaticStep(name='gstep', loads=['pload']))
 
 problem.summary()
-# Solve the problem
-problem.analyse(path=folder)
-# print(os.path.join(problem.path, '{}-results.pkl'.format(problem.name)))
+# problem.show()
+# # Solve the problem
+problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# # print(os.path.join(problem.path, '{}-results.pkl'.format(problem.name)))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem, fields=['s'], output=True)

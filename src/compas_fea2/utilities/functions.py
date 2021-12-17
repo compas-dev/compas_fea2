@@ -71,8 +71,15 @@ __all__ = [
 ]
 
 
-def process_data(data, dtype, iptype, nodal, elements, n):
+# # =========================================================================
+# #                         General methods
+# # =========================================================================
 
+# def _sort(self, attr):
+#     return sorted(attr, key=lambda x: x.key, reverse=False)
+
+
+def process_data(data, dtype, iptype, nodal, elements, n):
     """ Process the raw data.
 
     Parameters
@@ -106,8 +113,8 @@ def process_data(data, dtype, iptype, nodal, elements, n):
 
     elif dtype == 'element':
 
-        m          = len(elements)
-        lengths    = zeros(m, dtype=int64)
+        m = len(elements)
+        lengths = zeros(m, dtype=int64)
         data_array = zeros((m, 20), dtype=float64)
 
         iptypes = {'max': 0, 'min': 1, 'mean': 2, 'abs': 3}
@@ -131,31 +138,29 @@ def process_data(data, dtype, iptype, nodal, elements, n):
             cols.extend(nodes)
         vals = [1] * len(rows)
 
-        A  = csr_matrix((vals, (rows, cols)), shape=(m, n))
+        A = csr_matrix((vals, (rows, cols)), shape=(m, n))
         AT = A.transpose()
-
 
         def _process(data_array, lengths, iptype):
 
-            m  = len(lengths)
+            m = len(lengths)
             ve = zeros((m, 1))
 
             for i in range(m):
 
                 if iptype == 0:
-                    ve[i]  = max(data_array[i, :lengths[i]])
+                    ve[i] = max(data_array[i, :lengths[i]])
 
                 elif iptype == 1:
-                    ve[i]  = min(data_array[i, :lengths[i]])
+                    ve[i] = min(data_array[i, :lengths[i]])
 
                 elif iptype == 2:
-                    ve[i]  = mean(data_array[i, :lengths[i]])
+                    ve[i] = mean(data_array[i, :lengths[i]])
 
                 elif iptype == 3:
-                    ve[i]  = max(abs(data_array[i, :lengths[i]]))
+                    ve[i] = max(abs(data_array[i, :lengths[i]]))
 
             return ve
-
 
         def _nodal(rows, cols, nodal, ve, n):
 
@@ -163,7 +168,7 @@ def process_data(data, dtype, iptype, nodal, elements, n):
 
             for i in range(len(rows)):
 
-                node    = cols[i]
+                node = cols[i]
                 element = rows[i]
 
                 if nodal == 0:
@@ -175,7 +180,6 @@ def process_data(data, dtype, iptype, nodal, elements, n):
                         vn[node] = ve[element]
 
             return vn
-
 
         ve = _process(data_array, lengths, iptypes[iptype])
 
@@ -190,7 +194,6 @@ def process_data(data, dtype, iptype, nodal, elements, n):
 
 
 def identify_ranges(data):
-
     """ Identifies continuous interger series from a list and returns a list of ranges.
 
     Parameters
@@ -220,7 +223,6 @@ def identify_ranges(data):
 
 
 def colorbar(fsc, input='array', type=255):
-
     """ Creates RGB color information from -1 to 1 scaled values.
 
     Parameters
@@ -261,7 +263,6 @@ def colorbar(fsc, input='array', type=255):
 
 
 def mesh_from_shell_elements(structure):
-
     """ Returns a Mesh datastructure object from a Structure's ShellElement objects.
 
     Parameters
@@ -328,7 +329,6 @@ def _centre(p1, p2, p3):
 
 
 def combine_all_sets(sets_a, sets_b):
-
     """ Combines two nested lists of node or element sets into the minimum ammount of set combinations.
 
     Parameters
@@ -355,7 +355,6 @@ def combine_all_sets(sets_a, sets_b):
 
 
 def group_keys_by_attribute(adict, name, tol='3f'):
-
     """ Make group keys by shared attribute values.
 
     Parameters
@@ -385,7 +384,6 @@ def group_keys_by_attribute(adict, name, tol='3f'):
 
 
 def group_keys_by_attributes(adict, names, tol='3f'):
-
     """ Make group keys by shared values of attributes.
 
     Parameters
@@ -423,7 +421,6 @@ def group_keys_by_attributes(adict, names, tol='3f'):
 
 
 def network_order(start, structure, network):
-
     """ Extract node and element orders from a Network for a given start-point.
 
     Parameters
@@ -475,7 +472,6 @@ def network_order(start, structure, network):
 
 
 def normalise_data(data, cmin, cmax):
-
     """ Normalise a vector of data to between -1 and 1.
 
     Parameters
@@ -508,7 +504,6 @@ def normalise_data(data, cmin, cmax):
 
 
 def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, iptype, nodal):
-
     """ Post-process data from analysis results for given step and field.
 
     Parameters
@@ -575,16 +570,15 @@ def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, ip
         eabs = 0
         ElementBases_ = []
 
-    toc      = time() - tic
-    NodeBases_  = [list(i) for i in list(NodeBases)]
-    fabs_    = float(fabs)
+    toc = time() - tic
+    NodeBases_ = [list(i) for i in list(NodeBases)]
+    fabs_ = float(fabs)
     fscaled_ = [float(i) for i in list(fscaled)]
 
     return toc, U, NodeBases_, fabs_, fscaled_, ElementBases_, float(eabs)
 
 
 def plotvoxels(values, U, vdx, indexing=None):
-
     """ Plot values as voxel data.
 
     Parameters
@@ -615,7 +609,7 @@ def plotvoxels(values, U, vdx, indexing=None):
     Xm, Ym, Zm = meshgrid(X, Y, Z)
     # Zm, Ym, Xm = meshgrid(X, Y, Z, indexing='ij')
 
-    f  = abs(asarray(values))
+    f = abs(asarray(values))
     Am = squeeze(griddata(U, f, (Xm, Ym, Zm), method='linear', fill_value=0))
     Am[isnan(Am)] = 0
 
@@ -627,7 +621,6 @@ def plotvoxels(values, U, vdx, indexing=None):
 
 
 def principal_stresses(data, ptype, scale, rotate):
-
     """ Performs principal stress calculations.
 
     Parameters
@@ -657,10 +650,10 @@ def principal_stresses(data, ptype, scale, rotate):
     """
 
     axes = data['axes']
-    s11  = data['sxx']
-    s22  = data['syy']
-    s12  = data['sxy']
-    spr  = data['s{0}p'.format(ptype)]
+    s11 = data['sxx']
+    s22 = data['syy']
+    s12 = data['sxy']
+    spr = data['s{0}p'.format(ptype)]
 
     ekeys = spr.keys()
     m = len(ekeys)

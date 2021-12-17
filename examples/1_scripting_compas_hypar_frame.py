@@ -4,6 +4,7 @@ from pprint import pprint
 from compas.datastructures import Mesh
 
 from compas_fea2.backends.abaqus.model import Model
+from compas_fea2.backends.abaqus.model import Part
 from compas_fea2.backends.abaqus.model import ElasticIsotropic
 from compas_fea2.backends.abaqus.model import BoxSection
 from compas_fea2.backends.abaqus.model import NodesGroup
@@ -24,14 +25,15 @@ mesh = Mesh.from_obj(DATA + '/hypar.obj')
 model = Model(name='hypar')
 
 # Define materials
-model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
 
 # Define sections
-box_20_80 = BoxSection(name='section_A', material='mat_A', a=20, b=80, t=5)
+box_20_80 = BoxSection(name='section_A', material=mat, a=20, b=80, t=5)
 
 # Create a frame model from a mesh
-model.frame_from_mesh(mesh=mesh, beam_section=box_20_80)
+part = Part.frame_from_mesh(name='hypar_part', mesh=mesh, beam_section=box_20_80)
 
+model.add_part(part)
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0, ], 10)
 n_roller = model.get_node_from_coordinates([0, 0, -5000], 10)
@@ -43,8 +45,8 @@ n_load = model.get_node_from_coordinates([0, 3000, 0, ], 10)
 # model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
 
 # Assign boundary conditions to the node stes
-model.add_rollerXZ_bc(name='bc_roller', part='part-1', nodes=[n_roller['part-1']])
-model.add_fix_bc(name='bc_fix', part='part-1', nodes=[n_fixed['part-1']])
+model.add_rollerXZ_bc(name='bc_roller', part='hypar_part', nodes=[n_roller['hypar_part']])
+model.add_fix_bc(name='bc_fix', part='hypar_part', nodes=[n_fixed['hypar_part']])
 
 # model.show()
 
@@ -57,7 +59,7 @@ problem = Problem(name='hypar', model=model)
 problem.add_step(GeneralStaticStep(name='gstep'))
 
 # Assign a point load to the node set
-problem.add_point_load(name='pload', step='gstep', part='part-1', nodes=[n_load['part-1']], y=-1000)
+problem.add_point_load(name='pload', step='gstep', part='hypar_part', nodes=[n_load['hypar_part']], y=-1000)
 
 # Solve the problem
 problem.analyse(path=Path(TEMP).joinpath(problem.name))

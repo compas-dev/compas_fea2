@@ -84,11 +84,131 @@ class PartBase(FEABase):
         return '{0}({1})'.format(self.__name__, self.name)
 
     # =========================================================================
-    #                         General methods
+    #                       Constructor methods
     # =========================================================================
 
-    def _sort(self, attr):
-        return sorted(attr, key=lambda x: x.key, reverse=False)
+    def from_network(self, network):
+        raise NotImplementedError()
+
+    def from_obj(self, obj):
+        raise NotImplementedError()
+
+    @classmethod
+    def frame_from_mesh(cls, name, mesh, beam_section):
+        """Creates a Part object from a compas Mesh object [WIP]. The edges of
+        the mesh become the BeamElements of the frame. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        name : str
+            name of the new part.
+        mesh : obj
+            Mesh to convert to import as a Model.
+        beam_section : obj
+            compas_fea2 BeamSection object to to apply to the frame elements.
+        """
+        from compas.geometry import normalize_vector
+        m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
+        part = cls(name)
+        part.add_section(beam_section)
+
+        for v in mesh.vertices():
+            part.add_node(m.Node(mesh.vertex_coordinates(v)))
+
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        vertices = list(mesh.vertices())
+        edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
+
+        for e in edges:
+            # get elements orientation
+            v = normalize_vector(mesh.edge_vector(e[0], e[1]))
+            v.append(v.pop(0))
+            # add element to the model
+            part.add_element(m.BeamElement(connectivity=[
+                e[0], e[1]], section=beam_section, orientation=v))
+
+        return part
+
+    @classmethod
+    def shell_from_mesh(cls, name, mesh, shell_section):
+        """Creates a Part object from a compas Mesh object [WIP]. The faces of
+        the mesh become ShellElement objects. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        name : str
+            name of the new part.
+        mesh : obj
+            Mesh to convert to import as a Model.
+        shell_section : obj
+            compas_fea2 ShellSection object to to apply to the shell elements.
+        """
+        m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
+        part = cls(name)
+        part.add_section(shell_section)
+
+        for v in mesh.vertices():
+            part.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
+
+        # Generate elements between nodes
+        key_index = mesh.key_index()
+        faces = [[key_index[key]
+                  for key in mesh.face_vertices(face)] for face in mesh.faces()]
+
+        for face in faces:
+            part.add_element(m.ShellElement(connectivity=face, section=shell_section))
+
+        return part
+
+    @classmethod
+    def shell_from_gmesh(cls, name, gmshModel, shell_section):
+        """Creates a Part object from a gmshModel object [WIP]. The faces of
+        the mesh become the elements of the shell. Currently, the same section
+        is applied to all the elements.
+
+        Parameters
+        ----------
+        name : str
+            name of the new part.
+        gmshModel : obj
+            gmsh Model to convert.
+        shell_section : obj
+            compas_fea2 ShellSection object to to apply to the shell elements.
+        """
+
+        part = cls(name)
+        m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))
+        part.add_section(shell_section)
+
+        nodes = gmshModel.mesh.getNodes()
+        node_tags = nodes[0]
+        node_coords = nodes[1].reshape((-1, 3), order='C')
+        for _, coords in zip(node_tags, node_coords):
+            part.add_node(m.Node(coords.tolist()))
+        elements = gmshModel.mesh.getElements()
+        for eltype, etags, ntags in zip(*elements):
+            if eltype == 2:
+                for i, _ in enumerate(etags):
+                    n = gmshModel.mesh.getElementProperties(eltype)[3]
+                    triangle = ntags[i * n: i * n + n]  # NOTE: seems pretty much useless
+                    triangle = [x-1 for x in triangle]
+                    part.add_element(m.ShellElement(connectivity=triangle, section=shell_section))
+        return part
+
+    @classmethod
+    def from_volmesh(self, name, volmesh):
+        raise NotImplementedError()
+
+    @classmethod
+    def from_solid(self, name, solid):
+        raise NotImplementedError()
+
+    @classmethod
+    def from_compas_part(cls, name, part):
+        raise NotImplementedError()
 
     # =========================================================================
     #                           Nodes methods
@@ -437,7 +557,7 @@ class PartBase(FEABase):
                 if section.material in self._materials:
                     section._material = self._materials[section.material]
                 else:
-                    raise ValueError(f'Material {section.material} not found in {self}')
+                    raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
             else:
                 raise ValueError()
 

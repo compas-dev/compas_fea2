@@ -24,18 +24,16 @@ mesh = Mesh.from_obj(DATA + '/hypar.obj')
 # Initialise the assembly object
 model = Model(name='hypar')
 
-# Add a Part to the model
-model.add_part(Part(name='part-1'))
-
 # Define materials
-model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
 
 # Define sections
-shell_20 = ShellSection(name='section_A', material='mat_A', t=20)
+shell_20 = ShellSection(name='section_A', material=mat, t=20)
 
 # Create a shell model from a mesh
-model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
+part = Part.shell_from_mesh(name='hypar_part', mesh=mesh, shell_section=shell_20)
 
+model.add_part(part)
 # Find nodes in the model for the boundary conditions
 n_fixed = model.get_node_from_coordinates([5000, 0, 0, ], 10)
 n_roller = model.get_node_from_coordinates([0, 0, -5000], 10)
@@ -45,12 +43,11 @@ n_load = model.get_node_from_coordinates([0, 3000, 0, ], 10)
 # model.add_instance_set(NodesGroup(name='fixed', selection=[n_fixed['part-1']], stype='nset'), instance='part-1-1')
 # model.add_instance_set(NodesGroup(name='roller', selection=[n_roller['part-1']], stype='nset'), instance='part-1-1')
 # model.add_instance_set(NodesGroup(name='pload', selection=[n_load['part-1']], stype='nset'), instance='part-1-1')
-# Assign boundary conditions to the node stes
-model.add_fix_bc(name='bc_roller', nodes=[n_fixed['part-1']], part='part-1')
-model.add_rollerXZ_bc(name='bc_roller', nodes=[n_roller['part-1']], part='part-1')
 
-# Review
-model.summary()
+# Assign boundary conditions to the node stes
+model.add_rollerXZ_bc(name='bc_roller', part='hypar_part', nodes=[n_roller['hypar_part']])
+model.add_fix_bc(name='bc_fix', part='hypar_part', nodes=[n_fixed['hypar_part']])
+
 # model.show()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -63,11 +60,11 @@ problem.add_step(step=ModalStep(name='modal', modes=3))
 
 # Review
 problem.summary()
-problem.show()
+# problem.show()
 
 # Solve the problem
 problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
 ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u', 's'])
+results = Results.from_problem(problem, fields=['u'])
 pprint(results.nodal['modal'])

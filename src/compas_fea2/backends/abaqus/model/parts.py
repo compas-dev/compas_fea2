@@ -109,9 +109,9 @@ class Part(PartBase):
         # Write elements, elsets and sections
         grouped_elements = self._group_elements()
         for eltype, sections in grouped_elements.items():
-            part_data.append("*Element, type={}\n".format(eltype))
             for section, orientations in sections.items():
                 for orientation, elements in orientations.items():
+                    part_data.append("*Element, type={}\n".format(eltype))
                     # Write elements
                     for element in elements:
                         part_data.append(element._generate_jobdata())

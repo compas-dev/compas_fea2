@@ -16,4 +16,7 @@ sphinx_compas_theme >=0.12.2
 sphinx >=1.6, <2.4.4
 sphinxcontrib.gist
 twine
+openseespy ; sys_platform != 'darwin'
+openseespymac ; sys_platform == 'darwin'
 -e .
+

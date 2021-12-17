@@ -753,6 +753,8 @@ class ModelBase(FEABase):
         None
         """
         part = self._check_part_in_model(part)
+        if not isinstance(nodes, (list, tuple)):
+            nodes = [nodes]
         if not isinstance(bc, GeneralBCBase):
             raise TypeError(f'{bc} not instance of a BC class')
         if part not in self.bcs:

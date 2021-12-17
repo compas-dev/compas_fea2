@@ -123,7 +123,7 @@ problem.add_step(GeneralStaticStep(name='gstep'))
 problem.add_point_load(name='pload', step='gstep', nodes=[n_load['part-1']], part='part-1', x=1000)
 
 # Define the field outputs required
-# problem.add_field_output(fout=FieldOutput(name='fout'))
+problem.add_field_output(name='fout', node_outputs=None, element_outputs=['s'], step='gstep')
 
 
 problem.summary()

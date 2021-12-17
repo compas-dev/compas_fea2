@@ -121,11 +121,11 @@ problem.add_step(GeneralStaticStep(name='gstep'))
 # Assign a point load to the node set
 problem.add_point_load(name='pload', step='gstep', part='part-1', nodes=[((dis+1)//2)*(dis+1)],  z=-1000)
 
-# # Define the field outputs required
-# problem.add_field_output(fout=FieldOutput(name='fout'))
+# Define the field outputs required
+problem.add_field_output(name='fout', node_outputs=None, element_outputs=['s'], step='gstep')
 
 problem.summary()
-problem.show()
+# problem.show()
 # Solve the problem
 problem.analyse(path=folder)
 

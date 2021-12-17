@@ -5,6 +5,7 @@ from __future__ import print_function
 import os
 import sys
 import pickle
+import importlib
 from pathlib import Path
 
 from compas_fea2.backends._base.base import FEABase
@@ -495,7 +496,7 @@ class ProblemBase(FEABase):
         None
         """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        output = m.FieldOutputBase(name, node_outputs, element_outputs)
+        output = m.FieldOutput(name, node_outputs, element_outputs)
         self.add_output(output, step)
 
     # =========================================================================
@@ -515,7 +516,7 @@ class ProblemBase(FEABase):
         None
         """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        output = m.HistoryOutputBase(name)
+        output = m.HistoryOutput(name)
         self.add_output(output, step)
 
     # ==============================================================================

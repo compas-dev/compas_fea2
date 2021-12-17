@@ -60,7 +60,7 @@ problem.add_step(step=ModalStep(name='modal', modes=3))
 
 # Review
 problem.summary()
-# problem.show()
+problem.show()
 
 # Solve the problem
 problem.analyse(path=Path(TEMP).joinpath(problem.name))

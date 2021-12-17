@@ -22,6 +22,7 @@ from compas_fea2.backends._base.model.bcs import PinnedBCBase
 from compas_fea2.backends._base.model.bcs import FixedBCBase
 
 from compas_fea2.backends._base.problem.loads import PointLoadBase
+from compas_fea2.backends._base.problem.steps import ModalCaseBase
 
 
 # class Viewer():
@@ -165,19 +166,20 @@ class ProblemViewer(ModelViewer):
 
     def _add_loads(self):
         for step in self.problem.steps.values():  # TODO split the steps
-            for part, lode_node in step.loads.items():
-                for load, nodes in lode_node.items():
-                    # print(node, load)
-                    pts = [Point(*self.problem.model.parts[part].nodes[node].xyz) for node in nodes]
-                    if isinstance(load, PointLoadBase):
-                        # TODO add moment components xx, yy, zz
-                        # TODO add scale forces
-                        for pt in pts:
-                            comp = [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')]
-                            arrow = Arrow(pt, comp, head_portion=0.2, head_width=0.07, body_width=0.02)
-                            self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
-                            # t = Text(str(comp), pt, height=200)
-                            # self.app.add(t, color=(1, 0, 0))
+            if not isinstance(step, ModalCaseBase):
+                for part, lode_node in step.loads.items():
+                    for load, nodes in lode_node.items():
+                        # print(node, load)
+                        pts = [Point(*self.problem.model.parts[part].nodes[node].xyz) for node in nodes]
+                        if isinstance(load, PointLoadBase):
+                            # TODO add moment components xx, yy, zz
+                            # TODO add scale forces
+                            for pt in pts:
+                                comp = [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')]
+                                arrow = Arrow(pt, comp, head_portion=0.2, head_width=0.07, body_width=0.02)
+                                self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
+                                # t = Text(str(comp), pt, height=200)
+                                # self.app.add(t, color=(1, 0, 0))
 
 
 class ResultsViewer(ProblemViewer):

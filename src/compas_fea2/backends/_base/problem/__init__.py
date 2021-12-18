@@ -4,8 +4,6 @@ from __future__ import print_function
 
 from .problem import *
 from .displacements import *
-# from .load_cases import *
-# from .load_combos import *
 from .loads import *
 from .steps import *
 

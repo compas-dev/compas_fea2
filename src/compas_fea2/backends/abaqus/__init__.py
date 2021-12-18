@@ -8,11 +8,11 @@ This is the Abaqus implementation of compas_fea2.
 The following classes are used for the generation of the Model to be analysed in
 Abaqus
 
-.. currentmodule:: compas_fea2.backends.abaqus.model
-
 
 MODEL
 =====
+
+.. currentmodule:: compas_fea2.backends.abaqus.model
 
 .. autosummary::
     :toctree: generated/
@@ -87,11 +87,29 @@ Sections
     TieSection
     SpringSection
 
+Boundary Conditions
+-------------------
 
-.. currentmodule:: compas_fea2.backends.abaqus.problem
+.. autosummary::
+    :toctree: generated/
+
+    FixedBC
+    PinnedBC
+    FixedBCXX
+    FixedBCYY
+    FixedBCZZ
+    RollerBCX
+    RollerBCY
+    RollerBCZ
+    RollerBCXY
+    RollerBCYZ
+    RollerBCXZ
+
 
 PROBLEM
 =======
+
+.. currentmodule:: compas_fea2.backends.abaqus.problem
 
 .. autosummary::
     :toctree: generated/
@@ -135,22 +153,12 @@ Displacements
     :toctree: generated/
 
     GeneralDisplacement
-    FixedDisplacement
-    PinnedDisplacement
-    FixedDisplacementXX
-    FixedDisplacementYY
-    FixedDisplacementZZ
-    RollerDisplacementX
-    RollerDisplacementY
-    RollerDisplacementZ
-    RollerDisplacementXY
-    RollerDisplacementYZ
-    RollerDisplacementXZ
 
-.. currentmodule:: compas_fea2.backends.abaqus.results
 
 RESULTS
 =======
+
+.. currentmodule:: compas_fea2.backends.abaqus.results
 
 .. autosummary::
     :toctree: generated/

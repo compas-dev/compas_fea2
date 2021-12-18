@@ -187,14 +187,14 @@ class ResultsViewer(ProblemViewer):
         super(ProblemViewer, self).__init__(results.problem, width, height, scale_factor)
         self.results = results
 
-    # def show_deformed_shape(self):
-        # def _add_nodes(self):
-        #     for part in self.model.parts.values():
-        #         for node in part.nodes:
-        #             point = Point(node.x, node.y, node.z)
-        #             obj = self.app.add(point, size=10)
-        #             obj.translation = (5, 0, 0)
-        #             results.nodal
+    def show_deformed_shape(self):
+        def _add_nodes(self):
+            for part in self.model.parts.values():
+                for node in part.nodes:
+                    point = Point(node.x, node.y, node.z)
+                    obj = self.app.add(point, size=10)
+                    obj.translation = (5, 0, 0)
+                    results.nodal
 
 
 class BeamViewer():

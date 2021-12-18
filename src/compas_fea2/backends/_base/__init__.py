@@ -6,10 +6,11 @@ Base
 This is the Base implementation of compas_fea2, where the individual backends
 inherit from.
 
-.. currentmodule:: compas_fea2.backends._base.model
 
 MODEL
 =====
+
+.. currentmodule:: compas_fea2.backends._base.model
 
 .. autosummary::
     :toctree: generated/
@@ -70,10 +71,12 @@ Sections
     :toctree: generated/
 
     SectionBase
+    MassSectionBase
+    BeamSectionBase
+    SpringSectionBase
     AngleSectionBase
     BoxSectionBase
     CircularSectionBase
-    GeneralSectionBase
     ISectionBase
     PipeSectionBase
     RectangularSectionBase
@@ -84,32 +87,50 @@ Sections
     TrussSectionBase
     StrutSectionBase
     TieSectionBase
-    SpringSectionBase
 
+Boundary Conditions
+-------------------
 
-.. currentmodule:: compas_fea2.backends._base.problem
+.. autosummary::
+    :toctree: generated/
+
+    GeneralBCBase
+    FixedBCBase
+    PinnedBCBase
+    FixedBCXXBase
+    FixedBCYYBase
+    FixedBCZZBase
+    RollerBCXBase
+    RollerBCYBase
+    RollerBCZBase
+    RollerBCXYBase
+    RollerBCYZBase
+    RollerBCXZBase
+
 
 PROBLEM
 =======
+
+.. currentmodule:: compas_fea2.backends._base.problem
 
 .. autosummary::
     :toctree: generated/
 
     ProblemBase
 
-Steps
+Cases
 -----
 
 .. autosummary::
     :toctree: generated/
 
-    StepBase
-    GeneralStepBase
-    HeatStepBase
-    ModalStepBase
-    HarmonicStepBase
-    BucklingStepBase
-    AcousticStepBase
+    CaseBase
+    GeneralCaseBase
+    HeatCaseBase
+    ModalCaseBase
+    HarmonicCaseBase
+    BucklingCaseBase
+    AcousticCaseBase
 
 Loads
 -----
@@ -136,22 +157,12 @@ Displacements
     :toctree: generated/
 
     GeneralDisplacementBase
-    FixedDisplacementBase
-    PinnedDisplacementBase
-    FixedDisplacementXXBase
-    FixedDisplacementYYBase
-    FixedDisplacementZZBase
-    RollerDisplacementXBase
-    RollerDisplacementYBase
-    RollerDisplacementZBase
-    RollerDisplacementXYBase
-    RollerDisplacementYZBase
-    RollerDisplacementXZBase
 
-.. currentmodule:: compas_fea2.backends._base.results
 
 RESULTS
 =======
+
+.. currentmodule:: compas_fea2.backends._base.results
 
 .. autosummary::
     :toctree: generated/

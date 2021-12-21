@@ -1,5 +1,6 @@
 import os
-from compas_view2 import app
+from compas_view2.app import App
+from compas_view2.objects import Collection
 from compas_view2.shapes import Arrow
 from compas_view2.collections import Collection
 from compas_view2.shapes import Text
@@ -24,7 +25,6 @@ from compas_fea2.backends._base.model.bcs import FixedBCBase
 
 from compas_fea2.backends._base.problem.loads import PointLoadBase
 from compas_fea2.backends._base.problem.steps import ModalCaseBase
-
 
 # class Viewer():
 #     """Viewer for analysis results.
@@ -96,8 +96,8 @@ class ModelViewer():
         self.width = width
         self.height = height
         self.scale_factor = scale_factor
-        self.app = app.App(width=width, height=height)
-        self._add_nodes()
+        self.app = App(width=width, height=height)
+        # self._add_nodes()
         self._add_elements()
         self._add_bcs()
 
@@ -106,15 +106,20 @@ class ModelViewer():
         mesh.transform(S)
         return mesh
 
-    def _add_nodes(self):
-        for part in self.model.parts.values():
-            for node in part.nodes:
-                pt = Point(node.x, node.y, node.z)
-                self.app.add(pt, size=10)
-                self.app.add(Text(str(node.key), pt, height=25), color=(0, 0, 0))
+    # def _add_nodes(self):
+    #     for part in self.model.parts.values():
+    #         pts = []
+    #         txts = []
+    #         for node in part.nodes:
+    #             pt = Point(node.x, node.y, node.z)
+    #             pts.append(pt)
+    #             # txts.append(Text(str(node.key), pt, height=25))
+    #         self.app.add(Collection(pts), size=10)
+    #         # self.app.add(Collection(txts), color=(0, 0, 0))
 
     def _add_elements(self):
         for part in self.model.parts.values():
+            part_collection = []
             for element in part.elements.values():
                 pts = [Point(*part.nodes[node].xyz) for node in element.connectivity]
                 if isinstance(element, ShellElementBase):
@@ -128,22 +133,22 @@ class ModelViewer():
                         raise NotImplementedError("only 4 vertices shells supported at the moment")
                 elif isinstance(element, BeamElementBase):
                     line = Line(pts[0], pts[1])
-                    self.app.add(line, linewidth=0.5)
+                    part_collection.append(line)
                 elif isinstance(element, SolidElementBase):
                     if len(element.connectivity) == 8:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [
                                                             1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]])
-                        self.app.add(mesh, show_vertices=False, hide_coplanaredges=False)
-                    if len(element.connectivity) == 4:
+                        part_collection.append(mesh)
+                    elif len(element.connectivity) == 4:
                         faces = [
                             [0, 1, 2],
                             [0, 2, 3],
                             [1, 3, 2],
                             [0, 3, 1]]
-                        self.app.add(Polyhedron(pts, faces), hide_coplanaredges=False)
-
+                        part_collection.append(Polyhedron(pts, faces))
                     else:
                         print(f'{element} is not supported byt the viewer')
+            self.app.add(Collection(part_collection), linewidth=0.5, show_vertices=True, hide_coplanaredges=False)
 
     def _add_bcs(self):
         bcs_collection = []
@@ -157,11 +162,9 @@ class ModelViewer():
                     if isinstance(bc, FixedBCBase):
                         bcs_collection.append(FixBCShape(xyz, scale=self.scale_factor).shape)
 
-        self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0))
+        self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
 
     def show(self):
-        # from compas_view2.app import App
-        # from compas_view2.objects import Collection
         self.app.show()
 
     def dynamic_show(self):
@@ -177,6 +180,7 @@ class ProblemViewer(ModelViewer):
 
     def _add_loads(self):
         for step in self.problem.steps.values():  # TODO split the steps
+            step_collection = []
             if not isinstance(step, ModalCaseBase):
                 for part, lode_node in step.loads.items():
                     for load, nodes in lode_node.items():
@@ -188,9 +192,10 @@ class ProblemViewer(ModelViewer):
                             for pt in pts:
                                 comp = [load.components[c]/10000 if load.components[c] else 0 for c in ('x', 'y', 'z')]
                                 arrow = Arrow(pt, comp, head_portion=0.2, head_width=0.07, body_width=0.02)
-                                self.app.add(arrow, u=16, show_edges=False, facecolor=(0, 1, 0))
+                                step_collection.append(arrow)
                                 # t = Text(str(comp), pt, height=200)
                                 # self.app.add(t, color=(1, 0, 0))
+            self.app.add(Collection(step_collection), u=16, show_edges=False, facecolor=(0, 1, 0))
 
 
 class ResultsViewer(ProblemViewer):

@@ -16,38 +16,20 @@ __all__ = [
 
 
 class Part(PartBase):
-    """Initialises a Part object.
+    """Initialises a ``Part`` object.
 
     Parameters
     ----------
     name : str
-        Name of the set.
-
-    Attributes
-    ----------
-    elements_by_type : dict
-        Dictionary sorting the elements by unique element types.
-        key: element type
-        value: element key number
-    elements_by_section : dict
-        Dictionary sorting the elements by unique sections.
-        key: section
-        value: element key number
-    elements_by_elset : dict
-        Dictionary sorting the elements by their element set.
-        key: elset
-        value: element key number
-    elements_by_material : dict
-        Dictionary sorting the elements by unique materials.
-        key: material
-        value: element key number
+        Name of the ``Part``.
     """
 
     def __init__(self, name):
         super(Part, self).__init__(name)
 
     def _group_elements(self):
-        '''Group the elements.
+        '''Group the elements. This is used internally to generate the input
+        file.
 
         Parameters
         ----------
@@ -90,7 +72,7 @@ class Part(PartBase):
     # =========================================================================
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
+        """Generate the string information for the input file.
 
         Parameters
         ----------
@@ -98,7 +80,8 @@ class Part(PartBase):
 
         Returns
         -------
-        input file data line (str).
+        str
+            input file data lines.
         """
         from compas_fea2.backends.abaqus.model import ElementsGroup
         # Write nodes

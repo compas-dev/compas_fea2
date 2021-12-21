@@ -6,6 +6,7 @@ import sys
 import importlib
 import numpy as np
 
+import compas_fea2
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.model.materials import MaterialBase
 from compas_fea2.backends._base.model.sections import SectionBase
@@ -13,8 +14,6 @@ from compas_fea2.backends._base.model.sections import SolidSectionBase
 from compas_fea2.backends._base.model.sections import ShellSectionBase
 from compas_fea2.backends._base.model.groups import NodesGroupBase
 from compas_fea2.backends._base.model.groups import ElementsGroupBase
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'PartBase',
@@ -27,7 +26,7 @@ class PartBase(FEABase):
     Parameters
     ----------
     name : str
-        Name of the `Part`.
+        Name of the ``Part``.
     """
 
     def __init__(self, name):
@@ -46,7 +45,7 @@ class PartBase(FEABase):
 
     @property
     def name(self):
-        """str : Name of the `Part`"""
+        """str : Name of the ``Part``"""
         return self._name
 
     @name.setter
@@ -55,27 +54,32 @@ class PartBase(FEABase):
 
     @property
     def nodes(self):
-        """list : Sorted list (by Node key) with the `Nodes` objects belonging to the Part."""
+        """list : Sorted list (by `Node key`) with the :class:`NodeBase` sub-class
+        objects belonging to the ``Part``."""
         return self._nodes
 
     @property
     def materials(self):
-        """dict : Dictionary with the `Material` objects belonging to the Part."""
+        """dict : Dictionary with the :class:`MaterialBase` sub-class objects
+        belonging to the Part."""
         return self._materials
 
     @property
     def sections(self):
-        """dict : Dictionary with the `Section` objects belonging to the Part."""
+        """dict : Dictionary with the :class:`SectionBase` sub-class objects
+        belonging to the ``Part``."""
         return self._sections
 
     @property
     def elements(self):
-        """dict : Sorted list (by `Element key`) with the `Element` objects belonging to the Part."""
+        """dict : Sorted list (by `Element key`) with the :class:`ElementBase`
+        sub-class objects belonging to the ``Part``."""
         return self._elements
 
     @property
     def groups(self):
-        """list : List with the `NodesGroup` or `ElementsGroup` objects belonging to the `Part`."""
+        """list : List with the :class:`NodesGroupBase` or :class:`ElementsGroupBase`
+        sub-class objects belonging to the ``Part``."""
         return self._groups
 
     @property
@@ -98,7 +102,7 @@ class PartBase(FEABase):
 
     @classmethod
     def frame_from_mesh(cls, name, mesh, beam_section):
-        """Creates a Part object from a compas Mesh object [WIP]. The edges of
+        """Creates a ``Part`` object from a compas Mesh object [WIP]. The edges of
         the mesh become the BeamElements of the frame. Currently, the same section
         is applied to all the elements.
 
@@ -182,24 +186,29 @@ class PartBase(FEABase):
         name : str
             name of the new part.
         gmshModel : obj
-            gmsh Model to convert.
+            gmsh Model to convert. See [1]_
         section : obj
-            compas_fea2 SolidSection or ShellSection object to to apply to the
-            elements.
+            `compas_fea2` :class:`SolidSectionBase` or :class:`ShellSectionBase` sub-class
+            object to to apply to the elements.
         split : bool, optional
-            if `True` create an additional node in the middle of the edges of the
-            elements to implement more refined element types. Check for example [1]
+            if ``True`` create an additional node in the middle of the edges of the
+            elements to implement more refined element types. Check for example [2]_.
         verbose : bool, optional
-            if `True` print a log, by default False
+            if ``True`` print a log, by default False
         check : bool, optional
-            if `True` performs sanity checks, by default False. This is a quite
-            resource-intense operation! Set to `False` for large models (>10000
+            if ``True`` performs sanity checks, by default False. This is a quite
+            resource-intense operation! Set to ``False`` for large models (>10000
             nodes).
 
         Returns
         -------
         obj
             compas_fea2 `Part` object.
+
+        References
+        ----------
+        .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
+        .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
 
         Examples
         --------
@@ -208,7 +217,6 @@ class PartBase(FEABase):
         >>> sec = SolidSection('mysec', mat)
         >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
 
-        [1] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
         """
         part = cls(name)
         m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))

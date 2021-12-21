@@ -14,10 +14,21 @@ MODEL
 
 .. currentmodule:: compas_fea2.backends.abaqus.model
 
+Model
+-----
+
 .. autosummary::
     :toctree: generated/
 
     Model
+
+Parts
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    Part
 
 Nodes
 -----
@@ -34,9 +45,7 @@ Elements
     :toctree: generated/
 
     BeamElement
-    TrussElement
     ShellElement
-    MembraneElement
     SolidElement
 
 Constraints
@@ -45,8 +54,7 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
-    Constraint
-    TieConstraint
+    NodeTieConstraint
 
 Materials
 ---------
@@ -54,15 +62,15 @@ Materials
 .. autosummary::
     :toctree: generated/
 
+    ElasticIsotropic
+    ElasticOrthotropic
+    ElasticPlastic
+    Stiff
     Concrete
     ConcreteSmearedCrack
     ConcreteDamagedPlasticity
-    ElasticIsotropic
-    Stiff
-    ElasticOrthotropic
-    ElasticPlastic
-    ThermalMaterial
     Steel
+    ThermalMaterial
 
 
 Sections
@@ -74,7 +82,6 @@ Sections
     AngleSection
     BoxSection
     CircularSection
-    GeneralSection
     ISection
     PipeSection
     RectangularSection
@@ -105,6 +112,14 @@ Boundary Conditions
     RollerBCYZ
     RollerBCXZ
 
+Groups
+------
+
+.. autosummary::
+    :toctree: generated/
+
+    NodesGroup
+    ElementsGroup
 
 PROBLEM
 =======
@@ -123,11 +138,7 @@ Steps
     :toctree: generated/
 
     GeneralStep
-    HeatStep
     ModalStep
-    HarmonicStep
-    BucklingStep
-    AcousticStep
 
 Loads
 -----
@@ -136,15 +147,7 @@ Loads
     :toctree: generated/
 
     PointLoad
-    PrestressLoad
-    LineLoad
-    AreaLoad
     GravityLoad
-    ThermalLoad
-    TributaryLoad
-    HarmonicPointLoad
-    HarmonicPressureLoad
-    AcousticDiffuseFieldLoad
 
 Displacements
 -------------

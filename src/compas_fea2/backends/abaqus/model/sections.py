@@ -6,7 +6,6 @@ from math import pi
 
 from compas_fea2.backends._base.model import SectionBase
 from compas_fea2.backends._base.model import MassSectionBase
-# from compas_fea2.backends._base.model import GeneralSectionBase
 from compas_fea2.backends._base.model import ShellSectionBase
 from compas_fea2.backends._base.model import MembraneSectionBase
 from compas_fea2.backends._base.model import SolidSectionBase

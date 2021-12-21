@@ -12,10 +12,21 @@ MODEL
 
 .. currentmodule:: compas_fea2.backends._base.model
 
+Model
+-----
+
 .. autosummary::
     :toctree: generated/
 
     ModelBase
+
+Parts
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    PartBase
 
 Nodes
 -----
@@ -31,10 +42,9 @@ Elements
 .. autosummary::
     :toctree: generated/
 
+    ElementBase
     BeamElementBase
-    TrussElementBase
     ShellElementBase
-    MembraneElementBase
     SolidElementBase
 
 Constraints
@@ -53,16 +63,15 @@ Materials
     :toctree: generated/
 
     MaterialBase
+    StiffBase
+    ElasticIsotropicBase
+    ElasticOrthotropicBase
+    ElasticPlasticBase
     ConcreteBase
     ConcreteSmearedCrackBase
     ConcreteDamagedPlasticityBase
-    ElasticIsotropicBase
-    StiffBase
-    ElasticOrthotropicBase
-    ElasticPlasticBase
-    ThermalMaterialBase
     SteelBase
-
+    ThermalMaterialBase
 
 Sections
 --------
@@ -71,7 +80,6 @@ Sections
     :toctree: generated/
 
     SectionBase
-    MassSectionBase
     BeamSectionBase
     SpringSectionBase
     AngleSectionBase
@@ -87,6 +95,7 @@ Sections
     TrussSectionBase
     StrutSectionBase
     TieSectionBase
+    MassSectionBase
 
 Boundary Conditions
 -------------------
@@ -107,11 +116,23 @@ Boundary Conditions
     RollerBCYZBase
     RollerBCXZBase
 
+Groups
+------
+
+.. autosummary::
+    :toctree: generated/
+
+    NodesGroupBase
+    ElementsGroupBase
+
 
 PROBLEM
 =======
 
 .. currentmodule:: compas_fea2.backends._base.problem
+
+Problem
+-------
 
 .. autosummary::
     :toctree: generated/

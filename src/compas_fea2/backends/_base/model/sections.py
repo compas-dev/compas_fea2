@@ -521,15 +521,6 @@ class TrussSectionBase(BeamSectionBase):
         Area.
     material : obj
         `compas_fea2` Material object.
-
-    Attributes
-    ----------
-    name : str
-        Section object name.
-    material : obj
-        `compas_fea2` Material object.
-    geometry : dict
-        Dictionary containing the geometric properties of the section.
     """
 
     def __init__(self, name, A, material):
@@ -607,10 +598,6 @@ class ShellSectionBase(SectionBase):
     def t(self):
         """float : The thickness of the shell."""
         return self._t
-
-    @t.setter
-    def t(self, value):
-        self._t = value
 
 
 class MembraneSectionBase(SectionBase):

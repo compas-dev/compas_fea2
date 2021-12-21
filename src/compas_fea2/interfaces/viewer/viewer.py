@@ -12,6 +12,7 @@ from compas.geometry import Circle
 from compas.geometry import Line
 from compas.geometry import Plane
 from compas.geometry import Box
+from compas.geometry import Polyhedron
 
 from compas_fea2.interfaces.viewer.shapes import PinBCShape
 from compas_fea2.interfaces.viewer.shapes import FixBCShape
@@ -110,7 +111,7 @@ class ModelViewer():
             for node in part.nodes:
                 pt = Point(node.x, node.y, node.z)
                 self.app.add(pt, size=10)
-                self.app.add(Text(str(node.key), pt, height=50), color=(0, 0, 0))
+                self.app.add(Text(str(node.key), pt, height=25), color=(0, 0, 0))
 
     def _add_elements(self):
         for part in self.model.parts.values():
@@ -132,9 +133,17 @@ class ModelViewer():
                     if len(element.connectivity) == 8:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [
                                                             1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]])
-                        self.app.add(mesh, show_vertices=False, hide_coplanaredges=False, opacity=0.1)
-                else:
-                    raise print(f'{element} is not supported byt the viewer')
+                        self.app.add(mesh, show_vertices=False, hide_coplanaredges=False)
+                    if len(element.connectivity) == 4:
+                        faces = [
+                            [0, 1, 2],
+                            [0, 2, 3],
+                            [1, 3, 2],
+                            [0, 3, 1]]
+                        self.app.add(Polyhedron(pts, faces), hide_coplanaredges=False)
+
+                    else:
+                        print(f'{element} is not supported byt the viewer')
 
     def _add_bcs(self):
         bcs_collection = []
@@ -144,13 +153,15 @@ class ModelViewer():
                 for pt in pts:
                     xyz = [pt.x, pt.y, pt.z]
                     if isinstance(bc, PinnedBCBase):
-                        bcs_collection.append(PinBCShape(xyz).shape)
+                        bcs_collection.append(PinBCShape(xyz, scale=self.scale_factor).shape)
                     if isinstance(bc, FixedBCBase):
-                        bcs_collection.append(FixBCShape(xyz).shape)
+                        bcs_collection.append(FixBCShape(xyz, scale=self.scale_factor).shape)
 
         self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0))
 
     def show(self):
+        # from compas_view2.app import App
+        # from compas_view2.objects import Collection
         self.app.show()
 
     def dynamic_show(self):

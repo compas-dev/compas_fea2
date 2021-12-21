@@ -4,10 +4,13 @@ from __future__ import print_function
 
 import sys
 import importlib
+import numpy as np
 
 from compas_fea2.backends._base.base import FEABase
 from compas_fea2.backends._base.model.materials import MaterialBase
 from compas_fea2.backends._base.model.sections import SectionBase
+from compas_fea2.backends._base.model.sections import SolidSectionBase
+from compas_fea2.backends._base.model.sections import ShellSectionBase
 from compas_fea2.backends._base.model.groups import NodesGroupBase
 from compas_fea2.backends._base.model.groups import ElementsGroupBase
 
@@ -164,10 +167,15 @@ class PartBase(FEABase):
         return part
 
     @classmethod
-    def shell_from_gmesh(cls, name, gmshModel, shell_section):
-        """Creates a Part object from a gmshModel object [WIP]. The faces of
-        the mesh become the elements of the shell. Currently, the same section
-        is applied to all the elements.
+    def from_gmsh(cls, name, gmshModel, section, split=False, verbose=False, check=False):
+        """Create a Part object from a gmshModel object. According to the `section`
+        type provided, SolidElement or ShellElement elements are cretated.
+        The same section is applied to all the elements.
+
+        Note
+        ----
+        The gmshModel must have the right dimension corresponding to the section
+        provided.
 
         Parameters
         ----------
@@ -175,39 +183,70 @@ class PartBase(FEABase):
             name of the new part.
         gmshModel : obj
             gmsh Model to convert.
-        shell_section : obj
-            compas_fea2 ShellSection object to to apply to the shell elements.
-        """
+        section : obj
+            compas_fea2 SolidSection or ShellSection object to to apply to the
+            elements.
+        split : bool, optional
+            if `True` create an additional node in the middle of the edges of the
+            elements to implement more refined element types. Check for example [1]
+        verbose : bool, optional
+            if `True` print a log, by default False
+        check : bool, optional
+            if `True` performs sanity checks, by default False. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes).
 
+        Returns
+        -------
+        obj
+            compas_fea2 `Part` object.
+
+        Examples
+        --------
+        >>> gmshModel = gmsh.mode.generate(3)
+        >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, p=2.5e-9)
+        >>> sec = SolidSection('mysec', mat)
+        >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
+
+        [1] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
+        """
         part = cls(name)
         m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))
-        part.add_section(shell_section)
-
-        nodes = gmshModel.mesh.getNodes()
-        node_tags = nodes[0]
+        part.add_section(section)
+        # add nodes
+        nodes = gmshModel.mesh.get_nodes()
         node_coords = nodes[1].reshape((-1, 3), order='C')
-        for _, coords in zip(node_tags, node_coords):
-            part.add_node(m.Node(coords.tolist()))
-        elements = gmshModel.mesh.getElements()
-        for eltype, etags, ntags in zip(*elements):
-            if eltype == 2:
-                for i, _ in enumerate(etags):
-                    n = gmshModel.mesh.getElementProperties(eltype)[3]
-                    triangle = ntags[i * n: i * n + n]  # NOTE: seems pretty much useless
-                    triangle = [x-1 for x in triangle]
-                    part.add_element(m.ShellElement(connectivity=triangle, section=shell_section))
+        for coords in node_coords:
+            k = part.add_node(m.Node(coords.tolist()), check)
+            if verbose:
+                print(f'node {k} added')
+        # add elements
+        elements = gmshModel.mesh.get_elements()
+        if isinstance(section, SolidSectionBase):
+            ntags_per_element = np.split(elements[2][2]-1, len(elements[1][2]))  # gmsh keys start from 1
+            for ntags in ntags_per_element:
+                # if split:
+                # iteritools combinations
+                # for comb in combs:
+                # midpoint a b
+                # k = add node
+                k = part.add_element(m.SolidElement(ntags, section), check)
+                if verbose:
+                    print(f'element {k} added')
+        if isinstance(section, ShellSectionBase):
+            ntags_per_element = np.split(elements[2][1]-1, len(elements[1][1]))  # gmsh keys start from 1
+            for ntags in ntags_per_element:
+                k = part.add_element(m.ShellElement(ntags, section), check)
+                if verbose:
+                    print(f'element {k} added')
         return part
+
+    @ classmethod
+    def from_compas_part(cls, name, part):
+        raise NotImplementedError()
 
     @classmethod
     def from_volmesh(self, name, volmesh):
-        raise NotImplementedError()
-
-    @classmethod
-    def from_solid(self, name, solid):
-        raise NotImplementedError()
-
-    @classmethod
-    def from_compas_part(cls, name, part):
         raise NotImplementedError()
 
     # =========================================================================
@@ -263,7 +302,14 @@ class PartBase(FEABase):
         node : obj
             compas_fea2 Node object.
         check : bool
-            If True, checks if the node is already present.
+            If True, checks if the node is already present. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes)
+
+        Return
+        ------
+        int
+            node key
 
         Examples
         --------
@@ -272,8 +318,9 @@ class PartBase(FEABase):
         >>> part.add_node(node)
         """
 
-        if check and self.check_node_in_part(node):
-            print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
+        if check:
+            if self.check_node_in_part(node):
+                print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
         else:
             k = len(self.nodes)
             node._key = k
@@ -281,6 +328,7 @@ class PartBase(FEABase):
                 node._name = 'n-{}'.format(k)
             self._nodes.append(node)
             self._nodes_gkeys.append(node.gkey)
+        return node.key
 
     def add_nodes(self, nodes, check=True):
         """Add multiple compas_fea2 Node objects to the Part.
@@ -290,7 +338,9 @@ class PartBase(FEABase):
         nodes : list
             List of compas_fea2 Node objects.
         check : bool
-            If True, checks if the nodes are already present.
+            If True, checks if the nodes are already present. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes)
 
         Examples
         --------
@@ -402,24 +452,30 @@ class PartBase(FEABase):
             element.key = k
             k += 1
 
-    def add_element(self, element):
+    def add_element(self, element, check=True):
         """Adds a compas_fea2 Element object to the Part.
 
         Parameters
         ----------
         element : obj
             compas_fea2 Element object.
+        check : bool
+            If True, checks if the element keys are in the model. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes)
 
         Returns
         -------
-        None
+        int
+            element key
         """
 
         element._key = len(self.elements)
         for c in element.connectivity:
-            if c not in [node.key for node in self.nodes]:
-                raise ValueError(
-                    f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
+            if check:
+                if c not in [node.key for node in self.nodes]:
+                    raise ValueError(
+                        f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
         self._elements[element._key] = element
 
         if isinstance(element.section, str):
@@ -431,6 +487,7 @@ class PartBase(FEABase):
             self.add_section(element.section)
         else:
             raise ValueError('You must provide a Section object or the name of a previously added section')
+        return element._key
 
     def add_elements(self, elements):
         """Adds multiple compas_fea2 Element objects to the Part.
@@ -440,7 +497,9 @@ class PartBase(FEABase):
         elements : list
             List of compas_fea2 Element objects.
         check : bool
-            If True, checks if the elements are already present.
+            If True, checks if the element keys are in the model. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes)
 
         Returns
         -------
@@ -551,15 +610,15 @@ class PartBase(FEABase):
         if section.name not in self._sections:
             self._sections[section.name] = section
             if isinstance(section.material, MaterialBase):
-                if section.material.name not in self._materials:
+                if section.material.name not in self.materials:
                     self.add_material(section.material)
             elif isinstance(section.material, str):
-                if section.material in self._materials:
-                    section._material = self._materials[section.material]
+                if section.material in self.materials:
+                    section._material = self.materials[section.material]
                 else:
                     raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
             else:
-                raise ValueError()
+                raise TypeError()
 
     def add_sections(self, sections):
         """Add multiple compas_fea2 Section objects to the Part.

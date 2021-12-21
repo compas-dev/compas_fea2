@@ -250,7 +250,7 @@ class SolidElement(SolidElementBase):
             self.elset = elset
 
         if not eltype:
-            eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8'}
+            eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8', 10: 'C3D10'}
             self.eltype = eltypes[len(self.connectivity)]
         else:
             self.eltype = eltype
@@ -266,7 +266,7 @@ class SolidElement(SolidElementBase):
         -------
         input file data line (str).
         """
-        return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
+        return '{0}, {1}\n'.format(self.key+1, ','.join(str(node_key+1) for node_key in self.connectivity))
 
 
 # class PentahedronElement(PentahedronElementBase):

@@ -1043,7 +1043,7 @@ class ModelBase(FEABase):
                 if a == b:
                     node_dict[part.name] = node.key
         if not node_dict:
-            print("WARNING: Node at {} not found!".format(b))
+            print(f"WARNING: Node at {xyz} not found!")
 
         return node_dict
 

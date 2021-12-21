@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from compas_fea2.backends.abaqus import Model
+from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import ShellSection
 from compas_fea2.backends.abaqus import NodesGroup
@@ -48,25 +49,26 @@ def gmsh_geometry(x, y, lc, path):
 
     # We can then generate a 2D mesh...
     gmsh.model.mesh.generate(2)
-    print(gmsh.model.mesh.getNode(nodeTag=10))
-    element = gmsh.model.mesh.getElement(10)
+    return gmsh.model
+    # print(gmsh.model.mesh.getNode(nodeTag=10))
+    # element = gmsh.model.mesh.getElement(10)
     # gmsh.model.mesh.getElementFaceNodes()
     # print(gmsh.model.mesh.getKeysForElement(1,'Lagrange'))
 
-    # ... and save it to disk
-    gmsh.write(path)
-    gmsh.finalize()
+    # # ... and save it to disk
+    # gmsh.write(path)
+    # gmsh.finalize()
 
 
 def plot_vectors(problem, spr, e, scale):
 
-    centroids = [centroid_points([problem.model.parts['part-1'].nodes[i].xyz for i in element.connectivity])
-                 for element in problem.model.parts['part-1'].elements]
+    centroids = [centroid_points([problem.model.parts['cantilever'].nodes[i].xyz for i in element.connectivity])
+                 for element in problem.model.parts['cantilever'].elements.values()]
     x = [c[0] for c in centroids]
     y = [c[1] for c in centroids]
 
     for stype in ['max', 'min']:
-        color = 'gray'  # if stype == 'max' else 'b'
+        color = 'r' if stype == 'max' else 'b'
         u = e[sp][stype][0]*spr['sp1'][stype]/2
         v = e[sp][stype][1]*spr['sp1'][stype]/2
         plt.quiver(x, y, u, v, color=color, width=1*10**-3)
@@ -78,35 +80,36 @@ def plot_vectors(problem, spr, e, scale):
 # Generate a cantilever beam using gmsh
 lx = 1000
 ly = 3000
-gmsh_geometry(lx, ly, 100, DATA+"/t1.stl")
-mesh = Mesh.from_stl(DATA+"/t1.stl")
+mesh = gmsh_geometry(lx, ly, 100, DATA+"/t1.stl")
+# mesh = Mesh.from_stl(DATA+"/t1.stl")
 
 ##### ----------------------------- MODEL ----------------------------- #####
 # Initialise the assembly object
 model = Model(name='cantilever_gmsh')
 
 # Define materials
-model.add_material(ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+mat = ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9)
 
 # Define sections
-shell_20 = ShellSection(name='section_A', material='mat_A', t=20)
+shell_20 = ShellSection(name='section_A', material=mat, t=20)
 
 # Create a shell model from a mesh
-model.shell_from_mesh(mesh=mesh, shell_section=shell_20)
+part = Part.from_gmsh(name='cantilever', gmshModel=mesh, section=shell_20)
+model.add_part(part)
 
 # Find nodes in the model for the boundary conditions
-n_fixed = model.get_node_from_coordinates([0, 0, 0, ], 1)
-n_roller = model.get_node_from_coordinates([lx, 0, 0], 1)
-n_load = model.get_node_from_coordinates([lx, ly, 0, ], 1)
+n_fixed = model.get_node_from_coordinates([0, 0, 0, ], 10)
+n_roller = model.get_node_from_coordinates([lx, 0, 0], 10)
+n_load = model.get_node_from_coordinates([lx, ly, 0, ], 10)
 
 # Define sets for boundary conditions and loads
-model.add_nodes_group(name='fixed', nodes=[n_fixed['part-1']], part='part-1')
-model.add_nodes_group(name='roller', nodes=[n_roller['part-1']], part='part-1')
-model.add_nodes_group(name='pload', nodes=[n_load['part-1']], part='part-1')
+model.add_nodes_group(name='fixed', nodes=[n_fixed['cantilever']], part='cantilever')
+model.add_nodes_group(name='roller', nodes=[n_roller['cantilever']], part='cantilever')
+model.add_nodes_group(name='pload', nodes=[n_load['cantilever']], part='cantilever')
 
 # Assign boundary conditions to the node stes
-model.add_rollerXZ_bc('bc_roller', nodes=[n_roller['part-1']], part='part-1')
-model.add_fix_bc(name='bc_fix', nodes=[n_fixed['part-1']], part='part-1')
+model.add_rollerXZ_bc('bc_roller', nodes=[n_roller['cantilever']], part='cantilever')
+model.add_fix_bc(name='bc_fix', nodes=[n_fixed['cantilever']], part='cantilever')
 model.summary()
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
@@ -120,7 +123,7 @@ problem = Problem(name='cantilever_gmsh', model=model)
 problem.add_step(GeneralStaticStep(name='gstep'))
 
 # Assign a point load to the node set
-problem.add_point_load(name='pload', step='gstep', nodes=[n_load['part-1']], part='part-1', x=1000)
+problem.add_point_load(name='pload', step='gstep', nodes=[n_load['cantilever']], part='cantilever', x=1000)
 
 # Define the field outputs required
 problem.add_field_output(name='fout', node_outputs=None, element_outputs=['s'], step='gstep')

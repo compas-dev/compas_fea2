@@ -1029,8 +1029,8 @@ class ModelBase(FEABase):
         Returns
         -------
         node : dict
-            Dictionary with the Node object for each Instance.
-            key =  Instance
+            Dictionary with the Node object for each Part.
+            key =  Part name
             value = Node object with the specified coordinates.
         """
 

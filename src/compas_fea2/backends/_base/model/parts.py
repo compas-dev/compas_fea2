@@ -247,6 +247,7 @@ class PartBase(FEABase):
                 k = part.add_element(m.ShellElement(ntags, section), check)
                 if verbose:
                     print(f'element {k} added')
+        print('\ncompas_fea2 model generated!\n')
         return part
 
     @ classmethod

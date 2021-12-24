@@ -111,6 +111,7 @@ model.add_nodes_group(name='pload', nodes=[n_load['cantilever']], part='cantilev
 model.add_rollerXZ_bc('bc_roller', nodes=[n_roller['cantilever']], part='cantilever')
 model.add_fix_bc(name='bc_fix', nodes=[n_fixed['cantilever']], part='cantilever')
 model.summary()
+model.show(node_labels={'cantilever': [0, 1]})
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 folder = 'C:/temp/'

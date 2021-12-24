@@ -1108,9 +1108,9 @@ Boundary Conditions
     # Viewer
     # ==============================================================================
 
-    def show(self, width=800, height=500, scale_factor=1):
+    def show(self, width=800, height=500, scale_factor=1, node_labels=None):
         from compas_fea2.interfaces.viewer import ModelViewer
-        v = ModelViewer(self, width, height, scale_factor)
+        v = ModelViewer(self, width, height, scale_factor, node_labels)
         v.show()
 
     # ==============================================================================

@@ -91,13 +91,14 @@ from compas_fea2.backends._base.problem.steps import ModalCaseBase
 
 class ModelViewer():
 
-    def __init__(self, model, width, height, scale_factor):
+    def __init__(self, model, width, height, scale_factor, node_labels):
         self.model = model
         self.width = width
         self.height = height
         self.scale_factor = scale_factor
         self.app = App(width=width, height=height)
-        # self._add_nodes()
+        if node_labels:
+            self._add_nodes_labels(node_labels)
         self._add_elements()
         self._add_bcs()
 
@@ -106,49 +107,51 @@ class ModelViewer():
         mesh.transform(S)
         return mesh
 
-    # def _add_nodes(self):
-    #     for part in self.model.parts.values():
-    #         pts = []
-    #         txts = []
-    #         for node in part.nodes:
-    #             pt = Point(node.x, node.y, node.z)
-    #             pts.append(pt)
-    #             # txts.append(Text(str(node.key), pt, height=25))
-    #         self.app.add(Collection(pts), size=10)
-    #         # self.app.add(Collection(txts), color=(0, 0, 0))
+    def _add_nodes_labels(self, node_labels):
+        for part, indices in node_labels.items():
+            nodes = [self.model.parts[part].nodes[index] for index in indices]
+            for node in nodes:
+                txt = Text(str(node.key), Point(node.x, node.y, node.z), height=35)
+                self.app.add(txt, color=[1, 0, 0])
 
     def _add_elements(self):
         for part in self.model.parts.values():
-            part_collection = []
+            part_shells_collection = []
+            part_tets_collection = []
+            part_lines_collection = []
             for element in part.elements.values():
                 pts = [Point(*part.nodes[node].xyz) for node in element.connectivity]
                 if isinstance(element, ShellElementBase):
                     if len(element.connectivity) == 4:
                         mesh = Mesh.from_vertices_and_faces(pts, [[1, 2, 3, 0]])
-                        self.app.add(mesh, show_vertices=False, hide_coplanaredges=False)
                     elif len(element.connectivity) == 3:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2]])
-                        self.app.add(mesh, show_vertices=False, hide_coplanaredges=False)
                     else:
                         raise NotImplementedError("only 4 vertices shells supported at the moment")
+                    part_shells_collection.append(mesh)
                 elif isinstance(element, BeamElementBase):
                     line = Line(pts[0], pts[1])
-                    part_collection.append(line)
+                    part_lines_collection.append(line)
                 elif isinstance(element, SolidElementBase):
                     if len(element.connectivity) == 8:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [
                                                             1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]])
-                        part_collection.append(mesh)
                     elif len(element.connectivity) == 4:
                         faces = [
                             [0, 1, 2],
                             [0, 2, 3],
                             [1, 3, 2],
                             [0, 3, 1]]
-                        part_collection.append(Polyhedron(pts, faces))
+                        mesh = Polyhedron(pts, faces)
                     else:
                         print(f'{element} is not supported byt the viewer')
-            self.app.add(Collection(part_collection), linewidth=0.5, show_vertices=True, hide_coplanaredges=False)
+                    part_tets_collection.append(mesh)
+            if part_shells_collection:
+                self.app.add(Collection(part_shells_collection), show_vertices=True, hide_coplanaredges=False)
+            if part_tets_collection:
+                self.app.add(Collection(part_tets_collection), show_vertices=True, hide_coplanaredges=False)
+            if part_lines_collection:
+                self.app.add(Collection(part_lines_collection), linewidth=0.5, show_vertices=True)
 
     def _add_bcs(self):
         bcs_collection = []

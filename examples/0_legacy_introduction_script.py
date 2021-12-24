@@ -55,33 +55,33 @@ model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[2, 3, 4])
 
 # Review
 model.summary()
-# model.show()
+model.show(node_labels={'part-1': [0, 1]})
 
 
-##### ----------------------------- PROBLEM ----------------------------- #####
-# Create the Problem object
-problem = Problem(name='test_structure', model=model)
+# ##### ----------------------------- PROBLEM ----------------------------- #####
+# # Create the Problem object
+# problem = Problem(name='test_structure', model=model)
 
-# Approach 1: Create a step and assign a gravity load
-step_0 = GeneralStaticStep(name='step_pload_0')
-step_0.add_gravity_load()
-problem.add_step(step_0)
+# # Approach 1: Create a step and assign a gravity load
+# step_0 = GeneralStaticStep(name='step_pload_0')
+# step_0.add_gravity_load()
+# problem.add_step(step_0)
 
-# Approach 2: Add a step and define a point load directly from Problem
-problem.add_step(GeneralStaticStep(name='step_pload_1'))
-problem.add_point_load(name='load_point', x=10000, z=-10000, nodes=[0], part='part-1', step='step_pload_1')
+# # Approach 2: Add a step and define a point load directly from Problem
+# problem.add_step(GeneralStaticStep(name='step_pload_1'))
+# problem.add_point_load(name='load_point', x=10000, z=-10000, nodes=[0], part='part-1', step='step_pload_1')
 
-# Define the field outputs required
-fout = FieldOutput(name='fout')
-problem.add_output(fout, step_0)
+# # Define the field outputs required
+# fout = FieldOutput(name='fout')
+# problem.add_output(fout, step_0)
 
-# Review
-problem.summary()
-problem.show()
+# # Review
+# problem.summary()
+# problem.show()
 
-# Solve the problem
-problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# # Solve the problem
+# problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-pprint(results.nodal)
+# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# results = Results.from_problem(problem, fields=['u'])
+# pprint(results.nodal)

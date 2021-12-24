@@ -327,9 +327,8 @@ class PartBase(FEABase):
         >>> part.add_node(node)
         """
 
-        if check:
-            if self.check_node_in_part(node):
-                print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
+        if check and self.check_node_in_part(node):
+            print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
         else:
             k = len(self.nodes)
             node._key = k
@@ -461,7 +460,7 @@ class PartBase(FEABase):
             element.key = k
             k += 1
 
-    def add_element(self, element, check=True):
+    def add_element(self, element, check=False):
         """Adds a compas_fea2 Element object to the Part.
 
         Parameters

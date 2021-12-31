@@ -444,6 +444,12 @@ class ModelBase(FEABase):
                 raise ValueError(f'** ERROR! **: section {section.material} not found in the Model!')
             else:
                 section._material = self.materials[section.material]
+        elif isinstance(section.material, MaterialBase):
+            if section.material.name not in self.materials:
+                self._materials[section.material.name] = section.material
+        else:
+            raise TypeError(
+                "The material for the the section must be either the name of a previously added Material or an instance of a Material object")
 
         if isinstance(section, SectionBase):
             if section._name not in self._sections:
@@ -775,6 +781,8 @@ class ModelBase(FEABase):
                  'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
                  'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
                  }
+        self._check_part_in_model(part)
+        # self._check_nodes_in_model(nodes) #TODO implement method
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         bc = getattr(m, types[bc_type])(name, axes)
         self._bcs.setdefault(part, {})[bc] = nodes

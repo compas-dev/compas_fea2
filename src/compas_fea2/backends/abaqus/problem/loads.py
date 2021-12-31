@@ -76,7 +76,7 @@ class PointLoad(PointLoadBase):
             for comp, dof in enumerate(dofs, 1):
                 if self.components[dof]:
                     data_section += [f'{instance}.{node+1}, {comp}, {self.components[dof]}']
-            return '\n'.join(data_section) + '\n'
+        return '\n'.join(data_section) + '\n'
 
 
 class LineLoad(LineLoadBase):

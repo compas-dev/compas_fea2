@@ -175,10 +175,9 @@ class ModelViewer():
 
 
 class ProblemViewer(ModelViewer):
-    def __init__(self, problem, width=800, height=500, scale_factor=.001):
-        super(ProblemViewer, self).__init__(problem.model, width, height, scale_factor)
+    def __init__(self, problem, width, height, scale_factor, node_labels):
+        super(ProblemViewer, self).__init__(problem.model, width, height, scale_factor, node_labels)
         self.problem = problem
-
         self._add_loads()
 
     def _add_loads(self):
@@ -254,8 +253,8 @@ class OptiViewer(ProblemViewer):
         application
     """
 
-    def __init__(self, problem, width=800, height=500, scale_factor=.001):
-        super().__init__(problem, width, height, scale_factor)
+    def __init__(self, problem, width=800, height=500, scale_factor=.001, node_labels=None):
+        super().__init__(problem, width, height, scale_factor, node_labels)
         self._get_scaled_mesh()
 
     def _get_scaled_mesh(self):

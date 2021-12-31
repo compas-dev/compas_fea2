@@ -503,7 +503,7 @@ class ProblemBase(FEABase):
     #                           History outputs
     # =========================================================================
 
-    def add_history_output(self, name):
+    def add_history_output(self, name, step):
         """Adds a HistoryOutput object to the Problem object.
 
         Parameters
@@ -560,10 +560,10 @@ Steps Order
     # Viewer
     # ==============================================================================
 
-    def show(self, width=800, height=500, scale_factor=.001):
+    def show(self, width=800, height=500, scale_factor=.001, node_lables=None):
         from compas_fea2.interfaces.viewer import ProblemViewer
 
-        v = ProblemViewer(self, width, height, scale_factor)
+        v = ProblemViewer(self, width, height, scale_factor, node_lables)
         v.show()
 
     # ==============================================================================

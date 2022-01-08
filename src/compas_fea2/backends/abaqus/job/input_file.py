@@ -122,8 +122,7 @@ class ParFile(InputFileBase):
         self.input_name = '{}.inp'.format(problem.name)
         self.vf = problem.vf
         self.iter_max = problem.iter_max
-
-        self._jobdata = self._generate_jobdata()
+        self._jobdata = self._generate_jobdata(problem)
 
     @property
     def jobdata(self):
@@ -139,7 +138,7 @@ class ParFile(InputFileBase):
         """
         return self._jobdata
 
-    def _generate_jobdata(self):
+    def _generate_jobdata(self, problem):
         """Generate the content of the parameter file from the optimisation
         settings of the Problem object.
 
@@ -153,58 +152,87 @@ class ParFile(InputFileBase):
         str
             content of the .par file
         """
-        return """FEM_INPUT
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        return f"""! Optimization Process name: {self._job_name}
+! Model name: {problem.model.name}
+! Task name: TopOpt
+! Generated using compas_fea2 version {compas_fea2.__version__}
+! Author: {problem.author}
+! Date: {now}
+!
+! ----------------------------------------------------------------
+! Input model
+!
+FEM_INPUT
   ID_NAME        = OPTIMIZATION_MODEL
-  FILE           = {}
+  FILE           = {self.input_name}
 END_
-
+!
+! ----------------------------------------------------------------
+! Design area for task: top_opt
+!
 DV_TOPO
-  ID_NAME        = design_variables
+  ID_NAME        = top_opt_DESIGN_AREA_
   EL_GROUP       = ALL_ELEMENTS
 END_
-
+!
+! ----------------------------------------------------------------
+! Design Response: strain_eng
+!
 DRESP
-  ID_NAME        = DRESP_SUM_ENERGY
+  ID_NAME        = strain_eng
   DEF_TYPE       = SYSTEM
-  TYPE           = STRAIN_ENERGY
+  TYPE           = ENERGY_STIFF_MEASURE
   UPDATE         = EVER
   EL_GROUP       = ALL_ELEMENTS
   GROUP_OPER     = SUM
+  LC_SET         = ALL, 1, ALL
 END_
-
+!
+! ----------------------------------------------------------------
+! Design Response: volume
+!
 DRESP
-  ID_NAME        = DRESP_VOL_TOPO
+  ID_NAME        = volume
   DEF_TYPE       = SYSTEM
   TYPE           = VOLUME
   UPDATE         = EVER
   EL_GROUP       = ALL_ELEMENTS
   GROUP_OPER     = SUM
 END_
-
+!
+! ----------------------------------------------------------------
+! Objective Function: maximize_stiffness
+!
 OBJ_FUNC
   ID_NAME        = maximize_stiffness
-  DRESP          = DRESP_SUM_ENERGY
+  DRESP          = strain_eng, 1
   TARGET         = MINMAX
 END_
-
+!
+! ----------------------------------------------------------------
+! Constraint: vol_fraction
+!
 CONSTRAINT
-  ID_NAME        = volume_constraint
-  DRESP          = DRESP_VOL_TOPO
+  ID_NAME        = vol_fraction
+  DRESP          = volume
   MAGNITUDE      = REL
-  EQ_VALUE       = {}
+  EQ_VALUE       = {self.vf}
 END_
-
+!
+! ----------------------------------------------------------------
+! Task: top_opt
+!
 OPTIMIZE
-  ID_NAME        = topology_optimization
-  DV             = design_variables
+  ID_NAME        = top_opt
+  DV             = top_opt_DESIGN_AREA_
   OBJ_FUNC       = maximize_stiffness
-  CONSTRAINT     = volume_constraint
-  STRATEGY       = TOPO_CONTROLLER
+  CONSTRAINT     = vol_fraction
+  STRATEGY       = TOPO_SENSITIVITY
 END_
-
 OPT_PARAM
-  ID_NAME = topology_optimization_OPT_PARAM_
-  OPTIMIZE = topology_optimization
+  ID_NAME = top_opt_OPT_PARAM_
+  OPTIMIZE = top_opt
   AUTO_FROZEN = LOAD
   DENSITY_UPDATE = NORMAL
   DENSITY_LOWER = 0.001
@@ -217,13 +245,13 @@ OPT_PARAM
   STOP_CRITERION_ITER = 4
   SUM_Q_FACTOR = 6.
 END_
-
-
 STOP
   ID_NAME        = global_stop
-  ITER_MAX       = {}
+  ITER_MAX       = {self.iter_max}
 END_
-
+!
+! ----------------------------------------------------------------
+!
 SMOOTH
   id_name = ISO_SMOOTHING_0_3
   task = iso
@@ -235,4 +263,15 @@ SMOOTH
   format = vtf
   format = stl
   format = onf
-END_""".format(self.input_name, self.vf, self.iter_max)
+END_
+DRIVER
+driver.Solver.AddCallArgs = ['message', 'messaging_mechanism=DIRECT', 'listener_name=FR-lenovo-P52', 'listener_resource=40212', 'direct_port=64475',  'memory=90%', 'cpus=4',]
+config.registerSaveRule(UpdateRules.MOVE, CheckPoints.CYCLE_COMPLETE, EventTimes.NEVER, [ '*.odb' ], 'SAVE.odb')
+config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.odb' ], 'SAVE.odb', '_%i')
+config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.msg' ], 'SAVE.msg', '_%i')
+config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.dat' ], 'SAVE.dat', '_%i')
+config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.sta' ], 'SAVE.sta', '_%i')
+driver.registerCheckPointHook(CheckPoints.ITER_COMPLETE, HookTypes.POST, EventTimes.EVER, [ driver.Solver.Path, 'python', '-m', 'driverWriteOnfToOdb', '--type', OptimizationTypes.toOnf(driver.OptimizationType), '--inp', SMATsoUtil.basename(driver.FemInput.MasterFile) ], True, silent=True)
+driver.Solver.RemoveUserRequests = False
+END_
+EXIT"""

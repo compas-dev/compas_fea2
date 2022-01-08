@@ -46,7 +46,7 @@ class Problem(ProblemBase):
     # =========================================================================
     #                           Optimisation methods
     # =========================================================================
-
+    # TODO move to the base class and change to **kwargs
     def set_optimisation_parameters(self, vf, iter_max, cpus):
         self.vf = vf
         self.iter_max = iter_max
@@ -61,19 +61,13 @@ class Problem(ProblemBase):
 
         Parameters
         ----------
-        path : str
-            Path to the folder where the input file will be saved.
         output : bool
             Print terminal output.
-        save : bool
-            Save problem to .cfp before file writing.
 
         Returns
         -------
         None
-
         """
-
         input_file = InputFile(self)
         r = input_file.write_to_file(self.path)
         if output:
@@ -84,27 +78,16 @@ class Problem(ProblemBase):
 
         Parameters
         ----------
-        path : str
-            Path to the folder where the input file will be saved.
         output : bool
             Print terminal output.
-        save : bool
-            Save structure to .cfp before file writing.
 
         Returns
         -------
         None
-
         """
-
-        input_file = InputFile(self)
-        inp = input_file.write_to_file(self.path)
-
         par_file = ParFile(self)
         par = par_file.write_to_file(self.path)
-
         if output:
-            print(inp)
             print(par)
 
     # TODO: try to make this an abstract method of the base class

@@ -89,9 +89,15 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     else:
         print('***** Analysis failed *****')
 
+# TODO combine with previous
+
 
 def launch_optimisation(problem, output):
     """ Run the topology optimisation through Tosca.
+
+    Note
+    ----
+    https://abaqus-docs.mit.edu/2017/English/TsoUserMap/tso-c-usr-control-start-commandLine.htm
 
     Parameters
     ----------
@@ -112,14 +118,15 @@ def launch_optimisation(problem, output):
     # Analyse
     tic = time()
     success = False
-    cmd = 'cd {} && {} --job {} --cpus {}'.format(problem.path, exe_kw, problem.name, problem.cpus)
+    cmd = 'cd {} && {} --job {} --cpus {} --loglevel TRACE --solver MSCNASTRAN --ow'.format(
+        problem.path, exe_kw, problem.name, problem.cpus)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:
         line = p.stdout.readline()
         if not line:
             break
-        line = str(line.strip())
+        line = line.strip().decode()
 
         if output:
             print(line)
@@ -130,8 +137,8 @@ def launch_optimisation(problem, output):
     stdout, stderr = p.communicate()
 
     if output:
-        print(stdout)
-        print(stderr)
+        print(stdout.decode())
+        print(stderr.decode())
 
     toc = time() - tic
 

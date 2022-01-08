@@ -29,6 +29,8 @@ from compas_fea2.backends.abaqus import FieldOutput
 from compas_fea2.backends.abaqus import GeneralStaticStep
 from compas_fea2.backends.abaqus import Results
 
+from compas_fea2.interfaces.viewer import OptiViewer
+
 from compas_fea2 import DATA
 from compas_fea2 import TEMP
 
@@ -170,11 +172,15 @@ n_load = model.get_node_from_coordinates([L/2, 0, 0, ], 0.1)
 problem.add_point_load(name='pload', step='gstep', part='rod', nodes=[n_load['rod']], z=-1000)
 
 # Review
+problem.summary()
 problem.show(width=1600, height=900, scale_factor=0.02)
 
-# Solve the problem
-problem.analyse(path=Path(TEMP).joinpath(problem.name))
+# Define the optimisation parameters
+problem.set_optimisation_parameters(0.2, 40, 10)
 
-##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-results = Results.from_problem(problem, fields=['u'])
-# pprint(results.nodal)
+# Solve the problem
+problem.optimise()
+
+# Visualie results
+v = OptiViewer(problem)
+v.show()

@@ -96,7 +96,7 @@ class CaseBase(FEABase):
         -------
         None
         """
-        attrb = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_output'
+        attrb = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_outputs'
 
         if output.name not in getattr(self, attrb):
             getattr(self, attrb)[output.name] = output
@@ -255,7 +255,7 @@ class CaseBase(FEABase):
 
         # check if load is valid
         if not isinstance(displacement, GeneralDisplacementBase):
-            raise ValueError(f'{load} is not a `compas_fea2` GeneralDisplacement object')
+            raise ValueError(f'{displacement} is not a `compas_fea2` GeneralDisplacement object')
 
         # check if part is valid
         if isinstance(part, PartBase):

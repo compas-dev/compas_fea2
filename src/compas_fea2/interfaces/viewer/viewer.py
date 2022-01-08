@@ -23,7 +23,7 @@ from compas_fea2.backends._base.model.elements import BeamElementBase
 from compas_fea2.backends._base.model.bcs import PinnedBCBase
 from compas_fea2.backends._base.model.bcs import FixedBCBase
 
-from compas_fea2.backends._base.problem.loads import PointLoadBase
+from compas_fea2.backends._base.problem.loads import GravityLoadBase, PointLoadBase
 from compas_fea2.backends._base.problem.steps import ModalCaseBase
 
 # class Viewer():
@@ -197,6 +197,9 @@ class ProblemViewer(ModelViewer):
                                 step_collection.append(arrow)
                                 # t = Text(str(comp), pt, height=200)
                                 # self.app.add(t, color=(1, 0, 0))
+                        elif isinstance(load, GravityLoadBase):
+                            pass
+
             self.app.add(Collection(step_collection), u=16, show_edges=False, facecolor=(0, 1, 0))
 
 

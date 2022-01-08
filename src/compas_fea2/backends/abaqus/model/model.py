@@ -97,46 +97,46 @@ class Model(ModelBase):
         else:
             print('Duplicate instance {} will be ignored!'.format(instance.name))
 
-    def _remove_instance(self, part):
-        """ Removes the instance of a part from the Model.
+    # def _remove_instance(self, part):
+    #     """ Removes the instance of a part from the Model.
 
-        Parameters
-        ----------
-        part : str
-            Name of the part object to remove.
+    #     Parameters
+    #     ----------
+    #     part : str
+    #         Name of the part object to remove.
 
-        Returns
-        -------
-        None
-        """
+    #     Returns
+    #     -------
+    #     None
+    #     """
 
-        self.instances.pop(instance)
+    #     self.instances.pop(instance)
 
     # =========================================================================
     #                            Groups methods
     # =========================================================================
-    # NOTE in abaqus loads and bc must be applied to instance level sets, while sections
-    # are applied to part level sets. Since in FEA2 there is no distinction,
-    # this must be taken into account from the `add_group` method
     def add_group(self, group):
         '''Add a Group object to the Model at the instance level. Can be either
         a NodesGroup or an ElementsGroup.
+
+        Note
+        ----
+        in abaqus loads and bc must be applied to instance level sets, while sections
+        are applied to part level sets. Since in FEA2 there is no distinction,
+        this is automatically taken into account from the `add_group` method
 
         Parameters
         ----------
         group : obj
             group object.
-        part : str
-            Name of the part the group belongs to.
 
         Returns
         -------
         None
         '''
         super().add_group(group)
-
         if f'{group.part}-1' not in self._instances:
-            raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
+            raise ValueError(f'ERROR: instance {group.part}-1 not found in the Model!')
         self._instances[f'{group.part}-1'].add_group(group)
 
     def add_nodes_group(self, name, part, nodes):
@@ -151,29 +151,7 @@ class Model(ModelBase):
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
         self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
 
-    # # =========================================================================
-    # #                           BCs methods
-    # # =========================================================================
 
-    # def add_bc(self, bc, nodes, part):
-    #     """Adds a boundary condition to the Problem object.
-
-    #     Parameters
-    #     ----------
-    #     bc : obj
-    #         `compas_fea2` BoundaryCondtion object.
-    #     part : str
-    #         part in the model where the BoundaryCondtion is applied.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     super().add_bc(bc, nodes, part)
-    #     self.add_group(bc.group, part)
-
-    # def remove_bc(self, bc_name, part):
-    #     raise NotImplementedError
 # =============================================================================
 #                               Job data
 # =============================================================================

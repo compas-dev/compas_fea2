@@ -1,6 +1,3 @@
-import inspect
-from pathlib import Path
-from pprint import pprint
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import Node

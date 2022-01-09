@@ -56,7 +56,3 @@ class PartsGroup(GroupBase):
     def __init__(self, name, parts_names):
         super(PartsGroup, self).__init__(name, parts_names)
         raise NotImplementedError()
-
-
-class SurfaceBase(FEABase):
-    pass

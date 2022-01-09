@@ -5,7 +5,6 @@ from __future__ import print_function
 
 from compas_fea2.backends._base.model.groups import NodesGroupBase
 from compas_fea2.backends._base.model.groups import ElementsGroupBase
-from compas_fea2.backends._base.model.groups import SurfaceBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
@@ -98,39 +97,39 @@ class ElementsGroup(ElementsGroupBase):
         return _generate_jobdata(self, instance)
 
 
-class Surface(SurfaceBase):
-    """Initialises the Surfaces object.
+# class Surface(SurfaceBase):
+#     """Initialises the Surfaces object.
 
-    Parameters
-    ----------
-    name : str
-        Name of the set.
-    keys : list
-        A list with either the Node or Element objects belonging to the set.
-    generate : bool
-        Automatically generates a set of elements/nodes between the two keys specified.
-    """
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the set.
+#     keys : list
+#         A list with either the Node or Element objects belonging to the set.
+#     generate : bool
+#         Automatically generates a set of elements/nodes between the two keys specified.
+#     """
 
-    # TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
-    def __init__(self, name, set, generate=False):
-        super(Surface, self).__init__(name, set, generate)
+#     # TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
+#     def __init__(self, name, set, generate=False):
+#         super(Surface, self).__init__(name, set, generate)
 
-    # TODO: old ---> change
-    def _generate_jobdata(self):
-        """Generates the string information for the input file.
+#     # TODO: old ---> change
+#     def _generate_jobdata(self):
+#         """Generates the string information for the input file.
 
-        Parameters
-        ----------
-        None
+#         Parameters
+#         ----------
+#         None
 
-        Returns
-        -------
-        input file data line (str).
-        """
-        line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
-        self.write_line('** ELEMENT, SIDE')
+#         Returns
+#         -------
+#         input file data line (str).
+#         """
+#         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
+#         self.write_line('** ELEMENT, SIDE')
 
-        for element, sides in element_set.keys.items():
-            for side in sides:
-                self.write_line('{0}, {1}'.format(element + 1, side))
-                self.blank_line()
+#         for element, sides in element_set.keys.items():
+#             for side in sides:
+#                 self.write_line('{0}, {1}'.format(element + 1, side))
+#                 self.blank_line()

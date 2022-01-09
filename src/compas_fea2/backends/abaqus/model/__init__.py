@@ -12,7 +12,6 @@ from .interactions import *
 from .groups import (
     NodesGroup,
     ElementsGroup,
-    Surface
 )
 from .constraints import *
 from .elements import (

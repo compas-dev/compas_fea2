@@ -156,6 +156,7 @@ class Model(ModelBase):
 #                               Job data
 # =============================================================================
 
+
     def _generate_jobdata(self):
         return f"""**
 ** PARTS
@@ -201,15 +202,9 @@ class Model(ModelBase):
     def _generate_assembly_section(self):
         """Generate the content relatitive the assembly for the input file.
 
-        Note
-        ----
-        in compas_fea2 the Model is for many aspects equivalent to an assembly in
-        abaqus.
-
         Parameters
         ----------
-        problem : obj
-            compas_fea2 Problem object.
+        None
 
         Returns
         -------
@@ -221,8 +216,8 @@ class Model(ModelBase):
             data_section.append(instance._generate_jobdata())
             for group in instance.groups.values():
                 data_section.append(group._generate_jobdata(instance.name))
-            # for surface in self.surfaces:
-            #     data_section.append(surface.jobdata)
+        for surface in self.surfaces.values():
+            data_section.append(surface._generate_jobdata())
         for constraint in self.constraints.values():
             data_section.append(constraint._generate_jobdata())
         data_section.append('*End Assembly\n**\n')
@@ -235,8 +230,7 @@ class Model(ModelBase):
 
         Parameters
         ----------
-        problem : obj
-            compas_fea2 Problem object.
+        None
 
         Returns
         -------
@@ -249,10 +243,16 @@ class Model(ModelBase):
         return ''.join(data_section)
 
     def _generate_int_props_section(self):
-        return ''
+        data_section = []
+        for interaction in self.interactions.values():
+            data_section.append(interaction._generate_jobdata())
+        return ''.join(data_section)
 
     def _generate_interactions_section(self):
-        return ''
+        data_section = []
+        for contact in self.contacts.values():
+            data_section.append(contact._generate_jobdata())
+        return ''.join(data_section)
 
     def _generate_bcs_section(self):
         """Generate the content relatitive to the boundary conditions section
@@ -260,8 +260,7 @@ class Model(ModelBase):
 
         Parameters
         ----------
-        problem : obj
-            compas_fea2 Problem object.
+        None
 
         Returns
         -------

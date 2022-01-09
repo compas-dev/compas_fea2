@@ -1,9 +1,14 @@
+from itertools import tee
+from compas_fea2.backends._base.model.sections import SectionBase
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import Node
 from compas_fea2.backends.abaqus import ElasticIsotropic
 from compas_fea2.backends.abaqus import SolidSection
 from compas_fea2.backends.abaqus import NodeTieConstraint
+from compas_fea2.backends.abaqus.model.interactions import ContactHardFrictionPenalty
+from compas_fea2.backends.abaqus.model.surfaces import Surface
+from compas_fea2.backends.abaqus.model.contacts import Contact
 from compas_fea2.backends.abaqus.model.elements import SolidElement
 
 from compas_fea2.backends.abaqus import Problem
@@ -59,11 +64,11 @@ lx, ly, lz = 0.5, 0.3, 0.25
 #     brick.add_element(SolidElement([0, 1, 2, 3, 4, 5, 6, 7], sec))
 #     # Add a Part to the model
 #     model.add_part(brick)
-
-curves = define_arch(n=10)
+n = 3
+curves = define_arch(n+1)
 for i in range(len(curves[0])-1):
-    brick = Part(name=f'brick-{i}')
-    brick.add_nodes([Node(curves[0][i]),
+    block = Part(name=f'block-{i}')
+    block.add_nodes([Node(curves[0][i]),
                      Node(curves[1][i]),
                      Node(curves[3][i]),
                      Node(curves[2][i]),
@@ -72,14 +77,33 @@ for i in range(len(curves[0])-1):
                      Node(curves[3][i+1]),
                      Node(curves[2][i+1])
                      ])
-    brick.add_element(SolidElement([0, 1, 2, 3, 4, 5, 6, 7], sec))
+    block.add_element(SolidElement([0, 1, 2, 3, 4, 5, 6, 7], sec))
     # Add a Part to the model
-    model.add_part(brick)
+    model.add_part(block)
 
 # Assign boundary conditions
-model.add_bc_type(name='bc_pinned', bc_type='fix', part='brick-0', nodes=[0, 1, 2, 3])
-constraint = NodeTieConstraint(name='tie', master='block-0-1.4', slave='block-1-1.0')
-model.add_constraint(constraint)
+model.add_bc_type(name='bc_pinned', bc_type='fix', part='block-0', nodes=[0, 1, 2, 3])
+model.add_bc_type(name='bc_pinned', bc_type='fix', part=f'block-{n-1}', nodes=[4, 5, 6, 7])
+
+master, slave = tee(model.parts.keys())
+next(slave, None)
+# for m, s in zip(master, slave):
+#     if s:
+#         for node in [1, 2, 3, 4]:
+#             model.add_constraint(NodeTieConstraint(name=f'tie_{m[-1]}-{s[-1]}_{node+4}-{node}',
+#                                                    master=f'{m}-1.{node+4}',
+#                                                    slave=f'{s}-1.{node}'))
+hard_contact = ContactHardFrictionPenalty('hard_contact', 0.5)
+model.add_interaction(hard_contact)
+for m, s in zip(master, slave):
+    if s:
+        model.add_surface(Surface(f'{m}_S2', m, 1, 'S2'))
+        model.add_surface(Surface(f'{s}_S1', s, 1, 'S1'))
+        model.add_contact(Contact(name=f'CP_{m[-1]}-{s[-1]}',
+                                  master=f'{m}_S2',
+                                  slave=f'{s}_S1',
+                                  interaction=hard_contact.name))
+
 # Review
 # model.summary()
 # model.show(scale_factor=0.1)
@@ -87,7 +111,7 @@ model.add_constraint(constraint)
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
-problem = Problem(name='test_tce', model=model)
+problem = Problem(name='test_int', model=model)
 
 # # Approach 1: Create a step and assign a gravity load
 # step_0 = GeneralStaticStep(name='step_pload_0')
@@ -96,7 +120,7 @@ problem = Problem(name='test_tce', model=model)
 
 # Approach 2: Add a step and define a point load directly from Problem
 problem.add_step(GeneralStaticStep(name='step_pload_1'))
-problem.add_point_load(name='load_point', x=200, y=100, z=-1000, nodes=[3], part='brick-2', step='step_pload_1')
+problem.add_point_load(name='load_point', z=-1, nodes=[0, 3, 4, 7], part='block-1', step='step_pload_1')
 
 # Define the field outputs required
 fout = FieldOutput(name='fout')
@@ -104,7 +128,7 @@ problem.add_output(fout, 'step_pload_1')
 
 # Review
 problem.summary()
-problem.show(scale_factor=0.1)
+# problem.show(scale_factor=0.1)
 
 # Solve the problem
 problem.analyse(path=Path(TEMP).joinpath(problem.name))

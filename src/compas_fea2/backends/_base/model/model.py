@@ -52,7 +52,9 @@ class ModelBase(FEABase):
         self._bcs = {}
         self._constraints = {}
         self._interactions = {}
+        self._contacts = {}
         self._parts_groups = {}
+        self._surfaces = {}
 
     @property
     def name(self):
@@ -113,6 +115,21 @@ class ModelBase(FEABase):
     def bcs(self):
         """dict : A dictionary with the boundary conditions assigned to the parts in the Model."""
         return self._bcs
+
+    @property
+    def contacts(self):
+        """The contacts property."""
+        return self._contacts
+
+    @property
+    def interactions(self):
+        """The interactions property."""
+        return self._interactions
+
+    @property
+    def surfaces(self):
+        """The surfaces property."""
+        return self._surfaces
 
     def __repr__(self):
         return '{0}({1})'.format(self.__name__, self.name)
@@ -687,7 +704,11 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_surface(self, surface):
-        raise NotImplementedError()
+        self._surfaces[surface.name] = surface
+
+    def add_surfaces(self, surfaces):
+        for surface in surfaces:
+            self.add_surface(surface)
 
     # =========================================================================
     #                       Constraints methods
@@ -717,9 +738,22 @@ class ModelBase(FEABase):
     # =========================================================================
     #                        Interaction methods
     # =========================================================================
+    def add_contact(self, contact):
+        self._contacts[contact.name] = contact
+
+    def add_interactions(self, contacts):
+        for contact in contacts:
+            self.add_contact(contact)
+
+    # =========================================================================
+    #                        Interaction methods
+    # =========================================================================
+    def add_interaction(self, interaction):
+        self._interactions[interaction.name] = interaction
 
     def add_interactions(self, interactions):
-        raise NotImplementedError()
+        for interaction in interactions:
+            self.add_interaction(interaction)
 
     # =========================================================================
     #                           BCs methods

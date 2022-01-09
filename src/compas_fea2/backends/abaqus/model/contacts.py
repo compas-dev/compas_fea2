@@ -1,9 +1,9 @@
-from compas_fea2.backends._base.model.contacts import ContactBase
+from compas_fea2.backends._base.model.contacts import ContactPairBase
 
 
-class Contact(ContactBase):
+class ContactPair(ContactPairBase):
     def __init__(self, name, master, slave, interaction):
-        super(Contact, self).__init__(name, master, slave, interaction)
+        super(ContactPair, self).__init__(name, master, slave, interaction)
 
     def _generate_jobdata(self):
         return f"""** Interaction: {self._name}

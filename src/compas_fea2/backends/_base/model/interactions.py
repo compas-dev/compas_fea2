@@ -1,15 +1,40 @@
 from compas_fea2.backends._base.base import FEABase
 
 
-class InterfaceBase():
-    def __init__(self) -> None:
-        self._master = None
-        self._slave = None
-
-
-class ContactBase(FEABase):
+class InteractionBase(FEABase):
     def __init__(self, name) -> None:
         self._name = name
+
+    @property
+    def name(self):
+        """str : the name of the interaction property."""
+        return self._name
+
+
+class ContactBase(InteractionBase):
+    """General contact interaction between two parts.
+    """
+
+    def __init__(self, name, tangent, normal, tollerance) -> None:
+        super(ContactBase, self).__init__(name)
+        self._tangent = tangent
+        self._normal = normal
+        self._tollerance = tollerance
+
+    @property
+    def tangent(self):
+        """The tangent property."""
+        return self._tangent
+
+    @property
+    def normal(self):
+        """The normal property."""
+        return self._normal
+
+    @property
+    def tollerance(self):
+        """float: slip tollerance."""
+        return self._tollerance
 
 
 class ContactNoFrictionBase():
@@ -17,8 +42,10 @@ class ContactNoFrictionBase():
 
 
 class ContactHardFrictionPenaltyBase(ContactBase):
-    def __init__(self, name, mu, slip_tollerance) -> None:
-        super(ContactHardFrictionPenaltyBase, self).__init__(name)
-        self._slip_tollerance = slip_tollerance
-        self._mu = mu
-        self._normal = 'HARD'
+    """Hard contact interaction property with friction using a penalty
+    formulation.
+    """
+
+    def __init__(self, name, mu, tollerance) -> None:
+        super(ContactHardFrictionPenaltyBase, self).__init__(
+            name=name, tangent=mu, normal='HARD', tollerance=tollerance)

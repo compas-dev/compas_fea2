@@ -8,7 +8,7 @@ from compas_fea2.backends.abaqus import SolidSection
 from compas_fea2.backends.abaqus import NodeTieConstraint
 from compas_fea2.backends.abaqus.model.interactions import ContactHardFrictionPenalty
 from compas_fea2.backends.abaqus.model.surfaces import Surface
-from compas_fea2.backends.abaqus.model.contacts import Contact
+from compas_fea2.backends.abaqus.model.contacts import ContactPair
 from compas_fea2.backends.abaqus.model.elements import SolidElement
 
 from compas_fea2.backends.abaqus import Problem
@@ -99,10 +99,10 @@ for m, s in zip(master, slave):
     if s:
         model.add_surface(Surface(f'{m}_S2', m, 1, 'S2'))
         model.add_surface(Surface(f'{s}_S1', s, 1, 'S1'))
-        model.add_contact(Contact(name=f'CP_{m[-1]}-{s[-1]}',
-                                  master=f'{m}_S2',
-                                  slave=f'{s}_S1',
-                                  interaction=hard_contact.name))
+        model.add_contact(ContactPair(name=f'CP_{m[-1]}-{s[-1]}',
+                                      master=f'{m}_S2',
+                                      slave=f'{s}_S1',
+                                      interaction=hard_contact.name))
 
 # Review
 # model.summary()

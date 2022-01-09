@@ -87,16 +87,6 @@ class ModelBase(FEABase):
         return self._parts
 
     @property
-    def constraints(self):
-        """dict : A dictionary with the `Constraint` objects between the parts of the model."""
-        return self._constraints
-
-    @property
-    def interactions(self):
-        """dict : A dictionary with the `Interaction` objects between the parts of the model."""
-        return self._interactions
-
-    @property
     def materials(self):
         """dict : A dictionary of all the materials defined in the Model."""
         return self._materials
@@ -118,17 +108,22 @@ class ModelBase(FEABase):
 
     @property
     def contacts(self):
-        """The contacts property."""
+        """dict : A dictionary with the boundary conditions assigned to the parts in the Model."""
         return self._contacts
 
     @property
+    def constraints(self):
+        """dict : A dictionary with the `Constraint` objects between the parts of the model."""
+        return self._constraints
+
+    @property
     def interactions(self):
-        """The interactions property."""
+        """dict : A dictionary with the `Interaction` properties  defined in the model."""
         return self._interactions
 
     @property
     def surfaces(self):
-        """The surfaces property."""
+        """dict : A dictionary with the surface definitions in the Model."""
         return self._surfaces
 
     def __repr__(self):
@@ -365,7 +360,7 @@ class ModelBase(FEABase):
             self.add_node(node, part)
 
     def remove_node(self, node_key, part):
-        '''Remove the node from a Part in the Model.
+        """Remove the node from a Part in the Model.
 
         Parameters
         ----------
@@ -377,11 +372,11 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
 
     def remove_nodes(self, nodes, part):
-        '''Remove the nodes from a Part in the Model. If there are duplicate nodes,
+        """Remove the nodes from a Part in the Model. If there are duplicate nodes,
         it removes also all the duplicates.
 
         Parameters
@@ -394,7 +389,7 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
 
     # =========================================================================
@@ -402,7 +397,7 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_material(self, material):
-        '''Add a Material object to the Model so that it can be later refernced
+        """Add a Material object to the Model so that it can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -413,14 +408,14 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         if material.name not in self.materials:
             self._materials[material._name] = material
         else:
             print('WARNING: {} already added to the model. skipped!'.format(material))
 
     def add_materials(self, materials):
-        '''Add multiple Material objects to the Model so that they can be later refernced
+        """Add multiple Material objects to the Model so that they can be later refernced
         and used in the Section and Element definitions.
 
         Parameters
@@ -431,7 +426,7 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         for material in materials:
             self.add_material(material)
 
@@ -542,7 +537,7 @@ class ModelBase(FEABase):
             self.add_element(element, part)
 
     def remove_element(self, element_key, part):
-        '''Removes the element from a Part in the Model.
+        """Removes the element from a Part in the Model.
 
         Parameters
         ----------
@@ -554,12 +549,12 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         part = self._check_part_in_model(part)
         part.remove_element(element_key)
 
     def remove_elements(self, elements, part):
-        '''Removes several elements from a Part in the Model.
+        """Removes several elements from a Part in the Model.
 
         Parameters
         ----------
@@ -571,7 +566,7 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         for element in elements:
             self.remove_node(element, part)
 
@@ -580,7 +575,7 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_release(self, release, part):
-        '''Add an Element EndRelease object to the Model.
+        """Add an Element EndRelease object to the Model.
 
         Parameters
         ----------
@@ -592,12 +587,12 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         part = self._check_part_in_model(part)
         part.add_release(release)
 
     def add_releases(self, releases, part):
-        '''Add multiple Element EndRelease objects to the Model.
+        """Add multiple Element EndRelease objects to the Model.
 
         Parameters
         ----------
@@ -609,7 +604,7 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         for release in releases:
             self.add_release(release, part)
 
@@ -631,7 +626,7 @@ class ModelBase(FEABase):
         self._parts_groups[group.name] = group
 
     def add_group(self, group, part):
-        '''Add a Group object to a part in the Model at the instance level. Can
+        """Add a Group object to a part in the Model at the instance level. Can
         be either a NodesGroup or an ElementsGroup.
 
         Parameters
@@ -644,12 +639,12 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         part = self._check_part_in_model(part)
         part.add_group(group)
 
     def add_groups(self, groups, part):
-        '''Add multiple Group objects to a part in the Model. Can be
+        """Add multiple Group objects to a part in the Model. Can be
         a list of NodesGroup or ElementsGroup objects, also mixed.
 
         Parameters
@@ -662,12 +657,12 @@ class ModelBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         for group in groups:
             self.add_group(group, part)
 
     def add_nodes_group(self, name, part, nodes):
-        """Add a NodeGroup object to the the part in the model.
+        """Add a :class:`NodeGroupBase` object to the the part in the model.
 
         Parameters
         ----------
@@ -677,12 +672,16 @@ class ModelBase(FEABase):
             name of the part
         nodes : list
             list of nodes keys to group
+
+        Returns
+        -------
+        None
         """
         part = self._check_part_in_model(part)
         part.add_nodes_group(name, nodes)
 
     def add_elements_group(self, name, part, elements):
-        """Add a ElementGroup object to the the part in the model.
+        """Add a :class:`ElementGroupBase` object to a part in the model.
 
         Parameters
         ----------
@@ -692,6 +691,10 @@ class ModelBase(FEABase):
             name of the part
         elements : list
             list of elements keys to group
+
+        Returns
+        -------
+        None
         """
         part = self._check_part_in_model(part)
         part.add_elements_group(name, elements)
@@ -704,9 +707,31 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_surface(self, surface):
+        """Add a :class:`SurfaceBase` object to the model.
+
+        Parameters
+        ----------
+        surface : obj
+            type :class:`SurfaceBase` object to be added
+
+        Returns
+        -------
+        None
+        """
         self._surfaces[surface.name] = surface
 
     def add_surfaces(self, surfaces):
+        """Add multiple :class:`SurfaceBase` objects to the Model.
+
+        Parameters
+        ----------
+        surfaces : list
+            list with the type :class:`SurfaceBase` objects to be added
+
+        Returns
+        -------
+        None
+        """
         for surface in surfaces:
             self.add_surface(surface)
 
@@ -721,6 +746,10 @@ class ModelBase(FEABase):
         ----------
         constraint : obj
             compas_fea2 Contraint object
+
+        Returns
+        -------
+        None
         """
         self._constraints[constraint.name] = constraint
 
@@ -731,17 +760,43 @@ class ModelBase(FEABase):
         ----------
         constraints : list
             list of Constraint objects to add.
+
+        Returns
+        -------
+        None
         """
         for constraint in constraints:
             self.add_constraint(constraint)
 
     # =========================================================================
-    #                        Interaction methods
+    #                        ContactPair methods
     # =========================================================================
     def add_contact(self, contact):
+        """Add a :class:`ContactPairBase` object to the model.
+
+        Parameters
+        ----------
+        surface : obj
+            type :class:`ContactPairBase` object to be added
+
+        Returns
+        -------
+        None
+        """
         self._contacts[contact.name] = contact
 
-    def add_interactions(self, contacts):
+    def add_contacts(self, contacts):
+        """Add multiple :class:`ContactPairBase` objects to the Model.
+
+        Parameters
+        ----------
+        surfaces : list
+            list with the type :class:`ContactPairBase` objects to be added
+
+        Returns
+        -------
+        None
+        """
         for contact in contacts:
             self.add_contact(contact)
 
@@ -749,9 +804,31 @@ class ModelBase(FEABase):
     #                        Interaction methods
     # =========================================================================
     def add_interaction(self, interaction):
+        """Add a :class:`ContactBase` object to the model.
+
+        Parameters
+        ----------
+        surface : obj
+            type :class:`ContactBase` object to be added
+
+        Returns
+        -------
+        None
+        """
         self._interactions[interaction.name] = interaction
 
     def add_interactions(self, interactions):
+        """Add multiple :class:`ContactBase` objects to the Model.
+
+        Parameters
+        ----------
+        surfaces : list
+            list with the type :class:`ContactBase` objects to be added
+
+        Returns
+        -------
+        None
+        """
         for interaction in interactions:
             self.add_interaction(interaction)
 

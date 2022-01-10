@@ -108,93 +108,50 @@ class ElasticOrthotropicBase(MaterialBase):
         """float : Young's modulus E along X, for example [Pa]."""
         return self._Ex
 
-    @Ex.setter
-    def Ex(self, value):
-        self._Ex = value
-
     @property
     def Ey(self):
         """float : Young's modulus E along Y, for example [Pa]."""
         return self._Ey
-
-    @Ey.setter
-    def Ey(self, value):
-        self._Ey = value
 
     @property
     def Ez(self):
         """float : Young's modulus E along Z, for example [Pa]."""
         return self._Ez
 
-    @Ez.setter
-    def Ez(self, value):
-        self._Ez = value
-
     @property
     def vxy(self):
         """float : Poisson's ratio vxy in x-y directions [unitless]."""
         return self._vxy
-
-    @vxy.setter
-    def vxy(self, value):
-        self._vxy = value
 
     @property
     def vyx(self):
         """float : Poisson's ratio vxy in y-z directions [unitless]."""
         return self._vyx
 
-    @vyx.setter
-    def vyx(self, value):
-        self._vyx = value
-
     @property
     def vzx(self):
         """float : Poisson's ratio vxy in x-z directions [unitless]."""
         return self._vzx
-
-    @vzx.setter
-    def vzx(self, value):
-        self._vzx = value
 
     @property
     def Gxy(self):
         """float : Shear modulus Gxy in x-y directions, for example [Pa]."""
         return self._Gxy
 
-    @Gxy.setter
-    def Gxy(self, value):
-        self._Gxy = value
-
     @property
     def Gyz(self):
         """float : Shear modulus Gxy in xy-z directions, for example [Pa]."""
         return self._Gyz
-
-    @Gyz.setter
-    def Gyz(self, value):
-        self._Gyz = value
 
     @property
     def Gzx(self):
         """float : Shear modulus Gxy in x-z directions, for example [Pa]."""
         return self._Gzx
 
-    @Gzx.setter
-    def Gzx(self, value):
-        self._Gzx = value
-
     @property
     def p(self):
         """float : Density, for example [kg/m3]."""
         return self._p
-
-    @p.setter
-    def p(self, value):
-        self._p = value
-
-    def _compute_G(self):
-        return 0.5 * self._E / (1 + self._v)
 
 
 class ElasticIsotropicBase(MaterialBase):
@@ -225,20 +182,10 @@ class ElasticIsotropicBase(MaterialBase):
         """float : Young's modulus E, for example [Pa]."""
         return self._E
 
-    @E.setter
-    def E(self, value):
-        self._E = value
-        self._G = self._compute_G()
-
     @property
     def v(self):
         """float : Poisson's ratio v [unitless]."""
         return self._v
-
-    @v.setter
-    def v(self, value):
-        self._v = value
-        self._G = self._compute_G()
 
     @property
     def G(self):
@@ -250,13 +197,6 @@ class ElasticIsotropicBase(MaterialBase):
         """float : Density, for example [kg/m3]."""
         return self._p
 
-    @p.setter
-    def p(self, value):
-        self._p = value
-
-    def _compute_G(self):
-        return 0.5 * self._E / (1 + self._v)
-
 
 class StiffBase(ElasticIsotropicBase):
     """Elastic, very stiff and massless material.
@@ -266,11 +206,11 @@ class StiffBase(ElasticIsotropicBase):
     name : str
         Material name.
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E, for example [Pa].
     """
 
-    def __init__(self, name, E=10**13):  # NOTE: depending on the unit used, this might not be correct.
-        super(StiffBase, self).__init__(name=name, E=E, v=0.3, p=10**(-1))
+    def __init__(self, name, E=10**13,  p=10**(-1)):  # FIXME: depending on the unit used, this is not be correct.
+        super(StiffBase, self).__init__(name=name, E=E, v=0.3, p=p)
         self.__name__ = 'Stiff'
 
 
@@ -325,7 +265,7 @@ class ElasticPlasticBase(ElasticIsotropicBase):
 # ==============================================================================
 # non-linear metal
 # ==============================================================================
-# TODO these are unit based! change
+# FIXME these are unit based! change
 class SteelBase(ElasticIsotropicBase):
     """Bi-linear steel with given yield stress.
 

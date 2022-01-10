@@ -262,8 +262,9 @@ class PartBase(FEABase):
     #                           Nodes methods
     # =========================================================================
 
+    # TODO check if this is still useful
     def _reorder_nodes(self):
-        '''Reorders the nodes to have consecutive keys. If the node label is an
+        """Reorders the nodes to have consecutive keys. If the node label is an
         auto-generated label, it updates the label as well, otherwise leaves the
         user-generated label.
 
@@ -274,7 +275,7 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
 
         k = 0
         for node in self.nodes:
@@ -284,7 +285,7 @@ class PartBase(FEABase):
                 node.label = 'n-{}'.format(node.key)
 
     def check_node_in_part(self, node):
-        '''Checks if a node already exists in the Part in the same location.
+        """Checks if a node already exists in the Part in the same location.
 
         Parameters
         ----------
@@ -296,24 +297,25 @@ class PartBase(FEABase):
         indices : list
             List of the indices of all the instances of the node already in the
             Part.
-        '''
+        """
 
         if node.gkey in self._nodes_gkeys:
             indices = [i for i, x in enumerate(self._nodes_gkeys) if x == node.gkey]
             return indices
 
-    def add_node(self, node, check=True):
-        """Add a compas_fea2 Node object to the Part. If the node object has
-        no label, one is automatically assigned.
+    def add_node(self, node, check=False):
+        """Add a :class:`NodeBase` object to the ``Part``.
+        If the node object has no label, one is automatically assigned.
+        Duplicate nodes are automatically excluded.
 
         Parameters
         ----------
         node : obj
-            compas_fea2 Node object.
-        check : bool
-            If True, checks if the node is already present. This is a quite
-            resource-intense operation! Set to `False` for large models (>10000
-            nodes)
+            :class:`NodeBase` object.
+        check : bool, optional
+            If ``True``, checks if the node is already present. This is a quite
+            resource-intense operation! Set to ``False`` for large parts (>10000
+            nodes). By default ``False``
 
         Return
         ------
@@ -326,43 +328,47 @@ class PartBase(FEABase):
         >>> node = Node(1.0, 2.0, 3.0)
         >>> part.add_node(node)
         """
-
         if check and self.check_node_in_part(node):
-            print('WARNING: duplicate node at {} skipped!'.format(node.gkey))
+            print('WARNING: duplicate node at {} skipped!'.format(node._gkey))
         else:
-            k = len(self.nodes)
+            k = len(self._nodes)
             node._key = k
             if not node._name:
                 node._name = 'n-{}'.format(k)
             self._nodes.append(node)
-            self._nodes_gkeys.append(node.gkey)
-        return node.key
+            self._nodes_gkeys.append(node._gkey)
+        return node._key
 
-    def add_nodes(self, nodes, check=True):
-        """Add multiple compas_fea2 Node objects to the Part.
+    def add_nodes(self, nodes, check=False):
+        """Add multiple :class:`NodeBase` objects to the ``Part``.
 
         Parameters
         ----------
         nodes : list
-            List of compas_fea2 Node objects.
-        check : bool
-            If True, checks if the nodes are already present. This is a quite
-            resource-intense operation! Set to `False` for large models (>10000
-            nodes)
+            List of :class:`NodeBase` objects.
+        check : bool, optional
+            If ``True``, checks if the node is already present. This is a quite
+            resource-intense operation! Set to ``False`` for large parts (>10000
+            nodes). By default ``False``
+
+        Return
+        ------
+        list of int
+            list with the keys of the added nodes.
 
         Examples
         --------
         >>> part = Part('mypart')
-        >>> node1 = Node(1.0, 2.0, 3.0)
-        >>> node2 = Node(3.0, 4.0, 5.0)
-        >>> part.add_nodes([node1, node2])
+        >>> node1 = Node([1.0, 2.0, 3.0])
+        >>> node2 = Node([3.0, 4.0, 5.0])
+        >>> node3 = Node([3.0, 4.0, 5.0]) # Duplicate node
+        >>> part.add_nodes([node1, node2, node3], check=True)
+        [0, 1, None]
         """
-
-        for node in nodes:
-            self.add_node(node, check)
+        return [self.add_node(node, check) for node in nodes]
 
     def remove_node(self, node_key):
-        '''Remove the node from the Part. If there are duplicate nodes, it
+        """Remove the node from the Part. If there are duplicate nodes, it
         removes also all the duplicates.
 
         Parameters
@@ -373,14 +379,14 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
         # del self.nodes[node_key]
         # del self.nodes_gkeys[node_key]
         # self._reorder_nodes()
 
     def remove_nodes(self, nodes):
-        '''Remove the nodes from the Part. If there are duplicate nodes, it
+        """Remove the nodes from the Part. If there are duplicate nodes, it
         removes also all the duplicates.
 
         Parameters
@@ -391,10 +397,124 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
         # for node in nodes:
         #     self.remove_node(node)
+
+    def get_node_from_coordinates(self, xyz, tol):
+        """Finds (if any) the nodes in the model at specified coordinates.
+        A tollerance factor can be specified.
+
+        Parameters
+        ----------
+        xyz : list
+            List with the [x, y, z] coordinates.
+        tol : int
+            multiple to which round the coordinates.
+
+        Returns
+        -------
+        list
+            list with the keys of the maching nodes.
+            key =  Part name
+            value = Node object with the specified coordinates.
+        """
+        matches = []
+        a = [tol * round(i/tol) for i in xyz]
+        for node in self.nodes:
+            b = [tol * round(i/tol) for i in node.xyz]
+            if a == b:
+                matches.append(node.key)
+        return matches
+
+    # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def add_material(self, material):
+        """Add a :class:`MaterialBase` subclass object to the Part so that
+        it can be later refernced and used in the Section and Element definitions.
+
+        Parameters
+        ----------
+        material : obj
+            :class:`MaterialBase` object to be added.
+
+        Returns
+        -------
+        None
+        """
+        if material.name not in self._materials:
+            self._materials[material.name] = material
+        else:
+            print('NOTE: {} already added to the model. skipped!'.format(material))
+
+    def add_materials(self, materials):
+        """Add multiple :class:`MaterialBase` subclass objects to the Part so
+        that they can be later refernced and used in section and element definitions.
+
+        Parameters
+        ----------
+        material : list
+            List of :class:`MaterialBase` objects.
+
+        Returns
+        -------
+        None
+        """
+        for material in materials:
+            self.add_material(material)
+
+    # =========================================================================
+    #                        Sections methods
+    # =========================================================================
+    def add_section(self, section):
+        """Add a :class:`SectionBase` subclass object to the Part o that it can
+        be later refernced and used in an element definition.
+
+        Parameters
+        ----------
+        section : obj
+            :class:`SectionBase` subclass object to be added.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            if the material associated to the section is a string and it has not
+            been defined previously in the model
+        """
+        if section.name not in self._sections:
+            self._sections[section.name] = section
+            if isinstance(section.material, MaterialBase):
+                if section.material.name not in self.materials:
+                    self.add_material(section.material)
+            elif isinstance(section.material, str):
+                if section.material in self.materials:
+                    section._material = self.materials[section.material]
+                else:
+                    raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
+            else:
+                raise TypeError('Provide a valid SectionBase subclass object')
+
+    def add_sections(self, sections):
+        """Add multiple :class:`SectionBase`subclass  objects to the Model.
+
+        Parameters
+        ----------
+        sections : list
+            list of :class:`SectionBase` subclass objects.
+
+        Returns
+        -------
+        None
+        """
+        for section in sections:
+            self.add_section(section)
 
     # =========================================================================
     #                           Elements methods
@@ -444,7 +564,7 @@ class PartBase(FEABase):
     #     return self.elements[element_name]
 
     def _reorder_elements(self):
-        '''Reorders the elements to have consecutive keys.
+        """Reorders the elements to have consecutive keys.
 
         Parameters
         ----------
@@ -453,7 +573,7 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
 
         k = 0
         for element in self._elements:
@@ -461,26 +581,29 @@ class PartBase(FEABase):
             k += 1
 
     def add_element(self, element, check=False):
-        """Adds a compas_fea2 Element object to the Part.
+        """Add a :class:`ElementBase` subclass object to the Part.
 
         Parameters
         ----------
         element : obj
-            compas_fea2 Element object.
+            :class:`ElementBase` subclass object.
         check : bool
             If True, checks if the element keys are in the model. This is a quite
             resource-intense operation! Set to `False` for large models (>10000
             nodes)
+        check : bool, optional
+            If ``True``, checks if the node connected by the element are present.
+            This is a quite resource-intense operation! Set to ``False`` for large parts (>10000
+            nodes). By default ``False``
 
         Returns
         -------
         int
             element key
         """
-
         element._key = len(self.elements)
-        for c in element.connectivity:
-            if check:
+        if check:
+            for c in element.connectivity:
                 if c not in [node.key for node in self.nodes]:
                     raise ValueError(
                         f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
@@ -490,35 +613,34 @@ class PartBase(FEABase):
             if element.section in self._sections:
                 element._section = self._sections[element.section]
             else:
-                raise ValueError(f'{element.section} not found in {self}')
+                raise ValueError(f'{element.section.__repr__()} not found in {self.__repr__()}')
         elif isinstance(element.section, SectionBase):
             self.add_section(element.section)
         else:
-            raise ValueError('You must provide a Section object or the name of a previously added section')
+            raise TypeError('You must provide a Section object or the name of a previously added section')
         return element._key
 
-    def add_elements(self, elements):
-        """Adds multiple compas_fea2 Element objects to the Part.
+    def add_elements(self, elements, check):
+        """Adds multiple :class:`ElementBase` subclass objects to the ``Part``.
 
         Parameters
         ----------
         elements : list
-            List of compas_fea2 Element objects.
+            List of :class:`ElementBase` subclass objects.
         check : bool
             If True, checks if the element keys are in the model. This is a quite
             resource-intense operation! Set to `False` for large models (>10000
             nodes)
 
-        Returns
-        -------
-        None
+        Return
+        ------
+        list of int
+            list with the keys of the added nodes.
         """
-
-        for element in elements:
-            self.add_element(element)
+        return [self.add_element(element, check) for element in elements]
 
     def remove_element(self, element_key):
-        '''Removes the element from the Part.
+        """Removes the element from the Part.
 
         Parameters
         ----------
@@ -528,14 +650,14 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
         # # TODO check if element key exists
         # del self.elements[element_key]
         # self._reorder_elements()
 
     def remove_elements(self, elements):
-        '''Removes the elements from the Part.
+        """Removes the elements from the Part.
 
         Parameters
         ----------
@@ -545,7 +667,7 @@ class PartBase(FEABase):
         Returns
         -------
         None
-        '''
+        """
         raise NotImplementedError()
 
         # for element in elements:
@@ -554,94 +676,13 @@ class PartBase(FEABase):
     # =========================================================================
     #                           Releases methods
     # =========================================================================
-
+    # TODO: check the release definition
     def add_release(self, release):
         self.releases.append(release)
 
     def add_releases(self, releases):
         for release in releases:
             self.add_release(release)
-
-    # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def add_material(self, material):
-        '''Add a Material object to the Part so that it can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : obj
-            compas_fea2 material object.
-
-        Returns
-        -------
-        None
-        '''
-        if material.name not in self._materials:
-            self._materials[material.name] = material
-        else:
-            print('WARNING - {} already defined and it has been skipped! Note: the material name must be unique.')
-
-    def add_materials(self, materials):
-        '''Add multiple Material objects to the Part so that they can be later refernced
-        and used in the Section and Element definitions.
-
-        Parameters
-        ----------
-        material : list
-            List of compas_fea2 material objects.
-
-        Returns
-        -------
-        None
-        '''
-        for material in materials:
-            self.add_material(material)
-
-    # =========================================================================
-    #                        Sections methods
-    # =========================================================================
-    def add_section(self, section):
-        """Add a compas_fea2 Section object to the Part.
-
-        Parameters
-        ----------
-        section : obj
-            compas_fea2 Section object.
-
-        Returns
-        -------
-        None
-        """
-        if section.name not in self._sections:
-            self._sections[section.name] = section
-            if isinstance(section.material, MaterialBase):
-                if section.material.name not in self.materials:
-                    self.add_material(section.material)
-            elif isinstance(section.material, str):
-                if section.material in self.materials:
-                    section._material = self.materials[section.material]
-                else:
-                    raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
-            else:
-                raise TypeError()
-
-    def add_sections(self, sections):
-        """Add multiple compas_fea2 Section objects to the Part.
-
-        Parameters
-        ----------
-        sections : list
-            list of compas_fea2 Section objects.
-
-        Returns
-        -------
-        None
-        """
-        for section in sections:
-            self.add_section(section)
 
     # =========================================================================
     #                           Groups methods

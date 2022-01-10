@@ -196,7 +196,7 @@ class ModelBase(FEABase):
         name : str
             name of the new Model.
         part_name : str
-            name of the new part.
+            name of the new Part.
         gmshModel : obj
             gmsh Model to convert.
         shell_section : obj
@@ -204,7 +204,7 @@ class ModelBase(FEABase):
         """
         m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
         model = cls(name)
-        part = m.Part.shell_from_gmesh(part_name, mesh, shell_section)
+        part = m.Part.shell_from_gmesh(part_name, gmshModel, shell_section)
         model.add_part(part)
         return model
 
@@ -220,13 +220,17 @@ class ModelBase(FEABase):
     def from_compas_part(cls, name, part_name, part):
         raise NotImplementedError()
 
+    @classmethod
+    def from_compas_assembly(cls, name, part_name, assembly):
+        raise NotImplementedError()
+
     # =========================================================================
     #                             Parts methods
     # =========================================================================
     def _check_part_in_model(self, part):
         """Check if the part is already in the model and in case add it.
-        If `part` is of type `str`, check if the part is already defined.
-        If `part` is of type `PartBase`, add the part to the Model if not
+        If `part` is of type :class:`str`, check if the part is already defined.
+        If `part` is of type :class:`PartBase`, add the part to the Model if not
         already defined.
 
         Parameters
@@ -237,15 +241,15 @@ class ModelBase(FEABase):
         Returns
         -------
         obj
-            Part object
+            type :class:`PartBase` object
 
         Raises
         ------
         ValueError
             if `part` is a string and the part is not defined in the model
         TypeError
-            `part` must be either an instance of a `compas_fea2` Part class or the
-            name of a Part already defined in the Model.
+            `part` must be either an instance of a `compas_fea2` :class:`PartBase`
+            or the name of a :class:`PartBase` already defined in the Model.
         """
         if isinstance(part, str):
             if part not in self.parts:
@@ -268,16 +272,11 @@ class ModelBase(FEABase):
         Parameters
         ----------
         part : obj
-            Part object from which the Instance is created.
+            type :class:`PartBase` object.
 
         Returns
         -------
         None
-
-        Examples
-        --------
-        >>> model = Assembly('mymodel')
-        >>> part = Part('mypart')
         """
         if part.name in self.parts:
             print(f"WARNING: {part.__repr__()} already in the Model. skipped!")
@@ -289,15 +288,15 @@ class ModelBase(FEABase):
                 if not k in getattr(self, attr):
                     getattr(self, attr)[k] = v
                 else:
-                    print('{} already in Model, skipped!'.format(v.__repr__()))
+                    print(f'{v.__repr__()} already in Model, skipped!')
 
     def add_parts(self, parts):
-        """Add multiple parts to the Model.
+        """Add multiple Part objects to the Model.
 
         Parameters
         ----------
         parts : list
-            List of the Part objects to add.
+            List of the :class:`PartBase` objects to add.
         """
         for part in parts:
             self.add_part(part)
@@ -321,43 +320,71 @@ class ModelBase(FEABase):
     #                           Nodes methods
     # =========================================================================
 
-    def add_node(self, node, part):
-        """Add a compas_fea2 `Node` object to a `Part` in the `Model`.
-        If the `Node` object has no label, one is automatically assigned.
-        Duplicate nodes are automatically excluded.
+    def add_node(self, node, part, check=False):
+        """Add a :class:`NodeBase` object to a part in the Model.
+        If the node object has no label, one is automatically assigned.
 
         Parameters
         ----------
         node : obj
-            compas_fea2 Node object.
+            :class:`NodeBase` object.
         part : str, obj
-            Name of the part or Part object where the node will be added.
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
+        check : bool, optional
+            If ``True``, checks if the node is already present. This is a quite
+            resource-intense operation! Set to ``False`` for large parts (>10000
+            nodes). By default ``False``
 
-        Returns
-        -------
-        None
+        Return
+        ------
+        int
+            node key
+
+        Examples
+        --------
+        >>> model = Model('mymodel')
+        >>> model.add_part(Part('mypart'))
+        >>> node = Node(1.0, 2.0, 3.0)
+        >>> model.add_node(node, 'mypart', check=True)
+        0
         """
         part = self._check_part_in_model(part)
-        part.add_node(node)
+        return part.add_node(node, check)
 
-    def add_nodes(self, nodes, part):
-        """Add multiple compas_fea2 Node objects a Part in the Model.
-        If the Node object has no label, one is automatically assigned. Duplicate
-        nodes are automatically excluded.
+    def add_nodes(self, nodes, part, check=False):
+        """Add multiple :class:`NodeBase` objects a part in the Model.
+        If the Node object has no label, one is automatically assigned.
+        Duplicate nodes are automatically excluded.
 
         Parameters
         ----------
         nodes : list
-            List of compas_fea2 Node objects.
-        part : str
-            Name of the part where the node will be added.
+            List of :class:`NodeBase` objects.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
+        check : bool, optional
+            If ``True``, checks if the node is already present. This is a quite
+            resource-intense operation! Set to ``False`` for large parts (>10000
+            nodes). By default ``False``
 
-        Returns
-        -------
-        None
+        Return
+        ------
+        list of int
+            list with the keys of the added nodes.
+
+        Examples
+        --------
+        >>> model = Model('mymodel')
+        >>> model.add_part(Part('mypart'))
+        >>> node1 = Node([1.0, 2.0, 3.0])
+        >>> node2 = Node([3.0, 4.0, 5.0])
+        >>> node3 = Node([3.0, 4.0, 5.0]) # Duplicate node
+        >>> model.add_nodes([node1, node2, node3], 'mypart', check=True)
+        [0, 1, None]
         """
-        for node in nodes:
-            self.add_node(node, part)
+        return [self.add_node(node, part, check) for node in nodes]
 
     def remove_node(self, node_key, part):
         """Remove the node from a Part in the Model.
@@ -376,15 +403,16 @@ class ModelBase(FEABase):
         raise NotImplementedError()
 
     def remove_nodes(self, nodes, part):
-        """Remove the nodes from a Part in the Model. If there are duplicate nodes,
-        it removes also all the duplicates.
+        """Remove the `nodes` from a part in the Model. If there are duplicate
+        nodes, remove also all the duplicates.
 
         Parameters
         ----------
-        node : list
-            List with the key numbers of the nodes to be removed.
-        part : str
-            Name of the part where the nodes will be removed from.
+        nodes : list
+            List with the key (:class:`int`) of the nodes to be removed.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            removed.
 
         Returns
         -------
@@ -392,18 +420,38 @@ class ModelBase(FEABase):
         """
         raise NotImplementedError()
 
+    def get_node_from_coordinates(self, xyz, tol):
+        """Finds (if any) the Node object in the model with the specified coordinates.
+        A tollerance factor can be specified.
+
+        Parameters
+        ----------
+        xyz : list
+            List with the [x, y, z] coordinates of the Node.
+        tol : int
+            multiple to which round the coordinates.
+
+        Returns
+        -------
+        dict
+            Dictionary with the keys of the maching nodes for each Part.
+            key =  Part name
+            value = list of keys of the maching the specified coordinates.
+        """
+        return {part: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
+
     # =========================================================================
     #                           Materials methods
     # =========================================================================
 
     def add_material(self, material):
-        """Add a Material object to the Model so that it can be later refernced
-        and used in the Section and Element definitions.
+        """Add a :class:`MaterialBase` subclass object to the Model so that it can be
+        later refernced and used in the section and element definitions.
 
         Parameters
         ----------
         material : obj
-            compas_fea2 material object.
+            :class:`MaterialBase` object to be added.
 
         Returns
         -------
@@ -412,16 +460,16 @@ class ModelBase(FEABase):
         if material.name not in self.materials:
             self._materials[material._name] = material
         else:
-            print('WARNING: {} already added to the model. skipped!'.format(material))
+            print('NOTE: {} already added to the model. skipped!'.format(material))
 
     def add_materials(self, materials):
-        """Add multiple Material objects to the Model so that they can be later refernced
-        and used in the Section and Element definitions.
+        """Add multiple :class:`MaterialBase` subclass objects to the Model so
+        that they can be later refernced and used in section and element definitions.
 
         Parameters
         ----------
         material : list
-            List of compas_fea2 material objects.
+            List of :class:`MaterialBase` objects.
 
         Returns
         -------
@@ -430,30 +478,33 @@ class ModelBase(FEABase):
         for material in materials:
             self.add_material(material)
 
-    def assign_material_to_element(self, material, part, element):
-        raise NotImplementedError()
-
     # =========================================================================
     #                           Sections methods
     # =========================================================================
 
     def add_section(self, section):
-        """Add a compas_fea2 Section object to the Model o that it can be later
-        refernced and used in an Element definitions
+        """Add a :class:`SectionBase` subclass object to the Model o that it can be later
+        refernced and used in an element definition.
 
         Parameters
         ----------
         section : obj
-            compas_fea2 Section object.
+            :class:`SectionBase` subclass object to be added.
 
         Returns
         -------
         None
+
+        Raises
+        ------
+        ValueError
+            if the material associated to the section is a string and it has not
+            been defined previously in the model
         """
 
         if isinstance(section.material, str):
             if section.material not in self.materials:
-                raise ValueError(f'** ERROR! **: section {section.material} not found in the Model!')
+                raise ValueError(f'** ERROR! **: section {section.material.__repr__()} not found in the Model!')
             else:
                 section._material = self.materials[section.material]
         elif isinstance(section.material, MaterialBase):
@@ -469,15 +520,15 @@ class ModelBase(FEABase):
             else:
                 print('WARNING: {} already added to the model. skipped!'.format(section))
         else:
-            raise ValueError('Provide a valid Section object')
+            raise TypeError('Provide a valid SectionBase subclass object')
 
     def add_sections(self, sections):
-        """Add multiple compas_fea2 Section objects to the Model.
+        """Add multiple :class:`SectionBase`subclass  objects to the Model.
 
         Parameters
         ----------
         sections : list
-            list of compas_fea2 Section objects.
+            list of :class:`SectionBase` subclass objects.
 
         Returns
         -------
@@ -493,19 +544,31 @@ class ModelBase(FEABase):
     #                           Elements methods
     # =========================================================================
 
-    def add_element(self, element, part):
-        """Add a compas_fea2 Element object to a Part in the Model.
+    def add_element(self, element, part, check=False):
+        """Add a :class:`ElementBase` subclass object to a part in the Model.
+
+        Note
+        ----
+        Elements are defined at the part level. The element added is stored in
+        the specified part. However, the section and material associaceted are
+        added to tthe model, if not already present.
 
         Parameters
         ----------
         element : obj
-            compas_fea2 `Element` object.
-        part : str
-            Name of the part where the nodes will be removed from.
+            :class:`ElementBase` subclass object to be added.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
+        check : bool, optional
+            If ``True``, checks if the node connected by the element are present.
+            This is a quite resource-intense operation! Set to ``False`` for large
+            parts (>10000 nodes). By default ``False``
 
         Returns
         -------
-        None
+        int
+            element key
         """
         part = self._check_part_in_model(part)
         if isinstance(element.section, str):
@@ -513,28 +576,32 @@ class ModelBase(FEABase):
                 if element.section in part.sections:
                     self.sections[element.section] = part.sections[element.section]
                 else:
-                    raise ValueError('ERROR: section {} not found in the Model!'.format(element.section.__repr__()))
+                    raise ValueError(f'ERROR: section {element.section.__repr__()} not found in the Model!')
             else:
                 element._section = self.sections[element.section]
-        part.add_element(element)
+        return part.add_element(element, check)
 
-    def add_elements(self, elements, part):
-        """Adds multiple compas_fea2 Element objects to a Part in the Model.
+    def add_elements(self, elements, part, check=False):
+        """Adds multiple :class:`ElementBase` subclass objects to a part in the Model.
 
         Parameters
         ----------
         elements : list
-            List of compas_fea2 Element objects.
-        part : str
-            Name of the part where the nodes will be removed from.
+            List of compas_fea2 Element subclass objects.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
+        check : bool
+            If True, checks if the element keys are in the model. This is a quite
+            resource-intense operation! Set to `False` for large models (>10000
+            nodes)
 
-        Returns
-        -------
-        None
+        Return
+        ------
+        list of int
+            list with the keys of the added nodes.
         """
-
-        for element in elements:
-            self.add_element(element, part)
+        return [self.add_element(element, part, check) for element in elements]
 
     def remove_element(self, element_key, part):
         """Removes the element from a Part in the Model.
@@ -550,6 +617,7 @@ class ModelBase(FEABase):
         -------
         None
         """
+        raise NotImplementedError()
         part = self._check_part_in_model(part)
         part.remove_element(element_key)
 
@@ -567,12 +635,14 @@ class ModelBase(FEABase):
         -------
         None
         """
+        raise NotImplementedError()
         for element in elements:
             self.remove_node(element, part)
 
     # =========================================================================
     #                           Releases methods
     # =========================================================================
+    # TODO: check the release definition
 
     def add_release(self, release, part):
         """Add an Element EndRelease object to the Model.
@@ -581,8 +651,9 @@ class ModelBase(FEABase):
         ----------
         release : obj
             `EndRelase` object.
-        part : str
-            Name of the part where the nodes will be removed from.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
 
         Returns
         -------
@@ -612,29 +683,35 @@ class ModelBase(FEABase):
     #                           Groups methods
     # =========================================================================
     def group_parts(self, name, parts):
-        """Group parts together
+        """Group parts together.
 
         Parameters
         ----------
         name : str
             name of the group
-        parts : list
+        parts : list of str
             list containing the parts names to group
+
+        Returns
+        -------
+        None
         """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         group = m.PartsGroup(name=name, parts=parts)
         self._parts_groups[group.name] = group
 
+    # NOTE: Nodes and Elements groups should not be added but defined (simlartly to what happens for Parts)
     def add_group(self, group, part):
-        """Add a Group object to a part in the Model at the instance level. Can
-        be either a NodesGroup or an ElementsGroup.
+        """Add a Group object to a part in the Model. it can be either a
+        :class:`NodesGroupBase` or an :class:`ElementsGroupBase`.
 
         Parameters
         ----------
         group : obj
-            group object.
+            :class:`NodesGroupBase` or :class:`ElementsGroupBase` object to add.
         part : str, obj
-            Part name or Part object.
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
 
         Returns
         -------
@@ -651,8 +728,9 @@ class ModelBase(FEABase):
         ----------
         group : obj
             group object.
-        part : str
-            Name of the part the group belongs to.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
 
         Returns
         -------
@@ -740,12 +818,12 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_constraint(self, constraint):
-        """Add a Constraint object to the Model.
+        """Add a :class:`ConstraintBase` object to the Model.
 
         Parameters
         ----------
         constraint : obj
-            compas_fea2 Contraint object
+            :class:`ConstraintBase` object to add.
 
         Returns
         -------
@@ -754,12 +832,12 @@ class ModelBase(FEABase):
         self._constraints[constraint.name] = constraint
 
     def add_constraints(self, constraints):
-        """Add multiple Constraint objects to the Model.
+        """Add multiple :class:`ConstraintBase` objects to the Model.
 
         Parameters
         ----------
         constraints : list
-            list of Constraint objects to add.
+            list of :class:`ConstraintBase` objects to add.
 
         Returns
         -------
@@ -803,6 +881,7 @@ class ModelBase(FEABase):
     # =========================================================================
     #                        Interaction methods
     # =========================================================================
+    # FIXME choose between Contact and Interaction for the name
     def add_interaction(self, interaction):
         """Add a :class:`ContactBase` object to the model.
 
@@ -835,16 +914,19 @@ class ModelBase(FEABase):
     # =========================================================================
     #                           BCs methods
     # =========================================================================
-    # TODO missing axes
+    # FIXME missing axes
     def add_bc(self, bc, nodes, part):
-        """Adds a boundary condition to the Problem object.
+        """Adds a :class:`GeneralBCBase` to the Problem object.
 
         Parameters
         ----------
         bc : obj
-            `compas_fea2` BoundaryCondtion object.
-        part : str
-            part in the model where the BoundaryCondtion is applied.
+            :class:`GeneralBCBase` object.
+        nodes : list
+            list with the node keys where to assign the boundary condition.
+        part : str, obj
+            Name of the part or :class:`PartBase` object where the node will be
+            added.
 
         Returns
         -------
@@ -860,15 +942,23 @@ class ModelBase(FEABase):
         else:
             for node in nodes:
                 if node in self.bcs[part]:
-                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[node]}")
+                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[node].__repr__()}")
                 else:
                     self._bcs[part][node] = bc
 
     def add_bc_type(self, name, bc_type, part, nodes, axes='global'):
-        """Add a BoundaryCondition to nodes in a part by type.
+        """Add a :class:`GeneralBCBase` subclass to nodes in a part by type.
 
         Note
         ----
+        The bc_type must be one of the following:
+        +------------------------+-------------------------+
+        | bc_type                | BC                      |
+        +========================+=========================+
+        | fix                    | :class:`FixedBCBase`    |
+        +------------------------+-------------------------+
+        | body row 2             | ...                     |
+        +------------------------+-------------------------+
         'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
         'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
         'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
@@ -899,7 +989,7 @@ class ModelBase(FEABase):
         self._bcs.setdefault(part, {})[bc] = nodes
 
     def add_fix_bc(self, name, part, nodes, axes='global'):
-        """Add a fixed boundary condition type to some nodes in a part.
+        """Add a :class:`FixedBCBase` to the nodes in a part.
 
         Parameters
         ----------
@@ -908,7 +998,7 @@ class ModelBase(FEABase):
         part : str
             name of the part where the boundary condition is applied
         nodes : list
-            list of nodes where to apply the boundary condition
+            list of nodes keys where to apply the boundary condition
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
@@ -1090,7 +1180,7 @@ class ModelBase(FEABase):
             self.add_bc(bc)
 
     def remove_bc(self, bc_name):
-        """Removes a boundary condition from the Problem object.
+        """Removes a boundary condition from the Model.
 
         Parameters
         ----------
@@ -1104,7 +1194,7 @@ class ModelBase(FEABase):
         raise NotImplementedError
 
     def remove_bcs(self, bc_names):
-        """Removes multiple boundary conditions from the Problem object.
+        """Removes multiple boundary conditions from the Model.
 
         Parameters
         ----------
@@ -1118,7 +1208,7 @@ class ModelBase(FEABase):
         raise NotImplementedError
 
     def remove_all_bcs(self):
-        """Removes all the boundary conditions from the Problem object.
+        """Removes all the boundary conditions from the Model.
 
         Parameters
         ----------
@@ -1129,42 +1219,6 @@ class ModelBase(FEABase):
         None
         """
         raise NotImplementedError()
-
-    # =========================================================================
-    #                          Helper methods
-    # =========================================================================
-
-    def get_node_from_coordinates(self, xyz, tol):
-        """Finds (if any) the Node object in the model with the specified coordinates.
-        A tollerance factor can be specified.
-
-        Parameters
-        ----------
-        xyz : list
-            List with the [x, y, z] coordinates of the Node.
-        tol : int
-            multiple to which round the coordinates.
-
-        Returns
-        -------
-        node : dict
-            Dictionary with the Node object for each Part.
-            key =  Part name
-            value = Node object with the specified coordinates.
-        """
-
-        node_dict = {}
-        for part in self.parts.values():
-            for node in part.nodes:
-                a = [tol * round(i/tol) for i in node.xyz]
-                b = [tol * round(i/tol) for i in xyz]
-                # if math.isclose(node.xyz, xyz, tol):
-                if a == b:
-                    node_dict[part.name] = node.key
-        if not node_dict:
-            print(f"WARNING: Node at {xyz} not found!")
-
-        return node_dict
 
     # ==============================================================================
     # Summary
@@ -1178,7 +1232,8 @@ class ModelBase(FEABase):
 
         Returns
         -------
-        None
+        str
+            Model summary
         """
         parts_info = ['\n'.join([f'{part.name}',
                                  f'    # of nodes: {len(part.nodes)}',

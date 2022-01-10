@@ -863,6 +863,30 @@ class ModelBase(FEABase):
         """
         self._contacts[contact.name] = contact
 
+        if isinstance(contact.master, str):
+            if contact.master in self._surfaces:
+                contact._master = self._surfaces[contact.master]
+            else:
+                raise ValueError(f'{contact.master} not found in {self.__repr__()}')
+        if contact.master.name not in self._surfaces:
+            self._surfaces[contact.master.name] = contact.master
+
+        if isinstance(contact.slave, str):
+            if contact.slave in self._surfaces:
+                contact._slave = self._surfaces[contact.slave]
+            else:
+                raise ValueError(f'{contact.slave} not found in {self.__repr__()}')
+        if contact.slave.name not in self._surfaces:
+            self._surfaces[contact.slave.name] = contact.slave
+
+        if isinstance(contact.interaction, str):
+            if contact.interaction in self._interaction:
+                contact._interactions = self._interactions[contact.interaction]
+            else:
+                raise ValueError(f'{contact.interaction} not found in {self.__repr__()}')
+        if contact.interaction.name not in self._interactions:
+            self._interactions[contact.interaction.name] = contact.interaction
+
     def add_contacts(self, contacts):
         """Add multiple :class:`ContactPairBase` objects to the Model.
 

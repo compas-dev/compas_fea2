@@ -7,6 +7,6 @@ class ContactPair(ContactPairBase):
 
     def _generate_jobdata(self):
         return f"""** Interaction: {self._name}
-*Contact Pair, interaction={self._interaction}, type=SURFACE TO SURFACE
-{self._master}, {self._slave}
+*Contact Pair, interaction={self._interaction.name}, type=SURFACE TO SURFACE
+{self._master.name}, {self._slave.name}
 **"""

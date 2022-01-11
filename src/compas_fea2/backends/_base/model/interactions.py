@@ -3,12 +3,16 @@ from compas_fea2.backends._base.base import FEABase
 
 class InteractionBase(FEABase):
     def __init__(self, name) -> None:
+        self.__name__ = 'Interaction'
         self._name = name
 
     @property
     def name(self):
         """str : the name of the interaction property."""
         return self._name
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
 
 
 class ContactBase(InteractionBase):

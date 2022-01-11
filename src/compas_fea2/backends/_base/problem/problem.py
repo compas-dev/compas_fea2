@@ -56,6 +56,10 @@ class ProblemBase(FEABase):
         can be useful for future reference."""
         return self._author
 
+    @author.setter
+    def author(self, value):
+        self._author = value
+
     @property
     def description(self):
         """str : Some description of the Problem. This will be added to the input file and

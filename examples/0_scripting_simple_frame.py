@@ -70,16 +70,16 @@ problem.add_step(GeneralStaticStep(name='step-1'))
 # Assign a point load to the node set
 problem.add_point_load(name='pload', step='step-1', part='part-1', nodes=[5], y=-1000)
 
-# # Define the field outputs required
-# problem.add_field_output(fout=FieldOutput(name='fout'))
+# Define the field outputs required
+# problem.add_field_output(fout=FieldOutput(name='fout'), )
 
 # Review
 problem.summary()
 problem.show()
 
 # # Solve the problem
-# problem.analyse(path=Path(TEMP).joinpath(problem.name))
+problem.analyse(path=Path(TEMP).joinpath(problem.name))
 
-# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-# results = Results.from_problem(problem, fields=['u'])
-# pprint(results.nodal)
+##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+results = Results.from_problem(problem, fields=['u'])
+pprint(results.nodal)

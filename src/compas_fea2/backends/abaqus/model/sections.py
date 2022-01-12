@@ -4,15 +4,15 @@ from __future__ import print_function
 
 from math import pi
 
-from compas_fea2.backends._base.model import SectionBase
-from compas_fea2.backends._base.model import MassSectionBase
-from compas_fea2.backends._base.model import ShellSectionBase
-from compas_fea2.backends._base.model import MembraneSectionBase
-from compas_fea2.backends._base.model import SolidSectionBase
-from compas_fea2.backends._base.model import TrussSectionBase
-from compas_fea2.backends._base.model import StrutSectionBase
-from compas_fea2.backends._base.model import TieSectionBase
-from compas_fea2.backends._base.model import SpringSectionBase
+from compas_fea2._base.model import SectionBase
+from compas_fea2._base.model import MassSectionBase
+from compas_fea2._base.model import ShellSectionBase
+from compas_fea2._base.model import MembraneSectionBase
+from compas_fea2._base.model import SolidSectionBase
+from compas_fea2._base.model import TrussSectionBase
+from compas_fea2._base.model import StrutSectionBase
+from compas_fea2._base.model import TieSectionBase
+from compas_fea2._base.model import SpringSectionBase
 
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)

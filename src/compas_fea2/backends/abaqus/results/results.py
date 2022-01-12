@@ -9,8 +9,8 @@ from time import time
 from subprocess import Popen
 from subprocess import PIPE
 
-from compas_fea2.backends._base.results import ResultsBase
-from compas_fea2.backends._base.results import CaseResultsBase
+from compas_fea2._base.results import ResultsBase
+from compas_fea2._base.results import CaseResultsBase
 from compas_fea2.backends.abaqus.results import odb_extract
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)

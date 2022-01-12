@@ -5,7 +5,7 @@ from __future__ import print_function
 from datetime import datetime
 import compas_fea2
 import os.path
-from compas_fea2.backends._base.job.input_file import InputFileBase
+from compas_fea2._base.job.input_file import InputFileBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

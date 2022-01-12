@@ -4,13 +4,13 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.backends._base.problem import GeneralStaticCaseBase
-from compas_fea2.backends._base.problem import StaticLinearPerturbationCaseBase
-from compas_fea2.backends._base.problem import HeatCaseBase
-from compas_fea2.backends._base.problem import ModalCaseBase
-from compas_fea2.backends._base.problem import HarmonicCaseBase
-from compas_fea2.backends._base.problem import BucklingCaseBase
-from compas_fea2.backends._base.problem import AcousticCaseBase
+from compas_fea2._base.problem import GeneralStaticCaseBase
+from compas_fea2._base.problem import StaticLinearPerturbationCaseBase
+from compas_fea2._base.problem import HeatCaseBase
+from compas_fea2._base.problem import ModalCaseBase
+from compas_fea2._base.problem import HarmonicCaseBase
+from compas_fea2._base.problem import BucklingCaseBase
+from compas_fea2._base.problem import AcousticCaseBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

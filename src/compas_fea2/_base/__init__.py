@@ -10,7 +10,7 @@ inherit from.
 MODEL
 =====
 
-.. currentmodule:: compas_fea2.backends._base.model
+.. currentmodule:: compas_fea2._base.model
 
 Model
 -----
@@ -129,7 +129,7 @@ Groups
 PROBLEM
 =======
 
-.. currentmodule:: compas_fea2.backends._base.problem
+.. currentmodule:: compas_fea2._base.problem
 
 Problem
 -------
@@ -183,7 +183,7 @@ Displacements
 RESULTS
 =======
 
-.. currentmodule:: compas_fea2.backends._base.results
+.. currentmodule:: compas_fea2._base.results
 
 .. autosummary::
     :toctree: generated/

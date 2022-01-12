@@ -1,5 +1,5 @@
 from itertools import tee
-from compas_fea2.backends._base.model.sections import SectionBase
+from compas_fea2._base.model.sections import SectionBase
 from compas_fea2.backends.abaqus import Model
 from compas_fea2.backends.abaqus import Part
 from compas_fea2.backends.abaqus import Node

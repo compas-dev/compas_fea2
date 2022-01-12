@@ -4,13 +4,13 @@ from __future__ import print_function
 
 import importlib
 
-from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.problem.loads import LoadBase
-from compas_fea2.backends._base.problem.displacements import GeneralDisplacementBase
-from compas_fea2.backends._base.problem.outputs import FieldOutputBase
-from compas_fea2.backends._base.model.parts import PartBase
-from compas_fea2.backends._base.model.groups import NodesGroupBase
-from compas_fea2.backends._base.model.groups import ElementsGroupBase
+from compas_fea2._base.base import FEABase
+from compas_fea2._base.problem.loads import LoadBase
+from compas_fea2._base.problem.displacements import GeneralDisplacementBase
+from compas_fea2._base.problem.outputs import FieldOutputBase
+from compas_fea2._base.model.parts import PartBase
+from compas_fea2._base.model.groups import NodesGroupBase
+from compas_fea2._base.model.groups import ElementsGroupBase
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)

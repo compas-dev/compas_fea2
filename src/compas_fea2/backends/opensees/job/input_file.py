@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os.path
 from datetime import datetime
-from compas_fea2.backends._base.job.input_file import InputFileBase
+from compas_fea2._base.job.input_file import InputFileBase
 # from compas_fea2.backends.opensees.problem.steps import ModalStep
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

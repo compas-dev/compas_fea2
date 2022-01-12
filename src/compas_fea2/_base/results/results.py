@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 from sys import path
 
-from compas_fea2.backends._base.base import FEABase
+from compas_fea2._base.base import FEABase
 
 import json
 import pickle

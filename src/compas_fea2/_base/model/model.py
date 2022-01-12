@@ -2,19 +2,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
 import pickle
 import os
 import importlib
 
-from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.model.parts import PartBase
-from compas_fea2.backends._base.model.materials import MaterialBase
-from compas_fea2.backends._base.model.sections import SectionBase
-from compas_fea2.backends._base.model.bcs import GeneralBCBase
-from compas_fea2.backends._base.model.groups import NodesGroupBase
-from compas_fea2.backends._base.model.groups import ElementsGroupBase
+from compas_fea2._base.base import FEABase
+from compas_fea2._base.model.parts import PartBase
+from compas_fea2._base.model.materials import MaterialBase
+from compas_fea2._base.model.sections import SectionBase
+from compas_fea2._base.model.bcs import GeneralBCBase
+from compas_fea2._base.model.groups import NodesGroupBase
+from compas_fea2._base.model.groups import ElementsGroupBase
 
 __all__ = [
     'ModelBase',
@@ -262,7 +260,7 @@ class ModelBase(FEABase):
             part_name = part.name
         else:
             raise TypeError(
-                f'{part} is either not an instance of a `compas_fea2` Part class or not found in the Model')
+                f'{part} is either not an instance of a compas_fea2 Part class or not found in the Model')
 
         return self.parts[part_name]
 
@@ -438,7 +436,7 @@ class ModelBase(FEABase):
             key =  Part name
             value = list of keys of the maching the specified coordinates.
         """
-        return {part: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
+        return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
 
     # =========================================================================
     #                           Materials methods

@@ -7,13 +7,13 @@ import importlib
 import numpy as np
 
 import compas_fea2
-from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.model.materials import MaterialBase
-from compas_fea2.backends._base.model.sections import SectionBase
-from compas_fea2.backends._base.model.sections import SolidSectionBase
-from compas_fea2.backends._base.model.sections import ShellSectionBase
-from compas_fea2.backends._base.model.groups import NodesGroupBase
-from compas_fea2.backends._base.model.groups import ElementsGroupBase
+from compas_fea2._base.base import FEABase
+from compas_fea2._base.model.materials import MaterialBase
+from compas_fea2._base.model.sections import SectionBase
+from compas_fea2._base.model.sections import SolidSectionBase
+from compas_fea2._base.model.sections import ShellSectionBase
+from compas_fea2._base.model.groups import NodesGroupBase
+from compas_fea2._base.model.groups import ElementsGroupBase
 
 __all__ = [
     'PartBase',
@@ -34,7 +34,7 @@ class PartBase(FEABase):
         self._name = name
 
         self._nodes = []
-        self._nodes_gkeys = []
+        self._nodes_gkeys = []  # TODO check with dict and set
 
         self._materials = {}
         self._sections = {}

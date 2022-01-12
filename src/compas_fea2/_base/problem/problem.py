@@ -8,11 +8,11 @@ import pickle
 import importlib
 from pathlib import Path
 
-from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.problem.displacements import GeneralDisplacementBase
-from compas_fea2.backends._base.problem.loads import LoadBase
-from compas_fea2.backends._base.problem.outputs import FieldOutputBase, HistoryOutputBase
-from compas_fea2.backends._base.problem.steps import CaseBase
+from compas_fea2._base.base import FEABase
+from compas_fea2._base.problem.displacements import GeneralDisplacementBase
+from compas_fea2._base.problem.loads import LoadBase
+from compas_fea2._base.problem.outputs import FieldOutputBase, HistoryOutputBase
+from compas_fea2._base.problem.steps import CaseBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

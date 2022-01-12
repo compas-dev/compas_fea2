@@ -1,7 +1,7 @@
 import pytest
 import compas_fea2
 
-from compas_fea2.backends._base.model import ConcreteBase
+from compas_fea2._base.model import ConcreteBase
 
 from compas_fea2.backends.abaqus.model import materials
 from compas_fea2.backends.abaqus.model.materials import Concrete, ElasticIsotropic, Stiff, Steel, UserMaterial,\

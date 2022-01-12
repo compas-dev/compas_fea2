@@ -1,4 +1,4 @@
-from compas_fea2.backends._base.model.interactions import ContactHardFrictionPenaltyBase
+from compas_fea2._base.model.interactions import ContactHardFrictionPenaltyBase
 
 
 class ContactHardFrictionPenalty(ContactHardFrictionPenaltyBase):

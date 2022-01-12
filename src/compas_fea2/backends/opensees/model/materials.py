@@ -6,14 +6,14 @@ from __future__ import print_function
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-from compas_fea2.backends._base.model import MaterialBase
-from compas_fea2.backends._base.model import ConcreteBase
-from compas_fea2.backends._base.model import ElasticIsotropicBase
-from compas_fea2.backends._base.model import StiffBase
-from compas_fea2.backends._base.model import ElasticOrthotropicBase
-from compas_fea2.backends._base.model import ElasticPlasticBase
-from compas_fea2.backends._base.model import SteelBase
-from compas_fea2.backends._base.model import ThermalMaterialBase
+from compas_fea2._base.model import MaterialBase
+from compas_fea2._base.model import ConcreteBase
+from compas_fea2._base.model import ElasticIsotropicBase
+from compas_fea2._base.model import StiffBase
+from compas_fea2._base.model import ElasticOrthotropicBase
+from compas_fea2._base.model import ElasticPlasticBase
+from compas_fea2._base.model import SteelBase
+from compas_fea2._base.model import ThermalMaterialBase
 
 
 # ==============================================================================

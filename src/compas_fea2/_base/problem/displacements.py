@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._base.model.bcs import GeneralBCBase
+from compas_fea2._base.model.bcs import GeneralBCBase
 
 __all__ = [
     'GeneralDisplacementBase',

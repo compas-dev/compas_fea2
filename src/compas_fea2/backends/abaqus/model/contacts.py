@@ -1,4 +1,4 @@
-from compas_fea2.backends._base.model.contacts import ContactPairBase
+from compas_fea2._base.model.contacts import ContactPairBase
 
 
 class ContactPair(ContactPairBase):

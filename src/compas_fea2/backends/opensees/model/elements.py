@@ -3,21 +3,21 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.backends._base.model import NodeBase
-from compas_fea2.backends._base.model import ElementBase
-from compas_fea2.backends._base.model import MassElementBase
-from compas_fea2.backends._base.model import BeamElementBase
-from compas_fea2.backends._base.model import SpringElementBase
-from compas_fea2.backends._base.model import TrussElementBase
-from compas_fea2.backends._base.model import StrutElementBase
-from compas_fea2.backends._base.model import TieElementBase
-from compas_fea2.backends._base.model import ShellElementBase
-from compas_fea2.backends._base.model import MembraneElementBase
-# from compas_fea2.backends._base.model import FaceElementBase
-from compas_fea2.backends._base.model import SolidElementBase
-from compas_fea2.backends._base.model import PentahedronElementBase
-from compas_fea2.backends._base.model import TetrahedronElementBase
-from compas_fea2.backends._base.model import HexahedronElementBase
+from compas_fea2._base.model import NodeBase
+from compas_fea2._base.model import ElementBase
+from compas_fea2._base.model import MassElementBase
+from compas_fea2._base.model import BeamElementBase
+from compas_fea2._base.model import SpringElementBase
+from compas_fea2._base.model import TrussElementBase
+from compas_fea2._base.model import StrutElementBase
+from compas_fea2._base.model import TieElementBase
+from compas_fea2._base.model import ShellElementBase
+from compas_fea2._base.model import MembraneElementBase
+# from compas_fea2._base.model import FaceElementBase
+from compas_fea2._base.model import SolidElementBase
+from compas_fea2._base.model import PentahedronElementBase
+from compas_fea2._base.model import TetrahedronElementBase
+from compas_fea2._base.model import HexahedronElementBase
 
 
 # Francesco Ranaudo (github.com/franaudo)

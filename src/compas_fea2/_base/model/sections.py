@@ -5,8 +5,8 @@ from __future__ import print_function
 
 from math import pi
 
-from compas_fea2.backends._base.base import FEABase
-from compas_fea2.backends._base.model.materials import MaterialBase
+from compas_fea2._base.base import FEABase
+from compas_fea2._base.model.materials import MaterialBase
 
 __all__ = [
     'SectionBase',

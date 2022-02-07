@@ -1,4 +1,4 @@
-from compas_fea2._base.model.surfaces import SurfaceBase
+from compas_fea2.model.surfaces import SurfaceBase
 
 
 class Surface(SurfaceBase):

@@ -5,16 +5,16 @@ from __future__ import print_function
 from math import log
 import os
 
-from compas_fea2._base.model import MaterialBase
-from compas_fea2._base.model import ConcreteBase
-from compas_fea2._base.model import ConcreteSmearedCrackBase
-from compas_fea2._base.model import ConcreteDamagedPlasticityBase
-from compas_fea2._base.model import ElasticIsotropicBase
-from compas_fea2._base.model import StiffBase
-from compas_fea2._base.model import ElasticOrthotropicBase
-from compas_fea2._base.model import ElasticPlasticBase
-from compas_fea2._base.model import SteelBase
-from compas_fea2._base.model import ThermalMaterialBase
+from compas_fea2.model import MaterialBase
+from compas_fea2.model import ConcreteBase
+from compas_fea2.model import ConcreteSmearedCrackBase
+from compas_fea2.model import ConcreteDamagedPlasticityBase
+from compas_fea2.model import ElasticIsotropicBase
+from compas_fea2.model import StiffBase
+from compas_fea2.model import ElasticOrthotropicBase
+from compas_fea2.model import ElasticPlasticBase
+from compas_fea2.model import SteelBase
+from compas_fea2.model import ThermalMaterialBase
 
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)

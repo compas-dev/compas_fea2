@@ -4,7 +4,7 @@ from __future__ import print_function
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
-from compas_fea2._base.model import ModelBase
+from compas_fea2.model import ModelBase
 
 __all__ = [
     'Model',

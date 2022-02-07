@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._base.model import ModelBase
+from compas_fea2.model import ModelBase
 from compas_fea2.backends.abaqus.model._instances import _Instance
 
 __all__ = [

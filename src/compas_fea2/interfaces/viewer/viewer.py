@@ -17,14 +17,14 @@ from compas.geometry import Polyhedron
 
 from compas_fea2.interfaces.viewer.shapes import PinBCShape
 from compas_fea2.interfaces.viewer.shapes import FixBCShape
-from compas_fea2._base.model.elements import ShellElementBase
-from compas_fea2._base.model.elements import SolidElementBase
-from compas_fea2._base.model.elements import BeamElementBase
-from compas_fea2._base.model.bcs import PinnedBCBase
-from compas_fea2._base.model.bcs import FixedBCBase
+from compas_fea2.model.elements import ShellElementBase
+from compas_fea2.model.elements import SolidElementBase
+from compas_fea2.model.elements import BeamElementBase
+from compas_fea2.model.bcs import PinnedBCBase
+from compas_fea2.model.bcs import FixedBCBase
 
-from compas_fea2._base.problem.loads import GravityLoadBase, PointLoadBase
-from compas_fea2._base.problem.steps import ModalCaseBase
+from compas_fea2.problem.loads import GravityLoadBase, PointLoadBase
+from compas_fea2.problem.steps import ModalCaseBase
 
 # class Viewer():
 #     """Viewer for analysis results.

@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
-from compas_fea2._base.model import PartBase
+from compas_fea2.model import PartBase
 
 # from compas_fea2.backends.abaqus.components import Node
 

@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2._base.model import NodeBase
+from compas_fea2.model import NodeBase
 
 # Francesco Ranaudo (github.com/franaudo)
 

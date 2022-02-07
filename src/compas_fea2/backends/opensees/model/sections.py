@@ -4,22 +4,22 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2._base.model import SectionBase
-from compas_fea2._base.model import MassSectionBase
-from compas_fea2._base.model import AngleSectionBase
-from compas_fea2._base.model import BoxSectionBase
-from compas_fea2._base.model import CircularSectionBase
-from compas_fea2._base.model import ISectionBase
-from compas_fea2._base.model import PipeSectionBase
-from compas_fea2._base.model import RectangularSectionBase
-from compas_fea2._base.model import ShellSectionBase
-from compas_fea2._base.model import MembraneSectionBase
-from compas_fea2._base.model import SolidSectionBase
-from compas_fea2._base.model import TrapezoidalSectionBase
-from compas_fea2._base.model import TrussSectionBase
-from compas_fea2._base.model import StrutSectionBase
-from compas_fea2._base.model import TieSectionBase
-from compas_fea2._base.model import SpringSectionBase
+from compas_fea2.model import SectionBase
+from compas_fea2.model import MassSectionBase
+from compas_fea2.model import AngleSectionBase
+from compas_fea2.model import BoxSectionBase
+from compas_fea2.model import CircularSectionBase
+from compas_fea2.model import ISectionBase
+from compas_fea2.model import PipeSectionBase
+from compas_fea2.model import RectangularSectionBase
+from compas_fea2.model import ShellSectionBase
+from compas_fea2.model import MembraneSectionBase
+from compas_fea2.model import SolidSectionBase
+from compas_fea2.model import TrapezoidalSectionBase
+from compas_fea2.model import TrussSectionBase
+from compas_fea2.model import StrutSectionBase
+from compas_fea2.model import TieSectionBase
+from compas_fea2.model import SpringSectionBase
 
 
 class RectangularSection(RectangularSectionBase):

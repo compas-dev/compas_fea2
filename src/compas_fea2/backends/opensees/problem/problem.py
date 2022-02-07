@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from pathlib import Path
-from compas_fea2._base.problem import ProblemBase
+from compas_fea2.problem import ProblemBase
 
 from compas_fea2.backends.abaqus.job.input_file import InputFile
 from compas_fea2.backends.abaqus.job.input_file import ParFile

@@ -3,8 +3,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._base.model.groups import NodesGroupBase
-from compas_fea2._base.model.groups import ElementsGroupBase
+from compas_fea2.model.groups import NodesGroupBase
+from compas_fea2.model.groups import ElementsGroupBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

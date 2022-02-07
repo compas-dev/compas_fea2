@@ -2,18 +2,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._base.model import GeneralBCBase
-from compas_fea2._base.model import FixedBCBase
-from compas_fea2._base.model import PinnedBCBase
-from compas_fea2._base.model import FixedBCXXBase
-from compas_fea2._base.model import FixedBCYYBase
-from compas_fea2._base.model import FixedBCZZBase
-from compas_fea2._base.model import RollerBCXBase
-from compas_fea2._base.model import RollerBCYBase
-from compas_fea2._base.model import RollerBCZBase
-from compas_fea2._base.model import RollerBCXYBase
-from compas_fea2._base.model import RollerBCYZBase
-from compas_fea2._base.model import RollerBCXZBase
+from compas_fea2.model import GeneralBCBase
+from compas_fea2.model import FixedBCBase
+from compas_fea2.model import PinnedBCBase
+from compas_fea2.model import FixedBCXXBase
+from compas_fea2.model import FixedBCYYBase
+from compas_fea2.model import FixedBCZZBase
+from compas_fea2.model import RollerBCXBase
+from compas_fea2.model import RollerBCYBase
+from compas_fea2.model import RollerBCZBase
+from compas_fea2.model import RollerBCXYBase
+from compas_fea2.model import RollerBCYZBase
+from compas_fea2.model import RollerBCXZBase
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 

@@ -2,16 +2,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2._base.problem import LoadBase
-from compas_fea2._base.problem import PrestressLoadBase
-from compas_fea2._base.problem import PointLoadBase
-from compas_fea2._base.problem import LineLoadBase
-from compas_fea2._base.problem import AreaLoadBase
-from compas_fea2._base.problem import GravityLoadBase
-from compas_fea2._base.problem import TributaryLoadBase
-from compas_fea2._base.problem import HarmonicPointLoadBase
-from compas_fea2._base.problem import HarmonicPressureLoadBase
-from compas_fea2._base.problem import AcousticDiffuseFieldLoadBase
+from compas_fea2.problem import LoadBase
+from compas_fea2.problem import PrestressLoadBase
+from compas_fea2.problem import PointLoadBase
+from compas_fea2.problem import LineLoadBase
+from compas_fea2.problem import AreaLoadBase
+from compas_fea2.problem import GravityLoadBase
+from compas_fea2.problem import TributaryLoadBase
+from compas_fea2.problem import HarmonicPointLoadBase
+from compas_fea2.problem import HarmonicPressureLoadBase
+from compas_fea2.problem import AcousticDiffuseFieldLoadBase
 
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)

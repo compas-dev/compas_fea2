@@ -5,8 +5,8 @@ from __future__ import print_function
 from pathlib import Path
 from compas_fea2.problem import Problem
 
-from compas_fea2.backends.abaqus.job import InputFile
-from compas_fea2.backends.abaqus.job import ParFile
+from compas_fea2.backends.abaqus.job import AbaqusInputFile
+from compas_fea2.backends.abaqus.job import AbaqusParFile
 from compas_fea2.backends.abaqus.job import launch_process
 from compas_fea2.backends.abaqus.job import launch_optimisation
 
@@ -60,7 +60,7 @@ class AbaqusProblem(Problem):
         -------
         None
         """
-        input_file = InputFile(self)
+        input_file = AbaqusInputFile(self)
         r = input_file.write_to_file(self.path)
         if output:
             print(r)
@@ -77,7 +77,7 @@ class AbaqusProblem(Problem):
         -------
         None
         """
-        par_file = ParFile(self)
+        par_file = AbaqusParFile(self)
         par = par_file.write_to_file(self.path)
         if output:
             print(par)

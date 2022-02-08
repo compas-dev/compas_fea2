@@ -16,7 +16,7 @@ from .loads import (
     AbaqusAreaLoad,
     AbaqusGravityLoad,
     AbaqusTributaryLoad,
-    AbaqusHarmoniPointLoad,
+    AbaqusHarmonicPointLoad,
     AbaqusHarmonicPressureLoad,
     AbaqusAcousticDiffuseFieldLoad
 )
@@ -38,7 +38,7 @@ __all__ = [
     'AbaqusAreaLoad',
     'AbaqusGravityLoad',
     'AbaqusTributaryLoad',
-    'AbaqusHarmoniPointLoad',
+    'AbaqusHarmonicPointLoad',
     'AbaqusHarmonicPressureLoad',
     'AbaqusAcousticDiffuseFieldLoad',
 

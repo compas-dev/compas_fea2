@@ -62,66 +62,66 @@ class ElasticOrthotropic(Material):
 
     def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
         super(ElasticOrthotropic, self).__init__(name=name)
-        self._Ex = Ex
-        self._Ey = Ey
-        self._Ez = Ez
-        self._vxy = vxy
-        self._vyz = vyz
-        self._vzx = vzx
-        self._Gxy = Gxy
-        self._Gyz = Gyz
-        self._Gzx = Gzx
-        self._p = p
+        self.Ex = Ex
+        self.Ey = Ey
+        self.Ez = Ez
+        self.vxy = vxy
+        self.vyz = vyz
+        self.vzx = vzx
+        self.Gxy = Gxy
+        self.Gyz = Gyz
+        self.Gzx = Gzx
+        self.p = p
 
-    @property
-    def Ex(self):
-        """float : Young's modulus E along X, for example [Pa]."""
-        return self._Ex
+    # @property
+    # def Ex(self):
+    #     """float : Young's modulus E along X, for example [Pa]."""
+    #     return self._Ex
 
-    @property
-    def Ey(self):
-        """float : Young's modulus E along Y, for example [Pa]."""
-        return self._Ey
+    # @property
+    # def Ey(self):
+    #     """float : Young's modulus E along Y, for example [Pa]."""
+    #     return self._Ey
 
-    @property
-    def Ez(self):
-        """float : Young's modulus E along Z, for example [Pa]."""
-        return self._Ez
+    # @property
+    # def Ez(self):
+    #     """float : Young's modulus E along Z, for example [Pa]."""
+    #     return self._Ez
 
-    @property
-    def vxy(self):
-        """float : Poisson's ratio vxy in x-y directions [unitless]."""
-        return self._vxy
+    # @property
+    # def vxy(self):
+    #     """float : Poisson's ratio vxy in x-y directions [unitless]."""
+    #     return self._vxy
 
-    @property
-    def vyx(self):
-        """float : Poisson's ratio vxy in y-z directions [unitless]."""
-        return self._vyx
+    # @property
+    # def vyx(self):
+    #     """float : Poisson's ratio vxy in y-z directions [unitless]."""
+    #     return self._vyx
 
-    @property
-    def vzx(self):
-        """float : Poisson's ratio vxy in x-z directions [unitless]."""
-        return self._vzx
+    # @property
+    # def vzx(self):
+    #     """float : Poisson's ratio vxy in x-z directions [unitless]."""
+    #     return self._vzx
 
-    @property
-    def Gxy(self):
-        """float : Shear modulus Gxy in x-y directions, for example [Pa]."""
-        return self._Gxy
+    # @property
+    # def Gxy(self):
+    #     """float : Shear modulus Gxy in x-y directions, for example [Pa]."""
+    #     return self._Gxy
 
-    @property
-    def Gyz(self):
-        """float : Shear modulus Gxy in xy-z directions, for example [Pa]."""
-        return self._Gyz
+    # @property
+    # def Gyz(self):
+    #     """float : Shear modulus Gxy in xy-z directions, for example [Pa]."""
+    #     return self._Gyz
 
-    @property
-    def Gzx(self):
-        """float : Shear modulus Gxy in x-z directions, for example [Pa]."""
-        return self._Gzx
+    # @property
+    # def Gzx(self):
+    #     """float : Shear modulus Gxy in x-z directions, for example [Pa]."""
+    #     return self._Gzx
 
-    @property
-    def p(self):
-        """float : Density, for example [kg/m3]."""
-        return self._p
+    # @property
+    # def p(self):
+    #     """float : Density, for example [kg/m3]."""
+    #     return self._p
 
 
 class ElasticIsotropic(Material):
@@ -141,30 +141,30 @@ class ElasticIsotropic(Material):
 
     def __init__(self, name, E, v, p):
         super(ElasticIsotropic, self).__init__(name=name)
-        self._E = E
-        self._v = v
-        self._G = 0.5 * E / (1 + v)
-        self._p = p
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
+        self.p = p
 
-    @property
-    def E(self):
-        """float : Young's modulus E, for example [Pa]."""
-        return self._E
+    # @property
+    # def E(self):
+    #     """float : Young's modulus E, for example [Pa]."""
+    #     return self._E
 
-    @property
-    def v(self):
-        """float : Poisson's ratio v [unitless]."""
-        return self._v
+    # @property
+    # def v(self):
+    #     """float : Poisson's ratio v [unitless]."""
+    #     return self._v
 
-    @property
-    def G(self):
-        """float : Shear modulus  G, for example [Pa]."""
-        return self._G
+    # @property
+    # def G(self):
+    #     """float : Shear modulus  G, for example [Pa]."""
+    #     return self._G
 
-    @property
-    def p(self):
-        """float : Density, for example [kg/m3]."""
-        return self._p
+    # @property
+    # def p(self):
+    #     """float : Density, for example [kg/m3]."""
+    #     return self._p
 
 
 class Stiff(ElasticIsotropic):
@@ -214,18 +214,18 @@ class ElasticPlastic(ElasticIsotropic):
         super(ElasticPlastic, self).__init__(name=name, E=E, v=v, p=p)
         fc = [-i for i in f]
         ec = [-i for i in e]
-        self._tension = {'f': f, 'e': e}
-        self._compression = {'f': fc, 'e': ec}
+        self.tension = {'f': f, 'e': e}
+        self.compression = {'f': fc, 'e': ec}
 
-    @property
-    def tension(self):
-        """dict : Parameters for modelling the tension side of the stess--strain curve"""
-        return self._tension
+    # @property
+    # def tension(self):
+    #     """dict : Parameters for modelling the tension side of the stess--strain curve"""
+    #     return self._tension
 
-    @property
-    def compression(self):
-        """dict : Parameters for modelling the tension side of the stess--strain curve"""
-        return self._compression
+    # @property
+    # def compression(self):
+    #     """dict : Parameters for modelling the tension side of the stess--strain curve"""
+    #     return self._compression
 
 
 # ==============================================================================
@@ -308,7 +308,7 @@ class Steel(ElasticIsotropic):
         self.p = p
         self.tension = {'f': f, 'e': e}
         self.compression = {'f': fc, 'e': ec}
-        self.attr_list.extend(['fy', 'fu', 'eu', 'ep', 'E', 'v', 'G', 'p', 'tension', 'compression'])
+        # self.attr_list.extend(['fy', 'fu', 'eu', 'ep', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
 # ==============================================================================
@@ -398,7 +398,7 @@ class Concrete(Material):
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': f[1:], 'e': ec}
         self.fratios = fr
-        self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
+        # self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
 class ConcreteSmearedCrack(Material):

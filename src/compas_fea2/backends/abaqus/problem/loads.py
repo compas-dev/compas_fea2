@@ -120,10 +120,10 @@ class AbaqusTributaryLoad(TributaryLoad):
         raise NotImplementedError
 
 
-class AbaqusHarmoniPointLoad(HarmonicPointLoad):
+class AbaqusHarmonicPointLoad(HarmonicPointLoad):
 
     def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-        super(AbaqusHarmoniPointLoad, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+        super(AbaqusHarmonicPointLoad, self).__init__(name, nodes, x, y, z, xx, yy, zz)
         raise NotImplementedError
 
 

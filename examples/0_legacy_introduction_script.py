@@ -21,7 +21,6 @@ from compas_fea2.model import BeamElement
 
 compas_fea2.set_backend('abaqus')
 
-
 # Initialise the assembly object
 model = Model(name='structural_model', description='...', author='me')
 
@@ -37,7 +36,7 @@ model.add_nodes([Node(xyz=node) for node in nodes], part='part-1')
 model.add_material(ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, p=1500))
 
 # Define sections
-model.add_section(CircularSection(name='sec_circ',    material='mat_elastic', r=0.010))
+model.add_section(CircularSection(name='sec_circ', material='mat_elastic', r=0.010))
 
 # Generate elements between nodes
 connectivity = [[0, i] for i in range(1, 5)]

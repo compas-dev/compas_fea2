@@ -22,7 +22,8 @@ class Section(FEABase):
 
     def __init__(self, name, material):
         super(Section, self).__init__(name=name)
-        self._material = material
+        self._material = None
+        self.material = material
 
     @property
     def material(self):
@@ -32,7 +33,7 @@ class Section(FEABase):
     @material.setter
     def material(self, value):
         if not isinstance(value, Material):
-            raise ValueError('must be a `compas_fea2` Material object')
+            raise ValueError('Material must be of type `compas_fea2.model.Material`.')
         self._material = value
 
 
@@ -125,7 +126,6 @@ class BeamSection(Section):
 
     def __init__(self, name, material):
         super(BeamSection, self).__init__(name, material)
-
         self._A = 0.
         self._Ixx = 0.
         self._Iyy = 0.

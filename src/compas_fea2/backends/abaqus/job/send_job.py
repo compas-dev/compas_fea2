@@ -7,8 +7,6 @@ import os
 from subprocess import Popen
 from subprocess import PIPE
 
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
-
 
 def launch_process(problem, exe, output, overwrite, user_mat):
     """ Run the analysis through Abaqus.

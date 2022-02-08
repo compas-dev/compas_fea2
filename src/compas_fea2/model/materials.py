@@ -17,6 +17,7 @@ class Material(FEABase):
     ----------
     name : str
         Name of the Material object.
+
     """
 
     def __init__(self, name):
@@ -137,10 +138,11 @@ class ElasticIsotropic(Material):
         Poisson's ratio v [-].
     p : float
         Density [kg/m3].
+
     """
 
     def __init__(self, name, E, v, p):
-        super(ElasticIsotropic, self).__init__(name=name)
+        super(ElasticIsotropic, self).__init__(name)
         self.E = E
         self.v = v
         self.G = 0.5 * E / (1 + v)
@@ -174,12 +176,11 @@ class Stiff(ElasticIsotropic):
     ----------
     name : str
         Material name.
-    E : float
-        Young's modulus E, for example [Pa].
+
     """
 
-    def __init__(self, name, E=10**13,  p=10**(-1)):  # FIXME: depending on the unit used, this is not be correct.
-        super(Stiff, self).__init__(name=name, E=E, v=0.3, p=p)
+    def __init__(self, name):
+        super(Stiff, self).__init__(name, E=1e+16, v=0.3, p=1e-16)
 
 
 # ==============================================================================
@@ -211,28 +212,17 @@ class ElasticPlastic(ElasticIsotropic):
     """
 
     def __init__(self, name, E, v, p, f, e):
-        super(ElasticPlastic, self).__init__(name=name, E=E, v=v, p=p)
+        super(ElasticPlastic, self).__init__(name, E=E, v=v, p=p)
         fc = [-i for i in f]
         ec = [-i for i in e]
         self.tension = {'f': f, 'e': e}
         self.compression = {'f': fc, 'e': ec}
-
-    # @property
-    # def tension(self):
-    #     """dict : Parameters for modelling the tension side of the stess--strain curve"""
-    #     return self._tension
-
-    # @property
-    # def compression(self):
-    #     """dict : Parameters for modelling the tension side of the stess--strain curve"""
-    #     return self._compression
 
 
 # ==============================================================================
 # non-linear metal
 # ==============================================================================
 
-# FIXME these are unit based! change
 class Steel(ElasticIsotropic):
     """Bi-linear steel with given yield stress.
 
@@ -281,16 +271,13 @@ class Steel(ElasticIsotropic):
     """
 
     def __init__(self, name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850):
-        super(Steel, self).__init__(name=name, E=E, v=v, p=p)
+        super(Steel, self).__init__(name, E=E, v=v, p=p)
 
-        E *= 10.**9
-        fy *= 10.**6
+        fu = fu or fy
+        E *= 10**9
+        fu *= 10**6
+        fy *= 10**6
         eu *= 0.01
-
-        if not fu:
-            fu = fy
-        else:
-            fu *= 10.**6
 
         ep = eu - fy / E
         f = [fy, fu]
@@ -302,13 +289,12 @@ class Steel(ElasticIsotropic):
         self.fu = fu
         self.eu = eu
         self.ep = ep
-        self.E = {'E': E}
-        self.v = {'v': v}
-        self.G = {'G': 0.5 * E / (1 + v)}
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
         self.p = p
         self.tension = {'f': f, 'e': e}
         self.compression = {'f': fc, 'e': ec}
-        # self.attr_list.extend(['fy', 'fu', 'eu', 'ep', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
 # ==============================================================================
@@ -369,36 +355,33 @@ class Concrete(Material):
     """
 
     def __init__(self, name, fck, v=0.2, p=2400, fr=None):
-        super(Concrete, self).__init__(name=name)
+        super(Concrete, self).__init__(name)
 
         de = 0.0001
         fcm = fck + 8
-        Ecm = 22 * 10**3 * (fcm / 10.)**0.3
+        Ecm = 22 * 10**3 * (fcm / 10)**0.3
         ec1 = min(0.7 * fcm**0.31, 2.8) * 0.001
         ecu1 = 0.0035 if fck < 50 else (2.8 + 27 * ((98 - fcm) / 100.)**4) * 0.001
 
         k = 1.05 * Ecm * ec1 / fcm
         e = [i * de for i in range(int(ecu1 / de) + 1)]
         ec = [ei - e[1] for ei in e[1:]]
-        fctm = 0.3 * fck**(2. / 3.) if fck <= 50 else 2.12 * log(1 + fcm / 10.)
-        f = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1)**2) / (1. + (k - 2) * (ei / ec1)) for ei in e]
+        fctm = 0.3 * fck**(2 / 3) if fck <= 50 else 2.12 * log(1 + fcm / 10)
+        f = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1)**2) / (1 + (k - 2) * (ei / ec1)) for ei in e]
 
         E = f[1] / e[1]
-        ft = [1., 0.]
-        et = [0., 0.001]
+        ft = [1.0, 0.0]
+        et = [0.0, 0.001]
+        fr = fr or [1.16, fctm / fcm]
 
-        if not fr:
-            fr = [1.16, fctm / fcm]
-
-        self.fck = fck * 10.**6
-        self.E = {'E': E}
-        self.v = {'v': v}
-        self.G = {'G': 0.5 * E / (1 + v)}
+        self.fck = fck * 10**6
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
         self.p = p
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': f[1:], 'e': ec}
         self.fratios = fr
-        # self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
 class ConcreteSmearedCrack(Material):
@@ -455,16 +438,15 @@ class ConcreteSmearedCrack(Material):
     """
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        super(ConcreteSmearedCrack, self).__init__(name=name)
+        super(ConcreteSmearedCrack, self).__init__(name)
 
-        self.E = {'E': E}
-        self.v = {'v': v}
-        self.G = {'G': 0.5 * E / (1 + v)}
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
         self.p = p
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': fc, 'e': ec}
         self.fratios = fr
-        self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression', 'fratios'])
 
 
 class ConcreteDamagedPlasticity(Material):
@@ -509,16 +491,15 @@ class ConcreteDamagedPlasticity(Material):
     """
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name=name)
+        super(ConcreteDamagedPlasticity, self).__init__(name)
 
-        self.E = {'E': E}
-        self.v = {'v': v}
-        self.G = {'G': 0.5 * E / (1 + v)}
+        self.E = E
+        self.v = v
+        self.G = 0.5 * E / (1 + v)
         self.p = p
         self.damage = damage
         self.hardening = hardening
         self.stiffening = stiffening
-        self.attr_list.extend(['E', 'v', 'G', 'p', 'damage', 'hardening', 'stiffening'])
 
 
 # ==============================================================================
@@ -542,9 +523,8 @@ class ThermalMaterial(Material):
     """
 
     def __init__(self, name, conductivity, p, sheat):
-        super(ThermalMaterial, self).__init__(name=name)
+        super(ThermalMaterial, self).__init__(name)
 
         self.conductivity = conductivity
         self.p = p
         self.sheat = sheat
-        self.attr_list.extend(['p', 'conductivity', 'sheat'])

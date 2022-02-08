@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import compas_fea2
+import compas
 
 from compas.utilities.maps import geometric_key
 from compas_fea2.base import FEABase
@@ -40,7 +40,7 @@ class Node(FEABase):
         self._x = self.xyz[0]
         self._y = self.xyz[1]
         self._z = self.xyz[2]
-        self._gkey = geometric_key(self.xyz, precision=compas_fea2.precision, sanitize=False)
+        self._gkey = geometric_key(self.xyz, precision=compas.PRECISION, sanitize=False)
         self._ex = ex
         self._ey = ey
         self._ez = ez

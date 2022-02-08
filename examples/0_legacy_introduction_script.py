@@ -1,28 +1,29 @@
-from compas_fea2.backends.abaqus import Model
-from compas_fea2.backends.abaqus import Part
-from compas_fea2.backends.abaqus import Node
-from compas_fea2.backends.abaqus import ElasticIsotropic
-from compas_fea2.backends.abaqus import CircularSection
-from compas_fea2.backends.abaqus import BeamElement
-from compas_fea2.backends.abaqus import ShellElement
-from compas_fea2.backends.abaqus import RollerBCXY
+import compas_fea2
 
-from compas_fea2.backends.abaqus import Problem
-from compas_fea2.backends.abaqus import ShellSection
-from compas_fea2.backends.abaqus import PointLoad
-from compas_fea2.backends.abaqus import GravityLoad
-from compas_fea2.backends.abaqus import FieldOutput
-from compas_fea2.backends.abaqus import GeneralStaticStep
-from compas_fea2.backends.abaqus import GeneralDisplacement
+from compas_fea2.model import Model
+from compas_fea2.model import Part
+from compas_fea2.model import Node
+from compas_fea2.model import ElasticIsotropic
+from compas_fea2.model import CircularSection
+# from compas_fea2.model import ShellSection
+from compas_fea2.model import BeamElement
+# from compas_fea2.model import ShellElement
+# from compas_fea2.model import RollerBCXY
 
-from compas_fea2.backends.abaqus import Results
+# from compas_fea2.problem import Problem
+# from compas_fea2.problem import PointLoad
+# from compas_fea2.problem import GravityLoad
+# from compas_fea2.problem import FieldOutput
+# from compas_fea2.problem import GeneralStaticStep
+# from compas_fea2.problem import GeneralDisplacement
 
-from compas_fea2 import TEMP
-from compas_fea2.backends.abaqus.model import nodes
+# from compas_fea2.results import Results
 
-##### ----------------------------- MODEL ----------------------------- #####
+compas_fea2.set_backend('abaqus')
+
+
 # Initialise the assembly object
-model = Model(name='structural_model')
+model = Model(name='structural_model', description='...', author='me')
 
 # Add a Part to the model
 model.add_part(Part(name='part-1'))
@@ -52,7 +53,7 @@ model.add_pin_bc(name='bc_pinned', part='part-1', nodes=[2, 3, 4])
 
 # Review
 model.summary()
-model.show(node_labels={'part-1': [0, 1]})
+# model.show(node_labels={'part-1': [0, 1]})
 
 
 # ##### ----------------------------- PROBLEM ----------------------------- #####

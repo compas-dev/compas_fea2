@@ -7,7 +7,6 @@ from math import log
 from compas_fea2.base import FEABase
 
 # TODO: make units independent
-# TODO: remove att_list attribute
 
 
 class Material(FEABase):
@@ -74,56 +73,6 @@ class ElasticOrthotropic(Material):
         self.Gzx = Gzx
         self.p = p
 
-    # @property
-    # def Ex(self):
-    #     """float : Young's modulus E along X, for example [Pa]."""
-    #     return self._Ex
-
-    # @property
-    # def Ey(self):
-    #     """float : Young's modulus E along Y, for example [Pa]."""
-    #     return self._Ey
-
-    # @property
-    # def Ez(self):
-    #     """float : Young's modulus E along Z, for example [Pa]."""
-    #     return self._Ez
-
-    # @property
-    # def vxy(self):
-    #     """float : Poisson's ratio vxy in x-y directions [unitless]."""
-    #     return self._vxy
-
-    # @property
-    # def vyx(self):
-    #     """float : Poisson's ratio vxy in y-z directions [unitless]."""
-    #     return self._vyx
-
-    # @property
-    # def vzx(self):
-    #     """float : Poisson's ratio vxy in x-z directions [unitless]."""
-    #     return self._vzx
-
-    # @property
-    # def Gxy(self):
-    #     """float : Shear modulus Gxy in x-y directions, for example [Pa]."""
-    #     return self._Gxy
-
-    # @property
-    # def Gyz(self):
-    #     """float : Shear modulus Gxy in xy-z directions, for example [Pa]."""
-    #     return self._Gyz
-
-    # @property
-    # def Gzx(self):
-    #     """float : Shear modulus Gxy in x-z directions, for example [Pa]."""
-    #     return self._Gzx
-
-    # @property
-    # def p(self):
-    #     """float : Density, for example [kg/m3]."""
-    #     return self._p
-
 
 class ElasticIsotropic(Material):
     """Elastic, isotropic and homogeneous material.
@@ -147,26 +96,6 @@ class ElasticIsotropic(Material):
         self.v = v
         self.G = 0.5 * E / (1 + v)
         self.p = p
-
-    # @property
-    # def E(self):
-    #     """float : Young's modulus E, for example [Pa]."""
-    #     return self._E
-
-    # @property
-    # def v(self):
-    #     """float : Poisson's ratio v [unitless]."""
-    #     return self._v
-
-    # @property
-    # def G(self):
-    #     """float : Shear modulus  G, for example [Pa]."""
-    #     return self._G
-
-    # @property
-    # def p(self):
-    #     """float : Density, for example [kg/m3]."""
-    #     return self._p
 
 
 class Stiff(ElasticIsotropic):

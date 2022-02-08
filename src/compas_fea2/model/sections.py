@@ -27,14 +27,14 @@ class Section(FEABase):
 
     @property
     def material(self):
-        """obj : `compas_fea2` Material object."""
         return self._material
 
     @material.setter
     def material(self, value):
-        if not isinstance(value, Material):
-            raise ValueError('Material must be of type `compas_fea2.model.Material`.')
-        self._material = value
+        if value:
+            if not isinstance(value, Material):
+                raise ValueError('Material must be of type `compas_fea2.model.Material`.')
+            self._material = value
 
 
 # ==============================================================================
@@ -50,20 +50,12 @@ class MassSection(FEABase):
         Section name.
     mass : float
         Point mass value.
+
     """
 
     def __init__(self, name, mass):
         super(MassSection, self).__init__(name=name)
-        self._mass = mass
-
-    @property
-    def mass(self):
-        """float : Point mass value."""
-        return self._mass
-
-    @mass.setter
-    def mass(self, value):
-        self._mass = value
+        self.mass = mass
 
 
 class SpringSection(Section):
@@ -100,9 +92,7 @@ class SpringSection(Section):
     """
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        super(SpringSection, self).__init__(self, name)
-        self.geometry = None
-        self.material = None
+        super(SpringSection, self).__init__(name)
         self.forces = forces
         self.displacements = displacements
         self.stiffness = stiffness
@@ -126,96 +116,15 @@ class BeamSection(Section):
 
     def __init__(self, name, material):
         super(BeamSection, self).__init__(name, material)
-        self._A = 0.
-        self._Ixx = 0.
-        self._Iyy = 0.
-        self._Ixy = 0.
-        self._Avx = 0.
-        self._Avy = 0.
-        self._J = 0.
-        self._g0 = 0.
-        self._gw = 0.
-
-    @property
-    def A(self):
-        """float : The area of the section."""
-        return self._A
-
-    @A.setter
-    def A(self, value):
-        self._A = value
-
-    @property
-    def Ixx(self):
-        """float: Second moment of area about axis x-x."""
-        return self._Ixx
-
-    @Ixx.setter
-    def Ixx(self, value):
-        self._Ixx = value
-
-    @property
-    def Iyy(self):
-        """float: Second moment of area about axis y-y."""
-        return self._Iyy
-
-    @Iyy.setter
-    def Iyy(self, value):
-        self._Iyy = value
-
-    @property
-    def Ixy(self):
-        """float : Cross moment of area.."""
-        return self._Ixy
-
-    @Ixy.setter
-    def Ixy(self, value):
-        self._Ixy = value
-
-    @property
-    def Avx(self):
-        """float : shear area along x."""
-        return self._Avx
-
-    @Avx.setter
-    def Avx(self, value):
-        self._Avx = value
-
-    @property
-    def Avy(self):
-        """float : shear area along y."""
-        return self._Avy
-
-    @Avy.setter
-    def Avy(self, value):
-        self._Avy = value
-
-    @property
-    def J(self):
-        """float : Torsional rigidity."""
-        return self._J
-
-    @J.setter
-    def J(self, value):
-        self._J = value
-
-    @property
-    def g0(self):
-        """float : Sectorial moment."""
-        return self._g0
-
-    @g0.setter
-    def g0(self, value):
-        self._g0 = value
-
-    @property
-    def gw(self):
-        """float : Warping constant."""
-        return self._gw
-
-    @gw.setter
-    def gw(self, value):
-        self._gw = value
+        self.A = 0.0
+        self.Ixx = 0.0
+        self.Iyy = 0.0
+        self.Ixy = 0.0
+        self.Avx = 0.0
+        self.Avy = 0.0
+        self.J = 0.0
+        self.g0 = 0.0
+        self.gw = 0.0
 
 
 class AngleSection(BeamSection):
@@ -243,18 +152,18 @@ class AngleSection(BeamSection):
     def __init__(self, name, b, h, t, material):
         super(AngleSection, self).__init__(name, material)
         # parameters
-        self._b = b
-        self._h = h
-        self._t = t
+        self.b = b
+        self.h = h
+        self.t = t
         # aux parameters
-        self._p = 2. * (b + h - t)
-        self._xc = (b**2 + h * t - t**2) / self._p
-        self._yc = (h**2 + b * t - t**2) / self._p
+        self.p = 2. * (b + h - t)
+        self.xc = (b**2 + h * t - t**2) / self.p
+        self.yc = (h**2 + b * t - t**2) / self.p
         # default properties
-        self._A = t * (b + h - t)
-        self._Ixx = (1. / 3) * (b * h**3 - (b - t) * (h - t)**3) - self._A * (h - self._yc)**2
-        self._Iyy = (1. / 3) * (h * b**3 - (h - t) * (b - t)**3) - self._A * (b - self._xc)**2
-        self._J = (1. / 3) * (h + b - t) * t**3
+        self.A = t * (b + h - t)
+        self.Ixx = (1. / 3) * (b * h**3 - (b - t) * (h - t)**3) - self.A * (h - self.yc)**2
+        self.Iyy = (1. / 3) * (h * b**3 - (h - t) * (b - t)**3) - self.A * (b - self.xc)**2
+        self.J = (1. / 3) * (h + b - t) * t**3
 
 
 class BoxSection(BeamSection):
@@ -284,18 +193,18 @@ class BoxSection(BeamSection):
     def __init__(self, name, b, h, tw, tf, material):
         super(BoxSection, self).__init__(name, material)
         # parameters
-        self._b = b
-        self._h = h
-        self._tw = tw
-        self._tf = tf
+        self.b = b
+        self.h = h
+        self.tw = tw
+        self.tf = tf
         # aux parameters
-        self._Ap = (h - tf) * (b - tw)
-        self._p = 2 * ((h - tf) / tw + (b - tw) / tf)
+        self.Ap = (h - tf) * (b - tw)
+        self.p = 2 * ((h - tf) / tw + (b - tw) / tf)
         # default parameters
-        self._A = b * h - (b - 2 * tw) * (h - 2 * tf)
-        self._Ixx = (b * h**3) / 12. - ((b - 2 * tw) * (h - 2 * tf)**3) / 12.
-        self._Iyy = (h * b**3) / 12. - ((h - 2 * tf) * (b - 2 * tw)**3) / 12.
-        self._J = 4 * (self._Ap**2) / self._p
+        self.A = b * h - (b - 2 * tw) * (h - 2 * tf)
+        self.Ixx = (b * h**3) / 12. - ((b - 2 * tw) * (h - 2 * tf)**3) / 12.
+        self.Iyy = (h * b**3) / 12. - ((h - 2 * tf) * (b - 2 * tw)**3) / 12.
+        self.J = 4 * (self.Ap**2) / self.p
 
 
 class CircularSection(BeamSection):
@@ -315,13 +224,13 @@ class CircularSection(BeamSection):
     def __init__(self, name, r, material):
         super(CircularSection, self).__init__(name, material)
         # parameters
-        self._r = r
+        self.r = r
         # aux parameters
-        self._D = 2 * r
+        self.D = 2 * r
         # default parameters
-        self._A = 0.25 * pi * self._D**2
-        self._Ixx = self._Iyy = (pi * self._D**4) / 64.
-        self._J = (pi * self._D**4) / 32
+        self.A = 0.25 * pi * self.D**2
+        self.Ixx = self.Iyy = (pi * self.D**4) / 64.
+        self.J = (pi * self.D**4) / 32
 
 
 class ISection(BeamSection):
@@ -347,16 +256,16 @@ class ISection(BeamSection):
     def __init__(self, name, b, h, tw, tf, material):
         super(ISection, self).__init__(name, material)
         # parameters
-        self._b = b
-        self._h = h
-        self._tw = tw
-        self._tf = tf
+        self.b = b
+        self.h = h
+        self.tw = tw
+        self.tf = tf
         # aux parameters
         # default parameters
-        self._A = 2 * b * tf + (h - 2 * tf) * tw
-        self._Ixx = (tw * (h - 2 * tf)**3) / 12. + 2 * ((tf**3) * b / 12. + b * tf * (h / 2. - tf / 2.)**2)
-        self._Iyy = ((h - 2 * tf) * tw**3) / 12. + 2 * ((b**3) * tf / 12.)
-        self._J = (1. / 3) * (2 * b * tf**3 + (h - tf) * tw**3)
+        self.A = 2 * b * tf + (h - 2 * tf) * tw
+        self.Ixx = (tw * (h - 2 * tf)**3) / 12. + 2 * ((tf**3) * b / 12. + b * tf * (h / 2. - tf / 2.)**2)
+        self.Iyy = ((h - 2 * tf) * tw**3) / 12. + 2 * ((b**3) * tf / 12.)
+        self.J = (1. / 3) * (2 * b * tf**3 + (h - tf) * tw**3)
 
 
 class PipeSection(BeamSection):
@@ -378,14 +287,14 @@ class PipeSection(BeamSection):
     def __init__(self, name, r, t, material):
         super(PipeSection, self).__init__(name, material)
         # parameters
-        self._r = r
-        self._t = t
+        self.r = r
+        self.t = t
         # aux parameters
-        self._D = 2 * r
+        self.D = 2 * r
         # default parameters
-        self._A = 0.25 * pi * (self._D**2 - (self._D - 2 * t)**2)
-        self._Ixx = self._Iyy = 0.25 * pi * (r**4 - (r - t)**4)
-        self._J = (2. / 3) * pi * (r + 0.5 * t) * t**3
+        self.A = 0.25 * pi * (self.D**2 - (self.D - 2 * t)**2)
+        self.Ixx = self.Iyy = 0.25 * pi * (r**4 - (r - t)**4)
+        self.J = (2. / 3) * pi * (r + 0.5 * t) * t**3
 
 
 class RectangularSection(BeamSection):
@@ -407,20 +316,19 @@ class RectangularSection(BeamSection):
     def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, material)
         # parameters
-        self._b = b
-        self._h = h
+        self.b = b
+        self.h = h
         # aux parameters
-        self._l1 = max([b, h])
-        self._l2 = min([b, h])
+        self.l1 = max([b, h])
+        self.l2 = min([b, h])
         # default parameters
-        self._A = b * h
-        self._Ixx = (1 / 12.) * b * h**3
-        self._Iyy = (1 / 12.) * h * b**3
-        self._Ixy = 0.
-        # self._Avy = 0.833 * A
-        # self._Avx = 0.833 * A
-        self._J = (self._l1 * self._l2**3) * (0.33333 - 0.21 *
-                                              (self._l2 / self._l1) * (1 - (self._l2**4) / (self._l2 * self._l1**4)))
+        self.A = b * h
+        self.Ixx = (1 / 12.) * b * h**3
+        self.Iyy = (1 / 12.) * h * b**3
+        self.Ixy = 0.
+        # self.Avy = 0.833 * A
+        # self.Avx = 0.833 * A
+        self.J = (self.l1 * self.l2**3) * (0.33333 - 0.21 * (self.l2 / self.l1) * (1 - (self.l2**4) / (self.l2 * self.l1**4)))
 
 
 class TrapezoidalSection(BeamSection):
@@ -448,15 +356,15 @@ class TrapezoidalSection(BeamSection):
     def __init__(self, name, b1, b2, h, material):
         super(TrapezoidalSection, self).__init__(name, material)
         # parameters
-        self._b1 = b1
-        self._b2 = b2
-        self._h = h
+        self.b1 = b1
+        self.b2 = b2
+        self.h = h
         # aux parameters
-        self._c = (h * (2 * b2 + b1)) / (3. * (b1 + b2))  # NOTE: not used
+        self.c = (h * (2 * b2 + b1)) / (3. * (b1 + b2))  # NOTE: not used
         # default paramters
-        self._A = 0.5 * (b1 + b2) * h
-        self._Ixx = (1 / 12.) * (3 * b2 + b1) * h**3
-        self._Iyy = (1 / 48.) * h * (b1 + b2) * (b2**2 + 7 * b1**2)
+        self.A = 0.5 * (b1 + b2) * h
+        self.Ixx = (1 / 12.) * (3 * b2 + b1) * h**3
+        self.Iyy = (1 / 48.) * h * (b1 + b2) * (b2**2 + 7 * b1**2)
 
 
 class TrussSection(BeamSection):
@@ -475,7 +383,7 @@ class TrussSection(BeamSection):
 
     def __init__(self, name, A, material):
         super(TrussSection, self).__init__(name, material)
-        self._A = A
+        self.A = A
 
 
 class StrutSection(TrussSection):
@@ -534,12 +442,7 @@ class ShellSection(Section):
 
     def __init__(self, name, t, material):
         super(ShellSection, self).__init__(name, material)
-        self._t = t
-
-    @property
-    def t(self):
-        """float : The thickness of the shell."""
-        return self._t
+        self.t = t
 
 
 class MembraneSection(Section):
@@ -557,16 +460,7 @@ class MembraneSection(Section):
 
     def __init__(self, name, t, material):
         super(MembraneSection, self).__init__(name, material)
-        self._t = t
-
-    @property
-    def t(self):
-        """float : The thickness of the membrane."""
-        return self._t
-
-    @t.setter
-    def t(self, value):
-        self._t = value
+        self.t = t
 
 
 # ==============================================================================

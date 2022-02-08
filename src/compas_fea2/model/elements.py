@@ -99,17 +99,6 @@ class MassElement(Element):
         self.mass = mass
         self.elset = elset
 
-    # def __str__(self):
-    #     print('\n')
-    #     print('compas_fea2 {0} object'.format(self.__name__))
-    #     print('-' * (len(self.__name__) + 18))
-    #     for attr in ['key', 'eltype', 'elset', 'mass']:
-    #         print('{0:<10} : {1}'.format(attr, getattr(self, attr)))
-    #     return ''
-
-    # def __repr__(self):
-    #     return '{0}({1})'.format(self.__name__, self.key)
-
 
 # ==============================================================================
 # 1D elements

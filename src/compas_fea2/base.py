@@ -2,10 +2,11 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 
-from compas.base import Base
+from compas.data import Data
+import compas_fea2
 
 
-class FEABase(Base):
+class FEABase(Data):
     """Base class for all FEA model objects.
 
     This base class inherits the serialisation infrastructure
@@ -21,75 +22,50 @@ class FEABase(Base):
 
     """
 
-    def __str__(self):
-        """String representation of the object.
+    def __new__(cls, *args, **kwargs):
+        imp = compas_fea2.get_backend_implementation(cls)
+        if not imp:
+            return super(FEABase, cls).__new__(cls)
+        return super(FEABase, imp).__new__(imp)
 
-        This method is used to explicitly convert the object to a string, with :func:``str``,
-        or implicitly, using the print function.
+    # def __str__(self):
+    #     """String representation of the object.
 
-        Returns
-        -------
-        str
+    #     This method is used to explicitly convert the object to a string, with :func:``str``,
+    #     or implicitly, using the print function.
 
-        Examples
-        --------
-        Convert the object to a string.
-        This returns a value.
+    #     Returns
+    #     -------
+    #     str
 
-        >>> s = str(obj)
-        >>> s
-        '...'
+    #     Examples
+    #     --------
+    #     Convert the object to a string.
+    #     This returns a value.
 
-        Print the object.
-        This does not return a value.
+    #     >>> s = str(obj)
+    #     >>> s
+    #     '...'
 
-        >>> p = print(obj)
-        '...'
-        >>> p
-        None
-        """
-        title = 'compas_fea2 {0} object'.format(self.__name__)
-        separator = '-' * (len(title))
-        data_extended = []
-        for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_') and a != 'jsondefinitions', dir(self))):
-            try:
-                attr = getattr(self, a)
-                if not callable(attr):
-                    if not isinstance(attr, (list, dict, tuple)):
-                        data_extended.append('{0:<15} : {1}'.format(a, attr.__repr__()))
-                    else:
-                        data_extended.append('{0:<15} : {1}'.format(a, attr))
-            except Exception:
-                pass
-        return """\n{}\n{}\n{}\n""".format(title, separator, '\n'.join(data_extended))
+    #     Print the object.
+    #     This does not return a value.
 
-    def __repr__(self):
-        """Code representation of object.
-
-        This method is used to convert the object to a code representation that can be evaluated by :func:`eval`
-        to recreate the object.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>> str(obj) == str(eval(repr(obj)))
-        True
-        """
-        raise NotImplementedError
-
-    @ property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        raise NotImplementedError
+    #     >>> p = print(obj)
+    #     '...'
+    #     >>> p
+    #     None
+    #     """
+    #     title = 'compas_fea2 {0} object'.format(self.__class__.__name__)
+    #     separator = '-' * (len(title))
+    #     data_extended = []
+    #     for a in list(filter(lambda a: not a.startswith('__') and not a.startswith('_') and a != 'jsondefinitions', dir(self))):
+    #         try:
+    #             attr = getattr(self, a)
+    #             if not callable(attr):
+    #                 if not isinstance(attr, (list, dict, tuple)):
+    #                     data_extended.append('{0:<15} : {1}'.format(a, attr.__repr__()))
+    #                 else:
+    #                     data_extended.append('{0:<15} : {1}'.format(a, attr))
+    #         except Exception:
+    #             pass
+    #     return """\n{}\n{}\n{}\n""".format(title, separator, '\n'.join(data_extended))

@@ -5,27 +5,29 @@ from __future__ import print_function
 import importlib
 import numpy as np
 
+from compas.geometry import normalize_vector
+
 from compas_fea2.base import FEABase
-from compas_fea2.model.materials import MaterialBase
-from compas_fea2.model.sections import SectionBase
-from compas_fea2.model.sections import SolidSectionBase
-from compas_fea2.model.sections import ShellSectionBase
-from compas_fea2.model.groups import NodesGroupBase
-from compas_fea2.model.groups import ElementsGroupBase
+from compas_fea2.model.materials import Material
+from compas_fea2.model.sections import Section
+from compas_fea2.model.sections import SolidSection
+from compas_fea2.model.sections import ShellSection
+from compas_fea2.model.groups import NodesGroup
+from compas_fea2.model.groups import ElementsGroup
 
 
-class PartBase(FEABase):
-    """Base Part object.
+class Part(FEABase):
+    """Part object.
 
     Parameters
     ----------
     name : str
         Name of the ``Part``.
+
     """
 
     def __init__(self, name):
-        self.__name__ = 'Part'
-        self._name = name
+        super(Part, self).__init__(name=name)
 
         self._nodes = []
         self._nodes_gkeys = []  # TODO check with dict and set
@@ -38,42 +40,28 @@ class PartBase(FEABase):
         self._releases = {}
 
     @property
-    def name(self):
-        """str : Name of the ``Part``"""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
     def nodes(self):
-        """list : Sorted list (by `Node key`) with the :class:`NodeBase` sub-class
-        objects belonging to the ``Part``."""
+        """list : Sorted list (by `Node key`) with the :class:`Node` sub-class objects belonging to the ``Part``."""
         return self._nodes
 
     @property
     def materials(self):
-        """dict : Dictionary with the :class:`MaterialBase` sub-class objects
-        belonging to the Part."""
+        """dict : Dictionary with the :class:`Material` sub-class objects belonging to the Part."""
         return self._materials
 
     @property
     def sections(self):
-        """dict : Dictionary with the :class:`SectionBase` sub-class objects
-        belonging to the ``Part``."""
+        """dict : Dictionary with the :class:`Section` sub-class objects belonging to the ``Part``."""
         return self._sections
 
     @property
     def elements(self):
-        """dict : Sorted list (by `Element key`) with the :class:`ElementBase`
-        sub-class objects belonging to the ``Part``."""
+        """dict : Sorted list (by `Element key`) with the :class:`Element` sub-class objects belonging to the ``Part``."""
         return self._elements
 
     @property
     def groups(self):
-        """list : List with the :class:`NodesGroupBase` or :class:`ElementsGroupBase`
-        sub-class objects belonging to the ``Part``."""
+        """list : List with the :class:`NodesGroup` or :class:`ElementsGroup` sub-class objects belonging to the ``Part``."""
         return self._groups
 
     @property
@@ -81,18 +69,15 @@ class PartBase(FEABase):
         """The releases property."""
         return self._releases
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
-
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
 
-    def from_network(self, network):
-        raise NotImplementedError()
+    # def from_network(self, network):
+    #     raise NotImplementedError()
 
-    def from_obj(self, obj):
-        raise NotImplementedError()
+    # def from_obj(self, obj):
+    #     raise NotImplementedError()
 
     @classmethod
     def frame_from_mesh(cls, name, mesh, beam_section):
@@ -108,8 +93,8 @@ class PartBase(FEABase):
             Mesh to convert to import as a Model.
         beam_section : obj
             compas_fea2 BeamSection object to to apply to the frame elements.
+
         """
-        from compas.geometry import normalize_vector
         m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
         part = cls(name)
         part.add_section(beam_section)
@@ -145,6 +130,7 @@ class PartBase(FEABase):
             Mesh to convert to import as a Model.
         shell_section : obj
             compas_fea2 ShellSection object to to apply to the shell elements.
+
         """
         m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
         part = cls(name)
@@ -181,7 +167,7 @@ class PartBase(FEABase):
         gmshModel : obj
             gmsh Model to convert. See [1]_
         section : obj
-            `compas_fea2` :class:`SolidSectionBase` or :class:`ShellSectionBase` sub-class
+            `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
             object to to apply to the elements.
         split : bool, optional
             if ``True`` create an additional node in the middle of the edges of the
@@ -223,7 +209,7 @@ class PartBase(FEABase):
                 print(f'node {k} added')
         # add elements
         elements = gmshModel.mesh.get_elements()
-        if isinstance(section, SolidSectionBase):
+        if isinstance(section, SolidSection):
             ntags_per_element = np.split(elements[2][2]-1, len(elements[1][2]))  # gmsh keys start from 1
             for ntags in ntags_per_element:
                 # if split:
@@ -234,7 +220,7 @@ class PartBase(FEABase):
                 k = part.add_element(m.SolidElement(ntags, section), check)
                 if verbose:
                     print(f'element {k} added')
-        if isinstance(section, ShellSectionBase):
+        if isinstance(section, ShellSection):
             ntags_per_element = np.split(elements[2][1]-1, len(elements[1][1]))  # gmsh keys start from 1
             for ntags in ntags_per_element:
                 k = part.add_element(m.ShellElement(ntags, section), check)
@@ -297,14 +283,14 @@ class PartBase(FEABase):
             return indices
 
     def add_node(self, node, check=False):
-        """Add a :class:`NodeBase` object to the ``Part``.
+        """Add a :class:`Node` object to the ``Part``.
         If the node object has no label, one is automatically assigned.
         Duplicate nodes are automatically excluded.
 
         Parameters
         ----------
         node : obj
-            :class:`NodeBase` object.
+            :class:`Node` object.
         check : bool, optional
             If ``True``, checks if the node is already present. This is a quite
             resource-intense operation! Set to ``False`` for large parts (>10000
@@ -333,12 +319,12 @@ class PartBase(FEABase):
         return node._key
 
     def add_nodes(self, nodes, check=False):
-        """Add multiple :class:`NodeBase` objects to the ``Part``.
+        """Add multiple :class:`Node` objects to the ``Part``.
 
         Parameters
         ----------
         nodes : list
-            List of :class:`NodeBase` objects.
+            List of :class:`Node` objects.
         check : bool, optional
             If ``True``, checks if the node is already present. This is a quite
             resource-intense operation! Set to ``False`` for large parts (>10000
@@ -426,13 +412,13 @@ class PartBase(FEABase):
     # =========================================================================
 
     def add_material(self, material):
-        """Add a :class:`MaterialBase` subclass object to the Part so that
+        """Add a :class:`Material` subclass object to the Part so that
         it can be later refernced and used in the Section and Element definitions.
 
         Parameters
         ----------
         material : obj
-            :class:`MaterialBase` object to be added.
+            :class:`Material` object to be added.
 
         Returns
         -------
@@ -444,13 +430,13 @@ class PartBase(FEABase):
             print('NOTE: {} already added to the model. skipped!'.format(material))
 
     def add_materials(self, materials):
-        """Add multiple :class:`MaterialBase` subclass objects to the Part so
+        """Add multiple :class:`Material` subclass objects to the Part so
         that they can be later refernced and used in section and element definitions.
 
         Parameters
         ----------
         material : list
-            List of :class:`MaterialBase` objects.
+            List of :class:`Material` objects.
 
         Returns
         -------
@@ -462,14 +448,15 @@ class PartBase(FEABase):
     # =========================================================================
     #                        Sections methods
     # =========================================================================
+
     def add_section(self, section):
-        """Add a :class:`SectionBase` subclass object to the Part o that it can
+        """Add a :class:`Section` subclass object to the Part o that it can
         be later refernced and used in an element definition.
 
         Parameters
         ----------
         section : obj
-            :class:`SectionBase` subclass object to be added.
+            :class:`Section` subclass object to be added.
 
         Returns
         -------
@@ -483,7 +470,7 @@ class PartBase(FEABase):
         """
         if section.name not in self._sections:
             self._sections[section.name] = section
-            if isinstance(section.material, MaterialBase):
+            if isinstance(section.material, Material):
                 if section.material.name not in self.materials:
                     self.add_material(section.material)
             elif isinstance(section.material, str):
@@ -492,15 +479,15 @@ class PartBase(FEABase):
                 else:
                     raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
             else:
-                raise TypeError('Provide a valid SectionBase subclass object')
+                raise TypeError('Provide a valid Section subclass object')
 
     def add_sections(self, sections):
-        """Add multiple :class:`SectionBase`subclass  objects to the Model.
+        """Add multiple :class:`Section`subclass  objects to the Model.
 
         Parameters
         ----------
         sections : list
-            list of :class:`SectionBase` subclass objects.
+            list of :class:`Section` subclass objects.
 
         Returns
         -------
@@ -512,10 +499,11 @@ class PartBase(FEABase):
     # =========================================================================
     #                           Elements methods
     # =========================================================================
+
     # def _check_element_in_part(self, element):
     #     """Check if the element is already in the model and in case add it.
     #     If `element` is of type `str`, check if the element is already defined.
-    #     If `element` is of type `ElementBase`, add the element to the Part if not
+    #     If `element` is of type `Element`, add the element to the Part if not
     #     already defined.
 
     #     Warning
@@ -545,14 +533,14 @@ class PartBase(FEABase):
     #         if element not in self.elements:
     #             raise ValueError(f'{element} not found in the Part')
     #         element_name = element
-    #     elif isinstance(element, PartBase):
+    #     elif isinstance(element, Part):
     #         if element.name not in self.elements:
     #             self.add_element(element)
     #             print(f'{element.__repr__()} added to the Part')
     #         element_name = element.name
     #     else:
     #         raise TypeError(
-    #             f'{element} is either not an instance of a `compas_fea2` ElementBase class or not found in the Model')
+    #             f'{element} is either not an instance of a `compas_fea2` Element class or not found in the Model')
 
     #     return self.elements[element_name]
 
@@ -574,12 +562,12 @@ class PartBase(FEABase):
             k += 1
 
     def add_element(self, element, check=False):
-        """Add a :class:`ElementBase` subclass object to the Part.
+        """Add a :class:`Element` subclass object to the Part.
 
         Parameters
         ----------
         element : obj
-            :class:`ElementBase` subclass object.
+            :class:`Element` subclass object.
         check : bool
             If True, checks if the element keys are in the model. This is a quite
             resource-intense operation! Set to `False` for large models (>10000
@@ -607,19 +595,19 @@ class PartBase(FEABase):
                 element._section = self._sections[element.section]
             else:
                 raise ValueError(f'{element.section.__repr__()} not found in {self.__repr__()}')
-        elif isinstance(element.section, SectionBase):
+        elif isinstance(element.section, Section):
             self.add_section(element.section)
         else:
             raise TypeError('You must provide a Section object or the name of a previously added section')
         return element._key
 
     def add_elements(self, elements, check):
-        """Adds multiple :class:`ElementBase` subclass objects to the ``Part``.
+        """Adds multiple :class:`Element` subclass objects to the ``Part``.
 
         Parameters
         ----------
         elements : list
-            List of :class:`ElementBase` subclass objects.
+            List of :class:`Element` subclass objects.
         check : bool
             If True, checks if the element keys are in the model. This is a quite
             resource-intense operation! Set to `False` for large models (>10000
@@ -669,6 +657,7 @@ class PartBase(FEABase):
     # =========================================================================
     #                           Releases methods
     # =========================================================================
+
     # TODO: check the release definition
     def add_release(self, release):
         self.releases.append(release)
@@ -680,8 +669,9 @@ class PartBase(FEABase):
     # =========================================================================
     #                           Groups methods
     # =========================================================================
+
     def add_group(self, group):
-        if isinstance(group, (NodesGroupBase, ElementsGroupBase)):
+        if isinstance(group, (NodesGroup, ElementsGroup)):
             if group.name not in self.groups:
                 self._groups[group.name] = group
         else:

@@ -5,7 +5,7 @@ from __future__ import print_function
 from compas_fea2.base import FEABase
 
 
-class GeneralBCBase(FEABase):
+class GeneralBC(FEABase):
     """Boundary Condtion object.
 
     Parameters
@@ -20,25 +20,13 @@ class GeneralBCBase(FEABase):
     """
 
     def __init__(self, name,  components, axes):
-        self.__name__ = 'GeneralBC'
-        self._name = name
+        super(GeneralBC, self).__init__(name=name)
+
         self._components = components
         for c, a in self._components.items():
             if a is not None:
                 setattr(self, '_' + c, a)
         self._axes = axes
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
-
-    @property
-    def name(self):
-        """str :  Name of the BC object."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def components(self):
@@ -61,127 +49,94 @@ class GeneralBCBase(FEABase):
             setattr(self, c, a)
 
 
-class FixedBCBase(GeneralBCBase):
+class FixedBC(GeneralBC):
     """A fixed nodal displacement boundary condition.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(FixedBCBase, self).__init__(name=name,  components={'x': 0, 'y': 0, 'z': 0,
-                                                                  'xx': 0, 'yy': 0, 'zz': 0}, axes=axes)
-        self.__name__ = 'FixedBC'
+        components = {'x': 0, 'y': 0, 'z': 0, 'xx': 0, 'yy': 0, 'zz': 0}
+        super(FixedBC, self).__init__(name=name,  components=components, axes=axes)
 
 
-class PinnedBCBase(GeneralBCBase):
+class PinnedBC(GeneralBC):
     """A pinned nodal displacement boundary condition.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(PinnedBCBase, self).__init__(name=name,  components={'x': 0, 'y': 0, 'z': 0}, axes=axes)
-        self.__name__ = 'PinnedBC'
+        components = {'x': 0, 'y': 0, 'z': 0}
+        super(PinnedBC, self).__init__(name=name,  components=components, axes=axes)
 
 
-class FixedBCXXBase(GeneralBCBase):
+class FixedBCXX(GeneralBC):
     """A pinned nodal displacement boundary condition clamped in XX.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(FixedBCXXBase, self).__init__(name=name,
-                                            components={'x': 0, 'y': 0, 'z': 0, 'xx': 0}, axes=axes)
-        self.__name__ = 'FixedBCXX'
+        components = {'x': 0, 'y': 0, 'z': 0, 'xx': 0}
+        super(FixedBCXX, self).__init__(name=name, components=components, axes=axes)
 
 
-class FixedBCYYBase(GeneralBCBase):
+class FixedBCYY(GeneralBC):
     """A pinned nodal displacement boundary condition clamped in YY.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(FixedBCYYBase, self).__init__(name=name,
-                                            components={'x': 0, 'y': 0, 'z': 0, 'yy': 0}, axes=axes)
-        self.__name__ = 'FixedBCYY'
+        components = {'x': 0, 'y': 0, 'z': 0, 'yy': 0}
+        super(FixedBCYY, self).__init__(name=name, components=components, axes=axes)
 
 
-class FixedBCZZBase(GeneralBCBase):
+class FixedBCZZ(GeneralBC):
     """A pinned nodal displacement boundary condition clamped in ZZ.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(FixedBCZZBase, self).__init__(name=name,
-                                            components={'x': 0, 'y': 0, 'z': 0, 'zz': 0}, axes=axes)
-        self.__name__ = 'FixedBCZZ'
+        components = {'x': 0, 'y': 0, 'z': 0, 'zz': 0}
+        super(FixedBCZZ, self).__init__(name=name, components=components, axes=axes)
 
 
-class RollerBCXBase(GeneralBCBase):
+class RollerBCX(GeneralBC):
     """A pinned nodal displacement boundary condition released in X.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCXBase, self).__init__(name=name,  components={'y': 0, 'z': 0}, axes=axes)
-        self.__name__ = 'RollerBCX'
+        super(RollerBCX, self).__init__(name=name,  components={'y': 0, 'z': 0}, axes=axes)
 
 
-class RollerBCYBase(GeneralBCBase):
+class RollerBCY(GeneralBC):
     """A pinned nodal displacement boundary condition released in Y.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCYBase, self).__init__(name=name,  components={'x': 0, 'z': 0}, axes=axes)
-        self.__name__ = 'RollerBCY'
+        super(RollerBCY, self).__init__(name=name,  components={'x': 0, 'z': 0}, axes=axes)
 
 
-class RollerBCZBase(GeneralBCBase):
+class RollerBCZ(GeneralBC):
     """A pinned nodal displacement boundary condition released in Z.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCZBase, self).__init__(name=name,  components={'x': 0, 'y': 0}, axes=axes)
-        self.__name__ = 'RollerBCZ'
+        super(RollerBCZ, self).__init__(name=name,  components={'x': 0, 'y': 0}, axes=axes)
 
 
-class RollerBCXYBase(GeneralBCBase):
+class RollerBCXY(GeneralBC):
     """A pinned nodal displacement boundary condition released in X and Y.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCXYBase, self).__init__(name=name,  components={'z': 0}, axes=axes)
-
-        self.__name__ = 'RollerBCXY'
+        super(RollerBCXY, self).__init__(name=name,  components={'z': 0}, axes=axes)
 
 
-class RollerBCYZBase(GeneralBCBase):
+class RollerBCYZ(GeneralBC):
     """A pinned nodal displacement boundary condition released in Y and Z.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCYZBase, self).__init__(name=name,  components={'x': 0}, axes=axes)
-        self.__name__ = 'RollerBCYZ'
+        super(RollerBCYZ, self).__init__(name=name,  components={'x': 0}, axes=axes)
 
 
-class RollerBCXZBase(GeneralBCBase):
+class RollerBCXZ(GeneralBC):
     """A pinned nodal displacement boundary condition released in X and Z.
-
     """
-    __doc__ += GeneralBCBase.__doc__
 
     def __init__(self, name,  axes):
-        super(RollerBCXZBase, self).__init__(name=name,  components={'y': 0}, axes=axes)
-        self.__name__ = 'RollerBCXZ'
+        super(RollerBCXZ, self).__init__(name=name,  components={'y': 0}, axes=axes)

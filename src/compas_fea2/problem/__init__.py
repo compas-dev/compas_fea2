@@ -11,7 +11,7 @@ Problem
 .. autosummary::
     :toctree: generated/
 
-    ProblemBase
+    Problem
 
 Cases
 =====
@@ -19,13 +19,13 @@ Cases
 .. autosummary::
     :toctree: generated/
 
-    CaseBase
-    GeneralCaseBase
-    HeatCaseBase
-    ModalCaseBase
-    HarmonicCaseBase
-    BucklingCaseBase
-    AcousticCaseBase
+    Case
+    GeneralCase
+    HeatCase
+    ModalCase
+    HarmonicCase
+    BucklingCase
+    AcousticCase
 
 Loads
 =====
@@ -33,17 +33,17 @@ Loads
 .. autosummary::
     :toctree: generated/
 
-    LoadBase
-    PointLoadBase
-    PrestressLoadBase
-    LineLoadBase
-    AreaLoadBase
-    GravityLoadBase
-    ThermalLoadBase
-    TributaryLoadBase
-    HarmonicPointLoadBase
-    HarmonicPressureLoadBase
-    AcousticDiffuseFieldLoadBase
+    Load
+    PointLoad
+    PrestressLoad
+    LineLoad
+    AreaLoad
+    GravityLoad
+    ThermalLoad
+    TributaryLoad
+    HarmonicPointLoad
+    HarmonicPressureLoad
+    AcousticDiffuseFieldLoad
 
 Displacements
 =============
@@ -51,59 +51,59 @@ Displacements
 .. autosummary::
     :toctree: generated/
 
-    GeneralDisplacementBase
+    GeneralDisplacement
 
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .problem import ProblemBase
-from .displacements import GeneralDisplacementBase
+from .problem import Problem
+from .displacements import GeneralDisplacement
 from .loads import (
-    LoadBase,
-    PrestressLoadBase,
-    PointLoadBase,
-    LineLoadBase,
-    AreaLoadBase,
-    GravityLoadBase,
-    # ThermalLoadBase,
-    TributaryLoadBase,
-    HarmonicPointLoadBase,
-    HarmonicPressureLoadBase,
-    AcousticDiffuseFieldLoadBase
+    Load,
+    PrestressLoad,
+    PointLoad,
+    LineLoad,
+    AreaLoad,
+    GravityLoad,
+    TributaryLoad,
+    HarmonicPointLoad,
+    HarmonicPressureLoad,
+    AcousticDiffuseFieldLoad
 )
 from .steps import (
-    CaseBase,
-    GeneralStaticCaseBase,
-    StaticLinearPerturbationCaseBase,
-    HeatCaseBase,
-    ModalCaseBase,
-    HarmonicCaseBase,
-    BucklingCaseBase,
-    AcousticCaseBase
+    Case,
+    GeneralStaticCase,
+    StaticLinearPerturbationCase,
+    HeatCase,
+    ModalCase,
+    HarmonicCase,
+    BucklingCase,
+    AcousticCase
 )
 
 
 __all__ = [
-    'ProblemBase',
-    'GeneralDisplacementBase',
-    'LoadBase',
-    'PrestressLoadBase',
-    'PointLoadBase',
-    'LineLoadBase',
-    'AreaLoadBase',
-    'GravityLoadBase',
-    'TributaryLoadBase',
-    'HarmonicPointLoadBase',
-    'HarmonicPressureLoadBase',
-    'AcousticDiffuseFieldLoadBase',
-    'CaseBase',
-    'GeneralStaticCaseBase',
-    'StaticLinearPerturbationCaseBase',
-    'HeatCaseBase',
-    'ModalCaseBase',
-    'HarmonicCaseBase',
-    'BucklingCaseBase',
-    'AcousticCaseBase',
+    'Problem',
+
+    'GeneralDisplacement',
+    'Load',
+    'PrestressLoad',
+    'PointLoad',
+    'LineLoad',
+    'AreaLoad',
+    'GravityLoad',
+    'TributaryLoad',
+    'HarmonicPointLoad',
+    'HarmonicPressureLoad',
+    'AcousticDiffuseFieldLoad',
+    'Case',
+    'GeneralStaticCase',
+    'StaticLinearPerturbationCase',
+    'HeatCase',
+    'ModalCase',
+    'HarmonicCase',
+    'BucklingCase',
+    'AcousticCase',
 ]

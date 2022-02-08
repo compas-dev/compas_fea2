@@ -4,17 +4,10 @@ from __future__ import print_function
 
 from datetime import datetime
 import compas_fea2
-from compas_fea2.job.input_file import InputFileBase
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'AbaqusInputFile',
-    'ParFile'
-]
+from compas_fea2.job import InputFile
 
 
-class AbaqusInputFile(InputFileBase):
+class AbaqusInputFile(InputFile):
     """Input file object for standard analysis.
 
     Parameters
@@ -34,13 +27,7 @@ class AbaqusInputFile(InputFileBase):
     def __init__(self, problem):
         super(AbaqusInputFile, self).__init__(problem)
         self._input_file_type = "Input File"
-        self._name = '{}.inp'.format(problem.name)
         self._jobdata = self._generate_jobdata(problem)
-
-    @property
-    def name(self):
-        """The name property."""
-        return self._name
 
     @property
     def jobdata(self):
@@ -98,7 +85,7 @@ class AbaqusInputFile(InputFileBase):
 {problem._generate_jobdata()}"""
 
 
-class ParFile(InputFileBase):
+class AbaqusParFile(InputFile):
     """ParFile object for optimisation.
 
     Parameters
@@ -115,7 +102,7 @@ class ParFile(InputFileBase):
     """
 
     def __init__(self, problem):
-        super(ParFile, self).__init__(problem)
+        super(AbaqusParFile, self).__init__(problem)
         self._input_file_type = "Parameters File"
         self.name = '{}.par'.format(problem.name)
         self.input_name = '{}.inp'.format(problem.name)

@@ -2,15 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem import GeneralDisplacementBase
+from compas_fea2.problem import GeneralDisplacement
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-class GeneralDisplacement(GeneralDisplacementBase):
+class AbaqusGeneralDisplacement(GeneralDisplacement):
 
     def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=True):
-        super(GeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
+        super(AbaqusGeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
         self._op = 'NEW' if modify else 'MOD'
 
     def _generate_jobdata(self, instance, nodes):

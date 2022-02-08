@@ -11,7 +11,7 @@ Model
 .. autosummary::
     :toctree: generated/
 
-    ModelBase
+    Model
 
 Parts
 =====
@@ -19,7 +19,7 @@ Parts
 .. autosummary::
     :toctree: generated/
 
-    PartBase
+    Part
 
 Nodes
 =====
@@ -27,7 +27,7 @@ Nodes
 .. autosummary::
     :toctree: generated/
 
-    NodeBase
+    Node
 
 Elements
 ========
@@ -35,10 +35,10 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    ElementBase
-    BeamElementBase
-    ShellElementBase
-    SolidElementBase
+    Element
+    BeamElement
+    ShellElement
+    SolidElement
 
 Constraints
 ===========
@@ -46,8 +46,8 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
-    ConstraintBase
-    TieConstraintBase
+    Constraint
+    TieConstraint
 
 Materials
 =========
@@ -55,16 +55,16 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    MaterialBase
-    StiffBase
-    ElasticIsotropicBase
-    ElasticOrthotropicBase
-    ElasticPlasticBase
-    ConcreteBase
-    ConcreteSmearedCrackBase
-    ConcreteDamagedPlasticityBase
-    SteelBase
-    ThermalMaterialBase
+    Material
+    Stiff
+    ElasticIsotropic
+    ElasticOrthotropic
+    ElasticPlastic
+    Concrete
+    ConcreteSmearedCrack
+    ConcreteDamagedPlasticity
+    Steel
+    ThermalMaterial
 
 Sections
 ========
@@ -72,23 +72,23 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    SectionBase
-    BeamSectionBase
-    SpringSectionBase
-    AngleSectionBase
-    BoxSectionBase
-    CircularSectionBase
-    ISectionBase
-    PipeSectionBase
-    RectangularSectionBase
-    ShellSectionBase
-    MembraneSectionBase
-    SolidSectionBase
-    TrapezoidalSectionBase
-    TrussSectionBase
-    StrutSectionBase
-    TieSectionBase
-    MassSectionBase
+    Section
+    BeamSection
+    SpringSection
+    AngleSection
+    BoxSection
+    CircularSection
+    ISection
+    PipeSection
+    RectangularSection
+    ShellSection
+    MembraneSection
+    SolidSection
+    TrapezoidalSection
+    TrussSection
+    StrutSection
+    TieSection
+    MassSection
 
 Boundary Conditions
 ===================
@@ -96,18 +96,18 @@ Boundary Conditions
 .. autosummary::
     :toctree: generated/
 
-    GeneralBCBase
-    FixedBCBase
-    PinnedBCBase
-    FixedBCXXBase
-    FixedBCYYBase
-    FixedBCZZBase
-    RollerBCXBase
-    RollerBCYBase
-    RollerBCZBase
-    RollerBCXYBase
-    RollerBCYZBase
-    RollerBCXZBase
+    GeneralBC
+    FixedBC
+    PinnedBC
+    FixedBCXX
+    FixedBCYY
+    FixedBCZZ
+    RollerBCX
+    RollerBCY
+    RollerBCZ
+    RollerBCXY
+    RollerBCYZ
+    RollerBCXZ
 
 Groups
 ======
@@ -115,155 +115,164 @@ Groups
 .. autosummary::
     :toctree: generated/
 
-    NodesGroupBase
-    ElementsGroupBase
+    NodesGroup
+    ElementsGroup
 
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-from .model import ModelBase
-from .parts import PartBase
-from .nodes import NodeBase
+from .model import Model
+from .parts import Part
+from .nodes import Node
 from .elements import (
-    ElementBase,
-    MassElementBase,
-    BeamElementBase,
-    SpringElementBase,
-    TrussElementBase,
-    StrutElementBase,
-    TieElementBase,
-    ShellElementBase,
-    MembraneElementBase,
-    # FaceElementBase,
-    SolidElementBase,
-    PentahedronElementBase,
-    TetrahedronElementBase,
-    HexahedronElementBase,
+    Element,
+    MassElement,
+    BeamElement,
+    SpringElement,
+    TrussElement,
+    StrutElement,
+    TieElement,
+    ShellElement,
+    MembraneElement,
+    SolidElement,
+    PentahedronElement,
+    TetrahedronElement,
+    HexahedronElement,
 )
 from .materials import (
-    MaterialBase,
-    ConcreteBase,
-    ConcreteSmearedCrackBase,
-    ConcreteDamagedPlasticityBase,
-    ElasticIsotropicBase,
-    StiffBase,
-    ElasticOrthotropicBase,
-    ElasticPlasticBase,
-    ThermalMaterialBase,
-    SteelBase
+    Material,
+    Concrete,
+    ConcreteSmearedCrack,
+    ConcreteDamagedPlasticity,
+    ElasticIsotropic,
+    Stiff,
+    ElasticOrthotropic,
+    ElasticPlastic,
+    ThermalMaterial,
+    Steel
 )
+from .interactions import ContactHardFrictionPenalty
 from .sections import (
-    SectionBase,
-    MassSectionBase,
-    BeamSectionBase,
-    SpringSectionBase,
-    AngleSectionBase,
-    BoxSectionBase,
-    CircularSectionBase,
-    ISectionBase,
-    PipeSectionBase,
-    RectangularSectionBase,
-    ShellSectionBase,
-    MembraneSectionBase,
-    SolidSectionBase,
-    TrapezoidalSectionBase,
-    TrussSectionBase,
-    StrutSectionBase,
-    TieSectionBase,
+    Section,
+    MassSection,
+    BeamSection,
+    SpringSection,
+    AngleSection,
+    BoxSection,
+    CircularSection,
+    ISection,
+    PipeSection,
+    RectangularSection,
+    ShellSection,
+    MembraneSection,
+    SolidSection,
+    TrapezoidalSection,
+    TrussSection,
+    StrutSection,
+    TieSection,
 )
 from .constraints import (
-    ConstraintBase,
-    TieConstraintBase,
+    Constraint,
+    TieConstraint,
 )
 from .groups import (
-    GroupBase,
-    NodesGroupBase,
-    ElementsGroupBase,
+    Group,
+    NodesGroup,
+    ElementsGroup,
     PartsGroup
 )
 from .releases import (
-    BeamEndReleaseBase,
+    BeamEndRelease,
 )
 from .bcs import (
-    GeneralBCBase,
-    FixedBCBase,
-    PinnedBCBase,
-    FixedBCXXBase,
-    FixedBCYYBase,
-    FixedBCZZBase,
-    RollerBCXBase,
-    RollerBCYBase,
-    RollerBCZBase,
-    RollerBCXYBase,
-    RollerBCYZBase,
-    RollerBCXZBase
+    GeneralBC,
+    FixedBC,
+    PinnedBC,
+    FixedBCXX,
+    FixedBCYY,
+    FixedBCZZ,
+    RollerBCX,
+    RollerBCY,
+    RollerBCZ,
+    RollerBCXY,
+    RollerBCYZ,
+    RollerBCXZ,
 )
 
 
 __all__ = [
-    'ModelBase',
-    'PartBase',
-    'NodeBase',
-    'ElementBase',
-    'MassElementBase',
-    'BeamElementBase',
-    'SpringElementBase',
-    'TrussElementBase',
-    'StrutElementBase',
-    'TieElementBase',
-    'ShellElementBase',
-    'MembraneElementBase',
-    'SolidElementBase',
-    'PentahedronElementBase',
-    'TetrahedronElementBase',
-    'HexahedronElementBase',
-    'MaterialBase',
-    'ConcreteBase',
-    'ConcreteSmearedCrackBase',
-    'ConcreteDamagedPlasticityBase',
-    'ElasticIsotropicBase',
-    'StiffBase',
-    'ElasticOrthotropicBase',
-    'ElasticPlasticBase',
-    'ThermalMaterialBase',
-    'SteelBase',
-    'SectionBase',
-    'MassSectionBase',
-    'BeamSectionBase',
-    'SpringSectionBase',
-    'AngleSectionBase',
-    'BoxSectionBase',
-    'CircularSectionBase',
-    'ISectionBase',
-    'PipeSectionBase',
-    'RectangularSectionBase',
-    'ShellSectionBase',
-    'MembraneSectionBase',
-    'SolidSectionBase',
-    'TrapezoidalSectionBase',
-    'TrussSectionBase',
-    'StrutSectionBase',
-    'TieSectionBase',
-    'ConstraintBase',
-    'TieConstraintBase',
-    'GroupBase',
-    'NodesGroupBase',
-    'ElementsGroupBase',
+    'Model',
+
+    'Part',
+    'Node',
+
+    'Element',
+    'MassElement',
+    'BeamElement',
+    'SpringElement',
+    'TrussElement',
+    'StrutElement',
+    'TieElement',
+    'ShellElement',
+    'MembraneElement',
+    'SolidElement',
+    'PentahedronElement',
+    'TetrahedronElement',
+    'HexahedronElement',
+
+    'Material',
+    'Concrete',
+    'ConcreteSmearedCrack',
+    'ConcreteDamagedPlasticity',
+    'ElasticIsotropic',
+    'Stiff',
+    'ElasticOrthotropic',
+    'ElasticPlastic',
+    'ThermalMaterial',
+    'Steel',
+
+    'ContactHardFrictionPenalty',
+
+    'Section',
+    'MassSection',
+    'BeamSection',
+    'SpringSection',
+    'AngleSection',
+    'BoxSection',
+    'CircularSection',
+    'ISection',
+    'PipeSection',
+    'RectangularSection',
+    'ShellSection',
+    'MembraneSection',
+    'SolidSection',
+    'TrapezoidalSection',
+    'TrussSection',
+    'StrutSection',
+    'TieSection',
+
+    'Constraint',
+    'TieConstraint',
+
+    'Group',
+    'NodesGroup',
+    'ElementsGroup',
     'PartsGroup',
-    'BeamEndReleaseBase',
-    'GeneralBCBase',
-    'FixedBCBase',
-    'PinnedBCBase',
-    'FixedBCXXBase',
-    'FixedBCYYBase',
-    'FixedBCZZBase',
-    'RollerBCXBase',
-    'RollerBCYBase',
-    'RollerBCZBase',
-    'RollerBCXYBase',
-    'RollerBCYZBase',
-    'RollerBCXZBase',
+
+    'BeamEndRelease',
+
+    'GeneralBC',
+    'FixedBC',
+    'PinnedBC',
+    'FixedBCXX',
+    'FixedBCYY',
+    'FixedBCZZ',
+    'RollerBCX',
+    'RollerBCY',
+    'RollerBCZ',
+    'RollerBCXY',
+    'RollerBCYZ',
+    'RollerBCXZ',
 ]

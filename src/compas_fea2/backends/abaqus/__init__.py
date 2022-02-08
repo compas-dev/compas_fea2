@@ -169,8 +169,22 @@ RESULTS
     Results
 """
 
-from .model import *
-from .problem import *
-from .results import *
+import compas_fea2
+
+from compas.plugins import plugin
+from compas_fea2.model import Model
+from compas_fea2.problem import Problem
+
+from .model import AbaqusModel
+from .problem import AbaqusProblem
+
+
+@plugin(category='fea_backends')
+def register_backend():
+    compas_fea2.BACKENDS['abaqus'][Model] = AbaqusModel
+    compas_fea2.BACKENDS['abaqus'][Problem] = AbaqusProblem
+
+    print('Abaqus implementations registered...')
+
 
 __all__ = [name for name in dir() if not name.startswith('_')]

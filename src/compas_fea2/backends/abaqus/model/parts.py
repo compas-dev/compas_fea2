@@ -2,33 +2,24 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-from compas_fea2.model import PartBase
-
-# from compas_fea2.backends.abaqus.components import Node
+from compas_fea2.model import Part
 
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'Part',
-]
-
-
-class Part(PartBase):
+class AbaqusPart(Part):
     """Initialises a ``Part`` object.
 
     Parameters
     ----------
     name : str
         Name of the ``Part``.
+
     """
 
     def __init__(self, name):
-        super(Part, self).__init__(name)
+        super(AbaqusPart, self).__init__(name)
 
     def _group_elements(self):
-        '''Group the elements. This is used internally to generate the input
+        """Group the elements. This is used internally to generate the input
         file.
 
         Parameters
@@ -39,7 +30,7 @@ class Part(PartBase):
         -------
         dict
             {eltype:{section:{orientation: [elements]},},}
-        '''
+        """
 
         # group elements by type and section
         eltypes = set(map(lambda x: x.eltype, self.elements.values()))

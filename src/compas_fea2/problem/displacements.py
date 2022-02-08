@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model.bcs import GeneralBCBase
+from compas_fea2.model.bcs import GeneralBC
 
 
-class GeneralDisplacementBase(GeneralBCBase):
+class GeneralDisplacement(GeneralBC):
     """GeneralDisplacement object.
 
     Parameters
@@ -29,6 +29,5 @@ class GeneralDisplacementBase(GeneralBCBase):
     """
 
     def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-        super(GeneralDisplacementBase, self).__init__(name=name,
-                                                      components={'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz},
-                                                      axes=axes)
+        components = {'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}
+        super(GeneralDisplacement, self).__init__(name=name, components=components, axes=axes)

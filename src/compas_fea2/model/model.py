@@ -7,15 +7,15 @@ import os
 import importlib
 
 from compas_fea2.base import FEABase
-from compas_fea2.model.parts import PartBase
-from compas_fea2.model.materials import MaterialBase
-from compas_fea2.model.sections import SectionBase
-from compas_fea2.model.bcs import GeneralBCBase
-# from compas_fea2.model.groups import NodesGroupBase
-# from compas_fea2.model.groups import ElementsGroupBase
+from compas_fea2.model.parts import Part
+from compas_fea2.model.materials import Material
+from compas_fea2.model.sections import Section
+from compas_fea2.model.bcs import GeneralBC
+# from compas_fea2.model.groups import NodesGroup
+# from compas_fea2.model.groups import ElementsGroup
 
 
-class ModelBase(FEABase):
+class Model(FEABase):
     """Initialise the Model object.
 
     Note
@@ -36,7 +36,7 @@ class ModelBase(FEABase):
     """
 
     def __init__(self, name, description, author):
-        self.__name__ = 'Model'
+        super(Model, self).__init__(name=name)
         self._name = name
         self._description = description
         self._author = author
@@ -50,10 +50,10 @@ class ModelBase(FEABase):
         self._parts_groups = {}
         self._surfaces = {}
 
-    @property
-    def name(self):
-        """str : Name of the Model."""
-        return self._name
+    # @property
+    # def name(self):
+    #     """str : Name of the Model."""
+    #     return self._name
 
     @property
     def description(self):
@@ -120,8 +120,8 @@ class ModelBase(FEABase):
         """dict : A dictionary with the surface definitions in the Model."""
         return self._surfaces
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
+    # def __repr__(self):
+    #     return '{0}({1})'.format(self.__name__, self.name)
 
     # =========================================================================
     #                       Constructor methods
@@ -221,10 +221,11 @@ class ModelBase(FEABase):
     # =========================================================================
     #                             Parts methods
     # =========================================================================
+
     def _check_part_in_model(self, part):
         """Check if the part is already in the model and in case add it.
         If `part` is of type :class:`str`, check if the part is already defined.
-        If `part` is of type :class:`PartBase`, add the part to the Model if not
+        If `part` is of type :class:`Part`, add the part to the Model if not
         already defined.
 
         Parameters
@@ -235,21 +236,21 @@ class ModelBase(FEABase):
         Returns
         -------
         obj
-            type :class:`PartBase` object
+            type :class:`Part` object
 
         Raises
         ------
         ValueError
             if `part` is a string and the part is not defined in the model
         TypeError
-            `part` must be either an instance of a `compas_fea2` :class:`PartBase`
-            or the name of a :class:`PartBase` already defined in the Model.
+            `part` must be either an instance of a `compas_fea2` :class:`Part`
+            or the name of a :class:`Part` already defined in the Model.
         """
         if isinstance(part, str):
             if part not in self.parts:
                 raise ValueError(f'{part} not found in the Model')
             part_name = part
-        elif isinstance(part, PartBase):
+        elif isinstance(part, Part):
             if part.name not in self.parts:
                 self.add_part(part)
                 print(f'{part.__repr__()} added to the Model')
@@ -266,7 +267,7 @@ class ModelBase(FEABase):
         Parameters
         ----------
         part : obj
-            type :class:`PartBase` object.
+            type :class:`Part` object.
 
         Returns
         -------
@@ -290,7 +291,7 @@ class ModelBase(FEABase):
         Parameters
         ----------
         parts : list
-            List of the :class:`PartBase` objects to add.
+            List of the :class:`Part` objects to add.
         """
         for part in parts:
             self.add_part(part)
@@ -308,7 +309,7 @@ class ModelBase(FEABase):
         -------
         None
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # =========================================================================
     #                           Nodes methods
@@ -323,7 +324,7 @@ class ModelBase(FEABase):
         node : obj
             :class:`NodeBase` object.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
         check : bool, optional
             If ``True``, checks if the node is already present. This is a quite
@@ -356,7 +357,7 @@ class ModelBase(FEABase):
         nodes : list
             List of :class:`NodeBase` objects.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
         check : bool, optional
             If ``True``, checks if the node is already present. This is a quite
@@ -405,7 +406,7 @@ class ModelBase(FEABase):
         nodes : list
             List with the key (:class:`int`) of the nodes to be removed.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             removed.
 
         Returns
@@ -439,13 +440,13 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_material(self, material):
-        """Add a :class:`MaterialBase` subclass object to the Model so that it can be
+        """Add a :class:`Material` subclass object to the Model so that it can be
         later refernced and used in the section and element definitions.
 
         Parameters
         ----------
         material : obj
-            :class:`MaterialBase` object to be added.
+            :class:`Material` object to be added.
 
         Returns
         -------
@@ -457,13 +458,13 @@ class ModelBase(FEABase):
             print('NOTE: {} already added to the model. skipped!'.format(material))
 
     def add_materials(self, materials):
-        """Add multiple :class:`MaterialBase` subclass objects to the Model so
+        """Add multiple :class:`Material` subclass objects to the Model so
         that they can be later refernced and used in section and element definitions.
 
         Parameters
         ----------
         material : list
-            List of :class:`MaterialBase` objects.
+            List of :class:`Material` objects.
 
         Returns
         -------
@@ -477,13 +478,13 @@ class ModelBase(FEABase):
     # =========================================================================
 
     def add_section(self, section):
-        """Add a :class:`SectionBase` subclass object to the Model o that it can be later
+        """Add a :class:`Section` subclass object to the Model o that it can be later
         refernced and used in an element definition.
 
         Parameters
         ----------
         section : obj
-            :class:`SectionBase` subclass object to be added.
+            :class:`Section` subclass object to be added.
 
         Returns
         -------
@@ -501,28 +502,28 @@ class ModelBase(FEABase):
                 raise ValueError(f'** ERROR! **: section {section.material.__repr__()} not found in the Model!')
             else:
                 section._material = self.materials[section.material]
-        elif isinstance(section.material, MaterialBase):
+        elif isinstance(section.material, Material):
             if section.material.name not in self.materials:
                 self._materials[section.material.name] = section.material
         else:
             raise TypeError(
                 "The material for the the section must be either the name of a previously added Material or an instance of a Material object")
 
-        if isinstance(section, SectionBase):
+        if isinstance(section, Section):
             if section._name not in self._sections:
                 self._sections[section._name] = section
             else:
                 print('WARNING: {} already added to the model. skipped!'.format(section))
         else:
-            raise TypeError('Provide a valid SectionBase subclass object')
+            raise TypeError('Provide a valid Section subclass object')
 
     def add_sections(self, sections):
-        """Add multiple :class:`SectionBase`subclass  objects to the Model.
+        """Add multiple :class:`Section`subclass  objects to the Model.
 
         Parameters
         ----------
         sections : list
-            list of :class:`SectionBase` subclass objects.
+            list of :class:`Section` subclass objects.
 
         Returns
         -------
@@ -552,7 +553,7 @@ class ModelBase(FEABase):
         element : obj
             :class:`ElementBase` subclass object to be added.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
         check : bool, optional
             If ``True``, checks if the node connected by the element are present.
@@ -583,7 +584,7 @@ class ModelBase(FEABase):
         elements : list
             List of compas_fea2 Element subclass objects.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
         check : bool
             If True, checks if the element keys are in the model. This is a quite
@@ -646,7 +647,7 @@ class ModelBase(FEABase):
         release : obj
             `EndRelase` object.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
 
         Returns
@@ -704,7 +705,7 @@ class ModelBase(FEABase):
         group : obj
             :class:`NodesGroupBase` or :class:`ElementsGroupBase` object to add.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
 
         Returns
@@ -723,7 +724,7 @@ class ModelBase(FEABase):
         group : obj
             group object.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
 
         Returns
@@ -934,16 +935,16 @@ class ModelBase(FEABase):
     # =========================================================================
     # FIXME missing axes
     def add_bc(self, bc, nodes, part):
-        """Adds a :class:`GeneralBCBase` to the Problem object.
+        """Adds a :class:`GeneralBC` to the Problem object.
 
         Parameters
         ----------
         bc : obj
-            :class:`GeneralBCBase` object.
+            :class:`GeneralBC` object.
         nodes : list
             list with the node keys where to assign the boundary condition.
         part : str, obj
-            Name of the part or :class:`PartBase` object where the node will be
+            Name of the part or :class:`Part` object where the node will be
             added.
 
         Returns
@@ -953,7 +954,7 @@ class ModelBase(FEABase):
         part = self._check_part_in_model(part)
         if not isinstance(nodes, (list, tuple)):
             nodes = [nodes]
-        if not isinstance(bc, GeneralBCBase):
+        if not isinstance(bc, GeneralBC):
             raise TypeError(f'{bc} not instance of a BC class')
         if part not in self.bcs:
             self._bcs[part] = {node: bc for node in nodes}
@@ -965,7 +966,7 @@ class ModelBase(FEABase):
                     self._bcs[part][node] = bc
 
     def add_bc_type(self, name, bc_type, part, nodes, axes='global'):
-        """Add a :class:`GeneralBCBase` subclass to nodes in a part by type.
+        """Add a :class:`GeneralBC` subclass to nodes in a part by type.
 
         Note
         ----

@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -12,11 +11,6 @@ from time import time
 
 from operator import itemgetter
 from itertools import groupby
-
-try:
-    from compas.viewers import VtkViewer
-except:
-    pass
 
 try:
     from numpy import abs
@@ -52,9 +46,6 @@ except ImportError:
     pass
 
 
-# Author(s): Andrew Liew (github.com/andrewliew)
-
-
 __all__ = [
     'colorbar',
     'combine_all_sets',
@@ -71,13 +62,9 @@ __all__ = [
 ]
 
 
-# # =========================================================================
-# #                         General methods
-# # =========================================================================
-
-# def _sort(self, attr):
-#     return sorted(attr, key=lambda x: x.key, reverse=False)
-
+# =========================================================================
+#                         General methods
+# =========================================================================
 
 def process_data(data, dtype, iptype, nodal, elements, n):
     """ Process the raw data.
@@ -613,9 +600,9 @@ def plotvoxels(values, U, vdx, indexing=None):
     Am = squeeze(griddata(U, f, (Xm, Ym, Zm), method='linear', fill_value=0))
     Am[isnan(Am)] = 0
 
-    voxels = VtkViewer(data={'voxels': Am})
-    voxels.setup()
-    voxels.start()
+    # voxels = VtkViewer(data={'voxels': Am})
+    # voxels.setup()
+    # voxels.start()
 
     return Am
 
@@ -681,7 +668,7 @@ def principal_stresses(data, ptype, scale, rotate):
             s22_sp5[i] = s22[ekey]['ip1_sp5']
             s12_sp5[i] = s12[ekey]['ip1_sp5']
             spr_sp5[i] = spr[ekey]['ip1_sp5']
-        except:
+        except Exception:
             pass
 
     th1 = tile((0.5 * arctan2(s12_sp1, 0.5 * (s11_sp1 - s22_sp1)) + 0.5 * pi * rotate)[:, newaxis], (1, 3))
@@ -693,12 +680,3 @@ def principal_stresses(data, ptype, scale, rotate):
     pmax = max([max(abs(spr_sp1)), max(abs(spr_sp5))])
 
     return vec1, vec5, spr_sp1, spr_sp5, pmax
-
-
-# ==============================================================================
-# Debugging
-# ==============================================================================
-
-if __name__ == "__main__":
-
-    pass

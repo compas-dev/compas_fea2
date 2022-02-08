@@ -6,13 +6,13 @@ import pickle
 import importlib
 
 from compas_fea2.base import FEABase
-from compas_fea2.problem.displacements import GeneralDisplacementBase
-from compas_fea2.problem.steps import CaseBase
+from compas_fea2.problem.displacements import GeneralDisplacement
+from compas_fea2.problem.steps import Case
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-class ProblemBase(FEABase):
+class Problem(FEABase):
     """Initialises the Problem object.
 
     Parameters
@@ -24,22 +24,13 @@ class ProblemBase(FEABase):
     """
 
     def __init__(self, name, model, author=None, description=None):
-        self.__name__ = 'Problem'
-        self._name = name
+        super(Problem, self).__init__(name=name)
         self._author = author
         self._description = description or f'Problem for {model}'
         self._model = model
         self._steps = {}
         self._steps_order = []
         self._path = None
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
-
-    @property
-    def name(self):
-        """str : Name of the Problem"""
-        return self._name
 
     @property
     def author(self):
@@ -88,9 +79,10 @@ class ProblemBase(FEABase):
     # =========================================================================
     #                           Step methods
     # =========================================================================
+
     def _check_step_in_problem(self, step):
         """Check if a step is defined in the Problem. If `step` is of type `str`,
-        check if the step is already defined. If `step` is of type `CaseBase`,
+        check if the step is already defined. If `step` is of type `Case`,
         add the step to the Problem if not already defined.
 
         Parameters
@@ -116,7 +108,7 @@ class ProblemBase(FEABase):
                 raise ValueError(f'{step} not found in the Problem')
             step_name = step
             # step = self.steps[step]
-        elif isinstance(step, CaseBase):
+        elif isinstance(step, Case):
             if step.name not in self.steps:
                 self.add_step(step)
                 print(f'{step.__repr__()} added to the Problem')
@@ -141,7 +133,7 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        if isinstance(step, CaseBase):
+        if isinstance(step, Case):
             if step._name in self._steps:
                 print(f'WARNING: {step.__repr__()} already defined in the Problem. skipped!')
             else:
@@ -236,7 +228,7 @@ class ProblemBase(FEABase):
         """
 
         if step:
-            if isinstance(step, CaseBase):
+            if isinstance(step, Case):
                 if step._name not in self._steps:
                     self.add_step(step)
                     print(f'{step.__repr__()} added to the Problem')
@@ -247,7 +239,7 @@ class ProblemBase(FEABase):
                         'The step provided is either not an instance of a `compas_fea2` Step class or not found in the Problem')
                 step_name = step
 
-            if isinstance(displacement, GeneralDisplacementBase):
+            if isinstance(displacement, GeneralDisplacement):
                 if displacement._name not in self._displacements:
                     self._displacements[displacement._name] = displacement
                     print(f'{displacement.__repr__()} added to {self.__repr__()}')
@@ -261,7 +253,7 @@ class ProblemBase(FEABase):
             print(f'{self._displacements[displacement_name].__repr__()} added to {self._steps[step_name].__repr__()}')
 
         else:
-            if not isinstance(displacement, GeneralDisplacementBase):
+            if not isinstance(displacement, GeneralDisplacement):
                 raise ValueError('You must provide a Displacement object.')
             if displacement._name not in self._displacements:
                 self._displacements[displacement._name] = displacement
@@ -279,8 +271,9 @@ class ProblemBase(FEABase):
         -------
         None
         """
-        self._check_step_in_problem(step)
-        self.steps[step_name].add_displacement(displacement)
+        raise NotImplementedError
+        # self._check_step_in_problem(step)
+        # self.steps[step_name].add_displacement(displacement)
 
     def remove_displacement(self, displacement_name, step_name):
         """Removes a boundary condition from the Problem object.
@@ -327,6 +320,7 @@ class ProblemBase(FEABase):
     # =========================================================================
     #                           Loads methods
     # =========================================================================
+
     def add_point_load(self, name, step, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         step = self._check_step_in_problem(step)
         step.add_point_load(name, part, nodes, x, y, z, xx, yy, zz, axes)
@@ -586,7 +580,7 @@ Steps Order
         if output:
             print('***** Problem saved to: {0} *****\n'.format(filename))
 
-    @ staticmethod
+    @staticmethod
     def load_from_cfp(filename, output=True):
         """Imports a Problem object from an .cfp file through Pickle.
 

@@ -6,14 +6,11 @@ from math import log
 
 from compas_fea2.base import FEABase
 
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
-
-
 # TODO: make units independent
 # TODO: remove att_list attribute
 
 
-class MaterialBase(FEABase):
+class Material(FEABase):
     """Initialises base Material object.
 
     Parameters
@@ -23,27 +20,14 @@ class MaterialBase(FEABase):
     """
 
     def __init__(self, name):
-        self.__name__ = 'Material'
-        self._name = name
-
-    @property
-    def name(self):
-        """str : Name of the Material object."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
+        super(Material, self).__init__(name=name)
 
 
 # ==============================================================================
 # linear elastic
 # ==============================================================================
 
-class ElasticOrthotropicBase(MaterialBase):
+class ElasticOrthotropic(Material):
     """Elastic, orthotropic and homogeneous material.
 
     Parameters
@@ -77,8 +61,7 @@ class ElasticOrthotropicBase(MaterialBase):
     """
 
     def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
-        super(ElasticOrthotropicBase, self).__init__(name=name)
-        self.__name__ = 'ElasticOrthotropic'
+        super(ElasticOrthotropic, self).__init__(name=name)
         self._Ex = Ex
         self._Ey = Ey
         self._Ez = Ez
@@ -141,7 +124,7 @@ class ElasticOrthotropicBase(MaterialBase):
         return self._p
 
 
-class ElasticIsotropicBase(MaterialBase):
+class ElasticIsotropic(Material):
     """Elastic, isotropic and homogeneous material.
 
     Parameters
@@ -157,8 +140,7 @@ class ElasticIsotropicBase(MaterialBase):
     """
 
     def __init__(self, name, E, v, p):
-        super(ElasticIsotropicBase, self).__init__(name=name)
-        self.__name__ = 'ElasticIsotropic'
+        super(ElasticIsotropic, self).__init__(name=name)
         self._E = E
         self._v = v
         self._G = 0.5 * E / (1 + v)
@@ -185,7 +167,7 @@ class ElasticIsotropicBase(MaterialBase):
         return self._p
 
 
-class StiffBase(ElasticIsotropicBase):
+class Stiff(ElasticIsotropic):
     """Elastic, very stiff and massless material.
 
     Parameters
@@ -197,15 +179,14 @@ class StiffBase(ElasticIsotropicBase):
     """
 
     def __init__(self, name, E=10**13,  p=10**(-1)):  # FIXME: depending on the unit used, this is not be correct.
-        super(StiffBase, self).__init__(name=name, E=E, v=0.3, p=p)
-        self.__name__ = 'Stiff'
+        super(Stiff, self).__init__(name=name, E=E, v=0.3, p=p)
 
 
 # ==============================================================================
 # non-linear general
 # ==============================================================================
 
-class ElasticPlasticBase(ElasticIsotropicBase):
+class ElasticPlastic(ElasticIsotropic):
     """Elastic and plastic, isotropic and homogeneous material.
 
     Parameters
@@ -226,15 +207,13 @@ class ElasticPlasticBase(ElasticIsotropicBase):
     Notes
     -----
     - Plastic stress--strain pairs applies to both compression and tension.
+
     """
 
     def __init__(self, name, E, v, p, f, e):
-        super(ElasticPlasticBase, self).__init__(name=name, E=E, v=v, p=p)
-
+        super(ElasticPlastic, self).__init__(name=name, E=E, v=v, p=p)
         fc = [-i for i in f]
         ec = [-i for i in e]
-
-        self.__name__ = 'ElasticPlastic'
         self._tension = {'f': f, 'e': e}
         self._compression = {'f': fc, 'e': ec}
 
@@ -252,8 +231,9 @@ class ElasticPlasticBase(ElasticIsotropicBase):
 # ==============================================================================
 # non-linear metal
 # ==============================================================================
+
 # FIXME these are unit based! change
-class SteelBase(ElasticIsotropicBase):
+class Steel(ElasticIsotropic):
     """Bi-linear steel with given yield stress.
 
     Parameters
@@ -297,11 +277,11 @@ class SteelBase(ElasticIsotropicBase):
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
+
     """
 
     def __init__(self, name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850):
-        raise NotImplementedError
-        super(SteelBase, self).__init__(name=name, E=E, v=v, p=p)
+        super(Steel, self).__init__(name=name, E=E, v=v, p=p)
 
         E *= 10.**9
         fy *= 10.**6
@@ -318,8 +298,6 @@ class SteelBase(ElasticIsotropicBase):
         fc = [-i for i in f]
         ec = [-i for i in e]
 
-        self.__name__ = 'Steel'
-        self.name = name
         self.fy = fy
         self.fu = fu
         self.eu = eu
@@ -347,7 +325,7 @@ class SteelBase(ElasticIsotropicBase):
 # non-linear concrete
 # ==============================================================================
 
-class ConcreteBase(MaterialBase):
+class Concrete(Material):
     """Elastic and plastic-cracking Eurocode based concrete material.
 
     Parameters
@@ -387,11 +365,11 @@ class ConcreteBase(MaterialBase):
     Notes
     -----
     - The concrete model is based on Eurocode 2 up to fck=90 MPa.
+
     """
 
     def __init__(self, name, fck, v=0.2, p=2400, fr=None):
-        raise NotImplementedError
-        MaterialBase.__init__(self, name=name)
+        super(Concrete, self).__init__(name=name)
 
         de = 0.0001
         fcm = fck + 8
@@ -412,8 +390,6 @@ class ConcreteBase(MaterialBase):
         if not fr:
             fr = [1.16, fctm / fcm]
 
-        self.__name__ = 'Concrete'
-        self.name = name
         self.fck = fck * 10.**6
         self.E = {'E': E}
         self.v = {'v': v}
@@ -425,7 +401,7 @@ class ConcreteBase(MaterialBase):
         self.attr_list.extend(['fck', 'fratios', 'E', 'v', 'G', 'p', 'tension', 'compression'])
 
 
-class ConcreteSmearedCrackBase(MaterialBase):
+class ConcreteSmearedCrack(Material):
     """Elastic and plastic, cracking concrete material.
 
     Parameters
@@ -475,14 +451,12 @@ class ConcreteSmearedCrackBase(MaterialBase):
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
+
     """
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        raise NotImplementedError
-        MaterialBase.__init__(self, name=name)
+        super(ConcreteSmearedCrack, self).__init__(name=name)
 
-        self.__name__ = 'ConcreteSmearedCrack'
-        self.name = name
         self.E = {'E': E}
         self.v = {'v': v}
         self.G = {'G': 0.5 * E / (1 + v)}
@@ -493,7 +467,7 @@ class ConcreteSmearedCrackBase(MaterialBase):
         self.attr_list.extend(['E', 'v', 'G', 'p', 'tension', 'compression', 'fratios'])
 
 
-class ConcreteDamagedPlasticityBase(MaterialBase):
+class ConcreteDamagedPlasticity(Material):
     """Damaged plasticity isotropic and homogeneous material.
 
     Parameters
@@ -531,14 +505,12 @@ class ConcreteDamagedPlasticityBase(MaterialBase):
         Compression hardening parameters.
     stiffening : list
         Tension stiffening parameters.
+
     """
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        raise NotImplementedError
-        MaterialBase.__init__(self, name=name)
+        super(ConcreteDamagedPlasticity, self).__init__(name=name)
 
-        self.__name__ = 'ConcreteDamagedPlasticity'
-        self.name = name
         self.E = {'E': E}
         self.v = {'v': v}
         self.G = {'G': 0.5 * E / (1 + v)}
@@ -553,7 +525,7 @@ class ConcreteDamagedPlasticityBase(MaterialBase):
 # thermal
 # ==============================================================================
 
-class ThermalMaterialBase(MaterialBase):
+class ThermalMaterial(Material):
     """Class for thermal material properties. [WIP]
 
     Parameters
@@ -570,11 +542,8 @@ class ThermalMaterialBase(MaterialBase):
     """
 
     def __init__(self, name, conductivity, p, sheat):
-        raise NotImplementedError
-        MaterialBase.__init__(self, name=name)
+        super(ThermalMaterial, self).__init__(name=name)
 
-        self.__name__ = 'ThermalMaterial'
-        self.name = name
         self.conductivity = conductivity
         self.p = p
         self.sheat = sheat

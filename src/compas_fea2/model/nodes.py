@@ -6,10 +6,9 @@ import compas_fea2
 
 from compas.utilities.maps import geometric_key
 from compas_fea2.base import FEABase
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
 
-class NodeBase(FEABase):
+class Node(FEABase):
     """Initialises base Node object.
 
     Parameters
@@ -31,12 +30,12 @@ class NodeBase(FEABase):
     Examples
     --------
     >>> node = Node(1.0, 2.0, 3.0)
+
     """
 
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
-        self.__name__ = 'Node'
+        super(Node, self).__init__(name=name)
         self._key = None
-        self._name = name
         self._xyz = [float(x) for x in xyz]
         self._x = self.xyz[0]
         self._y = self.xyz[1]
@@ -51,16 +50,6 @@ class NodeBase(FEABase):
     def key(self):
         """int : Node key number. The key number is unique."""
         return self._key
-
-    @property
-    def name(self):
-        """str : Node's name. If no name is specified, it is automatically generated
-        when a node is added. The name does not need to be unique."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def xyz(self):
@@ -138,9 +127,6 @@ class NodeBase(FEABase):
     def gkey(self):
         """The gkey property."""
         return self._gkey
-
-    def __repr__(self):
-        return '{0}({1} - {2})'.format(self.__name__, self._key, self._name)
 
     def move_node(self):
         raise NotImplementedError

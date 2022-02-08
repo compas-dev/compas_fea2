@@ -2,21 +2,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import pi
+from compas_fea2.model import BeamSection
+from compas_fea2.model import MassSection
+from compas_fea2.model import ShellSection
+from compas_fea2.model import MembraneSection
+from compas_fea2.model import SolidSection
+from compas_fea2.model import TrussSection
+from compas_fea2.model import StrutSection
+from compas_fea2.model import TieSection
+from compas_fea2.model import SpringSection
 
-from compas_fea2.model import SectionBase
-from compas_fea2.model import MassSectionBase
-from compas_fea2.model import ShellSectionBase
-from compas_fea2.model import MembraneSectionBase
-from compas_fea2.model import SolidSectionBase
-from compas_fea2.model import TrussSectionBase
-from compas_fea2.model import StrutSectionBase
-from compas_fea2.model import TieSectionBase
-from compas_fea2.model import SpringSectionBase
-
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-#           Andrew Liew (github.com/andrewliew)
 
 # NOTE: these classes are sometimes overwriting the _base ones because Abaqus
 # offers internal ways of computing beam sections' properties
@@ -26,8 +21,7 @@ from compas_fea2.model import SpringSectionBase
 # 0D
 # ==============================================================================
 
-
-class MassSection(MassSectionBase):
+class AbaqusMassSection(MassSection):
     """Section for mass elements.
 
     Parameters
@@ -39,7 +33,7 @@ class MassSection(MassSectionBase):
     """
 
     def __init__(self, name, mass):
-        super(MassSection, self).__init__(name, mass)
+        super(AbaqusMassSection, self).__init__(name, mass)
 
     def _generate_jobdata(self, set_name, orientation):
         """Generates the string information for the input file.
@@ -61,7 +55,7 @@ class MassSection(MassSectionBase):
 # ==============================================================================
 
 
-class AbaqusBeamSection(SectionBase):
+class AbaqusBeamSection(BeamSection):
     """
     Notes
     -----
@@ -88,7 +82,7 @@ class AbaqusBeamSection(SectionBase):
 {}\n{}\n""".format(self.name, set_name, self.material.name, self._stype, ', '.join([str(v) for v in self.properties]), orientation_line)
 
 
-class AngleSection(AbaqusBeamSection):
+class AbaqusAngleSection(AbaqusBeamSection):
     """L section.
 
     Parameters
@@ -102,18 +96,18 @@ class AngleSection(AbaqusBeamSection):
         provide a list the two values [t1, t2]
     material : str
         material name to be assigned to the section.
+
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, t, material):
-        super(ISection, self).__init__(name, material)
+        super(AbaqusAngleSection, self).__init__(name, material)
         self._stype = 'L'
         if not isinstance(t, list):
             t = [t]*2
         self.properties = [a, b, *t]
 
 
-class BoxSection(AbaqusBeamSection):
+class AbaqusBoxSection(AbaqusBeamSection):
     """Box section.
 
     Parameters
@@ -127,11 +121,11 @@ class BoxSection(AbaqusBeamSection):
         provide a list the four values [t1, t2, t3, t4]
     material : str
         material name to be assigned to the section.
+
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, t, material):
-        super(BoxSection, self).__init__(name, material)
+        super(AbaqusBoxSection, self).__init__(name, material)
         self._stype = 'box'
         if not isinstance(t, list):
             t = [t]*4
@@ -140,7 +134,7 @@ class BoxSection(AbaqusBeamSection):
         self.properties = [a, b, *t]
 
 
-class CircularSection(AbaqusBeamSection):
+class AbaqusCircularSection(AbaqusBeamSection):
     """Circular filled section.
 
     Parameters
@@ -150,15 +144,14 @@ class CircularSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, r, material):
-        super(CircularSection, self).__init__(name, material)
+        super(AbaqusCircularSection, self).__init__(name, material)
         self._stype = 'circ'
         self.properties = [r]
 
 
-class HexSection(AbaqusBeamSection):
+class AbaqusHexSection(AbaqusBeamSection):
     """Hexagonal hollow section.
 
     Parameters
@@ -169,16 +162,16 @@ class HexSection(AbaqusBeamSection):
         wall thickness
     material : str
         material name to be assigned to the section.
+
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, d, t, material):
-        super(HexSection, self).__init__(name, r, material)
+        super(AbaqusHexSection, self).__init__(name, r, material)
         self._stype = 'hex'
         self.properties = [d, t]
 
 
-class ISection(AbaqusBeamSection):
+class AbaqusISection(AbaqusBeamSection):
     """I or T section.
 
     Parameters
@@ -201,10 +194,9 @@ class ISection(AbaqusBeamSection):
     -----
     Set b1 and t1 or b2 and t2 to zero to model a T-section
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, b, h, t, material, l=0):
-        super(ISection, self).__init__(name, material)
+        super(AbaqusISection, self).__init__(name, material)
         self._stype = 'I'
         if not isinstance(b, list):
             b = [b]*2
@@ -213,7 +205,7 @@ class ISection(AbaqusBeamSection):
         self.properties = [l, h, *b, *t]
 
 
-class PipeSection(AbaqusBeamSection):
+class AbaqusPipeSection(AbaqusBeamSection):
     """Pipe section.
 
     Parameters
@@ -225,15 +217,14 @@ class PipeSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, r, t, material):
-        super(PipeSection, self).__init__(name, material)
+        super(AbaqusPipeSection, self).__init__(name, material)
         self._stype = 'pipe'
         self.properties = [r, t]
 
 
-class RectangularSection(AbaqusBeamSection):
+class AbaqusRectangularSection(AbaqusBeamSection):
     """Rectangular filled section.
 
     Parameters
@@ -245,15 +236,14 @@ class RectangularSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, b, h, material):
-        super(RectangularSection, self).__init__(name, material)
+        super(AbaqusRectangularSection, self).__init__(name, material)
         self._stype = 'rect'
         self.properties = [b, h]
 
 
-class TrapezoidalSection(AbaqusBeamSection):
+class AbaqusTrapezoidalSection(AbaqusBeamSection):
     """Rectangular filled section.
 
     Parameters
@@ -270,19 +260,18 @@ class TrapezoidalSection(AbaqusBeamSection):
     material : str
         material name to be assigned to the section.
     """
-    __doc__ += AbaqusBeamSection.__doc__
 
     def __init__(self, name, a, b, c, d, material):
-        super(TrapezoidalSection, self).__init__(name, material)
+        super(AbaqusTrapezoidalSection, self).__init__(name, material)
         self._stype = 'rect'
         self.properties = [a, b, c, d]
 
 
 # TODO -> check how these sections are implemented in ABAQUS
-class TrussSection(TrussSectionBase):
+class AbaqusTrussSection(TrussSection):
 
     def __init__(self, name, A, material):
-        super(TrussSection, self).__init__(name, A, material)
+        super(AbaqusTrussSection, self).__init__(name, A, material)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.
@@ -300,32 +289,32 @@ class TrussSection(TrussSectionBase):
 {},\n""".format(self.name, set_name, self.material.name, self.geometry['A'])
 
 
-class StrutSection(StrutSectionBase):
+class AbaqusStrutSection(StrutSection):
 
     def __init__(self, name, A, material):
-        super(StrutSection, self).__init__(name, A, material)
-        self.elset = elset
+        super(AbaqusStrutSection, self).__init__(name, A, material)
+        # self.elset = elset
 
 
-class TieSection(TieSectionBase):
+class AbaqusTieSection(TieSection):
 
     def __init__(self, name, A, material):
-        super(TieSection, self).__init__(name, A, material)
-        self.elset = elset
+        super(AbaqusTieSection, self).__init__(name, A, material)
+        # self.elset = elset
 
 
-class SpringSection(SpringSectionBase):
+class AbaqusSpringSection(SpringSection):
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        super(SpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
-        self.elset = elset
+        super(AbaqusSpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
+        # self.elset = elset
+
 
 # ==============================================================================
 # 2D
 # ==============================================================================
 
-
-class ShellSection(ShellSectionBase):
+class AbaqusShellSection(ShellSection):
 
     """
     Parameters
@@ -342,8 +331,7 @@ class ShellSection(ShellSectionBase):
     """
 
     def __init__(self, name, t, material, int_points=5):
-        super(ShellSection, self).__init__(name, t, material)
-        self.__doc__ += ShellSection.__doc__
+        super(AbaqusShellSection, self).__init__(name, t, material)
         self.int_points = int_points
 
     def _generate_jobdata(self, set_name):
@@ -362,10 +350,10 @@ class ShellSection(ShellSectionBase):
 {}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
 
 
-class MembraneSection(MembraneSectionBase):
+class AbaqusMembraneSection(MembraneSection):
 
     def __init__(self, name, t, material):
-        super(MembraneSection, self).__init__(name, t, material)
+        super(AbaqusMembraneSection, self).__init__(name, t, material)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.
@@ -382,15 +370,15 @@ class MembraneSection(MembraneSectionBase):
 *Membrane Section, elset={}, material={}
 {},\n""".format(self.name, set_name, self.material.name, self.t)
 
+
 # ==============================================================================
 # 3D
 # ==============================================================================
 
-
-class SolidSection(SolidSectionBase):
+class AbaqusSolidSection(SolidSection):
 
     def __init__(self, name, material):
-        super(SolidSectionBase, self).__init__(name, material)
+        super(AbaqusSolidSection, self).__init__(name, material)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.

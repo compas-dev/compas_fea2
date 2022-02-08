@@ -2,20 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem.outputs import FieldOutputBase, HistoryOutputBase
+from compas_fea2.problem.outputs import FieldOutput, HistoryOutput
 
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'FieldOutput',
-    'HistoryOutput',
-]
-
-
-class FieldOutput(FieldOutputBase):
+class AbaqusFieldOutput(FieldOutput):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
-        super(FieldOutput, self).__init__(name, node_outputs, element_outputs)
+        super(AbaqusFieldOutput, self).__init__(name, node_outputs, element_outputs)
         self._frequency = frequency
 
     @property
@@ -40,18 +32,15 @@ class FieldOutput(FieldOutputBase):
         else:
             data.append(f'*Output, field, frequency={self.frequency}')
             if self.node_outputs:
-                data.append('\n'.join([f'*Node Output',
-                                       f'{", ".join(self.node_outputs)}']))
+                data.append('\n'.join(['*Node Output', f'{", ".join(self.node_outputs)}']))
             if self.element_outputs:
-                data.append('\n'.join([f'*Element output, direction=YES',
-                                       f'{", ".join(self.element_outputs)}']))
+                data.append('\n'.join(['*Element output, direction=YES', f'{", ".join(self.element_outputs)}']))
         return '\n'.join(data)
 
 
-class HistoryOutput(HistoryOutputBase):
+class AbaqusHistoryOutput(HistoryOutput):
     def __init__(self, name):
-        super(HistoryOutput, self).__init__(name)
-        self.__name__ = 'FieldOutputRequst'
+        super(AbaqusHistoryOutput, self).__init__(name)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

@@ -9,22 +9,21 @@ from time import time
 from subprocess import Popen
 from subprocess import PIPE
 
-from compas_fea2.results import ResultsBase
-from compas_fea2.results import CaseResultsBase
+from compas_fea2.results import Results
+from compas_fea2.results import CaseResults
 from compas_fea2.backends.abaqus.results import odb_extract
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-class Results(ResultsBase):
+class AbaqusResults(Results):
 
-    def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True,
-                 components=None, exe=None, license='research',):
-        super(Results, self).__init__(database_name, database_path, fields, steps, sets, components, output)
+    def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True, components=None, exe=None, license='research',):
+        super(AbaqusResults, self).__init__(database_name, database_path, fields, steps, sets, components, output)
         self.exe = exe
         self.license = license
 
-     # ==========================================================================
+    # ==========================================================================
     # Extract results
     # ==========================================================================
 
@@ -61,9 +60,9 @@ class Results(ResultsBase):
                 print(stderr.decode())
         else:
             raise NotImplementedError("custom abaqus.exe location not implemented")
-            os.chdir(self.database_path)
-            os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
-                                                         odb_args, self.database_name, self.database_path))
+            # os.chdir(self.database_path)
+            # os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
+            #                                              odb_args, self.database_name, self.database_path))
 
         toc1 = time() - tic1
         if self.output:
@@ -94,11 +93,7 @@ class Results(ResultsBase):
             print('***** Data stored successfully : {0:.3f} s *****\n'.format(toc2))
 
 
-class StepResults(CaseResultsBase):
+class AbaqusStepResults(CaseResults):
 
     def __init__(self):
-        super(Results, self).__init__()
-
-
-if __name__ == "__main__":
-    pass
+        super(AbaqusStepResults, self).__init__()

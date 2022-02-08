@@ -1,7 +1,11 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
 
-class InputFileBase():
+class InputFile(object):
     """Input file object for standard analysis.
 
     Parameters

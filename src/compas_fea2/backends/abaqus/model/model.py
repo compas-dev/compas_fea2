@@ -2,28 +2,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import ModelBase
+from compas_fea2.model import Model
 from compas_fea2.backends.abaqus.model._instances import _Instance
 
-__all__ = [
-    'Model',
-]
 
-
-class Model(ModelBase):
-    """ Abaqus Model object
+class AbaqusModel(Model):
+    """Abaqus Model object
 
     Note
     ----
     This is in many aspects equivalent to an `Assembly` in Abaqus.
 
-
     """
-    __doc__ += ModelBase.__doc__
 
     def __init__(self, name, description=None, author=None):
-        super(Model, self).__init__(name, description, author)
-        self._backend = 'abaqus'
+        super(AbaqusModel, self).__init__(name, description, author)
         self._instances = {}
 
     # =========================================================================
@@ -70,6 +63,7 @@ class Model(ModelBase):
     # =========================================================================
     #                          Instances methods
     # =========================================================================
+
     def _add_instance(self, part):
         """Adds a compas_fea2 Instance of a Part object to the Model.
 
@@ -113,8 +107,9 @@ class Model(ModelBase):
     # =========================================================================
     #                            Groups methods
     # =========================================================================
+
     def add_group(self, group):
-        '''Add a Group object to the Model at the instance level. Can be either
+        """Add a Group object to the Model at the instance level. Can be either
         a NodesGroup or an ElementsGroup.
 
         Note
@@ -131,7 +126,7 @@ class Model(ModelBase):
         Returns
         -------
         None
-        '''
+        """
         super().add_group(group)
         if f'{group.part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {group.part}-1 not found in the Model!')
@@ -149,11 +144,9 @@ class Model(ModelBase):
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
         self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
 
-
 # =============================================================================
 #                               Job data
 # =============================================================================
-
 
     def _generate_jobdata(self):
         return f"""**

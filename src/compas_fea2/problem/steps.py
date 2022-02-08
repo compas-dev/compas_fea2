@@ -5,17 +5,17 @@ from __future__ import print_function
 import importlib
 
 from compas_fea2.base import FEABase
-from compas_fea2.problem.loads import LoadBase
-from compas_fea2.problem.displacements import GeneralDisplacementBase
-from compas_fea2.problem.outputs import FieldOutputBase
-from compas_fea2.model.parts import PartBase
-from compas_fea2.model.groups import NodesGroupBase
+from compas_fea2.problem.loads import Load
+from compas_fea2.problem.displacements import GeneralDisplacement
+from compas_fea2.problem.outputs import FieldOutput
+from compas_fea2.model.parts import Part
+from compas_fea2.model.groups import NodesGroup
 
 # Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
 #            Francesco Ranaudo (github.com/franaudo)
 
 
-class CaseBase(FEABase):
+class Case(FEABase):
     """Initialises base Case object.
 
     Parameters
@@ -26,12 +26,11 @@ class CaseBase(FEABase):
         `compas_fea2` FieldOutput object.
     History_outputs : obj
         `compas_fea2` HistiryOutput object.
+
     """
 
     def __init__(self, name):
-        super(CaseBase, self).__init__(name)
-        self.__name__ = 'CaseBase'
-        self._name = name
+        super(Case, self).__init__(name=name)
         self._gravity = None
         self._loads = {}
         self._applied_loads = {}
@@ -39,18 +38,6 @@ class CaseBase(FEABase):
         self._applied_displacements = {}
         self._field_outputs = {}
         self._history_outputs = {}
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
-
-    @property
-    def name(self):
-        """str : Name of the Case object."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def gravity(self):
@@ -83,7 +70,7 @@ class CaseBase(FEABase):
         -------
         None
         """
-        attrb = '_field_outputs' if isinstance(output, FieldOutputBase) else '_history_outputs'
+        attrb = '_field_outputs' if isinstance(output, FieldOutput) else '_history_outputs'
 
         if output.name not in getattr(self, attrb):
             getattr(self, attrb)[output.name] = output
@@ -127,7 +114,7 @@ class CaseBase(FEABase):
         """
 
         # check if load is valid
-        if not isinstance(load, LoadBase):
+        if not isinstance(load, Load):
             raise TypeError(f'{load} is not a `compas_fea2` Load object')
         if part not in self.loads:
             self._loads[part] = {key: load for key in keys}
@@ -150,7 +137,7 @@ class CaseBase(FEABase):
         # if not isinstance(where, list):
         #     where = [where]
         # for i in where:
-        #     if isinstance(i, (NodesGroupBase, ElementsGroupBase)):
+        #     if isinstance(i, (NodesGroup, ElementsGroup)):
         #         keys += [key+1 for key in i._selection]
         #     elif isinstance(i, int):
         #         keys.append(i+1)
@@ -158,11 +145,11 @@ class CaseBase(FEABase):
         #         raise TypeError('You must provide either a (list of) key or a (list of) NodesGroup/ElementsGroup')
 
         # # check if load is valid
-        # if not isinstance(load, LoadBase):
+        # if not isinstance(load, Load):
         #     raise TypeError(f'{load} is not a `compas_fea2` Load object')
 
         # # check if part is valid
-        # if isinstance(part, PartBase):
+        # if isinstance(part, Part):
         #     part = part.name
         # elif not isinstance(part, str):
         #     raise TypeError(f'{part} is not valid')
@@ -233,7 +220,7 @@ class CaseBase(FEABase):
         if not isinstance(where, list):
             where = [where]
         for i in where:
-            if isinstance(i, (NodesGroupBase)):
+            if isinstance(i, (NodesGroup)):
                 keys += [key+1 for key in i._selection]
             elif isinstance(i, int):
                 keys.append(i+1)
@@ -241,11 +228,11 @@ class CaseBase(FEABase):
                 raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup')
 
         # check if load is valid
-        if not isinstance(displacement, GeneralDisplacementBase):
+        if not isinstance(displacement, GeneralDisplacement):
             raise ValueError(f'{displacement} is not a `compas_fea2` GeneralDisplacement object')
 
         # check if part is valid
-        if isinstance(part, PartBase):
+        if isinstance(part, Part):
             part = part.name
         elif not isinstance(part, str):
             raise ValueError(f'{part} is not valid')
@@ -259,7 +246,7 @@ class CaseBase(FEABase):
             self._applied_displacement[displacement.name].append((part, where))
 
 
-class StaticCaseBase(CaseBase):
+class StaticCase(Case):
     """Initialises base Case object.
 
     Parameters
@@ -274,11 +261,11 @@ class StaticCaseBase(CaseBase):
         `compas_fea2` FieldOutput object.
     History_outputs : obj
         `compas_fea2` HistiryOutput object.
+
     """
 
     def __init__(self, name):
-        super(StaticCaseBase, self).__init__(name)
-        self.__name__ = 'StaticCaseBase'
+        super(StaticCase, self).__init__(name)
         self._loads = {}
         self._displacements = {}
 
@@ -297,15 +284,12 @@ class StaticCaseBase(CaseBase):
         return self._displacements
 
 
-class GeneralStaticCaseBase(StaticCaseBase):
+class GeneralStaticCase(StaticCase):
     """Initialises GeneralCase object for use in a static analysis.
     """
 
     def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time):
-        super(GeneralStaticCaseBase, self).__init__(name)
-
-        self.__name__ = 'GeneralCase'
-
+        super(GeneralStaticCase, self).__init__(name)
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
         self._min_inc_size = min_inc_size
@@ -354,8 +338,8 @@ class GeneralStaticCaseBase(StaticCaseBase):
         self._time = value
 
 
-# TODO CHECK this sis a duplicate of StaticCaseBase
-class StaticLinearPerturbationCaseBase(StaticCaseBase):
+# TODO CHECK this sis a duplicate of StaticCase
+class StaticLinearPerturbationCase(StaticCase):
     """Initialises LinearPertubationCase object for use in a linear analysis.
 
     Parameters
@@ -366,14 +350,14 @@ class StaticLinearPerturbationCaseBase(StaticCaseBase):
         Displacement objects.
     loads : list
         Load objects.
+
     """
 
     def __init__(self,  name):
-        super(StaticLinearPerturbationCaseBase, self).__init__(name)
-        self.__name__ = 'StaticLinearPerturbationCase'
+        super(StaticLinearPerturbationCase, self).__init__(name)
 
 
-class HeatCaseBase(CaseBase):
+class HeatCase(Case):
     """Initialises HeatCase object for use in a thermal analysis.
 
     Parameters
@@ -409,12 +393,11 @@ class HeatCaseBase(CaseBase):
         'heat transfer'.
     duration : float
         Duration of case step.
+
     """
 
     def __init__(self, name, interaction, field_outputs, history_outputs, increments=100, temp0=20, dTmax=1, duration=1):
-        super(HeatCaseBase, self).__init__(name, field_outputs, history_outputs)
-
-        self.__name__ = 'HeatCase'
+        super(HeatCase, self).__init__(name, field_outputs, history_outputs)
         self.interaction = interaction
         self.increments = increments
         self.temp0 = temp0
@@ -422,7 +405,7 @@ class HeatCaseBase(CaseBase):
         self.duration = duration
 
 
-class ModalCaseBase(CaseBase):
+class ModalCase(Case):
     """Initialises ModalCase object for use in a modal analysis.
 
     Parameters
@@ -431,12 +414,11 @@ class ModalCaseBase(CaseBase):
         Name of the ModalCase.
     modes : int
         Number of modes to analyse.
+
     """
 
     def __init__(self, name, modes=1):
-        super(ModalCaseBase, self).__init__(name)
-
-        self.__name__ = 'ModalCase'
+        super(ModalCase, self).__init__(name)
         self._modes = modes
 
     @property
@@ -449,13 +431,13 @@ class ModalCaseBase(CaseBase):
         self._modes = value
 
 
-class HarmonicCaseBase(CaseBase):
-    """Initialises HarmoniCaseBase object for use in a harmonic analysis.
+class HarmonicCase(Case):
+    """Initialises HarmoniCase object for use in a harmonic analysis.
 
     Parameters
     ----------
     name : str
-        Name of the HarmoniCaseBase.
+        Name of the HarmoniCase.
     freq_list : list
         Sorted list of frequencies to analyse.
     displacements : list
@@ -472,7 +454,7 @@ class HarmonicCaseBase(CaseBase):
     Attributes
     ----------
     name : str
-        Name of the HarmoniCaseBase.
+        Name of the HarmoniCase.
     freq_list : list
         Sorted list of frequencies to analyse.
     displacements : list
@@ -488,25 +470,16 @@ class HarmonicCaseBase(CaseBase):
     """
 
     def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None):
-        CaseBase.__init__(self, name=name)
-
-        if not displacements:
-            displacements = []
-
-        if not loads:
-            loads = []
-
-        self.__name__ = 'HarmonicCaseBase'
-        self.name = name
+        super(HarmonicCase).__init__(name=name)
         self.freq_list = freq_list
-        self.displacements = displacements
-        self.loads = loads
+        self.displacements = displacements or []
+        self.loads = loads or []
         self.factor = factor
         self.damping = damping
         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
-class BucklingCaseBase(CaseBase):
+class BucklingCase(Case):
     """Initialises BucklingCase object for use in a buckling analysis.
 
     Parameters
@@ -546,35 +519,27 @@ class BucklingCaseBase(CaseBase):
         'buckle'.
     case : str
         Case to copy loads and displacements from.
+
     """
 
     def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, case=None):
-        CaseBase.__init__(self, name=name)
-
-        if not displacements:
-            displacements = []
-
-        if not loads:
-            loads = []
-
-        self.__name__ = 'BucklingCase'
-        self.name = name
+        super(BucklingCase).__init__(name=name)
         self.modes = modes
         self.increments = increments
         self.factor = factor
-        self.displacements = displacements
-        self.loads = loads
+        self.displacements = displacements or []
+        self.loads = loads or []
         self.case = case
         self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'case'])
 
 
-class AcousticCaseBase(CaseBase):
-    """Initialises AcoustiCaseBase object for use in a acoustic analysis.
+class AcousticCase(Case):
+    """Initialises AcoustiCase object for use in a acoustic analysis.
 
     Parameters
     ----------
     name : str
-        Name of the AcoustiCaseBase.
+        Name of the AcoustiCase.
     freq_range : list
         Range of frequencies to analyse.
     freq_step : int
@@ -597,7 +562,7 @@ class AcousticCaseBase(CaseBase):
     Attributes
     ----------
     name : str
-        Name of the AcoustiCaseBase.
+        Name of the AcoustiCase.
     freq_range : list
         Range of frequencies to analyse.
     freq_step : int
@@ -616,30 +581,17 @@ class AcousticCaseBase(CaseBase):
         Constant harmonic damping ratio.
     type : str
         'acoustic'.
+
     """
 
-    def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,
-                 factor=1.0, damping=None):
-        CaseBase.__init__(self, name=name)
-
-        if not displacements:
-            displacements = []
-
-        if not loads:
-            loads = []
-
-        if not sources:
-            sources = []
-
-        self.__name__ = 'AcousticCaseBase'
-        self.name = name
+    def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5, factor=1.0, damping=None):
+        super(AcousticCase).__init__(name)
         self.freq_range = freq_range
         self.freq_step = freq_step
-        self.displacements = displacements
-        self.sources = sources
+        self.displacements = displacements or []
+        self.sources = sources or []
         self.samples = samples
-        self.loads = loads
+        self.loads = loads or []
         self.factor = factor
         self.damping = damping
-        self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor',
-                               'damping'])
+        self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor', 'damping'])

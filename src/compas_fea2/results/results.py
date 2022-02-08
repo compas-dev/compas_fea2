@@ -1,18 +1,16 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from sys import path
-
-from compas_fea2.base import FEABase
 
 import json
 import pickle
+from sys import path
 from pathlib import Path
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
+from compas_fea2.base import FEABase
 
 
-class ResultsBase(FEABase):
+class Results(FEABase):
     """`compas_fea2` ResultsBase object. This ensures that the results from all
     the backends are consistent.
 
@@ -35,6 +33,7 @@ class ResultsBase(FEABase):
     """
 
     def __init__(self, database_name, database_path, fields, steps, sets, components, output):
+        super(Results, self).__init__()
         self.database_name = database_name
         self.database_path = database_path
         self.temp_dump = Path(self.database_path).joinpath(self.database_name + '.cfr')
@@ -192,7 +191,7 @@ class ResultsBase(FEABase):
                           sort_keys=True, indent=4)
 
 
-class CaseResultsBase(FEABase):
+class CaseResults(FEABase):
     """`compas_fea2` ResultsCaseBase object. This ensures that the results from
     a specific load case are consistently organised across all backends.
 
@@ -204,10 +203,11 @@ class CaseResultsBase(FEABase):
         nodal results for the load case.\n`{node_id: value}`
     element : dict
         element results for the loda case\n`{element_id: value}`
+
     """
 
     def __init__(self, name):
-        self.name = name
+        super(CaseResults, self).__init__(name=name)
         self.path = path
         self.temp_dump = Path(self.path).joinpath(self.name+'-results')
         self.info = {}

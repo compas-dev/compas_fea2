@@ -21,7 +21,7 @@ class Node(NodeBase):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)
 
     def _generate_jobdata(self):
-        '''Generates the string information for the input file.
+        """Generates the string information for the input file.
 
         Parameters
         ----------
@@ -30,7 +30,7 @@ class Node(NodeBase):
         Returns
         -------
         input file data line (str).
-        '''
+        """
         x, y, z = self.xyz
         return '{0}{1}{2}{3:.3f}{2}{4:.3f}{2}{5:.3f}'.format('node ', self.key, ' ', x, y, z)
 

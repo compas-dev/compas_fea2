@@ -1,12 +1,9 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model.groups import NodesGroupBase
-from compas_fea2.model.groups import ElementsGroupBase
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
+from compas_fea2.model import NodesGroup
+from compas_fea2.model import ElementsGroup
 
 
 def _generate_jobdata(self, instance):
@@ -40,22 +37,22 @@ def _generate_jobdata(self, instance):
     return '\n'.join(data_section) + '\n'
 
 
-class NodesGroup(NodesGroupBase):
+class AbaqusNodesGroup(NodesGroup):
     """Initialises the Set object.
-
-    Notes
-    -----
-    This is equivalent to a node set in Abaqus
 
     Parameters
     ----------
     generate : bool
         Automatically generates a set of elements/nodes between the two keys specified.
+
+    Notes
+    -----
+    This is equivalent to a node set in Abaqus
+
     """
 
     def __init__(self, name, nodes_keys, generate=False):
-        super(NodesGroup, self).__init__(name, nodes_keys)
-        self.__name__ = 'NodesGroup'
+        super(AbaqusNodesGroup, self).__init__(name, nodes_keys)
         self._generate = generate
         self._set_type = 'nset'
 
@@ -68,23 +65,22 @@ class NodesGroup(NodesGroupBase):
         return _generate_jobdata(self, instance)
 
 
-class ElementsGroup(ElementsGroupBase):
-
+class AbaqusElementsGroup(ElementsGroup):
     """Initialises the Set object.
-
-    Notes
-    -----
-    This is equivalent to a node set in Abaqus
 
     Parameters
     ----------
     generate : bool
         Automatically generates a set of elements/nodes between the two keys specified.
+
+    Notes
+    -----
+    This is equivalent to a node set in Abaqus
+
     """
 
     def __init__(self, name, elements_keys, generate=False):
-        super(ElementsGroup, self).__init__(name, elements_keys)
-        self.__name__ = 'ElementsGroup'
+        super(AbaqusElementsGroup, self).__init__(name, elements_keys)
         self._generate = generate
         self._set_type = 'elset'
 
@@ -95,41 +91,3 @@ class ElementsGroup(ElementsGroupBase):
 
     def _generate_jobdata(self, instance=None):
         return _generate_jobdata(self, instance)
-
-
-# class Surface(SurfaceBase):
-#     """Initialises the Surfaces object.
-
-#     Parameters
-#     ----------
-#     name : str
-#         Name of the set.
-#     keys : list
-#         A list with either the Node or Element objects belonging to the set.
-#     generate : bool
-#         Automatically generates a set of elements/nodes between the two keys specified.
-#     """
-
-#     # TODO check http://130.149.89.49:2080/v6.14/books/usb/default.htm?startat=pt01ch02s03aus17.html#usb-int-adeformablesurf
-#     def __init__(self, name, set, generate=False):
-#         super(Surface, self).__init__(name, set, generate)
-
-#     # TODO: old ---> change
-#     def _generate_jobdata(self):
-#         """Generates the string information for the input file.
-
-#         Parameters
-#         ----------
-#         None
-
-#         Returns
-#         -------
-#         input file data line (str).
-#         """
-#         line = '*Surface, type={}, NAME={0}'.format(self.stype, self.name)
-#         self.write_line('** ELEMENT, SIDE')
-
-#         for element, sides in element_set.keys.items():
-#             for side in sides:
-#                 self.write_line('{0}, {1}'.format(element + 1, side))
-#                 self.blank_line()

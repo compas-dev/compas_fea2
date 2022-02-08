@@ -2,20 +2,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from compas_fea2.model import GeneralBCBase
-from compas_fea2.model import FixedBCBase
-from compas_fea2.model import PinnedBCBase
-from compas_fea2.model import FixedBCXXBase
-from compas_fea2.model import FixedBCYYBase
-from compas_fea2.model import FixedBCZZBase
-from compas_fea2.model import RollerBCXBase
-from compas_fea2.model import RollerBCYBase
-from compas_fea2.model import RollerBCZBase
-from compas_fea2.model import RollerBCXYBase
-from compas_fea2.model import RollerBCYZBase
-from compas_fea2.model import RollerBCXZBase
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
+from compas_fea2.model import FixedBC
+from compas_fea2.model import PinnedBC
+from compas_fea2.model import FixedBCXX
+from compas_fea2.model import FixedBCYY
+from compas_fea2.model import FixedBCZZ
+from compas_fea2.model import RollerBCX
+from compas_fea2.model import RollerBCY
+from compas_fea2.model import RollerBCZ
+from compas_fea2.model import RollerBCXY
+from compas_fea2.model import RollerBCYZ
+from compas_fea2.model import RollerBCXZ
 
 # TODO: add the possibility to add bcs to nodes/elements and not only to sets
 
@@ -33,9 +30,9 @@ def _generate_jobdata(obj, instance, nodes):
     Returns
     -------
     input file data line (str).
+
     """
-    data_section = [f'** Name: {obj.name} Type: BC/Rotation\n',
-                    '*Boundary, op=NEW']
+    data_section = [f'** Name: {obj.name} Type: BC/Rotation\n', '*Boundary, op=NEW']
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
             if dof in obj.components:
@@ -43,110 +40,100 @@ def _generate_jobdata(obj, instance, nodes):
     return '\n'.join(data_section)
 
 
-# class GeneralBC(GeneralBCBase):
-
-#     def __init__(self, name, axes='global'):
-#         super(GeneralBC, self).__init__(name, x, y, z, xx, yy, zz, axes)
-#         self._modify = True
-
-#     def _generate_jobdata(self):
-#         return _generate_jobdata(self)
-
-
-class FixedBC(FixedBCBase):
+class AbaqusFixedBC(FixedBC):
 
     def __init__(self, name, axes='global'):
-        super(FixedBC, self).__init__(name, axes)
+        super(AbaqusFixedBC, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class PinnedBC(PinnedBCBase):
+class AbaqusPinnedBC(PinnedBC):
 
     def __init__(self, name, axes='global'):
-        super(PinnedBC, self).__init__(name, axes)
+        super(AbaqusPinnedBC, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class FixedBCXX(FixedBCXXBase):
+class AbaqusFixedBCXX(FixedBCXX):
 
-    def __init__(sself, name, axes='global'):
-        super(FixedBCXX, self).__init__(name, axes)
+    def __init__(self, name, axes='global'):
+        super(AbaqusFixedBCXX, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class FixedBCYY(FixedBCYYBase):
+class AbaqusFixedBCYY(FixedBCYY):
 
     def __init__(self, name, axes='global'):
-        super(FixedBCYY, self).__init__(name, axes)
+        super(AbaqusFixedBCYY, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class FixedBCZZ(FixedBCZZBase):
+class AbaqusFixedBCZZ(FixedBCZZ):
 
     def __init__(self, name, axes='global'):
-        super(FixedBCZZ, self).__init__(name, axes)
+        super(AbaqusFixedBCZZ, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCX(RollerBCXBase):
+class AbaqusRollerBCX(RollerBCX):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCX, self).__init__(name, axes)
+        super(AbaqusRollerBCX, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCY(RollerBCYBase):
+class AbaqusRollerBCY(RollerBCY):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCY, self).__init__(name, axes)
+        super(AbaqusRollerBCY, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCZ(RollerBCZBase):
+class AbaqusRollerBCZ(RollerBCZ):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCZ, self).__init__(name, axes)
+        super(AbaqusRollerBCZ, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCXY(RollerBCXYBase):
+class AbaqusRollerBCXY(RollerBCXY):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCXY, self).__init__(name, axes)
+        super(AbaqusRollerBCXY, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCYZ(RollerBCYZBase):
+class AbaqusRollerBCYZ(RollerBCYZ):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCYZ, self).__init__(name, axes)
+        super(AbaqusRollerBCYZ, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
-class RollerBCXZ(RollerBCXZBase):
+class AbaqusRollerBCXZ(RollerBCXZ):
 
     def __init__(self, name, axes='global'):
-        super(RollerBCXZ, self).__init__(name, axes)
+        super(AbaqusRollerBCXZ, self).__init__(name, axes)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)

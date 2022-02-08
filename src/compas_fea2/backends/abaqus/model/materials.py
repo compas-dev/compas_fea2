@@ -2,46 +2,26 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import log
-import os
-
-from compas_fea2.model import MaterialBase
-from compas_fea2.model import ConcreteBase
-from compas_fea2.model import ConcreteSmearedCrackBase
-from compas_fea2.model import ConcreteDamagedPlasticityBase
-from compas_fea2.model import ElasticIsotropicBase
-from compas_fea2.model import StiffBase
-from compas_fea2.model import ElasticOrthotropicBase
-from compas_fea2.model import ElasticPlasticBase
-from compas_fea2.model import SteelBase
-from compas_fea2.model import ThermalMaterialBase
-
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-
-# __all__ = [
-#     'ElasticIsotropic',
-#     'Stiff',
-#     'ElasticOrthotropic',
-#     'ElasticPlastic',
-#     # 'ThermalMaterial',
-#     'Steel',
-#     'Concrete',
-#     'ConcreteSmearedCrack',
-#     'ConcreteDamagedPlasticity',
-#     'UserMaterial'
-# ]
+from compas_fea2.model import Material
+from compas_fea2.model import Concrete
+from compas_fea2.model import ConcreteSmearedCrack
+from compas_fea2.model import ConcreteDamagedPlasticity
+from compas_fea2.model import ElasticIsotropic
+from compas_fea2.model import Stiff
+from compas_fea2.model import ElasticOrthotropic
+from compas_fea2.model import ElasticPlastic
+from compas_fea2.model import Steel
+from compas_fea2.model import ThermalMaterial
 
 
 # ==============================================================================
 # linear elastic
 # ==============================================================================
 
-class ElasticIsotropic(ElasticIsotropicBase):
+class AbaqusElasticIsotropic(ElasticIsotropic):
 
     def __init__(self, name, E, v, p, unilateral=None):
-        super(ElasticIsotropic, self).__init__(name, E, v, p)
+        super(AbaqusElasticIsotropic, self).__init__(name, E, v, p)
         self.unilateral = unilateral
 
     def _generate_jobdata(self):
@@ -72,10 +52,10 @@ class ElasticIsotropic(ElasticIsotropicBase):
                 "{}, {}{}\n").format(self.name, self.p, self.E, self.v, n)
 
 
-class Stiff(StiffBase):
+class AbaqusStiff(Stiff):
 
     def __init__(self, name, E):
-        super(Stiff, self).__init__(name, E)
+        super(AbaqusStiff, self).__init__(name, E)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -95,20 +75,20 @@ class Stiff(StiffBase):
                 "{}, {}\n").format(self.name, self.p, self.E['E'], self.v['v'])
 
 
-class ElasticOrthotropic(ElasticOrthotropicBase):
+class AbaqusElasticOrthotropic(ElasticOrthotropic):
+
     def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
-        super(ElasticOrthotropic).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p)
-        raise NotImplementedError
+        super(AbaqusElasticOrthotropic).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p)
 
 
 # ==============================================================================
 # non-linear general
 # ==============================================================================
 
-class ElasticPlastic(ElasticPlasticBase):
+class AbaqusElasticPlastic(ElasticPlastic):
 
     def __init__(self, name, E, v, p, f, e):
-        super(ElasticPlastic, self).__init__(name, E, v, p, f, e)
+        super(AbaqusElasticPlastic, self).__init__(name, E, v, p, f, e)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -140,10 +120,10 @@ class ElasticPlastic(ElasticPlasticBase):
 # non-linear metal
 # ==============================================================================
 
-class Steel(SteelBase):
+class AbaqusSteel(Steel):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
-        super(Steel, self).__init__(name, fy, fu, eu, E, v, p)
+        super(AbaqusSteel, self).__init__(name, fy, fu, eu, E, v, p)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -170,6 +150,7 @@ class Steel(SteelBase):
             data_section.append(line)
         return '\n'.join(data_section)
 
+
 # ==============================================================================
 # non-linear timber
 # ==============================================================================
@@ -184,10 +165,10 @@ class Steel(SteelBase):
 # non-linear concrete
 # ==============================================================================
 
-class Concrete(ConcreteBase):
+class AbaqusConcrete(Concrete):
 
     def __init__(self, name, fck, v, p, fr):
-        super(Concrete, self).__init__(name, fck, v, p, fr)
+        super(AbaqusConcrete, self).__init__(name, fck, v, p, fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -226,10 +207,10 @@ class Concrete(ConcreteBase):
         return '\n'.join(data_section)
 
 
-class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
+class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
-        super(ConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
+        super(AbaqusConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -268,10 +249,10 @@ class ConcreteSmearedCrack(ConcreteSmearedCrackBase):
         return '\n'.join(data_section)
 
 
-class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
+class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
+        super(AbaqusConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -304,18 +285,18 @@ class ConcreteDamagedPlasticity(ConcreteDamagedPlasticityBase):
 
         return '\n'.join(data_section)
 
+
 # ==============================================================================
 # thermal
 # ==============================================================================
 
-
-class ThermalMaterial(ThermalMaterialBase):
+class AbaqusThermalMaterial(ThermalMaterial):
     def __init__(self, name, conductivity, p, sheat):
-        super(ThermalMaterial).__init__(name, conductivity, p, sheat)
+        super(AbaqusThermalMaterial).__init__(name, conductivity, p, sheat)
         raise NotImplementedError
 
 
-class UserMaterial(MaterialBase):
+class AbaqusUserMaterial(Material):
 
     """ User Defined Material (UMAT). Tho implement this type of material, a
     separate subroutine is required
@@ -331,7 +312,7 @@ class UserMaterial(MaterialBase):
     """
 
     def __init__(self, name, sub_path, p=None, **kwargs):
-        MaterialBase.__init__(self, name=name)
+        Material.__init__(self, name=name)
 
         self.__name__ = 'UserMaterial'
         self.__dict__.update(kwargs)

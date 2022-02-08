@@ -1,42 +1,27 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-from compas_fea2.problem import GeneralStaticCaseBase
-from compas_fea2.problem import StaticLinearPerturbationCaseBase
-from compas_fea2.problem import HeatCaseBase
-from compas_fea2.problem import ModalCaseBase
-from compas_fea2.problem import HarmonicCaseBase
-from compas_fea2.problem import BucklingCaseBase
-from compas_fea2.problem import AcousticCaseBase
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-# __all__ = [
-#     'GeneralStaticStep',
-#     'StaticLinearPertubationStep',
-#     # 'HeatStepBase',
-#     'ModalStep',
-#     'HarmoniStepBase',
-#     'BucklingStep',
-#     'AcoustiStepBase'
-# ]
+from compas_fea2.problem import GeneralStaticCase
+from compas_fea2.problem import StaticLinearPerturbationCase
+from compas_fea2.problem import HeatCase
+from compas_fea2.problem import ModalCase
+from compas_fea2.problem import HarmonicCase
+from compas_fea2.problem import BucklingCase
+from compas_fea2.problem import AcousticCase
 
 # TODO add field and history output requrests
 
 
-class GeneralStaticStep(GeneralStaticCaseBase):
+class AbaqusGeneralStaticStep(GeneralStaticCase):
     """
     Notes
     -----
     the data for the input file for this object is generated at runtime.
     """
-    # __doc__ += GeneralStaticCaseBase.__doc__
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True,):
-        super(GeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
+        super(AbaqusGeneralStaticStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
         self._stype = 'Static'
         self._nlgeom = 'YES' if nlgeom else 'NO'
         self._modify = modify
@@ -92,16 +77,14 @@ class GeneralStaticStep(GeneralStaticCaseBase):
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
-                "{4}, {5}, {6}, {5}\n").format(self._name, self._nlgeom, self._max_increments, self._stype,
-                                               self._initial_inc_size, self._time, self._min_inc_size)
+                "{4}, {5}, {6}, {5}\n").format(self._name, self._nlgeom, self._max_increments, self._stype, self._initial_inc_size, self._time, self._min_inc_size)
         data_section.append(line)
         return ''.join(data_section)
 
     def _generate_displacements_section(self):
         data_section = []
         for part in self.displacements:
-            data_section += [displacement._generate_jobdata(f'{part}-1', node)
-                             for node, displacement in self.displacements[part].items()]
+            data_section += [displacement._generate_jobdata(f'{part}-1', node) for node, displacement in self.displacements[part].items()]
         return '\n'.join(data_section)
 
     def _generate_loads_section(self):
@@ -131,14 +114,14 @@ class GeneralStaticStep(GeneralStaticCaseBase):
 
 
 # TODO fix also the steps below
-class GeneralStaticRiksStep(GeneralStaticCaseBase):
+class AbaqusGeneralStaticRiksStep(GeneralStaticCase):
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
-        super(GeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
+        super(AbaqusGeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
         raise NotImplementedError
 
 
-class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
+class AbaqusStaticLinearPertubationStep(StaticLinearPerturbationCase):
     """Initialises the StaticLinearPertubationStep object for use in a static analysis.
 
     Parameters
@@ -152,9 +135,7 @@ class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
     """
 
     def __init__(self, name, nlgeom=False):
-        super(StaticLinearPertubationStep, self).__init__(name)
-
-        self.__name__ = 'StaticPerturbationStep'
+        super(AbaqusStaticLinearPertubationStep, self).__init__(name)
         # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
         self._nlgeom = 'NO' if not nlgeom else 'YES'
         self._stype = 'Static'
@@ -180,59 +161,26 @@ class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
                 "**\n").format(self._name, self._nlgeom, self._stype)
 
 
-class BuckleStep(StaticLinearPerturbationCaseBase):
-
+class AbaqusBuckleStep(StaticLinearPerturbationCase):
     """Initialises BuckleStep object for use in a buckling analysis.
-
-    Parameters
-    ----------
-    name : str
-        Name of the GeneralStep.
-    displacements : list
-        Displacement objects.
-    loads : list
-        Load objects.
     """
 
     def __init__(self, name, nmodes):
-        super(BuckleStep).__init__(name)
+        super(AbaqusBuckleStep).__init__(name)
         raise NotImplementedError
-#         self.__name__      = 'BuckleStep'
-#         self.name          = name
-#         self.nlgeom        = 'NO'  #TODO this depends on the previous step -> loop through the steps order and adjust this parameter
-#         self.displacements = displacements
-#         self.loads         = loads
-#         self.attr_list.extend(['displacements', 'loads'])
-#         self.type = 'Buckle'
-    # def _generate_jobdata(self):
-    #     """Generates the string information for the input file.
-
-    #     Parameters
-    #     ----------
-    #     None
-
-    #     Returns
-    #     -------
-    #     input file data line (str).
-    #     """
-#         return """** ----------------------------------------------------------------
-# **
-# ** STEP: {0}
-# **
-# * Step, name={0}, nlgeom={1}, perturbation
-# *{2}
-# **\n""".format(self.name, self.nlgeom, self.stype)
 
 
-class HeatStep(HeatCaseBase):
+class AbaqusHeatStep(HeatCase):
+
     def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):
-        super(HeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
+        super(AbaqusHeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
         raise NotImplementedError
 
 
-class ModalStep(ModalCaseBase):
+class AbaqusModalStep(ModalCase):
+
     def __init__(self, name, modes):
-        super(ModalStep, self).__init__(name, modes)
+        super(AbaqusModalStep, self).__init__(name, modes)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -255,22 +203,22 @@ class ModalStep(ModalCaseBase):
                 "*END STEP").format(self.name, self.modes)
 
 
-class HarmoniStepBase(HarmonicCaseBase):
+class AbaqusHarmoniStep(HarmonicCase):
 
     def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
-        super(HarmoniStepBase, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
+        super(AbaqusHarmoniStep, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
         raise NotImplementedError
 
 
-class BucklingStep(BucklingCaseBase):
+class AbaqusBucklingStep(BucklingCase):
+
     def __init__(self, name, modes, increments, factor, displacements, loads, type, step):
-        super(BucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
+        super(AbaqusBucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
         raise NotImplementedError
 
 
-class AcoustiStepBase(AcousticCaseBase):
+class AbaqusAcoustiStep(AcousticCase):
 
     def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
-        super(AcoustiStepBase, self).__init__(name, freq_range, freq_step,
-                                              displacements, loads, sources, samples, factor, damping, type)
+        super(AbaqusAcoustiStep, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)
         raise NotImplementedError

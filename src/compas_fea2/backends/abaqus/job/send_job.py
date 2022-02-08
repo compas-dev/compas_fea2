@@ -3,16 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 from time import time
-import subprocess
 import os
 from subprocess import Popen
 from subprocess import PIPE
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'launch_process',
-]
 
 
 def launch_process(problem, exe, output, overwrite, user_mat):
@@ -80,7 +75,7 @@ def launch_process(problem, exe, output, overwrite, user_mat):
             with open(problem.path + problem.name + '.sta', 'r') as f:
                 if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
                     success = True
-        except:
+        except Exception:
             pass
 
     if success:
@@ -147,7 +142,7 @@ def launch_optimisation(problem, output):
             with open(problem.path + problem.name + '.sta', 'r') as f:
                 if 'COMPLETED SUCCESSFULLY' in f.readlines()[-1]:
                     success = True
-        except:
+        except Exception:
             pass
 
     if success:

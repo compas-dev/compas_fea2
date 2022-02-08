@@ -5,10 +5,10 @@ from __future__ import print_function
 from math import pi
 
 from compas_fea2.base import FEABase
-from compas_fea2.model.materials import MaterialBase
+from compas_fea2.model.materials import Material
 
 
-class SectionBase(FEABase):
+class Section(FEABase):
     """Initialises base Section object.
 
     Parameters
@@ -17,22 +17,12 @@ class SectionBase(FEABase):
         Section object name.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, material):
-        super(SectionBase, self).__init__()
-        self.__name__ = 'Section'
-        self._name = name
+        super(Section, self).__init__(name=name)
         self._material = material
-
-    @property
-    def name(self):
-        """The name property."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def material(self):
@@ -41,19 +31,16 @@ class SectionBase(FEABase):
 
     @material.setter
     def material(self, value):
-        if not isinstance(value, MaterialBase):
+        if not isinstance(value, Material):
             raise ValueError('must be a `compas_fea2` Material object')
         self._material = value
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
 
 # ==============================================================================
 # 0D
 # ==============================================================================
 
-
-class MassSectionBase(FEABase):
+class MassSection(FEABase):
     """Section for point mass elements.
 
     Parameters
@@ -65,19 +52,8 @@ class MassSectionBase(FEABase):
     """
 
     def __init__(self, name, mass):
-        super(SectionBase, self).__init__()
-        self.__name__ = 'MassSection'
-        self._name = name
+        super(MassSection, self).__init__(name=name)
         self._mass = mass
-
-    @property
-    def name(self):
-        """The name of the section."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def mass(self):
@@ -89,7 +65,7 @@ class MassSectionBase(FEABase):
         self._mass = value
 
 
-class SpringSectionBase(SectionBase):
+class SpringSection(Section):
     """For use with spring elements.
 
     Parameters
@@ -119,24 +95,23 @@ class SpringSectionBase(SectionBase):
     - Force and displacement data should range from negative to positive values.
     - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
     - Directions are 'axial', 'lateral', 'rotation'.
+
     """
 
     def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        super(SpringSectionBase, self).__init__(self, name)
-
-        self.__name__ = 'SpringSection'
+        super(SpringSection, self).__init__(self, name)
         self.geometry = None
         self.material = None
         self.forces = forces
         self.displacements = displacements
         self.stiffness = stiffness
 
+
 # ==============================================================================
 # 1D
 # ==============================================================================
 
-
-class BeamSectionBase(SectionBase):
+class BeamSection(Section):
     """Initialises base Section object.
 
     Parameters
@@ -145,11 +120,11 @@ class BeamSectionBase(SectionBase):
         Section object name.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, material):
-        super(BeamSectionBase, self).__init__(name, material)
-        self.__name__ = 'BeamSection'
+        super(BeamSection, self).__init__(name, material)
 
         self._A = 0.
         self._Ixx = 0.
@@ -242,11 +217,8 @@ class BeamSectionBase(SectionBase):
     def gw(self, value):
         self._gw = value
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
 
-
-class AngleSectionBase(BeamSectionBase):
+class AngleSection(BeamSection):
     """Uniform thickness angle cross-section for beam elements.
 
     Parameters
@@ -269,9 +241,8 @@ class AngleSectionBase(BeamSectionBase):
     """
 
     def __init__(self, name, b, h, t, material):
-        super(AngleSectionBase, self).__init__(name, material)
+        super(AngleSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'AngleSection'
         self._b = b
         self._h = h
         self._t = t
@@ -286,7 +257,7 @@ class AngleSectionBase(BeamSectionBase):
         self._J = (1. / 3) * (h + b - t) * t**3
 
 
-class BoxSectionBase(BeamSectionBase):
+class BoxSection(BeamSection):
     """Hollow rectangular box cross-section for beam elements.
 
     Parameters
@@ -307,12 +278,12 @@ class BoxSectionBase(BeamSectionBase):
     Notes
     -----
     - Ixy not yet calculated.
+
     """
 
     def __init__(self, name, b, h, tw, tf, material):
-        super(BoxSectionBase, self).__init__(name, material)
+        super(BoxSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'BoxSection'
         self._b = b
         self._h = h
         self._tw = tw
@@ -327,7 +298,7 @@ class BoxSectionBase(BeamSectionBase):
         self._J = 4 * (self._Ap**2) / self._p
 
 
-class CircularSectionBase(BeamSectionBase):
+class CircularSection(BeamSection):
     """Solid circular cross-section for beam elements.
 
     Parameters
@@ -338,12 +309,12 @@ class CircularSectionBase(BeamSectionBase):
         Radius.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, r, material):
-        super(CircularSectionBase, self).__init__(name, material)
+        super(CircularSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'CircularSection'
         self._r = r
         # aux parameters
         self._D = 2 * r
@@ -353,7 +324,7 @@ class CircularSectionBase(BeamSectionBase):
         self._J = (pi * self._D**4) / 32
 
 
-class ISectionBase(BeamSectionBase):
+class ISection(BeamSection):
     """Equal flanged I-section for beam elements.
 
     Parameters
@@ -370,18 +341,17 @@ class ISectionBase(BeamSectionBase):
         Flange thickness.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, b, h, tw, tf, material):
-        super(ISectionBase, self).__init__(name, material)
+        super(ISection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'ISection'
         self._b = b
         self._h = h
         self._tw = tw
         self._tf = tf
         # aux parameters
-
         # default parameters
         self._A = 2 * b * tf + (h - 2 * tf) * tw
         self._Ixx = (tw * (h - 2 * tf)**3) / 12. + 2 * ((tf**3) * b / 12. + b * tf * (h / 2. - tf / 2.)**2)
@@ -389,7 +359,7 @@ class ISectionBase(BeamSectionBase):
         self._J = (1. / 3) * (2 * b * tf**3 + (h - tf) * tw**3)
 
 
-class PipeSectionBase(BeamSectionBase):
+class PipeSection(BeamSection):
     """Hollow circular cross-section for beam elements.
 
     Parameters
@@ -402,12 +372,12 @@ class PipeSectionBase(BeamSectionBase):
         Wall thickness.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, r, t, material):
-        super(PipeSectionBase, self).__init__(name, material)
+        super(PipeSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'PipeSection'
         self._r = r
         self._t = t
         # aux parameters
@@ -418,7 +388,7 @@ class PipeSectionBase(BeamSectionBase):
         self._J = (2. / 3) * pi * (r + 0.5 * t) * t**3
 
 
-class RectangularSectionBase(BeamSectionBase):
+class RectangularSection(BeamSection):
     """Solid rectangular cross-section for beam elements.
 
     Parameters
@@ -431,12 +401,12 @@ class RectangularSectionBase(BeamSectionBase):
         Height.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, b, h, material):
-        super(RectangularSectionBase, self).__init__(name, material)
+        super(RectangularSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'RectangularSection'
         self._b = b
         self._h = h
         # aux parameters
@@ -453,7 +423,7 @@ class RectangularSectionBase(BeamSectionBase):
                                               (self._l2 / self._l1) * (1 - (self._l2**4) / (self._l2 * self._l1**4)))
 
 
-class TrapezoidalSectionBase(BeamSectionBase):
+class TrapezoidalSection(BeamSection):
     """Solid trapezoidal cross-section for beam elements.
 
     Parameters
@@ -472,12 +442,12 @@ class TrapezoidalSectionBase(BeamSectionBase):
     Note
     ----
     - J not yet calculated.
+
     """
 
     def __init__(self, name, b1, b2, h, material):
-        super(TrapezoidalSectionBase, self).__init__(name, material)
+        super(TrapezoidalSection, self).__init__(name, material)
         # parameters
-        self.__name__ = 'TrapezoidalSection'
         self._b1 = b1
         self._b2 = b2
         self._h = h
@@ -489,7 +459,7 @@ class TrapezoidalSectionBase(BeamSectionBase):
         self._Iyy = (1 / 48.) * h * (b1 + b2) * (b2**2 + 7 * b1**2)
 
 
-class TrussSectionBase(BeamSectionBase):
+class TrussSection(BeamSection):
     """For use with truss elements.
 
     Parameters
@@ -500,19 +470,15 @@ class TrussSectionBase(BeamSectionBase):
         Area.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, A, material):
-        super(TrussSectionBase, self).__init__(name, material)
-
-        # parameters
-        self.__name__ = 'TrussSection'
-        # aux parameters
-        # default paramters
+        super(TrussSection, self).__init__(name, material)
         self._A = A
 
 
-class StrutSectionBase(TrussSectionBase):
+class StrutSection(TrussSection):
     """For use with strut elements.
 
     Parameters
@@ -523,15 +489,14 @@ class StrutSectionBase(TrussSectionBase):
         Area.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, A, material):
-        super(StrutSectionBase, self).__init__(name, A, material)
-
-        self.__name__ = 'StrutSection'
+        super(StrutSection, self).__init__(name, A, material)
 
 
-class TieSectionBase(TrussSectionBase):
+class TieSection(TrussSection):
     """For use with tie elements.
 
     Parameters
@@ -542,19 +507,18 @@ class TieSectionBase(TrussSectionBase):
         Area.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, A, material):
-        super(TieSectionBase, self).__init__(name, A, material)
-
-        self.__name__ = 'TieSection'
+        super(TieSection, self).__init__(name, A, material)
 
 
 # ==============================================================================
 # 2D
 # ==============================================================================
 
-class ShellSectionBase(SectionBase):
+class ShellSection(Section):
     """Section for shell elements.
 
     Parameters
@@ -565,12 +529,11 @@ class ShellSectionBase(SectionBase):
         Thickness.
     material : obj
         `compas_fea2` Material object.
+
     """
 
     def __init__(self, name, t, material):
-        super(ShellSectionBase, self).__init__(name, material)
-
-        self.__name__ = 'ShellSection'
+        super(ShellSection, self).__init__(name, material)
         self._t = t
 
     @property
@@ -579,7 +542,7 @@ class ShellSectionBase(SectionBase):
         return self._t
 
 
-class MembraneSectionBase(SectionBase):
+class MembraneSection(Section):
     """Section for membrane elements.
 
     Parameters
@@ -593,9 +556,7 @@ class MembraneSectionBase(SectionBase):
     """
 
     def __init__(self, name, t, material):
-        super(MembraneSectionBase, self).__init__(name, material)
-
-        self.__name__ = 'MembraneSection'
+        super(MembraneSection, self).__init__(name, material)
         self._t = t
 
     @property
@@ -612,7 +573,7 @@ class MembraneSectionBase(SectionBase):
 # 3D
 # ==============================================================================
 
-class SolidSectionBase(SectionBase):
+class SolidSection(Section):
     """Section for solid elements.
 
     Parameters
@@ -624,6 +585,4 @@ class SolidSectionBase(SectionBase):
     """
 
     def __init__(self, name, material):
-        super(SolidSectionBase, self).__init__(name, material)
-
-        self.__name__ = 'SolidSection'
+        super(SolidSection, self).__init__(name, material)

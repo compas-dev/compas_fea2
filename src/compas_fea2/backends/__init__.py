@@ -27,7 +27,3 @@ might want to have a look a these.
     compas_fea2.backends._base
 
 """
-
-# from .abaqus import *
-# from .ansys import *
-# from .opensees import *

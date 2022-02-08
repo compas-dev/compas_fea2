@@ -4,10 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.base import FEABase
 
-# Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)
 
-
-class ConstraintBase(FEABase):
+class Constraint(FEABase):
     """Initialises base Constraint object.
 
     Parameters
@@ -15,31 +13,13 @@ class ConstraintBase(FEABase):
     name : str
         Name of the Constraint object.
 
-    Attributes
-    ----------
-    name : str
-        Name of the Constraint object.
-
     """
 
     def __init__(self, name):
-        self.__name__ = 'ConstraintObject'
-        self._name = name
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
-
-    @property
-    def name(self):
-        """The name property."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
+        super(Constraint, self).__init__(name=name)
 
 
-class TieConstraintBase(ConstraintBase):
+class TieConstraint(Constraint):
     """Tie constraint between two sets of nodes, elements or surfaces.
 
     Parameters
@@ -67,23 +47,19 @@ class TieConstraintBase(ConstraintBase):
     """
 
     def __init__(self, name, master, slave, tol):
-        super(ConstraintBase, self).__init__(name=name)
-        self.__name__ = 'TieConstraint'
+        super(TieConstraint, self).__init__(name=name)
         self._master = master
         self._slave = slave
         self._tol = tol
 
     @property
     def master(self):
-        """The master property."""
         return self._master
 
     @property
     def slave(self):
-        """The slave property."""
         return self._slave
 
     @property
     def tol(self):
-        """The tol property."""
         return self._tol

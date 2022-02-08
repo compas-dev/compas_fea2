@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -6,7 +5,7 @@ from __future__ import print_function
 from compas_fea2.base import FEABase
 
 
-class GroupBase(FEABase):
+class Group(FEABase):
     """Initialises a base Set object.
 
     Parameters
@@ -19,39 +18,25 @@ class GroupBase(FEABase):
     """
 
     def __init__(self, name, keys):
-        self.__name__ = 'Group'
-        self._name = name
+        super(Group, self).__init__(name=name)
         self._keys = keys
-
-    @property
-    def name(self):
-        """The name property."""
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def keys(self):
         """The selection property."""
         return self._keys
 
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)
 
-
-class NodesGroupBase(GroupBase):
+class NodesGroup(Group):
     def __init__(self, name, nodes_keys):
-        super(NodesGroupBase, self).__init__(name, nodes_keys)
+        super(NodesGroup, self).__init__(name, nodes_keys)
 
 
-class ElementsGroupBase(GroupBase):
+class ElementsGroup(Group):
     def __init__(self, name, elements_keys):
-        super(ElementsGroupBase, self).__init__(name, elements_keys)
+        super(ElementsGroup, self).__init__(name, elements_keys)
 
 
-class PartsGroup(GroupBase):
+class PartsGroup(Group):
     def __init__(self, name, parts_names):
         super(PartsGroup, self).__init__(name, parts_names)
-        raise NotImplementedError()

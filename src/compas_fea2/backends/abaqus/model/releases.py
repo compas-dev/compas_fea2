@@ -2,20 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-from compas_fea2.model import BeamEndReleaseBase
-
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'BeamEndRelease',
-]
+from compas_fea2.model import BeamEndRelease
 
 
-class BeamEndRelease(BeamEndReleaseBase):
+class AbaqusBeamEndRelease(BeamEndRelease):
     def __init__(self, name, elem_end_dof):
-        super(BeamEndRelease).__init__()
+        super(AbaqusBeamEndRelease).__init__(name=name)
         self.elem_end_dof = elem_end_dof
 
     def _generate_jobdata(self):

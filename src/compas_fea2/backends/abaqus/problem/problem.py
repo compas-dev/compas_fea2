@@ -3,24 +3,15 @@ from __future__ import division
 from __future__ import print_function
 
 from pathlib import Path
-from compas_fea2.problem import ProblemBase
+from compas_fea2.problem import Problem
 
-from compas_fea2.backends.abaqus.job.input_file import InputFile
-from compas_fea2.backends.abaqus.job.input_file import ParFile
-from compas_fea2.backends.abaqus.job.send_job import launch_process
-from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
-from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
-from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
-from compas_fea2.backends.abaqus.problem.steps import ModalStep
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'Problem',
-]
+from compas_fea2.backends.abaqus.job import InputFile
+from compas_fea2.backends.abaqus.job import ParFile
+from compas_fea2.backends.abaqus.job import launch_process
+from compas_fea2.backends.abaqus.job import launch_optimisation
 
 
-class Problem(ProblemBase):
+class AbaqusProblem(Problem):
     """Initialises the Problem object.
 
     Parameters
@@ -37,15 +28,16 @@ class Problem(ProblemBase):
     None
     """
 
-    def __init__(self, name, model):
-        super(Problem, self).__init__(name=name, model=model)
-        self.__name__ = 'AbaqusProblem'
+    def __init__(self, name, model, **kwargs):
+        super(AbaqusProblem, self).__init__(name=name, model=model, **kwargs)
+        # self.__name__ = 'AbaqusProblem'
         # self.parts = model.parts.values()  # TODO remove
         # self.interactions       = model.interactions
 
     # =========================================================================
     #                           Optimisation methods
     # =========================================================================
+
     # TODO move to the base class and change to **kwargs
     def set_optimisation_parameters(self, vf, iter_max, cpus):
         self.vf = vf
@@ -136,11 +128,9 @@ class Problem(ProblemBase):
         self.write_parameters_file(output)
         launch_optimisation(self, output)
 
-
-# =============================================================================
-#                               Job data
-# =============================================================================
-
+    # =============================================================================
+    #                               Job data
+    # =============================================================================
 
     def _generate_jobdata(self):
         return f"""**
@@ -168,9 +158,7 @@ class Problem(ProblemBase):
         return ''.join(section_data)
 
 
-"""TODO: add cpu parallelization option
-Parallel execution requested but no parallel feature present in the setup
-"""
+# TODO: add cpu parallelization option. Parallel execution requested but no parallel feature present in the setup
 
 # =========================================================================
 #                         Results methods

@@ -5,7 +5,7 @@ from __future__ import print_function
 from compas_fea2.base import FEABase
 
 
-class ContactPairBase(FEABase):
+class ContactPair(FEABase):
     """Pair of master and slave surfaces to assign an interaction property
 
     Parameters
@@ -23,16 +23,10 @@ class ContactPairBase(FEABase):
     """
 
     def __init__(self, name, master, slave, interaction):
-        self.__name__ = 'ContactPair'
-        self._name = name
+        super(ContactPair, self).__init__(name=name)
         self._master = master
         self._slave = slave
         self._interaction = interaction
-
-    @property
-    def name(self):
-        """str : the name of the contact pair."""
-        return self._name
 
     @property
     def master(self):
@@ -49,6 +43,3 @@ class ContactPairBase(FEABase):
         """str : name of a previusly defined :class:`InterfaceBase` object to define the type of interaction between master and slave.
         """
         return self._interaction
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.name)

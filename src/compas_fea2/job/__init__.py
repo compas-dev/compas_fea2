@@ -8,15 +8,15 @@ job
 .. autosummry::
     :toctree: generated/
 
-    InputFileBase
+    InputFile
 
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .input_file import InputFileBase
+from .input_file import InputFile
 
 __all__ = [
-    'InputFileBase'
+    'InputFile'
 ]

@@ -3,10 +3,13 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
+from abc import abstractmethod
+from pint import UnitRegistry
 
 from compas_fea2.base import FEABase
 
-# TODO: make units independent
+units = UnitRegistry()
+units.define('@alias pascal = Pa')
 
 
 class Material(FEABase):
@@ -19,8 +22,22 @@ class Material(FEABase):
 
     """
 
-    def __init__(self, name):
+    def __init__(self, name, *, p):
         super(Material, self).__init__(name=name)
+        self.p = p
+
+    def __str__(self):
+        return """
+Material
+--------
+name    : {}
+density : {}
+""".format(self.name, self.p)
+
+    @abstractmethod
+    def jobdata(self, *args, **kwargs):
+        """Generate the job data for the backend-specific input file."""
+        raise NotImplementedError
 
 
 # ==============================================================================
@@ -58,10 +75,11 @@ class ElasticOrthotropic(Material):
     Warnings
     --------
     Can be created but is currently not implemented.
+
     """
 
-    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
-        super(ElasticOrthotropic, self).__init__(name=name)
+    def __init__(self, name, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
+        super(ElasticOrthotropic, self).__init__(name, p=p)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -71,7 +89,24 @@ class ElasticOrthotropic(Material):
         self.Gxy = Gxy
         self.Gyz = Gyz
         self.Gzx = Gzx
-        self.p = p
+
+    def __str__(self):
+        return """
+ElasticOrthotropic Material
+---------------------------
+name    : {}
+density : {}
+
+Ex  : {}
+Ey  : {}
+Ez  : {}
+vxy : {}
+vyz : {}
+vzx : {}
+Gxy : {}
+Gyz : {}
+Gzx : {}
+""".format(self.name, self.p, self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
 
 class ElasticIsotropic(Material):
@@ -88,14 +123,34 @@ class ElasticIsotropic(Material):
     p : float
         Density [kg/m3].
 
+    Other Parameters
+    ----------------
+    **kwargs : dict
+        Backend dependent keyword arguments.
+        See the individual backends for more information.
+
     """
 
-    def __init__(self, name, E, v, p):
-        super(ElasticIsotropic, self).__init__(name)
+    def __init__(self, name, *, E, v, p, **kwargs):
+        super(ElasticIsotropic, self).__init__(name, p=p)
         self.E = E
         self.v = v
-        self.G = 0.5 * E / (1 + v)
-        self.p = p
+
+    def __str__(self):
+        return """
+ElasticIsotropic Material
+-------------------------
+name    : {}
+density : {}
+
+E : {}
+v : {}
+G : {}
+""".format(self.name, self.p, self.E, self.v, self.G)
+
+    @property
+    def G(self):
+        return 0.5 * self.E / (1 + self.v)
 
 
 class Stiff(ElasticIsotropic):
@@ -110,6 +165,18 @@ class Stiff(ElasticIsotropic):
 
     def __init__(self, name):
         super(Stiff, self).__init__(name, E=1e+16, v=0.3, p=1e-16)
+
+    def __str__(self):
+        return """
+Stiff Material
+--------------
+name    : {}
+density : {}
+
+E : {}
+v : {}
+G : {}
+""".format(self.name, self.p, self.E, self.v, self.G)
 
 
 # ==============================================================================
@@ -140,12 +207,26 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, name, E, v, p, f, e):
+    def __init__(self, name, *, E, v, p, f, e):
         super(ElasticPlastic, self).__init__(name, E=E, v=v, p=p)
-        fc = [-i for i in f]
-        ec = [-i for i in e]
+        self.fc = fc = [-i for i in f]
+        self.ec = ec = [-i for i in e]
         self.tension = {'f': f, 'e': e}
         self.compression = {'f': fc, 'e': ec}
+
+    def __str__(self):
+        return """
+ElasticPlastic Material
+-----------------------
+name    : {}
+density : {}
+
+E  : {}
+v  : {}
+G  : {}
+fc : {}
+ec : {}
+""".format(self.name, self.p, self.E, self.v, self.G, self.fc, self.ec)
 
 
 # ==============================================================================
@@ -199,10 +280,11 @@ class Steel(ElasticIsotropic):
 
     """
 
-    def __init__(self, name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850):
+    def __init__(self, name, *, fy, fu, eu, E, v, p):
         super(Steel, self).__init__(name, E=E, v=v, p=p)
 
         fu = fu or fy
+
         E *= 10**9
         fu *= 10**6
         fy *= 10**6
@@ -220,10 +302,36 @@ class Steel(ElasticIsotropic):
         self.ep = ep
         self.E = E
         self.v = v
-        self.G = 0.5 * E / (1 + v)
-        self.p = p
         self.tension = {'f': f, 'e': e}
         self.compression = {'f': fc, 'e': ec}
+
+    def __str__(self):
+        return """
+Steel Material
+--------------
+name    : {}
+density : {:~.0f}
+
+E  : {:~.0f}
+G  : {:~.0f}
+fy : {:~.0f}
+fu : {:~.0f}
+v  : {:.2f}
+eu : {:.2f}
+ep : {:.2f}
+""".format(self.name,
+           (self.p * units['kg/m**2']),
+           (self.E * units.pascal).to('GPa'),
+           (self.G * units.pascal).to('GPa'),
+           (self.fy * units.pascal).to('MPa'),
+           (self.fu * units.pascal).to('MPa'),
+           (self.v * units.dimensionless),
+           (self.eu * units.dimensionless),
+           (self.ep * units.dimensionless))
+
+    @staticmethod
+    def S355(name='S355'):
+        return Steel(name=name, fy=355, fu=None, eu=20, E=210, v=0.3, p=7850)
 
 
 # ==============================================================================
@@ -283,8 +391,8 @@ class Concrete(Material):
 
     """
 
-    def __init__(self, name, fck, v=0.2, p=2400, fr=None):
-        super(Concrete, self).__init__(name)
+    def __init__(self, name, *, fck, v=0.2, p=2400, fr=None):
+        super(Concrete, self).__init__(name, p=p)
 
         de = 0.0001
         fcm = fck + 8
@@ -306,11 +414,32 @@ class Concrete(Material):
         self.fck = fck * 10**6
         self.E = E
         self.v = v
-        self.G = 0.5 * E / (1 + v)
-        self.p = p
+        self.fc = f
+        self.ec = ec
+        self.ft = ft
+        self.et = et
+        self.fr = fr
+        # these necessary if we have the above?
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': f[1:], 'e': ec}
-        self.fratios = fr
+
+    @property
+    def G(self):
+        return 0.5 * self.E / (1 + self.v)
+
+    def __str__(self):
+        return """
+Concrete Material
+-----------------
+name    : {}
+density : {}
+
+E   : {}
+v   : {}
+G   : {}
+fck : {}
+fr  : {}
+""".format(self.name, self.p, self.E, self.v, self.G, self.fck, self.fr)
 
 
 class ConcreteSmearedCrack(Material):
@@ -366,16 +495,40 @@ class ConcreteSmearedCrack(Material):
 
     """
 
-    def __init__(self, name, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        super(ConcreteSmearedCrack, self).__init__(name)
+    def __init__(self, name, *, E, v, p, fc, ec, ft, et, fr=[1.16, 0.0836]):
+        super(ConcreteSmearedCrack, self).__init__(name, p=p)
 
         self.E = E
         self.v = v
-        self.G = 0.5 * E / (1 + v)
-        self.p = p
+        self.fc = fc
+        self.ec = ec
+        self.ft = ft
+        self.et = et
+        self.fr = fr
+        # are these necessary if we have the above?
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': fc, 'e': ec}
-        self.fratios = fr
+
+    @property
+    def G(self):
+        return 0.5 * self.E / (1 + self.v)
+
+    def __str__(self):
+        return """
+Concrete Material
+-----------------
+name    : {}
+density : {}
+
+E  : {}
+v  : {}
+G  : {}
+fc : {}
+ec : {}
+ft : {}
+et : {}
+fr : {}
+""".format(self.name, self.p, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
 
 
 class ConcreteDamagedPlasticity(Material):
@@ -419,16 +572,20 @@ class ConcreteDamagedPlasticity(Material):
 
     """
 
-    def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name)
+    def __init__(self, name, *, E, v, p, damage, hardening, stiffening):
+        super(ConcreteDamagedPlasticity, self).__init__(name, p=p)
 
         self.E = E
         self.v = v
-        self.G = 0.5 * E / (1 + v)
-        self.p = p
+
+        # would make sense to validate these inputs
         self.damage = damage
         self.hardening = hardening
         self.stiffening = stiffening
+
+    @property
+    def G(self):
+        return 0.5 * self.E / (1 + self.v)
 
 
 # ==============================================================================
@@ -451,9 +608,9 @@ class ThermalMaterial(Material):
 
     """
 
-    def __init__(self, name, conductivity, p, sheat):
-        super(ThermalMaterial, self).__init__(name)
+    def __init__(self, name, *, conductivity, p, sheat):
+        super(ThermalMaterial, self).__init__(name, p=p)
 
+        # all these list inputs should be validated
         self.conductivity = conductivity
-        self.p = p
         self.sheat = sheat

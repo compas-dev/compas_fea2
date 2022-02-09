@@ -20,8 +20,8 @@ from compas_fea2.model import ThermalMaterial
 
 class AbaqusElasticIsotropic(ElasticIsotropic):
 
-    def __init__(self, name, E, v, p, unilateral=None):
-        super(AbaqusElasticIsotropic, self).__init__(name, E, v, p)
+    def __init__(self, name, *, E, v, p, unilateral=None):
+        super(AbaqusElasticIsotropic, self).__init__(name, E=E, v=v, p=p)
         self.unilateral = unilateral
 
     def _generate_jobdata(self):
@@ -34,6 +34,7 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
         Returns
         -------
         input file data line (str).
+
         """
         n = ''
         if self.unilateral:
@@ -52,10 +53,11 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
                 "{}, {}{}\n").format(self.name, self.p, self.E, self.v, n)
 
 
-class AbaqusStiff(Stiff):
+class AbaqusElasticOrthotropic(ElasticOrthotropic):
+    pass
 
-    def __init__(self, name, E):
-        super(AbaqusStiff, self).__init__(name, E)
+
+class AbaqusStiff(Stiff):
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -73,12 +75,6 @@ class AbaqusStiff(Stiff):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n").format(self.name, self.p, self.E['E'], self.v['v'])
-
-
-class AbaqusElasticOrthotropic(ElasticOrthotropic):
-
-    def __init__(self, name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p):
-        super(AbaqusElasticOrthotropic).__init__(name, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, p)
 
 
 # ==============================================================================

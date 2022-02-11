@@ -12,17 +12,17 @@ class ContactPair(FEABase):
     ----------
     name : str
         Name of the contact pair.
-    master : :class:`compas_fea2.model.SurfaceBase`
+    master : :class:`compas_fea2.model.Surface`
         Master object.
-    slave : :class:`compas_fea2.model.SurfaceBase`
+    slave : :class:`compas_fea2.model.Surface`
         Slave object.
     interaction : str
-        Name of a previusly defined :class:`InterfaceBase` object to
+        Name of a previusly defined :class:`compas_fea2.model.Interface` object to
         define the type of interaction between master and slave.
 
     """
 
-    def __init__(self, name, master, slave, interaction):
+    def __init__(self, name, *, master, slave, interaction):
         super(ContactPair, self).__init__(name=name)
         self._master = master
         self._slave = slave
@@ -30,16 +30,16 @@ class ContactPair(FEABase):
 
     @property
     def master(self):
-        """:class:`SurfaceBase` : object to be used as master."""
+        """:class:`compas_fea2.model.Surface` : object to be used as master."""
         return self._master
 
     @property
     def slave(self):
-        """:class:`SurfaceBase` : object to be used as slave."""
+        """:class:`compas_fea2.model.Surface` : object to be used as slave."""
         return self._slave
 
     @property
     def interaction(self):
-        """str : name of a previusly defined :class:`InterfaceBase` object to define the type of interaction between master and slave.
+        """str : name of a :class:`compas_fea2.model.Interface` defining the type of interaction between master and slave.
         """
         return self._interaction

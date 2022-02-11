@@ -14,10 +14,10 @@ class Element(FEABase):
         Key number of the element.
     connectivity : list[int]
         Ordered nodes keys the element connects to.
-    section : :class:`compas_fea2.model.SectionBase`
+    section : :class:`compas_fea2.model.Section`
         Section Object assigned to the element.
     thermal : bool, optional
-        Thermal properties on or off, by default None
+        If True, thermal properties are turned on.
     name : str, optional
         The name of the Element, by default the element key.
 

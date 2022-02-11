@@ -34,6 +34,10 @@ import os
 from collections import defaultdict
 from compas.plugins import pluggable
 
+from pint import UnitRegistry
+units = UnitRegistry()
+units.define('@alias pascal = Pa')
+
 
 __author__ = ["Francesco Ranaudo"]
 __copyright__ = "Block Research Group"

@@ -5,6 +5,7 @@ from __future__ import print_function
 from abc import abstractmethod
 from math import pi
 
+from compas_fea2 import units
 from compas_fea2.base import FEABase
 from .materials import Material
 
@@ -127,8 +128,8 @@ class SpringSection(FEABase):
 
     def __str__(self):
         return """
-Section
--------
+Spring Section
+--------------
 name      : {}
 material  : None
 forces    : {}
@@ -182,6 +183,36 @@ class BeamSection(Section):
         self.J = J
         self.g0 = g0
         self.gw = gw
+
+    def __str__(self):
+        return """
+{}
+{}
+name     : {}
+material : {!r}
+
+A   : {:~.4g}
+Ixx : {:~.4g}
+Iyy : {:~.4g}
+Ixy : {:~.4g}
+Avx : {}
+Avy : {}
+J   : {}
+g0  : {}
+gw  : {}
+""".format(self.__class__.__name__,
+           len(self.__class__.__name__) * '-',
+           self.name,
+           self.material,
+           (self.A * units['m**2']),
+           (self.Ixx * units['m**4']),
+           (self.Iyy * units['m**4']),
+           (self.Ixy * units['m**4']),
+           self.Avx,
+           self.Avy,
+           self.J,
+           self.g0,
+           self.gw)
 
 
 class AngleSection(BeamSection):

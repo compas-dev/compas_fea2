@@ -29,7 +29,7 @@ class AbaqusMassElement(MassElement):
 
     """
 
-    def __init__(self,  key, node, mass, elset):
+    def __init__(self, key, node, mass, elset):
         super(AbaqusMassElement, self).__init__(key, node, mass, elset)
 
     def _generate_jobdata(self):
@@ -76,7 +76,7 @@ class AbaqusBeamElement(BeamElement):
 
         """
         # note: the string `*Element, type=B31` is generated in the part section to group elements with the same type
-        return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
+        return '{0}, {1}, {2}\n'.format(self.key + 1, self.connectivity[0] + 1, self.connectivity[1] + 1)
 
 
 class AbaqusSpringElement(SpringElement):

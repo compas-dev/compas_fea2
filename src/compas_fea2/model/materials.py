@@ -4,12 +4,9 @@ from __future__ import print_function
 
 from math import log
 from abc import abstractmethod
-from pint import UnitRegistry
 
+from compas_fea2 import units
 from compas_fea2.base import FEABase
-
-units = UnitRegistry()
-units.define('@alias pascal = Pa')
 
 
 class Material(FEABase):
@@ -28,11 +25,11 @@ class Material(FEABase):
 
     def __str__(self):
         return """
-Material
---------
+{}
+{}
 name    : {}
 density : {}
-""".format(self.name, self.p)
+""".format(self.__class__.__name__, len(self.__class__.__name__) * '-', self.name, self.p)
 
     @abstractmethod
     def jobdata(self, *args, **kwargs):
@@ -92,8 +89,8 @@ class ElasticOrthotropic(Material):
 
     def __str__(self):
         return """
-ElasticOrthotropic Material
----------------------------
+{}
+{}
 name    : {}
 density : {}
 
@@ -106,7 +103,9 @@ vzx : {}
 Gxy : {}
 Gyz : {}
 Gzx : {}
-""".format(self.name, self.p, self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
+""".format(self.__class__.__name__, len(self.__class__.__name__) * '-',
+           self.name, self.p,
+           self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
 
 class ElasticIsotropic(Material):

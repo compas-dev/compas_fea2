@@ -14,12 +14,12 @@ class GeneralBC(FEABase):
         Name of the BC object.
     components : dict
         BC components.
-    axes : str, optional
+    axes : Literal['local', 'global'], optional
         BC applied via 'local' or 'global' axes, by default 'global'.
 
     """
 
-    def __init__(self, name,  components, axes):
+    def __init__(self, name,  *, components, axes):
         super(GeneralBC, self).__init__(name=name)
 
         self._components = components

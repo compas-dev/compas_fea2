@@ -46,7 +46,7 @@ class TieConstraint(Constraint):
 
     """
 
-    def __init__(self, name, master, slave, tol):
+    def __init__(self, name, *, master, slave, tol):
         super(TieConstraint, self).__init__(name)
         self._master = master
         self._slave = slave

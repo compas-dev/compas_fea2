@@ -82,7 +82,10 @@ from .steps import (
     BucklingCase,
     AcousticCase
 )
-
+from .outputs import (
+    FieldOutput,
+    HistoryOutput
+)
 
 __all__ = [
     'Problem',
@@ -106,4 +109,6 @@ __all__ = [
     'HarmonicCase',
     'BucklingCase',
     'AcousticCase',
+    'FieldOutput',
+    'HistoryOutput'
 ]

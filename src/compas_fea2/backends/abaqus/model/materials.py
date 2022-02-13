@@ -84,7 +84,7 @@ class AbaqusStiff(Stiff):
 class AbaqusElasticPlastic(ElasticPlastic):
 
     def __init__(self, name, E, v, p, f, e):
-        super(AbaqusElasticPlastic, self).__init__(name, E, v, p, f, e)
+        super(AbaqusElasticPlastic, self).__init__(name=name, E=E, v=v, p=p, f=f, e=e)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -119,7 +119,7 @@ class AbaqusElasticPlastic(ElasticPlastic):
 class AbaqusSteel(Steel):
 
     def __init__(self, name, fy, fu, eu, E, v, p):
-        super(AbaqusSteel, self).__init__(name, fy, fu, eu, E, v, p)
+        super(AbaqusSteel, self).__init__(name=name, fy=fy, fu=fu, eu=eu, E=E, v=v, p=p)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -164,7 +164,7 @@ class AbaqusSteel(Steel):
 class AbaqusConcrete(Concrete):
 
     def __init__(self, name, fck, v, p, fr):
-        super(AbaqusConcrete, self).__init__(name, fck, v, p, fr)
+        super(AbaqusConcrete, self).__init__(name=name, fck=fck, v=v, p=p, fr=fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -206,7 +206,7 @@ class AbaqusConcrete(Concrete):
 class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 
     def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
-        super(AbaqusConcreteSmearedCrack, self).__init__(name, E, v, p, fc, ec, ft, et, fr)
+        super(AbaqusConcreteSmearedCrack, self).__init__(name=name, E=E, v=v, p=p, fc=fc, ec=ec, ft=ft, et=et, fr=fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -248,7 +248,8 @@ class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 
     def __init__(self, name, E, v, p, damage, hardening, stiffening):
-        super(AbaqusConcreteDamagedPlasticity, self).__init__(name, E, v, p, damage, hardening, stiffening)
+        super(AbaqusConcreteDamagedPlasticity, self).__init__(name, E=E, v=v,
+                                                              p=p, damage=damage, hardening=hardening, stiffening=stiffening)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -288,7 +289,7 @@ class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 
 class AbaqusThermalMaterial(ThermalMaterial):
     def __init__(self, name, conductivity, p, sheat):
-        super(AbaqusThermalMaterial).__init__(name, conductivity, p, sheat)
+        super(AbaqusThermalMaterial).__init__(name=name, conductivity=conductivity, p=p, sheat=sheat)
         raise NotImplementedError
 
 

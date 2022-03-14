@@ -40,8 +40,8 @@ class Node(FEABase):
 
     """
 
-    def __init__(self, xyz, name=None):
-        super(Node, self).__init__(name=name)
+    def __init__(self, xyz, **kwargs):
+        super(Node, self).__init__(**kwargs)
         self._key = None
         self._x = None
         self._y = None

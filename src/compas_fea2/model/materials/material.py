@@ -17,8 +17,8 @@ class Material(FEABase):
 
     """
 
-    def __init__(self, name, *, density):
-        super(Material, self).__init__(name=name)
+    def __init__(self, density, **kwargs):
+        super(Material, self).__init__(**kwargs)
         self.density = density
 
     def __str__(self):
@@ -74,8 +74,8 @@ class ElasticOrthotropic(Material):
 
     """
 
-    def __init__(self, name, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density):
-        super(ElasticOrthotropic, self).__init__(name, density=density)
+    def __init__(self, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -129,8 +129,8 @@ class ElasticIsotropic(Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, **kwargs):
-        super(ElasticIsotropic, self).__init__(name, density=density)
+    def __init__(self, E, v, density, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density, **kwargs)
         self.E = E
         self.v = v
 
@@ -161,8 +161,8 @@ class Stiff(ElasticIsotropic):
 
     """
 
-    def __init__(self, name):
-        super(Stiff, self).__init__(name, E=1e+16, v=0.3, density=1e-16)
+    def __init__(self, **kwargs):
+        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, **kwargs)
 
     def __str__(self):
         return """
@@ -201,8 +201,8 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, name, *, E, v, density, strain_stress):
-        super(ElasticPlastic, self).__init__(name, E=E, v=v, density=density)
+    def __init__(self, E, v, density, strain_stress, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):

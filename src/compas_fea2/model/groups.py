@@ -20,8 +20,8 @@ class Group(FEABase):
 
     """
 
-    def __init__(self, name):
-        super(Group, self).__init__(name=name)
+    def __init__(self, **kwargs):
+        super(Group, self).__init__(**kwargs)
 
 
 class NodesGroup(Group):
@@ -41,8 +41,8 @@ class NodesGroup(Group):
 
     """
 
-    def __init__(self, name, nodes):
-        super(NodesGroup, self).__init__(name)
+    def __init__(self, nodes, **kwargs):
+        super(NodesGroup, self).__init__(**kwargs)
         self.nodes = nodes
 
 
@@ -63,8 +63,8 @@ class ElementsGroup(Group):
 
     """
 
-    def __init__(self, name, elements):
-        super(ElementsGroup, self).__init__(name)
+    def __init__(self, elements, **kwargs):
+        super(ElementsGroup, self).__init__(**kwargs)
         self.elements = elements
 
 
@@ -85,6 +85,6 @@ class PartsGroup(Group):
 
     """
 
-    def __init__(self, name, parts):
-        super(PartsGroup, self).__init__(name, parts)
+    def __init__(self, parts, **kwargs):
+        super(PartsGroup, self).__init__(**kwargs)
         self.parts = parts

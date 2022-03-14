@@ -17,7 +17,7 @@ mesh = Mesh.from_meshgrid(10, 10)
 part = Part()
 
 material = ElasticIsotropic(E=210e+6, v=0.2, density=7850)
-section = ShellSection(material=material, thickness=0.05)
+section = ShellSection(material=material, t=0.05)
 
 part.add_material(material)
 part.add_section(section)

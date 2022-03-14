@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import importlib
-import numpy as np
+# import importlib
+# import numpy as np
 
-from compas.geometry import normalize_vector
+# from compas.geometry import normalize_vector
 
 from compas_fea2.base import FEABase
 
@@ -13,10 +13,10 @@ from .nodes import Node
 from .elements import Element
 from .materials import Material
 from .sections import Section
-from .sections import SolidSection
-from .sections import ShellSection
-from .groups import NodesGroup
-from .groups import ElementsGroup
+# from .sections import SolidSection
+# from .sections import ShellSection
+# from .groups import NodesGroup
+# from .groups import ElementsGroup
 
 
 class Part(FEABase):
@@ -42,15 +42,19 @@ class Part(FEABase):
 
     """
 
-    def __init__(self, model=None, name=None):
-        super(Part, self).__init__(name=name)
-        self.model = model
+    def __init__(self, model=None, **kwargs):
+        super(Part, self).__init__(**kwargs)
+        self._model = model
         self._nodes = set()
         self._materials = set()
         self._sections = set()
         self._elements = set()
         self._groups = set()
         self.gkey_node = {}
+
+    @property
+    def model(self):
+        return self._model
 
     @property
     def nodes(self):
@@ -76,163 +80,163 @@ class Part(FEABase):
     #                       Constructor methods
     # =========================================================================
 
-    @classmethod
-    def frame_from_mesh(cls, name, mesh, beam_section):
-        """Creates a ``Part`` object from a compas Mesh object [WIP]. The edges of
-        the mesh become the BeamElements of the frame. Currently, the same section
-        is applied to all the elements.
+    # @classmethod
+    # def frame_from_mesh(cls, name, mesh, beam_section):
+    #     """Creates a ``Part`` object from a compas Mesh object [WIP]. The edges of
+    #     the mesh become the BeamElements of the frame. Currently, the same section
+    #     is applied to all the elements.
 
-        Parameters
-        ----------
-        name : str
-            name of the new part.
-        mesh : obj
-            Mesh to convert to import as a Model.
-        beam_section : obj
-            compas_fea2 BeamSection object to to apply to the frame elements.
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         name of the new part.
+    #     mesh : obj
+    #         Mesh to convert to import as a Model.
+    #     beam_section : obj
+    #         compas_fea2 BeamSection object to to apply to the frame elements.
 
-        """
-        m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-        part = cls(name)
-        part.add_section(beam_section)
+    #     """
+    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
+    #     part = cls(name)
+    #     part.add_section(beam_section)
 
-        for v in mesh.vertices():
-            part.add_node(m.Node(mesh.vertex_coordinates(v)))
+    #     for v in mesh.vertices():
+    #         part.add_node(m.Node(mesh.vertex_coordinates(v)))
 
-        # Generate elements between nodes
-        key_index = mesh.key_index()
-        # vertices = list(mesh.vertices())
-        edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
+    #     # Generate elements between nodes
+    #     key_index = mesh.key_index()
+    #     # vertices = list(mesh.vertices())
+    #     edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
 
-        for e in edges:
-            # get elements orientation
-            v = normalize_vector(mesh.edge_vector(e[0], e[1]))
-            v.append(v.pop(0))
-            # add element to the model
-            part.add_element(m.BeamElement(connectivity=[e[0], e[1]], section=beam_section, orientation=v))
+    #     for e in edges:
+    #         # get elements orientation
+    #         v = normalize_vector(mesh.edge_vector(e[0], e[1]))
+    #         v.append(v.pop(0))
+    #         # add element to the model
+    #         part.add_element(m.BeamElement(connectivity=[e[0], e[1]], section=beam_section, orientation=v))
 
-        return part
+    #     return part
 
-    @classmethod
-    def shell_from_mesh(cls, name, mesh, shell_section):
-        """Creates a Part object from a compas Mesh object [WIP]. The faces of
-        the mesh become ShellElement objects. Currently, the same section
-        is applied to all the elements.
+    # @classmethod
+    # def shell_from_mesh(cls, name, mesh, shell_section):
+    #     """Creates a Part object from a compas Mesh object [WIP]. The faces of
+    #     the mesh become ShellElement objects. Currently, the same section
+    #     is applied to all the elements.
 
-        Parameters
-        ----------
-        name : str
-            name of the new part.
-        mesh : obj
-            Mesh to convert to import as a Model.
-        shell_section : obj
-            compas_fea2 ShellSection object to to apply to the shell elements.
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         name of the new part.
+    #     mesh : obj
+    #         Mesh to convert to import as a Model.
+    #     shell_section : obj
+    #         compas_fea2 ShellSection object to to apply to the shell elements.
 
-        """
-        m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-        part = cls(name)
-        part.add_section(shell_section)
+    #     """
+    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
+    #     part = cls(name)
+    #     part.add_section(shell_section)
 
-        for v in mesh.vertices():
-            part.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
+    #     for v in mesh.vertices():
+    #         part.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
 
-        # Generate elements between nodes
-        key_index = mesh.key_index()
-        faces = [[key_index[key]
-                  for key in mesh.face_vertices(face)] for face in mesh.faces()]
+    #     # Generate elements between nodes
+    #     key_index = mesh.key_index()
+    #     faces = [[key_index[key]
+    #               for key in mesh.face_vertices(face)] for face in mesh.faces()]
 
-        for face in faces:
-            part.add_element(m.ShellElement(connectivity=face, section=shell_section))
+    #     for face in faces:
+    #         part.add_element(m.ShellElement(connectivity=face, section=shell_section))
 
-        return part
+    #     return part
 
-    @classmethod
-    def from_gmsh(cls, name, gmshModel, section, split=False, verbose=False, check=False):
-        """Create a Part object from a gmshModel object. According to the `section`
-        type provided, SolidElement or ShellElement elements are cretated.
-        The same section is applied to all the elements.
+    # @classmethod
+    # def from_gmsh(cls, name, gmshModel, section, split=False, verbose=False, check=False):
+    #     """Create a Part object from a gmshModel object. According to the `section`
+    #     type provided, SolidElement or ShellElement elements are cretated.
+    #     The same section is applied to all the elements.
 
-        Note
-        ----
-        The gmshModel must have the right dimension corresponding to the section
-        provided.
+    #     Note
+    #     ----
+    #     The gmshModel must have the right dimension corresponding to the section
+    #     provided.
 
-        Parameters
-        ----------
-        name : str
-            name of the new part.
-        gmshModel : obj
-            gmsh Model to convert. See [1]_
-        section : obj
-            `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
-            object to to apply to the elements.
-        split : bool, optional
-            if ``True`` create an additional node in the middle of the edges of the
-            elements to implement more refined element types. Check for example [2]_.
-        verbose : bool, optional
-            if ``True`` print a log, by default False
-        check : bool, optional
-            if ``True`` performs sanity checks, by default False. This is a quite
-            resource-intense operation! Set to ``False`` for large models (>10000
-            nodes).
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         name of the new part.
+    #     gmshModel : obj
+    #         gmsh Model to convert. See [1]_
+    #     section : obj
+    #         `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
+    #         object to to apply to the elements.
+    #     split : bool, optional
+    #         if ``True`` create an additional node in the middle of the edges of the
+    #         elements to implement more refined element types. Check for example [2]_.
+    #     verbose : bool, optional
+    #         if ``True`` print a log, by default False
+    #     check : bool, optional
+    #         if ``True`` performs sanity checks, by default False. This is a quite
+    #         resource-intense operation! Set to ``False`` for large models (>10000
+    #         nodes).
 
-        Returns
-        -------
-        obj
-            compas_fea2 `Part` object.
+    #     Returns
+    #     -------
+    #     obj
+    #         compas_fea2 `Part` object.
 
-        References
-        ----------
-        .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
-        .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
+    #     References
+    #     ----------
+    #     .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
+    #     .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
 
-        Examples
-        --------
-        >>> gmshModel = gmsh.mode.generate(3)
-        >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, p=2.5e-9)
-        >>> sec = SolidSection('mysec', mat)
-        >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
+    #     Examples
+    #     --------
+    #     >>> gmshModel = gmsh.mode.generate(3)
+    #     >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, p=2.5e-9)
+    #     >>> sec = SolidSection('mysec', mat)
+    #     >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
 
-        """
-        part = cls(name)
-        m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))
-        part.add_section(section)
-        # add nodes
-        nodes = gmshModel.mesh.get_nodes()
-        node_coords = nodes[1].reshape((-1, 3), order='C')
-        for coords in node_coords:
-            k = part.add_node(m.Node(coords.tolist()), check)
-            if verbose:
-                print(f'node {k} added')
-        # add elements
-        elements = gmshModel.mesh.get_elements()
-        if isinstance(section, SolidSection):
-            ntags_per_element = np.split(elements[2][2]-1, len(elements[1][2]))  # gmsh keys start from 1
-            for ntags in ntags_per_element:
-                # if split:
-                # iteritools combinations
-                # for comb in combs:
-                # midpoint a b
-                # k = add node
-                k = part.add_element(m.SolidElement(ntags, section), check)
-                if verbose:
-                    print(f'element {k} added')
-        if isinstance(section, ShellSection):
-            ntags_per_element = np.split(elements[2][1]-1, len(elements[1][1]))  # gmsh keys start from 1
-            for ntags in ntags_per_element:
-                k = part.add_element(m.ShellElement(ntags, section), check)
-                if verbose:
-                    print(f'element {k} added')
-        print('\ncompas_fea2 model generated!\n')
-        return part
+    #     """
+    #     part = cls(name)
+    #     m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))
+    #     part.add_section(section)
+    #     # add nodes
+    #     nodes = gmshModel.mesh.get_nodes()
+    #     node_coords = nodes[1].reshape((-1, 3), order='C')
+    #     for coords in node_coords:
+    #         k = part.add_node(m.Node(coords.tolist()), check)
+    #         if verbose:
+    #             print(f'node {k} added')
+    #     # add elements
+    #     elements = gmshModel.mesh.get_elements()
+    #     if isinstance(section, SolidSection):
+    #         ntags_per_element = np.split(elements[2][2]-1, len(elements[1][2]))  # gmsh keys start from 1
+    #         for ntags in ntags_per_element:
+    #             # if split:
+    #             # iteritools combinations
+    #             # for comb in combs:
+    #             # midpoint a b
+    #             # k = add node
+    #             k = part.add_element(m.SolidElement(ntags, section), check)
+    #             if verbose:
+    #                 print(f'element {k} added')
+    #     if isinstance(section, ShellSection):
+    #         ntags_per_element = np.split(elements[2][1]-1, len(elements[1][1]))  # gmsh keys start from 1
+    #         for ntags in ntags_per_element:
+    #             k = part.add_element(m.ShellElement(ntags, section), check)
+    #             if verbose:
+    #                 print(f'element {k} added')
+    #     print('\ncompas_fea2 model generated!\n')
+    #     return part
 
-    @classmethod
-    def from_compas_part(cls, name, part):
-        raise NotImplementedError()
+    # @classmethod
+    # def from_compas_part(cls, name, part):
+    #     raise NotImplementedError()
 
-    @classmethod
-    def from_volmesh(self, name, volmesh):
-        raise NotImplementedError()
+    # @classmethod
+    # def from_volmesh(self, name, volmesh):
+    #     raise NotImplementedError()
 
     # =========================================================================
     #                           Nodes methods
@@ -285,8 +289,6 @@ class Part(FEABase):
     def add_node(self, node):
         """Add a node to the part.
 
-        Duplicate nodes (i.e. nodes in the same location) are ignored.
-
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
@@ -297,9 +299,14 @@ class Part(FEABase):
         :class:`compas_fea2.model.Node`
             The identifier of the node in the part.
 
+        Raises
+        ------
+        TypeError
+            If the node is not a node.
+
         Examples
         --------
-        >>> part = Part('mypart')
+        >>> part = Part()
         >>> node = Node(1.0, 2.0, 3.0)
         >>> part.add_node(node)
 
@@ -332,53 +339,52 @@ class Part(FEABase):
 
         Examples
         --------
-        >>> part = Part('mypart')
+        >>> part = Part()
         >>> node1 = Node([1.0, 2.0, 3.0])
         >>> node2 = Node([3.0, 4.0, 5.0])
-        >>> node3 = Node([3.0, 4.0, 5.0]) # Duplicate node
+        >>> node3 = Node([3.0, 4.0, 5.0])
         >>> nodes = part.add_nodes([node1, node2, node3])
 
         """
         return [self.add_node(node) for node in nodes]
 
-    def remove_node(self, node):
-        """Remove the node from the Part. If there are duplicate nodes, it
-        removes also all the duplicates.
+    # def remove_node(self, node):
+    #     """Remove the node from the Part. If there are duplicate nodes, it
+    #     removes also all the duplicates.
 
-        Parameters
-        ----------
-        node : :class:`compas_fea2.model.Node`
-            The node.
+    #     Parameters
+    #     ----------
+    #     node : :class:`compas_fea2.model.Node`
+    #         The node.
 
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError()
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     raise NotImplementedError()
 
-    def remove_nodes(self, nodes):
-        """Remove the nodes from the Part.
+    # def remove_nodes(self, nodes):
+    #     """Remove the nodes from the Part.
 
-        If there are duplicate nodes, it removes also all the duplicates.
+    #     If there are duplicate nodes, it removes also all the duplicates.
 
-        Parameters
-        ----------
-        nodes : list[:class:`compas_fea2.model.Node`]
-            List of nodes.
+    #     Parameters
+    #     ----------
+    #     nodes : list[:class:`compas_fea2.model.Node`]
+    #         List of nodes.
 
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError()
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     raise NotImplementedError()
 
     # =========================================================================
     #                           Materials methods
     # =========================================================================
 
     def add_material(self, material):
-        """Add a :class:`Material` subclass object to the Part so that
-        it can be later refernced and used in the Section and Element definitions.
+        """Add a material to the part so that it can be referenced in section and element definitions.
 
         Parameters
         ----------
@@ -391,7 +397,7 @@ class Part(FEABase):
         Raises
         ------
         TypeError
-            If the material is not a valid material.
+            If the material is not a material.
 
         """
         if not isinstance(material, Material):
@@ -404,8 +410,7 @@ class Part(FEABase):
         self._materials.add(material)
 
     def add_materials(self, materials):
-        """Add multiple :class:`Material` subclass objects to the Part so
-        that they can be later refernced and used in section and element definitions.
+        """Add multiple materials to the part.
 
         Parameters
         ----------
@@ -424,8 +429,7 @@ class Part(FEABase):
     # =========================================================================
 
     def add_section(self, section):
-        """Add a :class:`Section` subclass object to the Part o that it can
-        be later refernced and used in an element definition.
+        """Add a section to the part so that it can be referenced in element definitions.
 
         Parameters
         ----------
@@ -438,7 +442,7 @@ class Part(FEABase):
         Raises
         ------
         TypeError
-            If the section is not a valid section.
+            If the section is not a section.
 
         """
         if not isinstance(section, Section):
@@ -452,16 +456,16 @@ class Part(FEABase):
         self._sections.add(section)
 
     def add_sections(self, sections):
-        """Add multiple :class:`Section`subclass  objects to the Model.
+        """Add multiple sections to the part.
 
         Parameters
         ----------
-        sections : list
-            list of :class:`Section` subclass objects.
+        sections : list[:class:`compas_fea2.model.Section`]
 
         Returns
         -------
         None
+
         """
         for section in sections:
             self.add_section(section)
@@ -531,22 +535,22 @@ class Part(FEABase):
     #         element.key = k
     #         k += 1
 
-    def add_element(self, element, check=False):
-        """Add a :class:`Element` subclass object to the Part.
+    def add_element(self, element):
+        """Add an element to the part.
 
         Parameters
         ----------
         element : :class:`compas_fea2.model.Element`
             The element instance.
-        check : bool, optional
-            If ``True``, checks if the node connected by the element are present.
-            This is a quite resource-intense operation! Set to ``False`` for large parts (>10000
-            nodes). By default ``False``
 
         Returns
         -------
-        int
-            element key
+        :class:`compas_fea2.model.Element`
+
+        Raises
+        ------
+        TypeError
+            If the element is not an element.
 
         """
         if not isinstance(element, Element):
@@ -562,121 +566,117 @@ class Part(FEABase):
         self.elements.add(element)
         return element
 
-    def add_elements(self, elements, check):
-        """Adds multiple :class:`Element` subclass objects to the ``Part``.
+    def add_elements(self, elements):
+        """Add multiple elements to the part.
 
         Parameters
         ----------
-        elements : list
-            List of :class:`Element` subclass objects.
-        check : bool
-            If True, checks if the element keys are in the model. This is a quite
-            resource-intense operation! Set to `False` for large models (>10000
-            nodes)
+        elements : list[:class:`compas_fea2.model.Element`]
 
         Return
         ------
-        list of int
-            list with the keys of the added nodes.
+        list[:class:`compas_fea2.model.Element`]
+
         """
-        return [self.add_element(element, check) for element in elements]
+        return [self.add_element(element) for element in elements]
 
-    def remove_element(self, element_key):
-        """Removes the element from the Part.
+    # def remove_element(self, element_key):
+    #     """Removes the element from the Part.
 
-        Parameters
-        ----------
-        element_key : int
-            Key number of the element to be removed.
+    #     Parameters
+    #     ----------
+    #     element_key : int
+    #         Key number of the element to be removed.
 
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError()
-        # # TODO check if element key exists
-        # del self.elements[element_key]
-        # self._reorder_elements()
+    #     Returns
+    #     -------
+    #     None
 
-    def remove_elements(self, elements):
-        """Removes the elements from the Part.
+    #     """
+    #     raise NotImplementedError()
+    #     # # TODO check if element key exists
+    #     # del self.elements[element_key]
+    #     # self._reorder_elements()
 
-        Parameters
-        ----------
-        elements : list
-            List with the key numbers of the element to be removed.
+    # def remove_elements(self, elements):
+    #     """Removes the elements from the Part.
 
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError()
+    #     Parameters
+    #     ----------
+    #     elements : list
+    #         List with the key numbers of the element to be removed.
 
-        # for element in elements:
-        #     self.remove_element(element)
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     raise NotImplementedError()
+
+    #     # for element in elements:
+    #     #     self.remove_element(element)
 
     # =========================================================================
     #                           Releases methods
     # =========================================================================
 
-    # TODO: check the release definition
-    def add_release(self, release):
-        self.releases.append(release)
+    # # TODO: check the release definition
+    # def add_release(self, release):
+    #     self.releases.append(release)
 
-    def add_releases(self, releases):
-        for release in releases:
-            self.add_release(release)
+    # def add_releases(self, releases):
+    #     for release in releases:
+    #         self.add_release(release)
 
     # =========================================================================
     #                           Groups methods
     # =========================================================================
 
-    def add_group(self, group):
-        if isinstance(group, (NodesGroup, ElementsGroup)):
-            if group.name not in self.groups:
-                self._groups[group.name] = group
-        else:
-            raise ValueError('You must provide either a NodesGroup or an ElementsGroup object')
+    # def add_group(self, group):
+    #     if isinstance(group, (NodesGroup, ElementsGroup)):
+    #         if group.name not in self.groups:
+    #             self._groups[group.name] = group
+    #     else:
+    #         raise ValueError('You must provide either a NodesGroup or an ElementsGroup object')
 
-    def add_groups(self, groups):
-        for group in groups:
-            self.add_group(group)
+    # def add_groups(self, groups):
+    #     for group in groups:
+    #         self.add_group(group)
 
-    def add_nodes_group(self, name, nodes_keys):
-        """Add a NodeGroup object to the the part .
+    # def add_nodes_group(self, name, nodes_keys):
+    #     """Add a NodeGroup object to the the part .
 
-        Parameters
-        ----------
-        name : str
-            name of the group.
-        nodes : list
-            list of nodes keys to group
-        """
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        group = m.NodesGroup(name, nodes_keys)
-        self._groups[name] = group
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         name of the group.
+    #     nodes : list
+    #         list of nodes keys to group
+    #     """
+    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+    #     group = m.NodesGroup(name, nodes_keys)
+    #     self._groups[name] = group
 
-    def add_elements_group(self, name, elements_keys):
-        """Add a ElementGroup object to the the part.
+    # def add_elements_group(self, name, elements_keys):
+    #     """Add a ElementGroup object to the the part.
 
-        Parameters
-        ----------
-        name : str
-            name of the group.
-        part : str
-            name of the part
-        elements : list
-            list of elements keys to group
-        """
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        group = m.ElementsGroup(name, elements_keys)
-        self._groups[name] = group
+    #     Parameters
+    #     ----------
+    #     name : str
+    #         name of the group.
+    #     part : str
+    #         name of the part
+    #     elements : list
+    #         list of elements keys to group
+    #     """
+    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+    #     group = m.ElementsGroup(name, elements_keys)
+    #     self._groups[name] = group
 
-    def add_elements_to_group(self, group_name, element_keys):
-        raise NotADirectoryError()
+    # def add_elements_to_group(self, group_name, element_keys):
+    #     raise NotADirectoryError()
 
-    def remove_element_group(self, group_name):
-        raise NotImplementedError()
+    # def remove_element_group(self, group_name):
+    #     raise NotImplementedError()
 
-    def remove_element_from_group(self, group_name, element):
-        raise NotImplementedError()
+    # def remove_element_from_group(self, group_name, element):
+    #     raise NotImplementedError()

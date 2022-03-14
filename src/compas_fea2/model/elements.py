@@ -40,8 +40,8 @@ class Element(FEABase):
 
     """
 
-    def __init__(self, *, nodes, section, name=None):
-        super(Element, self).__init__(name=name)
+    def __init__(self, *, nodes, section, **kwargs):
+        super(Element, self).__init__(**kwargs)
         self._key = None
         self._nodes = nodes
         self._connected_nodes = []

@@ -6,37 +6,85 @@ from compas_fea2.base import FEABase
 
 
 class Group(FEABase):
-    """Initialises a base Set object.
+    """Base class for all groups.
 
     Parameters
     ----------
     name : str
         Name of the group.
-    selection : list
-        A list with either the Node or Element objects belonging to the set.
+
+    Attributes
+    ----------
+    name : str
+        Name of the group.
 
     """
 
-    def __init__(self, name, keys):
+    def __init__(self, name):
         super(Group, self).__init__(name=name)
-        self._keys = keys
-
-    @property
-    def keys(self):
-        """The selection property."""
-        return self._keys
 
 
 class NodesGroup(Group):
-    def __init__(self, name, nodes_keys):
-        super(NodesGroup, self).__init__(name, nodes_keys)
+    """Base class for all node groups.
+
+    Parameters
+    ----------
+    name : str
+        Name of the group.
+    nodes : list[:class:`compas_fea2.model.Node`]
+        The nodes belonging to the group.
+
+    Attributes
+    ----------
+    nodes : list[:class:`compas_fea2.model.Node`]
+        The nodes belonging to the group.
+
+    """
+
+    def __init__(self, name, nodes):
+        super(NodesGroup, self).__init__(name)
+        self.nodes = nodes
 
 
 class ElementsGroup(Group):
-    def __init__(self, name, elements_keys):
-        super(ElementsGroup, self).__init__(name, elements_keys)
+    """Base class for all element groups.
+
+    Parameters
+    ----------
+    name : str
+        Name of the group.
+    elements : list[:class:`compas_fea2.model.Element`]
+        The elements belonging to the group.
+
+    Attributes
+    ----------
+    elements : list[:class:`compas_fea2.model.Element`]
+        The elements belonging to the group.
+
+    """
+
+    def __init__(self, name, elements):
+        super(ElementsGroup, self).__init__(name)
+        self.elements = elements
 
 
 class PartsGroup(Group):
-    def __init__(self, name, parts_names):
-        super(PartsGroup, self).__init__(name, parts_names)
+    """Base class for all element groups.
+
+    Parameters
+    ----------
+    name : str
+        Name of the group.
+    parts : list[:class:`compas_fea2.model.Part`]
+        The parts belonging to the group.
+
+    Attributes
+    ----------
+    parts : list[:class:`compas_fea2.model.Part`]
+        The parts belonging to the group.
+
+    """
+
+    def __init__(self, name, parts):
+        super(PartsGroup, self).__init__(name, parts)
+        self.parts = parts

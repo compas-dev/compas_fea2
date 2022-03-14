@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas.geometry import Frame
 from compas_fea2.base import FEABase
 
 
@@ -12,53 +13,59 @@ class Element(FEABase):
     ----------
     key : int
         Key number of the element.
-    connectivity : list[int]
-        Ordered nodes keys the element connects to.
+    nodes : list[:class:`compas_fea2.model.Node`]
+        Ordered list of node identifiers to which the element connects.
     section : :class:`compas_fea2.model.Section`
         Section Object assigned to the element.
-    thermal : bool, optional
-        If True, thermal properties are turned on.
     name : str, optional
         The name of the Element, by default the element key.
 
+    Attributes
+    ----------
+    key : int
+        Key number of the element.
+    nodes : list[:class:`compas_fea2.model.Node`]
+        Ordered list of node identifiers to which the element connects.
+    nodes_key : str, read-only
+        Identifier of the conntected nodes.
+    section : :class:`compas_fea2.model.Section`
+        Section object.
+    frame : :class:`compas.geometry.Frame`
+        The local coordinate system for property assignement.
+        Default to the global coordinate system.
+
     Warnings
     --------
-    The connectivity of the element must be provided in the correct order!
+    The nodes of the element must be provided in the correct order!
 
     """
 
-    def __init__(self, connectivity, section, thermal=False, name=None):
+    def __init__(self, *, nodes, section, name=None):
         super(Element, self).__init__(name=name)
         self._key = None
-        self._connectivity = connectivity  # TODO add find node method to get the connectivity from the Node object
-        self._connectivity_key = '_'.join(sorted([str(c) for c in self.connectivity]))
+        self._nodes = nodes
         self._connected_nodes = []
         self._section = section
-        self._thermal = thermal
-        self._axes = None
+        self._frame = None
 
     @property
     def key(self):
-        """int : Key number of the element."""
         return self._key
 
     @property
-    def connectivity(self):
-        """list[int] : list of nodes keys the element connects to."""
-        return self._connectivity
+    def nodes(self):
+        return self._nodes
 
-    @connectivity.setter
-    def connectivity(self, value):
-        self._connectivity = value
+    @nodes.setter
+    def nodes(self, value):
+        self._nodes = value
 
     @property
-    def connectivity_key(self):
-        """str : string identifier of the conntected nodes"""
-        return self._connectivity_key
+    def nodes_key(self):
+        return '_'.join(sorted([str(node.key) for node in self.nodes]))
 
     @property
     def section(self):
-        """:class:`compas_fea2.model.SectionBase` : object or name of a Section previously added to the model."""
         return self._section
 
     @section.setter
@@ -66,148 +73,91 @@ class Element(FEABase):
         self._section = value
 
     @property
-    def thermal(self):
-        """The thermal property."""
-        return self._thermal
+    def frame(self):
+        if self._frame is None:
+            self._frame = Frame.worldXY()
+        return self._frame
 
-    @thermal.setter
-    def thermal(self, value):
-        self._thermal = value
-
-    @property
-    def axes(self):
-        """The axes property."""
-        return self._axes
-
-    @axes.setter
-    def axes(self, value):
-        self._axes = value
+    @frame.setter
+    def frame(self, value):
+        self._frame = value
 
 
 # ==============================================================================
 # 0D elements
 # ==============================================================================
 
+
 class MassElement(Element):
     """A 0D element for concentrated point mass.
     """
-
-    def __init__(self, key, node, mass, elset):
-        super(MassElement, self).__init__()
-        self.key = key
-        self.node = node
-        self.mass = mass
-        self.elset = elset
 
 
 # ==============================================================================
 # 1D elements
 # ==============================================================================
 
+
 class BeamElement(Element):
     """A 1D element that resists axial, shear, bending and torsion.
     """
-
-    def __init__(self, connectivity, section, thermal=None):
-        super(BeamElement, self).__init__(connectivity, section, thermal)
 
 
 class SpringElement(Element):
     """A 1D spring element.
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(SpringElement, self).__init__(key, connectivity, section, thermal)
-
 
 class TrussElement(Element):
     """A 1D element that resists axial loads.
     """
-
-    def __init__(self, connectivity, section, thermal=None):
-        super(TrussElement, self).__init__(connectivity, section, thermal)
-
-    def _checks(self):
-        if self.section.__name__ in []:
-            raise TypeError("The chosen section cannot be applied to Truss elements")
 
 
 class StrutElement(TrussElement):
     """A truss element that resists axial compressive loads.
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(StrutElement, self).__init__(key, connectivity, section, thermal)
-
 
 class TieElement(TrussElement):
     """A truss element that resists axial tensile loads.
     """
-
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(TieElement, self).__init__(key, connectivity, section, thermal)
 
 
 # ==============================================================================
 # 2D elements
 # ==============================================================================
 
+
 class ShellElement(Element):
     """A 2D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    connectivity : list
-        List containing the nodes sequence building the shell element
-    section : obj
-        compas_fea2 ShellSection object
-    thermal : bool
-        NotImplemented
     """
-
-    def __init__(self, connectivity, section, thermal=None):
-        super(ShellElement, self).__init__(connectivity, section, thermal)
 
 
 class MembraneElement(ShellElement):
     """A shell element that resists only axial loads.
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(MembraneElement, self).__init__(key, connectivity, section, thermal)
-
 
 # ==============================================================================
 # 3D elements
 # ==============================================================================
 
+
 class SolidElement(Element):
     """A 3D element that resists axial, shear, bending and torsion.
     """
-
-    def __init__(self, connectivity, section, thermal=None):
-        super(SolidElement, self).__init__(connectivity, section, thermal)
 
 
 class TetrahedronElement(SolidElement):
     """A Solid element with 4 faces.
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(TetrahedronElement, self).__init__(key, connectivity, section, thermal)
-
 
 class PentahedronElement(SolidElement):
     """A Solid element with 5 faces (extruded triangle).
     """
 
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(PentahedronElement, self).__init__(key, connectivity, section, thermal)
-
 
 class HexahedronElement(SolidElement):
     """A Solid cuboid element with 6 faces (extruded rectangle).
     """
-
-    def __init__(self, key, connectivity, section, thermal=None):
-        super(HexahedronElement, self).__init__(key, connectivity, section, thermal)

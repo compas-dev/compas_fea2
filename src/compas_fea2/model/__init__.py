@@ -64,7 +64,6 @@ Materials
     ConcreteSmearedCrack
     ConcreteDamagedPlasticity
     Steel
-    ThermalMaterial
 
 Sections
 ========
@@ -150,7 +149,6 @@ from .materials import (
     Stiff,
     ElasticOrthotropic,
     ElasticPlastic,
-    ThermalMaterial,
     Steel
 )
 from .interactions import ContactHardFrictionPenalty
@@ -230,7 +228,6 @@ __all__ = [
     'Stiff',
     'ElasticOrthotropic',
     'ElasticPlastic',
-    'ThermalMaterial',
     'Steel',
 
     'ContactHardFrictionPenalty',

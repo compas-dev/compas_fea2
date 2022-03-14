@@ -13,19 +13,26 @@ class Node(FEABase):
 
     Parameters
     ----------
-    xyz : list
-        [x, y, z] co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-    name : string
+    xyz : list[float]
+        The location of the node in the global coordinate system.
+    name : str, optional
         Node's label. If no label is specified, it is automatically generated
         when a node is added. The label does not need to be unique.
+
+    Attributes
+    ----------
+    key : str, read-only
+        The identifier of the node.
+    xyz : list[float]
+        The location of the node in the global coordinate system.
+    x : float
+        The X coordinate.
+    y : float
+        The Y coordinate.
+    z : float
+        The Z coordinate.
+    gkey : str, read-only
+        The geometric key.
 
     Examples
     --------
@@ -33,103 +40,51 @@ class Node(FEABase):
 
     """
 
-    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
+    def __init__(self, xyz, name=None):
         super(Node, self).__init__(name=name)
         self._key = None
-        self._xyz = [float(x) for x in xyz]
-        self._x = self.xyz[0]
-        self._y = self.xyz[1]
-        self._z = self.xyz[2]
-        self._gkey = geometric_key(self.xyz, precision=compas.PRECISION, sanitize=False)
-        self._ex = ex
-        self._ey = ey
-        self._ez = ez
-        self._mass = mass
+        self._x = None
+        self._y = None
+        self._z = None
 
     @property
     def key(self):
-        """int : Node key number. The key number is unique."""
         return self._key
 
     @property
     def xyz(self):
-        """list : [x, y, z] coordinates of the node."""
-        return self._xyz
+        return [self.x, self.y, self.z]
 
-    # @xyz.setter
-    # def xyz(self, value):
-    #     self._xyz = value
+    @xyz.setter
+    def xyz(self, value):
+        self.x = value[0]
+        self.y = value[1]
+        self.z = value[2]
 
     @property
     def x(self):
-        """float : x coordinates of the node."""
         return self._x
 
-    # @x.setter
-    # def x(self, value):
-    #     self._x = value
+    @x.setter
+    def x(self, value):
+        self._x = float(value)
 
     @property
     def y(self):
-        """float : y coordinates of the node."""
         return self._y
 
-    # @y.setter
-    # def y(self, value):
-    #     self._y = value
+    @y.setter
+    def y(self, value):
+        self._y = float(value)
 
     @property
     def z(self):
-        """float : z coordinates of the node."""
         return self._z
 
-    # @z.setter
-    # def z(self, value):
-    #     self._z = value
-
-    @property
-    def ex(self):
-        """list : Node's local x axis."""
-        return self._ex
-
-    # @ex.setter
-    # def ex(self, value):
-    #     self._ex = value
-
-    @property
-    def ey(self):
-        """list : Node's local y axis."""
-        return self._ey
-
-    # @ey.setter
-    # def ey(self, value):
-    #     self._ey = value
-
-    @property
-    def ez(self):
-        """list : Node's local z axis."""
-        return self._ez
-
-    # @ez.setter
-    # def ez(self, value):
-    #     self._ez = value
-
-    @property
-    def mass(self):
-        """float : Mass in kg associated with the node."""
-        return self._mass
-
-    @mass.setter
-    def mass(self, value):
-        self._mass = value
+    @z.setter
+    def z(self, value):
+        self._z = float(value)
 
     @property
     def gkey(self):
-        """The gkey property."""
-        return self._gkey
-
-    def move_node(self):
-        raise NotImplementedError
-
-    def rotate_node_axes(self):
-        raise NotImplementedError
+        return geometric_key(self.xyz, precision=compas.PRECISION, sanitize=False)

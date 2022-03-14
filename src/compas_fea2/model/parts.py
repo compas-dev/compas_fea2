@@ -17,67 +17,59 @@ from compas_fea2.model.groups import ElementsGroup
 
 
 class Part(FEABase):
-    """Part object.
+    """Base class for all parts.
 
     Parameters
     ----------
     name : str
-        Name of the ``Part``.
+        Name of the part.
+
+    Attributes
+    ----------
+    nodes : list[:class:`compas_fea2.model.Node`]
+        Sorted list (by `Node key`) with the :class:`Node` sub-class objects belonging to the ``Part``.
+    materials : dict
+        Dictionary with the :class:`Material` sub-class objects belonging to the Part.
+    sections : dict
+        Dictionary with the :class:`Section` sub-class objects belonging to the ``Part``.
+    elements : dict
+        Sorted list (by `Element key`) with the :class:`Element` sub-class objects belonging to the ``Part``.
+    groups : list
+        List with the :class:`NodesGroup` or :class:`ElementsGroup` sub-class objects belonging to the ``Part``.
 
     """
 
     def __init__(self, name):
         super(Part, self).__init__(name=name)
-
         self._nodes = []
-        self._nodes_gkeys = []  # TODO check with dict and set
-
         self._materials = {}
         self._sections = {}
-
         self._elements = {}
         self._groups = {}
-        self._releases = {}
 
     @property
     def nodes(self):
-        """list : Sorted list (by `Node key`) with the :class:`Node` sub-class objects belonging to the ``Part``."""
         return self._nodes
 
     @property
     def materials(self):
-        """dict : Dictionary with the :class:`Material` sub-class objects belonging to the Part."""
         return self._materials
 
     @property
     def sections(self):
-        """dict : Dictionary with the :class:`Section` sub-class objects belonging to the ``Part``."""
         return self._sections
 
     @property
     def elements(self):
-        """dict : Sorted list (by `Element key`) with the :class:`Element` sub-class objects belonging to the ``Part``."""
         return self._elements
 
     @property
     def groups(self):
-        """list : List with the :class:`NodesGroup` or :class:`ElementsGroup` sub-class objects belonging to the ``Part``."""
         return self._groups
-
-    @property
-    def releases(self):
-        """The releases property."""
-        return self._releases
 
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
-
-    # def from_network(self, network):
-    #     raise NotImplementedError()
-
-    # def from_obj(self, obj):
-    #     raise NotImplementedError()
 
     @classmethod
     def frame_from_mesh(cls, name, mesh, beam_section):

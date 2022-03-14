@@ -46,6 +46,7 @@ class Node(FEABase):
         self._x = None
         self._y = None
         self._z = None
+        self.xyz = xyz
 
     @property
     def key(self):

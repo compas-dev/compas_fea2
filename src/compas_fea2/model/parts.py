@@ -8,12 +8,15 @@ import numpy as np
 from compas.geometry import normalize_vector
 
 from compas_fea2.base import FEABase
-from compas_fea2.model.materials import Material
-from compas_fea2.model.sections import Section
-from compas_fea2.model.sections import SolidSection
-from compas_fea2.model.sections import ShellSection
-from compas_fea2.model.groups import NodesGroup
-from compas_fea2.model.groups import ElementsGroup
+
+from .nodes import Node
+from .elements import Element
+from .materials import Material
+from .sections import Section
+from .sections import SolidSection
+from .sections import ShellSection
+from .groups import NodesGroup
+from .groups import ElementsGroup
 
 
 class Part(FEABase):
@@ -39,13 +42,15 @@ class Part(FEABase):
 
     """
 
-    def __init__(self, name):
+    def __init__(self, model=None, name=None):
         super(Part, self).__init__(name=name)
-        self._nodes = []
-        self._materials = {}
-        self._sections = {}
-        self._elements = {}
-        self._groups = {}
+        self.model = model
+        self._nodes = set()
+        self._materials = set()
+        self._sections = set()
+        self._elements = set()
+        self._groups = set()
+        self.gkey_node = {}
 
     @property
     def nodes(self):
@@ -233,99 +238,97 @@ class Part(FEABase):
     #                           Nodes methods
     # =========================================================================
 
-    # TODO check if this is still useful
-    def _reorder_nodes(self):
-        """Reorders the nodes to have consecutive keys. If the node label is an
-        auto-generated label, it updates the label as well, otherwise leaves the
-        user-generated label.
+    # def find_node_in_part(self, node):
+    #     """Checks if a node already exists in the Part in the same location.
+
+    #     Parameters
+    #     ----------
+    #     node : :class:`compas_fea2.model.Node`
+    #         compas_fea2 Node object.
+
+    #     Returns
+    #     -------
+    #     :class:`compas_fea2.model.Node` | None
+    #         The existing node in the same location.
+
+    #     """
+    #     gkey = node.gkey
+    #     if gkey in self.gkey_node:
+    #         return self.gkey_node[gkey]
+    #     return None
+
+    # def find_nodes_at_location(self, xyz, tol):
+    #     """Finds (if any) the nodes in the model at specified coordinates.
+
+    #     Parameters
+    #     ----------
+    #     xyz : list[float]
+    #         List with the [x, y, z] coordinates.
+    #     tol : int
+    #         multiple to which round the coordinates.
+
+    #     Returns
+    #     -------
+    #     list
+    #         list with the keys of the maching nodes.
+    #         key =  Part name
+    #         value = Node object with the specified coordinates.
+    #     """
+    #     matches = []
+    #     a = [tol * round(i/tol) for i in xyz]
+    #     for node in self.nodes:
+    #         b = [tol * round(i/tol) for i in node.xyz]
+    #         if a == b:
+    #             matches.append(node.key)
+    #     return matches
+
+    def add_node(self, node):
+        """Add a node to the part.
+
+        Duplicate nodes (i.e. nodes in the same location) are ignored.
 
         Parameters
         ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        k = 0
-        for node in self.nodes:
-            node.key = k
-            k += 1
-            if node.label[:2] == 'n-':
-                node.label = 'n-{}'.format(node.key)
-
-    def check_node_in_part(self, node):
-        """Checks if a node already exists in the Part in the same location.
-
-        Parameters
-        ----------
-        node : obj
-            compas_fea2 Node object.
-
-        Returns
-        -------
-        indices : list
-            List of the indices of all the instances of the node already in the
-            Part.
-        """
-
-        if node.gkey in self._nodes_gkeys:
-            indices = [i for i, x in enumerate(self._nodes_gkeys) if x == node.gkey]
-            return indices
-
-    def add_node(self, node, check=False):
-        """Add a :class:`Node` object to the ``Part``.
-        If the node object has no label, one is automatically assigned.
-        Duplicate nodes are automatically excluded.
-
-        Parameters
-        ----------
-        node : obj
-            :class:`Node` object.
-        check : bool, optional
-            If ``True``, checks if the node is already present. This is a quite
-            resource-intense operation! Set to ``False`` for large parts (>10000
-            nodes). By default ``False``
+        node : :class:`compas_fea2.model.Node`
+            The node.
 
         Return
         ------
-        int
-            node key
+        :class:`compas_fea2.model.Node`
+            The identifier of the node in the part.
 
         Examples
         --------
         >>> part = Part('mypart')
         >>> node = Node(1.0, 2.0, 3.0)
         >>> part.add_node(node)
-        """
-        if check and self.check_node_in_part(node):
-            print('WARNING: duplicate node at {} skipped!'.format(node._gkey))
-        else:
-            k = len(self._nodes)
-            node._key = k
-            if not node._name:
-                node._name = 'n-{}'.format(k)
-            self._nodes.append(node)
-            self._nodes_gkeys.append(node._gkey)
-        return node._key
 
-    def add_nodes(self, nodes, check=False):
-        """Add multiple :class:`Node` objects to the ``Part``.
+        """
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a valid node.'.format(node))
+
+        if node in self.nodes:
+            print('NOTE: {!r} already in the model. skipped!'.format(node))
+            return
+
+        node._key = len(self._nodes)
+        if node not in self._nodes:
+            self._nodes.add(node)
+        self.gkey_node[node.gkey] = node
+        return node
+
+    def add_nodes(self, nodes):
+        """Add multiple nodes to the part.
 
         Parameters
         ----------
-        nodes : list
-            List of :class:`Node` objects.
-        check : bool, optional
-            If ``True``, checks if the node is already present. This is a quite
-            resource-intense operation! Set to ``False`` for large parts (>10000
-            nodes). By default ``False``
+        nodes : list[:class:`compas_fea2.model.Node`]
+            The list of nodes.
 
         Return
         ------
-        list of int
-            list with the keys of the added nodes.
+        list[:class:`compas_fea2.model.Node`]
+            The identifiers of the nodes in the part.
 
         Examples
         --------
@@ -333,71 +336,41 @@ class Part(FEABase):
         >>> node1 = Node([1.0, 2.0, 3.0])
         >>> node2 = Node([3.0, 4.0, 5.0])
         >>> node3 = Node([3.0, 4.0, 5.0]) # Duplicate node
-        >>> part.add_nodes([node1, node2, node3], check=True)
-        [0, 1, None]
-        """
-        return [self.add_node(node, check) for node in nodes]
+        >>> nodes = part.add_nodes([node1, node2, node3])
 
-    def remove_node(self, node_key):
+        """
+        return [self.add_node(node) for node in nodes]
+
+    def remove_node(self, node):
         """Remove the node from the Part. If there are duplicate nodes, it
         removes also all the duplicates.
 
         Parameters
         ----------
-        node_key : int
-            Key number of the node to be removed.
+        node : :class:`compas_fea2.model.Node`
+            The node.
 
         Returns
         -------
         None
         """
         raise NotImplementedError()
-        # del self.nodes[node_key]
-        # del self.nodes_gkeys[node_key]
-        # self._reorder_nodes()
 
     def remove_nodes(self, nodes):
-        """Remove the nodes from the Part. If there are duplicate nodes, it
-        removes also all the duplicates.
+        """Remove the nodes from the Part.
+
+        If there are duplicate nodes, it removes also all the duplicates.
 
         Parameters
         ----------
-        node : list
-            List with the key numbers of the nodes to be removed..
+        nodes : list[:class:`compas_fea2.model.Node`]
+            List of nodes.
 
         Returns
         -------
         None
         """
         raise NotImplementedError()
-        # for node in nodes:
-        #     self.remove_node(node)
-
-    def get_node_from_coordinates(self, xyz, tol):
-        """Finds (if any) the nodes in the model at specified coordinates.
-        A tollerance factor can be specified.
-
-        Parameters
-        ----------
-        xyz : list
-            List with the [x, y, z] coordinates.
-        tol : int
-            multiple to which round the coordinates.
-
-        Returns
-        -------
-        list
-            list with the keys of the maching nodes.
-            key =  Part name
-            value = Node object with the specified coordinates.
-        """
-        matches = []
-        a = [tol * round(i/tol) for i in xyz]
-        for node in self.nodes:
-            b = [tol * round(i/tol) for i in node.xyz]
-            if a == b:
-                matches.append(node.key)
-        return matches
 
     # =========================================================================
     #                           Materials methods
@@ -409,17 +382,26 @@ class Part(FEABase):
 
         Parameters
         ----------
-        material : obj
-            :class:`Material` object to be added.
+        material : :class:`compas_fea2.model.Material`
 
         Returns
         -------
         None
+
+        Raises
+        ------
+        TypeError
+            If the material is not a valid material.
+
         """
-        if material.name not in self._materials:
-            self._materials[material.name] = material
-        else:
-            print('NOTE: {} already added to the model. skipped!'.format(material))
+        if not isinstance(material, Material):
+            raise TypeError('{!r} is not a valid material.'.format(material))
+
+        if material in self.materials:
+            print('NOTE: {!r} already in the model. skipped!'.format(material))
+            return
+
+        self._materials.add(material)
 
     def add_materials(self, materials):
         """Add multiple :class:`Material` subclass objects to the Part so
@@ -427,12 +409,12 @@ class Part(FEABase):
 
         Parameters
         ----------
-        material : list
-            List of :class:`Material` objects.
+        materials : list[:class:`compas_fea2.model.Material`]
 
         Returns
         -------
         None
+
         """
         for material in materials:
             self.add_material(material)
@@ -447,8 +429,7 @@ class Part(FEABase):
 
         Parameters
         ----------
-        section : obj
-            :class:`Section` subclass object to be added.
+        section : :class:`compas_fea2.model.Section`
 
         Returns
         -------
@@ -456,22 +437,19 @@ class Part(FEABase):
 
         Raises
         ------
-        ValueError
-            if the material associated to the section is a string and it has not
-            been defined previously in the model
+        TypeError
+            If the section is not a valid section.
+
         """
-        if section.name not in self._sections:
-            self._sections[section.name] = section
-            if isinstance(section.material, Material):
-                if section.material.name not in self.materials:
-                    self.add_material(section.material)
-            elif isinstance(section.material, str):
-                if section.material in self.materials:
-                    section._material = self.materials[section.material]
-                else:
-                    raise ValueError(f'Material {section.material.__repr__()} not found in {self.__repr__}')
-            else:
-                raise TypeError('Provide a valid Section subclass object')
+        if not isinstance(section, Section):
+            raise TypeError('{!r} is not a valid section.'.format(section))
+
+        if section in self._sections:
+            print("Section {!r} already in model => Skipped.".format(section))
+            return
+
+        self.add_material(section.material)
+        self._sections.add(section)
 
     def add_sections(self, sections):
         """Add multiple :class:`Section`subclass  objects to the Model.
@@ -536,34 +514,30 @@ class Part(FEABase):
 
     #     return self.elements[element_name]
 
-    def _reorder_elements(self):
-        """Reorders the elements to have consecutive keys.
+    # def _reorder_elements(self):
+    #     """Reorders the elements to have consecutive keys.
 
-        Parameters
-        ----------
-        None
+    #     Parameters
+    #     ----------
+    #     None
 
-        Returns
-        -------
-        None
-        """
+    #     Returns
+    #     -------
+    #     None
+    #     """
 
-        k = 0
-        for element in self._elements:
-            element.key = k
-            k += 1
+    #     k = 0
+    #     for element in self._elements:
+    #         element.key = k
+    #         k += 1
 
     def add_element(self, element, check=False):
         """Add a :class:`Element` subclass object to the Part.
 
         Parameters
         ----------
-        element : obj
-            :class:`Element` subclass object.
-        check : bool
-            If True, checks if the element keys are in the model. This is a quite
-            resource-intense operation! Set to `False` for large models (>10000
-            nodes)
+        element : :class:`compas_fea2.model.Element`
+            The element instance.
         check : bool, optional
             If ``True``, checks if the node connected by the element are present.
             This is a quite resource-intense operation! Set to ``False`` for large parts (>10000
@@ -573,25 +547,20 @@ class Part(FEABase):
         -------
         int
             element key
-        """
-        element._key = len(self.elements)
-        if check:
-            for c in element.connectivity:
-                if c not in [node.key for node in self.nodes]:
-                    raise ValueError(
-                        f'ERROR CREATING ELEMENT: node {c} not found. Check the connectivity indices of element: \n {element.__repr__()}!')
-        self._elements[element._key] = element
 
-        if isinstance(element.section, str):
-            if element.section in self._sections:
-                element._section = self._sections[element.section]
-            else:
-                raise ValueError(f'{element.section.__repr__()} not found in {self.__repr__()}')
-        elif isinstance(element.section, Section):
-            self.add_section(element.section)
-        else:
-            raise TypeError('You must provide a Section object or the name of a previously added section')
-        return element._key
+        """
+        if not isinstance(element, Element):
+            raise TypeError('{!r} is not a valid element.'.format(element))
+
+        if element in self._elements:
+            print("Element {!r} already in model => Skipped.".format(element))
+            return
+
+        self.add_nodes(element.nodes)
+        self.add_section(element.section)
+        element._key = len(self.elements)
+        self.elements.add(element)
+        return element
 
     def add_elements(self, elements, check):
         """Adds multiple :class:`Element` subclass objects to the ``Part``.

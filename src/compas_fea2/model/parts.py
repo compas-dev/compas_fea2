@@ -6,6 +6,7 @@ from __future__ import print_function
 # import numpy as np
 
 # from compas.geometry import normalize_vector
+from compas.geometry import distance_point_point_sqrd
 
 from compas_fea2 import config
 from compas_fea2.base import FEAData
@@ -261,49 +262,55 @@ number of groups   : {}
     #                           Nodes methods
     # =========================================================================
 
-    # def find_node_in_part(self, node):
-    #     """Checks if a node already exists in the Part in the same location.
+    def find_nodes_by_name(self, name):
+        """Find all nodes with a given name.
 
-    #     Parameters
-    #     ----------
-    #     node : :class:`compas_fea2.model.Node`
-    #         compas_fea2 Node object.
+        Parameters
+        ----------
+        name : str
 
-    #     Returns
-    #     -------
-    #     :class:`compas_fea2.model.Node` | None
-    #         The existing node in the same location.
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Node`]
 
-    #     """
-    #     gkey = node.gkey
-    #     if gkey in self.gkey_node:
-    #         return self.gkey_node[gkey]
-    #     return None
+        """
+        return [node for node in self.nodes if node.name == name]
 
-    # def find_nodes_at_location(self, xyz, tol):
-    #     """Finds (if any) the nodes in the model at specified coordinates.
+    def find_nodes_by_location(self, point, distance):
+        """Find all nodes within a distance of a given geometrical location.
 
-    #     Parameters
-    #     ----------
-    #     xyz : list[float]
-    #         List with the [x, y, z] coordinates.
-    #     tol : int
-    #         multiple to which round the coordinates.
+        Parameters
+        ----------
+        point : :class:`compas.geometry.Point`
+            A geometrical location.
+        distance : float
+            Distance from the location.
 
-    #     Returns
-    #     -------
-    #     list
-    #         list with the keys of the maching nodes.
-    #         key =  Part name
-    #         value = Node object with the specified coordinates.
-    #     """
-    #     matches = []
-    #     a = [tol * round(i/tol) for i in xyz]
-    #     for node in self.nodes:
-    #         b = [tol * round(i/tol) for i in node.xyz]
-    #         if a == b:
-    #             matches.append(node.key)
-    #     return matches
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Node`]
+
+        """
+        d2 = distance ** 2
+        matched = []
+        for node in self.nodes:
+            if distance_point_point_sqrd(node.xyz, point) < d2:
+                matched.append(node)
+        return matched
+
+    def contains_node(self, node):
+        """Verify that the part contains a given node.
+
+        Parameters
+        ----------
+        node : :class:`compas_fea2.model.Node`
+
+        Returns
+        -------
+        bool
+
+        """
+        return node in self.nodes
 
     def add_node(self, node):
         """Add a node to the part.
@@ -333,7 +340,7 @@ number of groups   : {}
         if not isinstance(node, Node):
             raise TypeError('{!r} is not a node.'.format(node))
 
-        if node in self.nodes:
+        if self.contains_node(node):
             if config.VERBOSE:
                 print('SKIPPED: Node {!r} already in part.'.format(node))
             return
@@ -368,40 +375,37 @@ number of groups   : {}
         """
         return [self.add_node(node) for node in nodes]
 
-    # def remove_node(self, node):
-    #     """Remove the node from the Part. If there are duplicate nodes, it
-    #     removes also all the duplicates.
-
-    #     Parameters
-    #     ----------
-    #     node : :class:`compas_fea2.model.Node`
-    #         The node.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     raise NotImplementedError()
-
-    # def remove_nodes(self, nodes):
-    #     """Remove the nodes from the Part.
-
-    #     If there are duplicate nodes, it removes also all the duplicates.
-
-    #     Parameters
-    #     ----------
-    #     nodes : list[:class:`compas_fea2.model.Node`]
-    #         List of nodes.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     raise NotImplementedError()
-
     # =========================================================================
     #                           Materials methods
     # =========================================================================
+
+    def find_materials_by_name(self, name):
+        """Find all materials with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Material`]
+
+        """
+        return [material for material in self.materials if material.name == name]
+
+    def contains_material(self, material):
+        """Verify that the part contains a specific material.
+
+        Parameters
+        ----------
+        material : :class:`compas_fea2.model.Material`
+
+        Returns
+        -------
+        bool
+
+        """
+        return material in self.materials
 
     def add_material(self, material):
         """Add a material to the part so that it can be referenced in section and element definitions.
@@ -423,7 +427,7 @@ number of groups   : {}
         if not isinstance(material, Material):
             raise TypeError('{!r} is not a material.'.format(material))
 
-        if material in self.materials:
+        if self.contains_material(material):
             if config.VERBOSE:
                 print('SKIPPED: Material {!r} already in part.'.format(material))
             return
@@ -449,6 +453,34 @@ number of groups   : {}
     #                        Sections methods
     # =========================================================================
 
+    def find_sections_by_name(self, name):
+        """Find all sections with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Section`]
+
+        """
+        return [section for section in self.sections if section.name == name]
+
+    def contains_section(self, section):
+        """Verify that the part contains a specific section.
+
+        Parameters
+        ----------
+        section : :class:`compas_fea2.model.Section`
+
+        Returns
+        -------
+        bool
+
+        """
+        return section in self.sections
+
     def add_section(self, section):
         """Add a section to the part so that it can be referenced in element definitions.
 
@@ -469,7 +501,7 @@ number of groups   : {}
         if not isinstance(section, Section):
             raise TypeError('{!r} is not a section.'.format(section))
 
-        if section in self._sections:
+        if self.contains_section(section):
             if config.VERBOSE:
                 print("SKIPPED: Section {!r} already in part.".format(section))
             return
@@ -496,66 +528,33 @@ number of groups   : {}
     #                           Elements methods
     # =========================================================================
 
-    # def _check_element_in_part(self, element):
-    #     """Check if the element is already in the model and in case add it.
-    #     If `element` is of type `str`, check if the element is already defined.
-    #     If `element` is of type `Element`, add the element to the Part if not
-    #     already defined.
+    def find_elements_by_name(self, name):
+        """Find all elements with a given name.
 
-    #     Warning
-    #     -------
-    #     the function does not check the elements connectivity. This could generate
-    #     duplicate elements.
+        Parameters
+        ----------
+        name : str
 
-    #     Parameters
-    #     ----------
-    #     element : str or obj
-    #         Name of the Part or Part object to check.
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Element`]
 
-    #     Returns
-    #     -------
-    #     obj
-    #         Part object
+        """
+        return [element for element in self.elements if element.name == name]
 
-    #     Raises
-    #     ------
-    #     ValueError
-    #         if `element` is a string and the element is not defined in the Part
-    #     TypeError
-    #         `element` must be either an instance of a `compas_fea2` Part class or the
-    #         name of a Part already defined in the Problem.
-    #     """
-    #     if isinstance(element, str):
-    #         if element not in self.elements:
-    #             raise ValueError(f'{element} not found in the Part')
-    #         element_name = element
-    #     elif isinstance(element, Part):
-    #         if element.name not in self.elements:
-    #             self.add_element(element)
-    #             print(f'{element.__repr__()} added to the Part')
-    #         element_name = element.name
-    #     else:
-    #         raise TypeError(
-    #             f'{element} is either not an instance of a `compas_fea2` Element class or not found in the Model')
+    def contains_element(self, element):
+        """Verify that the part contains a specific element.
 
-    #     return self.elements[element_name]
+        Parameters
+        ----------
+        element : :class:`compas_fea2.model.Element`
 
-    # def _reorder_elements(self):
-    #     """Reorders the elements to have consecutive keys.
+        Returns
+        -------
+        bool
 
-    #     Parameters
-    #     ----------
-    #     None
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-
-    #     k = 0
-    #     for element in self._elements:
-    #         element.key = k
-    #         k += 1
+        """
+        return element in self.elements
 
     def add_element(self, element):
         """Add an element to the part.
@@ -578,7 +577,7 @@ number of groups   : {}
         if not isinstance(element, Element):
             raise TypeError('{!r} is not an element.'.format(element))
 
-        if element in self._elements:
+        if self.contains_element(element):
             if config.VERBOSE:
                 print("SKIPPED: Element {!r} already in part.".format(element))
             return
@@ -603,56 +602,41 @@ number of groups   : {}
         """
         return [self.add_element(element) for element in elements]
 
-    # def remove_element(self, element_key):
-    #     """Removes the element from the Part.
-
-    #     Parameters
-    #     ----------
-    #     element_key : int
-    #         Key number of the element to be removed.
-
-    #     Returns
-    #     -------
-    #     None
-
-    #     """
-    #     raise NotImplementedError()
-    #     # # TODO check if element key exists
-    #     # del self.elements[element_key]
-    #     # self._reorder_elements()
-
-    # def remove_elements(self, elements):
-    #     """Removes the elements from the Part.
-
-    #     Parameters
-    #     ----------
-    #     elements : list
-    #         List with the key numbers of the element to be removed.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     raise NotImplementedError()
-
-    #     # for element in elements:
-    #     #     self.remove_element(element)
-
     # =========================================================================
     #                           Releases methods
     # =========================================================================
 
-    # # TODO: check the release definition
-    # def add_release(self, release):
-    #     self.releases.append(release)
-
-    # def add_releases(self, releases):
-    #     for release in releases:
-    #         self.add_release(release)
-
     # =========================================================================
     #                           Groups methods
     # =========================================================================
+
+    def find_groups_by_name(self, name):
+        """Find all groups with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Group`]
+
+        """
+        return [group for group in self.groups if group.name == name]
+
+    def contains_group(self, group):
+        """Verify that the part contains a specific group.
+
+        Parameters
+        ----------
+        group : :class:`compas_fea2.model.Group`
+
+        Returns
+        -------
+        bool
+
+        """
+        return group in self.groups
 
     def add_group(self, group):
         """Add a node or element group to the part.
@@ -679,7 +663,7 @@ number of groups   : {}
         elif isinstance(group, ElementsGroup):
             self.add_elements(group.elements)
 
-        if group in self.groups:
+        if self.contains_group(group):
             if config.VERBOSE:
                 print("SKIPPED: Group {!r} already in part.".format(group))
             return

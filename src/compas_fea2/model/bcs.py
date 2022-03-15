@@ -5,12 +5,12 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class GeneralBC(FEAData):
-    """Boundary Condtion object.
+class BoundaryCondition(FEAData):
+    """Base class for all boundary conditions.
     """
 
     def __init__(self, **kwargs):
-        super(GeneralBC, self).__init__(**kwargs)
+        super(BoundaryCondition, self).__init__(**kwargs)
         self.x = 0
         self.y = 0
         self.z = 0
@@ -19,7 +19,7 @@ class GeneralBC(FEAData):
         self.zz = 0
 
 
-class FixedBC(GeneralBC):
+class FixedBC(BoundaryCondition):
     """A fixed nodal displacement boundary condition.
     """
 
@@ -33,7 +33,7 @@ class FixedBC(GeneralBC):
         self.zz = 1
 
 
-class PinnedBC(GeneralBC):
+class PinnedBC(BoundaryCondition):
     """A pinned nodal displacement boundary condition.
     """
 
@@ -44,7 +44,7 @@ class PinnedBC(GeneralBC):
         self.z = 1
 
 
-class FixedBCXX(GeneralBC):
+class FixedBCXX(BoundaryCondition):
     """A pinned nodal displacement boundary condition clamped in XX.
     """
 
@@ -56,7 +56,7 @@ class FixedBCXX(GeneralBC):
         self.xx = 1
 
 
-class FixedBCYY(GeneralBC):
+class FixedBCYY(BoundaryCondition):
     """A pinned nodal displacement boundary condition clamped in YY.
     """
 
@@ -68,7 +68,7 @@ class FixedBCYY(GeneralBC):
         self.yy = 1
 
 
-class FixedBCZZ(GeneralBC):
+class FixedBCZZ(BoundaryCondition):
     """A pinned nodal displacement boundary condition clamped in ZZ.
     """
 
@@ -80,7 +80,7 @@ class FixedBCZZ(GeneralBC):
         self.zz = 1
 
 
-class RollerBCX(GeneralBC):
+class RollerBCX(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in X.
     """
 
@@ -90,7 +90,7 @@ class RollerBCX(GeneralBC):
         self.z = 1
 
 
-class RollerBCY(GeneralBC):
+class RollerBCY(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in Y.
     """
 
@@ -100,7 +100,7 @@ class RollerBCY(GeneralBC):
         self.z = 1
 
 
-class RollerBCZ(GeneralBC):
+class RollerBCZ(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in Z.
     """
 
@@ -110,7 +110,7 @@ class RollerBCZ(GeneralBC):
         self.y = 1
 
 
-class RollerBCXY(GeneralBC):
+class RollerBCXY(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in X and Y.
     """
 
@@ -119,7 +119,7 @@ class RollerBCXY(GeneralBC):
         self.z = 1
 
 
-class RollerBCYZ(GeneralBC):
+class RollerBCYZ(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in Y and Z.
     """
 
@@ -128,7 +128,7 @@ class RollerBCYZ(GeneralBC):
         self.x = 1
 
 
-class RollerBCXZ(GeneralBC):
+class RollerBCXZ(BoundaryCondition):
     """A pinned nodal displacement boundary condition released in X and Z.
     """
 

@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class FieldOutput(FEABase):
+class FieldOutput(FEAData):
     """FieldOutput object for specification of the fields (stresses, displacements,
     etc..) to output from the analysis.
 
@@ -36,6 +36,6 @@ class FieldOutput(FEABase):
         return self._element_outputs
 
 
-class HistoryOutput(FEABase):
+class HistoryOutput(FEAData):
     def __init__(self, name):
         super(HistoryOutput, self).__init__(name=name)

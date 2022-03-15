@@ -2,17 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class GeneralBC(FEABase):
+class GeneralBC(FEAData):
     """Boundary Condtion object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the BC object.
-
     """
 
     def __init__(self, **kwargs):

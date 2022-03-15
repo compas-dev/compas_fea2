@@ -1,7 +1,7 @@
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Surface(FEABase):
+class Surface(FEAData):
     def __init__(self, name, part, element, face):
         super(Surface, self).__init__(name=name)
         self._name = name

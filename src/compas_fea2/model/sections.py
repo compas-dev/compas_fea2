@@ -6,17 +6,15 @@ from abc import abstractmethod
 from math import pi
 
 from compas_fea2 import units
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 from .materials import Material
 
 
-class Section(FEABase):
+class Section(FEAData):
     """Base class for sections.
 
     Parameters
     ----------
-    name : str
-        Section object name.
     material : :class:`~compas_fea2.model.Material`
         A material definition.
 
@@ -60,7 +58,7 @@ material : {}
 # 0D
 # ==============================================================================
 
-class MassSection(FEABase):
+class MassSection(FEAData):
     """Section for point mass elements.
 
     Parameters
@@ -86,7 +84,7 @@ mass     : {}
 """.format(self.name, self.mass)
 
 
-class SpringSection(FEABase):
+class SpringSection(FEAData):
     """Section for use with spring elements.
 
     Parameters

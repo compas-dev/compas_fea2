@@ -6,7 +6,7 @@ import pickle
 import os
 import importlib
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 from compas_fea2.model.parts import Part
 from compas_fea2.model.materials import Material
 from compas_fea2.model.sections import Section
@@ -15,7 +15,7 @@ from compas_fea2.model.bcs import GeneralBC
 # from compas_fea2.model.groups import ElementsGroup
 
 
-class Model(FEABase):
+class Model(FEAData):
     """Initialise the Model object.
 
     Note

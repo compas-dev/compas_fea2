@@ -7,7 +7,8 @@ from __future__ import print_function
 
 # from compas.geometry import normalize_vector
 
-from compas_fea2.base import FEABase
+from compas_fea2 import config
+from compas_fea2.base import FEAData
 
 from .nodes import Node
 from .elements import Element
@@ -15,30 +16,32 @@ from .materials import Material
 from .sections import Section
 # from .sections import SolidSection
 # from .sections import ShellSection
-# from .groups import NodesGroup
-# from .groups import ElementsGroup
+from .groups import NodesGroup
+from .groups import ElementsGroup
 
 
-class Part(FEABase):
+class Part(FEAData):
     """Base class for all parts.
 
     Parameters
     ----------
-    name : str
-        Name of the part.
+    model : :class:`compas_fea2.model.Model`
+        The parent model of the part.
 
     Attributes
     ----------
-    nodes : list[:class:`compas_fea2.model.Node`]
-        Sorted list (by `Node key`) with the :class:`Node` sub-class objects belonging to the ``Part``.
-    materials : dict
-        Dictionary with the :class:`Material` sub-class objects belonging to the Part.
-    sections : dict
-        Dictionary with the :class:`Section` sub-class objects belonging to the ``Part``.
-    elements : dict
-        Sorted list (by `Element key`) with the :class:`Element` sub-class objects belonging to the ``Part``.
-    groups : list
-        List with the :class:`NodesGroup` or :class:`ElementsGroup` sub-class objects belonging to the ``Part``.
+    model : :class:`compas_fea2.model.Model`
+        The parent model of the part.
+    nodes : Set[:class:`compas_fea2.model.Node`]
+        The nodes belonging to the part.
+    materials : Set[:class:`compas_fea2.model.Material`]
+        The materials belonging to the part.
+    sections : Set[:class:`compas_fea2.model.Section`]
+        The sections belonging to the part.
+    elements : Set[:class:`compas_fea2.model.Element`]
+        The elements belonging to the part.
+    groups : Set[:class:`compas_fea2.model.Group`]
+        The groups belonging to the part.
 
     """
 
@@ -75,6 +78,22 @@ class Part(FEABase):
     @property
     def groups(self):
         return self._groups
+
+    def __str__(self):
+        return """
+{}
+{}
+name : {}
+
+number of elements : {}
+number of nodes    : {}
+number of groups   : {}
+""".format(self.__class__.__name__,
+           len(self.__class__.__name__) * '-',
+           self.name,
+           len(self.elements),
+           len(self.nodes),
+           len(self.groups))
 
     # =========================================================================
     #                       Constructor methods
@@ -312,10 +331,11 @@ class Part(FEABase):
 
         """
         if not isinstance(node, Node):
-            raise TypeError('{!r} is not a valid node.'.format(node))
+            raise TypeError('{!r} is not a node.'.format(node))
 
         if node in self.nodes:
-            print('NOTE: {!r} already in the model. skipped!'.format(node))
+            if config.VERBOSE:
+                print('SKIPPED: Node {!r} already in part.'.format(node))
             return
 
         node._key = len(self._nodes)
@@ -401,10 +421,11 @@ class Part(FEABase):
 
         """
         if not isinstance(material, Material):
-            raise TypeError('{!r} is not a valid material.'.format(material))
+            raise TypeError('{!r} is not a material.'.format(material))
 
         if material in self.materials:
-            print('NOTE: {!r} already in the model. skipped!'.format(material))
+            if config.VERBOSE:
+                print('SKIPPED: Material {!r} already in part.'.format(material))
             return
 
         self._materials.add(material)
@@ -446,10 +467,11 @@ class Part(FEABase):
 
         """
         if not isinstance(section, Section):
-            raise TypeError('{!r} is not a valid section.'.format(section))
+            raise TypeError('{!r} is not a section.'.format(section))
 
         if section in self._sections:
-            print("Section {!r} already in model => Skipped.".format(section))
+            if config.VERBOSE:
+                print("SKIPPED: Section {!r} already in part.".format(section))
             return
 
         self.add_material(section.material)
@@ -554,10 +576,11 @@ class Part(FEABase):
 
         """
         if not isinstance(element, Element):
-            raise TypeError('{!r} is not a valid element.'.format(element))
+            raise TypeError('{!r} is not an element.'.format(element))
 
         if element in self._elements:
-            print("Element {!r} already in model => Skipped.".format(element))
+            if config.VERBOSE:
+                print("SKIPPED: Element {!r} already in part.".format(element))
             return
 
         self.add_nodes(element.nodes)
@@ -631,52 +654,49 @@ class Part(FEABase):
     #                           Groups methods
     # =========================================================================
 
-    # def add_group(self, group):
-    #     if isinstance(group, (NodesGroup, ElementsGroup)):
-    #         if group.name not in self.groups:
-    #             self._groups[group.name] = group
-    #     else:
-    #         raise ValueError('You must provide either a NodesGroup or an ElementsGroup object')
+    def add_group(self, group):
+        """Add a node or element group to the part.
 
-    # def add_groups(self, groups):
-    #     for group in groups:
-    #         self.add_group(group)
+        Parameters
+        ----------
+        group : :class:`compas_fea2.model.NodeGroup` | :class:`compas_fea2.model.ElementGroup`
 
-    # def add_nodes_group(self, name, nodes_keys):
-    #     """Add a NodeGroup object to the the part .
+        Returns
+        -------
+        None
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     nodes : list
-    #         list of nodes keys to group
-    #     """
-    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-    #     group = m.NodesGroup(name, nodes_keys)
-    #     self._groups[name] = group
+        Raises
+        ------
+        TypeError
+            If the group is not a node or element group.
 
-    # def add_elements_group(self, name, elements_keys):
-    #     """Add a ElementGroup object to the the part.
+        """
+        if not isinstance(group, (NodesGroup, ElementsGroup)):
+            raise TypeError("{!r} is not a node or element group.".format(group))
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     part : str
-    #         name of the part
-    #     elements : list
-    #         list of elements keys to group
-    #     """
-    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-    #     group = m.ElementsGroup(name, elements_keys)
-    #     self._groups[name] = group
+        if isinstance(group, NodesGroup):
+            self.add_nodes(group.nodes)
+        elif isinstance(group, ElementsGroup):
+            self.add_elements(group.elements)
 
-    # def add_elements_to_group(self, group_name, element_keys):
-    #     raise NotADirectoryError()
+        if group in self.groups:
+            if config.VERBOSE:
+                print("SKIPPED: Group {!r} already in part.".format(group))
+            return
 
-    # def remove_element_group(self, group_name):
-    #     raise NotImplementedError()
+        self._groups.add(group)
 
-    # def remove_element_from_group(self, group_name, element):
-    #     raise NotImplementedError()
+    def add_groups(self, groups):
+        """Add multiple groups to the part.
+
+        Parameters
+        ----------
+        groups : list[:class:`compas_fea2.model.Group`]
+
+        Returns
+        -------
+        None
+
+        """
+        for group in groups:
+            self.add_group(group)

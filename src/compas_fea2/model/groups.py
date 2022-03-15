@@ -2,22 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Group(FEABase):
+class Group(FEAData):
     """Base class for all groups.
-
-    Parameters
-    ----------
-    name : str
-        Name of the group.
-
-    Attributes
-    ----------
-    name : str
-        Name of the group.
-
     """
 
     def __init__(self, **kwargs):
@@ -29,8 +18,6 @@ class NodesGroup(Group):
 
     Parameters
     ----------
-    name : str
-        Name of the group.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
@@ -41,7 +28,7 @@ class NodesGroup(Group):
 
     """
 
-    def __init__(self, nodes, **kwargs):
+    def __init__(self, *, nodes, **kwargs):
         super(NodesGroup, self).__init__(**kwargs)
         self.nodes = nodes
 
@@ -51,8 +38,6 @@ class ElementsGroup(Group):
 
     Parameters
     ----------
-    name : str
-        Name of the group.
     elements : list[:class:`compas_fea2.model.Element`]
         The elements belonging to the group.
 
@@ -63,7 +48,7 @@ class ElementsGroup(Group):
 
     """
 
-    def __init__(self, elements, **kwargs):
+    def __init__(self, *, elements, **kwargs):
         super(ElementsGroup, self).__init__(**kwargs)
         self.elements = elements
 
@@ -73,8 +58,6 @@ class PartsGroup(Group):
 
     Parameters
     ----------
-    name : str
-        Name of the group.
     parts : list[:class:`compas_fea2.model.Part`]
         The parts belonging to the group.
 
@@ -85,6 +68,6 @@ class PartsGroup(Group):
 
     """
 
-    def __init__(self, parts, **kwargs):
+    def __init__(self, *, parts, **kwargs):
         super(PartsGroup, self).__init__(**kwargs)
         self.parts = parts

@@ -7,10 +7,10 @@ import pickle
 from sys import path
 from pathlib import Path
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Results(FEABase):
+class Results(FEAData):
     """`compas_fea2` ResultsBase object. This ensures that the results from all
     the backends are consistent.
 
@@ -191,7 +191,7 @@ class Results(FEABase):
                           sort_keys=True, indent=4)
 
 
-class CaseResults(FEABase):
+class CaseResults(FEAData):
     """`compas_fea2` ResultsCaseBase object. This ensures that the results from
     a specific load case are consistently organised across all backends.
 

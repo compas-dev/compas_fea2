@@ -2,21 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Constraint(FEABase):
+class Constraint(FEAData):
     """Initialises base Constraint object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the Constraint object.
-
     """
 
-    def __init__(self, name):
-        super(Constraint, self).__init__(name=name)
+    def __init__(self, **kwargs):
+        super(Constraint, self).__init__(**kwargs)
 
 
 class TieConstraint(Constraint):
@@ -24,30 +18,26 @@ class TieConstraint(Constraint):
 
     Parameters
     ----------
-    name : str
-        TieConstraint name.
-    master : str
-        Master set name.
-    slave : str
-        Slave set name.
+    master : :class:`compas_fea2.model.Node`
+        Master set.
+    slave : :class:`compas_fea2.model.Node`
+        Slave set.
     tol : float
         Constraint tolerance, distance limit between master and slave.
 
     Attributes
     ----------
-    name : str
-        TieConstraint name.
-    master : str
-        Master set name.
-    slave : str
-        Slave set name.
+    master : :class:`compas_fea2.model.Node`
+        Master set.
+    slave : :class:`compas_fea2.model.Node`
+        Slave set.
     tol : float
         Constraint tolerance, distance limit between master and slave.
 
     """
 
-    def __init__(self, name, *, master, slave, tol):
-        super(TieConstraint, self).__init__(name)
+    def __init__(self, *, master, slave, tol, **kwargs):
+        super(TieConstraint, self).__init__(**kwargs)
         self._master = master
         self._slave = slave
         self._tol = tol

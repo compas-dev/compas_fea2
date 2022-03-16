@@ -2,22 +2,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import compas
-
 from compas.utilities.maps import geometric_key
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Node(FEABase):
+class Node(FEAData):
     """Initialises base Node object.
 
     Parameters
     ----------
-    xyz : list[float]
+    xyz : list[float, float, float] | :class:`compas.geometry.Point`
         The location of the node in the global coordinate system.
-    name : str, optional
-        Node's label. If no label is specified, it is automatically generated
-        when a node is added. The label does not need to be unique.
 
     Attributes
     ----------
@@ -33,6 +28,8 @@ class Node(FEABase):
         The Z coordinate.
     gkey : str, read-only
         The geometric key.
+    part : :class:`compas_fea2.model.Part` | None
+        The parent part of the node.
 
     Examples
     --------
@@ -40,12 +37,15 @@ class Node(FEABase):
 
     """
 
-    def __init__(self, xyz, name=None):
-        super(Node, self).__init__(name=name)
+    def __init__(self, xyz, part=None, **kwargs):
+        super(Node, self).__init__(**kwargs)
         self._key = None
         self._x = None
         self._y = None
         self._z = None
+        self._part = None
+        self.xyz = xyz
+        self.part = part
 
     @property
     def key(self):
@@ -87,4 +87,12 @@ class Node(FEABase):
 
     @property
     def gkey(self):
-        return geometric_key(self.xyz, precision=compas.PRECISION, sanitize=False)
+        return geometric_key(self.xyz)
+
+    @property
+    def part(self):
+        return self._part
+
+    @part.setter
+    def part(self, value):
+        self._part = value

@@ -5,14 +5,14 @@ from __future__ import print_function
 import pickle
 import importlib
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.steps import Case
 
 # Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
-class Problem(FEABase):
+class Problem(FEAData):
     """Initialises the Problem object.
 
     Parameters

@@ -4,21 +4,26 @@ from __future__ import print_function
 
 from abc import abstractmethod
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Material(FEABase):
+class Material(FEAData):
     """Initialises base Material object.
 
     Parameters
     ----------
-    name : str
-        Name of the Material object.
+    denisty : float
+        Density of the material.
+
+    Attributes
+    ----------
+    density : float
+        Density of the material.
 
     """
 
-    def __init__(self, name, *, density):
-        super(Material, self).__init__(name=name)
+    def __init__(self, *, density, **kwargs):
+        super(Material, self).__init__(**kwargs)
         self.density = density
 
     def __str__(self):
@@ -45,8 +50,6 @@ class ElasticOrthotropic(Material):
 
     Parameters
     ----------
-    name : str
-        Material name.
     Ex : float
         Young's modulus Ex in x direction [Pa].
     Ey : float
@@ -74,8 +77,8 @@ class ElasticOrthotropic(Material):
 
     """
 
-    def __init__(self, name, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density):
-        super(ElasticOrthotropic, self).__init__(name, density=density)
+    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -112,8 +115,6 @@ class ElasticIsotropic(Material):
 
     Parameters
     ----------
-    name : str
-        Material name.
     E : float
         Young's modulus E [Pa].
     v : float
@@ -129,8 +130,8 @@ class ElasticIsotropic(Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, **kwargs):
-        super(ElasticIsotropic, self).__init__(name, density=density)
+    def __init__(self, *, E, v, density, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density, **kwargs)
         self.E = E
         self.v = v
 
@@ -153,16 +154,10 @@ G : {}
 
 class Stiff(ElasticIsotropic):
     """Elastic, very stiff and massless material.
-
-    Parameters
-    ----------
-    name : str
-        Material name.
-
     """
 
-    def __init__(self, name):
-        super(Stiff, self).__init__(name, E=1e+16, v=0.3, density=1e-16)
+    def __init__(self, **kwargs):
+        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, **kwargs)
 
     def __str__(self):
         return """
@@ -187,8 +182,6 @@ class ElasticPlastic(ElasticIsotropic):
 
     Parameters
     ----------
-    name : str
-        Material name.
     E : float
         Young's modulus [Pa].
     v : float
@@ -201,8 +194,8 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, name, *, E, v, density, strain_stress):
-        super(ElasticPlastic, self).__init__(name, E=E, v=v, density=density)
+    def __init__(self, *, E, v, density, strain_stress, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):

@@ -6,7 +6,7 @@ from compas.data import Data
 import compas_fea2
 
 
-class FEABase(Data):
+class FEAData(Data):
     """Base class for all FEA model objects.
 
     This base class inherits the serialisation infrastructure
@@ -25,8 +25,8 @@ class FEABase(Data):
     def __new__(cls, *args, **kwargs):
         imp = compas_fea2.get_backend_implementation(cls)
         if not imp:
-            return super(FEABase, cls).__new__(cls)
-        return super(FEABase, imp).__new__(imp)
+            return super(FEAData, cls).__new__(cls)
+        return super(FEAData, imp).__new__(imp)
 
     # def __str__(self):
     #     """String representation of the object.

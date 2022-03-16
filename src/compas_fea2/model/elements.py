@@ -3,50 +3,50 @@ from __future__ import division
 from __future__ import print_function
 
 from compas.geometry import Frame
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 
 
-class Element(FEABase):
+class Element(FEAData):
     """Initialises a base Element object.
 
     Parameters
     ----------
-    key : int
-        Key number of the element.
     nodes : list[:class:`compas_fea2.model.Node`]
         Ordered list of node identifiers to which the element connects.
     section : :class:`compas_fea2.model.Section`
         Section Object assigned to the element.
-    name : str, optional
-        The name of the Element, by default the element key.
+    part : :class:`compas_fea2.model.Part`, optional
+        The parent part of the element.
 
     Attributes
     ----------
-    key : int
-        Key number of the element.
+    key : int, read-only
+        Identifier of the element in the parent part.
     nodes : list[:class:`compas_fea2.model.Node`]
-        Ordered list of node identifiers to which the element connects.
+        Nodes to which the element is connected.
     nodes_key : str, read-only
-        Identifier of the conntected nodes.
+        Identifier based on the conntected nodes.
     section : :class:`compas_fea2.model.Section`
         Section object.
     frame : :class:`compas.geometry.Frame`
         The local coordinate system for property assignement.
         Default to the global coordinate system.
-
-    Warnings
-    --------
-    The nodes of the element must be provided in the correct order!
+    part : :class:`compas_fea2.model.Part` | None
+        The parent part.
 
     """
 
-    def __init__(self, *, nodes, section, name=None):
-        super(Element, self).__init__(name=name)
+    def __init__(self, *, nodes, section, frame=None, part=None, **kwargs):
+        super(Element, self).__init__(**kwargs)
         self._key = None
-        self._nodes = nodes
-        self._connected_nodes = []
-        self._section = section
+        self._nodes = None
+        self._section = None
         self._frame = None
+        self._part = None
+        self.nodes = nodes
+        self.section = section
+        self.frame = frame
+        self.part = part
 
     @property
     def key(self):
@@ -62,7 +62,7 @@ class Element(FEABase):
 
     @property
     def nodes_key(self):
-        return '_'.join(sorted([str(node.key) for node in self.nodes]))
+        return '-'.join(sorted([str(node.key) for node in self.nodes], key=int))
 
     @property
     def section(self):
@@ -81,6 +81,14 @@ class Element(FEABase):
     @frame.setter
     def frame(self, value):
         self._frame = value
+
+    @property
+    def part(self):
+        return self._part
+
+    @part.setter
+    def part(self, value):
+        self._part = value
 
 
 # ==============================================================================

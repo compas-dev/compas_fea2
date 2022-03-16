@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import importlib
 
-from compas_fea2.base import FEABase
+from compas_fea2.base import FEAData
 from compas_fea2.problem.loads import Load
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.outputs import FieldOutput
@@ -15,7 +15,7 @@ from compas_fea2.model.groups import NodesGroup
 #            Francesco Ranaudo (github.com/franaudo)
 
 
-class Case(FEABase):
+class Case(FEAData):
     """Initialises base Case object.
 
     Parameters

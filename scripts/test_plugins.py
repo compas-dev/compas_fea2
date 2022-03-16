@@ -2,6 +2,7 @@
 from compas_fea2.model import Model
 from compas_fea2.model import Material
 from compas_fea2.model import Section, BoxSection
+from compas_fea2.model import Part
 from compas_fea2.problem import Problem
 
 # compas_fea2.set_backend('abaqus')
@@ -24,3 +25,29 @@ print(section)
 print(box)
 
 print(problem)
+
+
+# for material in model.materials:
+#     for part in model.parts:
+#         for element in part.elements:
+#             element.section.material = material
+
+part = Part()
+
+material = Material()
+section = Section(material=material)
+
+part.add_material(material)
+part.add_section(section)
+
+vertex_node = {}
+for vertex in mesh.vertices():
+    point = mesh.vertex_coordinates(vertex)
+    node = part.add_node(Node(point))
+    vertex_node[vertex] = node
+
+for face in mesh.faces():
+    nodes = [vertex_node[vertex] for vertex in mesh.face_vertices(face)]
+    element = Element(nodes=nodes, section=section)
+    part.add_element(element)
+

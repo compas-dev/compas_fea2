@@ -95,7 +95,7 @@ Boundary Conditions
 .. autosummary::
     :toctree: generated/
 
-    GeneralBC
+    BoundaryCondition
     FixedBC
     PinnedBC
     FixedBCXX
@@ -185,7 +185,7 @@ from .releases import (
     BeamEndRelease,
 )
 from .bcs import (
-    GeneralBC,
+    BoundaryCondition,
     FixedBC,
     PinnedBC,
     FixedBCXX,
@@ -260,7 +260,7 @@ __all__ = [
 
     'BeamEndRelease',
 
-    'GeneralBC',
+    'BoundaryCondition',
     'FixedBC',
     'PinnedBC',
     'FixedBCXX',

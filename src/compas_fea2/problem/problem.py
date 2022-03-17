@@ -7,9 +7,7 @@ import importlib
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
-from compas_fea2.problem.steps import Case
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
+from compas_fea2.problem.steps import Step
 
 
 class Problem(FEAData):
@@ -37,10 +35,6 @@ class Problem(FEAData):
         """str : The author of the Model. This will be added to the input file and
         can be useful for future reference."""
         return self._author
-
-    @author.setter
-    def author(self, value):
-        self._author = value
 
     @property
     def description(self):
@@ -82,7 +76,7 @@ class Problem(FEAData):
 
     def _check_step_in_problem(self, step):
         """Check if a step is defined in the Problem. If `step` is of type `str`,
-        check if the step is already defined. If `step` is of type `Case`,
+        check if the step is already defined. If `step` is of type `Step`,
         add the step to the Problem if not already defined.
 
         Parameters
@@ -107,15 +101,14 @@ class Problem(FEAData):
             if step not in self._steps:
                 raise ValueError(f'{step} not found in the Problem')
             step_name = step
-            # step = self.steps[step]
-        elif isinstance(step, Case):
+        elif isinstance(step, Step):
             if step.name not in self.steps:
                 self.add_step(step)
-                print(f'{step.__repr__()} added to the Problem')
+                print(f'{step!r} added to the Problem')
             step_name = step.name
         else:
             raise TypeError(
-                f'{step} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+                f'{step!r} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
 
         return self.steps[step_name]
 
@@ -125,54 +118,23 @@ class Problem(FEAData):
         Parameters
         ----------
         Step : obj
-            `compas_fea2` Step object.
+            :class:`Step` subclass object.
         append : bool
-            if True add it to the step_order sequence.
+            if ``True`` add it to the step_order sequence.
 
         Returns
         -------
         None
         """
-        if isinstance(step, Case):
+        if isinstance(step, Step):
             if step._name in self._steps:
-                print(f'WARNING: {step.__repr__()} already defined in the Problem. skipped!')
+                print(f'WARNING: {step!r} already defined in the Problem. skipped!')
             else:
                 self._steps[step._name] = step
-
-                # for displacement in step._displacements.values():
-                #     if displacement._name not in self._displacements:
-                #         self._displacements[displacement._name] = displacement
-                #     else:
-                #         raise ValueError(f'{displacement}')
-
-                # if step._loads:
-                #     for load in step._loads.values():
-                #         if isinstance(load, LoadBase):
-                #             if load._name not in self._loads:
-                #                 self._loads[load._name] = load
-                #         else:
-                #             raise ValueError(f'{load}')
-
-                # if step._field_outputs:
-                #     for field_output in step._field_outputs.values():
-                #         if isinstance(field_output, FieldOutputBase):
-                #             if field_output._name not in self._field_outputs:
-                #                 self._field_outputs[field_output._name] = field_output
-                #         else:
-                #             raise ValueError(f'{field_output}')
-
-                # if step._history_outputs:
-                #     for history_output in step._history_outputs.values():
-                #         if isinstance(history_output, HistoryOutputBase):
-                #             if history_output._name not in self._history_outputs:
-                #                 self._history_outputs[history_output._name] = history_output
-                #         else:
-                #             raise ValueError(f'{history_output}')
-
                 if append:
                     self._steps_order.append(step._name)
         else:
-            raise TypeError('You must provide a Step/Case object')
+            raise TypeError('You must provide a Step/Step object')
 
     def add_steps(self, steps):
         """Adds multiple steps to the Problem object.
@@ -180,7 +142,8 @@ class Problem(FEAData):
         Parameters
         ----------
         steps : list
-            List of `compas_fea2` Step objects in the order they will be applied.
+            List of :class:`Step` subclass objects in the order they will be
+            applied.
 
         Returns
         -------
@@ -208,6 +171,23 @@ class Problem(FEAData):
         """
         raise NotImplementedError
 
+    def add_linear_perturbation_step(self, lp_step, base_step):
+        """Add a linear perturbation step to a previously defined step.
+
+        Note
+        ----
+        Linear perturbartion steps do not change the history of the problem (hence
+        following steps will not consider their effects).
+
+        Parameters
+        ----------
+        lp_step : obj
+            :class:`LinearPerturbationBase` subclass instance
+        base_step : str
+            name of a previously defined step which will be used as starting conditions
+            for the application of the linear perturbation step.
+        """
+        raise NotImplementedError()
     # =========================================================================
     #                           Displacements methods
     # =========================================================================
@@ -218,9 +198,10 @@ class Problem(FEAData):
         Parameters
         ----------
         displacement : obj, str
-            `compas_fea2` Displacement object or name of the object.
+            :class:`GeneralDisplacementBase` subclass object or name of the object.
         step : obj or str, optional
-            `compas_fea2` Step object or name of the object, by default None.
+            :class:`Step` subclass object or name of the object, by default
+            ``None``.
 
         Returns
         -------
@@ -228,21 +209,21 @@ class Problem(FEAData):
         """
 
         if step:
-            if isinstance(step, Case):
+            if isinstance(step, Step):
                 if step._name not in self._steps:
                     self.add_step(step)
-                    print(f'{step.__repr__()} added to the Problem')
+                    print(f'{step!r} added to the Problem')
                 step_name = step._name
             else:
                 if step not in self._steps:
                     raise ValueError(
-                        'The step provided is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+                        'The step provided is either not an instance of a compas_fea2 Step subclass or not found in the Problem')
                 step_name = step
 
             if isinstance(displacement, GeneralDisplacement):
                 if displacement._name not in self._displacements:
                     self._displacements[displacement._name] = displacement
-                    print(f'{displacement.__repr__()} added to {self.__repr__()}')
+                    print(f'{displacement!r} added to {self!r}')
                 displacement_name = displacement._name
             else:
                 if displacement not in self._displacements:
@@ -250,14 +231,14 @@ class Problem(FEAData):
                 displacement_name = displacement
 
             self._steps[step_name].add_displacement(self._displacements[displacement_name])
-            print(f'{self._displacements[displacement_name].__repr__()} added to {self._steps[step_name].__repr__()}')
+            print(f'{self._displacements[displacement_name]!r} added to {self._steps[step_name]!r}')
 
         else:
             if not isinstance(displacement, GeneralDisplacement):
                 raise ValueError('You must provide a Displacement object.')
             if displacement._name not in self._displacements:
                 self._displacements[displacement._name] = displacement
-                print(f'{displacement.__repr__()} added to {self.__repr__()}')
+                print(f'{displacement!r} added to {self!r}')
 
     def add_displacements(self, displacements, step):
         """Adds multiple displacements to the a Step in Problem object.
@@ -265,15 +246,14 @@ class Problem(FEAData):
         Parameters
         ----------
         displacements : list
-            List of `compas_fea2` Displacement objects.
+            List of :class:`GeneralDisplacementBase` subclass objects.
 
         Returns
         -------
         None
         """
-        raise NotImplementedError
-        # self._check_step_in_problem(step)
-        # self.steps[step_name].add_displacement(displacement)
+        for displacement in displacements:
+            self.add_displacement(displacement, step)
 
     def remove_displacement(self, displacement_name, step_name):
         """Removes a boundary condition from the Problem object.
@@ -281,7 +261,9 @@ class Problem(FEAData):
         Parameters
         ----------
         displacement_name : str
-            Name of thedisplacement to remove.
+            Name of the Displacement to remove.
+        stap_name : str
+            Name of the Step where the Displacement will be removed from.
 
         Returns
         -------
@@ -296,6 +278,8 @@ class Problem(FEAData):
         ----------
         displacement_names : list
             List of names of the displacements to remove.
+        stap_name : str
+            Name of the Step where the Displacement will be removed from.
 
         Returns
         -------
@@ -303,8 +287,8 @@ class Problem(FEAData):
         """
         raise NotImplementedError
 
-    def remove_all_displacement(self, step_name):
-        """Removes all the Displacements from a Step in the Problem object.
+    def remove_all_displacements(self, step_name):
+        """Removes all the Displacements from a Step.
 
         Parameters
         ----------
@@ -320,35 +304,63 @@ class Problem(FEAData):
     # =========================================================================
     #                           Loads methods
     # =========================================================================
+    def add_point_load(self, name, step, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        """Apply a :class:`PointLoadBase` subclass object to a Part in a Step.
 
-    def add_point_load(self, name, step, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        Parameters
+        ----------
+        name : str
+            name of the PointLoad
+        step : str
+            name of the Step
+        part : str
+            name of the Part
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
+            applied.
+        x : float, optional
+            x component of force, by default ``None``.
+        y : float, optional
+            y component of force, by default ``None``.
+        z : float, optional
+            z component of force, by default ``None``.
+        xx : float, optional
+            xx component of moment, by default ``None``.
+        yy : float, optional
+            yy component of moment, by default ``None``.
+        zz : float, optional
+            zz component of moment, by default ``None``.
+        axes : str, optional
+            Load applied via 'local' or 'global' axes, by default ``global``.
+        """
+        # FIXME in this way it is not possible to check if the part is in the model
         step = self._check_step_in_problem(step)
-        step.add_point_load(name, part, nodes, x, y, z, xx, yy, zz, axes)
+        step.add_point_load(name, part, where, x, y, z, xx, yy, zz, axes)
 
     def add_gravity_load(self, name, step, g=9.81, x=0., y=0., z=-1.):
         step = self._check_step_in_problem(step)
         step.add_gravity_load(name, g, x, y, z)
 
     def add_prestress_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_line_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_area_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_tributary_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_harmonic_point_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_harmonic_preassure_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add_acoustic_diffuse_field_load(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def remove_load(self, load_name, step_name):
         """Removes a Load from the Problem object.
@@ -362,7 +374,7 @@ class Problem(FEAData):
         -------
         None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def remove_loads(self, load_names, step_name):
         """Removes multiple Loads from the Problem object.
@@ -376,7 +388,7 @@ class Problem(FEAData):
         -------
         None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def remove_all_loads(self, step_name):
         """Removes all the loads from a Step in the Problem object.
@@ -445,7 +457,7 @@ class Problem(FEAData):
         -------
         None
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def remove_all_output(self, step):
         """Removes all the outputs from the Problem object. Both FieldOutputs and HistoryOutputs
@@ -523,24 +535,20 @@ class Problem(FEAData):
         -------
         None
         """
-        steps_data = '\n'.join([f'{name.__repr__()}' for name in self.steps.values()])
-        steps_order_data = '\n'.join([f'{name}' for name in self.steps_order])
+        steps_data = '\n'.join([f'{self.steps[step].name}: {self.steps[step].__name__}' for step in self.steps_order])
 
         summary = f"""
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 compas_fea2 Problem: {self._name}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-description: {self.description or 'N/A'}
-author: {self.author or 'N/A'}
+description: {self.description}
+author: {self.author}
 
-Steps
------
+Steps (in order of application)
+-------------------------------
 {steps_data}
 
-Steps Order
------------
-{steps_order_data}
 """
         print(summary)
         return summary
@@ -572,13 +580,13 @@ Steps Order
         None
         """
 
-        filename = '{0}/{1}.cfp'.format(path, self.name)
+        filename = f'{path}/{self.name}.cfp'
 
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
         if output:
-            print('***** Problem saved to: {0} *****\n'.format(filename))
+            print(f'***** Problem saved to: {filename} *****\n')
 
     @staticmethod
     def load_from_cfp(filename, output=True):
@@ -600,7 +608,7 @@ Steps Order
             probelm = pickle.load(f)
 
         if output:
-            print('***** Problem loaded from: {0} *****'.format(filename))
+            print(f'***** Problem loaded from: {filename} *****\n')
 
         return probelm
 
@@ -612,9 +620,6 @@ Steps Order
         raise NotImplementedError("this function is not available for the selceted backend")
 
     def analyse(self):
-        raise NotImplementedError("this function is not available for the selceted backend")
-
-    def optimise(self):
         raise NotImplementedError("this function is not available for the selceted backend")
 
     # =========================================================================

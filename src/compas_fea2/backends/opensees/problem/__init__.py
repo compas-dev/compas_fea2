@@ -4,9 +4,10 @@ from __future__ import print_function
 
 
 # additional software-based classes
-#from .load_combos import *
-from .loads import *
-from .problem import *
-
+from .problem import Problem
+from .loads import (PointLoad,
+                    )
+from .steps import (LinearStaticStep,
+                    )
 
 __all__ = [name for name in dir() if not name.startswith('_')]

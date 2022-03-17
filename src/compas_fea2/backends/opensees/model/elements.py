@@ -20,15 +20,6 @@ from compas_fea2.model import TetrahedronElementBase
 from compas_fea2.model import HexahedronElementBase
 
 
-# Francesco Ranaudo (github.com/franaudo)
-
-# TODO add the property class here
-
-__all__ = [
-    'BeamElement',
-]
-
-
 # ==============================================================================
 # General
 # ==============================================================================
@@ -44,25 +35,19 @@ __all__ = [
 # ==============================================================================
 
 class BeamElement(BeamElementBase):
-    """A 1D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
+    """OpenSees implementation of :class:`BeamElementBase`.\n
     """
+    __doc__ += BeamElementBase.__doc__
 
-    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
-        super(BeamElement, self).__init__(connectivity, section, thermal)
-        self.elset = elset
-        self.eltype = 'element elasticBeamColumn'
-        self.orientation = orientation
+    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], thermal=None):
+        super(BeamElement, self).__init__(connectivity, section, orientation, thermal)
+        self._eltype = 'element elasticBeamColumn'
 
     def _generate_jobdata(self):
         line = []
         line.append('geomTransf Corotational {1}\n'.format(
             self.key, ' '.join([str(i) for i in self.orientation])))
-        line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self.eltype,
+        line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self._eltype,
                                                               self.key,
                                                               self.connectivity[0],
                                                               self.connectivity[1],
@@ -74,7 +59,3 @@ class BeamElement(BeamElementBase):
                                                               self.section.Iyy,
                                                               self.key))
         return ''.join(line)
-
-
-if __name__ == "__main__":
-    pass

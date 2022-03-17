@@ -118,23 +118,27 @@ Sets
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import os
-
-# additional software-based classes
-from .model import *
-from .parts import *
-from .nodes import *
+from .model import Model
+from .parts import Part
+from .nodes import Node
 # from .interactions import *
 # from .sets import *
-from .constraints import *
-from .elements import *
-from .materials import *
-from .sections import *
-from .bcs import *
-
-
-__all__ = [name for name in dir() if not name.startswith('_')]
+# from .constraints import *
+from .elements import (BeamElement,
+                       )
+from .materials import (ElasticIsotropic,
+                        )
+from .sections import (RectangularSection,
+                       )
+from .bcs import (FixedBC,
+                  PinnedBC,
+                  FixedBCXX,
+                  FixedBCYY,
+                  FixedBCZZ,
+                  RollerBCX,
+                  RollerBCY,
+                  RollerBCZ,
+                  RollerBCXY,
+                  RollerBCYZ,
+                  RollerBCXZ
+                  )

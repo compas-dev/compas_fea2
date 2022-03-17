@@ -14,8 +14,8 @@ from compas_fea2.model.parts import Part
 from compas_fea2.model.materials import Material
 from compas_fea2.model.sections import Section
 from compas_fea2.model.bcs import BoundaryCondition
-# from compas_fea2.model.groups import NodesGroup
-# from compas_fea2.model.groups import ElementsGroup
+from compas_fea2.model.groups import NodesGroup
+from compas_fea2.model.groups import ElementsGroup
 
 
 class Model(FEAData):
@@ -323,95 +323,25 @@ class Model(FEAData):
         for part in parts:
             self.add_part(part)
 
-    # =========================================================================
-    #                           Nodes methods
-    # =========================================================================
+    def get_node_from_coordinates(self, xyz, tol):
+        """Finds (if any) the Node object in the model with the specified coordinates.
+        A tollerance factor can be specified.
 
-    # def add_node(self, node, part, check=False):
-    #     """Add a :class:`NodeBase` object to a part in the Model.
-    #     If the node object has no label, one is automatically assigned.
+        Parameters
+        ----------
+        xyz : list
+            List with the [x, y, z] coordinates of the Node.
+        tol : int
+            multiple to which round the coordinates.
 
-    #     Parameters
-    #     ----------
-    #     node : obj
-    #         :class:`NodeBase` object.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool, optional
-    #         If ``True``, checks if the node is already present. This is a quite
-    #         resource-intense operation! Set to ``False`` for large parts (>10000
-    #         nodes). By default ``False``
-
-    #     Return
-    #     ------
-    #     int
-    #         node key
-
-    #     Examples
-    #     --------
-    #     >>> model = Model('mymodel')
-    #     >>> model.add_part(Part('mypart'))
-    #     >>> node = Node(1.0, 2.0, 3.0)
-    #     >>> model.add_node(node, 'mypart', check=True)
-    #     0
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     return part.add_node(node, check)
-
-    # def add_nodes(self, nodes, part, check=False):
-    #     """Add multiple :class:`NodeBase` objects a part in the Model.
-    #     If the Node object has no label, one is automatically assigned.
-    #     Duplicate nodes are automatically excluded.
-
-    #     Parameters
-    #     ----------
-    #     nodes : list
-    #         List of :class:`NodeBase` objects.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool, optional
-    #         If ``True``, checks if the node is already present. This is a quite
-    #         resource-intense operation! Set to ``False`` for large parts (>10000
-    #         nodes). By default ``False``
-
-    #     Return
-    #     ------
-    #     list of int
-    #         list with the keys of the added nodes.
-
-    #     Examples
-    #     --------
-    #     >>> model = Model('mymodel')
-    #     >>> model.add_part(Part('mypart'))
-    #     >>> node1 = Node([1.0, 2.0, 3.0])
-    #     >>> node2 = Node([3.0, 4.0, 5.0])
-    #     >>> node3 = Node([3.0, 4.0, 5.0]) # Duplicate node
-    #     >>> model.add_nodes([node1, node2, node3], 'mypart', check=True)
-    #     [0, 1, None]
-    #     """
-    #     return [self.add_node(node, part, check) for node in nodes]
-
-    # def get_node_from_coordinates(self, xyz, tol):
-    #     """Finds (if any) the Node object in the model with the specified coordinates.
-    #     A tollerance factor can be specified.
-
-    #     Parameters
-    #     ----------
-    #     xyz : list
-    #         List with the [x, y, z] coordinates of the Node.
-    #     tol : int
-    #         multiple to which round the coordinates.
-
-    #     Returns
-    #     -------
-    #     dict
-    #         Dictionary with the keys of the maching nodes for each Part.
-    #         key =  Part name
-    #         value = list of keys of the maching the specified coordinates.
-    #     """
-    #     return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
+        Returns
+        -------
+        dict
+            Dictionary with the keys of the maching nodes for each Part.
+            key =  Part name
+            value = list of keys of the maching the specified coordinates.
+        """
+        return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
 
     # =========================================================================
     #                           Materials methods
@@ -873,8 +803,8 @@ class Model(FEAData):
     # =========================================================================
 
     # FIXME missing axes
-    def add_bc(self, bc, nodes, part):
-        """Adds a :class:`BoundaryCondition` to the Problem object.
+    def add_bc(self, bc, where, part):
+        """Adds a :class:`compas_fea2.model.GeneralBC` to the Problem object.
 
         Parameters
         ----------
@@ -891,21 +821,24 @@ class Model(FEAData):
         None
         """
         part = self._check_part_in_model(part)
-        if not isinstance(nodes, (list, tuple)):
-            nodes = [nodes]
+
+        if isinstance(where, int):
+            nodes = [where]
+        elif isinstance(where, (list, tuple)):
+            nodes = where
+        elif isinstance(where, NodesGroup):
+            nodes = where.keys
+        else:
+            raise TypeError('You must provide either a key or a list of keys, or a NodesGroupBase subclass instance')
+        # self._check_nodes_in_model(nodes) #TODO implement method
+
         if not isinstance(bc, BoundaryCondition):
             raise TypeError(f'{bc} not instance of a BC class')
-        if part not in self.bcs:
-            self._bcs[part] = {node: bc for node in nodes}
-        else:
-            for node in nodes:
-                if node in self.bcs[part]:
-                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[node].__repr__()}")
-                else:
-                    self._bcs[part][node] = bc
 
-    def add_bc_type(self, name, bc_type, part, nodes, axes='global'):
-        """Add a :class:`BoundaryCondition` subclass to nodes in a part by type.
+        self._bcs.setdefault(part.name, {})[bc] = nodes
+
+    def add_bc_type(self, name, bc_type, part, where, axes='global'):
+        """Add a :class:`GeneralBCBase` subclass to some nodes in a part by type.
 
         Note
         ----
@@ -930,8 +863,9 @@ class Model(FEAData):
             one of the boundary condition types specified above
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
@@ -940,13 +874,11 @@ class Model(FEAData):
                  'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
                  'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
                  }
-        self._check_part_in_model(part)
-        # self._check_nodes_in_model(nodes) #TODO implement method
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         bc = getattr(m, types[bc_type])(name, axes)
-        self._bcs.setdefault(part, {})[bc] = nodes
+        self.add_bc(bc, where, part)
 
-    def add_fix_bc(self, name, part, nodes, axes='global'):
+    def add_fix_bc(self, name, part, where, axes='global'):
         """Add a :class:`FixedBCBase` to the nodes in a part.
 
         Parameters
@@ -955,14 +887,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes keys where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fix', part, nodes)
+        self.add_bc_type(name, 'fix', part, where)
 
-    def add_fixXX_bc(self, name, part, nodes, axes='global'):
+    def add_fixXX_bc(self, name, part, where, axes='global'):
         """Add a fixed boundary condition type free about XX to some nodes in a part.
 
         Parameters
@@ -971,14 +904,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixXX', part, nodes)
+        self.add_bc_type(name, 'fixXX', part, where)
 
-    def add_fixYY_bc(self, name, part, nodes, axes='global'):
+    def add_fixYY_bc(self, name, part, where, axes='global'):
         """Add a fixed boundary condition free about YY type to some nodes in a part.
 
         Parameters
@@ -987,14 +921,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixYY', part, nodes)
+        self.add_bc_type(name, 'fixYY', part, where)
 
-    def add_fixZZ_bc(self, name, part, nodes, axes='global'):
+    def add_fixZZ_bc(self, name, part, where, axes='global'):
         """Add a fixed boundary condition free about ZZ type to some nodes in a part.
 
         Parameters
@@ -1003,14 +938,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixZZ', part, nodes)
+        self.add_bc_type(name, 'fixZZ', part, where)
 
-    def add_pin_bc(self, name, part, nodes):
+    def add_pin_bc(self, name, part, where):
         """Add a pinned boundary condition type to some nodes in a part.
 
         Parameters
@@ -1019,14 +955,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'pin', part, nodes)
+        self.add_bc_type(name, 'pin', part, where)
 
-    def add_rollerX_bc(self, name, part, nodes):
+    def add_rollerX_bc(self, name, part, where):
         """Add a roller free on X boundary condition type to some nodes in a part.
 
         Parameters
@@ -1035,14 +972,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerX', part, nodes)
+        self.add_bc_type(name, 'rollerX', part, where)
 
-    def add_rollerY_bc(self, name, part, nodes):
+    def add_rollerY_bc(self, name, part, where):
         """Add a roller free on Y boundary condition type to some nodes in a part.
 
         Parameters
@@ -1051,14 +989,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerY', part, nodes)
+        self.add_bc_type(name, 'rollerY', part, where)
 
-    def add_rollerZ_bc(self, name, part, nodes):
+    def add_rollerZ_bc(self, name, part, where):
         """Add a roller free on Z boundary condition type to some nodes in a part.
 
         Parameters
@@ -1067,14 +1006,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerZ', part, nodes)
+        self.add_bc_type(name, 'rollerZ', part, where)
 
-    def add_rollerXY_bc(self, name, part, nodes):
+    def add_rollerXY_bc(self, name, part, where):
         """Add a roller free on XY boundary condition type to some nodes in a part.
 
         Parameters
@@ -1083,14 +1023,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerXY', part, nodes)
+        self.add_bc_type(name, 'rollerXY', part, where)
 
-    def add_rollerXZ_bc(self, name, part, nodes):
+    def add_rollerXZ_bc(self, name, part, where):
         """Add a roller free on XZ boundary condition type to some nodes in a part.
 
         Parameters
@@ -1099,14 +1040,15 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerXZ', part, nodes)
+        self.add_bc_type(name, 'rollerXZ', part, where)
 
-    def add_rollerYZ_bc(self, name, part, nodes):
+    def add_rollerYZ_bc(self, name, part, where):
         """Add a roller free on YZ boundary condition type to some nodes in a part.
 
         Parameters
@@ -1115,12 +1057,13 @@ class Model(FEAData):
             name of the boundary condition
         part : str
             name of the part where the boundary condition is applied
-        nodes : list
-            list of nodes where to apply the boundary condition
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
+            of the nodes where the boundary condition is applied.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerYZ', part, nodes)
+        self.add_bc_type(name, 'rollerYZ', part, where)
 
     def add_bcs(self, bcs):
         """Adds multiple boundary conditions to the Problem object.
@@ -1237,9 +1180,43 @@ Boundary Conditions
         print(data)
         return data
 
-    # # ==============================================================================
-    # # Save model file
-    # # ==============================================================================
+    # ==============================================================================
+    # Save model file
+    # ==============================================================================
+
+    def check(self, type='quick'):
+        """Check for possible problems in the model
+
+            Warning
+            -------
+            WIP! It is better if you check yourself...
+
+            Parameters
+            ----------
+            type : str, optional
+                *quick* or *deep* check, by default 'quick'
+
+            Returns
+            -------
+            str
+                report
+            """
+
+        def _check_units(self):
+            """Check if the units are consistent.
+            """
+            raise NotImplementedError()
+
+        def _check_bcs(self):
+            """Check if the units are consistent.
+            """
+            raise NotImplementedError()
+
+        raise NotImplementedError()
+
+    # ==============================================================================
+    # Viewer
+    # ==============================================================================
 
     # def save_to_cfm(self, path, output=True):
     #     """Exports the Model object to an .cfm file through Pickle.

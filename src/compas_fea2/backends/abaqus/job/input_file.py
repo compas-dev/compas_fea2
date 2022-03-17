@@ -61,8 +61,7 @@ class AbaqusInputFile(InputFile):
             content of the input file
         """
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        return f"""** {self._name}
-*Heading
+        return f"""*Heading
 ** Job name: {self._job_name}
 ** Generated using compas_fea2 version {compas_fea2.__version__}
 ** Author: {problem.author}
@@ -76,7 +75,7 @@ class AbaqusInputFile(InputFile):
 **------------------------------------------------------------------
 **------------------------------------------------------------------
 **
-{problem.model._generate_jobdata()}
+{problem.model._generate_jobdata()}**
 **------------------------------------------------------------------
 **------------------------------------------------------------------
 ** PROBLEM
@@ -85,7 +84,7 @@ class AbaqusInputFile(InputFile):
 {problem._generate_jobdata()}"""
 
 
-class AbaqusParFile(InputFile):
+class AbaqusParametersFile(InputFile):
     """ParFile object for optimisation.
 
     Parameters
@@ -101,30 +100,36 @@ class AbaqusParFile(InputFile):
         Name of the Abaqus job. This is the same as the input file name.
     """
 
-    def __init__(self, problem):
-        super(AbaqusParFile, self).__init__(problem)
-        self._input_file_type = "Parameters File"
-        self.name = '{}.par'.format(problem.name)
-        self.input_name = '{}.inp'.format(problem.name)
-        self.vf = problem.vf
-        self.iter_max = problem.iter_max
-        self._jobdata = self._generate_jobdata(problem)
+    def __init__(self):
+        self.__name__ = "Parameters File"
+        self._extension = 'par'
+        super().__init__()
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
+    @classmethod
+    def from_problem(cls, problem, smooth):
+        """[summary]
+
+        Parameters
+        ----------
+        problem : obj
+            :class:`ProblemBase` sub class object.
+        smooth : obj, optional
+            if a :class:`SmoothingParametersBase` subclass object is passed, the
+            optimisation results will be postprocessed and smoothed, by defaut
+            ``None`` (no smoothing)
 
         Returns
         -------
-        str
-
-        Examples
-        --------
-        >>>
+        obj
+            InputFile for the analysis.
         """
-        return self._jobdata
+        input_file = cls()
+        input_file._job_name = problem._name
+        input_file._file_name = f'{problem._name}.{input_file._extension}'
+        input_file._job_data = input_file._generate_jobdata(problem, smooth)
+        return input_file
 
-    def _generate_jobdata(self, problem):
+    def _generate_jobdata(self, opti_problem, smooth):
         """Generate the content of the parameter file from the optimisation
         settings of the Problem object.
 
@@ -140,10 +145,10 @@ class AbaqusParFile(InputFile):
         """
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         return f"""! Optimization Process name: {self._job_name}
-! Model name: {problem.model.name}
+! Model name: {opti_problem._problem.model.name}
 ! Task name: TopOpt
 ! Generated using compas_fea2 version {compas_fea2.__version__}
-! Author: {problem.author}
+! Author: {opti_problem._problem.author}
 ! Date: {now}
 !
 ! ----------------------------------------------------------------
@@ -151,113 +156,29 @@ class AbaqusParFile(InputFile):
 !
 FEM_INPUT
   ID_NAME        = OPTIMIZATION_MODEL
-  FILE           = {self.input_name}
+  FILE           = {opti_problem._problem._name}.inp
 END_
 !
 ! ----------------------------------------------------------------
-! Design area for task: top_opt
-!
-DV_TOPO
-  ID_NAME        = top_opt_DESIGN_AREA_
-  EL_GROUP       = ALL_ELEMENTS
-END_
-!
+! Design area
+{opti_problem._design_variables._generate_jobdata()}!
 ! ----------------------------------------------------------------
-! Design Response: strain_eng
-!
-DRESP
-  ID_NAME        = strain_eng
-  DEF_TYPE       = SYSTEM
-  TYPE           = ENERGY_STIFF_MEASURE
-  UPDATE         = EVER
-  EL_GROUP       = ALL_ELEMENTS
-  GROUP_OPER     = SUM
-  LC_SET         = ALL, 1, ALL
-END_
-!
+! Design responses
+{''.join([value._generate_jobdata() for value in opti_problem._design_responses.values()])}!
 ! ----------------------------------------------------------------
-! Design Response: volume
-!
-DRESP
-  ID_NAME        = volume
-  DEF_TYPE       = SYSTEM
-  TYPE           = VOLUME
-  UPDATE         = EVER
-  EL_GROUP       = ALL_ELEMENTS
-  GROUP_OPER     = SUM
-END_
-!
+! Objective Function
+{opti_problem._objective_function._generate_jobdata()}!
 ! ----------------------------------------------------------------
-! Objective Function: maximize_stiffness
-!
-OBJ_FUNC
-  ID_NAME        = maximize_stiffness
-  DRESP          = strain_eng, 1
-  TARGET         = MINMAX
-END_
-!
+! Constraints
+{''.join([value._generate_jobdata() for value in opti_problem._constraints.values()])}!
 ! ----------------------------------------------------------------
-! Constraint: vol_fraction
-!
-CONSTRAINT
-  ID_NAME        = vol_fraction
-  DRESP          = volume
-  MAGNITUDE      = REL
-  EQ_VALUE       = {self.vf}
-END_
-!
+! Task
+{opti_problem._generate_jobdata()}!
 ! ----------------------------------------------------------------
-! Task: top_opt
-!
-OPTIMIZE
-  ID_NAME        = top_opt
-  DV             = top_opt_DESIGN_AREA_
-  OBJ_FUNC       = maximize_stiffness
-  CONSTRAINT     = vol_fraction
-  STRATEGY       = TOPO_SENSITIVITY
-END_
-OPT_PARAM
-  ID_NAME = top_opt_OPT_PARAM_
-  OPTIMIZE = top_opt
-  AUTO_FROZEN = LOAD
-  DENSITY_UPDATE = NORMAL
-  DENSITY_LOWER = 0.001
-  DENSITY_UPPER = 1.
-  DENSITY_MOVE = 0.25
-  MAT_PENALTY = 3.
-  STOP_CRITERION_LEVEL = BOTH
-  STOP_CRITERION_OBJ = 0.001
-  STOP_CRITERION_DENSITY = 0.005
-  STOP_CRITERION_ITER = 4
-  SUM_Q_FACTOR = 6.
-END_
-STOP
-  ID_NAME        = global_stop
-  ITER_MAX       = {self.iter_max}
-END_
+! Parameters
+{opti_problem._parameters._generate_jobdata(opti_problem._name)}!
 !
 ! ----------------------------------------------------------------
 !
-SMOOTH
-  id_name = ISO_SMOOTHING_0_3
-  task = iso
-  iso_value = 0.3
-  SELF_INTERSECTION_CHECK = runtime
-  smooth_cycles = 10
-  reduction_rate = 60
-  reduction_angle = 5.0
-  format = vtf
-  format = stl
-  format = onf
-END_
-DRIVER
-driver.Solver.AddCallArgs = ['message', 'messaging_mechanism=DIRECT', 'listener_name=FR-lenovo-P52', 'listener_resource=40212', 'direct_port=64475',  'memory=90%', 'cpus=4',]
-config.registerSaveRule(UpdateRules.MOVE, CheckPoints.CYCLE_COMPLETE, EventTimes.NEVER, [ '*.odb' ], 'SAVE.odb')
-config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.odb' ], 'SAVE.odb', '_%i')
-config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.msg' ], 'SAVE.msg', '_%i')
-config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.dat' ], 'SAVE.dat', '_%i')
-config.registerSaveRule(UpdateRules.COPY, CheckPoints.CYCLE_COMPLETE, EventTimes.EVER, [ '*.sta' ], 'SAVE.sta', '_%i')
-driver.registerCheckPointHook(CheckPoints.ITER_COMPLETE, HookTypes.POST, EventTimes.EVER, [ driver.Solver.Path, 'python', '-m', 'driverWriteOnfToOdb', '--type', OptimizationTypes.toOnf(driver.OptimizationType), '--inp', SMATsoUtil.basename(driver.FemInput.MasterFile) ], True, silent=True)
-driver.Solver.RemoveUserRequests = False
-END_
+{smooth._generate_jobdata() if smooth else '!'}
 EXIT"""

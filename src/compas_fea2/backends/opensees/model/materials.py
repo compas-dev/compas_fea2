@@ -21,22 +21,14 @@ from compas_fea2.model import ThermalMaterialBase
 # ==============================================================================
 
 class ElasticIsotropic(ElasticIsotropicBase):
+    """OpenSees implementation of :class:`ElasticIsotropicBase`.\n
+    """
+    __doc__ += ElasticIsotropicBase.__doc__
 
-    def __init__(self, name, E, v, p, unilateral=None):
+    def __init__(self, name, E, v, p):
         super(ElasticIsotropic, self).__init__(name, E, v, p)
-        self.unilateral = unilateral
-        # self._jobdata = self._generate_jobdata()
 
     def _generate_jobdata(self, m_index):
-        line = []
-        line.append('uniaxialMaterial Elastic {0} {1}\n'.format(m_index, self.E))
-        line.append('nDMaterial ElasticIsotropic {0} {1} {2} {3}'.format(
-            m_index + 1000, self.E, self.v, self.p))
+        line = [f'uniaxialMaterial Elastic {m_index} {self.E}\n',
+                f'nDMaterial ElasticIsotropic {m_index + 1000} {self.E} {self.v} {self.p}']
         return ''.join(line)
-
-
-### -------------------------------- DEBUG ------------------------------- ###
-if __name__ == "__main__":
-
-    material = ElasticIsotropic(name='test', E=10000, v=0.3, p=3000)
-    print(material._generate_jobdata(1))

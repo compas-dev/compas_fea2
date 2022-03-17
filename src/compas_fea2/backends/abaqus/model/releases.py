@@ -22,7 +22,7 @@ class AbaqusBeamEndRelease(BeamEndRelease):
         input file data line (str).
         """
         data = ''
-        for k, v in self.elem_end_dof.items():
+        for k, v in self.end_dof.items():
             for end, dofs in v.items():
                 data += '{},{},{}\n'.format(k, end, ','.join(dofs))
         return data

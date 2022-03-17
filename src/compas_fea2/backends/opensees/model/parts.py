@@ -5,24 +5,11 @@ from __future__ import print_function
 import sys
 from compas_fea2.model import PartBase
 
-# from compas_fea2.backends.abaqus.components import Node
-
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'Part',
-]
-
 
 class Part(PartBase):
-    """Initialises a Part object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the set.
+    """OpenSees implementation of :class:`PartBase`.\n
     """
+    __doc__ += PartBase.__doc__
 
     def __init__(self, name):
         super(Part, self).__init__(name)
@@ -41,13 +28,9 @@ class Part(PartBase):
 if __name__ == "__main__":
 
     from compas_fea2.backends.opensees import Node
-    from compas_fea2.backends.opensees import Concrete
     from compas_fea2.backends.opensees import ElasticIsotropic
-    from compas_fea2.backends.opensees import BoxSection
-    from compas_fea2.backends.opensees import SolidSection
+    from compas_fea2.backends.opensees import RectangularSection
     from compas_fea2.backends.opensees import BeamElement
-    from compas_fea2.backends.opensees import SolidElement
-    from compas_fea2.backends.opensees import Set
 
     part1 = Part(name='part-1')
 
@@ -66,21 +49,12 @@ if __name__ == "__main__":
     mat2 = ElasticIsotropic(name='mat2', E=25000, v=0.17, p=2.4e-9)
 
     # Define sections
-    section_A = SolidSection(name='section_A', material=mat1)
-    section_B = BoxSection(name='section_B', material=mat2, a=50, b=100, t1=5, t2=5, t3=5, t4=5)
+    section_A = RectangularSection(name='section_A', b=10, h=20, material=mat1)
 
     # Generate elements between nodes
     elements = []
     for e in range(len(part1.nodes)-1):
-        elements.append((BeamElement([e, e+1], section_B)))
+        elements.append((BeamElement([e, e+1], section_A)))
     part1.add_elements(elements)
-    part1.add_element(BeamElement([29, 0], section_A, elset='test'))
-    print(part1.elements_by_type)
-    print(part1._generate_jobdata())
-
-    # nset = Set('test_neset', my_part.nodes)
-    # my_part = Part(name='test', nodes=my_part.nodes, elements=[el_one, el_two, el_three, el_4], sets=[nset])
-
-    # print(my_part.check_for_duplicate_nodes())
-
-    # # print(type(my_part.elements_by_section[section_A]))
+    part1.add_element(BeamElement([29, 0], section_A))
+    print(part1)

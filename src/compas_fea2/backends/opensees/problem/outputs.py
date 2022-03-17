@@ -5,8 +5,6 @@ from __future__ import print_function
 from compas_fea2.problem.outputs import FieldOutputBase
 from compas_fea2.problem.outputs import HistoryOutputBase
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
 __all__ = [
     'FieldOutput',
     'HistoryOutput',

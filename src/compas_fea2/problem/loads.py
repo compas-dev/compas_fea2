@@ -89,7 +89,8 @@ class PointLoad(Load):
     """
 
     def __init__(self, name, x, y, z, xx, yy, zz, axes):
-        super(PointLoad, self).__init__(name=name, components={'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
+        super(PointLoad, self).__init__(name=name, components={
+            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
 
 
 class LineLoad(Load):
@@ -120,7 +121,8 @@ class LineLoad(Load):
     """
 
     def __init__(self, name, elements, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global'):
-        super(LineLoad, self).__init__(name=name, components={'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
+        super(LineLoad, self).__init__(name=name, components={
+            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
 
 
 class AreaLoad(Load):
@@ -176,6 +178,7 @@ class GravityLoad(Load):
 
 
 #  FIXME remove the nodes/elements from the loads below
+
 class TributaryLoad(Load):
     """Tributary area loads applied to nodes.
 
@@ -285,4 +288,118 @@ class AcousticDiffuseFieldLoad(Load):
 
     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
         components = {'air_density': air_density, 'sound_speed': sound_speed, 'max_inc_angle': max_inc_angle}
-        super(AcousticDiffuseFieldLoad, self).__init__(name=name, components=components, elements=elements, axes='global')
+        super(AcousticDiffuseFieldLoad, self).__init__(
+            name=name, components=components, elements=elements, axes='global')
+
+
+# class TributaryLoadBase(LoadBase):
+#     """Tributary area loads applied to nodes.
+
+#     Parameters
+#     ----------
+#     structure : obj
+#         Structure class.
+#     name : str
+#         Name of the TributaryLoad object.
+#     mesh : str
+#         Tributary Mesh datastructure.
+#     x : float
+#         x component of area load.
+#     y : float
+#         y component of area load.
+#     z : float
+#         z component of area load.
+#     axes : str
+#         TributaryLoad applied via 'local' or 'global' axes.
+
+#     Note
+#     ----
+#     - The load components are loads per unit area [N/m2].
+#     - Currently only supports 'global' axis.
+#     """
+
+#     def __init__(self, structure, name, mesh, x=0, y=0, z=0, axes='global'):
+#         nodes = []
+#         components = {}
+#         for key in mesh.vertices():
+#             node = structure.check_node_exists(mesh.vertex_coordinates(key))
+#             if node is not None:
+#                 A = mesh.vertex_area(key)
+#                 nodes.append(node)
+#                 components[node] = {'x': x * A, 'y': y * A, 'z': z * A}
+#         LoadBase.__init__(self, name=name, components=components, nodes=nodes, axes=axes)
+#         self.__name__ = 'TributaryLoad'
+
+
+# class HarmonicPointLoadBase(LoadBase):
+#     """Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the HarmoniPointLoadBase object.
+#     nodes : str, list
+#         Node set or node keys the load is applied to.
+#     x : float
+#         x component of force.
+#     y : float
+#         y component of force.
+#     z : float
+#         z component of force.
+#     xx : float
+#         xx component of moment.
+#     yy : float
+#         yy component of moment.
+#     zz : float
+#         zz component of moment.
+#     """
+
+#     def __init__(self, name, nodes, x=0, y=0, z=0, xx=0, yy=0, zz=0):
+#         LoadBase.__init__(self, name=name, components={'x': x, 'y': y,
+#                                                        'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, nodes=nodes, axes='global')
+#         self.__name__ = 'HarmoniPointLoadBase'
+
+
+# class HarmonicPressureLoadBase(LoadBase):
+#     """Harmonic pressure loads [units:N/m2] applied to element(s).
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the HarmonicPressureLoad object.
+#     elements : str, list
+#         Elements set or element keys the load is applied to.
+#     pressure : float
+#         Normal acting pressure to be applied to the elements.
+#     phase : float
+#         Phase angle in radians.
+#     """
+
+#     def __init__(self, name, elements, pressure=0, phase=None):
+#         LoadBase.__init__(self, name=name, components={'pressure': pressure,
+#                                                        'phase': phase}, elements=elements, axes='global')
+#         self.__name__ = 'HarmonicPressureLoad'
+
+
+# class AcousticDiffuseFieldLoadBase(LoadBase):
+#     """Acoustic Diffuse field loads applied to elements.
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the HarmonicPressureLoad object.
+#     elements : str, list
+#         Elements set or element keys the load is applied to.
+#     air_density : float
+#         Density of the acoustic fluid (defaults to air at 20 degrees).
+#     sound_speed : float
+#         Speed of sound (defaults to air at 20 degrees)
+#     max_inc_angle: float
+#         Maximum angle with the positive z axis for the randon incident plane waves
+#     """
+
+#     def __init__(self, name, elements, air_density=1.225, sound_speed=340, max_inc_angle=90):
+#         LoadBase.__init__(self, name=name, components={
+#                           'air_density': air_density, 'sound_speed': sound_speed, 'max_inc_angle': max_inc_angle},
+#                           elements=elements, axes='global')
+#         self.__name__ = 'AcousticDiffuseFieldLoad'

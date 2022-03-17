@@ -14,6 +14,7 @@ class AbaqusPart(Part):
         Name of the ``Part``.
 
     """
+    __doc__ += Part.__doc__
 
     def __init__(self, name):
         super(AbaqusPart, self).__init__(name)

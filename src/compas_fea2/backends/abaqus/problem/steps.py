@@ -2,18 +2,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem import GeneralStaticCase
+from compas_fea2.problem import GeneralStaticStep
 from compas_fea2.problem import StaticLinearPerturbationCase
 from compas_fea2.problem import HeatCase
 from compas_fea2.problem import ModalCase
-from compas_fea2.problem import HarmonicCase
-from compas_fea2.problem import BucklingCase
-from compas_fea2.problem import AcousticCase
+# from compas_fea2.problem import HarmonicCase
+# from compas_fea2.problem import BucklingCase
+# from compas_fea2.problem import AcousticCase
 
 # TODO add field and history output requrests
 
 
-class AbaqusGeneralStaticStep(GeneralStaticCase):
+class AbaqusGeneralStaticStep(GeneralStaticStep):
     """
     Notes
     -----
@@ -26,23 +26,21 @@ class AbaqusGeneralStaticStep(GeneralStaticCase):
         self._nlgeom = 'YES' if nlgeom else 'NO'
         self._modify = modify
 
-        @property
-        def nlgeometry(self):
-            """The nlgeometry property."""
-            return self.nlgeom
 
-        @nlgeometry.setter
-        def nlgeometry(self, value):
-            self._nlgeom = 'YES' if value else 'NO'
+class GeneralStaticStep(GeneralStaticStep):
+    """Abaqus implementation of the :class:`GeneralStaticStep`.
 
-        @property
-        def modify(self):
-            """The modify property."""
-            return self._modify
+    Note
+    ----
+    the data for the input file for this object is generated at runtime.
 
-        @modify.setter
-        def modify(self, value):
-            self._modify = value
+    """
+    __doc__ += GeneralStaticStep.__doc__
+
+    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
+        super(GeneralStaticStep, self).__init__(name, max_increments,
+                                                initial_inc_size, min_inc_size, time, nlgeom, modify)
+        self._stype = 'Static'
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -58,22 +56,20 @@ class AbaqusGeneralStaticStep(GeneralStaticCase):
 
         return f"""**
 {self._generate_header_section()}**
-** DISPLACEMENTS
-**
+** - Displacements
+**   -------------
 {self._generate_displacements_section()}**
-** LOADS
-**
+** - Loads
+**   -----
 {self._generate_loads_section()}**
-** OUTPUT REQUESTS
-**
+** - Output Requests
+**   ---------------
 {self._generate_output_section()}**
 """
 
     def _generate_header_section(self):
         data_section = []
-        line = ("** ----------------------------------------------------------------\n"
-                "**\n"
-                f"** STEP: {0}\n"
+        line = ("** STEP: {0}\n"
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
@@ -84,7 +80,8 @@ class AbaqusGeneralStaticStep(GeneralStaticCase):
     def _generate_displacements_section(self):
         data_section = []
         for part in self.displacements:
-            data_section += [displacement._generate_jobdata(f'{part}-1', node) for node, displacement in self.displacements[part].items()]
+            data_section += [displacement._generate_jobdata(f'{part}-1', node)
+                             for node, displacement in self.displacements[part].items()]
         return '\n'.join(data_section)
 
     def _generate_loads_section(self):
@@ -98,8 +95,8 @@ class AbaqusGeneralStaticStep(GeneralStaticCase):
 
     def _generate_output_section(self):
         # TODO check restart option
-        data_section = ["**\n"
-                        "*Restart, write, frequency=0\n"
+        data_section = ["**",
+                        "*Restart, write, frequency=0",
                         "**"]
 
         if self._field_outputs:
@@ -114,7 +111,9 @@ class AbaqusGeneralStaticStep(GeneralStaticCase):
 
 
 # TODO fix also the steps below
-class AbaqusGeneralStaticRiksStep(GeneralStaticCase):
+
+
+class AbaqusGeneralStaticRiksStep(GeneralStaticStep):
 
     def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
         super(AbaqusGeneralStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
@@ -132,29 +131,30 @@ class AbaqusStaticLinearPertubationStep(StaticLinearPerturbationCase):
         Displacement objects.
     loads : list
         Load objects.
-    """
 
-    def __init__(self, name, nlgeom=False):
+   """
+    __doc__ += StaticLinearPerturbationCase.__doc__
+
+    def __init__(self, name):
         super(AbaqusStaticLinearPertubationStep, self).__init__(name)
+
         # TODO this depends on the previous step -> loop through the steps order and adjust this parameter
-        self._nlgeom = 'NO' if not nlgeom else 'YES'
+        self._nlgeom = 'NO'  # if not nlgeom else 'YES'
         self._stype = 'Static'
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
 
-        Parameters
+       Parameters
         ----------
         None
 
         Returns
         -------
-        input file data line (str).
+        input file data line(str).
         """
 
-        return ("** ----------------------------------------------------------------\n"
-                "**\n"
-                "** STEP: {0}\n"
+        return ("** STEP: {0}\n"
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, perturbation\n"
                 "*{2}\n"
@@ -185,13 +185,13 @@ class AbaqusModalStep(ModalCase):
     def _generate_jobdata(self):
         """Generates the string information for the input file.
 
-        Parameters
+       Parameters
         ----------
         None
 
         Returns
         -------
-        input file data line (str).
+        input file data line(str).
         """
         return ("** ----------------------------------------------------------------\n"
                 "**\n"
@@ -203,22 +203,65 @@ class AbaqusModalStep(ModalCase):
                 "*END STEP").format(self.name, self.modes)
 
 
-class AbaqusHarmoniStep(HarmonicCase):
+# class AbaqusHarmoniStep(HarmonicStep):
 
-    def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
-        super(AbaqusHarmoniStep, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
-        raise NotImplementedError
-
-
-class AbaqusBucklingStep(BucklingCase):
-
-    def __init__(self, name, modes, increments, factor, displacements, loads, type, step):
-        super(AbaqusBucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
-        raise NotImplementedError
+#     def __init__(self, name, freq_list, displacements, loads, factor, damping, type):
+#         super(AbaqusHarmoniStep, self).__init__(name, freq_list, displacements, loads, factor, damping, type)
+#         raise NotImplementedError
 
 
-class AbaqusAcoustiStep(AcousticCase):
+# class AbaqusBucklingStep(BucklingStep):
 
-    def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
-        super(AbaqusAcoustiStep, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)
-        raise NotImplementedError
+#     def __init__(self, name, modes, increments, factor, displacements, loads, type, step):
+#         super(AbaqusBucklingStep, self).__init__(name, modes, increments, factor, displacements, loads, type, step)
+#         raise NotImplementedError
+
+
+# class AbaqusAcoustiStep(AcousticStep):
+
+#     def __init__(self, name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type):
+#         super(AbaqusAcoustiStep, self).__init__(name, freq_range, freq_step, displacements, loads, sources, samples, factor, damping, type)
+#         raise NotImplementedError
+
+# class BuckleStep(StaticLinearPerturbationStep):
+
+#     """Initialises BuckleStep object for use in a buckling analysis.
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the GeneralStep.
+#     displacements : list
+#         Displacement objects.
+#     loads : list
+#         Load objects.
+#     """
+
+#     def __init__(self, name, nmodes):
+#         super(BuckleStep).__init__(name)
+#         raise NotImplementedError
+# #         self.__name__      = 'BuckleStep'
+# #         self.name          = name
+# #         self.nlgeom        = 'NO'  #TODO this depends on the previous step -> loop through the steps order and adjust this parameter
+# #         self.displacements = displacements
+# #         self.loads         = loads
+# #         self.attr_list.extend(['displacements', 'loads'])
+# #         self.type = 'Buckle'
+#     # def _generate_jobdata(self):
+#     #     """Generates the string information for the input file.
+
+#     #     Parameters
+#     #     ----------
+#     #     None
+
+#     #     Returns
+#     #     -------
+#     #     input file data line (str).
+#     #     """
+# #         return """** ----------------------------------------------------------------
+# # **
+# # ** STEP: {0}
+# # **
+# # * Step, name={0}, nlgeom={1}, perturbation
+# # *{2}
+# # **\n""".format(self.name, self.nlgeom, self.stype)

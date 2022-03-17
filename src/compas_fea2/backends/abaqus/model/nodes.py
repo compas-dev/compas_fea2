@@ -18,6 +18,7 @@ class AbaqusNode(Node):
     from 1. The conversion in automatically resolved by compas_fea2.
 
     """
+    __doc__ += Node.__doc__
 
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
         super(AbaqusNode, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)

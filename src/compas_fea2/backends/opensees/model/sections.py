@@ -23,6 +23,9 @@ from compas_fea2.model import SpringSectionBase
 
 
 class RectangularSection(RectangularSectionBase):
+    """OpenSees implementation of :class:`RectangularSectionBase`. \n
+    """
+    __doc__ += RectangularSectionBase.__doc__
 
     def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, b, h, material)

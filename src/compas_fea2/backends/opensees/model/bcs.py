@@ -15,24 +15,6 @@ from compas_fea2.model import RollerBCXYBase
 from compas_fea2.model import RollerBCYZBase
 from compas_fea2.model import RollerBCXZBase
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-# TODO: add the possibility to add bcs to nodes/elements and not only to sets
-
-__all__ = [
-    # 'GeneralBC',
-    'FixedBC',
-    # 'PinnedBC',
-    # 'FixedBCXX',
-    # 'FixedBCYY',
-    # 'FixedBCZZ',
-    # 'RollerBCX',
-    # 'RollerBCY',
-    # 'RollerBCZ',
-    # 'RollerBCXY',
-    # 'RollerBCYZ',
-    # 'RollerBCXZ'
-]
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
@@ -46,6 +28,9 @@ def _generate_jobdata(obj):
 
 
 class FixedBC(FixedBCBase):
+    """OpenSees implementation of :class:`FixedBCBase`.\n
+    """
+    __doc__ += FixedBCBase.__doc__
 
     def __init__(self, name, axes='global'):
         super(FixedBC, self).__init__(name, axes)
@@ -54,5 +39,121 @@ class FixedBC(FixedBCBase):
         return _generate_jobdata(self)
 
 
-if __name__ == "__main__":
-    pass
+class PinnedBC(PinnedBCBase):
+    """OpenSees implementation of :class:`PinnedBCBase`.\n
+    """
+    __doc__ += PinnedBCBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(PinnedBC, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class FixedBCXX(FixedBCXXBase):
+    """OpenSees implementation of :class:`FixedBCXXBase`.\n
+    """
+    __doc__ += FixedBCXXBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(FixedBCXX, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class FixedBCYY(FixedBCYYBase):
+    """OpenSees implementation of :class:`FixedBCYYBase`.\n
+    """
+    __doc__ += FixedBCYYBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(FixedBCYY, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class FixedBCZZ(FixedBCZZBase):
+    """OpenSees implementation of :class:`FixedBCZZBase`.\n
+    """
+    __doc__ += FixedBCZZBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(FixedBCZZ, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCX(RollerBCXBase):
+    """OpenSees implementation of :class:`RollerBCXBase`.\n
+    """
+    __doc__ += RollerBCXBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCX, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCY(RollerBCYBase):
+    """OpenSees implementation of :class:`RollerBCYBase`.\n
+    """
+    __doc__ += RollerBCYBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCY, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCZ(RollerBCZBase):
+    """OpenSees implementation of :class:`RollerBCZBase`.\n
+    """
+    __doc__ += RollerBCZBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCZ, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCXY(RollerBCXYBase):
+    """OpenSees implementation of :class:`RollerBCXYBase`.\n
+    """
+    __doc__ += RollerBCXYBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCXY, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCYZ(RollerBCYZBase):
+    """OpenSees implementation of :class:`RollerBCYZBase`.\n
+    """
+    __doc__ += RollerBCYZBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCYZ, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
+
+
+class RollerBCXZ(RollerBCXZBase):
+    """OpenSees implementation of :class:`RollerBCXZBase`.\n
+    """
+    __doc__ += RollerBCXZBase.__doc__
+
+    def __init__(self, name, axes='global'):
+        super(RollerBCXZ, self).__init__(name, axes)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)

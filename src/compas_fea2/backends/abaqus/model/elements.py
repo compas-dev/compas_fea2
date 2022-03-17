@@ -63,7 +63,7 @@ class AbaqusBeamElement(BeamElement):
         self.eltype = 'B31'
         self.orientation = orientation
 
-    def _generate_jobdata(self):
+    def _generate_jobdata(element):
         """Generates the string information for the input file.
 
         Parameters
@@ -83,10 +83,15 @@ class AbaqusSpringElement(SpringElement):
     """A 1D spring element.
     """
 
+    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], thermal=None):
+        super(BeamElement, self).__init__(connectivity, section, orientation, thermal)
+        self._eltype = 'B31'
+
 
 class AbaqusTrussElement(TrussElement):
     """A 1D element that resists axial loads.
     """
+    __doc__ += TrussElementBase.__doc__
 
     def __init__(self, connectivity, section, elset=None, thermal=None):
         super(AbaqusTrussElement, self).__init__(connectivity, section, thermal)
@@ -128,6 +133,7 @@ class AbaqusShellElement(ShellElement):
         NotImplemented
 
     """
+    __doc__ += ShellElementBase.__doc__
 
     def __init__(self, connectivity, section, elset=None, thermal=None):
         super(AbaqusShellElement, self).__init__(connectivity, section, thermal)
@@ -136,12 +142,10 @@ class AbaqusShellElement(ShellElement):
         else:
             self.elset = elset
 
-        if len(self.connectivity) == 3:
-            self.eltype = 'S3'
-        elif len(self.connectivity) == 4:
-            self.eltype = 'S4'
-        else:
-            raise NotImplementedError
+        eltypes = {3: 'S3', 4: 'S4'}
+        if not len(self.connectivity) in eltypes:
+            raise NotImplementedError('Shells must currently have either 3 or 4 nodes')
+        self._eltype = eltypes[len(self.connectivity)]
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -167,6 +171,11 @@ class AbaqusMembraneElement(MembraneElement):
 # ==============================================================================
 # 3D elements
 # ==============================================================================
+class SolidElement(_AbaqusElement, SolidElement):
+    """Abaqus implementation of a :class:`SolidElementBase`.\n
+    """
+    __doc__ += SolidElement.__doc__
+
 
 class AbaqusSolidElement(SolidElement):
 

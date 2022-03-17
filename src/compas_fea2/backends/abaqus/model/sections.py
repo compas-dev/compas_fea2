@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from compas_fea2.model import Section
 from compas_fea2.model import BeamSection
@@ -36,7 +33,7 @@ class AbaqusMassSection(MassSection):
     def __init__(self, name, mass):
         super(AbaqusMassSection, self).__init__(name, mass)
 
-    def _generate_jobdata(self, set_name, orientation):
+    def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.
 
         Parameters
@@ -63,8 +60,13 @@ class AbaqusBeamSection(BeamSection):
     The properties for beam sections are automatically computed by Abaqus.
     """
 
-    def __init__(self, name, material):
-        super(AbaqusBeamSection, self).__init__(name, material)
+    def __init__(self, name, material, **kwargs):
+        super(AbaqusBeamSection, self).__init__(name=name, material=material, **kwargs)
+
+    @property
+    def stype(self):
+        """str : abaqus section type designation."""
+        return self._stype
 
     def _generate_jobdata(self, set_name, orientation):
         """Generates the string information for the input file.
@@ -113,9 +115,9 @@ class AbaqusBoxSection(AbaqusBeamSection):
 
     Parameters
     ----------
-    a : float
-        base of the section.
     b : float
+        base of the section.
+    h : float
         total height of the section (including the flanges).
     t : float or list
         thickness(es) of the section. If the four thicknesses are different,
@@ -125,14 +127,10 @@ class AbaqusBoxSection(AbaqusBeamSection):
 
     """
 
-    def __init__(self, name, a, b, t, material):
+    def __init__(self, name, b, h, t, material):
         super(AbaqusBoxSection, self).__init__(name, material)
         self._stype = 'box'
-        if not isinstance(t, list):
-            t = [t]*4
-        elif not len(t) == 4:
-            raise ValueError("You must specify a tickness for every side of the box")
-        self.properties = [a, b, *t]
+        self.properties = [b, h, *self._t]
 
 
 class AbaqusCircularSection(AbaqusBeamSection):
@@ -166,10 +164,10 @@ class AbaqusHexSection(AbaqusBeamSection):
 
     """
 
-    def __init__(self, name, d, t, material):
+    def __init__(self, name, r, t, material):
         super(AbaqusHexSection, self).__init__(name, r, material)
         self._stype = 'hex'
-        self.properties = [d, t]
+        self.properties = [r, t]
 
 
 class AbaqusISection(AbaqusBeamSection):
@@ -187,7 +185,7 @@ class AbaqusISection(AbaqusBeamSection):
         provide a list the three values [t1, t2, t3]
     material : str
         material name to be assigned to the section.
-    l : float
+    l : float, optional
         distance of the origin of the local cross-section axis from the origin
         of the beam axis along the 2-axis, by default 0.
 
@@ -317,18 +315,12 @@ class AbaqusSpringSection(SpringSection):
 
 class AbaqusShellSection(ShellSection):
 
-    """
-    Parameters
-    ----------
-    name : str
-        name of the section
-    t : float
-        thickness of the section
-    material : obj
-        compas_fea2 Material object
+    __doc__ += ShellSection.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
     int_points : int
         number of integration points. 5 by default.
-
     """
 
     def __init__(self, name, t, material, int_points=5):

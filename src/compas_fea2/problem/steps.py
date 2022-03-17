@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import importlib
 
 from compas_fea2.base import FEAData
@@ -10,39 +6,41 @@ from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.outputs import FieldOutput
 from compas_fea2.model.parts import Part
 from compas_fea2.model.groups import NodesGroup
-
-# Author(s): Andrew Liew (github.com/andrewliew), Tomas Mendez Echenagucia (github.com/tmsmendez),
-#            Francesco Ranaudo (github.com/franaudo)
+from compas_fea2.model.groups import ElementsGroup
 
 
-class Case(FEAData):
-    """Initialises base Case object.
+class Step(FEAData):
+    """Initialises base Step object.
+
+    Note
+    ----
+    A ``compas_fea2`` analysis is based on the concept of ``steps``,
+    which represent the sequence of modification of the state of the model. Steps
+    can be introduced simply to change the output requests or to change the loads,
+    boundary conditions, analysis procedure, etc. There is no limit on the number
+    of steps in an analysis.
 
     Parameters
     ----------
     name : str
-        Name of the Case object.
-    field_outputs : obj
-        `compas_fea2` FieldOutput object.
-    History_outputs : obj
-        `compas_fea2` HistiryOutput object.
-
+        Name of the Step object.
     """
 
     def __init__(self, name):
-        super(Case, self).__init__(name=name)
-        self._gravity = None
-        self._loads = {}
-        self._applied_loads = {}
-        self._displacements = {}
-        self._applied_displacements = {}
+        super(Step, self).__init__(name)
+        self.__name__ = 'Step'
+        self._name = name
         self._field_outputs = {}
         self._history_outputs = {}
 
     @property
-    def gravity(self):
-        """The gravity property."""
-        return self._gravity
+    def name(self):
+        """str : Name of the Step object."""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def field_outputs(self):
@@ -64,7 +62,8 @@ class Case(FEAData):
         Parameters
         ----------
         output : obj
-            `compas_fea2` Output objects. Can be either a FieldOutput or a HistoryOutput
+            `compas_fea2` Output objects. Can be either a :class:`FieldOutputBase`
+            or a :class:`HistoryOutputBase` subclass instance.
 
         Returns
         -------
@@ -75,7 +74,7 @@ class Case(FEAData):
         if output.name not in getattr(self, attrb):
             getattr(self, attrb)[output.name] = output
         else:
-            print('WARNING: {} already present in the Problem. skipped!'.format(output.__repr__()))
+            print(f'WARNING: {output.__repr__()} already present in the Problem. skipped!')
 
     def add_outputs(self, outputs):
         """Add multiple outputs to the Step object.
@@ -83,7 +82,8 @@ class Case(FEAData):
         Parameters
         ----------
         outputs : list
-            list of `compas_fea2` Output objects. Can be both FieldOutput and HistoryOutput objects
+            list of `compas_fea2` Output objects. The list can contain both :class:`FieldOutputBase`
+            or a :class:`HistoryOutputBase` subclass instances.
 
         Returns
         -------
@@ -92,21 +92,90 @@ class Case(FEAData):
         for output in outputs:
             self.add_output(output)
 
+
+class ModalStep(Step):
+    """Initialises ModalStep object for use in a modal analysis.
+
+    Note
+    ----
+    Modal steps can be only used as Linear Perturbation steps. Check
+    :class:`LinearFrequencyStep`
+
+    Parameters
+    ----------
+    name : str
+        Name of the ModalStep.
+    modes : int
+        Number of modes to analyse.
+    """
+
+    def __init__(self, name, modes=1):
+        super(ModalStep, self).__init__(name)
+
+        self.__name__ = 'ModalStep'
+        self._modes = modes
+
+    @property
+    def modes(self):
+        """int : Number of modes to analyse."""
+        return self._modes
+
+
+class StaticStep(Step):
+    """Initialises base StaticStep object.
+
+    Parameters
+    ----------
+    name : str
+        Name of the Step object.
+    """
+
+    def __init__(self, name, **kwargs):
+        super(StaticStep, self).__init__(name, **kwargs)
+        self.__name__ = 'StaticStep'
+        self._gravity = None
+        self._loads = {}
+        self._displacements = {}
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__name__, self.name)
+
+    @property
+    def gravity(self):
+        """obj : :class:`GravityLoadBase` subclass object."""
+        return self._gravity
+
+    @property
+    def loads(self):
+        """dict: dictionary of the loads assigned to the ``Step``."""
+        return self._loads
+
+    @property
+    def displacements(self):
+        """dict: dictionary of the displacements assigned to the ``Step``."""
+        return self._displacements
+
     # =========================================================================
     #                           Loads methods
     # =========================================================================
 
-    def add_load(self, load, keys, part):
+    def add_load(self, load, where, part):
         """Add a load to Step object.
+
+        Warning
+        -------
+        The *load* and the *keys* must be consistent (you should not assing a
+        line load to a node). Consider using specific methods to assign load,
+        such as ``add_point_load``, ``add_line_load``, etc.
 
         Parameters
         ----------
         load : obj
-            `compas_fea2` Load objects
-        key : int
-            node or element key
+            any ``compas_fea2`` :class:`LoadBase` subclass object
+        keys : int
+            node or element key where the load is applied
         part : str
-            part name
+            name of the part where the load is applied
 
         Returns
         -------
@@ -116,67 +185,87 @@ class Case(FEAData):
         # check if load is valid
         if not isinstance(load, Load):
             raise TypeError(f'{load} is not a `compas_fea2` Load object')
-        if part not in self.loads:
-            self._loads[part] = {key: load for key in keys}
+
+        if isinstance(where, int):
+            nodes = [where]
+        elif isinstance(where, (list, tuple)):
+            nodes = where
+        elif isinstance(where, (NodesGroup, ElementsGroup)):
+            nodes = where.keys
         else:
-            # TODO this wrong because a node can have more than one load applied to it
-            # restructure the way the information is stored
-            for key in keys:
-                if key in self.loads[part]:
-                    raise ValueError(f"overconstrained node: {self.parts[part].nodes[key]}")
-                else:
-                    self._loads[part][key] = load
-        # if load.name not in self._applied_loads:
-        #     self._applied_loads[load.name] = [(part, where)]
-        # else:
-        #     self._applied_load[load.name].append((part, where))
+            raise TypeError('You must provide either a key or a list of keys, or a Group instance')
+        # self._check_nodes_in_model(nodes) #TODO implement method
 
-        # print(f'{load.__repr__()} added to {self.__repr__()}')
-        # # check if where is valid
-        # keys = []
-        # if not isinstance(where, list):
-        #     where = [where]
-        # for i in where:
-        #     if isinstance(i, (NodesGroup, ElementsGroup)):
-        #         keys += [key+1 for key in i._selection]
-        #     elif isinstance(i, int):
-        #         keys.append(i+1)
-        #     else:
-        #         raise TypeError('You must provide either a (list of) key or a (list of) NodesGroup/ElementsGroup')
-
-        # # check if load is valid
-        # if not isinstance(load, Load):
-        #     raise TypeError(f'{load} is not a `compas_fea2` Load object')
-
-        # # check if part is valid
-        # if isinstance(part, Part):
-        #     part = part.name
-        # elif not isinstance(part, str):
-        #     raise TypeError(f'{part} is not valid')
-
-        # if load.name not in self.loads:
-        #     self.loads[load.name] = load
-
-        # if load.name not in self._applied_loads:
-        #     self._applied_loads[load.name] = [(part, where)]
-        # else:
-        #     self._applied_load[load.name].append((part, where))
-
-        # print(f'{load.__repr__()} added to {self.__repr__()}')
+        if not isinstance(load, Load):
+            raise TypeError(f'{load} is not a compas_fea2 LoadBase subclass instance')
+        if isinstance(part, Part):
+            part = part.name
+        self._loads.setdefault(part, {})[load] = nodes
 
     def add_loads(self, loads):
         for load in loads:
             self.add_load(load)
 
-    def add_point_load(self, name, part, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+    def add_point_load(self, name, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+        """Add a :class:`PointLoadBase` subclass object to the ``Step``.
+
+        Warning
+        -------
+        local axes are not supported yet
+
+        Parameters
+        ----------
+        name : str
+            name of the point load
+        part : str
+            name of the :class:`PartBase` where the load is applied
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
+            applied.
+        x : float, optional
+            x component (in global coordinates) of the point load, by default None
+        y : float, optional
+            y component (in global coordinates) of the point load, by default None
+        z : float, optional
+            z component (in global coordinates) of the point load, by default None
+        xx : float, optional
+            moment about the global x axis of the point load, by default None
+        yy : float, optional
+            moment about the global y axis of the point load, by default None
+        zz : float, optional
+            moment about the global z axis of the point load, by default None
+        axes : str, optional
+            'local' or 'global' axes, by default 'global'
+        """
+        if axes != 'global':
+            raise NotImplementedError('local axes are not supported yet')
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         load = m.PointLoad(name, x, y, z, xx, yy, zz, axes)
-        self._loads.setdefault(part, {})[load] = nodes
+        self.add_load(load, where, part)
 
     def add_gravity_load(self, name='gravity', g=9.81, x=0., y=0., z=-1.):
+        """Add a :class:`GravityLoadBase` load to the ``Step``
+
+        Warning
+        -------
+        Be careful to assign a value of *g* consistent with the units in your
+        model!
+
+        Parameters
+        ----------
+        name : str, optional
+            name to assign to the load, by default 'gravity'
+        g : float, optional
+            acceleration of gravity, by default 9.81
+        x : float, optional
+            x component of the gravity direction vector (in global coordinates), by default 0.
+        y : [type], optional
+            y component of the gravity direction vector (in global coordinates), by default 0.
+        z : [type], optional
+            z component of the gravity direction vector (in global coordinates), by default -1.
+        """
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        load = m.GravityLoad(name, g, x, y, z)
-        self._gravity = load
+        self._gravity = m.GravityLoad(name, g, x, y, z)
 
     def add_prestress_load(self):
         raise NotImplementedError
@@ -209,389 +298,422 @@ class Case(FEAData):
         Parameters
         ----------
         displacement : obj
-            `compas_fea2` Displacement object.
-
+            ``compas_fea2`` :class:`GeneralDisplacementBase` object.
+        where : int
+            node or element key where the load is applied
+        part : str
+            name of the part where the load is applied
         Returns
         -------
         None
         """
         # check if where is valid
-        keys = []
-        if not isinstance(where, list):
-            where = [where]
-        for i in where:
-            if isinstance(i, (NodesGroup)):
-                keys += [key+1 for key in i._selection]
-            elif isinstance(i, int):
-                keys.append(i+1)
-            else:
-                raise ValueError('You must provide either a (list of) key or a (list of) NodesGroup')
+        if isinstance(where, int):
+            nodes = [where]
+        elif isinstance(where, (list, tuple)):
+            nodes = where
+        elif isinstance(where, (NodesGroup, ElementsGroup)):
+            nodes = where.keys
+        else:
+            raise TypeError('You must provide either a key or a list of keys, or a Group instance')
 
-        # check if load is valid
+        # check if displacement is valid
         if not isinstance(displacement, GeneralDisplacement):
             raise ValueError(f'{displacement} is not a `compas_fea2` GeneralDisplacement object')
 
         # check if part is valid
         if isinstance(part, Part):
             part = part.name
-        elif not isinstance(part, str):
-            raise ValueError(f'{part} is not valid')
-
-        if displacement.name not in self.displacements:
-            self.displacements[displacement.name] = displacement
-
-        if displacement.name not in self._applied_displacements:
-            self._applied_displacements[displacement.name] = [(part, where)]
-        else:
-            self._applied_displacement[displacement.name].append((part, where))
+        self._loads.setdefault(part, {})[displacement] = nodes
 
 
-class StaticCase(Case):
-    """Initialises base Case object.
+# ==============================================================================
+#                                General Steps
+# ==============================================================================
+class GeneralStep(Step):
+    """Initialises GeneralStep object for use in a general static, dynamic or
+    multiphysics analysis.
 
-    Parameters
-    ----------
-    name : str
-        Name of the Case object.
-    loads : list
-        `compas_fea2` Load objects.
-    displacements : list
-        `compas_fea2` Displacement objects.
-    field_outputs : obj
-        `compas_fea2` FieldOutput object.
-    History_outputs : obj
-        `compas_fea2` HistiryOutput object.
-
+        name to assign to the ``Step``
+    max_increments : int
+        Max number of increments to perform during the case step.
+        (Typically 100 but you might have to increase it in highly non-linear
+        problems. This might increase the analysis time.).
+    initial_inc_size : float
+        Sets the the size of the increment for the first iteration.
+        (By default is equal to the total time, meaning that the software decrease
+        the size automatically.)
+    min_inc_size : float
+        Minimum increment size before stopping the analysis.
+        (By default is 1e-5, but you can set a smaller size for highly non-linear
+        problems. This might increase the analysis time.)
+    time : float
+        Total time of the case step. Note that this not actual 'time',
+        but rather a proportionality factor. (By default is 1, meaning that the
+        analysis is complete when all the increments sum up to 1)
+    nlgeom : bool
+        if ``True`` nonlinear geometry effects are considered.
+    modify : bool
+        if ``True`` the loads applied in a previous step are substituted by the
+        ones defined in the present step, otherwise the loads are added.
     """
 
-    def __init__(self, name):
-        super(StaticCase, self).__init__(name)
-        self._loads = {}
-        self._displacements = {}
+    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
+        super(GeneralStep, self).__init__(name)
 
-    @property
-    def loads(self):
-        """list : list of `compas_fea2` Load objects."""
-        return self._loads
-
-    @loads.setter
-    def loads(self, value):
-        self._loads = value
-
-    @property
-    def displacements(self):
-        """list : list of `compas_fea2` Displacement objects."""
-        return self._displacements
-
-
-class GeneralStaticCase(StaticCase):
-    """Initialises GeneralCase object for use in a static analysis.
-    """
-
-    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time):
-        super(GeneralStaticCase, self).__init__(name)
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
         self._min_inc_size = min_inc_size
         self._time = time
+        self._nlgeom = 'YES' if nlgeom else 'NO'  # FIXME change to bool
+        self._modify = modify
 
     @property
     def max_increments(self):
         """int : Max number of increments to perform during the case step.
-        (Typically 100 but you might have to increase it in highly non-linear problems. This might increase the
-        analysis time.)."""
+        (Typically 100 but you might have to increase it in highly non-linear
+        problems. This might increase the analysis time.)."""
         return self._max_increments
-
-    @max_increments.setter
-    def max_increments(self, value):
-        self._max_increments = value
 
     @property
     def initial_inc_size(self):
         """float : Sets the the size of the increment for the first iteration.
-        (By default is equal to the total time, meaning that the software decrease the size automatically.)"""
+        (By default is equal to the total time, meaning that the software decrease
+        the size automatically.)"""
         return self._initial_inc_size
-
-    @initial_inc_size.setter
-    def initial_inc_size(self, value):
-        self._initial_inc_size = value
 
     @property
     def min_inc_size(self):
         """float : Minimum increment size before stopping the analysis.
-        (By default is 1e-5, but you can set a smaller size for highly non-linear problems. This might increase the
-        analysis time.)"""
+        (By default is 1e-5, but you can set a smaller size for highly non-linear
+        problems. This might increase the analysis time.)"""
         return self._min_inc_size
-
-    @min_inc_size.setter
-    def min_inc_size(self, value):
-        self._min_inc_size = value
 
     @property
     def time(self):
-        """float : Total time of the case step. Note that this not actual 'time' in Abaqus, but rather a proportionality factor.
-        (By default is 1, meaning that the analysis is complete when all the increments sum up to 1)"""
+        """float : Total time of the case step. Note that this not actual 'time',
+        but rather a proportionality factor. (By default is 1, meaning that the
+        analysis is complete when all the increments sum up to 1)"""
         return self._time
 
-    @time.setter
-    def time(self, value):
-        self._time = value
+    @property
+    def nlgeometry(self):
+        """The nlgeometry property."""
+        return self.nlgeom
+
+    @property
+    def modify(self):
+        """The modify property."""
+        return self._modify
 
 
-# TODO CHECK this sis a duplicate of StaticCase
-class StaticLinearPerturbationCase(StaticCase):
-    """Initialises LinearPertubationCase object for use in a linear analysis.
+class GeneralStaticStep(StaticStep, GeneralStep):
+    """Initialises GeneralStaticStep object for use in a static analysis.
+    """
+
+    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
+        super(GeneralStaticStep, self).__init__(name=name, max_increments=max_increments,
+                                                initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
+                                                time=time, nlgeom=nlgeom, modify=modify)
+        self.__name__ = 'GeneralStaticStep'
+
+
+# ==============================================================================
+#                                Linear Steps
+# ==============================================================================
+
+class LinearStep():
+    """Initialises LinearStep object for use in a linear perturbation analysis.
+
+    Note
+    ----
+    a linear step allows the investigation of the perturbation
+    response of the system with respect to a base state at any stage during the
+    response history. The solution from the perturbation response is not carried
+    over to subsequent steps and, therefore, does not contribute to the response
+    history. A linear step can be used only to analyze linear problems, but can
+    be static, dynamic or multiphysics.
 
     Parameters
     ----------
     name : str
-        Name of the GeneralCase.
-    displacements : list
-        Displacement objects.
-    loads : list
-        Load objects.
-
+        Name of the LinearPerturbationStep.
     """
 
     def __init__(self,  name):
-        super(StaticLinearPerturbationCase, self).__init__(name)
+        super(LinearStep, self).__init__(name)
+        self.__name__ = 'LinearPerturbationStep'
 
 
-class HeatCase(Case):
-    """Initialises HeatCase object for use in a thermal analysis.
+class LinearStaticStep(LinearStep, StaticStep):
+    """Initialises LinearStaticStep object for use in a linear static analysis.
+
 
     Parameters
     ----------
     name : str
-        Name of the HeatCase.
-    interaction : str
-        Name of the HeatTransfer interaction.
-    increments : int
-        Number of case step increments.
-    temp0 : float
-        Initial temperature of all nodes.
-    dTmax : float
-        Maximum temperature increase per increment.
-    stype : str
-        'heat transfer'.
-    duration : float
-        Duration of case step.
-
-    Attributes
-    ----------
-    name : str
-        Name of the HeatCase.
-    interaction : str
-        Name of the HeatTransfer interaction.
-    increments : int
-        Number of case step increments.
-    temp0 : float
-        Initial temperature of all nodes.
-    dTmax : float
-        Maximum temperature increase per increment.
-    stype : str
-        'heat transfer'.
-    duration : float
-        Duration of case step.
-
+        Name of the LinearPerturbationStep.
     """
 
-    def __init__(self, name, interaction, field_outputs, history_outputs, increments=100, temp0=20, dTmax=1, duration=1):
-        super(HeatCase, self).__init__(name, field_outputs, history_outputs)
-        self.interaction = interaction
-        self.increments = increments
-        self.temp0 = temp0
-        self.dTmax = dTmax
-        self.duration = duration
+    def __init__(self,  name):
+        super(LinearStaticStep, self).__init__(name)
+        self.__name__ = 'LinearPerturbationStaticStep'
 
 
-class ModalCase(Case):
-    """Initialises ModalCase object for use in a modal analysis.
+# TODO implement dynamic steps
+class LinearFrequencyStep(LinearStep, ):
+    """Initialises LinearStaticStep object for use in a linear static analysis.
+
 
     Parameters
     ----------
     name : str
-        Name of the ModalCase.
-    modes : int
-        Number of modes to analyse.
-
+        Name of the LinearPerturbationStep.
     """
 
-    def __init__(self, name, modes=1):
-        super(ModalCase, self).__init__(name)
-        self._modes = modes
+    def __init__(self,  name):
+        super(LinearFrequencyStep, self).__init__(name)
+        self.__name__ = 'LinearFrequencyStep'
 
-    @property
-    def modes(self):
-        """int : Number of modes to analyse."""
-        return self._modes
+# class HarmonicStep(Step):
+#     """Initialises HarmoniStep object for use in a harmonic analysis.
 
-    @modes.setter
-    def modes(self, value):
-        self._modes = value
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the HarmoniStep.
+#     freq_list : list
+#         Sorted list of frequencies to analyse.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     factor : float
+#         Proportionality factor on the loads and displacements.
+#     damping : float
+#         Constant harmonic damping ratio.
+#     stype : str
+#         'harmonic'.
 
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the HarmoniStep.
+#     freq_list : list
+#         Sorted list of frequencies to analyse.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     factor : float
+#         Proportionality factor on the loads and displacements.
+#     damping : float
+#         Constant harmonic damping ratio.
+#     stype : str
+#         'harmonic'.
+#     """
 
-class HarmonicCase(Case):
-    """Initialises HarmoniCase object for use in a harmonic analysis.
+#     def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None):
+#         Step.__init__(self, name=name)
 
-    Parameters
-    ----------
-    name : str
-        Name of the HarmoniCase.
-    freq_list : list
-        Sorted list of frequencies to analyse.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    factor : float
-        Proportionality factor on the loads and displacements.
-    damping : float
-        Constant harmonic damping ratio.
-    stype : str
-        'harmonic'.
+#         if not displacements:
+#             displacements = []
 
-    Attributes
-    ----------
-    name : str
-        Name of the HarmoniCase.
-    freq_list : list
-        Sorted list of frequencies to analyse.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    factor : float
-        Proportionality factor on the loads and displacements.
-    damping : float
-        Constant harmonic damping ratio.
-    stype : str
-        'harmonic'.
-    """
+#         if not loads:
+#             loads = []
 
-    def __init__(self, name, freq_list, displacements=None, loads=None, factor=1.0, damping=None):
-        super(HarmonicCase).__init__(name=name)
-        self.freq_list = freq_list
-        self.displacements = displacements or []
-        self.loads = loads or []
-        self.factor = factor
-        self.damping = damping
-        self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
-
-
-class BucklingCase(Case):
-    """Initialises BucklingCase object for use in a buckling analysis.
-
-    Parameters
-    ----------
-    name : str
-        Name of the BucklingCase.
-    modes : int
-        Number of modes to analyse.
-    increments : int
-        Number of increments.
-    factor : float, dict
-        Proportionality factor on the loads and displacements.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    stype : str
-        'buckle'.
-    case : str
-        Case to copy loads and displacements from.
-
-    Attributes
-    ----------
-    name : str
-        Name of the BucklingCase.
-    modes : int
-        Number of modes to analyse.
-    increments : int
-        Number of increments.
-    factor : float, dict
-        Proportionality factor on the loads and displacements.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    stype : str
-        'buckle'.
-    case : str
-        Case to copy loads and displacements from.
-
-    """
-
-    def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, case=None):
-        super(BucklingCase).__init__(name=name)
-        self.modes = modes
-        self.increments = increments
-        self.factor = factor
-        self.displacements = displacements or []
-        self.loads = loads or []
-        self.case = case
-        self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'case'])
+#         self.__name__ = 'HarmonicStep'
+#         self.name = name
+#         self.freq_list = freq_list
+#         self.displacements = displacements
+#         self.loads = loads
+#         self.factor = factor
+#         self.damping = damping
+#         self.attr_list.extend(['freq_list', 'displacements', 'loads', 'factor', 'damping', 'stype'])
 
 
-class AcousticCase(Case):
-    """Initialises AcoustiCase object for use in a acoustic analysis.
+# class BucklingStep(Step):
+#     """Initialises BucklingStep object for use in a buckling analysis.
 
-    Parameters
-    ----------
-    name : str
-        Name of the AcoustiCase.
-    freq_range : list
-        Range of frequencies to analyse.
-    freq_step : int
-        Step size for frequency range.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    sources : list
-        List of source elements or element sets radiating sound.
-    samples : int
-        Number of samples for acoustic analysis.
-    factor : float
-        Proportionality factor on the loads and displacements.
-    damping : float
-        Constant harmonic damping ratio.
-    type : str
-        'acoustic'.
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the BucklingStep.
+#     modes : int
+#         Number of modes to analyse.
+#     increments : int
+#         Number of increments.
+#     factor : float, dict
+#         Proportionality factor on the loads and displacements.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     stype : str
+#         'buckle'.
+#     case : str
+#         Step to copy loads and displacements from.
 
-    Attributes
-    ----------
-    name : str
-        Name of the AcoustiCase.
-    freq_range : list
-        Range of frequencies to analyse.
-    freq_step : int
-        Case size for frequency range.
-    displacements : list
-        Displacement object names.
-    loads : list
-        Load object names.
-    sources : list
-        List of source elements or element sets radiating sound.
-    samples : int
-        Number of samples for acoustic analysis.
-    factor : float
-        Proportionality factor on the loads and displacements.
-    damping : float
-        Constant harmonic damping ratio.
-    type : str
-        'acoustic'.
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the BucklingStep.
+#     modes : int
+#         Number of modes to analyse.
+#     increments : int
+#         Number of increments.
+#     factor : float, dict
+#         Proportionality factor on the loads and displacements.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     stype : str
+#         'buckle'.
+#     case : str
+#         Step to copy loads and displacements from.
+#     """
 
-    """
+#     def __init__(self, name, modes=5, increments=100, factor=1., displacements=None, loads=None, case=None):
+#         Step.__init__(self, name=name)
 
-    def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5, factor=1.0, damping=None):
-        super(AcousticCase).__init__(name)
-        self.freq_range = freq_range
-        self.freq_step = freq_step
-        self.displacements = displacements or []
-        self.sources = sources or []
-        self.samples = samples
-        self.loads = loads or []
-        self.factor = factor
-        self.damping = damping
-        self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor', 'damping'])
+#         if not displacements:
+#             displacements = []
+
+#         if not loads:
+#             loads = []
+
+#         self.__name__ = 'BucklingStep'
+#         self.name = name
+#         self.modes = modes
+#         self.increments = increments
+#         self.factor = factor
+#         self.displacements = displacements
+#         self.loads = loads
+#         self.case = case
+#         self.attr_list.extend(['modes', 'increments', 'factor', 'displacements', 'loads', 'case'])
+
+
+# class AcousticStep(Step):
+#     """Initialises AcoustiStep object for use in a acoustic analysis.
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the AcoustiStep.
+#     freq_range : list
+#         Range of frequencies to analyse.
+#     freq_step : int
+#         Step size for frequency range.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     sources : list
+#         List of source elements or element sets radiating sound.
+#     samples : int
+#         Number of samples for acoustic analysis.
+#     factor : float
+#         Proportionality factor on the loads and displacements.
+#     damping : float
+#         Constant harmonic damping ratio.
+#     type : str
+#         'acoustic'.
+
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the AcoustiStep.
+#     freq_range : list
+#         Range of frequencies to analyse.
+#     freq_step : int
+#         Step size for frequency range.
+#     displacements : list
+#         Displacement object names.
+#     loads : list
+#         Load object names.
+#     sources : list
+#         List of source elements or element sets radiating sound.
+#     samples : int
+#         Number of samples for acoustic analysis.
+#     factor : float
+#         Proportionality factor on the loads and displacements.
+#     damping : float
+#         Constant harmonic damping ratio.
+#     type : str
+#         'acoustic'.
+#     """
+
+#     def __init__(self, name, freq_range, freq_step, displacements=None, loads=None, sources=None, samples=5,
+#                  factor=1.0, damping=None):
+#         Step.__init__(self, name=name)
+
+#         if not displacements:
+#             displacements = []
+
+#         if not loads:
+#             loads = []
+
+#         if not sources:
+#             sources = []
+
+#         self.__name__ = 'AcousticStep'
+#         self.name = name
+#         self.freq_range = freq_range
+#         self.freq_step = freq_step
+#         self.displacements = displacements
+#         self.sources = sources
+#         self.samples = samples
+#         self.loads = loads
+#         self.factor = factor
+#         self.damping = damping
+#         self.attr_list.extend(['freq_range', 'freq_step', 'displacements', 'sources', 'samples', 'loads', 'factor',
+#                                'damping'])
+
+# class HeatStep(Step):
+#     """Initialises HeatStep object for use in a thermal analysis.
+
+#     Parameters
+#     ----------
+#     name : str
+#         Name of the HeatStep.
+#     interaction : str
+#         Name of the HeatTransfer interaction.
+#     increments : int
+#         Number of case step increments.
+#     temp0 : float
+#         Initial temperature of all nodes.
+#     dTmax : float
+#         Maximum temperature increase per increment.
+#     stype : str
+#         'heat transfer'.
+#     duration : float
+#         Duration of case step.
+
+#     Attributes
+#     ----------
+#     name : str
+#         Name of the HeatStep.
+#     interaction : str
+#         Name of the HeatTransfer interaction.
+#     increments : int
+#         Number of case step increments.
+#     temp0 : float
+#         Initial temperature of all nodes.
+#     dTmax : float
+#         Maximum temperature increase per increment.
+#     stype : str
+#         'heat transfer'.
+#     duration : float
+#         Duration of case step.
+#     """
+
+#     def __init__(self, name, interaction, field_outputs, history_outputs, increments=100, temp0=20, dTmax=1, duration=1):
+#         super(HeatStep, self).__init__(name, field_outputs, history_outputs)
+
+#         self.__name__ = 'HeatStep'
+#         self.interaction = interaction
+#         self.increments = increments
+#         self.temp0 = temp0
+#         self.dTmax = dTmax
+#         self.duration = duration

@@ -284,7 +284,7 @@ class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 
 
 # ==============================================================================
-# thermal
+# User-defined Materials
 # ==============================================================================
 
 class AbaqusThermalMaterial(ThermalMaterial):
@@ -313,7 +313,7 @@ class AbaqusUserMaterial(Material):
 
         self.__name__ = 'UserMaterial'
         self.__dict__.update(kwargs)
-        self.name = name
+        self._name = name
         # os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
         self.sub_path = sub_path
         self.p = p

@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.problem import GeneralStaticCaseBase
+from compas_fea2.problem import GeneralStaticCase
 from compas_fea2.problem import StaticLinearPerturbationCaseBase
 from compas_fea2.problem import HeatCaseBase
 from compas_fea2.problem import ModalCaseBase
@@ -12,34 +12,14 @@ from compas_fea2.problem import HarmonicCaseBase
 from compas_fea2.problem import BucklingCaseBase
 from compas_fea2.problem import AcousticCaseBase
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
 
-__all__ = [
-    'GeneralStaticStep',
-    # 'StaticLinearPertubationStep',
-    # # 'HeatStepBase',
-    # 'ModalStep',
-    # 'HarmoniStepBase',
-    # 'BucklingStep',
-    # 'AcoustiStepBase'
-]
-
-
-class StaticLinearPertubationStep(StaticLinearPerturbationCaseBase):
-    """Initialises the StaticLinearPertubationStep object for use in a static analysis.
-
-    Parameters
-    ----------
-    name : str
-        Name of the GeneralStep.
-    displacements : list
-        Displacement objects.
-    loads : list
-        Load objects.
+class LinearStaticStep(LinearStaticStep):
+    """Abaqus implementation of the :class:`LinearStaticStep`.\n
     """
+    __doc__ += LinearStaticStep.__doc__
 
     def __init__(self, name):
-        super(StaticLinearPertubationStep, self).__init__(name)
+        super(LinearStaticStep, self).__init__(name)
 
     def _generate_jobdata(self, problem):
         return """#

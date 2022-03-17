@@ -37,5 +37,21 @@ class FieldOutput(FEAData):
 
 
 class HistoryOutput(FEAData):
+    """HistoryOutputBase object for recording the fields (stresses, displacements,
+    etc..) from the analysis.
+
+    Parameters
+    ----------
+    name : str
+        name of the output request
+    """
+
     def __init__(self, name):
-        super(HistoryOutput, self).__init__(name=name)
+        super(HistoryOutput, self).__init__()
+        self.__name__ = 'HistoryOutputRequst'
+        self._name = name
+
+    @property
+    def name(self):
+        """str : name of the output request"""
+        return self._name

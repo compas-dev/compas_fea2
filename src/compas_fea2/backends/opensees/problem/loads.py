@@ -14,23 +14,19 @@ from compas_fea2.problem import HarmonicPressureLoadBase
 from compas_fea2.problem import AcousticDiffuseFieldLoadBase
 
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-
 __all__ = [
     'PointLoad',
 ]
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-# class PrestressLoad(PrestressLoadBase):
-#     NotImplemented
-#     # def __init__(self, name, elements, sxx):
-#     #     super(PrestressLoad, self).__init__(name, elements, sxx)
-
 
 class PointLoad(PointLoadBase):
-    def __init__(self, name,  x=0., y=0., z=0., xx=0., yy=0., zz=0., axes='global'):
+    """OpenSees implementation of :class:`PointLoadBase`.\n
+    """
+    __doc__ += PointLoadBase.__doc__
+
+    def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False):
         super(PointLoad, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
     def _generate_jobdata(self):

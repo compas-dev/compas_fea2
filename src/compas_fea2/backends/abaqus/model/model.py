@@ -107,9 +107,8 @@ class AbaqusModel(Model):
     # =========================================================================
     #                            Groups methods
     # =========================================================================
-
-    def add_group(self, group):
-        """Add a Group object to the Model at the instance level. Can be either
+    def add_group(self, group, part):
+        '''Add a Group object to the Model at the instance level. Can be either
         a NodesGroup or an ElementsGroup.
 
         Note
@@ -126,23 +125,25 @@ class AbaqusModel(Model):
         Returns
         -------
         None
-        """
-        super().add_group(group)
-        if f'{group.part}-1' not in self._instances:
-            raise ValueError(f'ERROR: instance {group.part}-1 not found in the Model!')
-        self._instances[f'{group.part}-1'].add_group(group)
+        '''
+        super().add_group(group, part)
+        if f'{part}-1' not in self._instances:
+            raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
+        self._instances[f'{part}-1'].add_group(group)
 
     def add_nodes_group(self, name, part, nodes):
-        super().add_nodes_group(name, part, nodes)
+        group = super().add_nodes_group(name, part, nodes)
         if f'{part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
-        self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
+        self._instances[f'{part}-1'].add_group(group.name)
+        return group
 
     def add_elements_group(self, name, part, elements):
-        super().add_elements_group(name, part, elements)
+        group = super().add_elements_group(name, part, elements)
         if f'{part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')
-        self._instances[f'{part}-1'].add_group(self.parts[part].groups[name])
+        self._instances[f'{part}-1'].add_group(group.name)
+        return group
 
 # =============================================================================
 #                               Job data
@@ -153,6 +154,9 @@ class AbaqusModel(Model):
 ** PARTS
 **
 {self._generate_part_section()}**
+** ASSEMBLY
+**
+{self._generate_assembly_section()}**
 ** MATERIALS
 **
 {self._generate_material_section()}**
@@ -162,13 +166,9 @@ class AbaqusModel(Model):
 ** INTERACTIONS
 **
 {self._generate_interactions_section()}**
-** ASSEMBLY
-**
-{self._generate_assembly_section()}**
-** BOUNDARY CONDITIONS
+** INITIAL CONDITIONS
 **
 {self._generate_bcs_section()}
-**
 """
 
     def _generate_part_section(self):

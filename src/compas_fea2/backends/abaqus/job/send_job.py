@@ -46,7 +46,8 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     # Analyse
     tic = time()
     success = False
-    cmd = 'cd {} && {} {} job={} interactive {}'.format(problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
+    cmd = 'cd {} && {} {} job={} interactive resultsformat=odb {}'.format(
+        problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:
@@ -85,17 +86,18 @@ def launch_process(problem, exe, output, overwrite, user_mat):
 # TODO combine with previous
 
 
-def launch_optimisation(problem, output):
+def launch_optimisation(problem, cpus, output):
     """ Run the topology optimisation through Tosca.
 
     Note
     ----
     https://abaqus-docs.mit.edu/2017/English/TsoUserMap/tso-c-usr-control-start-commandLine.htm
+    http://194.167.201.93/English/TsoUserMap/tso-c-usr-control-tp-cmdline.htm#tso-c-usr-control-tp-cmdline
 
     Parameters
     ----------
     problem : obj
-        Problem object.
+        :class:`OptimisationProblem` subclass object.
     output : bool
         Print terminal output.
 
@@ -107,13 +109,13 @@ def launch_optimisation(problem, output):
 
     # Set options
     exe_kw = 'ToscaStructure'
-
     # Analyse
     tic = time()
     success = False
-    cmd = 'cd {} && {} --job {} --cpus {} --loglevel TRACE --solver MSCNASTRAN --ow'.format(
-        problem.path, exe_kw, problem.name, problem.cpus)
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
+
+    # cmd = f'cd {problem.path} && abaqus optimization task=c:/code/myrepos/from_compas/fea2/temp/topopt_hypar_gmsh/hypar.par job=c:/temp/test_opt interactive'
+    cmd = f'cd {problem._path} && {exe_kw} --job {problem._name} -scpus {cpus} --loglevel NOTICE --solver abaqus --ow'
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem._path, shell=True, env=os.environ)
 
     while True:
         line = p.stdout.readline()
@@ -148,3 +150,7 @@ def launch_optimisation(problem, output):
             print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
     else:
         print('***** Analysis failed *****')
+
+
+def smooth_optimisation(problem, output):
+    raise NotImplementedError

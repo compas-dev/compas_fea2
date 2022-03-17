@@ -1,0 +1,10 @@
+Type, Commonly used unit, SI value, SI-mm value, Multiplication factor from commonly used to SI-mm
+Stiffness of Steel, 210 GPa, 210∙10^9  Pa , 210000 MPa, 1000
+Stiffness of Concrete, 30 GPa, 30∙10^9  Pa , 30000 MPa, 1000
+Density of steel, 7850 kg/m3, 7850 kg/m3,7.85∙10^-9 tonne/mm3, 10^-12
+Density of concrete, 2400 kg/m3, 2400 kg/m3,2.4∙10^-9 tonne/mm3, 10^-12
+Gravitational constant, 9.81 m/s2, 9.81 m/s2,9810 mm/s2, 1000
+Pressure, 1 bar, 10^5 Pa, 0.1 MPa, 10^-1
+Absolute zero temperature, -273.15  ̊C, 0 K, C and K both acceptable, -
+Stefan-Boltzmann constant, 5.67∙10-8 W∙m-2∙K-4, , 5.67∙10-11 mW∙mm-2∙K-4, 0.001
+Universal gas constant, 8.31 J∙K-1∙mol-1, ,8.31∙103 mJ∙K-1∙mol-1,1000

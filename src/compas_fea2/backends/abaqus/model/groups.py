@@ -12,7 +12,7 @@ def _generate_jobdata(self, instance):
     Parameters
     ----------
     instance: bool
-        if `True` the set is generated at the instance level, otherwise only
+        if ``True`` the set is generated at the instance level, otherwise only
         at the part level
 
     Returns
@@ -23,6 +23,7 @@ def _generate_jobdata(self, instance):
     name = self.name if not instance else f'{self.name}_{instance}'
     line = f'*{self._set_type}, {self._set_type}={name}'
     if instance:
+        # BUG instance is a bool, but it should be a str with the name of the instance
         line = ', instance='.join([line, instance])
 
     if self.generate:
@@ -86,7 +87,7 @@ class AbaqusElementsGroup(ElementsGroup):
 
     @property
     def generate(self):
-        """The generate property."""
+        """bool : if ``True``, automatically generates a set of elements/nodes between the two keys specified."""
         return self._generate
 
     def _generate_jobdata(self, instance=None):

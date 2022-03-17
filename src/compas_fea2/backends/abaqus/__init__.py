@@ -2,6 +2,190 @@
 ********************************************************************************
 Abaqus
 ********************************************************************************
+<<<<<<< HEAD
+=======
+
+This is the Abaqus implementation of compas_fea2.
+
+The following classes are used for the generation of the Model to be analysed in
+Abaqus
+
+
+MODEL
+=====
+
+.. currentmodule:: compas_fea2.backends.abaqus.model
+
+Model
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    Model
+
+Parts
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    Part
+
+Nodes
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    Node
+
+Elements
+--------
+
+.. autosummary::
+    :toctree: generated/
+
+    MassElement
+    BeamElement
+    TrussElement
+    ShellElement
+    SolidElement
+
+Constraints
+-----------
+
+.. autosummary::
+    :toctree: generated/
+
+    NodeTieConstraint
+
+Materials
+---------
+
+.. autosummary::
+    :toctree: generated/
+
+    ElasticIsotropic
+    ElasticPlastic
+    Stiff
+    Concrete
+    ConcreteSmearedCrack
+    ConcreteDamagedPlasticity
+    Steel
+    UserMaterial
+
+Sections
+--------
+
+.. autosummary::
+    :toctree: generated/
+
+    MassSection
+    AngleSection
+    BoxSection
+    CircularSection
+    HexSection
+    ISection
+    PipeSection
+    RectangularSection
+    TrapezoidalSection
+    TrussSection
+    ShellSection
+    MembraneSection
+    SolidSection
+
+Boundary Conditions
+-------------------
+
+.. autosummary::
+    :toctree: generated/
+
+    FixedBC
+    PinnedBC
+    FixedBCXX
+    FixedBCYY
+    FixedBCZZ
+    RollerBCX
+    RollerBCY
+    RollerBCZ
+    RollerBCXY
+    RollerBCYZ
+    RollerBCXZ
+
+Groups
+------
+
+.. autosummary::
+    :toctree: generated/
+
+    NodesGroup
+    ElementsGroup
+
+PROBLEM
+=======
+
+.. currentmodule:: compas_fea2.backends.abaqus.problem
+
+.. autosummary::
+    :toctree: generated/
+
+    Problem
+
+Steps
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    GeneralStep
+    ModalStep
+
+Loads
+-----
+
+.. autosummary::
+    :toctree: generated/
+
+    PointLoad
+    GravityLoad
+
+Displacements
+-------------
+
+.. autosummary::
+    :toctree: generated/
+
+    GeneralDisplacement
+
+
+OPTIMISATION
+============
+
+.. currentmodule:: compas_fea2.backends.abaqus.optimisation
+
+.. autosummary::
+    :toctree: generated/
+
+    OptimisationProblem
+    OptimisationParameters
+    OptimisationConstraint
+    ObjectiveFunction
+    DesignVariables
+    VolumeResponse
+    EnergyStiffnessResponse
+
+
+RESULTS
+=======
+
+.. currentmodule:: compas_fea2.backends.abaqus.results
+
+.. autosummary::
+    :toctree: generated/
+
+    Results
+>>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 """
 
 import compas_fea2

@@ -1,12 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os.path
 from datetime import datetime
 from compas_fea2.job.input_file import InputFileBase
-# from compas_fea2.backends.opensees.problem.steps import ModalStep
-# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 __all__ = [
     'InputFile',
@@ -89,20 +83,20 @@ class InputFile(InputFileBase):
 #
 #{problem.model._generate_jobdata()}
 #
-# -----------------------------------------------------------------
-# -----------------------------------------------------------------
-# PROBLEM
-# -----------------------------------------------------------------
-# -----------------------------------------------------------------
 #
 #------------------------------------------------------------------
-# Boundary conditions
+# Initial conditions
 #------------------------------------------------------------------
 #
 #    tag   DX   DY   RZ   MX   MY   MZ
 {problem}
 #
 #
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
+# PROBLEM
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
 #
 #------------------------------------------------------------------
 # Steps

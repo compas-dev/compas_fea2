@@ -191,8 +191,8 @@ class Results(FEAData):
                           sort_keys=True, indent=4)
 
 
-class CaseResults(FEAData):
-    """`compas_fea2` ResultsCaseBase object. This ensures that the results from
+class StepResults(FEAData):
+    """`compas_fea2` ResultsStep object. This ensures that the results from
     a specific load case are consistently organised across all backends.
 
     Parameters
@@ -207,7 +207,7 @@ class CaseResults(FEAData):
     """
 
     def __init__(self, name):
-        super(CaseResults, self).__init__(name=name)
+        super(StepResults, self).__init__(name=name)
         self.path = path
         self.temp_dump = Path(self.path).joinpath(self.name+'-results')
         self.info = {}

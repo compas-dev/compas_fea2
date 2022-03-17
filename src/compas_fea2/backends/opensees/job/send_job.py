@@ -1,8 +1,4 @@
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas_fea2.backends.opensees.writer import Writer
 
 from subprocess import Popen
@@ -15,17 +11,7 @@ import json
 import os
 
 
-# Author(s): Andrew Liew (github.com/andrewliew)
-
-
-__all__ = [
-    'input_generate',
-    'launch_process',
-]
-
-
 def input_generate(structure, fields, output, ndof):
-
     """ Creates the OpenSees .tcl file from the Structure object.
 
     Parameters
@@ -60,7 +46,6 @@ def input_generate(structure, fields, output, ndof):
 
 
 def launch_process(structure, exe, output):
-
     """ Runs the analysis through OpenSees.
 
     Parameters

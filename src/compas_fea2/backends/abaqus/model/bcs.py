@@ -23,6 +23,30 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 def _generate_jobdata(obj, instance, nodes):
     """Generates the string information for the input file.
 
+    Note
+    ----
+    A node set is created during the input file generation to group the application
+    point of the boundary condition. The new set name follows this name scheme:
+    `_aux_{bc.name}_{instance_name}`
+
+    Note
+    ----
+    Ideally, this would have not been necessary
+    because it is possible to retreive nodes within the Assembly-Part definition
+    by just using the format `instance_name.node_key`. However Tosca Structure
+    throws an exception during the flattening of the input file (it can not run
+    if the model is organised in Assembly and Parts). Below the orginal implementation
+    for future reference.
+
+    .. code-block:: python
+
+        data_section = [f'** Name: {obj.name} Type: BC/Rotation',
+                        '*Boundary, op=NEW']
+        for node in nodes:
+            for comp, dof in enumerate(dofs, 1):
+                if dof in obj.components:
+                    data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
+
     Parameters
     ----------
     None

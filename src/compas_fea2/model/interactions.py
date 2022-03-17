@@ -18,27 +18,23 @@ class Contact(Interaction):
 
     Parameters
     ----------
-    tangent : :class:`compas.geometry.Vector`
-        ???
-    normal : :class:`compas.geometry.Vector`
-        ???
-    tol : float
+    tangent :
+        tangent behaviour
+    normal :
+        normal behaviour
 
     Attributes
     ----------
-    tangent : :class:`compas.geometry.Vector`
-        ???
-    normal : :class:`compas.geometry.Vector`
-        ???
-    tol : float
-
+    tangent :
+        tangent behaviour
+    normal :
+        normal behaviour
     """
 
-    def __init__(self, *, tangent, normal, tol, **kwargs):
+    def __init__(self, *, tangent, normal, **kwargs):
         super(Contact, self).__init__(**kwargs)
         self._tangent = tangent
         self._normal = normal
-        self._tol = tol
 
     @property
     def tangent(self):
@@ -48,18 +44,30 @@ class Contact(Interaction):
     def normal(self):
         return self._normal
 
-    @property
-    def tol(self):
-        return self._tol
-
 
 class ContactNoFrictionBase(Contact):
     """"""
 
 
 class ContactHardFrictionPenalty(Contact):
-    """Hard contact interaction property with friction using a penalty formulation.
+    """Hard contact interaction property with friction using a penalty
+    formulation.
+
+    Parameters
+    ----------
+    name : str
+        name of the Contact property
+    mu : float
+        friction coefficient, usually less than 1.
+    tollerance : float
+        slip tollerance
     """
 
-    def __init__(self, *, mu, tol, **kwargs):
-        super(ContactHardFrictionPenalty, self).__init__(tangent=mu, normal='HARD', tol=tol, **kwargs)
+    def __init__(self, name, mu, tollerance) -> None:
+        super(ContactHardFrictionPenalty, self).__init__(
+            name=name, tangent=mu, normal='HARD')
+        self._tol = tollerance
+
+    @property
+    def tollerance(self):
+        return self._tol

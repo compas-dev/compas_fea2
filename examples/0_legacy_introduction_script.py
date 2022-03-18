@@ -21,33 +21,23 @@ from compas_fea2.model import BeamElement
 
 compas_fea2.set_backend('abaqus')
 
-# Initialise the model object
-model = Model(name='structural_model', description='...', author='me')
-# Define materials
-model.add_material(ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, density=1000))
-# Define sections
-model.add_section(CircularSection(name='sec_circ', material='mat_elastic', r=0.010))
+model = Model(name='structural_model', description='test model', author='me')
+mat = ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, density=1000)
+model.add_section(CircularSection(name='sec_circ', material=mat, r=0.010))
 
 
 frame = Part(name='frame')
 
-# Add nodes to the part
-frame.add_node(Node(xyz=[0., 0., 5.]))
-nodes = [[5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
-frame.add_nodes([Node(xyz=node) for node in nodes])
+coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
 
-# Add a Part to the model
+nodes = [Node(xyz=node) for node in coordinates]
+frame.add_nodes(nodes)
+for i in range(1, len(nodes)):
+    frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section='sec_circ'))
 model.add_part(frame)
-
-# Generate elements between nodes
-connectivity = [[0, i] for i in range(1, 5)]
-frame.add_elements([BeamElement(nodes=conn, section='sec_circ') for conn in connectivity])
-
-# Assign boundary conditions (3 pins and a rollerXY)
-# approach 1: driectly from model
-model.add_fix_bc(name='bc_pinned', part='frame', where=[1])
-model.add_pin_bc(name='bc_pinned', part='frame', where=[2, 3])
-model.add_rollerXY_bc(name='bc_pinned', part='frame', where=[4])
+model.add_fix_bc(name='bc_pinned', part=frame, where=[1])
+model.add_pin_bc(name='bc_pinned', part=frame, where=[2, 3])
+model.add_rollerXY_bc(name='bc_pinned', part=frame, where=[4])
 
 # Review
 model.summary()

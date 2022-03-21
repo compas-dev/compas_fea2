@@ -3,10 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
+from compas.geometry import Frame
 
 
 class BeamEndRelease(FEAData):
-    """Assign an end release to a `compas_fea2.model.BeamElement`.
+    """Assign a general end release to a `compas_fea2.model.BeamElement`.
 
     Parameters
     ----------
@@ -14,6 +15,8 @@ class BeamEndRelease(FEAData):
         Name of the BeamEndRelease object.
     location : str
         'start' or 'end'
+    local : bool
+        If True, use the local axes as reference frame for the release, by default False.
     x : bool, optional
         Release displacements along global x direction, by default False
     y : bool, optional
@@ -28,12 +31,21 @@ class BeamEndRelease(FEAData):
         Release rotations about global z direction, by default False
     """
 
-    def __init__(self, element, location, x=False, y=False, z=False, xx=False, yy=False, zz=False):
+    def __init__(self, element, location, local=False, x=False, y=False, z=False, xx=False, yy=False, zz=False):
         self.element = element
         self.location = location
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.xx = 0
-        self.yy = 0
-        self.zz = 0
+        self.local = local
+        self.x = x
+        self.y = y
+        self.z = z
+        self.xx = xx
+        self.yy = yy
+        self.zz = zz
+
+
+class BeamEndPinRelease(BeamEndRelease):
+    pass
+
+
+class BeamEndSliderRelease(BeamEndRelease):
+    pass

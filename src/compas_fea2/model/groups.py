@@ -14,7 +14,7 @@ class Group(FEAData):
 
 
 class NodesGroup(Group):
-    """Base class for all node groups.
+    """Base class nodes groups.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class NodesGroup(Group):
 
 
 class ElementsGroup(Group):
-    """Base class for all element groups.
+    """Base class for elements groups.
 
     Parameters
     ----------
@@ -53,8 +53,26 @@ class ElementsGroup(Group):
         self.elements = elements
 
 
+# NOTE this used to be called Surface
+class FacesGroup(Group):
+    """Base class elements faces groups.
+
+    Parameters
+    ----------
+    part : :class:`compas_fea2.model.Part`
+        Part where the elements are located
+    element_face : dict
+        element_key, face pairs of the elements faces creating the surface
+    """
+
+    def __init__(self, name, part, element_face):
+        self._name = name
+        self._part = part
+        self._element_face = element_face
+
+
 class PartsGroup(Group):
-    """Base class for all element groups.
+    """Base class for parts groups.
 
     Parameters
     ----------

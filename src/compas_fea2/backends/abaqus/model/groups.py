@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.model import NodesGroup
 from compas_fea2.model import ElementsGroup
+from compas_fea2.model.groups import FacesGroup
 
 
 def _generate_jobdata(self, instance):
@@ -92,3 +93,30 @@ class AbaqusElementsGroup(ElementsGroup):
 
     def _generate_jobdata(self, instance=None):
         return _generate_jobdata(self, instance)
+
+
+class AbaqusFacesGroup(FacesGroup):
+    """Abaqus implementation of the :class:`SurfaceBase`.\n
+    """
+    __doc__ += FacesGroup.__doc__
+
+    def __init__(self, name, part, element_face):
+        super(FacesGroup, self).__init__(name, part, element_face)
+
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            input file data line.
+        """
+        lines = [f'*Surface, type=ELEMENT, name={self._name}']
+        for key, face in self._element_face.items():
+            lines.append(f'{self._part}-1.{key+1}, {face}')
+        lines.append('**\n')
+        return '\n'.join(lines)

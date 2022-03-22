@@ -101,6 +101,26 @@ number of groups   : {}
     # =========================================================================
 
     # @classmethod
+    # def from_network(self, network):
+    #     raise NotImplementedError()
+
+    # @classmethod
+    # def from_obj(self, obj):
+    #     raise NotImplementedError()
+
+    # @classmethod
+    # def from_volmesh(cls, name, part_name, volmesh):
+    #     raise NotImplementedError()
+
+    # @classmethod
+    # def from_solid(cls, name, part_name, solid):
+    #     raise NotImplementedError()
+
+    # @classmethod
+    # def from_compas_part(cls, name, part_name, part):
+    #     raise NotImplementedError()
+
+    # @classmethod
     # def frame_from_mesh(cls, name, mesh, beam_section):
     #     """Creates a ``Part`` object from a compas Mesh object [WIP]. The edges of
     #     the mesh become the BeamElements of the frame. Currently, the same section

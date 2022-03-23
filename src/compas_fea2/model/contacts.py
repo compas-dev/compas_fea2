@@ -10,21 +10,21 @@ class ContactPair(FEAData):
 
     Parameters
     ----------
-    master : :class:`compas_fea2.model.Surface`
-        Master surface.
-    slave : :class:`compas_fea2.model.Surface`
-        Slave surface.
+    master : :class:`compas_fea2.model.FacesGroup`
+        Group of element faces determining the Master surface.
+    slave : :class:`compas_fea2.model.FacesGroup`
+        Group of element faces determining the Slave surface.
     interaction : :class:`compas_fea2.model.Interaction`
-        Interaction between master and slave.
+        Interaction type between master and slave.
 
     Attributes
     ----------
-    master : :class:`compas_fea2.model.Surface`
-        Master surface.
-    slave : :class:`compas_fea2.model.Surface`
-        Slave surface.
+    master : :class:`compas_fea2.model.FacesGroup`
+        Group of element faces determining the Master surface.
+    slave : :class:`compas_fea2.model.FacesGroup`
+        Group of element faces determining the Slave surface.
     interaction : :class:`compas_fea2.model.Interaction`
-        Interaction between master and slave.
+        Interaction type between master and slave.
 
     """
 

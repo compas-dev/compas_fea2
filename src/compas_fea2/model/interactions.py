@@ -18,20 +18,28 @@ class Contact(Interaction):
 
     Parameters
     ----------
+    normal : str
+        Behaviour of the contact along the direction normal to the interaction
+        surface. For faceted surfaces, this is the behavior along the direction
+        normal to each face.
     tangent :
-        tangent behaviour
-    normal :
-        normal behaviour
+        Behaviour of the contact along the directions tangent to the interaction
+        surface. For faceted surfaces, this is the behavior along the directions
+        tangent to each face.
 
     Attributes
     ----------
+    normal : str
+        Behaviour of the contact along the direction normal to the interaction
+        surface. For faceted surfaces, this is the behavior along the direction
+        normal to each face.
     tangent :
-        tangent behaviour
-    normal :
-        normal behaviour
+        Behaviour of the contact along the directions tangent to the interaction
+        surface. For faceted surfaces, this is the behavior along the directions
+        tangent to each face.
     """
 
-    def __init__(self, *, tangent, normal, **kwargs):
+    def __init__(self, *, normal, tangent, **kwargs):
         super(Contact, self).__init__(**kwargs)
         self._tangent = tangent
         self._normal = normal
@@ -45,29 +53,29 @@ class Contact(Interaction):
         return self._normal
 
 
-class ContactNoFrictionBase(Contact):
-    """"""
+class HardContactNoFriction(Contact):
+    pass
 
 
-class ContactHardFrictionPenalty(Contact):
+class HardContactFrictionPenalty(Contact):
     """Hard contact interaction property with friction using a penalty
     formulation.
 
     Parameters
     ----------
-    name : str
-        name of the Contact property
     mu : float
-        friction coefficient, usually less than 1.
+        Friction coefficient for tangential behaviour.
     tollerance : float
-        slip tollerance
+        Slippage tollerance during contact.
+
+    Attributes
+    ----------
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
     """
 
     def __init__(self, name, mu, tollerance) -> None:
-        super(ContactHardFrictionPenalty, self).__init__(
-            name=name, tangent=mu, normal='HARD')
-        self._tol = tollerance
-
-    @property
-    def tollerance(self):
-        return self._tol
+        super(HardContactFrictionPenalty, self).__init__(normal='HARD', tangent=mu)
+        self.tollerance = tollerance

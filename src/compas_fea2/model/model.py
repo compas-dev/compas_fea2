@@ -16,6 +16,8 @@ from compas_fea2.model.sections import Section
 from compas_fea2.model.bcs import BoundaryCondition
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import ElementsGroup
+from compas_fea2.model.groups import FacesGroup
+from compas_fea2.model.contacts import ContactPair
 
 
 class Model(FEAData):
@@ -115,139 +117,64 @@ class Model(FEAData):
     #                       Constructor methods
     # =========================================================================
 
-    def from_network(self, network):
-        raise NotImplementedError
+    @classmethod
+    def from_compas_assembly(cls, name, assembly, mesh_size, section, contact):
+        from compas_fea2.preprocessor.meshing import compas_to_gmsh_3d
+        from compas_fea2.utilities.interfaces import nodes_on_plane, elements_on_plane
+        from compas.geometry import Plane
+        from compas.datastructures import mesh_weld
+        # import compas_gmsh
+        from compas_gmsh.models import MeshModel
 
-    def from_assembly(self, assembly):
-        raise NotImplementedError
+        gmshModel = MeshModel()
 
-    # @classmethod
-    # def frame_from_mesh(cls, name, part_name, mesh, beam_section, author=None, description=None):
-    #     """Creates a Model object from a compas Mesh object [WIP]. The edges of
-    #     the mesh become the BeamElements of the frame. Currently, the same section
-    #     is applied to all the elements.
+        # m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     beam_section : obj
-    #         compas_fea2 BeamSection object to to apply to the frame elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.frame_from_mesh(part_name, mesh, beam_section)
-    #     model.add_part(part)
-    #     return model
+        model = cls(name=name)
 
-    # @classmethod
-    # def shell_from_mesh(cls, name, part_name, mesh, shell_section):
-    #     """Create a Model object from a compas Mesh object [WIP]. The faces of
-    #     the mesh become ShellElement objects. Currently, the same section
-    #     is applied to all the elements.
+        blocks = [assembly.node_attribute(node, 'block') for node in assembly.nodes()]
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     shell_section : obj
-    #         compas_fea2 ShellSection object to to apply to the shell elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.shell_from_mesh(part_name, mesh, shell_section)
-    #     model.add_part(part)
-    #     return model
+        for i, block in enumerate(blocks):
+            # block = mesh_weld(block)
+            # gmshModel.from_mesh(block)
+            # mesh = gmshModel.mesh_to_compas()
+            # gmshModel.synchronize()
+            # gmshModel.generate_mesh(3)
+            # part = m.Part.from_gmsh(name=f'block-{i}', gmshModel=gmshModel, section=section)
+            if mesh_size:
+                meshModel = compas_to_gmsh_3d(block, mesh_size)
+                part = Part.from_gmsh(name=f'block-{i}', gmshModel=meshModel, section=section)
+            else:
+                part = Part.from_compas_mesh(name=f'block-{i}', mesh=block, section=section)
+            model.add_part(part)
 
-    # @classmethod
-    # def shell_from_gmesh(cls, name, part_name, gmshModel, shell_section):
-    #     """Creates a Model object from a gmsh Model object [WIP]. The faces of
-    #     the mesh become the elements of the shell. Currently, the same section
-    #     is applied to all the elements.
+        first_block = list(model.parts.values())[0]
+        last_block = list(model.parts.values())[-1]
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new Part.
-    #     gmshModel : obj
-    #         gmsh Model to convert.
-    #     shell_section : obj
-    #         compas_fea2 ShellSection object to to apply to the shell elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.shell_from_gmesh(part_name, gmshModel, shell_section)
-    #     model.add_part(part)
-    #     return model
+        supp_a = nodes_on_plane(first_block, Plane([0, 0, 0], [0, 0, 1]))
+        supp_b = nodes_on_plane(last_block, Plane([0, 0, 0], [0, 0, 1]))
+        model.add_fix_bc(name='left_support', part=first_block, where=supp_a)
+        model.add_fix_bc(name='right_support', part=last_block, where=supp_b)
 
-    # @classmethod
-    # def from_volmesh(cls, name, part_name, volmesh):
-    #     raise NotImplementedError()
+        blocks_interface = [assembly.edge_attribute(edge, 'interface') for edge in assembly.edges()]
+        for i, interface in enumerate(blocks_interface):
+            if i == len(blocks):
+                break
+            master = elements_on_plane(model.parts[f'block-{i}'], Plane.from_frame(interface.frame))
+            slave = elements_on_plane(model.parts[f'block-{i+1}'], Plane.from_frame(interface.frame))
+            model.add_contact(ContactPair(master=FacesGroup(name=f'master_{i}_{i+1}',
+                                                            part=f'block-{i}',
+                                                            element_face=master),
+                                          slave=FacesGroup(name=f'slave_{i}_{i+1}',
+                                                           part=f'block-{i+1}',
+                                                           element_face=slave),
+                                          interaction=contact))
 
-    # @classmethod
-    # def from_solid(cls, name, part_name, solid):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_compas_part(cls, name, part_name, part):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_compas_assembly(cls, name, part_name, assembly):
-    #     raise NotImplementedError()
+        return model
 
     # =========================================================================
     #                             Parts methods
     # =========================================================================
-
-    # def _check_part_in_model(self, part):
-    #     """Check if the part is already in the model and in case add it.
-    #     If `part` is of type :class:`str`, check if the part is already defined.
-    #     If `part` is of type :class:`Part`, add the part to the Model if not
-    #     already defined.
-
-    #     Parameters
-    #     ----------
-    #     part : str or obj
-    #         Name of the Part or Part object to check.
-
-    #     Returns
-    #     -------
-    #     obj
-    #         type :class:`Part` object
-
-    #     Raises
-    #     ------
-    #     ValueError
-    #         if `part` is a string and the part is not defined in the model
-    #     TypeError
-    #         `part` must be either an instance of a `compas_fea2` :class:`Part`
-    #         or the name of a :class:`Part` already defined in the Model.
-    #     """
-    #     if isinstance(part, str):
-    #         if part not in self.parts:
-    #             raise ValueError(f'{part} not found in the Model')
-    #         part_name = part
-    #     elif isinstance(part, Part):
-    #         if part.name not in self.parts:
-    #             self.add_part(part)
-    #             print(f'{part.__repr__()} added to the Model')
-    #         part_name = part.name
-    #     else:
-    #         raise TypeError(
-    #             f'{part} is either not an instance of a compas_fea2 Part class or not found in the Model')
-
-    #     return self.parts[part_name]
 
     def find_parts_by_name(self, name):
         """Find all the parts with a given name.
@@ -441,108 +368,6 @@ class Model(FEAData):
             self.add_section(section)
 
     # =========================================================================
-    #                           Elements methods
-    # =========================================================================
-
-    # def add_element(self, element, part, check=False):
-    #     """Add a :class:`ElementBase` subclass object to a part in the Model.
-
-    #     Note
-    #     ----
-    #     Elements are defined at the part level. The element added is stored in
-    #     the specified part. However, the section and material associaceted are
-    #     added to tthe model, if not already present.
-
-    #     Parameters
-    #     ----------
-    #     element : obj
-    #         :class:`ElementBase` subclass object to be added.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool, optional
-    #         If ``True``, checks if the node connected by the element are present.
-    #         This is a quite resource-intense operation! Set to ``False`` for large
-    #         parts (>10000 nodes). By default ``False``
-
-    #     Returns
-    #     -------
-    #     int
-    #         element key
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     if isinstance(element.section, str):
-    #         if element.section not in self.sections:
-    #             if element.section in part.sections:
-    #                 self.sections[element.section] = part.sections[element.section]
-    #             else:
-    #                 raise ValueError(f'ERROR: section {element.section.__repr__()} not found in the Model!')
-    #         else:
-    #             element._section = self.sections[element.section]
-    #     return part.add_element(element, check)
-
-    # def add_elements(self, elements, part, check=False):
-    #     """Adds multiple :class:`ElementBase` subclass objects to a part in the Model.
-
-    #     Parameters
-    #     ----------
-    #     elements : list
-    #         List of compas_fea2 Element subclass objects.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool
-    #         If True, checks if the element keys are in the model. This is a quite
-    #         resource-intense operation! Set to `False` for large models (>10000
-    #         nodes)
-
-    #     Return
-    #     ------
-    #     list of int
-    #         list with the keys of the added nodes.
-    #     """
-    #     return [self.add_element(element, part, check) for element in elements]
-
-    # =========================================================================
-    #                           Releases methods
-    # =========================================================================
-
-    # def add_release(self, release, part):
-    #     """Add an Element EndRelease object to the Model.
-
-    #     Parameters
-    #     ----------
-    #     release : obj
-    #         `EndRelase` object.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_release(release)
-
-    # def add_releases(self, releases, part):
-    #     """Add multiple Element EndRelease objects to the Model.
-
-    #     Parameters
-    #     ----------
-    #     releases : list
-    #         list of `EndRelase` object.
-    #     part : str
-    #         Name of the part where the nodes will be removed from.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     for release in releases:
-    #         self.add_release(release, part)
-
-    # =========================================================================
     #                           Groups methods
     # =========================================================================
 
@@ -640,39 +465,6 @@ class Model(FEAData):
     #     """
     #     part = self._check_part_in_model(part)
     #     part.add_elements_group(name, elements)
-
-    # =========================================================================
-    #                        Surfaces methods
-    # =========================================================================
-
-    def add_surface(self, surface):
-        """Add a :class:`SurfaceBase` object to the model.
-
-        Parameters
-        ----------
-        surface : obj
-            type :class:`SurfaceBase` object to be added
-
-        Returns
-        -------
-        None
-        """
-        self._surfaces[surface.name] = surface
-
-    def add_surfaces(self, surfaces):
-        """Add multiple :class:`SurfaceBase` objects to the Model.
-
-        Parameters
-        ----------
-        surfaces : list
-            list with the type :class:`SurfaceBase` objects to be added
-
-        Returns
-        -------
-        None
-        """
-        for surface in surfaces:
-            self.add_surface(surface)
 
     # =========================================================================
     #                       Constraints methods

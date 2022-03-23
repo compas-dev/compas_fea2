@@ -151,7 +151,7 @@ from .materials import (
     ElasticPlastic,
     Steel
 )
-from .interactions import ContactHardFrictionPenalty
+from .interactions import HardContactFrictionPenalty
 from .sections import (
     Section,
     MassSection,
@@ -230,7 +230,7 @@ __all__ = [
     'ElasticPlastic',
     'Steel',
 
-    'ContactHardFrictionPenalty',
+    'HArdContactFrictionPenalty',
 
     'Section',
     'MassSection',

@@ -23,7 +23,7 @@ Dev Packages
     :maxdepth: 1
 
     compas_fea2.backends
-    compas_fea2.interfaces
+    compas_fea2.UI
     compas_fea2.job
     compas_fea2.postprocessor
     compas_fea2.preprocessor

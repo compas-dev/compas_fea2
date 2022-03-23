@@ -211,7 +211,7 @@ class AbaqusModel(Model):
             data_section.append(surface._generate_jobdata())
         for constraint in self.constraints.values():
             data_section.append(constraint._generate_jobdata())
-        data_section.append('*End Assembly\n**\n')
+        data_section.append('\n*End Assembly\n**\n')
 
         return ''.join(data_section)
 

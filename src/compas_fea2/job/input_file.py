@@ -62,3 +62,7 @@ class InputFile(FEAData):
             out = '***** ERROR: {!r} not generated ****'.format(self)
 
         return out
+
+
+class ParametersFile(InputFile):
+    pass

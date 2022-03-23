@@ -18,5 +18,6 @@ from __future__ import print_function
 from .input_file import InputFile
 
 __all__ = [
-    'InputFile'
+    'InputFile',
+    'ParametersFile'
 ]

@@ -1,7 +1,7 @@
-from compas_fea2._base.optimisation.variables import DesignVariablesBase
+from compas_fea2.optimisation.variables import DesignVariables
 
 
-class DesignVariables(DesignVariablesBase):
+class AbaqusDesignVariables(DesignVariables):
     def __init__(self, name, variables) -> None:
         super().__init__(name, variables)
 

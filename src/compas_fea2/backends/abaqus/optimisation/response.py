@@ -1,7 +1,7 @@
-from compas_fea2._base.optimisation.response import VolumeResponseBase, EnergyStiffnessResponseBase
+from compas_fea2.optimisation.responses import VolumeResponse, EnergyStiffnessResponse
 
 
-class VolumeResponse(VolumeResponseBase):
+class AbaqusVolumeResponse(VolumeResponse):
     def __init__(self, group, group_operator) -> None:
         super().__init__(group, group_operator)
 
@@ -18,7 +18,7 @@ END_
 """
 
 
-class EnergyStiffnessResponse(EnergyStiffnessResponseBase):
+class AbaqusEnergyStiffnessResponse(EnergyStiffnessResponse):
     def __init__(self, group, group_operator, lc) -> None:
         super().__init__(group, group_operator, lc)
 

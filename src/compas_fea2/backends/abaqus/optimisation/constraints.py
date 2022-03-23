@@ -1,7 +1,7 @@
-from compas_fea2._base.optimisation.constraints import OptimisationConstraintBase
+from compas_fea2.optimisation.constraints import OptimisationConstraint
 
 
-class OptimisationConstraint(OptimisationConstraintBase):
+class AbaqusOptimisationConstraint(OptimisationConstraint):
     def __init__(self, name, design_response, relative=False) -> None:
         super().__init__(name, design_response, relative)
 

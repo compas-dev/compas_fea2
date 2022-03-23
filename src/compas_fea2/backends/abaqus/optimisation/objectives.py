@@ -1,7 +1,7 @@
-from compas_fea2._base.optimisation.objectives import ObjectiveFunctionBase
+from compas_fea2.optimisation.objectives import ObjectiveFunction
 
 
-class ObjectiveFunction(ObjectiveFunctionBase):
+class AbaqusObjectiveFunction(ObjectiveFunction):
     def __init__(self, name, design_respone, target) -> None:
         super().__init__(name, design_respone, target)
 

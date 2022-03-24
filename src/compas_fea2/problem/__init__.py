@@ -13,19 +13,19 @@ Problem
 
     Problem
 
-Cases
+Steps
 =====
 
 .. autosummary::
     :toctree: generated/
 
-    Case
-    GeneralCase
-    HeatCase
-    ModalCase
-    HarmonicCase
-    BucklingCase
-    AcousticCase
+    Step
+    GeneralStep
+    HeatStep
+    ModalStep
+    HarmonicStep
+    BucklingStep
+    AcousticStep
 
 Loads
 =====
@@ -62,25 +62,26 @@ from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
     Load,
-    PrestressLoad,
+    # PrestressLoad,
     PointLoad,
     LineLoad,
     AreaLoad,
     GravityLoad,
-    TributaryLoad,
-    HarmonicPointLoad,
-    HarmonicPressureLoad,
-    AcousticDiffuseFieldLoad
+    # TributaryLoad,
+    # HarmonicPointLoad,
+    # HarmonicPressureLoad,
+    # AcousticDiffuseFieldLoad
 )
 from .steps import (
-    Case,
-    GeneralStaticCase,
-    StaticLinearPerturbationCase,
-    HeatCase,
-    ModalCase,
-    HarmonicCase,
-    BucklingCase,
-    AcousticCase
+    Step,
+    GeneralStep,
+    StaticStep,
+    # StaticLinearPerturbationStep,
+    # HeatStep,
+    ModalStep,
+    # HarmonicStep,
+    # BucklingStep,
+    AcousticStep
 )
 from .outputs import (
     FieldOutput,
@@ -101,14 +102,14 @@ __all__ = [
     'HarmonicPointLoad',
     'HarmonicPressureLoad',
     'AcousticDiffuseFieldLoad',
-    'Case',
-    'GeneralStaticCase',
-    'StaticLinearPerturbationCase',
-    'HeatCase',
-    'ModalCase',
-    'HarmonicCase',
-    'BucklingCase',
-    'AcousticCase',
+    'Step',
+    'GeneralStaticStep',
+    'StaticLinearPerturbationStep',
+    'HeatStep',
+    'ModalStep',
+    'HarmonicStep',
+    'BucklingStep',
+    'AcousticStep',
     'FieldOutput',
     'HistoryOutput'
 ]

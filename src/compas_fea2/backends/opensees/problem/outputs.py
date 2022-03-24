@@ -2,8 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem.outputs import FieldOutputBase
-from compas_fea2.problem.outputs import HistoryOutputBase
+from compas_fea2.problem.outputs import FieldOutput
+from compas_fea2.problem.outputs import HistoryOutput
 
 __all__ = [
     'FieldOutput',
@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class FieldOutput(FieldOutputBase):
+class FieldOutput(FieldOutput):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
         super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
 
@@ -25,7 +25,7 @@ class FieldOutput(FieldOutputBase):
         "recorder Node -file C:/temp/introduction/step_loads_u.out -time -nodeRange 1 5 -dof 1 2 3 disp"
 
 
-class HistoryOutput(HistoryOutputBase):
+class HistoryOutput(HistoryOutput):
     def __init__(self, name):
         super(HistoryOutput, self).__init__(name)
 

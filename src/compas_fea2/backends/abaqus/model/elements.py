@@ -57,13 +57,13 @@ class AbaqusMassElement(MassElement):
 
 class AbaqusBeamElement(BeamElement):
 
-    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
-        super(AbaqusBeamElement, self).__init__(connectivity, section, thermal)
-        self.elset = elset
+    def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, **kwargs):
+        super(AbaqusBeamElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, **kwargs)
+        self.elset = None
         self.eltype = 'B31'
-        self.orientation = orientation
+        self.orientation = frame
 
-    def _generate_jobdata(element):
+    def _generate_jobdata(self):
         """Generates the string information for the input file.
 
         Parameters
@@ -76,7 +76,7 @@ class AbaqusBeamElement(BeamElement):
 
         """
         # note: the string `*Element, type=B31` is generated in the part section to group elements with the same type
-        return '{0}, {1}, {2}\n'.format(self.key + 1, self.connectivity[0] + 1, self.connectivity[1] + 1)
+        return '{0}, {1}, {2}\n'.format(self.key + 1, self.nodes[0].key + 1, self.nodes[1].key + 1)
 
 
 class AbaqusSpringElement(SpringElement):
@@ -91,7 +91,7 @@ class AbaqusSpringElement(SpringElement):
 class AbaqusTrussElement(TrussElement):
     """A 1D element that resists axial loads.
     """
-    __doc__ += TrussElementBase.__doc__
+    __doc__ += TrussElement.__doc__
 
     def __init__(self, connectivity, section, elset=None, thermal=None):
         super(AbaqusTrussElement, self).__init__(connectivity, section, thermal)
@@ -133,7 +133,7 @@ class AbaqusShellElement(ShellElement):
         NotImplemented
 
     """
-    __doc__ += ShellElementBase.__doc__
+    __doc__ += ShellElement.__doc__
 
     def __init__(self, connectivity, section, elset=None, thermal=None):
         super(AbaqusShellElement, self).__init__(connectivity, section, thermal)
@@ -171,11 +171,6 @@ class AbaqusMembraneElement(MembraneElement):
 # ==============================================================================
 # 3D elements
 # ==============================================================================
-class SolidElement(_AbaqusElement, SolidElement):
-    """Abaqus implementation of a :class:`SolidElementBase`.\n
-    """
-    __doc__ += SolidElement.__doc__
-
 
 class AbaqusSolidElement(SolidElement):
 

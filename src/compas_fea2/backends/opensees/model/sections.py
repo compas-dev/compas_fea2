@@ -4,28 +4,28 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.model import SectionBase
-from compas_fea2.model import MassSectionBase
-from compas_fea2.model import AngleSectionBase
-from compas_fea2.model import BoxSectionBase
-from compas_fea2.model import CircularSectionBase
-from compas_fea2.model import ISectionBase
-from compas_fea2.model import PipeSectionBase
-from compas_fea2.model import RectangularSectionBase
-from compas_fea2.model import ShellSectionBase
-from compas_fea2.model import MembraneSectionBase
-from compas_fea2.model import SolidSectionBase
-from compas_fea2.model import TrapezoidalSectionBase
-from compas_fea2.model import TrussSectionBase
-from compas_fea2.model import StrutSectionBase
-from compas_fea2.model import TieSectionBase
-from compas_fea2.model import SpringSectionBase
+from compas_fea2.model import Section
+from compas_fea2.model import MassSection
+from compas_fea2.model import AngleSection
+from compas_fea2.model import BoxSection
+from compas_fea2.model import CircularSection
+from compas_fea2.model import ISection
+from compas_fea2.model import PipeSection
+from compas_fea2.model import RectangularSection
+from compas_fea2.model import ShellSection
+from compas_fea2.model import MembraneSection
+from compas_fea2.model import SolidSection
+from compas_fea2.model import TrapezoidalSection
+from compas_fea2.model import TrussSection
+from compas_fea2.model import StrutSection
+from compas_fea2.model import TieSection
+from compas_fea2.model import SpringSection
 
 
-class RectangularSection(RectangularSectionBase):
-    """OpenSees implementation of :class:`RectangularSectionBase`. \n
+class RectangularSection(RectangularSection):
+    """OpenSees implementation of :class:`RectangularSection`. \n
     """
-    __doc__ += RectangularSectionBase.__doc__
+    __doc__ += RectangularSection.__doc__
 
     def __init__(self, name, b, h, material):
         super(RectangularSection, self).__init__(name, b, h, material)

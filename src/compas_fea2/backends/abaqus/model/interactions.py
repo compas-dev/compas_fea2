@@ -2,12 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import ContactHardFrictionPenalty
+from compas_fea2.model import HardContactFrictionPenalty
 
 
-class AbaqusContactHardFrictionPenalty(ContactHardFrictionPenalty):
+class AbaqusHardContactFrictionPenalty(HardContactFrictionPenalty):
     def __init__(self, name, mu, tollerance=0.005) -> None:
-        super(AbaqusContactHardFrictionPenalty, self).__init__(name, mu, tollerance)
+        super(AbaqusHardContactFrictionPenalty, self).__init__(name, mu, tollerance)
 
     def _generate_jobdata(self):
         return f"""

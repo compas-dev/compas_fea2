@@ -15,21 +15,21 @@ class OptimisationProblem(FEAData):
     Parameters
     ----------
     problem : obj
-        :class:`ProblemBase` subclass object.
+        :class:`compas_fea2.optimisation.Problem` subclass object.
     design_variables : obj
-        :class:`DesignVariablesBase` subclass object
+        :class:`compas_fea2.optimisation.DesignVariables` subclass object
     design_responses : dict
-        dictionary with :class:`DesignResponseBase` subclass objects
+        dictionary with :class:`compas_fea2.optimisation.DesignResponse` subclass objects
     objective_function : obj
-        :class:`ObectiveFunctionBase` subclass object
+        :class:`compas_fea2.optimisation.ObectiveFunction` subclass object
     dv_constraints : dict of obj
-        dict of :class:`OptimisationConstraintBase` subclass objects
+        dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects
     constraints : dict of obj
-        dict of :class:`OptimisationConstraintBase` subclass objects
+        dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects
     strategy : str
         type of optimisation
     parameters : obj
-        :class:`OptimisationParametersBase` subclass object.
+        :class:`compas_fea2.optimisation.OptimisationParameters` subclass object.
     """
 
     def __init__(self, problem, design_variables, design_responses, objective_function,
@@ -45,32 +45,32 @@ class OptimisationProblem(FEAData):
 
     @property
     def problem(self):
-        """obj : :class:`ProblemBase` subclass object."""
+        """obj : :class:`compas_fea2.optimisation.Problem` subclass object."""
         return self._problem
 
     @property
     def desing_variables(self):
-        """obj: :class:`DesignVariablesBase` subclass object."""
+        """obj: :class:`compas_fea2.optimisation.DesignVariables` subclass object."""
         return self._desing_variables
 
     @property
     def desing_responses(self):
-        """dict : dictionary with :class:`DesignResponseBase` subclass objects."""
+        """dict : dictionary with :class:`compas_fea2.optimisation.DesignResponse` subclass objects."""
         return self._desing_responses
 
     @property
     def objective_function(self):
-        """obj : :class:`ObectiveFunctionBase` subclass object."""
+        """obj : :class:`compas_fea2.optimisation.ObectiveFunction` subclass object."""
         return self._objective_function
 
     @property
     def dv_constraints(self):
-        """dict : dict of :class:`OptimisationConstraintBase` subclass objects"""
+        """dict : dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects"""
         return self._dv_constraints
 
     @property
     def constraints(self):
-        """dict : dict of :class:`OptimisationConstraintBase` subclass objects."""
+        """dict : dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects."""
         return self._constraints
 
     @property
@@ -80,7 +80,7 @@ class OptimisationProblem(FEAData):
 
     @property
     def parameters(self):
-        """obj : :class:`OptimisationParametersBase` subclass object."""
+        """obj : :class:`compas_fea2.optimisation.OptimisationParameters` subclass object."""
         return self._parameters
 
     def add_objective_function(self, objective_function):
@@ -132,7 +132,7 @@ class OptimisationProblem(FEAData):
         save : bool, optional
             save results, by default False. CURRENTLY NOT IMPLEMENTED!
         smooth : obj, optional
-            if a :class:`SmoothingParametersBase` subclass object is passed, the
+            if a :class:`compas_fea2.optimisation.SmoothingParameters` subclass object is passed, the
             optimisation results will be postprocessed and smoothed, by defaut
             ``None`` (no smoothing)
         """
@@ -153,9 +153,9 @@ class TopOptSensitivity(OptimisationProblem):
     Parameters
     ----------
     problem : obj
-        :class:`ProblemBase` subclass object.
+        :class:`compas_fea2.optimisation.Problem` subclass object.
     design_variables : obj
-        :class:`DesignVariablesBase` subclass object
+        :class:`compas_fea2.optimisation.DesignVariables` subclass object
     vf : float
         volume fraction as final_volume/initial_volume
     lc : str

@@ -11,7 +11,7 @@ from compas_fea2.base import FEAData
 
 
 class Results(FEAData):
-    """`compas_fea2` ResultsBase object. This ensures that the results from all
+    """`compas_fea2` Results object. This ensures that the results from all
     the backends are consistent.
 
     Parameters

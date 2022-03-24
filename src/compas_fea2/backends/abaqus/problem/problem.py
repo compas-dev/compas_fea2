@@ -1,9 +1,8 @@
 from pathlib import Path
 from compas_fea2.problem import Problem
 
-<<<<<<< HEAD
 from compas_fea2.backends.abaqus.job import AbaqusInputFile
-from compas_fea2.backends.abaqus.job import AbaqusParFile
+from compas_fea2.backends.abaqus.job import AbaqusParametersFile
 from compas_fea2.backends.abaqus.job import launch_process
 from compas_fea2.backends.abaqus.job import launch_optimisation
 
@@ -23,28 +22,11 @@ class AbaqusProblem(Problem):
     Attributes
     ----------
     None
-=======
-from compas_fea2.backends.abaqus.job.input_file import InputFile
-
-from compas_fea2.backends.abaqus.job.send_job import launch_process
-from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
-from compas_fea2.backends.abaqus.problem.outputs import FieldOutput
-from compas_fea2.backends.abaqus.problem.outputs import HistoryOutput
-from compas_fea2.backends.abaqus.problem.steps import ModalStep
-
-
-class Problem(ProblemBase):
-    """Abaqus implementation of the :class:`ProblemBase`.\n
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
     """
-    __doc__ += ProblemBase.__doc__
+    __doc__ += Problem.__doc__
 
-<<<<<<< HEAD
     def __init__(self, name, model, **kwargs):
         super(AbaqusProblem, self).__init__(name=name, model=model, **kwargs)
-        # self.__name__ = 'AbaqusProblem'
-        # self.parts = model.parts.values()  # TODO remove
-        # self.interactions       = model.interactions
 
     # =========================================================================
     #                           Optimisation methods
@@ -55,10 +37,6 @@ class Problem(ProblemBase):
         self.vf = vf
         self.iter_max = iter_max
         self.cpus = cpus
-=======
-    def __init__(self, name, model, author=None, description=None):
-        super(Problem, self).__init__(name=name, model=model, author=author, description=description)
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 
     # =========================================================================
     #                         Analysis methods
@@ -76,16 +54,11 @@ class Problem(ProblemBase):
         -------
         None
         """
-<<<<<<< HEAD
         input_file = AbaqusInputFile(self)
-=======
-        input_file = InputFile.from_problem(self)
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
         r = input_file.write_to_file(self.path)
         if output:
             print(r)
 
-<<<<<<< HEAD
     def write_parameters_file(self, output=True):
         """Writes the abaqus parameters file for the optimisation.
 
@@ -98,13 +71,11 @@ class Problem(ProblemBase):
         -------
         None
         """
-        par_file = AbaqusParFile(self)
+        par_file = AbaqusParametersFile(self)
         par = par_file.write_to_file(self.path)
         if output:
             print(par)
 
-=======
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
     # TODO: try to make this an abstract method of the base class
 
     def analyse(self, path='C:/temp', exe=None, cpus=1, output=True, overwrite=True, user_mat=False, save=False):
@@ -140,7 +111,6 @@ class Problem(ProblemBase):
         self.write_input_file(output)
         launch_process(self, exe, output, overwrite, user_mat)
 
-<<<<<<< HEAD
     def optimise(self, path='C:/temp', output=True, save=False):
         self.path = path if isinstance(path, Path) else Path(path)
         if not self.path.exists():
@@ -156,12 +126,6 @@ class Problem(ProblemBase):
     # =============================================================================
     #                               Job data
     # =============================================================================
-=======
-
-# =============================================================================
-#                               Job data
-# =============================================================================
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 
     def _generate_jobdata(self):
         return f"""{self._generate_steps_section()}"""

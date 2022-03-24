@@ -1,64 +1,63 @@
-<<<<<<< HEAD
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# Abaqus Problem
 from .problem import AbaqusProblem
+
+# Abaqus Steps
 from .steps import (
-    AbaqusGeneralStaticStep,
-    AbaqusStaticLinearPertubationStep,
-    AbaqusModalStep,
-    AbaqusBucklingStep,
+    AbaqusStaticStep,
+    # AbaqusAcousticStep,
+    # AbaqusBucklingStep,
+    # AbaqusGeneralStaticStep,
+    # AbaqusHarmonicStep,
+    # AbaqusHeatStep,
+    # AbaqusModalStep,
+    # AbaqusStaticLinearPerturbationStep,
 )
-from .displacements import AbaqusGeneralDisplacement
+# Abaqus Loads
 from .loads import (
     AbaqusPointLoad,
-    AbaqusLineLoad,
-    AbaqusAreaLoad,
-    AbaqusGravityLoad,
-    AbaqusTributaryLoad,
-    AbaqusHarmonicPointLoad,
-    AbaqusHarmonicPressureLoad,
-    AbaqusAcousticDiffuseFieldLoad
+    # AbaqusLineLoad,
+    # AbaqusAreaLoad,
+    # AbaqusGravityLoad,
+    # AbaqusHarmonicPointLoad,
+    # AbaqusHarmonicPressureLoad,
+    # AbaqusTributaryLoad,
 )
-from .outputs import AbaqusFieldOutput, AbaqusHistoryOutput
-=======
-from .problem import Problem
-from .steps import (
-    GeneralStaticStep,
-    LinearStaticStep,
-    ModalStep,
+
+# Abaqus Displacements
+from .displacements import (
+    AbaqusGeneralDisplacement,
 )
-from .outputs import FieldOutput, HistoryOutput
-from .loads import (
-    PointLoad,
-    LineLoad,
-    AreaLoad,
-    GravityLoad,
+
+# Abaqus outputs
+from .outputs import (
+    AbaqusFieldOutput,
+    AbaqusHistoryOutput,
 )
-from .displacements import GeneralDisplacement
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 
 
-__all__ = [
-    'AbaqusProblem',
+# __all__ = [
+#     'AbaqusProblem',
 
-    'AbaqusGeneralStaticStep',
-    'AbaqusStaticLinearPertubationStep',
-    'AbaqusModalStep',
-    'AbaqusBucklingStep',
+#     'AbaqusStaticStep',
+#     'AbaqusStaticLinearPertubationStep',
+#     'AbaqusModalStep',
+#     'AbaqusBucklingStep',
 
-    'AbaqusGeneralDisplacement',
+#     'AbaqusGeneralDisplacement',
 
-    'AbaqusPointLoad',
-    'AbaqusLineLoad',
-    'AbaqusAreaLoad',
-    'AbaqusGravityLoad',
-    'AbaqusTributaryLoad',
-    'AbaqusHarmonicPointLoad',
-    'AbaqusHarmonicPressureLoad',
-    'AbaqusAcousticDiffuseFieldLoad',
+#     'AbaqusPointLoad',
+#     'AbaqusLineLoad',
+#     'AbaqusAreaLoad',
+#     'AbaqusGravityLoad',
+#     'AbaqusTributaryLoad',
+#     'AbaqusHarmonicPointLoad',
+#     'AbaqusHarmonicPressureLoad',
+#     'AbaqusAcousticDiffuseFieldLoad',
 
-    'AbaqusFieldOutput',
-    'AbaqusHistoryOutput',
-]
+#     'AbaqusFieldOutput',
+#     'AbaqusHistoryOutput',
+# ]

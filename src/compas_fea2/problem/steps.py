@@ -204,7 +204,7 @@ class GeneralStep(Step):
         Parameters
         ----------
         load : obj
-            any ``compas_fea2`` :class:`LoadBase` subclass object
+            any ``compas_fea2`` :class:`compas_fea2.problem.Load` subclass object
         keys : int
             node or element key where the load is applied
         part : str
@@ -230,7 +230,7 @@ class GeneralStep(Step):
         # self._check_nodes_in_model(nodes) #TODO implement method
 
         if not isinstance(load, Load):
-            raise TypeError(f'{load} is not a compas_fea2 LoadBase subclass instance')
+            raise TypeError(f'{load} is not a compas_fea2 Load subclass instance')
         if isinstance(part, Part):
             part = part.name
         self._loads.setdefault(part, {})[load] = nodes
@@ -302,7 +302,7 @@ class StaticStep(GeneralStep):
         Dictionary of the displacements assigned to each part in the model in the step.
     """
 
-    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
+    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
         super(StaticStep, self).__init__(name=name, max_increments=max_increments,
                                          initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
                                          time=time, nlgeom=nlgeom, modify=modify)
@@ -318,7 +318,7 @@ class StaticStep(GeneralStep):
         return self._displacements
 
     def add_point_load(self, name, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
-        """Add a :class:`PointLoadBase` subclass object to the ``Step``.
+        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the ``Step``.
 
         Warning
         -------
@@ -329,7 +329,7 @@ class StaticStep(GeneralStep):
         name : str
             name of the point load
         part : str
-            name of the :class:`PartBase` where the load is applied
+            name of the :class:`compas_fea2.problem.Part` where the load is applied
         where : int or list(int), obj
             It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
             applied.
@@ -354,7 +354,7 @@ class StaticStep(GeneralStep):
         self.add_load(load, where, part)
 
     def add_gravity_load(self, name='gravity', g=9.81, x=0., y=0., z=-1.):
-        """Add a :class:`GravityLoadBase` load to the ``Step``
+        """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
 
         Warning
         -------
@@ -398,7 +398,7 @@ class StaticStep(GeneralStep):
         Parameters
         ----------
         displacement : obj
-            ``compas_fea2`` :class:`GeneralDisplacementBase` object.
+            ``compas_fea2`` :class:`compas_fea2.problem.GeneralDisplacement` object.
         where : int
             node or element key where the load is applied
         part : str

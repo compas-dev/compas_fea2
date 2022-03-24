@@ -13,7 +13,7 @@ class ObjectiveFunction(FEAData):
     name : str
         the name of the objective function.
     desing_response : obj
-        :class:`DesignResponseBase` subclass of the response to optimise.
+        :class:`compas_fea2.optimisation.DesignResponse` subclass of the response to optimise.
     target : str
         target of the optimisation (i.e. 'min', 'MinMax', etc).
     """
@@ -30,7 +30,7 @@ class ObjectiveFunction(FEAData):
 
     @property
     def design_response(self):
-        """obj : :class:`DesignResponseBase` subclass object of the desing response to constraint."""
+        """obj : :class:`compas_fea2.optimisation.DesignResponse` subclass object of the desing response to constraint."""
         return self._design_response
 
     @property

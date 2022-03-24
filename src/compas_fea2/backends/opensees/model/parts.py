@@ -3,13 +3,13 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
-from compas_fea2.model import PartBase
+from compas_fea2.model import Part
 
 
-class Part(PartBase):
-    """OpenSees implementation of :class:`PartBase`.\n
+class Part(Part):
+    """OpenSees implementation of :class:`compas_fea2.model.Part`.\n
     """
-    __doc__ += PartBase.__doc__
+    __doc__ += Part.__doc__
 
     def __init__(self, name):
         super(Part, self).__init__(name)
@@ -45,8 +45,8 @@ if __name__ == "__main__":
         part1.add_node(Node([x, y, 0.0]))
 
     # Define materials
-    mat1 = ElasticIsotropic(name='mat1', E=29000, v=0.17, p=2.5e-9)
-    mat2 = ElasticIsotropic(name='mat2', E=25000, v=0.17, p=2.4e-9)
+    mat1 = ElasticIsotropic(name='mat1', E=29000, v=0.17, density=2.5e-9)
+    mat2 = ElasticIsotropic(name='mat2', E=25000, v=0.17, density=2.4e-9)
 
     # Define sections
     section_A = RectangularSection(name='section_A', b=10, h=20, material=mat1)

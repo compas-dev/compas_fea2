@@ -3,13 +3,13 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.model import NodeBase
+from compas_fea2.model import Node
 
 
-class Node(NodeBase):
-    """Opensees implementation of the :class:`NodeBase`. \n
+class Node(Node):
+    """Opensees implementation of the :class:`Node`. \n
     """
-    __doc__ += NodeBase.__doc__
+    __doc__ += Node.__doc__
 
     def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
         super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)

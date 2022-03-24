@@ -27,8 +27,7 @@ class Section(FEAData):
 
     def __init__(self, material, **kwargs):
         super(Section, self).__init__(**kwargs)
-        self._material = None
-        self.material = material
+        self._material = material
 
     @property
     def material(self):
@@ -254,7 +253,10 @@ class AngleSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(AngleSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(AngleSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+
+# TODO implement different thickness along the 4 sides
 
 
 class BoxSection(BeamSection):
@@ -300,7 +302,8 @@ class BoxSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(BoxSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(BoxSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                         Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class CircularSection(BeamSection):
@@ -330,7 +333,8 @@ class CircularSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(CircularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(CircularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                              Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class ISection(BeamSection):
@@ -369,7 +373,8 @@ class ISection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(ISection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(ISection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                       Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class PipeSection(BeamSection):
@@ -403,7 +408,8 @@ class PipeSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(PipeSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(PipeSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                          Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class RectangularSection(BeamSection):
@@ -439,7 +445,8 @@ class RectangularSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(RectangularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(RectangularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class TrapezoidalSection(BeamSection):
@@ -481,7 +488,8 @@ class TrapezoidalSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(TrapezoidalSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(TrapezoidalSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class TrussSection(BeamSection):
@@ -507,7 +515,8 @@ class TrussSection(BeamSection):
         J = 0
         g0 = 0
         gw = 0
-        super(TrussSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        super(TrussSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
+                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
 
 
 class StrutSection(TrussSection):

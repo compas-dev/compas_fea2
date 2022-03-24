@@ -15,8 +15,8 @@ class AbaqusModel(Model):
 
     """
 
-    def __init__(self, name, description=None, author=None):
-        super(AbaqusModel, self).__init__(name, description, author)
+    def __init__(self, description, author):
+        super(AbaqusModel, self).__init__(description=description, author=author)
         self._instances = {}
 
     # =========================================================================

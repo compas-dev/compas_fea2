@@ -54,7 +54,7 @@ class Part(FEAData):
         self._sections = set()
         self._elements = set()
         self._groups = set()
-        self.gkey_node = {}
+        self._gkey_node = {}
 
     @property
     def model(self):
@@ -79,6 +79,10 @@ class Part(FEAData):
     @property
     def groups(self):
         return self._groups
+
+    @property
+    def gkey_node(self):
+        return self._gkey_node
 
     def __str__(self):
         return """
@@ -233,7 +237,7 @@ number of groups   : {}
     #     Examples
     #     --------
     #     >>> gmshModel = gmsh.mode.generate(3)
-    #     >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, p=2.5e-9)
+    #     >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, density=2.5e-9)
     #     >>> sec = SolidSection('mysec', mat)
     #     >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
 
@@ -368,7 +372,7 @@ number of groups   : {}
         node._key = len(self._nodes)
         if node not in self._nodes:
             self._nodes.add(node)
-        self.gkey_node[node.gkey] = node
+        self._gkey_node[node.gkey] = node
         return node
 
     def add_nodes(self, nodes):

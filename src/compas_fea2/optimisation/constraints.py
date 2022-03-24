@@ -32,7 +32,7 @@ class OptimisationConstraint(FEAData):
     name : str
         name of the constraint
     design_response : obj
-        :class:`DesignResponseBase` subclass object of the desing response to constraint
+        :class:`compas_fea2.optimisation.DesignResponse` subclass object of the desing response to constraint
     relative : bool
         if ``True`` the constraint is set relatively to the initial value of the
         desing response. Relative values always refer to the design response of
@@ -74,7 +74,7 @@ class OptimisationConstraint(FEAData):
 
     @property
     def design_response(self):
-        """obj : :class:`DesignResponseBase` subclass object of the desing response to constraint."""
+        """obj : :class:`compas_fea2.optimisation.DesignResponse` subclass object of the desing response to constraint."""
         return self._design_response
 
     @property

@@ -10,7 +10,7 @@ class FEAData(Data):
     """Base class for all FEA model objects.
 
     This base class inherits the serialisation infrastructure
-    from the base class for core COMPAS objects: :class:`compas.base.Base`.
+    from the base class for core COMPAS objects: :class:`compas.base.`.
 
     It adds the abstract functionality for the representation of FEA objects
     in a model and/or problem summary,

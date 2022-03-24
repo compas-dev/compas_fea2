@@ -66,8 +66,8 @@ def _generate_jobdata(obj, instance, nodes):
 
 class AbaqusFixedBC(FixedBC):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBC, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusFixedBC, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -75,8 +75,8 @@ class AbaqusFixedBC(FixedBC):
 
 class AbaqusPinnedBC(PinnedBC):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusPinnedBC, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusPinnedBC, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -84,8 +84,8 @@ class AbaqusPinnedBC(PinnedBC):
 
 class AbaqusFixedBCXX(FixedBCXX):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCXX, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusFixedBCXX, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -93,8 +93,8 @@ class AbaqusFixedBCXX(FixedBCXX):
 
 class AbaqusFixedBCYY(FixedBCYY):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCYY, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusFixedBCYY, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -102,8 +102,8 @@ class AbaqusFixedBCYY(FixedBCYY):
 
 class AbaqusFixedBCZZ(FixedBCZZ):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCZZ, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusFixedBCZZ, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -111,8 +111,8 @@ class AbaqusFixedBCZZ(FixedBCZZ):
 
 class AbaqusRollerBCX(RollerBCX):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCX, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCX, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -120,8 +120,8 @@ class AbaqusRollerBCX(RollerBCX):
 
 class AbaqusRollerBCY(RollerBCY):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCY, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCY, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -129,8 +129,8 @@ class AbaqusRollerBCY(RollerBCY):
 
 class AbaqusRollerBCZ(RollerBCZ):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCZ, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCZ, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -138,8 +138,8 @@ class AbaqusRollerBCZ(RollerBCZ):
 
 class AbaqusRollerBCXY(RollerBCXY):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCXY, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCXY, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -147,8 +147,8 @@ class AbaqusRollerBCXY(RollerBCXY):
 
 class AbaqusRollerBCYZ(RollerBCYZ):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCYZ, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCYZ, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
@@ -156,8 +156,8 @@ class AbaqusRollerBCYZ(RollerBCYZ):
 
 class AbaqusRollerBCXZ(RollerBCXZ):
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCXZ, self).__init__(name, axes)
+    def __init__(self):
+        super(AbaqusRollerBCXZ, self).__init__()
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)

@@ -96,7 +96,7 @@ class AbaqusElementsGroup(ElementsGroup):
 
 
 class AbaqusFacesGroup(FacesGroup):
-    """Abaqus implementation of the :class:`SurfaceBase`.\n
+    """Abaqus implementation of the :class:`compas_fea2.model.FacesGroup`.\n
     """
     __doc__ += FacesGroup.__doc__
 

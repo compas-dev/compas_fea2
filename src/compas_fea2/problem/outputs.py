@@ -37,7 +37,7 @@ class FieldOutput(FEAData):
 
 
 class HistoryOutput(FEAData):
-    """HistoryOutputBase object for recording the fields (stresses, displacements,
+    """HistoryOutput object for recording the fields (stresses, displacements,
     etc..) from the analysis.
 
     Parameters

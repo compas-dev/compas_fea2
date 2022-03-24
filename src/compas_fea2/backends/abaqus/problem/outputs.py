@@ -5,30 +5,7 @@ from __future__ import print_function
 from compas_fea2.problem.outputs import FieldOutput, HistoryOutput
 
 
-<<<<<<< HEAD
 class AbaqusFieldOutput(FieldOutput):
-=======
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-__all__ = [
-    'FieldOutput',
-    'HistoryOutput',
-]
-
-
-class FieldOutput(FieldOutputBase):
-    """Abaqus implementation of the :class:`FieldOutputBase`.\n
-    """
-    __doc__ += FieldOutputBase.__doc__
-    __doc__ += """
-
-    Additional Parameters
-    ---------------------
-    frequency : ???
-        ?????
-    """
-
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
         super(AbaqusFieldOutput, self).__init__(name, node_outputs, element_outputs)
         self._frequency = frequency
@@ -61,15 +38,7 @@ class FieldOutput(FieldOutputBase):
         return '\n'.join(data)
 
 
-<<<<<<< HEAD
 class AbaqusHistoryOutput(HistoryOutput):
-=======
-class HistoryOutput(HistoryOutputBase):
-    """Abaqus implementation of the :class:`HistoryOutputBase`.\n
-    """
-    __doc__ += HistoryOutputBase.__doc__
-
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
     def __init__(self, name):
         super(AbaqusHistoryOutput, self).__init__(name)
 

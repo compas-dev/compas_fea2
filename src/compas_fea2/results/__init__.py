@@ -16,7 +16,7 @@ from __future__ import division
 from __future__ import print_function
 
 from .results import Results
-from .results import CaseResults
+# from .results import CaseResults
 
 
 __all__ = [

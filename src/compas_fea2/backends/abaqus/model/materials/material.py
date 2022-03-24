@@ -11,7 +11,6 @@ from compas_fea2.model import Stiff
 from compas_fea2.model import ElasticOrthotropic
 from compas_fea2.model import ElasticPlastic
 from compas_fea2.model import Steel
-from compas_fea2.model import ThermalMaterial
 
 
 # ==============================================================================
@@ -20,8 +19,8 @@ from compas_fea2.model import ThermalMaterial
 
 class AbaqusElasticIsotropic(ElasticIsotropic):
 
-    def __init__(self, name, *, E, v, p, unilateral=None):
-        super(AbaqusElasticIsotropic, self).__init__(name, E=E, v=v, p=p)
+    def __init__(self, name, *, E, v, density, unilateral=None):
+        super(AbaqusElasticIsotropic, self).__init__(name, E=E, v=v, density=density)
         self.unilateral = unilateral
 
     def _generate_jobdata(self):
@@ -50,7 +49,7 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
                 "*Density\n"
                 "{},\n"
                 "*Elastic\n"
-                "{}, {}{}\n").format(self.name, self.p, self.E, self.v, n)
+                "{}, {}{}\n").format(self.name, self.density, self.E, self.v, n)
 
 
 class AbaqusElasticOrthotropic(ElasticOrthotropic):
@@ -74,7 +73,7 @@ class AbaqusStiff(Stiff):
                 "*Density\n"
                 "{},\n"
                 "*Elastic\n"
-                "{}, {}\n").format(self.name, self.p, self.E['E'], self.v['v'])
+                "{}, {}\n").format(self.name, self.density, self.E['E'], self.v['v'])
 
 
 # ==============================================================================
@@ -83,8 +82,8 @@ class AbaqusStiff(Stiff):
 
 class AbaqusElasticPlastic(ElasticPlastic):
 
-    def __init__(self, name, E, v, p, f, e):
-        super(AbaqusElasticPlastic, self).__init__(name=name, E=E, v=v, p=p, f=f, e=e)
+    def __init__(self, name, E, v, density, f, e):
+        super(AbaqusElasticPlastic, self).__init__(name=name, E=E, v=v, density=density, f=f, e=e)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -103,7 +102,7 @@ class AbaqusElasticPlastic(ElasticPlastic):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n"
-                "*Plastic").format(self.name, self.p, self.E['E'], self.v['v'])
+                "*Plastic").format(self.name, self.density, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -118,8 +117,8 @@ class AbaqusElasticPlastic(ElasticPlastic):
 
 class AbaqusSteel(Steel):
 
-    def __init__(self, name, fy, fu, eu, E, v, p):
-        super(AbaqusSteel, self).__init__(name=name, fy=fy, fu=fu, eu=eu, E=E, v=v, p=p)
+    def __init__(self, name, fy, fu, eu, E, v, density):
+        super(AbaqusSteel, self).__init__(name=name, fy=fy, fu=fu, eu=eu, E=E, v=v, density=density)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -138,7 +137,7 @@ class AbaqusSteel(Steel):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n"
-                "*Plastic").format(self.name, self.p, self.E['E'], self.v['v'])
+                "*Plastic").format(self.name, self.density, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -163,8 +162,8 @@ class AbaqusSteel(Steel):
 
 class AbaqusConcrete(Concrete):
 
-    def __init__(self, name, fck, v, p, fr):
-        super(AbaqusConcrete, self).__init__(name=name, fck=fck, v=v, p=p, fr=fr)
+    def __init__(self, name, fck, v, density, fr):
+        super(AbaqusConcrete, self).__init__(name=name, fck=fck, v=v, density=density, fr=fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -183,7 +182,7 @@ class AbaqusConcrete(Concrete):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n"
-                "*Concrete\n").format(self.name, self.p, self.E['E'], self.v['v'])
+                "*Concrete\n").format(self.name, self.density, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -205,8 +204,9 @@ class AbaqusConcrete(Concrete):
 
 class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 
-    def __init__(self, name, E, v, p, fc, ec, ft, et, fr):
-        super(AbaqusConcreteSmearedCrack, self).__init__(name=name, E=E, v=v, p=p, fc=fc, ec=ec, ft=ft, et=et, fr=fr)
+    def __init__(self, name, E, v, density, fc, ec, ft, et, fr):
+        super(AbaqusConcreteSmearedCrack, self).__init__(
+            name=name, E=E, v=v, density=density, fc=fc, ec=ec, ft=ft, et=et, fr=fr)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -225,7 +225,7 @@ class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n"
-                "*Concrete\n").format(self.name, self.p, self.E['E'], self.v['v'])
+                "*Concrete\n").format(self.name, self.density, self.E['E'], self.v['v'])
         data_section.append(line)
 
         for i, j in zip(self.compression['f'], self.compression['e']):
@@ -247,9 +247,9 @@ class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 
 class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 
-    def __init__(self, name, E, v, p, damage, hardening, stiffening):
+    def __init__(self, name, E, v, density, damage, hardening, stiffening):
         super(AbaqusConcreteDamagedPlasticity, self).__init__(name, E=E, v=v,
-                                                              p=p, damage=damage, hardening=hardening, stiffening=stiffening)
+                                                              density=density, damage=damage, hardening=hardening, stiffening=stiffening)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -268,7 +268,7 @@ class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
                 "{},\n"
                 "*Elastic\n"
                 "{}, {}\n"
-                "*Concrete Damaged Plasticity\n").format(self.name, self.p, self.E['E'], self.v['v'])
+                "*Concrete Damaged Plasticity\n").format(self.name, self.density, self.E['E'], self.v['v'])
         data_section.append(line)
 
         data_section.append(', '.join([str(i) for i in self.damage]))
@@ -287,11 +287,6 @@ class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 # User-defined Materials
 # ==============================================================================
 
-class AbaqusThermalMaterial(ThermalMaterial):
-    def __init__(self, name, conductivity, p, sheat):
-        super(AbaqusThermalMaterial).__init__(name=name, conductivity=conductivity, p=p, sheat=sheat)
-        raise NotImplementedError
-
 
 class AbaqusUserMaterial(Material):
 
@@ -308,7 +303,7 @@ class AbaqusUserMaterial(Material):
         constants needed for the UMAT definition (depends on the subroutine)
     """
 
-    def __init__(self, name, sub_path, p=None, **kwargs):
+    def __init__(self, name, sub_path, density=None, **kwargs):
         Material.__init__(self, name=name)
 
         self.__name__ = 'UserMaterial'
@@ -316,7 +311,7 @@ class AbaqusUserMaterial(Material):
         self._name = name
         # os.path.abspath(os.path.join(os.path.dirname(__file__), "umat/Umat_hooke_iso.f")) #TODO find a way to deal with space in windows command line
         self.sub_path = sub_path
-        self.p = p
+        self.desity = density
         self.constants = self.get_constants()
         # self.attr_list.extend(['E', 'v', 'G', 'p', 'path'])
 
@@ -344,4 +339,4 @@ class AbaqusUserMaterial(Material):
                 "*Density\n"
                 "{},\n"
                 "*User Material, constants={}\n"
-                "{}").format(self.name, self.p, len(k), ', '.join(reversed(k)))
+                "{}").format(self.name, self.density, len(k), ', '.join(reversed(k)))

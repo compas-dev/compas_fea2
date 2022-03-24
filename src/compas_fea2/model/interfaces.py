@@ -5,8 +5,9 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class ContactPair(FEAData):
-    """Pair of master and slave surfaces to assign an interaction property
+class Interface(FEAData):
+    """An interface is defined as a pair of master and slave surfaces
+    with an interaction property between them.
 
     Parameters
     ----------
@@ -29,7 +30,7 @@ class ContactPair(FEAData):
     """
 
     def __init__(self, *, master, slave, interaction, **kwargs):
-        super(ContactPair, self).__init__(**kwargs)
+        super(Interface, self).__init__(**kwargs)
         self._master = master
         self._slave = slave
         self._interaction = interaction

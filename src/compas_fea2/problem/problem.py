@@ -65,43 +65,43 @@ class Problem(FEAData):
     #                           Step methods
     # =========================================================================
 
-    # def _check_step_in_problem(self, step):
-    #     """Check if a step is defined in the Problem. If `step` is of type `str`,
-    #     check if the step is already defined. If `step` is of type `Step`,
-    #     add the step to the Problem if not already defined.
+    def is_step_in_problem(self, step):
+        """Check if a step is defined in the Problem. If `step` is of type `str`,
+        check if the step is already defined. If `step` is of type `Step`,
+        add the step to the Problem if not already defined.
 
-    #     Parameters
-    #     ----------
-    #     step : str, obj
-    #         Name of the step (must be already defined) or Step object.
+        Parameters
+        ----------
+        step : str, obj
+            Name of the step (must be already defined) or Step object.
 
-    #     Returns
-    #     -------
-    #     obj
-    #         Step object
+        Returns
+        -------
+        obj
+            Step object
 
-    #     Raises
-    #     ------
-    #     ValueError
-    #         if `step` is a string and the step is not defined in the problem
-    #     TypeError
-    #         `step` must be either an instance of a `compas_fea2` Step class or the
-    #         name of a Step already defined in the Problem.
-    #     """
-    #     if isinstance(step, str):
-    #         if step not in self._steps:
-    #             raise ValueError(f'{step} not found in the Problem')
-    #         step_name = step
-    #     elif isinstance(step, Step):
-    #         if step.name not in self.steps:
-    #             self.add_step(step)
-    #             print(f'{step!r} added to the Problem')
-    #         step_name = step.name
-    #     else:
-    #         raise TypeError(
-    #             f'{step!r} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
+        Raises
+        ------
+        ValueError
+            if `step` is a string and the step is not defined in the problem
+        TypeError
+            `step` must be either an instance of a `compas_fea2` Step class or the
+            name of a Step already defined in the Problem.
+        """
+        if isinstance(step, str):
+            if step not in self._steps:
+                raise ValueError(f'{step} not found in the Problem')
+            step_name = step
+        elif isinstance(step, Step):
+            if step.name not in self.steps:
+                self.add_step(step)
+                print(f'{step!r} added to the Problem')
+            step_name = step.name
+        else:
+            raise TypeError(
+                f'{step!r} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
 
-    #     return self.steps[step_name]
+        return self.steps[step_name]
 
     def add_step(self, step):
         """Adds a Step to the Problem object.
@@ -119,22 +119,21 @@ class Problem(FEAData):
             self._steps.append(step)
         else:
             raise TypeError('You must provide a valid compas_fea2 Step object')
+        return step
 
     def add_steps(self, steps):
         """Adds multiple steps to the Problem object.
 
         Parameters
         ----------
-        steps : list
-            List of :class:`Step` subclass objects in the order they will be
-            applied.
+        steps : list[:class:`compas_fea2.problem.Step`]
+            List of steps objects in the order they will be applied.
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.problem.Step`]
         """
-        for step in steps:
-            self.add_step(step)
+        return [self.add_step(step) for step in steps]
 
     def define_steps_order(self, order):
         """Defines the order in which the steps are applied during the analysis.
@@ -155,6 +154,24 @@ class Problem(FEAData):
         """
         raise NotImplementedError
 
+    def add_linear_perturbation_step(self, lp_step, base_step):
+        """Add a linear perturbation step to a previously defined step.
+
+        Note
+        ----
+        Linear perturbartion steps do not change the history of the problem (hence
+        following steps will not consider their effects).
+
+        Parameters
+        ----------
+        lp_step : obj
+            :class:`compas_fea2.problem.LinearPerturbation` subclass instance
+        base_step : str
+            name of a previously defined step which will be used as starting conditions
+            for the application of the linear perturbation step.
+        """
+        raise NotImplementedError()
+
     # ==============================================================================
     # Summary
     # ==============================================================================
@@ -170,7 +187,7 @@ class Problem(FEAData):
         -------
         None
         """
-        steps_data = '\n'.join([f'{self.steps[step].name}: {self.steps[step].__name__}' for step in self.steps_order])
+        steps_data = '\n'.join([f'{step.name}' for step in self.steps])
 
         summary = f"""
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -193,8 +210,7 @@ Steps (in order of application)
     # ==============================================================================
 
     def show(self, width=800, height=500, scale_factor=.001, node_lables=None):
-        from compas_fea2.interfaces.viewer import ProblemViewer
-
+        from compas_fea2.UI.viewer import ProblemViewer
         v = ProblemViewer(self, width, height, scale_factor, node_lables)
         v.show()
 

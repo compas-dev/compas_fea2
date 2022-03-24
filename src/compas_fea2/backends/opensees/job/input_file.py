@@ -1,13 +1,13 @@
 import os.path
 from datetime import datetime
-from compas_fea2.job.input_file import InputFileBase
+from compas_fea2.job.input_file import InputFile
 
 __all__ = [
     'InputFile',
 ]
 
 
-class InputFile(InputFileBase):
+class InputFile(InputFile):
     """Input file object for standard analysis.
 
     Parameters

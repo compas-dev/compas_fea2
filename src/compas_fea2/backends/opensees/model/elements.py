@@ -3,21 +3,21 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.model import NodeBase
-from compas_fea2.model import ElementBase
-from compas_fea2.model import MassElementBase
-from compas_fea2.model import BeamElementBase
-from compas_fea2.model import SpringElementBase
-from compas_fea2.model import TrussElementBase
-from compas_fea2.model import StrutElementBase
-from compas_fea2.model import TieElementBase
-from compas_fea2.model import ShellElementBase
-from compas_fea2.model import MembraneElementBase
-# from compas_fea2.model import FaceElementBase
-from compas_fea2.model import SolidElementBase
-from compas_fea2.model import PentahedronElementBase
-from compas_fea2.model import TetrahedronElementBase
-from compas_fea2.model import HexahedronElementBase
+from compas_fea2.model import Node
+from compas_fea2.model import Element
+from compas_fea2.model import MassElement
+from compas_fea2.model import BeamElement
+from compas_fea2.model import SpringElement
+from compas_fea2.model import TrussElement
+from compas_fea2.model import StrutElement
+from compas_fea2.model import TieElement
+from compas_fea2.model import ShellElement
+from compas_fea2.model import MembraneElement
+# from compas_fea2.model import FaceElement
+from compas_fea2.model import SolidElement
+from compas_fea2.model import PentahedronElement
+from compas_fea2.model import TetrahedronElement
+from compas_fea2.model import HexahedronElement
 
 
 # ==============================================================================
@@ -34,10 +34,10 @@ from compas_fea2.model import HexahedronElementBase
 # 1D elements
 # ==============================================================================
 
-class BeamElement(BeamElementBase):
-    """OpenSees implementation of :class:`BeamElementBase`.\n
+class BeamElement(BeamElement):
+    """OpenSees implementation of :class:`compas_fea2.model.BeamElement`.\n
     """
-    __doc__ += BeamElementBase.__doc__
+    __doc__ += BeamElement.__doc__
 
     def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], thermal=None):
         super(BeamElement, self).__init__(connectivity, section, orientation, thermal)

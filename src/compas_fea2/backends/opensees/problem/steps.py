@@ -5,12 +5,12 @@ from __future__ import print_function
 
 
 from compas_fea2.problem import GeneralStaticCase
-from compas_fea2.problem import StaticLinearPerturbationCaseBase
-from compas_fea2.problem import HeatCaseBase
-from compas_fea2.problem import ModalCaseBase
-from compas_fea2.problem import HarmonicCaseBase
-from compas_fea2.problem import BucklingCaseBase
-from compas_fea2.problem import AcousticCaseBase
+from compas_fea2.problem import StaticLinearPerturbationCase
+from compas_fea2.problem import HeatCase
+from compas_fea2.problem import ModalCase
+from compas_fea2.problem import HarmonicCase
+from compas_fea2.problem import BucklingCase
+from compas_fea2.problem import AcousticCase
 
 
 class LinearStaticStep(LinearStaticStep):

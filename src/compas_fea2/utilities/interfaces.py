@@ -9,7 +9,7 @@ def nodes_on_plane(part, plane):
     Parameters
     ----------
     part : obj
-        compas_fea2 :class:`PartBase` subclass
+        compas_fea2 :class:`compas_fea2.model.Part` subclass
     plane : obl
         compas :class:`Plane`
 
@@ -41,7 +41,7 @@ def elements_on_plane(part, plane):
     Parameters
     ----------
     part : obj
-        compas_fea2 :class:`PartBase` subclass
+        compas_fea2 :class:`compas_fea2.model.Part` subclass
     plane : obl
         compas :class:`Plane`
 

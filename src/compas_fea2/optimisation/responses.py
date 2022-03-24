@@ -31,9 +31,9 @@ class DesignResponse(FEAData):
         return self._group_operator
 
 
-class VolumeResponseBase(DesignResponseBase):
+class VolumeResponse(DesignResponse):
     """Volume response recorder."""
-    __doc__ += DesignResponseBase.__doc__
+    __doc__ += DesignResponse.__doc__
 
     def __init__(self, group, group_operator) -> None:
         super().__init__(group, group_operator)
@@ -41,9 +41,9 @@ class VolumeResponseBase(DesignResponseBase):
         self._type = 'VOLUME'
 
 
-class EnergyStiffnessResponseBase(DesignResponseBase):
+class EnergyStiffnessResponse(DesignResponse):
     """Energy stiffness measure response recorder."""
-    __doc__ += DesignResponseBase.__doc__
+    __doc__ += DesignResponse.__doc__
 
     def __init__(self, group, group_operator, lc) -> None:
         super().__init__(group, group_operator)

@@ -2,18 +2,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import ModelBase
+from compas_fea2.model import Model
 
 
-class Model(ModelBase):
-    """ OpenSees implementation of the :class::`ModelBase`.
+class Model(Model):
+    """ OpenSees implementation of the :class::`Model`.
 
     Warning
     -------
     Work in Progress!
 
     """
-    __doc__ += ModelBase.__doc__
+    __doc__ += Model.__doc__
 
     def __init__(self, name, description=None, author=None):
         super(Model, self).__init__(name, description, author)

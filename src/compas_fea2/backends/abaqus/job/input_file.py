@@ -112,9 +112,9 @@ class AbaqusParametersFile(InputFile):
         Parameters
         ----------
         problem : obj
-            :class:`ProblemBase` sub class object.
+            :class:`compas_fea2.problem.Problem` sub class object.
         smooth : obj, optional
-            if a :class:`SmoothingParametersBase` subclass object is passed, the
+            if a :class:`compas_fea2.optimisation.SmoothingParameters` subclass object is passed, the
             optimisation results will be postprocessed and smoothed, by defaut
             ``None`` (no smoothing)
 

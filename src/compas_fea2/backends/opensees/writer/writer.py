@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.utilities import WriterBase
+from compas_fea2.utilities import Writer
 
 from compas_fea2.backends.opensees.writer import Heading
 from compas_fea2.backends.opensees.writer.elements import Elements
@@ -19,7 +19,8 @@ __all__ = [
     'Writer',
 ]
 
-class Writer(WriterBase, Steps, Materials, BCs, Elements, Nodes, Heading):
+
+class Writer(Writer, Steps, Materials, BCs, Elements, Nodes, Heading):
 
     """ Initialises base file writer.
 
@@ -35,6 +36,6 @@ class Writer(WriterBase, Steps, Materials, BCs, Elements, Nodes, Heading):
 
     def __init__(self, structure, filename, fields, ndof=6):
         super(Writer, self).__init__(structure, filename, fields)
-        self.comment   = '#'
-        self.spacer    = ' '
-        self.ndof      =  6
+        self.comment = '#'
+        self.spacer = ' '
+        self.ndof = 6

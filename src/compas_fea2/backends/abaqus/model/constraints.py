@@ -12,10 +12,10 @@ class AbaqusConstraint(Constraint):
         super(AbaqusConstraint).__init__(name)
 
 
-class AbaqusNodeTieConstraint(TieConstraint):
+class AbaqusTieConstraint(TieConstraint):
 
     def __init__(self, name, master, slave):
-        super(AbaqusNodeTieConstraint, self).__init__(name, master, slave, tol=None)
+        super(AbaqusTieConstraint, self).__init__(name, master, slave, tol=None)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

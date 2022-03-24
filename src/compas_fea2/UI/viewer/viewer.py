@@ -15,15 +15,15 @@ from compas.geometry import Plane
 from compas.geometry import Box
 from compas.geometry import Polyhedron
 
-from compas_fea2.interfaces.viewer.shapes import PinBCShape
-from compas_fea2.interfaces.viewer.shapes import FixBCShape
-from compas_fea2.model.elements import ShellElementBase
-from compas_fea2.model.elements import SolidElementBase
-from compas_fea2.model.elements import BeamElementBase
-from compas_fea2.model.bcs import PinnedBCBase
-from compas_fea2.model.bcs import FixedBCBase
+from compas_fea2.UI.viewer.shapes import PinBCShape
+from compas_fea2.UI.viewer.shapes import FixBCShape
+from compas_fea2.model.elements import ShellElement
+from compas_fea2.model.elements import SolidElement
+from compas_fea2.model.elements import BeamElement
+from compas_fea2.model.bcs import PinnedBC
+from compas_fea2.model.bcs import FixedBC
 
-from compas_fea2.problem.loads import GravityLoadBase, PointLoadBase
+from compas_fea2.problem.loads import GravityLoad, PointLoad
 from compas_fea2.problem.steps import ModalStep
 
 # class Viewer():
@@ -107,36 +107,36 @@ class ModelViewer():
         mesh.transform(S)
         return mesh
 
-    def _add_nodes_labels(self, node_labels):
-        for part, indices in node_labels.items():
-            nodes = [self.model.parts[part].nodes[index] for index in indices]
-            for node in nodes:
-                txt = Text(str(node.key), Point(node.x, node.y, node.z), height=35)
-                self.app.add(txt, color=[1, 0, 0])
+    # def _add_nodes_labels(self, node_labels):
+    #     for part, indices in node_labels.items():
+    #         nodes = [self.model.parts[part].nodes[index] for index in indices]
+    #         for node in nodes:
+    #             txt = Text(str(node.key), Point(node.x, node.y, node.z), height=35)
+    #             self.app.add(txt, color=[1, 0, 0])
 
     def _add_elements(self):
-        for part in self.model.parts.values():
+        for part in self.model.parts:
             part_shells_collection = []
             part_tets_collection = []
             part_lines_collection = []
-            for element in part.elements.values():
-                pts = [Point(*part.nodes[node].xyz) for node in element.connectivity]
-                if isinstance(element, ShellElementBase):
-                    if len(element.connectivity) == 4:
+            for element in part.elements:
+                pts = [Point(*part.nodes[node].xyz) for node in element.nodes]
+                if isinstance(element, ShellElement):
+                    if len(element.nodes) == 4:
                         mesh = Mesh.from_vertices_and_faces(pts, [[1, 2, 3, 0]])
-                    elif len(element.connectivity) == 3:
+                    elif len(element.nodes) == 3:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2]])
                     else:
                         raise NotImplementedError("only 4 vertices shells supported at the moment")
                     part_shells_collection.append(mesh)
-                elif isinstance(element, BeamElementBase):
+                elif isinstance(element, BeamElement):
                     line = Line(pts[0], pts[1])
                     part_lines_collection.append(line)
-                elif isinstance(element, SolidElementBase):
-                    if len(element.connectivity) == 8:
+                elif isinstance(element, SolidElement):
+                    if len(element.nodes) == 8:
                         mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [
                                                             1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]])
-                    elif len(element.connectivity) == 4:
+                    elif len(element.nodes) == 4:
                         faces = [
                             [0, 1, 2],
                             [0, 2, 3],
@@ -161,9 +161,9 @@ class ModelViewer():
                     pts = [Point(*self.model.parts[part].nodes[node].xyz) for node in nodes]
                     for pt in pts:
                         xyz = [pt.x, pt.y, pt.z]
-                        if isinstance(bc, PinnedBCBase):
+                        if isinstance(bc, PinnedBC):
                             bcs_collection.append(PinBCShape(xyz, scale=self.scale_factor).shape)
-                        if isinstance(bc, FixedBCBase):
+                        if isinstance(bc, FixedBC):
                             bcs_collection.append(FixBCShape(xyz, scale=self.scale_factor).shape)
 
             self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
@@ -189,7 +189,7 @@ class ProblemViewer(ModelViewer):
                     for load, nodes in lode_node.items():
                         # print(node, load)
                         pts = [Point(*self.problem.model.parts[part].nodes[node].xyz) for node in nodes]
-                        if isinstance(load, PointLoadBase):
+                        if isinstance(load, PointLoad):
                             # TODO add moment components xx, yy, zz
                             # TODO add scale forces
                             for pt in pts:
@@ -198,7 +198,7 @@ class ProblemViewer(ModelViewer):
                                 step_collection.append(arrow)
                                 # t = Text(str(comp), pt, height=200)
                                 # self.app.add(t, color=(1, 0, 0))
-                        elif isinstance(load, GravityLoadBase):
+                        elif isinstance(load, GravityLoad):
                             pass
             if step_collection:
                 self.app.add(Collection(step_collection), u=16, show_edges=False, facecolor=(0, 1, 0))
@@ -279,7 +279,7 @@ class OptiViewer(ProblemViewer):
 #     # S = Scale.from_factors([0.001]*3)
 #     # mesh.transform(S)
 #     model = Model(name='structural_model')
-#     # section = ShellSection('section', 10, ElasticIsotropic(name='mat_A', E=29000, v=0.17, p=2.5e-9))
+#     # section = ShellSection('section', 10, ElasticIsotropic(name='mat_A', E=29000, v=0.17, density=2.5e-9))
 #     # model.shell_from_mesh(mesh, section)
 
 #     # problem = Problem('simple_load', model)

@@ -339,6 +339,10 @@ number of groups   : {}
     def add_node(self, node):
         """Add a node to the part.
 
+        Note
+        ----
+        By adding a Node to the part, this gets registered to this part.
+
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
@@ -370,9 +374,11 @@ number of groups   : {}
             return
 
         node._key = len(self._nodes)
-        if node not in self._nodes:
-            self._nodes.add(node)
+        self._nodes.add(node)
         self._gkey_node[node.gkey] = node
+        node._part = self
+        if config.VERBOSE:
+            print('Node {!r} registered to {!r}.'.format(node, self))
         return node
 
     def add_nodes(self, nodes):
@@ -610,6 +616,9 @@ number of groups   : {}
         self.add_section(element.section)
         element._key = len(self.elements)
         self.elements.add(element)
+        element._part = self
+        if config.VERBOSE:
+            print('Element {!r} registered to {!r}.'.format(element, self))
         return element
 
     def add_elements(self, elements):

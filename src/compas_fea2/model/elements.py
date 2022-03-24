@@ -9,6 +9,17 @@ from compas_fea2.base import FEAData
 class Element(FEAData):
     """Initialises a base Element object.
 
+    Note
+    ----
+    Elements can belong to only one Part. Every time an element is added to a part,
+    it gets registered to that part.
+
+    Warning
+    -------
+    if the nodes to which the element connects do not belong to the same part,
+    they will be deregistered from the original part and registered to the new
+    part once the element is added to this part.
+
     Parameters
     ----------
     nodes : list[:class:`compas_fea2.model.Node`]
@@ -39,14 +50,10 @@ class Element(FEAData):
     def __init__(self, *, nodes, section, frame=None, part=None, **kwargs):
         super(Element, self).__init__(**kwargs)
         self._key = None
-        self._nodes = None
-        self._section = None
-        self._frame = None
-        self._part = None
-        self.nodes = nodes
-        self.section = section
-        self.frame = frame
-        self.part = part
+        self._nodes = nodes
+        self._section = section
+        self._frame = frame
+        self._part = part
 
     @property
     def key(self):

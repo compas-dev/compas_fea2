@@ -9,10 +9,17 @@ from compas_fea2.base import FEAData
 class Node(FEAData):
     """Initialises base Node object.
 
+    Note
+    ----
+    Nodes can belong to only one Part. Every time a node is added to a part, it
+    gets registered to that part.
+
     Parameters
     ----------
     xyz : list[float, float, float] | :class:`compas.geometry.Point`
         The location of the node in the global coordinate system.
+    part : `compas_fea2.model.Part`, optional
+        Part object where the node will be registered, by default ``None``
 
     Attributes
     ----------
@@ -43,9 +50,8 @@ class Node(FEAData):
         self._x = None
         self._y = None
         self._z = None
-        self._part = None
+        self._part = part
         self.xyz = xyz
-        self.part = part
 
     @property
     def key(self):
@@ -53,13 +59,13 @@ class Node(FEAData):
 
     @property
     def xyz(self):
-        return [self.x, self.y, self.z]
+        return [self._x, self._y, self._z]
 
     @xyz.setter
     def xyz(self, value):
-        self.x = value[0]
-        self.y = value[1]
-        self.z = value[2]
+        self._x = value[0]
+        self._y = value[1]
+        self._z = value[2]
 
     @property
     def x(self):

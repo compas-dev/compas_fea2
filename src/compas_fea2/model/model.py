@@ -214,7 +214,7 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Part`
 
         Raises
         ------
@@ -231,10 +231,13 @@ class Model(FEAData):
             return
 
         part._model = self
+        if config.VERBOSE:
+            print("{!r} registered to {!r}.".format(part, self))
 
         self.add_materials(part.materials)
         self.add_sections(part.sections)
         self._parts.add(part)
+        return part
 
     def add_parts(self, parts):
         """Add multiple parts to the model.
@@ -245,11 +248,10 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Part`]
 
         """
-        for part in parts:
-            self.add_part(part)
+        return [self.add_part(part) for part in parts]
 
     def get_node_from_coordinates(self, xyz, tol):
         """Finds (if any) the Node object in the model with the specified coordinates.
@@ -285,12 +287,13 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Material`
         """
         if isinstance(material, Material):
             self._materials.add(material)
         else:
             raise TypeError('{!r} is not a material.'.format(material))
+        return material
 
     def add_materials(self, materials):
         """Add multiple :class:`compas_fea2.model.Material` objects to the Model.
@@ -302,10 +305,9 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Material`]
         """
-        for material in materials:
-            self.add_material(material)
+        return [self.add_material(material) for material in materials]
 
     # =========================================================================
     #                           Sections methods
@@ -330,7 +332,6 @@ class Model(FEAData):
             self._sections.add(section)
         else:
             raise TypeError('{!r} is not a section.'.format(section))
-
         return section
 
     def add_sections(self, sections):
@@ -343,10 +344,9 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Section`]
         """
-        for section in sections:
-            self.add_section(section)
+        return [self.add_section(section) for section in sections]
 
     # =========================================================================
     #                           Groups methods
@@ -461,12 +461,13 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Constraint`
         """
         if isinstance(constraint, Constraint):
             self._constraints.add(constraint)
         else:
             raise TypeError('{!r} is not a constraint.'.format(constraint))
+        return constraint
 
     def add_constraints(self, constraints):
         """Add multiple :class:`compas_fea2.model.Constraint` objects to the Model.
@@ -478,10 +479,9 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Constraint`]
         """
-        for constraint in constraints:
-            self.add_constraint(constraint)
+        return [self.add_constraint(constraint) for constraint in constraints]
 
     # =========================================================================
     #                        ContactPair methods
@@ -497,12 +497,13 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Interface`
         """
         if isinstance(interface, Interface):
             self._contacts.add(interface)
         else:
             raise TypeError('{!r} is not an interface.'.format(interface))
+        return interface
 
     def add_interfaces(self, interfaces):
         """Add multiple :class:`compas_fea2.model.Interface` objects to the Model.
@@ -514,10 +515,9 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Interface`]
         """
-        for interface in interfaces:
-            self.add_interface(interface)
+        return [self.add_interface(interface) for interface in interfaces]
 
     # =========================================================================
     #                           BCs methods
@@ -558,6 +558,7 @@ class Model(FEAData):
             self._bcs.setdefault(part, {})[bc] = nodes
         else:
             raise TypeError('{!r} is not a Boundary Condition.'.format(bc))
+        return bc
 
     def _add_bc_type(self, bc_type, part, where, axes='global'):
         """Add a :class:`compas_fea2.model.BoundaryCondition` by type.
@@ -598,7 +599,7 @@ class Model(FEAData):
                  }
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         bc = getattr(m, types[bc_type])()
-        self.add_bc(bc, where, part)
+        return self.add_bc(bc, where, part)
 
     def add_fix_bc(self, part, where, axes='global'):
         """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
@@ -615,7 +616,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('fix', part, where)
+        return self._add_bc_type('fix', part, where)
 
     def add_fixXX_bc(self, part, where, axes='global'):
         """Add a fixed boundary condition type free about XX to some nodes in a part.
@@ -632,7 +633,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('fixXX', part, where)
+        return self._add_bc_type('fixXX', part, where)
 
     def add_fixYY_bc(self, part, where, axes='global'):
         """Add a fixed boundary condition free about YY type to some nodes in a part.
@@ -649,7 +650,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('fixYY', part, where)
+        return self._add_bc_type('fixYY', part, where)
 
     def add_fixZZ_bc(self, part, where, axes='global'):
         """Add a fixed boundary condition free about ZZ type to some nodes in a part.
@@ -666,7 +667,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('fixZZ', part, where)
+        return self._add_bc_type('fixZZ', part, where)
 
     def add_pin_bc(self, part, where):
         """Add a pinned boundary condition type to some nodes in a part.
@@ -683,7 +684,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('pin', part, where)
+        return self._add_bc_type('pin', part, where)
 
     def add_rollerX_bc(self, part, where):
         """Add a roller free on X boundary condition type to some nodes in a part.
@@ -700,7 +701,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerX', part, where)
+        return self._add_bc_type('rollerX', part, where)
 
     def add_rollerY_bc(self, part, where):
         """Add a roller free on Y boundary condition type to some nodes in a part.
@@ -717,7 +718,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerY', part, where)
+        return self._add_bc_type('rollerY', part, where)
 
     def add_rollerZ_bc(self, part, where):
         """Add a roller free on Z boundary condition type to some nodes in a part.
@@ -734,7 +735,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerZ', part, where)
+        return self._add_bc_type('rollerZ', part, where)
 
     def add_rollerXY_bc(self, part, where):
         """Add a roller free on XY boundary condition type to some nodes in a part.
@@ -751,7 +752,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerXY', part, where)
+        return self._add_bc_type('rollerXY', part, where)
 
     def add_rollerXZ_bc(self, part, where):
         """Add a roller free on XZ boundary condition type to some nodes in a part.
@@ -768,7 +769,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerXZ', part, where)
+        return self._add_bc_type('rollerXZ', part, where)
 
     def add_rollerYZ_bc(self, part, where):
         """Add a roller free on YZ boundary condition type to some nodes in a part.
@@ -785,7 +786,7 @@ class Model(FEAData):
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self._add_bc_type('rollerYZ', part, where)
+        return self._add_bc_type('rollerYZ', part, where)
 
     def add_bcs(self, bcs):
         """Adds multiple boundary conditions to the Problem object.
@@ -799,8 +800,7 @@ class Model(FEAData):
         -------
         None
         """
-        for bc in bcs:
-            self.add_bc(bc)
+        return [self.add_bc(bc) for bc in bcs]
 
     def remove_bc(self, bc_name):
         """Removes a boundary condition from the Model.

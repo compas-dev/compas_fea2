@@ -5,6 +5,8 @@ from __future__ import print_function
 from compas.utilities.maps import geometric_key
 from compas_fea2.base import FEAData
 
+from .bcs import BoundaryCondition
+
 
 class Node(FEAData):
     """Initialises base Node object.
@@ -37,6 +39,8 @@ class Node(FEAData):
         The geometric key.
     part : :class:`compas_fea2.model.Part` | None
         The parent part of the node.
+    dof : dict
+        Dictionary with the active degrees of freedom
 
     Examples
     --------
@@ -51,6 +55,7 @@ class Node(FEAData):
         self._y = None
         self._z = None
         self._part = part
+        self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True, }
         self.xyz = xyz
 
     @property
@@ -102,3 +107,13 @@ class Node(FEAData):
     @part.setter
     def part(self, value):
         self._part = value
+
+    @property
+    def dof(self):
+        return self._dof
+
+    @dof.setter
+    def dof(self, bc):
+        if not isinstance(bc, BoundaryCondition):
+            raise TypeError('{!r} is not a Boundary Condition'.format(bc))
+        self._dof = {attr: not bool(getattr(bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}

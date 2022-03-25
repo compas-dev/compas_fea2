@@ -11,6 +11,7 @@ from compas_fea2 import config
 
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import Part
+from compas_fea2.model.nodes import Node
 from compas_fea2.model.materials import Material, material
 from compas_fea2.model.sections import Section
 from compas_fea2.model.bcs import BoundaryCondition
@@ -49,7 +50,7 @@ class Model(FEAData):
         The materials used in the model.
     sections : Set[:class:`compas_fea2.model.Section`]
         The sections used in the model.
-    bcs : Set[:class:`compas_fea2.model.BoundaryCondition`]
+    bcs : dict
         The boundary conditions of the model.
     constraints : Set[:class:`compas_fea2.model.Constraint`]
         The constraints of the model.
@@ -523,7 +524,7 @@ class Model(FEAData):
     #                           BCs methods
     # =========================================================================
 
-    def add_bc(self, bc, where, part):
+    def add_bc(self, bc, node):
         """Add a :class:`compas_fea2.model.BoundaryCondition` to the model.
 
         Note
@@ -534,33 +535,24 @@ class Model(FEAData):
         ----------
         bc : :class:`compas_fea2.model.BoundaryCondition`
             Boundary condition object to add to the model.
-        where : list[:class:`compas_fea2.model.Node], :class:`compas_fea2.model.NodesGroup`
-            List or group of nodes where to assign the boundary condition.
-        part : :class:`compas_fea2.model.Part`
-            Part of the model where the nodes belong.
+        where :
 
         Returns
         -------
         None
         """
-        self.contains_part(part)
-        if isinstance(where, int):
-            nodes = [where]
-        if isinstance(where, (list, tuple)):
-            nodes = where
-        elif isinstance(where, NodesGroup):
-            nodes = where.keys
-        else:
-            raise TypeError('You must provide either list of Nodes or a NodesGroup')
-        # self._check_nodes_in_model(nodes) #TODO implement method
 
-        if isinstance(bc, BoundaryCondition):
-            self._bcs.setdefault(part, {})[bc] = nodes
-        else:
-            raise TypeError('{!r} is not a Boundary Condition.'.format(bc))
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a Node.'.format(node))
+        # self.contains_node(node) #TODO implement method
+        node.dof = bc
+        self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
         return bc
 
-    def _add_bc_type(self, bc_type, part, where, axes='global'):
+    def add_bcs(self, bc, nodes):
+        return [self.add_bc(bc, node) for node in nodes]
+
+    def _add_bc_type(self, bc_type, node, axes='global'):
         """Add a :class:`compas_fea2.model.BoundaryCondition` by type.
 
         Note
@@ -599,7 +591,7 @@ class Model(FEAData):
                  }
         m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
         bc = getattr(m, types[bc_type])()
-        return self.add_bc(bc, where, part)
+        return self.add_bc(bc, node)
 
     def add_fix_bc(self, part, where, axes='global'):
         """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
@@ -788,19 +780,19 @@ class Model(FEAData):
         """
         return self._add_bc_type('rollerYZ', part, where)
 
-    def add_bcs(self, bcs):
-        """Adds multiple boundary conditions to the Problem object.
+    # def add_bcs(self, bcs):
+    #     """Adds multiple boundary conditions to the Problem object.
 
-        Parameters
-        ----------
-        bcs : list
-            List of `compas_fea2` BoundaryCondtion objects.
+    #     Parameters
+    #     ----------
+    #     bcs : list
+    #         List of `compas_fea2` BoundaryCondtion objects.
 
-        Returns
-        -------
-        None
-        """
-        return [self.add_bc(bc) for bc in bcs]
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     return [self.add_bc(bc) for bc in bcs]
 
     def remove_bc(self, bc_name):
         """Removes a boundary condition from the Model.

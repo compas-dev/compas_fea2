@@ -59,8 +59,10 @@ def _generate_jobdata(obj, instance, nodes):
     data_section = [f'** Name: {obj.name} Type: BC/Rotation\n', '*Boundary, op=NEW']
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
-            if dof in obj.components:
-                data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
+            if getattr(obj, dof):
+
+                # if dof in obj.components:
+                data_section += [f'{instance}.{node.key+1}, {comp}, 0']
     return '\n'.join(data_section)
 
 

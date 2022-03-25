@@ -678,8 +678,8 @@ number of groups   : {}
         ----------
         group : :class:`compas_fea2.model.NodeGroup` | :class:`compas_fea2.model.ElementGroup`
 
-        Returns
-        -------
+        Return
+        ------
         None
 
         Raises
@@ -702,6 +702,7 @@ number of groups   : {}
             return
 
         self._groups.add(group)
+        return group
 
     def add_groups(self, groups):
         """Add multiple groups to the part.
@@ -710,10 +711,9 @@ number of groups   : {}
         ----------
         groups : list[:class:`compas_fea2.model.Group`]
 
-        Returns
-        -------
-        None
+        Return
+        ------
+        list[:class:`compas_fea2.model.Group`]
 
         """
-        for group in groups:
-            self.add_group(group)
+        return [self.add_group(group) for group in groups]

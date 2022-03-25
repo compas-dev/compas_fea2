@@ -77,7 +77,7 @@ class Model(FEAData):
         self._interactions = set()
         self._contacts = set()
         self._partsgroups = set()
-        self._surfaces = set()
+        self._facesgroups = set()
 
     @property
     def parts(self):
@@ -112,8 +112,8 @@ class Model(FEAData):
         return self._interactions
 
     @property
-    def surfaces(self):
-        return self._surfaces
+    def facesgroups(self):
+        return self._facesgroups
 
     # =========================================================================
     #                       Constructor methods

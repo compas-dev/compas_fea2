@@ -28,11 +28,12 @@ def _generate_jobdata(self, instance):
         line = ', instance='.join([line, instance])
 
     if self.generate:
-        data_section.append(', '.join([line, 'generate']))
-        data_section.append(f'{self.keys[0]}, {self.keys[-1]}, 1')
+        raise NotImplementedError
+        # data_section.append(', '.join([line, 'generate']))
+        # data_section.append(f'{self.keys[0]}, {self.keys[-1]}, 1')
     else:
         data_section.append(line)
-        data = [str(s+1) for s in self.keys]
+        data = [str(el.key+1) for el in self.elements]
         chunks = [data[x:x+15] for x in range(0, len(data), 15)]  # split data for readibility
         for chunk in chunks:
             data_section.append(', '.join(chunk))
@@ -81,8 +82,8 @@ class AbaqusElementsGroup(ElementsGroup):
 
     """
 
-    def __init__(self, name, elements_keys, generate=False):
-        super(AbaqusElementsGroup, self).__init__(name, elements_keys)
+    def __init__(self, name, *, elements, generate=False):
+        super(AbaqusElementsGroup, self).__init__(name=name, elements=elements)
         self._generate = generate
         self._set_type = 'elset'
 

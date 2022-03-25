@@ -207,9 +207,9 @@ class AbaqusModel(Model):
             data_section.append(instance._generate_jobdata())
             for group in instance.groups.values():
                 data_section.append(group._generate_jobdata(instance.name))
-        for surface in self.surfaces.values():
-            data_section.append(surface._generate_jobdata())
-        for constraint in self.constraints.values():
+        for facesgroup in self.facesgroups:
+            data_section.append(facesgroup._generate_jobdata())
+        for constraint in self.constraints:
             data_section.append(constraint._generate_jobdata())
         data_section.append('\n*End Assembly\n**\n')
 

@@ -9,8 +9,9 @@ class Group(FEAData):
     """Base class for all groups.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, name, **kwargs):
         super(Group, self).__init__(**kwargs)
+        self.name = name
 
 
 class NodesGroup(Group):
@@ -28,8 +29,8 @@ class NodesGroup(Group):
 
     """
 
-    def __init__(self, *, nodes, **kwargs):
-        super(NodesGroup, self).__init__(**kwargs)
+    def __init__(self, name, *, nodes, **kwargs):
+        super(NodesGroup, self).__init__(name, **kwargs)
         self.nodes = nodes
 
 
@@ -48,8 +49,8 @@ class ElementsGroup(Group):
 
     """
 
-    def __init__(self, *, elements, **kwargs):
-        super(ElementsGroup, self).__init__(**kwargs)
+    def __init__(self, name, *, elements, **kwargs):
+        super(ElementsGroup, self).__init__(name, **kwargs)
         self.elements = elements
 
 
@@ -65,8 +66,8 @@ class FacesGroup(Group):
         element_key, face pairs of the elements faces creating the surface
     """
 
-    def __init__(self, name, part, element_face):
-        self._name = name
+    def __init__(self, name, part, element_face, **kwargs):
+        super(FacesGroup, self).__init__(name, **kwargs)
         self._part = part
         self._element_face = element_face
 
@@ -86,6 +87,6 @@ class PartsGroup(Group):
 
     """
 
-    def __init__(self, *, parts, **kwargs):
-        super(PartsGroup, self).__init__(**kwargs)
+    def __init__(self, name,  *, parts, **kwargs):
+        super(PartsGroup, self).__init__(name, **kwargs)
         self.parts = parts

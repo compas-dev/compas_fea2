@@ -54,7 +54,7 @@ class AbaqusProblem(Problem):
         -------
         None
         """
-        input_file = AbaqusInputFile(self)
+        input_file = AbaqusInputFile().from_problem(self)
         r = input_file.write_to_file(self.path)
         if output:
             print(r)
@@ -145,7 +145,7 @@ class AbaqusProblem(Problem):
             text section for the input file.
         """
         section_data = []
-        for step in self.steps.values():
+        for step in self.steps:
             section_data.append(step._generate_jobdata())
 
         return ''.join(section_data)

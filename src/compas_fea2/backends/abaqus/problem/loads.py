@@ -82,7 +82,7 @@ class AbaqusPointLoad(PointLoad):
         data_section = [f'** Name: {self.name} Type: Concentrated Force',
                         f'*Nset, nset=_aux_{self.name}_{instance}, internal, instance={instance}',
                         '\n'.join([', '.join([str(node+1) for node in chunk]) for chunk in chunks]),
-                        f'*Cload, OP={self._op}{self._follow}']
+                        f'*Cload, OP={self._modify}{self._follow}']
         data_section += [f'_aux_{self.name}_{instance}, {comp}, {self.components[dof]}' for comp,
                          dof in enumerate(dofs, 1) if self.components[dof]]  # FIXME: this should be similar to what happens for the BC or viceversa
 

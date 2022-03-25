@@ -12,36 +12,16 @@ class AbaqusInputFile(InputFile):
 
     Parameters
     ----------
-    problem : obj
-        Problem object.
+    None
 
     Attributes
     ----------
-    name : str
-        Input file name.
-    job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
-
+    None
     """
 
-    def __init__(self, problem):
-        super(AbaqusInputFile, self).__init__(problem)
-        self._input_file_type = "Input File"
-        self._jobdata = self._generate_jobdata(problem)
-
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        return self._jobdata
+    def __init__(self):
+        self._extension = 'inp'
+        super().__init__()
 
     # ==============================================================================
     # Constructor methods
@@ -89,15 +69,11 @@ class AbaqusParametersFile(InputFile):
 
     Parameters
     ----------
-    problem : obj
-        Problem object.
+    None
 
     Attributes
     ----------
-    name : str
-        Par file name.
-    job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
+    None
     """
 
     def __init__(self):

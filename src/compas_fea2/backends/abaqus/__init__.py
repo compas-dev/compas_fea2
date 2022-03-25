@@ -99,7 +99,7 @@ from compas_fea2.problem.loads import (
     PointLoad,
     # LineLoad,
     # AreaLoad,
-    # GravityLoad,
+    GravityLoad,
     # HarmonicPointLoad,
     # HarmonicPressureLoad,
     # TributaryLoad,
@@ -166,7 +166,6 @@ from .model import (
     # AbaqusSteel,
 )
 
-
 # Abaqus Groups
 from .model.groups import (
     AbaqusNodesGroup,
@@ -218,7 +217,7 @@ from .problem.loads import (
     AbaqusPointLoad,
     # AbaqusLineLoad,
     # AbaqusAreaLoad,
-    # AbaqusGravityLoad,
+    AbaqusGravityLoad,
     # AbaqusHarmonicPointLoad,
     # AbaqusHarmonicPressureLoad,
     # AbaqusTributaryLoad,
@@ -300,19 +299,19 @@ def register_backend():
 
     backend[Problem] = AbaqusProblem
 
-    backend[StaticStep] = StaticStep
-    # backend[AcousticStep] = AcousticStep
-    # backend[BucklingStep] = BucklingStep
-    # backend[GeneralStaticStep] = GeneralStaticStep
-    # backend[HarmonicStep] = HarmonicStep
-    # backend[HeatStep] = HeatStep
-    # backend[ModalStep] = ModalStep
-    # backend[StaticLinearPerturbationStep] = StaticLinearPerturbationStep
+    backend[StaticStep] = AbaqusStaticStep
+    # backend[AcousticStep] = AbaqusAcousticStep
+    # backend[BucklingStep] = AbaqusBucklingStep
+    # backend[GeneralStaticStep] = AbaqusGeneralStaticStep
+    # backend[HarmonicStep] = AbaqusHarmonicStep
+    # backend[HeatStep] = AbaqusHeatStep
+    # backend[ModalStep] = AbaqusModalStep
+    # backend[StaticLinearPerturbationStep] = AbaqusStaticLinearPerturbationStep
 
+    backend[GravityLoad] = AbaqusGravityLoad
     backend[PointLoad] = AbaqusPointLoad
     # backend[LineLoad] = AbaqusLineLoad
     # backend[AreaLoad] = AbaqusAreaLoad
-    # backend[GravityLoad] = AbaqusGravityLoad
     # backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
     # backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
     # backend[TributaryLoad] = AbaqusTributaryLoad

@@ -127,7 +127,7 @@ class AbaqusCircularSection(CircularSection):
 
     def __init__(self, r, material):
         super(AbaqusCircularSection, self).__init__(r, material)
-        self.properties = [r]
+        self._properties = [r]
 
     def _generate_jobdata(self, set_name, orientation):
         return _generate_beams_jobdata(self, set_name, orientation, 'circ')

@@ -185,7 +185,7 @@ class AbaqusModel(Model):
             text section for the input file.
         """
         data_section = []
-        for part in self.parts.values():
+        for part in self.parts:
             data = part._generate_jobdata()
             data_section.append(data)
         return ''.join(data_section)
@@ -229,19 +229,19 @@ class AbaqusModel(Model):
             text section for the input file.
         """
         data_section = []
-        for material in self.materials.values():
+        for material in self.materials:
             data_section.append(material._generate_jobdata())
         return ''.join(data_section)
 
     def _generate_int_props_section(self):
         data_section = []
-        for interaction in self.interactions.values():
+        for interaction in self.interactions:
             data_section.append(interaction._generate_jobdata())
         return ''.join(data_section)
 
     def _generate_interactions_section(self):
         data_section = []
-        for contact in self.contacts.values():
+        for contact in self.contacts:
             data_section.append(contact._generate_jobdata())
         return ''.join(data_section)
 

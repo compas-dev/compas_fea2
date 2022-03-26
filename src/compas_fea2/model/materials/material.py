@@ -17,6 +17,9 @@ class Material(FEAData):
 
     Attributes
     ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     density : float
         Density of the material.
 
@@ -24,7 +27,16 @@ class Material(FEAData):
 
     def __init__(self, *, density, **kwargs):
         super(Material, self).__init__(**kwargs)
+        self._name = id(self)
         self.density = density
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     def __str__(self):
         return """

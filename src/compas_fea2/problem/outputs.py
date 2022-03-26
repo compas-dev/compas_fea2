@@ -11,8 +11,16 @@ class FieldOutput(FEAData):
 
     Parameters
     ----------
+    nodes_outputs : list
+        list of node fields to output
+    elements_outputs : list
+        list of elements fields to output
+
+    Attributes
+    ----------
     name : str
-        name of the output request
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     nodes_outputs : list
         list of node fields to output
     elements_outputs : list
@@ -20,10 +28,19 @@ class FieldOutput(FEAData):
 
     """
 
-    def __init__(self, name, node_outputs, element_outputs):
-        super(FieldOutput, self).__init__(name=name)
+    def __init__(self, node_outputs, element_outputs):
+        super(FieldOutput, self).__init__()
+        self._name = id(self)
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def node_outputs(self):

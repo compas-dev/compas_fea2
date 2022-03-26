@@ -2,8 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2 import config
 from compas_fea2.model import Model
 from compas_fea2.backends.abaqus.model._instances import _Instance
+from compas_fea2.backends.abaqus.model.parts import AbaqusPart
 
 
 class AbaqusModel(Model):
@@ -17,7 +19,7 @@ class AbaqusModel(Model):
 
     def __init__(self, description, author):
         super(AbaqusModel, self).__init__(description=description, author=author)
-        self._instances = {}
+        self._instances = set()
 
     # =========================================================================
     #                             Parts methods
@@ -83,11 +85,14 @@ class AbaqusModel(Model):
         -------
         None
         """
+        if not isinstance(part, AbaqusPart):
+            raise TypeError("{!r} is not an abaqus part.".format(part))
         instance = _Instance(f'{part.name}-1', part)
-        if instance.name not in self._instances:
-            self._instances[instance.name] = instance
-        else:
-            print('Duplicate instance {} will be ignored!'.format(instance.name))
+        if instance in self._instances:
+            if config.VERBOSE:
+                print('Duplicate instance {} will be ignored!'.format(instance.name))
+            return
+        self._instances.add(instance)
 
     # def _remove_instance(self, part):
     #     """ Removes the instance of a part from the Model.
@@ -203,7 +208,7 @@ class AbaqusModel(Model):
             text section for the input file.
         """
         data_section = ['*Assembly, name={}\n**\n'.format(self.name)]
-        for instance in self._instances.values():
+        for instance in self._instances:
             data_section.append(instance._generate_jobdata())
             for group in instance.groups.values():
                 data_section.append(group._generate_jobdata(instance.name))
@@ -260,6 +265,6 @@ class AbaqusModel(Model):
         """
         data_section = []
         for part in self.bcs:
-            data_section += [bc._generate_jobdata(f'{part}-1', nodes)
+            data_section += [bc._generate_jobdata(f'{part.name}-1', nodes)
                              for bc, nodes in self.bcs[part].items()]
         return '\n'.join(data_section)

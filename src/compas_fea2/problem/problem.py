@@ -15,21 +15,20 @@ class Problem(FEAData):
 
     Parameters
     ----------
-    name : str
-        Name of the Problem.
     model : :class:`compas_fea2.model.Model`
         Model object to analyse.
-    author : str
-        The author of the Model. This will be added to the input file and
-        can be useful for future reference.
-    describption : str
-        Brief description of the Problem. This will be added to the input file and
-        can be useful for future reference.
+    author : str, optional
+        The author of the Model, by default ``None``.
+        This will be added to the input file and can be useful for future reference.
+    describption : str, optional
+        Brief description of the Problem, , by default ``None``.
+        This will be added to the input file and can be useful for future reference.
 
     Attributes
     ----------
     name : str
-        Name of the Problem.
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     model : :class:`compas_fea2.model.Model`
         Model object to analyse.
     author : str
@@ -45,13 +44,22 @@ class Problem(FEAData):
 
     """
 
-    def __init__(self, name, model, author=None, description=None):
-        super(Problem, self).__init__(name=name)
+    def __init__(self, model, author=None, description=None):
+        super(Problem, self).__init__()
+        self._name = str(id(self))
         self.author = author
         self.description = description or f'Problem for {model}'
         self.path = None
         self._model = model
         self._steps = []
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def model(self):

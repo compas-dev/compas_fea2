@@ -30,11 +30,13 @@ class Step(FEAData):
 
     Parameters
     ----------
-    name : str
-        Name of the Step object.
+    None
 
     Attributes
     ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     field_outputs: :class:`compas_fea2.problem.FieldOutput'
         field outuputs requested for the step.
     history_outputs: :class:`compas_fea2.problem.HistoryOutput'
@@ -42,11 +44,19 @@ class Step(FEAData):
 
     """
 
-    def __init__(self, name):
-        super(Step, self).__init__(name)
-        self.name = name
+    def __init__(self):
+        super(Step, self).__init__()
+        self._name = id(self)
         self._field_outputs = None
         self._history_outputs = None
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def field_outputs(self):
@@ -77,7 +87,6 @@ class ModalStep(Step):
     def __init__(self, name, modes=1):
         super(ModalStep, self).__init__(name)
 
-        self.__name__ = 'ModalStep'
         self._modes = modes
 
     @property
@@ -95,8 +104,6 @@ class GeneralStep(Step):
 
     Parameters
     ----------
-    name : str
-        name to assign to the ``Step``
     max_increments : int
         Max number of increments to perform during the case step.
         (Typically 100 but you might have to increase it in highly non-linear
@@ -122,7 +129,8 @@ class GeneralStep(Step):
     Attributes
     ----------
     name : str
-        name to assign to the ``Step``
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     max_increments : int
         Max number of increments to perform during the case step.
         (Typically 100 but you might have to increase it in highly non-linear
@@ -148,8 +156,8 @@ class GeneralStep(Step):
         Dictionary of the loads assigned to each part in the model in the step.
     """
 
-    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
-        super(GeneralStep, self).__init__(name)
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
+        super(GeneralStep, self).__init__()
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
@@ -245,8 +253,6 @@ class StaticStep(GeneralStep):
 
     Parameters
     ----------
-    name : str
-        name to assign to the ``Step``
     max_increments : int
         Max number of increments to perform during the case step.
         (Typically 100 but you might have to increase it in highly non-linear
@@ -272,7 +278,8 @@ class StaticStep(GeneralStep):
     Attributes
     ----------
     name : str
-        name to assign to the ``Step``
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     max_increments : int
         Max number of increments to perform during the case step.
         (Typically 100 but you might have to increase it in highly non-linear
@@ -302,8 +309,8 @@ class StaticStep(GeneralStep):
         Dictionary of the displacements assigned to each part in the model in the step.
     """
 
-    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
-        super(StaticStep, self).__init__(name=name, max_increments=max_increments,
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
+        super(StaticStep, self).__init__(max_increments=max_increments,
                                          initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
                                          time=time, nlgeom=nlgeom, modify=modify)
         self._displacements = {}
@@ -317,7 +324,7 @@ class StaticStep(GeneralStep):
     def displacements(self):
         return self._displacements
 
-    def add_point_load(self, name, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+    def add_point_load(self, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the ``Step``.
 
         Warning
@@ -350,10 +357,10 @@ class StaticStep(GeneralStep):
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')
-        load = PointLoad(name, x, y, z, xx, yy, zz, axes)
+        load = PointLoad(x, y, z, xx, yy, zz, axes)
         self.add_load(load, where, part)
 
-    def add_gravity_load(self, name='gravity', g=9.81, x=0., y=0., z=-1.):
+    def add_gravity_load(self, g=9.81, x=0., y=0., z=-1.):
         """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
 
         Warning
@@ -363,8 +370,6 @@ class StaticStep(GeneralStep):
 
         Parameters
         ----------
-        name : str, optional
-            name to assign to the load, by default 'gravity'
         g : float, optional
             acceleration of gravity, by default 9.81
         x : float, optional
@@ -374,7 +379,7 @@ class StaticStep(GeneralStep):
         z : [type], optional
             z component of the gravity direction vector (in global coordinates), by default -1.
         """
-        self._gravity = GravityLoad(name, g, x, y, z)
+        self._gravity = GravityLoad(g, x, y, z)
 
     def add_prestress_load(self):
         raise NotImplementedError

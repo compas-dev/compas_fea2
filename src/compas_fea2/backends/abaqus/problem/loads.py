@@ -27,8 +27,6 @@ class AbaqusPointLoad(PointLoad):
 
     Parameters
     ----------
-    name : str
-        Name of the PointLoad object.
     x : float, optional
         x component of force, by default `0.`.
     y : float, optional
@@ -50,8 +48,8 @@ class AbaqusPointLoad(PointLoad):
 
     """
 
-    def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False):
-        super(AbaqusPointLoad, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False):
+        super(AbaqusPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
 
         self._modify = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''
@@ -91,22 +89,22 @@ class AbaqusPointLoad(PointLoad):
 
 class AbaqusLineLoad(LineLoad):
 
-    def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
-        super(AbaqusLineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
+    def __init__(self, elements, x, y, z, xx, yy, zz, axes):
+        super(AbaqusLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes)
         raise NotImplementedError
 
 
 class AbaqusAreaLoad(AreaLoad):
 
-    def __init__(self, name, elements, x, y, z, axes):
-        super(AbaqusAreaLoad, self).__init__(name, elements, x, y, z, axes)
+    def __init__(self, elements, x, y, z, axes):
+        super(AbaqusAreaLoad, self).__init__(elements, x, y, z, axes)
         raise NotImplementedError
 
 
 class AbaqusGravityLoad(GravityLoad):
 
-    def __init__(self, name, g=9.81, x=0., y=0., z=-1.):
-        super(AbaqusGravityLoad, self).__init__(name, g, x, y, z)
+    def __init__(self, g=9.81, x=0., y=0., z=-1.):
+        super(AbaqusGravityLoad, self).__init__(g, x, y, z)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -127,25 +125,25 @@ class AbaqusGravityLoad(GravityLoad):
 
 # class AbaqusTributaryLoad(TributaryLoad):
 
-#     def __init__(self, structure, name, mesh, x, y, z, axes):
-#         super(AbaqusTributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
+#     def __init__(self, structure, mesh, x, y, z, axes):
+#         super(AbaqusTributaryLoad, self).__init__(structure, mesh, x, y, z, axes)
 #         raise NotImplementedError
 
 
 # class AbaqusHarmonicPointLoad(HarmonicPointLoad):
 
-#     def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-#         super(AbaqusHarmonicPointLoad, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+#     def __init__(self, nodes, x, y, z, xx, yy, zz):
+#         super(AbaqusHarmonicPointLoad, self).__init__(nodes, x, y, z, xx, yy, zz)
 #         raise NotImplementedError
 
 
 # class AbaqusHarmonicPressureLoad(HarmonicPressureLoad):
-#     def __init__(self, name, elements, pressure, phase):
-#         super(AbaqusHarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
+#     def __init__(self, elements, pressure, phase):
+#         super(AbaqusHarmonicPressureLoad, self).__init__(elements, pressure, phase)
 #         raise NotImplementedError
 
 
 # class AbaqusAcousticDiffuseFieldLoad(AcousticDiffuseFieldLoad):
-#     def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
-#         super(AbaqusAcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)
+#     def __init__(self, elements, air_density, sound_speed, max_inc_angle):
+#         super(AbaqusAcousticDiffuseFieldLoad, self).__init__(elements, air_density, sound_speed, max_inc_angle)
 #         raise NotImplementedError

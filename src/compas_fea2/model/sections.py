@@ -20,6 +20,9 @@ class Section(FEAData):
 
     Attributes
     ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     material : :class:`~compas_fea2.model.Material`
         The material associated with the section.
 
@@ -27,7 +30,16 @@ class Section(FEAData):
 
     def __init__(self, material, **kwargs):
         super(Section, self).__init__(**kwargs)
+        self._name = id(self)
         self._material = material
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def material(self):

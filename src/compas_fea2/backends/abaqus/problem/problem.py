@@ -8,25 +8,13 @@ from compas_fea2.backends.abaqus.job import launch_optimisation
 
 
 class AbaqusProblem(Problem):
-    """Initialises the Problem object.
+    """Abaqus implementation of the Problem class.
 
-    Parameters
-    ----------
-    name : str
-        Name of the Structure.
-    model : obj
-        model object.
-    parts : list
-        List of the parts in the model.
-
-    Attributes
-    ----------
-    None
     """
     __doc__ += Problem.__doc__
 
-    def __init__(self, name, model, **kwargs):
-        super(AbaqusProblem, self).__init__(name=name, model=model, **kwargs)
+    def __init__(self, model, author=None, description=None, **kwargs):
+        super(AbaqusProblem, self).__init__(model=model, author=author, description=description, **kwargs)
 
     # =========================================================================
     #                           Optimisation methods

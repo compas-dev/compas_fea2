@@ -41,6 +41,8 @@ class Part(FEAData):
         The sections belonging to the part.
     elements : Set[:class:`compas_fea2.model.Element`]
         The elements belonging to the part.
+    releases : Set[:class:`compas_fea2.model.Release`]
+        The releases belonging to the part.
     groups : Set[:class:`compas_fea2.model.Group`]
         The groups belonging to the part.
 
@@ -48,6 +50,7 @@ class Part(FEAData):
 
     def __init__(self, model=None, **kwargs):
         super(Part, self).__init__(**kwargs)
+        self._name = id(self)
         self._model = model
         self._nodes = set()
         self._materials = set()

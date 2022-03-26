@@ -21,8 +21,8 @@ class AbaqusGeneralStep(GeneralStep):
     the data for the input file for this object is generated at runtime.
     """
 
-    def __init__(self, name, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
-        super(AbaqusGeneralStep, self).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
+        super(AbaqusGeneralStep, self).__init__(max_increments, initial_inc_size, min_inc_size, time)
         self._stype = 'Static'
         self._nlgeom = 'YES' if nlgeom else 'NO'
         self._modify = modify
@@ -38,9 +38,8 @@ class AbaqusStaticStep(StaticStep):
     """
     __doc__ += StaticStep.__doc__
 
-    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
-        super(AbaqusStaticStep, self).__init__(name, max_increments,
-                                               initial_inc_size, min_inc_size, time, nlgeom, modify)
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
+        super(AbaqusStaticStep, self).__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify)
         self._stype = 'Static'
 
     def _generate_jobdata(self):
@@ -116,8 +115,8 @@ class AbaqusStaticStep(StaticStep):
 
 class AbaqusStaticRiksStep(StaticStep):
 
-    def __init__(self, name, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
-        super(AbaqusStaticRiksStep).__init__(name, max_increments, initial_inc_size, min_inc_size, time)
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
+        super(AbaqusStaticRiksStep).__init__(max_increments, initial_inc_size, min_inc_size, time)
         raise NotImplementedError
 
 

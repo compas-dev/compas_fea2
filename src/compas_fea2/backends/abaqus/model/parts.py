@@ -16,8 +16,8 @@ class AbaqusPart(Part):
     """
     __doc__ += Part.__doc__
 
-    def __init__(self, name):
-        super(AbaqusPart, self).__init__(name)
+    def __init__(self, model=None, **kwargs):
+        super(AbaqusPart, self).__init__(model=model, **kwargs)
 
     def _group_elements(self):
         """Group the elements. This is used internally to generate the input

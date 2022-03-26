@@ -11,14 +11,10 @@ from compas_fea2.backends.abaqus.model.parts import AbaqusPart
 class AbaqusModel(Model):
     """Abaqus Model object
 
-    Note
-    ----
-    This is in many aspects equivalent to an `Assembly` in Abaqus.
-
     """
 
-    def __init__(self, description=None, author=None):
-        super(AbaqusModel, self).__init__(description=description, author=author)
+    def __init__(self, name=None, description=None, author=None):
+        super(AbaqusModel, self).__init__(name=name, description=description, author=author)
         self._instances = set()
 
     # =========================================================================
@@ -31,20 +27,16 @@ class AbaqusModel(Model):
 
         Parameters
         ----------
-        part : obj
-            Part object from which the Instance is created.
+        part : :class:`compas_fea2.backends.abaus.model.parts.AbaqusPart`
+            AbaqusPart object from which the Instance is created.
 
         Returns
         -------
         None
-
-        Examples
-        --------
-        >>> model = Assembly('mymodel')
-        >>> part = Part('mypart')
         """
         super().add_part(part)
         self._add_instance(part)
+        return part
 
     def remove_part(self, part):
         """ Removes the part from the Model and all the referenced instances
@@ -52,8 +44,8 @@ class AbaqusModel(Model):
 
         Parameters
         ----------
-        part : str
-            Name of the Part to remove.
+        part : :class:`compas_fea2.backends.abaus.model.parts.AbaqusPart`
+            AbaqusPart object from which the Instance is created.
 
         Returns
         -------
@@ -69,17 +61,22 @@ class AbaqusModel(Model):
     def _add_instance(self, part):
         """Adds a compas_fea2 Instance of a Part object to the Model.
 
-        Warning
-        -------
+        Note
+        ----
         The creation of instances from the same part (which is a specific abaqus
         feature) is less useful in a scripting context (where it is easy to generate
         the parts already in their correct locations). Instances are created
         autmatically everytime a Part is added.
 
+        Note
+        ----
+        The name of the instance is automatically generated using abaqus convention
+        of adding a "-1" to the name of the part from which it is generated.
+
         Parameters
         ----------
-        part : obj
-            compas_fea2 Part object.
+        part : :class:`compas_fea2.backends.abaus.model.parts.AbaqusPart`
+            AbaqusPart object from which the Instance is created.
 
         Returns
         -------
@@ -94,26 +91,26 @@ class AbaqusModel(Model):
             return
         self._instances.add(instance)
 
-    # def _remove_instance(self, part):
-    #     """ Removes the instance of a part from the Model.
+    def _remove_instance(self, part):
+        """ Removes the instance of a part from the Model.
 
-    #     Parameters
-    #     ----------
-    #     part : str
-    #         Name of the part object to remove.
+        Parameters
+        ----------
+        part : str
+            Name of the part object to remove.
 
-    #     Returns
-    #     -------
-    #     None
-    #     """
+        Returns
+        -------
+        None
+        """
 
-    #     self.instances.pop(instance)
-
+        raise NotImplementedError()
     # =========================================================================
     #                            Groups methods
     # =========================================================================
+
     def add_group(self, group, part):
-        '''Add a Group object to the Model at the instance level. Can be either
+        """Add a Group object to the Model at the instance level. Can be either
         a NodesGroup or an ElementsGroup.
 
         Note
@@ -124,13 +121,13 @@ class AbaqusModel(Model):
 
         Parameters
         ----------
-        group : obj
-            group object.
+        group : :class:`compas_fea2.model.Group`
+            Group object to be added.
 
         Returns
         -------
-        None
-        '''
+        :class:`compas_fea2.model.Group`
+        """
         super().add_group(group, part)
         if f'{part}-1' not in self._instances:
             raise ValueError(f'ERROR: instance {part}-1 not found in the Model!')

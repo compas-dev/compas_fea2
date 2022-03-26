@@ -565,17 +565,22 @@ class Model(FEAData):
         Note
         ----
         The bc_type must be one of the following:
-        +------------------------+-------------------------+
-        | bc_type                | BC                      |
-        +========================+=========================+
-        | fix                    | :class:`FixedBC`    |
-        +------------------------+-------------------------+
-        | body row 2             | ...                     |
-        +------------------------+-------------------------+
-        'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
-        'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
-        'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
-        'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
+
+        .. csv-table::
+            :header: bc_type , BC
+
+            fix, :class:`compas_fea2.model.bcs.FixedBC`
+            fixXX, :class:`compas_fea2.model.bcs.FixedBCXX`
+            fixYY, :class:`compas_fea2.model.bcs.FixedBCYY`
+            fixZZ, :class:`compas_fea2.model.bcs.FixedBCZZ`
+            pin, :class:`compas_fea2.model.bcs.PinnedBC`
+            rollerX, :class:`compas_fea2.model.bcs.RollerBCX`
+            rollerY, :class:`compas_fea2.model.bcs.RollerBCY`
+            rollerZ, :class:`compas_fea2.model.bcs.RollerBCZ`
+            rollerXY, :class:`compas_fea2.model.bcs.RollerBCXY`
+            rollerYZ, :class:`compas_fea2.model.bcs.RollerBCYZ`
+            rollerXZ, :class:`compas_fea2.model.bcs.RollerBCXZ`
+
 
         Parameters
         ----------
@@ -583,11 +588,8 @@ class Model(FEAData):
             name of the boundary condition
         bc_type : str
             one of the boundary condition types specified above
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
@@ -596,212 +598,165 @@ class Model(FEAData):
                  'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
                  'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
                  }
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
+        m = importlib.import_module('compas_fea2.model.bcs')
         bc = getattr(m, types[bc_type])()
         return self.add_bc(bc, node)
 
-    def add_fix_bc(self, part, where, axes='global'):
+    def add_fix_bc(self, node, axes='global'):
         """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('fix', part, where)
+        return self._add_bc_type('fix', node, axes)
 
-    def add_fixXX_bc(self, part, where, axes='global'):
+    def add_fixXX_bc(self, node, axes='global'):
         """Add a fixed boundary condition type free about XX to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('fixXX', part, where)
+        return self._add_bc_type('fixXX', node, axes)
 
-    def add_fixYY_bc(self, part, where, axes='global'):
+    def add_fixYY_bc(self, node, axes='global'):
         """Add a fixed boundary condition free about YY type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('fixYY', part, where)
+        return self._add_bc_type('fixYY', node, axes)
 
-    def add_fixZZ_bc(self, part, where, axes='global'):
+    def add_fixZZ_bc(self, node, axes='global'):
         """Add a fixed boundary condition free about ZZ type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('fixZZ', part, where)
+        return self._add_bc_type('fixZZ', node, axes)
 
-    def add_pin_bc(self, part, where):
+    def add_pin_bc(self, node, axes='global'):
         """Add a pinned boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('pin', part, where)
+        return self._add_bc_type('pin', node, axes)
 
-    def add_rollerX_bc(self, part, where):
+    def add_rollerX_bc(self,  node, axes='global'):
         """Add a roller free on X boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerX', part, where)
+        return self._add_bc_type('rollerX',  node, axes)
 
-    def add_rollerY_bc(self, part, where):
+    def add_rollerY_bc(self,  node, axes='global'):
         """Add a roller free on Y boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerY', part, where)
+        return self._add_bc_type('rollerY',  node, axes)
 
-    def add_rollerZ_bc(self, part, where):
+    def add_rollerZ_bc(self,  node, axes='global'):
         """Add a roller free on Z boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerZ', part, where)
+        return self._add_bc_type('rollerZ', node, axes)
 
-    def add_rollerXY_bc(self, part, where):
+    def add_rollerXY_bc(self,  node, axes='global'):
         """Add a roller free on XY boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerXY', part, where)
+        return self._add_bc_type('rollerXY',  node, axes)
 
-    def add_rollerXZ_bc(self, part, where):
+    def add_rollerXZ_bc(self,  node, axes='global'):
         """Add a roller free on XZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerXZ', part, where)
+        return self._add_bc_type('rollerXZ',  node, axes)
 
-    def add_rollerYZ_bc(self, part, where):
+    def add_rollerYZ_bc(self,  node, axes='global'):
         """Add a roller free on YZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`compas_fea2.model.NodesGroup` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerYZ', part, where)
+        return self._add_bc_type('rollerYZ',  node, axes)
 
-    # def add_bcs(self, bcs):
-    #     """Adds multiple boundary conditions to the Problem object.
-
-    #     Parameters
-    #     ----------
-    #     bcs : list
-    #         List of `compas_fea2` BoundaryCondtion objects.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     return [self.add_bc(bc) for bc in bcs]
-
-    def remove_bc(self, bc_name):
+    def remove_bc(self, bc):
         """Removes a boundary condition from the Model.
 
         Parameters
@@ -815,7 +770,7 @@ class Model(FEAData):
         """
         raise NotImplementedError
 
-    def remove_bcs(self, bc_names):
+    def remove_bcs(self, bcs):
         """Removes multiple boundary conditions from the Model.
 
         Parameters

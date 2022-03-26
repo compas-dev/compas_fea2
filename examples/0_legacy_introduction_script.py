@@ -31,18 +31,16 @@ model = Model()
 mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
 sec = CircularSection(material=mat, r=0.010)
 
-frame = Part()
+frame = model.add_part(Part())
 
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
 nodes = [Node(xyz=node) for node in coordinates]
 for i in range(1, len(nodes)):
     frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=sec))
-model.add_part(frame)
-model.add_bcs(bc=FixedBC(), nodes=nodes[1:])
+model.add_pin_bc(node=nodes[1])
+model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
 # model.add_bc(bc=fix_bc, where=nodes[1:], part=frame)
-# model.add_fix_bc(name='bc_pinned', part=frame, where=[1])
-# model.add_pin_bc(name='bc_pinned', part=frame, where=[2, 3])
 # model.add_rollerXY_bc(name='bc_pinned', part=frame, where=[4])
 
 # Review
@@ -52,20 +50,17 @@ model.add_bcs(bc=FixedBC(), nodes=nodes[1:])
 
 ##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
-problem = Problem(model=model)
-problem.name = 'test'
+problem = Problem(model=model, name='test')
 
-# Approach 1: Create a step and assign a gravity load
 step_0 = problem.add_step(StaticStep())
 step_0.add_gravity_load()
 
-# Approach 2: Add a step and define a point load directly from Problem
 step_1 = problem.add_step(StaticStep())
 step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 
-# # Define the field outputs required
-# fout = FieldOutput(name='fout')
-# problem.add_output(fout, step_0)
+# Define the field outputs required
+# fout = step_0.add_output(FieldOutput(name='fout'))
+
 
 # Review
 # problem.summary()

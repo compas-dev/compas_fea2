@@ -10,6 +10,9 @@ class Constraint(FEAData):
 
     Parameters
     ----------
+    name : str,optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -19,6 +22,9 @@ class Constraint(FEAData):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -28,8 +34,9 @@ class Constraint(FEAData):
 
     """
 
-    def __init__(self, *, master, slave, tol, **kwargs):
+    def __init__(self, *, master, slave, tol, name=None, **kwargs):
         super(Constraint, self).__init__(**kwargs)
+        self._name = name or "Constraint_"+str(id(self))
         self._master = master
         self._slave = slave
         self._tol = tol
@@ -52,6 +59,9 @@ class TieConstraint(Constraint):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -61,6 +71,9 @@ class TieConstraint(Constraint):
 
     Attributes
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -70,8 +83,8 @@ class TieConstraint(Constraint):
 
     """
 
-    def __init__(self, *, master, slave, tol, **kwargs):
-        super(TieConstraint, self).__init__(master, slave, tol, **kwargs)
+    def __init__(self, *, master, slave, tol, name=None, **kwargs):
+        super(TieConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
 
 
 class Pin3DConstraint(Constraint):
@@ -80,6 +93,9 @@ class Pin3DConstraint(Constraint):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -106,6 +122,9 @@ class Pin2DConstraint(Constraint):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -117,6 +136,9 @@ class Pin2DConstraint(Constraint):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.NodesGroup`
         Goup of nodes that act as master.
     slave : :class:`compas_fea2.model.NodesGroup`
@@ -128,13 +150,13 @@ class Pin2DConstraint(Constraint):
 
     """
 
-    def __init__(self, *, master, slave, tol, axis, **kwargs):
-        super(SliderConstraint, self).__init__(master, slave, tol, **kwargs)
+    def __init__(self, *, master, slave, tol, axis, name=None, **kwargs):
+        super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
         self.axis = axis
 
 
 class SliderConstraint(Constraint):
 
-    def __init__(self, *, master, slave, tol, plane, **kwargs):
-        super(SliderConstraint, self).__init__(master, slave, tol, **kwargs)
+    def __init__(self, *, master, slave, tol, plane, name=None, **kwargs):
+        super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
         self.plane = plane

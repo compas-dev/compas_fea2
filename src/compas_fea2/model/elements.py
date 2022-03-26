@@ -22,6 +22,9 @@ class Element(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         Ordered list of node identifiers to which the element connects.
     section : :class:`compas_fea2.model.Section`
@@ -31,6 +34,9 @@ class Element(FEAData):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     key : int, read-only
         Identifier of the element in the parent part.
     nodes : list[:class:`compas_fea2.model.Node`]
@@ -47,8 +53,9 @@ class Element(FEAData):
 
     """
 
-    def __init__(self, *, nodes, section, frame=None, part=None, **kwargs):
+    def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
         super(Element, self).__init__(**kwargs)
+        self._name = name or 'Element_'+str(id(self))
         self._key = None
         self._nodes = nodes
         self._section = section

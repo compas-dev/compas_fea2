@@ -12,6 +12,9 @@ class Load(FEAData):
 
     Parameters
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     components : dict
         Load components.
     axes : str, optional
@@ -20,30 +23,22 @@ class Load(FEAData):
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     components : dict
         Load components. These differ according to each Load type
     axes : str, optional
         Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, components, axes='global'):
-        super(Load, self).__init__()
-        self._name = "Load_"+str(id(self))
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(Load, self).__init__(**kwargs)
+        self._name = name or "Load_"+str(id(self))
         self._axes = axes
         self._components = components
         for component, attr in self._components.items():
             if attr:
                 setattr(self, '_'+component, attr)
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def axes(self):

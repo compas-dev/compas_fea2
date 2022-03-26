@@ -26,11 +26,17 @@ class Part(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     model : :class:`compas_fea2.model.Model`
         The parent model of the part.
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     model : :class:`compas_fea2.model.Model`
         The parent model of the part.
     nodes : Set[:class:`compas_fea2.model.Node`]
@@ -48,9 +54,9 @@ class Part(FEAData):
 
     """
 
-    def __init__(self, model=None, **kwargs):
+    def __init__(self, model=None, name=None, **kwargs):
         super(Part, self).__init__(**kwargs)
-        self._name = "Part_"+str(id(self))
+        self._name = name or "Part_"+str(id(self))
         self._model = model
         self._nodes = set()
         self._materials = set()

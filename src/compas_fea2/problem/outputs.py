@@ -28,19 +28,11 @@ class FieldOutput(FEAData):
 
     """
 
-    def __init__(self, node_outputs, element_outputs):
-        super(FieldOutput, self).__init__()
-        self._name = "FieldOutput_"+str(id(self))
+    def __init__(self, node_outputs, element_outputs, name=None, **kwargs):
+        super(FieldOutput, self).__init__(**kwargs)
+        self._name = name or "FieldOutput_"+str(id(self))
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def node_outputs(self):
@@ -59,23 +51,17 @@ class HistoryOutput(FEAData):
 
     Parameters
     ----------
-    None
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
 
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     """
 
-    def __init__(self, name):
-        super(HistoryOutput, self).__init__()
-        self._name = "HistoryOutput_"+str(id(self))
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
+    def __init__(self,  name=None, **kwargs):
+        super(HistoryOutput, self).__init__(**kwargs)
+        self._name = name or "HistoryOutput_"+str(id(self))

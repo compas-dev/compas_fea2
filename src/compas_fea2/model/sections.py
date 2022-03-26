@@ -15,31 +15,26 @@ class Section(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     material : :class:`~compas_fea2.model.Material`
         A material definition.
 
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     material : :class:`~compas_fea2.model.Material`
         The material associated with the section.
 
     """
 
-    def __init__(self, material, **kwargs):
+    def __init__(self, material, name=None, **kwargs):
         super(Section, self).__init__(**kwargs)
-        self._name = "Section_"+str(id(self))
+        self._name = name or "Section_"+str(id(self))
         self._material = material
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def material(self):

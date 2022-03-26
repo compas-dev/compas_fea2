@@ -11,8 +11,9 @@ class BeamEndRelease(FEAData):
 
     Parameters
     ----------
-    name : str
-        Name of the BeamEndRelease object.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     location : str
         'start' or 'end'
     local : bool
@@ -31,7 +32,9 @@ class BeamEndRelease(FEAData):
         Release rotations about global z direction, by default False
     """
 
-    def __init__(self, element, location, local=False, x=False, y=False, z=False, xx=False, yy=False, zz=False):
+    def __init__(self, element, location, local=False, x=False, y=False, z=False, xx=False, yy=False, zz=False, name=None, **kwargs):
+        super(BeamEndRelease, self).__init__(**kwargs)
+        self._name = name or 'Release_'+str(id(self))
         self.element = element
         self.location = location
         self.local = local

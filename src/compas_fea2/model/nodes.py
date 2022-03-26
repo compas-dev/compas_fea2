@@ -18,6 +18,9 @@ class Node(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     xyz : list[float, float, float] | :class:`compas.geometry.Point`
         The location of the node in the global coordinate system.
     part : `compas_fea2.model.Part`, optional
@@ -25,6 +28,9 @@ class Node(FEAData):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     key : str, read-only
         The identifier of the node.
     xyz : list[float]
@@ -48,8 +54,9 @@ class Node(FEAData):
 
     """
 
-    def __init__(self, xyz, part=None, **kwargs):
+    def __init__(self, xyz, part=None, name=None, **kwargs):
         super(Node, self).__init__(**kwargs)
+        self._name = name or 'Node_'+str(id(self))
         self._key = None
         self._x = None
         self._y = None

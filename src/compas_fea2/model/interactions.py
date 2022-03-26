@@ -18,6 +18,9 @@ class Contact(Interaction):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     normal : str
         Behaviour of the contact along the direction normal to the interaction
         surface. For faceted surfaces, this is the behavior along the direction
@@ -29,6 +32,9 @@ class Contact(Interaction):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     normal : str
         Behaviour of the contact along the direction normal to the interaction
         surface. For faceted surfaces, this is the behavior along the direction
@@ -39,8 +45,9 @@ class Contact(Interaction):
         tangent to each face.
     """
 
-    def __init__(self, *, normal, tangent, **kwargs):
+    def __init__(self, *, normal, tangent, name=None, **kwargs):
         super(Contact, self).__init__(**kwargs)
+        self._name = name or "Contact_"+str(id(self))
         self._tangent = tangent
         self._normal = normal
 
@@ -70,12 +77,15 @@ class HardContactFrictionPenalty(Contact):
 
     Attributes
     ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     mu : float
         Friction coefficient for tangential behaviour.
     tollerance : float
         Slippage tollerance during contact.
     """
 
-    def __init__(self, name, mu, tollerance) -> None:
-        super(HardContactFrictionPenalty, self).__init__(normal='HARD', tangent=mu)
+    def __init__(self, mu, tollerance, name=None, **kwargs) -> None:
+        super(HardContactFrictionPenalty, self).__init__(name=name, normal='HARD', tangent=mu, **kwargs)
         self.tollerance = tollerance

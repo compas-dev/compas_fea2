@@ -9,9 +9,9 @@ class Group(FEAData):
     """Base class for all groups.
     """
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name=None, **kwargs):
         super(Group, self).__init__(**kwargs)
-        self.name = name
+        self._name = name or 'Group_'+str(id(self))
 
 
 class NodesGroup(Group):
@@ -19,18 +19,24 @@ class NodesGroup(Group):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
     """
 
-    def __init__(self, name, *, nodes, **kwargs):
-        super(NodesGroup, self).__init__(name, **kwargs)
+    def __init__(self, nodes, name=None, **kwargs):
+        super(NodesGroup, self).__init__(name=name, **kwargs)
         self.nodes = nodes
 
 
@@ -49,8 +55,8 @@ class ElementsGroup(Group):
 
     """
 
-    def __init__(self, name, *, elements, **kwargs):
-        super(ElementsGroup, self).__init__(name, **kwargs)
+    def __init__(self, *, elements, name=None, **kwargs):
+        super(ElementsGroup, self).__init__(name=name, **kwargs)
         self.elements = elements
 
 
@@ -66,8 +72,8 @@ class FacesGroup(Group):
         element_key, face pairs of the elements faces creating the surface
     """
 
-    def __init__(self, name, part, element_face, **kwargs):
-        super(FacesGroup, self).__init__(name, **kwargs)
+    def __init__(self, part, element_face, name=None, **kwargs):
+        super(FacesGroup, self).__init__(name=name, **kwargs)
         self._part = part
         self._element_face = element_face
 
@@ -87,6 +93,6 @@ class PartsGroup(Group):
 
     """
 
-    def __init__(self, name,  *, parts, **kwargs):
-        super(PartsGroup, self).__init__(name, **kwargs)
+    def __init__(self, *, parts, name=None, **kwargs):
+        super(PartsGroup, self).__init__(name=name, **kwargs)
         self.parts = parts

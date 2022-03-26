@@ -11,6 +11,9 @@ class Interface(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.FacesGroup`
         Group of element faces determining the Master surface.
     slave : :class:`compas_fea2.model.FacesGroup`
@@ -20,6 +23,9 @@ class Interface(FEAData):
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.FacesGroup`
         Group of element faces determining the Master surface.
     slave : :class:`compas_fea2.model.FacesGroup`
@@ -29,8 +35,9 @@ class Interface(FEAData):
 
     """
 
-    def __init__(self, *, master, slave, interaction, **kwargs):
+    def __init__(self, *, master, slave, interaction, name=None, **kwargs):
         super(Interface, self).__init__(**kwargs)
+        self._name = name or "Interface_"+str(id(self))
         self._master = master
         self._slave = slave
         self._interaction = interaction

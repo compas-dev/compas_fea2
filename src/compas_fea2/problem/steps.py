@@ -31,13 +31,15 @@ class Step(FEAData):
 
     Parameters
     ----------
-    None
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
 
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     field_outputs: :class:`compas_fea2.problem.FieldOutput'
         field outuputs requested for the step.
     history_outputs: :class:`compas_fea2.problem.HistoryOutput'
@@ -45,19 +47,11 @@ class Step(FEAData):
 
     """
 
-    def __init__(self):
-        super(Step, self).__init__()
-        self._name = "Step_"+str(id(self))
+    def __init__(self, name=None, **kwargs):
+        super(Step, self).__init__(**kwargs)
+        self._name = name or "Step_"+str(id(self))
         self._field_outputs = None
         self._history_outputs = None
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def field_outputs(self):
@@ -85,14 +79,12 @@ class ModalStep(Step):
         Number of modes to analyse.
     """
 
-    def __init__(self, name, modes=1):
-        super(ModalStep, self).__init__(name)
-
+    def __init__(self, name, modes=1, **kwargs):
+        super(ModalStep, self).__init__(name=name, **kwargs)
         self._modes = modes
 
     @property
     def modes(self):
-        """int : Number of modes to analyse."""
         return self._modes
 
 
@@ -157,8 +149,8 @@ class GeneralStep(Step):
         Dictionary of the loads assigned to each part in the model in the step.
     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
-        super(GeneralStep, self).__init__()
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
+        super(GeneralStep, self).__init__(name=None, **kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
@@ -297,10 +289,10 @@ class StaticStep(GeneralStep):
         Dictionary of the displacements assigned to each part in the model in the step.
     """
 
-    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True, name=None, **kwargs):
         super(StaticStep, self).__init__(max_increments=max_increments,
                                          initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
-                                         time=time, nlgeom=nlgeom, modify=modify)
+                                         time=time, nlgeom=nlgeom, modify=modify, name=None, **kwargs)
         self._displacements = {}
         self._gravity = None
 

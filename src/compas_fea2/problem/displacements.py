@@ -10,6 +10,9 @@ class GeneralDisplacement(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     x : float, optional
         x component of force, by default 0.
     y : float, optional
@@ -28,8 +31,9 @@ class GeneralDisplacement(FEAData):
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    x : float, optional
         x component of force, by default 0.
     y : float, optional
         y component of force, by default 0.
@@ -45,9 +49,9 @@ class GeneralDisplacement(FEAData):
         BC applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', **kwargs):
+    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', name=None, **kwargs):
         super(GeneralDisplacement, self).__init__(**kwargs)
-        self._name = "Displacement_"+str(id(self))
+        self._name = name or "Displacement_"+str(id(self))
         self.x = x
         self.y = y
         self.z = z
@@ -55,11 +59,3 @@ class GeneralDisplacement(FEAData):
         self.yy = yy
         self.zz = zz
         self.axes = axes
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value

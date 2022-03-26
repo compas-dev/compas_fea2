@@ -27,6 +27,9 @@ class Model(FEAData):
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     description : str, optional
         Some description of the model, by default ``None``.
         This will be added to the input file and can be useful for future reference.
@@ -37,8 +40,8 @@ class Model(FEAData):
     Attributes
     ----------
     name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     description : str
         Some description of the model.
         This will be added to the input file and can be useful for future reference.
@@ -68,11 +71,11 @@ class Model(FEAData):
 
     """
 
-    def __init__(self, *, description=None, author=None, **kwargs):
+    def __init__(self, *, name=None, description=None, author=None, **kwargs):
         super(Model, self).__init__(**kwargs)
         self.description = description
         self.author = author
-        self._name = "Model_"+str(id(self))
+        self._name = name or "Model_"+str(id(self))
         self._parts = set()
         self._materials = set()
         self._sections = set()
@@ -82,14 +85,6 @@ class Model(FEAData):
         self._contacts = set()
         self._partsgroups = set()
         self._facesgroups = set()
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     @property
     def parts(self):

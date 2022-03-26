@@ -28,6 +28,9 @@ class FEAData(Data):
             return super(FEAData, cls).__new__(cls)
         return super(FEAData, imp).__new__(imp)
 
+    def __repr__(self):
+        return '{0}({1})'.format(type(self).__name__, self._name)
+
     # def __str__(self):
     #     """String representation of the object.
 

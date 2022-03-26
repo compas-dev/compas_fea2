@@ -19,8 +19,8 @@ from compas_fea2.model import Steel
 
 class AbaqusElasticIsotropic(ElasticIsotropic):
 
-    def __init__(self, name, *, E, v, density, unilateral=None):
-        super(AbaqusElasticIsotropic, self).__init__(name, E=E, v=v, density=density)
+    def __init__(self, *, E, v, density, unilateral=None):
+        super(AbaqusElasticIsotropic, self).__init__(E=E, v=v, density=density)
         self.unilateral = unilateral
 
     def _generate_jobdata(self):

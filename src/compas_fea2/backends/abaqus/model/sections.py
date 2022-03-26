@@ -64,7 +64,7 @@ class AbaqusMassSection(MassSection):
         -------
         input file data line (str).
         """
-        return """** Section: {}
+        return """** Section: \"{}\"
 *Mass, elset={}
 {}\n""".format(self.name, set_name, self.mass)
 

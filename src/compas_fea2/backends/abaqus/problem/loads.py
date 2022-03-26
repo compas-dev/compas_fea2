@@ -64,7 +64,7 @@ class AbaqusPointLoad(PointLoad):
         """bool : if `True` the load follows the deformation of the element."""
         return self._follow
 
-    def _generate_jobdata(self, instance, nodes):
+    def _generate_jobdata(self, instance_name, nodes):
         """Generates the string information for the input file.
 
         Parameters
@@ -76,12 +76,13 @@ class AbaqusPointLoad(PointLoad):
         input file data line (str).
 
         """
+        nodes = list(nodes)
         chunks = [nodes[x:x+15] for x in range(0, len(nodes), 15)]  # split data for readibility
-        data_section = [f'** Name: {self.name} Type: Concentrated Force',
-                        f'*Nset, nset=_aux_{self.name}_{instance}, internal, instance={instance}',
-                        '\n'.join([', '.join([str(node+1) for node in chunk]) for chunk in chunks]),
-                        f'*Cload, OP={self._modify}{self._follow}']
-        data_section += [f'_aux_{self.name}_{instance}, {comp}, {self.components[dof]}' for comp,
+        data_section = ['** Name: {} Type: Concentrated Force'.format(self.name),
+                        '*Nset, nset=_aux_{0}_{1}, internal, instance={1}'.format(self.name, instance_name),
+                        '\n'.join([', '.join([str(node.key+1) for node in chunk]) for chunk in chunks]),
+                        '*Cload, OP={}{}'.format(self._modify, self._follow)]
+        data_section += ['_aux_{}_{}, {}, {}'.format(self.name, instance_name, comp, self.components[dof]) for comp,
                          dof in enumerate(dofs, 1) if self.components[dof]]  # FIXME: this should be similar to what happens for the BC or viceversa
 
         return '\n'.join(data_section) + '\n'

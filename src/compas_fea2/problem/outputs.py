@@ -30,7 +30,7 @@ class FieldOutput(FEAData):
 
     def __init__(self, node_outputs, element_outputs):
         super(FieldOutput, self).__init__()
-        self._name = id(self)
+        self._name = "FieldOutput_"+str(id(self))
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
 
@@ -59,16 +59,23 @@ class HistoryOutput(FEAData):
 
     Parameters
     ----------
+    None
+
+    Attributes
+    ----------
     name : str
-        name of the output request
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     """
 
     def __init__(self, name):
         super(HistoryOutput, self).__init__()
-        self.__name__ = 'HistoryOutputRequst'
-        self._name = name
+        self._name = "HistoryOutput_"+str(id(self))
 
     @property
     def name(self):
-        """str : name of the output request"""
         return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value

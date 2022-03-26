@@ -55,7 +55,9 @@ class Node(FEAData):
         self._y = None
         self._z = None
         self._part = part
-        self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True, }
+        self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
+        self._loads = set()
+        self._displacements = set()
         self.xyz = xyz
 
     @property
@@ -117,3 +119,11 @@ class Node(FEAData):
         if not isinstance(bc, BoundaryCondition):
             raise TypeError('{!r} is not a Boundary Condition'.format(bc))
         self._dof = {attr: not bool(getattr(bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+
+    @property
+    def loads(self):
+        return self._loads
+
+    @property
+    def displacements(self):
+        return self._displacements

@@ -17,7 +17,7 @@ class AbaqusModel(Model):
 
     """
 
-    def __init__(self, description, author):
+    def __init__(self, description=None, author=None):
         super(AbaqusModel, self).__init__(description=description, author=author)
         self._instances = set()
 
@@ -265,6 +265,6 @@ class AbaqusModel(Model):
         """
         data_section = []
         for part in self.bcs:
-            data_section += [bc._generate_jobdata(f'{part.name}-1', nodes)
+            data_section += [bc._generate_jobdata('{}-1'.format(part.name), nodes)
                              for bc, nodes in self.bcs[part].items()]
         return '\n'.join(data_section)

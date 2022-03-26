@@ -56,7 +56,7 @@ def _generate_jobdata(obj, instance, nodes):
     input file data line (str).
 
     """
-    data_section = [f'** Name: {obj.name} Type: BC/Rotation\n', '*Boundary, op=NEW']
+    data_section = ['** Name: {} Type: BC/Rotation', '*Boundary, op=NEW'.format(obj.name)]
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
             if getattr(obj, dof):

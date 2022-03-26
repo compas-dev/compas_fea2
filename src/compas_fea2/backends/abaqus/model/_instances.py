@@ -21,7 +21,6 @@ class _Instance(FEAData):
     """
 
     def __init__(self, name, part):
-        self.__name__ = 'Instance'
         self._name = name
         self._part = part
         self._groups = {}
@@ -63,5 +62,5 @@ class _Instance(FEAData):
         -------
         input file data line (str).
         """
-        return ''.join([f'*Instance, name={self.name}, part={self.part.name}\n',
-                        '*End Instance\n**\n'])
+        return '\n'.join(['*Instance, name={}, part={}'.format(self.name, self.part.name),
+                          '*End Instance\n**\n'])

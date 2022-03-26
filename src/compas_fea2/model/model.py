@@ -72,7 +72,7 @@ class Model(FEAData):
         super(Model, self).__init__(**kwargs)
         self.description = description
         self.author = author
-        self._name = id(self)
+        self._name = "Model_"+str(id(self))
         self._parts = set()
         self._materials = set()
         self._sections = set()

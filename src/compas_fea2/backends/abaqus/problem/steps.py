@@ -80,7 +80,7 @@ class AbaqusStaticStep(StaticStep):
     def _generate_displacements_section(self):
         data_section = []
         for part in self.displacements:
-            data_section += [displacement._generate_jobdata(f'{part}-1', node)
+            data_section += [displacement._generate_jobdata('{}-1'.format(part.name), node)
                              for node, displacement in self.displacements[part].items()]
         return '\n'.join(data_section)
 
@@ -89,7 +89,7 @@ class AbaqusStaticStep(StaticStep):
         if self.gravity:
             data_section.append(self._gravity._generate_jobdata())
         for part in self.loads:
-            data_section += [load._generate_jobdata(f'{part}-1', nodes)
+            data_section += [load._generate_jobdata('{}-1'.format(part.name), nodes)
                              for load, nodes in self.loads[part].items()]
         return '\n'.join(data_section)
 

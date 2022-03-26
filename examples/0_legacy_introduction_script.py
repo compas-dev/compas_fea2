@@ -27,17 +27,14 @@ compas_fea2.set_backend('abaqus')
 compas_fea2.config.VERBOSE = not True
 
 
-model = Model(description='test model', author='me')
-mat = ElasticIsotropic(name='mat_elastic', E=10*10**9, v=0.3, density=1000)
+model = Model()
+mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
 sec = CircularSection(material=mat, r=0.010)
-# model.add_section(CircularSection(material=mat, r=0.010))
 
-frame = Part(name='frame')
-
+frame = Part()
 
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
 nodes = [Node(xyz=node) for node in coordinates]
-# frame.add_nodes(nodes)
 for i in range(1, len(nodes)):
     frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=sec))
 model.add_part(frame)
@@ -56,15 +53,15 @@ model.add_bcs(bc=FixedBC(), nodes=nodes[1:])
 ##### ----------------------------- PROBLEM ----------------------------- #####
 # Create the Problem object
 problem = Problem(model=model)
+problem.name = 'test'
 
 # Approach 1: Create a step and assign a gravity load
-step_0 = StaticStep()
+step_0 = problem.add_step(StaticStep())
 step_0.add_gravity_load()
-problem.add_step(step_0)
 
 # Approach 2: Add a step and define a point load directly from Problem
 step_1 = problem.add_step(StaticStep())
-step_1.add_point_load(x=1000, z=-1000, where=[0], part='frame')
+step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 
 # # Define the field outputs required
 # fout = FieldOutput(name='fout')

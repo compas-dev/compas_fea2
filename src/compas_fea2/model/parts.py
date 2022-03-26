@@ -50,7 +50,7 @@ class Part(FEAData):
 
     def __init__(self, model=None, **kwargs):
         super(Part, self).__init__(**kwargs)
-        self._name = id(self)
+        self._name = "Part_"+str(id(self))
         self._model = model
         self._nodes = set()
         self._materials = set()

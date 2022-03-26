@@ -23,14 +23,14 @@ class Load(FEAData):
         Automatically generated id. You can change the name if you want a more
         human readable input file.
     components : dict
-        Load components.
+        Load components. These differ according to each Load type
     axes : str, optional
         Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
     def __init__(self, components, axes='global'):
         super(Load, self).__init__()
-        self._name = id(self)
+        self._name = "Load_"+str(id(self))
         self._axes = axes
         self._components = components
         for component, attr in self._components.items():
@@ -47,7 +47,6 @@ class Load(FEAData):
 
     @property
     def axes(self):
-        """str : Load applied via 'local' or 'global' axes."""
         return self._axes
 
     @axes.setter
@@ -56,7 +55,6 @@ class Load(FEAData):
 
     @property
     def components(self):
-        """dict : Load components. These differ according to each Load type"""
         return self._components
 
 

@@ -1,5 +1,6 @@
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import Part
+from compas_fea2.model.nodes import Node
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import ElementsGroup
 
@@ -46,7 +47,7 @@ class Step(FEAData):
 
     def __init__(self):
         super(Step, self).__init__()
-        self._name = id(self)
+        self._name = "Step_"+str(id(self))
         self._field_outputs = None
         self._history_outputs = None
 
@@ -200,7 +201,7 @@ class GeneralStep(Step):
     #                           Loads methods
     # =========================================================================
 
-    def add_load(self, load, where, part):
+    def add_load(self, load, node):
         """Add a load to Step object.
 
         Warning
@@ -213,39 +214,26 @@ class GeneralStep(Step):
         ----------
         load : obj
             any ``compas_fea2`` :class:`compas_fea2.problem.Load` subclass object
-        keys : int
-            node or element key where the load is applied
-        part : str
-            name of the part where the load is applied
+        node : :class:`compas_fea2.model.Node`
+            Node where the load is applied
 
         Returns
         -------
         None
         """
 
-        # check if load is valid
         if not isinstance(load, Load):
-            raise TypeError(f'{load} is not a `compas_fea2` Load object')
+            raise TypeError('{!r} is not a Load.'.format(load))
 
-        if isinstance(where, int):
-            nodes = [where]
-        elif isinstance(where, (list, tuple)):
-            nodes = where
-        elif isinstance(where, (NodesGroup, ElementsGroup)):
-            nodes = where.keys
-        else:
-            raise TypeError('You must provide either a key or a list of keys, or a Group instance')
-        # self._check_nodes_in_model(nodes) #TODO implement method
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a Node.'.format(node))
+        # self.model.contains_node(node) #TODO implement method
+        node._loads.add(load)
+        self._loads.setdefault(node.part, {}).setdefault(load, set()).add(node)
+        return load
 
-        if not isinstance(load, Load):
-            raise TypeError(f'{load} is not a compas_fea2 Load subclass instance')
-        if isinstance(part, Part):
-            part = part.name
-        self._loads.setdefault(part, {})[load] = nodes
-
-    def add_loads(self, loads):
-        for load in loads:
-            self.add_load(load)
+    def add_loads(self, load, nodes):
+        return [self.add_load(load, node) for node in nodes]
 
 
 class StaticStep(GeneralStep):
@@ -324,7 +312,7 @@ class StaticStep(GeneralStep):
     def displacements(self):
         return self._displacements
 
-    def add_point_load(self, part, where, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+    def add_point_load(self, node, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the ``Step``.
 
         Warning
@@ -357,8 +345,7 @@ class StaticStep(GeneralStep):
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')
-        load = PointLoad(x, y, z, xx, yy, zz, axes)
-        self.add_load(load, where, part)
+        return self.add_load(PointLoad(x, y, z, xx, yy, zz, axes), node)
 
     def add_gravity_load(self, g=9.81, x=0., y=0., z=-1.):
         """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
@@ -397,7 +384,7 @@ class StaticStep(GeneralStep):
     #                       Displacement methods
     # =========================================================================
 
-    def add_displacement(self, displacement, where, part):
+    def add_displacement(self, displacement, node):
         """Add a displacement to Step object.
 
         Parameters
@@ -412,24 +399,18 @@ class StaticStep(GeneralStep):
         -------
         None
         """
-        # check if where is valid
-        if isinstance(where, int):
-            nodes = [where]
-        elif isinstance(where, (list, tuple)):
-            nodes = where
-        elif isinstance(where, (NodesGroup, ElementsGroup)):
-            nodes = where.keys
-        else:
-            raise TypeError('You must provide either a key or a list of keys, or a Group instance')
-
-        # check if displacement is valid
         if not isinstance(displacement, GeneralDisplacement):
-            raise ValueError(f'{displacement} is not a `compas_fea2` GeneralDisplacement object')
+            raise TypeError('{!r} is not a General Displacement.'.format(displacement))
 
-        # check if part is valid
-        if isinstance(part, Part):
-            part = part.name
-        self._loads.setdefault(part, {})[displacement] = nodes
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a Node.'.format(node))
+        # self.model.contains_node(node) #TODO implement method
+        node._displacements.add(displacement)
+        self._displacements.setdefault(node.part, {}).setdefault(displacement, set()).add(node)
+        return displacement
+
+    def add_displacements(self, displacement, nodes):
+        return [self.add_displacement(displacement, node) for node in nodes]
 
 
 class DynamicStep(GeneralStep):

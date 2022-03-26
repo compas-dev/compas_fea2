@@ -5,20 +5,22 @@ from __future__ import print_function
 from compas.geometry import Frame
 from compas_fea2.base import FEAData
 
+import compas_fea2
 
-class Element(FEAData):
+
+class _Element(FEAData):
     """Initialises a base Element object.
 
     Note
     ----
-    Elements can belong to only one Part. Every time an element is added to a part,
-    it gets registered to that part.
+    Elements can belong to only one Part. When an element is added to a part,
+    it is registered to that part.
 
     Warning
     -------
-    if the nodes to which the element connects do not belong to the same part,
+    If the nodes to which the element connects are not registered to the same part,
     they will be deregistered from the original part and registered to the new
-    part once the element is added to this part.
+    part once the element is added to it.
 
     Parameters
     ----------
@@ -29,6 +31,9 @@ class Element(FEAData):
         Ordered list of node identifiers to which the element connects.
     section : :class:`compas_fea2.model.Section`
         Section Object assigned to the element.
+    frame : :class:`compas.geometry.Frame`, optional
+        The local coordinate system for property assignement.
+        Default to the global coordinate system.
     part : :class:`compas_fea2.model.Part`, optional
         The parent part of the element.
 
@@ -52,9 +57,10 @@ class Element(FEAData):
         The parent part.
 
     """
+# FIXME frame and orientations are a bit different concepts. find a way to unify them
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(Element, self).__init__(**kwargs)
+        super(_Element, self).__init__(**kwargs)
         self._name = name or 'Element_'+str(id(self))
         self._key = None
         self._nodes = nodes
@@ -102,6 +108,10 @@ class Element(FEAData):
 
     @part.setter
     def part(self, value):
+        if not isinstance(value, compas_fea2.model.parts.Part):
+            raise TypeError('{} is not a Part'.format(value))
+        for node in self._nodes:
+            node._part = value
         self._part = value
 
 
@@ -110,7 +120,7 @@ class Element(FEAData):
 # ==============================================================================
 
 
-class MassElement(Element):
+class MassElement(_Element):
     """A 0D element for concentrated point mass.
     """
 
@@ -120,17 +130,17 @@ class MassElement(Element):
 # ==============================================================================
 
 
-class BeamElement(Element):
+class BeamElement(_Element):
     """A 1D element that resists axial, shear, bending and torsion.
     """
 
 
-class SpringElement(Element):
+class SpringElement(_Element):
     """A 1D spring element.
     """
 
 
-class TrussElement(Element):
+class TrussElement(_Element):
     """A 1D element that resists axial loads.
     """
 
@@ -150,7 +160,7 @@ class TieElement(TrussElement):
 # ==============================================================================
 
 
-class ShellElement(Element):
+class ShellElement(_Element):
     """A 2D element that resists axial, shear, bending and torsion.
     """
 
@@ -165,7 +175,7 @@ class MembraneElement(ShellElement):
 # ==============================================================================
 
 
-class SolidElement(Element):
+class SolidElement(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
     """
 

@@ -4,7 +4,7 @@ from __future__ import print_function
 
 
 from compas_fea2.model import Node
-from compas_fea2.model import Element
+from compas_fea2.model import _Element
 from compas_fea2.model import MassElement
 from compas_fea2.model import BeamElement
 from compas_fea2.model import SpringElement

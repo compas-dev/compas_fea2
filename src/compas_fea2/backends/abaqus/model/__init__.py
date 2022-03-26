@@ -63,7 +63,6 @@ from .interactions import (
 )
 # Abaqus Constraints
 from .constraints import (
-    AbaqusConstraint,
     AbaqusTieConstraint,
 )
 

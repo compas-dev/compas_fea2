@@ -5,15 +5,15 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class Interaction(FEAData):
+class _Interaction(FEAData):
     """Base class for all interactions.
     """
 
     def __init__(self, **kwargs):
-        super(Interaction, self).__init__(**kwargs)
+        super(_Interaction, self).__init__(**kwargs)
 
 
-class Contact(Interaction):
+class Contact(_Interaction):
     """General contact interaction between two parts.
 
     Parameters

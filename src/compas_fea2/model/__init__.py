@@ -126,7 +126,7 @@ from .model import Model
 from .parts import Part
 from .nodes import Node
 from .elements import (
-    Element,
+    _Element,
     MassElement,
     BeamElement,
     SpringElement,
@@ -141,7 +141,7 @@ from .elements import (
     HexahedronElement,
 )
 from .materials import (
-    Material,
+    _Material,
     Concrete,
     ConcreteSmearedCrack,
     ConcreteDamagedPlasticity,
@@ -153,7 +153,7 @@ from .materials import (
 )
 from .interactions import HardContactFrictionPenalty
 from .sections import (
-    Section,
+    _Section,
     MassSection,
     BeamSection,
     SpringSection,
@@ -172,11 +172,11 @@ from .sections import (
     TieSection,
 )
 from .constraints import (
-    Constraint,
+    _Constraint,
     TieConstraint,
 )
 from .groups import (
-    Group,
+    _Group,
     NodesGroup,
     ElementsGroup,
     PartsGroup
@@ -206,7 +206,7 @@ __all__ = [
     'Part',
     'Node',
 
-    'Element',
+    '_Element',
     'MassElement',
     'BeamElement',
     'SpringElement',
@@ -220,7 +220,7 @@ __all__ = [
     'TetrahedronElement',
     'HexahedronElement',
 
-    'Material',
+    '_Material',
     'Concrete',
     'ConcreteSmearedCrack',
     'ConcreteDamagedPlasticity',
@@ -232,7 +232,7 @@ __all__ = [
 
     'HArdContactFrictionPenalty',
 
-    'Section',
+    '_Section',
     'MassSection',
     'BeamSection',
     'SpringSection',
@@ -250,10 +250,10 @@ __all__ = [
     'StrutSection',
     'TieSection',
 
-    'Constraint',
+    '_Constraint',
     'TieConstraint',
 
-    'Group',
+    '_Group',
     'NodesGroup',
     'ElementsGroup',
     'PartsGroup',

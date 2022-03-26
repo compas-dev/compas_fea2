@@ -5,16 +5,16 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class Group(FEAData):
+class _Group(FEAData):
     """Base class for all groups.
     """
 
     def __init__(self, name=None, **kwargs):
-        super(Group, self).__init__(**kwargs)
+        super(_Group, self).__init__(**kwargs)
         self._name = name or 'Group_'+str(id(self))
 
 
-class NodesGroup(Group):
+class NodesGroup(_Group):
     """Base class nodes groups.
 
     Parameters
@@ -40,7 +40,7 @@ class NodesGroup(Group):
         self.nodes = nodes
 
 
-class ElementsGroup(Group):
+class ElementsGroup(_Group):
     """Base class for elements groups.
 
     Parameters
@@ -61,7 +61,7 @@ class ElementsGroup(Group):
 
 
 # NOTE this used to be called Surface
-class FacesGroup(Group):
+class FacesGroup(_Group):
     """Base class elements faces groups.
 
     Parameters
@@ -78,7 +78,7 @@ class FacesGroup(Group):
         self._element_face = element_face
 
 
-class PartsGroup(Group):
+class PartsGroup(_Group):
     """Base class for parts groups.
 
     Parameters

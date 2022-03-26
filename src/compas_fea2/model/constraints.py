@@ -5,7 +5,7 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class Constraint(FEAData):
+class _Constraint(FEAData):
     """Initialises base Constraint object.
 
     Parameters
@@ -35,7 +35,7 @@ class Constraint(FEAData):
     """
 
     def __init__(self, *, master, slave, tol, name=None, **kwargs):
-        super(Constraint, self).__init__(**kwargs)
+        super(_Constraint, self).__init__(**kwargs)
         self._name = name or "Constraint_"+str(id(self))
         self._master = master
         self._slave = slave
@@ -54,7 +54,7 @@ class Constraint(FEAData):
         return self._tol
 
 
-class TieConstraint(Constraint):
+class TieConstraint(_Constraint):
     """Tie constraint between two sets of nodes, elements or surfaces.
 
     Parameters
@@ -87,7 +87,7 @@ class TieConstraint(Constraint):
         super(TieConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
 
 
-class Pin3DConstraint(Constraint):
+class Pin3DConstraint(_Constraint):
     """Pin constraint between two sets of nodes, elements or surfaces that allows
     all rotations and fixes all translations.
 
@@ -116,7 +116,7 @@ class Pin3DConstraint(Constraint):
     pass
 
 
-class Pin2DConstraint(Constraint):
+class Pin2DConstraint(_Constraint):
     """Pin constraint between two sets of nodes, elements or surfaces that allows
     rotations about an axis and fixes all translations.
 
@@ -155,7 +155,7 @@ class Pin2DConstraint(Constraint):
         self.axis = axis
 
 
-class SliderConstraint(Constraint):
+class SliderConstraint(_Constraint):
 
     def __init__(self, *, master, slave, tol, plane, name=None, **kwargs):
         super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)

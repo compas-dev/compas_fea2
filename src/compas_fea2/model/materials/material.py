@@ -7,7 +7,7 @@ from abc import abstractmethod
 from compas_fea2.base import FEAData
 
 
-class Material(FEAData):
+class _Material(FEAData):
     """Initialises base Material object.
 
     Parameters
@@ -26,7 +26,7 @@ class Material(FEAData):
     """
 
     def __init__(self, *, density, **kwargs):
-        super(Material, self).__init__(**kwargs)
+        super(_Material, self).__init__(**kwargs)
         self._name = "Material_"+str(id(self))
         self.density = density
 
@@ -57,7 +57,7 @@ density : {}
 # ==============================================================================
 
 
-class ElasticOrthotropic(Material):
+class ElasticOrthotropic(_Material):
     """Elastic, orthotropic and homogeneous material.
 
     Parameters
@@ -122,7 +122,7 @@ Gzx : {}
            self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
 
-class ElasticIsotropic(Material):
+class ElasticIsotropic(_Material):
     """Elastic, isotropic and homogeneous material.
 
     Parameters

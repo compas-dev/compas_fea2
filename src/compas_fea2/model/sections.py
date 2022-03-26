@@ -7,10 +7,10 @@ from math import pi
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
-from .materials import Material
+from .materials import _Material
 
 
-class Section(FEAData):
+class _Section(FEAData):
     """Base class for sections.
 
     Parameters
@@ -32,7 +32,7 @@ class Section(FEAData):
     """
 
     def __init__(self, material, name=None, **kwargs):
-        super(Section, self).__init__(**kwargs)
+        super(_Section, self).__init__(**kwargs)
         self._name = name or "Section_"+str(id(self))
         self._material = material
 
@@ -43,7 +43,7 @@ class Section(FEAData):
     @material.setter
     def material(self, value):
         if value:
-            if not isinstance(value, Material):
+            if not isinstance(value, _Material):
                 raise ValueError('Material must be of type `compas_fea2.model.Material`.')
             self._material = value
 
@@ -146,7 +146,7 @@ stiffness : {}
 # 1D
 # ==============================================================================
 
-class BeamSection(Section):
+class BeamSection(_Section):
     """Initialises base Section object.
 
     Parameters
@@ -566,7 +566,7 @@ class TieSection(TrussSection):
 # 2D
 # ==============================================================================
 
-class ShellSection(Section):
+class ShellSection(_Section):
     """Section for shell elements.
 
     Parameters
@@ -585,7 +585,7 @@ class ShellSection(Section):
         self.t = t
 
 
-class MembraneSection(Section):
+class MembraneSection(_Section):
     """Section for membrane elements.
 
     Parameters
@@ -607,7 +607,7 @@ class MembraneSection(Section):
 # 3D
 # ==============================================================================
 
-class SolidSection(Section):
+class SolidSection(_Section):
     """Section for solid elements.
 
     Parameters

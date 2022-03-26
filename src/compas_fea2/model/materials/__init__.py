@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .material import Material  # noqa : F401
+from .material import _Material  # noqa : F401
 from .material import ElasticIsotropic  # noqa : F401
 from .material import ElasticOrthotropic  # noqa : F401
 from .material import ElasticPlastic  # noqa : F401

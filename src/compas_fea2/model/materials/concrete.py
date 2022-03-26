@@ -3,10 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
-from .material import Material
+from .material import _Material
 
 
-class Concrete(Material):
+class Concrete(_Material):
     """Elastic and plastic-cracking Eurocode based concrete material.
 
     Parameters
@@ -100,7 +100,7 @@ fr  : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
 
 
-class ConcreteSmearedCrack(Material):
+class ConcreteSmearedCrack(_Material):
     """Elastic and plastic, cracking concrete material.
 
     Parameters
@@ -189,7 +189,7 @@ fr : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
 
 
-class ConcreteDamagedPlasticity(Material):
+class ConcreteDamagedPlasticity(_Material):
     """Damaged plasticity isotropic and homogeneous material.
 
     Parameters

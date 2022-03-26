@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.model import Section
+from compas_fea2.model import _Section
 from compas_fea2.model import MassSection
 from compas_fea2.model import AngleSection
 from compas_fea2.model import BoxSection

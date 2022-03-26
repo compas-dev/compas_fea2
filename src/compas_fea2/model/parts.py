@@ -12,9 +12,9 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import Element
-from .materials import Material
-from .sections import Section
+from .elements import _Element
+from .materials import _Material
+from .sections import _Section
 # from .sections import SolidSection
 # from .sections import ShellSection
 from .groups import NodesGroup
@@ -468,7 +468,7 @@ number of groups   : {}
             If the material is not a material.
 
         """
-        if not isinstance(material, Material):
+        if not isinstance(material, _Material):
             raise TypeError('{!r} is not a material.'.format(material))
 
         if self.contains_material(material):
@@ -542,7 +542,7 @@ number of groups   : {}
             If the section is not a section.
 
         """
-        if not isinstance(section, Section):
+        if not isinstance(section, _Section):
             raise TypeError('{!r} is not a section.'.format(section))
 
         if self.contains_section(section):
@@ -618,7 +618,7 @@ number of groups   : {}
             If the element is not an element.
 
         """
-        if not isinstance(element, Element):
+        if not isinstance(element, _Element):
             raise TypeError('{!r} is not an element.'.format(element))
 
         if self.contains_element(element):

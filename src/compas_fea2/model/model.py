@@ -12,14 +12,14 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import Part
 from compas_fea2.model.nodes import Node
-from compas_fea2.model.materials import Material, material
-from compas_fea2.model.sections import Section
+from compas_fea2.model.materials import _Material, material
+from compas_fea2.model.sections import _Section
 from compas_fea2.model.bcs import BoundaryCondition
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import ElementsGroup
 from compas_fea2.model.groups import FacesGroup
 from compas_fea2.model.interfaces import Interface
-from compas_fea2.model.constraints import Constraint
+from compas_fea2.model.constraints import _Constraint
 
 
 class Model(FEAData):
@@ -338,7 +338,7 @@ class Model(FEAData):
         -------
         :class:`compas_fea2.model.Constraint`
         """
-        if isinstance(constraint, Constraint):
+        if isinstance(constraint, _Constraint):
             self._constraints.add(constraint)
         else:
             raise TypeError('{!r} is not a constraint.'.format(constraint))

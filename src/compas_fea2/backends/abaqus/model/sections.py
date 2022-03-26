@@ -1,5 +1,5 @@
 
-from compas_fea2.model import Section
+from compas_fea2.model import _Section
 from compas_fea2.model import BeamSection
 from compas_fea2.model import AngleSection
 from compas_fea2.model import BoxSection

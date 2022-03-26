@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import Material
+from compas_fea2.model import _Material
 from compas_fea2.model import Concrete
 from compas_fea2.model import ConcreteSmearedCrack
 from compas_fea2.model import ConcreteDamagedPlasticity
@@ -288,7 +288,7 @@ class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
 # ==============================================================================
 
 
-class AbaqusUserMaterial(Material):
+class AbaqusUserMaterial(_Material):
 
     """ User Defined Material (UMAT). Tho implement this type of material, a
     separate subroutine is required
@@ -304,7 +304,7 @@ class AbaqusUserMaterial(Material):
     """
 
     def __init__(self, name, sub_path, density=None, **kwargs):
-        Material.__init__(self, name=name)
+        _Material.__init__(self, name=name)
 
         self.__name__ = 'UserMaterial'
         self.__dict__.update(kwargs)

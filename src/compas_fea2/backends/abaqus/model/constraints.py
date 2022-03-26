@@ -2,14 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import Constraint
 from compas_fea2.model import TieConstraint
-
-
-class AbaqusConstraint(Constraint):
-
-    def __init__(self, name):
-        super(AbaqusConstraint).__init__(name)
 
 
 class AbaqusTieConstraint(TieConstraint):

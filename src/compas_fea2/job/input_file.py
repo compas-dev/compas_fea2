@@ -11,6 +11,7 @@ class InputFile(FEAData):
     """
 
     def __init__(self):
+        self._name = 'InputFile_'+str(id(self))
         self._job_name = None
         self._job_data = None
         self._file_name = None
@@ -31,7 +32,7 @@ class InputFile(FEAData):
         """
         input_file = cls()
         input_file._job_name = problem._name
-        input_file._file_name = f'{problem._name}.{input_file._extension}'
+        input_file._file_name = '{}.{}'.format(problem._name, input_file._extension)
         input_file._job_data = input_file._generate_jobdata(problem)
         return input_file
 

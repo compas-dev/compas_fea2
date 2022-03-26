@@ -63,7 +63,6 @@ from compas_fea2.model.interactions import (
 )
 # Constraints
 from compas_fea2.model.constraints import (
-    Constraint,
     TieConstraint,
 )
 # Boundary Conditions
@@ -179,7 +178,6 @@ from .model.interactions import (
 )
 # Abaqus Constraints
 from .model.constraints import (
-    AbaqusConstraint,
     AbaqusTieConstraint,
 )
 
@@ -282,7 +280,6 @@ def register_backend():
 
     backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
 
-    backend[Constraint] = AbaqusConstraint
     backend[TieConstraint] = AbaqusTieConstraint
 
     backend[FixedBC] = AbaqusFixedBC

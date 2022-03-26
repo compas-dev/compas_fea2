@@ -231,7 +231,11 @@ class AbaqusModel(Model):
             text section for the input file.
         """
         data_section = []
-        for material in self.materials:
+        materials = set()
+        for part in self.parts:
+            for material in part.materials:
+                materials.add(material)
+        for material in materials:
             data_section.append(material._generate_jobdata())
         return ''.join(data_section)
 

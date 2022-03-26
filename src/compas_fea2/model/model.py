@@ -77,8 +77,8 @@ class Model(FEAData):
         self.author = author
         self._name = name or "Model_"+str(id(self))
         self._parts = set()
-        self._materials = set()
-        self._sections = set()
+        # self._materials = set()
+        # self._sections = set()
         self._bcs = {}
         self._constraints = set()
         self._interactions = set()
@@ -242,8 +242,6 @@ class Model(FEAData):
         if config.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
-        self.add_materials(part.materials)
-        self.add_sections(part.sections)
         self._parts.add(part)
         return part
 
@@ -280,81 +278,6 @@ class Model(FEAData):
             value = list of keys of the maching the specified coordinates.
         """
         return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
-
-    # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def add_material(self, material):
-        """Add a :class:`compas_fea2.model.Material` object to the Model.
-
-        Parameters
-        ----------
-        material : :class:`compas_fea2.model.Material`
-            Material object to add to the model.
-
-        Returns
-        -------
-        :class:`compas_fea2.model.Material`
-        """
-        if isinstance(material, Material):
-            self._materials.add(material)
-        else:
-            raise TypeError('{!r} is not a material.'.format(material))
-        return material
-
-    def add_materials(self, materials):
-        """Add multiple :class:`compas_fea2.model.Material` objects to the Model.
-
-        Parameters
-        ----------
-        material : list[:class:`compas_fea2.model.Material`]
-            List of materials objects to add to the model.
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model.Material`]
-        """
-        return [self.add_material(material) for material in materials]
-
-    # =========================================================================
-    #                           Sections methods
-    # =========================================================================
-
-    def add_section(self, section):
-        """Add a :class:`compas_fea2.model.Section` subclass object to the Model.
-
-        Parameters
-        ----------
-        section : :class:`compas_fea2.model.Section`
-            Section object to add to the model.
-
-        Returns
-        -------
-        :class:`compas_fea2.model.Section`
-
-        """
-        self.add_material(section.material)
-
-        if isinstance(section, Section):
-            self._sections.add(section)
-        else:
-            raise TypeError('{!r} is not a section.'.format(section))
-        return section
-
-    def add_sections(self, sections):
-        """Add multiple :class:`compas_fea2.model.Section` objects to the Model.
-
-        Parameters
-        ----------
-        sections : list[:class:`compas_fea2.model.Section`]
-            list of section objects to add to the model.
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model.Section`]
-        """
-        return [self.add_section(section) for section in sections]
 
     # =========================================================================
     #                           Groups methods

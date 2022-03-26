@@ -53,6 +53,7 @@ class Part(FEAData):
         self._materials = set()
         self._sections = set()
         self._elements = set()
+        self._releases = set()
         self._groups = set()
         self._gkey_node = {}
 
@@ -75,6 +76,10 @@ class Part(FEAData):
     @property
     def elements(self):
         return self._elements
+
+    @property
+    def releases(self):
+        return self._releases
 
     @property
     def groups(self):

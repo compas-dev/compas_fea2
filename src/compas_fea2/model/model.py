@@ -283,24 +283,6 @@ class Model(FEAData):
     #                           Groups methods
     # =========================================================================
 
-    # def group_parts(self, name, parts):
-    #     """Group parts together.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group
-    #     parts : list of str
-    #         list containing the parts names to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-    #     group = m.PartsGroup(name=name, parts=parts)
-    #     self._parts_partgroups[group.name] = group
-
     # # NOTE: Nodes and Elements groups should not be added but defined (similarly to what happens for Parts)
     # def add_group(self, group, part):
     #     """Add a Group object to a part in the Model. it can be either a
@@ -339,44 +321,6 @@ class Model(FEAData):
     #     """
     #     for group in groups:
     #         self.add_group(group, part)
-
-    # def add_nodes_group(self, name, part, nodes):
-    #     """Add a :class:`NodeGroup` object to the the part in the model.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     part : str
-    #         name of the part
-    #     nodes : list
-    #         list of nodes keys to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_nodes_group(name, nodes)
-
-    # def add_elements_group(self, name, part, elements):
-    #     """Add a :class:`ElementGroup` object to a part in the model.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     part : str
-    #         name of the part
-    #     elements : list
-    #         list of elements keys to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_elements_group(name, elements)
 
     # =========================================================================
     #                       Constraints methods
@@ -736,46 +680,44 @@ class Model(FEAData):
         str
             Model summary
         """
-        parts_info = ['\n'.join([f'{part.name}',
-                                 f'    # of nodes: {len(part.nodes)}',
-                                 f'    # of elements: {len(part.elements)}']) for part in self.parts]
-        materials_info = '\n'.join([e.name for e in self.materials])
-        sections_info = '\n'.join([e.name for e in self.sections])
+        parts_info = ['\n'.join(['{}'.format(part.name),
+                                 '    # of nodes: {}'.format(len(part.nodes)),
+                                 '    # of elements: {}'.format(len(part.elements))]) for part in self.parts]
         interactions_info = '\n'.join([e.name for e in self.interactions])
         constraints_info = '\n'.join([e.__repr__() for e in self.constraints])
-        bc_info = '\n'.join([f'{part}: {node}' for part, node in self.bcs.items()])
-        data = f"""
+        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - {!r}'.format(bc, [node for node in nodes])
+                                                                     for bc, nodes in bc_nodes.items()])) for part, bc_nodes in self.bcs.items()])
+        data = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea2 Model: {self.name}
+compas_fea2 Model: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-description: {self.description or 'N/A'}
-author: {self.author or 'N/A'}
+description: {}
+author: {}
 
 Parts
 -----
-{''.join(parts_info)}
-
-Materials
----------
-{materials_info}
-
-Sections
---------
-{sections_info}
+{}
 
 Interactions
 ------------
-{interactions_info}
+{}
 
 Constraints
 -----------
-{constraints_info}
+{}
 
 Boundary Conditions
 -------------------
-{bc_info}
-"""
+{}
+""".format(self.name,
+           self.description or 'N/A',
+           self.author or 'N/A',
+           ''.join(parts_info),
+           interactions_info or 'N/A',
+           constraints_info or 'N/A',
+           bc_info or 'N/A'
+           )
         print(data)
         return data
 

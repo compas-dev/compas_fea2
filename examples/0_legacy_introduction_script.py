@@ -40,36 +40,33 @@ for i in range(1, len(nodes)):
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
-# model.add_bc(bc=fix_bc, where=nodes[1:], part=frame)
-# model.add_rollerXY_bc(name='bc_pinned', part=frame, where=[4])
-
 # Review
-# model.summary()
+model.summary()
 # model.show()
 
 
-##### ----------------------------- PROBLEM ----------------------------- #####
-# Create the Problem object
-problem = Problem(model=model, name='test')
+# ##### ----------------------------- PROBLEM ----------------------------- #####
+# # Create the Problem object
+# problem = Problem(model=model, name='test')
 
-step_0 = problem.add_step(StaticStep())
-step_0.add_gravity_load()
+# step_0 = problem.add_step(StaticStep())
+# step_0.add_gravity_load()
 
-step_1 = problem.add_step(StaticStep())
-step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
+# step_1 = problem.add_step(StaticStep())
+# step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 
-# Define the field outputs required
-# fout = step_0.add_output(FieldOutput(name='fout'))
+# # Define the field outputs required
+# # fout = step_0.add_output(FieldOutput(name='fout'))
 
 
-# Review
-# problem.summary()
-# problem.show()
+# # Review
+# # problem.summary()
+# # problem.show()
 
-# Solve the problem
-# problem.write_input_file()
-problem.analyse(path=Path(TEMP).joinpath('refactor'))
+# # Solve the problem
+# # problem.write_input_file()
+# problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
-# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-# results = Results.from_problem(problem, fields=['u'])
-# pprint(results.nodal)
+# # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# # results = Results.from_problem(problem, fields=['u'])
+# # pprint(results.nodal)

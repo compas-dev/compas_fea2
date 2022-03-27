@@ -16,8 +16,9 @@ class DesignVariables(FEAData):
         variables of the optimisation
     """
 
-    def __init__(self, name, variables) -> None:
-        self._name = name
+    def __init__(self, variables, name=None, **kwargs):
+        super(DesignVariables, self).__init__(**kwargs)
+        self._name = name or 'DesignVar_'+str(id(self))
         self._variables = variables
 
     @property

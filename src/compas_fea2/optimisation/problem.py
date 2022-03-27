@@ -33,7 +33,9 @@ class OptimisationProblem(FEAData):
     """
 
     def __init__(self, problem, design_variables, design_responses, objective_function,
-                 dv_constraints, constraints, strategy, parameters) -> None:
+                 dv_constraints, constraints, strategy, parameters, name=None, **kwargs):
+        super(OptimisationProblem, self).__init__(**kwargs)
+        self._name = name or 'OptiProb_'+str(id(self))
         self._problem = problem
         self._design_variables = design_variables
         self._design_responses = design_responses

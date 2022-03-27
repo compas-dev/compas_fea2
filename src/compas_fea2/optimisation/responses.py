@@ -16,7 +16,9 @@ class DesignResponse(FEAData):
         operation to evaluate the response (i.e. `sum`)
     """
 
-    def __init__(self, group, group_operator) -> None:
+    def __init__(self, group, group_operator, name=None, **kwargs):
+        super(DesignResponse, self).__init__(**kwargs)
+        self._name = name or 'DesingResp_'+str(id(self))
         self._group = group
         self._group_operator = group_operator
 
@@ -35,9 +37,9 @@ class VolumeResponse(DesignResponse):
     """Volume response recorder."""
     __doc__ += DesignResponse.__doc__
 
-    def __init__(self, group, group_operator) -> None:
-        super().__init__(group, group_operator)
-        self._name = 'DR_Volume'
+    def __init__(self, group, group_operator, name=None, **kwargs):
+        super().__init__(group, group_operator, name, **kwargs)
+        self._name = name or 'DR_Volume'
         self._type = 'VOLUME'
 
 
@@ -45,8 +47,8 @@ class EnergyStiffnessResponse(DesignResponse):
     """Energy stiffness measure response recorder."""
     __doc__ += DesignResponse.__doc__
 
-    def __init__(self, group, group_operator, lc) -> None:
-        super().__init__(group, group_operator)
-        self._name = 'DR_EnergyStiffness'
+    def __init__(self, group, group_operator, lc, name=None, **kwargs) -> None:
+        super().__init__(group, group_operator, name, **kwargs)
+        self._name = name or 'DR_EnergyStiffness'
         self._type = 'ENERGY_STIFF_MEASURE'
         self._lc = lc

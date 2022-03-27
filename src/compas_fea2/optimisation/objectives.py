@@ -18,8 +18,9 @@ class ObjectiveFunction(FEAData):
         target of the optimisation (i.e. 'min', 'MinMax', etc).
     """
 
-    def __init__(self, name, design_response, target) -> None:
-        self._name = name
+    def __init__(self,  design_response, target, name, **kwargs):
+        super(ObjectiveFunction, self).__init__(**kwargs)
+        self._name = name or 'ObjFunc_'+str(id(self))
         self._design_response = design_response
         self._target = target
 

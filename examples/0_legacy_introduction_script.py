@@ -20,6 +20,7 @@ from compas_fea2.problem import GeneralDisplacement
 
 from compas_fea2.results import Results
 from pathlib import Path
+from pprint import pprint
 
 from compas_fea2 import TEMP
 
@@ -54,7 +55,6 @@ step_0.add_gravity_load()
 
 step_1 = problem.add_step(StaticStep())
 step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
-
 # Define the field outputs required
 # fout = step_0.add_output(FieldOutput(name='fout'))
 

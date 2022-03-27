@@ -61,8 +61,12 @@ class Step(FEAData):
     def history_outputs(self):
         return self._history_outputs
 
+    # def add_output(self, output):
+    #     if not isinstance()
 
 # NOTE: this is not really a step, but rather a type of anlysis
+
+
 class ModalStep(Step):
     """Initialises ModalStep object for use in a modal analysis.
 
@@ -194,6 +198,7 @@ class GeneralStep(Step):
     # =========================================================================
 
     def add_load(self, load, node):
+        # type: (Load, Node) -> Load
         """Add a load to Step object.
 
         Warning

@@ -20,6 +20,7 @@ from compas_fea2.model.groups import ElementsGroup
 from compas_fea2.model.groups import FacesGroup
 from compas_fea2.model.interfaces import Interface
 from compas_fea2.model.constraints import _Constraint
+from compas_fea2.model.bcs import BoundaryCondition
 
 
 class Model(FEAData):
@@ -186,6 +187,7 @@ class Model(FEAData):
     # =========================================================================
 
     def find_parts_by_name(self, name):
+        # type: (str) -> Part
         """Find all the parts with a given name.
 
         Parameters
@@ -200,6 +202,7 @@ class Model(FEAData):
         return [part for part in self.parts if part.name == name]
 
     def contains_part(self, part):
+        # type: (Part) -> Part
         """Verify that the model contains a specific part.
 
         Parameters
@@ -214,6 +217,7 @@ class Model(FEAData):
         return part in self.parts
 
     def add_part(self, part):
+        # type: (Part) -> Part
         """Adds a Part to the Model.
 
         Parameters
@@ -246,6 +250,7 @@ class Model(FEAData):
         return part
 
     def add_parts(self, parts):
+        # type: (list) -> list
         """Add multiple parts to the model.
 
         Parameters
@@ -260,6 +265,7 @@ class Model(FEAData):
         return [self.add_part(part) for part in parts]
 
     def get_node_from_coordinates(self, xyz, tol):
+        # type: (list, float) -> dict
         """Finds (if any) the Node object in the model with the specified coordinates.
         A tollerance factor can be specified.
 
@@ -327,11 +333,12 @@ class Model(FEAData):
     # =========================================================================
 
     def add_constraint(self, constraint):
-        """Add a :class:`compas_fea2.model.Constraint` object to the Model.
+        # type: (_Constraint) -> _Constraint
+        """Add a :class:`compas_fea2.model._Constraint` object to the Model.
 
         Parameters
         ----------
-        constraint : :class:`compas_fea2.model.Constraint`
+        constraint : :class:`compas_fea2.model._Constraint`
             Constraint object to add to the model.
 
         Returns
@@ -345,16 +352,17 @@ class Model(FEAData):
         return constraint
 
     def add_constraints(self, constraints):
-        """Add multiple :class:`compas_fea2.model.Constraint` objects to the Model.
+        # type: (list) -> list
+        """Add multiple :class:`compas_fea2.model._Constraint` objects to the Model.
 
         Parameters
         ----------
-        constraints : list[:class:`compas_fea2.model.Constraint`]
+        constraints : list[:class:`compas_fea2.model._Constraint`]
             list of constraints objects to add to the model.
 
         Returns
         -------
-        list[:class:`compas_fea2.model.Constraint`]
+        list[:class:`compas_fea2.model._Constraint`]
         """
         return [self.add_constraint(constraint) for constraint in constraints]
 
@@ -363,6 +371,7 @@ class Model(FEAData):
     # =========================================================================
 
     def add_interface(self, interface):
+        # type: (Interface) -> Interface
         """Add a :class:`compas_fea2.model.Interface` object to the model.
 
         Parameters
@@ -381,6 +390,7 @@ class Model(FEAData):
         return interface
 
     def add_interfaces(self, interfaces):
+        # type: (list) -> list
         """Add multiple :class:`compas_fea2.model.Interface` objects to the Model.
 
         Parameters
@@ -398,7 +408,9 @@ class Model(FEAData):
     #                           BCs methods
     # =========================================================================
 
+    # TODO implement NodesGroup assignment
     def add_bc(self, bc, node):
+        # type: (BoundaryCondition, Node) -> BoundaryCondition
         """Add a :class:`compas_fea2.model.BoundaryCondition` to the model.
 
         Note
@@ -409,24 +421,45 @@ class Model(FEAData):
         ----------
         bc : :class:`compas_fea2.model.BoundaryCondition`
             Boundary condition object to add to the model.
-        where :
+        node : :class:`compas_fea2.model.Node
+            Node where the boundary condition is applied.
 
         Returns
         -------
         None
-        """
 
+        """
         if not isinstance(node, Node):
             raise TypeError('{!r} is not a Node.'.format(node))
+
+        if not isinstance(bc, BoundaryCondition):
+            raise TypeError('{!r} is not a BoundaryCondition.'.format(bc))
+
         # self.contains_node(node) #TODO implement method
         node.dof = bc
         self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
         return bc
 
     def add_bcs(self, bc, nodes):
+        # type: (BoundaryCondition, list) -> list
+        """Add a :class:`compas_fea2.model.BoundaryCondition` objects to
+        multiple nodes.
+
+        Parameters
+        ----------
+        bc : :class:`compas_fea2.model.BoundaryCondition`
+            Boundary condition object to add to the model.
+        nodes : list[:class:`compas_fea2.model.Node`]
+            List with the nodes where the boundary condition is assigned.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Interface`]
+        """
         return [self.add_bc(bc, node) for node in nodes]
 
     def _add_bc_type(self, bc_type, node, axes='global'):
+        # type: (str, Node, str) -> BoundaryCondition
         """Add a :class:`compas_fea2.model.BoundaryCondition` by type.
 
         Note
@@ -470,6 +503,7 @@ class Model(FEAData):
         return self.add_bc(bc, node)
 
     def add_fix_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
 
         Parameters
@@ -484,6 +518,7 @@ class Model(FEAData):
         return self._add_bc_type('fix', node, axes)
 
     def add_fixXX_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition type free about XX to some nodes in a part.
 
         Parameters
@@ -498,6 +533,7 @@ class Model(FEAData):
         return self._add_bc_type('fixXX', node, axes)
 
     def add_fixYY_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition free about YY type to some nodes in a part.
 
         Parameters
@@ -512,6 +548,7 @@ class Model(FEAData):
         return self._add_bc_type('fixYY', node, axes)
 
     def add_fixZZ_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition free about ZZ type to some nodes in a part.
 
         Parameters
@@ -526,6 +563,7 @@ class Model(FEAData):
         return self._add_bc_type('fixZZ', node, axes)
 
     def add_pin_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a pinned boundary condition type to some nodes in a part.
 
         Parameters
@@ -540,6 +578,7 @@ class Model(FEAData):
         return self._add_bc_type('pin', node, axes)
 
     def add_rollerX_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on X boundary condition type to some nodes in a part.
 
         Parameters
@@ -554,6 +593,7 @@ class Model(FEAData):
         return self._add_bc_type('rollerX',  node, axes)
 
     def add_rollerY_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on Y boundary condition type to some nodes in a part.
 
         Parameters
@@ -568,6 +608,7 @@ class Model(FEAData):
         return self._add_bc_type('rollerY',  node, axes)
 
     def add_rollerZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on Z boundary condition type to some nodes in a part.
 
         Parameters
@@ -582,6 +623,7 @@ class Model(FEAData):
         return self._add_bc_type('rollerZ', node, axes)
 
     def add_rollerXY_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on XY boundary condition type to some nodes in a part.
 
         Parameters
@@ -596,6 +638,7 @@ class Model(FEAData):
         return self._add_bc_type('rollerXY',  node, axes)
 
     def add_rollerXZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on XZ boundary condition type to some nodes in a part.
 
         Parameters
@@ -610,6 +653,7 @@ class Model(FEAData):
         return self._add_bc_type('rollerXZ',  node, axes)
 
     def add_rollerYZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on YZ boundary condition type to some nodes in a part.
 
         Parameters
@@ -669,6 +713,7 @@ class Model(FEAData):
     # ==============================================================================
 
     def summary(self):
+        # type: () -> str
         """Prints a summary of the Model object.
 
         Parameters

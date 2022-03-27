@@ -106,7 +106,8 @@ class Problem(FEAData):
 
         return self.steps[step_name]
 
-    def add_step(self, step):
+    def add_step(self, step) -> Step:
+        # # type: (Step) -> Step
         """Adds a Step to the Problem object.
 
         Parameters

@@ -14,24 +14,9 @@ from compas_fea2.model import ShellElement
 
 mesh = Mesh.from_meshgrid(10, 10)
 
-part = Part()
-
 material = ElasticIsotropic(E=210e+6, v=0.2, density=7850)
 section = ShellSection(material=material, t=0.05)
 
-part.add_material(material)
-part.add_section(section)
-
-vertex_node = {}
-for vertex in mesh.vertices():
-    point = mesh.vertex_coordinates(vertex)
-    node = Node(point)
-    part.add_node(node)
-    vertex_node[vertex] = node
-
-for face in mesh.faces():
-    nodes = [vertex_node[vertex] for vertex in mesh.face_vertices(face)]
-    element = ShellElement(nodes=nodes, section=section)
-    part.add_element(element)
+part = Part.shell_from_compas_mesh(mesh, section)
 
 print(part)

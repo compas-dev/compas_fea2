@@ -13,7 +13,7 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import _Element, BeamElement
+from .elements import _Element, BeamElement, ShellElement
 from .materials import _Material
 from .sections import _Section
 from .releases import _BeamEndRelease, BeamEndPinRelease
@@ -175,38 +175,38 @@ number of groups   : {}
 
     #     return part
 
-    # @classmethod
-    # def shell_from_mesh(cls, name, mesh, shell_section):
-    #     """Creates a Part object from a compas Mesh object [WIP]. The faces of
-    #     the mesh become ShellElement objects. Currently, the same section
-    #     is applied to all the elements.
+    @classmethod
+    def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
+        """Creates a Part object from a :class:`compas.datastructures.Mesh`.
+        To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
+        objects. Currently, the same section is applied to all the elements.
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     shell_section : obj
-    #         compas_fea2 ShellSection object to to apply to the shell elements.
+        Parameters
+        ----------
+        mesh : obj
+            Mesh to convert to import as a Model.
+        section : :class:`compas_fea2.model.ShellElement`
+            Shell section assigned to each face.
+        name : str, optional
+            name of the new part. If ``None``, a unique identifier is assigned
+            automatically.
 
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     part = cls(name)
-    #     part.add_section(shell_section)
+        """
+        part = cls(name)
 
-    #     for v in mesh.vertices():
-    #         part.add_node(m.Node(mesh.vertex_coordinates(v)), 'part-1')
+        vertex_node = {}
+        for vertex in mesh.vertices():
+            point = mesh.vertex_coordinates(vertex)
+            node = Node(point)
+            part.add_node(node)
+            vertex_node[vertex] = node
 
-    #     # Generate elements between nodes
-    #     key_index = mesh.key_index()
-    #     faces = [[key_index[key]
-    #               for key in mesh.face_vertices(face)] for face in mesh.faces()]
+        for face in mesh.faces():
+            nodes = [vertex_node[vertex] for vertex in mesh.face_vertices(face)]
+            element = ShellElement(nodes=nodes, section=section)
+            part.add_element(element)
 
-    #     for face in faces:
-    #         part.add_element(m.ShellElement(connectivity=face, section=shell_section))
-
-    #     return part
+        return part
 
     # @classmethod
     # def from_gmsh(cls, name, gmshModel, section, split=False, verbose=False, check=False):

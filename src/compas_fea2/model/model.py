@@ -77,8 +77,6 @@ class Model(FEAData):
         self.description = description
         self.author = author
         self._parts = set()
-        # self._materials = set()
-        # self._sections = set()
         self._bcs = {}
         self._constraints = set()
         self._interactions = set()

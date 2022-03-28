@@ -32,7 +32,7 @@ class _Section(FEAData):
     """
 
     def __init__(self, material, name=None, **kwargs):
-        super(_Section, self).__init__(name, **kwargs)
+        super(_Section, self).__init__(name=name, **kwargs)
         self._material = material
 
     @property
@@ -75,8 +75,8 @@ class MassSection(FEAData):
 
     """
 
-    def __init__(self, mass, **kwargs):
-        super(MassSection, self).__init__(**kwargs)
+    def __init__(self, mass, name=None, **kwargs):
+        super(MassSection, self).__init__(name=name, **kwargs)
         self.mass = mass
 
     def __str__(self):
@@ -122,8 +122,8 @@ class SpringSection(FEAData):
 
     """
 
-    def __init__(self, forces=None, displacements=None, stiffness=None, **kwargs):
-        super(SpringSection, self).__init__(**kwargs)
+    def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
+        super(SpringSection, self).__init__(name=name, **kwargs)
         # would be good to know the structure of these dicts and validate
         self.forces = forces or {}
         self.displacements = displacements or {}
@@ -175,8 +175,8 @@ class BeamSection(_Section):
 
     """
 
-    def __init__(self, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, **kwargs):
-        super(BeamSection, self).__init__(material=material, **kwargs)
+    def __init__(self, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
+        super(BeamSection, self).__init__(material=material, name=name, **kwargs)
         self.A = A
         self.Ixx = Ixx
         self.Iyy = Iyy
@@ -240,7 +240,7 @@ class AngleSection(BeamSection):
 
     """
 
-    def __init__(self, w, h, t, material, **kwargs):
+    def __init__(self, w, h, t, material, name=None, **kwargs):
         self.w = w
         self.h = h
         self.t = t
@@ -260,7 +260,7 @@ class AngleSection(BeamSection):
         gw = 0
 
         super(AngleSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 # TODO implement different thickness along the 4 sides
 
@@ -289,7 +289,7 @@ class BoxSection(BeamSection):
 
     """
 
-    def __init__(self, w, h, tw, tf, material, **kwargs):
+    def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         self.w = w
         self.h = h
         self.tw = tw
@@ -309,7 +309,7 @@ class BoxSection(BeamSection):
         gw = 0
 
         super(BoxSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                         Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                         Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class CircularSection(BeamSection):
@@ -326,7 +326,7 @@ class CircularSection(BeamSection):
 
     """
 
-    def __init__(self, r, material, **kwargs):
+    def __init__(self, r, material, name=None, **kwargs):
         self.r = r
 
         D = 2 * r
@@ -340,7 +340,7 @@ class CircularSection(BeamSection):
         gw = 0
 
         super(CircularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                              Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                              Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class ISection(BeamSection):
@@ -363,7 +363,7 @@ class ISection(BeamSection):
 
     """
 
-    def __init__(self, w, h, tw, tf, material, **kwargs):
+    def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         self.w = w
         self.h = h
         self.tw = tw
@@ -380,7 +380,7 @@ class ISection(BeamSection):
         gw = 0
 
         super(ISection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                       Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                       Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class PipeSection(BeamSection):
@@ -399,7 +399,7 @@ class PipeSection(BeamSection):
 
     """
 
-    def __init__(self, r, t, material, **kwargs):
+    def __init__(self, r, t, material, name=None, **kwargs):
         self.r = r
         self.t = t
 
@@ -415,7 +415,7 @@ class PipeSection(BeamSection):
         gw = 0
 
         super(PipeSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                          Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                          Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class RectangularSection(BeamSection):
@@ -434,7 +434,7 @@ class RectangularSection(BeamSection):
 
     """
 
-    def __init__(self, w, h, material, **kwargs):
+    def __init__(self, w, h, material, name=None, **kwargs):
         self.w = w
         self.h = h
 
@@ -452,7 +452,7 @@ class RectangularSection(BeamSection):
         gw = 0
 
         super(RectangularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class TrapezoidalSection(BeamSection):
@@ -477,7 +477,7 @@ class TrapezoidalSection(BeamSection):
 
     """
 
-    def __init__(self, w1, w2, h, material, **kwargs):
+    def __init__(self, w1, w2, h, material, name=None, **kwargs):
         self.w1 = w1
         self.w2 = w2
         self.h = h
@@ -495,7 +495,7 @@ class TrapezoidalSection(BeamSection):
         gw = 0
 
         super(TrapezoidalSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class TrussSection(BeamSection):
@@ -512,7 +512,7 @@ class TrussSection(BeamSection):
 
     """
 
-    def __init__(self, A, material, **kwargs):
+    def __init__(self, A, material, name=None, **kwargs):
         Ixx = 0
         Iyy = 0
         Ixy = 0
@@ -522,7 +522,7 @@ class TrussSection(BeamSection):
         g0 = 0
         gw = 0
         super(TrussSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
 
 
 class StrutSection(TrussSection):
@@ -539,8 +539,8 @@ class StrutSection(TrussSection):
 
     """
 
-    def __init__(self, A, material, **kwargs):
-        super(StrutSection, self).__init__(A=A, material=material, **kwargs)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(StrutSection, self).__init__(A=A, material=material, name=name, **kwargs)
 
 
 class TieSection(TrussSection):
@@ -557,8 +557,8 @@ class TieSection(TrussSection):
 
     """
 
-    def __init__(self, A, material, **kwargs):
-        super(TieSection, self).__init__(A=A, material=material, **kwargs)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(TieSection, self).__init__(A=A, material=material, name=name, **kwargs)
 
 
 # ==============================================================================
@@ -579,8 +579,8 @@ class ShellSection(_Section):
 
     """
 
-    def __init__(self, t, material, **kwargs):
-        super(ShellSection, self).__init__(material=material, **kwargs)
+    def __init__(self, t, material, name=None, **kwargs):
+        super(ShellSection, self).__init__(material=material, name=name, **kwargs)
         self.t = t
 
 
@@ -597,8 +597,8 @@ class MembraneSection(_Section):
         The section material.
     """
 
-    def __init__(self, t, material, **kwargs):
-        super(MembraneSection, self).__init__(material=material, **kwargs)
+    def __init__(self, t, material, name=None, **kwargs):
+        super(MembraneSection, self).__init__(material=material, name=name, **kwargs)
         self.t = t
 
 
@@ -617,5 +617,5 @@ class SolidSection(_Section):
         The section material.
     """
 
-    def __init__(self, material, **kwargs):
-        super(SolidSection, self).__init__(material=material, **kwargs)
+    def __init__(self, material, name=None, **kwargs):
+        super(SolidSection, self).__init__(material=material, name=name, **kwargs)

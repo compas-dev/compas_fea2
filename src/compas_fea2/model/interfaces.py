@@ -36,7 +36,7 @@ class Interface(FEAData):
     """
 
     def __init__(self, *, master, slave, interaction, name=None, **kwargs):
-        super(Interface, self).__init__(name, **kwargs)
+        super(Interface, self).__init__(name=name, **kwargs)
         self._master = master
         self._slave = slave
         self._interaction = interaction

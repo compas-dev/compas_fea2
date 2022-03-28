@@ -6,8 +6,8 @@ from compas_fea2.model import ContactPair
 
 
 class AbaqusContactPair(ContactPair):
-    def __init__(self, name, master, slave, interaction):
-        super(AbaqusContactPair, self).__init__(name, master, slave, interaction)
+    def __init__(self, master, slave, interaction, name=None, **kwargs):
+        super(AbaqusContactPair, self).__init__(master, slave, interaction, name=name, **kwargs)
 
     def _generate_jobdata(self):
         return f"""** Interaction: {self._name}

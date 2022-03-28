@@ -182,7 +182,7 @@ from .groups import (
     PartsGroup
 )
 from .releases import (
-    BeamEndRelease,
+    _BeamEndRelease,
 )
 from .bcs import (
     BoundaryCondition,
@@ -258,7 +258,7 @@ __all__ = [
     'ElementsGroup',
     'PartsGroup',
 
-    'BeamEndRelease',
+    '_BeamEndRelease',
 
     'BoundaryCondition',
     'FixedBC',

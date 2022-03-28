@@ -7,8 +7,8 @@ from compas_fea2.model import TieConstraint
 
 class AbaqusTieConstraint(TieConstraint):
 
-    def __init__(self, name, master, slave):
-        super(AbaqusTieConstraint, self).__init__(name, master, slave, tol=None)
+    def __init__(self, master, slave, name=None, **kwargs):
+        super(AbaqusTieConstraint, self).__init__(master, slave, tol=None, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

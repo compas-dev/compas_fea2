@@ -55,7 +55,7 @@ class Node(FEAData):
     """
 
     def __init__(self, xyz, part=None, name=None, **kwargs):
-        super(Node, self).__init__(name, **kwargs)
+        super(Node, self).__init__(name=name, **kwargs)
         self._key = None
         self._x = None
         self._y = None

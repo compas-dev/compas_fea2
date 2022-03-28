@@ -77,8 +77,8 @@ class AbaqusAngleSection(AngleSection):
     """
     """
 
-    def __init__(self, name, w, h, t, material, **kwargs):
-        super(AbaqusAngleSection, self).__init__(name, w, h, t, material, **kwargs)
+    def __init__(self, w, h, t, material, name=None, **kwargs):
+        super(AbaqusAngleSection, self).__init__(w, h, t, material, name=name, **kwargs)
         if not isinstance(t, list):
             t = [t]*2
         self._properties = [w, h, *t]
@@ -125,8 +125,8 @@ class AbaqusCircularSection(CircularSection):
         material name to be assigned to the section.
     """
 
-    def __init__(self, r, material):
-        super(AbaqusCircularSection, self).__init__(r, material)
+    def __init__(self, r, material, name=None, **kwargs):
+        super(AbaqusCircularSection, self).__init__(r, material, name=name, **kwargs)
         self._properties = [r]
 
     def _generate_jobdata(self, set_name, orientation):
@@ -252,29 +252,22 @@ class AbaqusCircularSection(CircularSection):
 # TODO -> check how these sections are implemented in ABAQUS
 class AbaqusTrussSection(TrussSection):
 
-    def __init__(self, name, A, material):
-        super(AbaqusTrussSection, self).__init__(name, A, material)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(AbaqusTrussSection, self).__init__(A, material, name=name, **kwargs)
         raise NotImplementedError
 
 
 class AbaqusStrutSection(StrutSection):
 
-    def __init__(self, name, A, material):
-        super(AbaqusStrutSection, self).__init__(name, A, material)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(AbaqusStrutSection, self).__init__(A, material, name=name, **kwargs)
         raise NotImplementedError
 
 
 class AbaqusTieSection(TieSection):
 
-    def __init__(self, name, A, material):
-        super(AbaqusTieSection, self).__init__(name, A, material)
-        raise NotImplementedError
-
-
-class AbaqusSpringSection(SpringSection):
-
-    def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        super(AbaqusSpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
+    def __init__(self, A, material, name=None, **kwargs):
+        super(AbaqusTieSection, self).__init__(A, material, name=name, **kwargs)
         raise NotImplementedError
 
 
@@ -292,8 +285,8 @@ class AbaqusShellSection(ShellSection):
         number of integration points. 5 by default.
     """
 
-    def __init__(self, name, t, material, int_points=5):
-        super(AbaqusShellSection, self).__init__(name, t, material)
+    def __init__(self, t, material, int_points=5, name=None, **kwargs):
+        super(AbaqusShellSection, self).__init__(t, material, name=name, **kwargs)
         self.int_points = int_points
 
     def _generate_jobdata(self, set_name):
@@ -314,8 +307,8 @@ class AbaqusShellSection(ShellSection):
 
 class AbaqusMembraneSection(MembraneSection):
 
-    def __init__(self, name, t, material):
-        super(AbaqusMembraneSection, self).__init__(name, t, material)
+    def __init__(self, t, material, name=None, **kwargs):
+        super(AbaqusMembraneSection, self).__init__(t, material, name=name, **kwargs)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.
@@ -339,8 +332,8 @@ class AbaqusMembraneSection(MembraneSection):
 
 class AbaqusSolidSection(SolidSection):
 
-    def __init__(self, name, material):
-        super(AbaqusSolidSection, self).__init__(name, material)
+    def __init__(self, material, name=None, **kwargs):
+        super(AbaqusSolidSection, self).__init__(material, name=name, **kwargs)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.

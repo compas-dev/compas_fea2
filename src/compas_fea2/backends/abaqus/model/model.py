@@ -13,8 +13,8 @@ class AbaqusModel(Model):
 
     """
 
-    def __init__(self, name=None, description=None, author=None):
-        super(AbaqusModel, self).__init__(name=name, description=description, author=author)
+    def __init__(self, name=None, description=None, author=None, **kwargs):
+        super(AbaqusModel, self).__init__(name=name, description=description, author=author, **kwargs)
         self._instances = set()
 
     # =========================================================================

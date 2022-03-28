@@ -11,6 +11,18 @@ class _Group(FEAData):
 
     def __init__(self, name=None, **kwargs):
         super(_Group, self).__init__(name, **kwargs)
+        self._members = None
+
+    def __str__(self):
+        return """
+{}
+{}
+name            : {}
+# of members    : {}
+""".format(self.__class__.__name__,
+           len(self.__class__.__name__) * '-',
+           self.name,
+           len(self.members))
 
 
 class NodesGroup(_Group):
@@ -34,9 +46,13 @@ class NodesGroup(_Group):
 
     """
 
-    def __init__(self, nodes, name=None, **kwargs):
+    def __init__(self, *, nodes, name=None, **kwargs):
         super(NodesGroup, self).__init__(name=name, **kwargs)
         self.nodes = nodes
+
+    @property
+    def members(self):
+        return self.nodes
 
 
 class ElementsGroup(_Group):
@@ -58,8 +74,13 @@ class ElementsGroup(_Group):
         super(ElementsGroup, self).__init__(name=name, **kwargs)
         self.elements = elements
 
+    @property
+    def members(self):
+        return self.elements
 
 # NOTE this used to be called Surface
+
+
 class FacesGroup(_Group):
     """Base class elements faces groups.
 
@@ -75,6 +96,10 @@ class FacesGroup(_Group):
         super(FacesGroup, self).__init__(name=name, **kwargs)
         self._part = part
         self._element_face = element_face
+
+    @property
+    def members(self):
+        return self._element_face
 
 
 class PartsGroup(_Group):
@@ -95,3 +120,7 @@ class PartsGroup(_Group):
     def __init__(self, *, parts, name=None, **kwargs):
         super(PartsGroup, self).__init__(name=name, **kwargs)
         self.parts = parts
+
+    @property
+    def members(self):
+        return self.parts

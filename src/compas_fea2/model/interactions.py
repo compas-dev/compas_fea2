@@ -46,7 +46,7 @@ class Contact(_Interaction):
     """
 
     def __init__(self, *, normal, tangent, name=None, **kwargs):
-        super(Contact, self).__init__(name, **kwargs)
+        super(Contact, self).__init__(name=name, **kwargs)
         self._tangent = tangent
         self._normal = normal
 

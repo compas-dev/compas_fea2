@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from binascii import rlecode_hqx
 
 # import importlib
 # import numpy as np
@@ -12,13 +13,13 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import _Element
+from .elements import _Element, BeamElement
 from .materials import _Material
 from .sections import _Section
+from .releases import _BeamEndRelease, BeamEndPinRelease
 # from .sections import SolidSection
 # from .sections import ShellSection
-from .groups import NodesGroup
-from .groups import ElementsGroup
+from .groups import NodesGroup, ElementsGroup
 
 
 class Part(FEAData):
@@ -55,7 +56,7 @@ class Part(FEAData):
     """
 
     def __init__(self, model=None, name=None, **kwargs):
-        super(Part, self).__init__(name, **kwargs)
+        super(Part, self).__init__(name=name, **kwargs)
         self._model = model
         self._nodes = set()
         self._materials = set()
@@ -651,6 +652,26 @@ number of groups   : {}
     # =========================================================================
     #                           Releases methods
     # =========================================================================
+
+    def add_beam_release(self, element, location, release):
+        """Add a :class:`compas_fea2.model.BeamEndRelease` to an element in the
+        part.
+
+        Parameters
+        ----------
+        element : :class:`compas_fea2.model.BeamElement`
+            The element to release.
+        location : str
+            'start' or 'end'.
+        release : :class:`compas_fea2.model.BeamEndRelease`
+            Release type to apply.
+        """
+        if not isinstance(release, _BeamEndRelease):
+            raise TypeError('{!r} is not a beam release element.'.format(release))
+        release.element = element
+        release.location = location
+        self._releases.add(release)
+        return release
 
     # =========================================================================
     #                           Groups methods

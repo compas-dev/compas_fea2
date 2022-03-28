@@ -129,7 +129,7 @@ from .model.elements import (
     AbaqusBeamElement,
     # AbaqusTrussElement,
     # AbaqusMembraneElement,
-    # AbaqusShellElement,
+    AbaqusShellElement,
     # AbaqusSolidElement,
 )
 
@@ -144,7 +144,7 @@ from .model.sections import (
     # AbaqusMembraneSection,
     # AbaqusPipeSection,
     # AbaqusRectangularSection,
-    # AbaqusShellSection,
+    AbaqusShellSection,
     # AbaqusSolidSection,
     # AbaqusSpringSection,
     # AbaqusStrutSection,
@@ -245,7 +245,7 @@ def register_backend():
     backend[BeamElement] = AbaqusBeamElement
     # backend[TrussElement] = AbaqusTrussElement
     # backend[MembraneElement] = AbaqusMembraneElement
-    # backend[ShellElement] = AbaqusShellElement
+    backend[ShellElement] = AbaqusShellElement
     # backend[SolidElement] = AbaqusSolidElement
 
     # backend[AngleSection] = AbaqusAngleSection
@@ -257,7 +257,7 @@ def register_backend():
     # backend[MembraneSection] = AbaqusMembraneSection
     # backend[PipeSection] = AbaqusPipeSection
     # backend[RectangularSection] = AbaqusRectangularSection
-    # backend[ShellSection] = AbaqusShellSection
+    backend[ShellSection] = AbaqusShellSection
     # backend[SolidSection] = AbaqusSolidSection
     # backend[SpringSection] = AbaqusSpringSection
     # backend[StrutSection] = AbaqusStrutSection

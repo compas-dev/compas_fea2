@@ -6,8 +6,8 @@ from compas_fea2.model import HardContactFrictionPenalty
 
 
 class AbaqusHardContactFrictionPenalty(HardContactFrictionPenalty):
-    def __init__(self, name, mu, tollerance=0.005) -> None:
-        super(AbaqusHardContactFrictionPenalty, self).__init__(name, mu, tollerance)
+    def __init__(self, mu, tollerance=0.005, name=None, **kwargs) -> None:
+        super(AbaqusHardContactFrictionPenalty, self).__init__(mu, tollerance, name=None, **kwargs)
 
     def _generate_jobdata(self):
         return f"""

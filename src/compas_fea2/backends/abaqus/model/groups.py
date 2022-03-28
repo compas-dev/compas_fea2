@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.model import NodesGroup
 from compas_fea2.model import ElementsGroup
-from compas_fea2.model.groups import FacesGroup
+from compas_fea2.model.groups import FacesGroup, PartsGroup
 
 
 def _generate_jobdata(self, instance):
@@ -27,16 +27,11 @@ def _generate_jobdata(self, instance):
         # BUG instance is a bool, but it should be a str with the name of the instance
         line = ', instance='.join([line, instance])
 
-    if self.generate:
-        raise NotImplementedError
-        # data_section.append(', '.join([line, 'generate']))
-        # data_section.append(f'{self.keys[0]}, {self.keys[-1]}, 1')
-    else:
-        data_section.append(line)
-        data = [str(el.key+1) for el in self.elements]
-        chunks = [data[x:x+15] for x in range(0, len(data), 15)]  # split data for readibility
-        for chunk in chunks:
-            data_section.append(', '.join(chunk))
+    data_section.append(line)
+    data = [str(el.key+1) for el in self.elements]
+    chunks = [data[x:x+15] for x in range(0, len(data), 15)]  # split data for readibility
+    for chunk in chunks:
+        data_section.append(', '.join(chunk))
     return '\n'.join(data_section) + '\n'
 
 
@@ -54,15 +49,9 @@ class AbaqusNodesGroup(NodesGroup):
 
     """
 
-    def __init__(self, name, nodes_keys, generate=False):
-        super(AbaqusNodesGroup, self).__init__(name, nodes_keys)
-        self._generate = generate
+    def __init__(self, nodes, name=None, **kwargs):
+        super(AbaqusNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
         self._set_type = 'nset'
-
-    @property
-    def generate(self):
-        """The generate property."""
-        return self._generate
 
     def _generate_jobdata(self, instance=None):
         return _generate_jobdata(self, instance)
@@ -82,15 +71,9 @@ class AbaqusElementsGroup(ElementsGroup):
 
     """
 
-    def __init__(self, name, *, elements, generate=False):
-        super(AbaqusElementsGroup, self).__init__(name=name, elements=elements)
-        self._generate = generate
+    def __init__(self, *, elements, name=None, **kwargs):
+        super(AbaqusElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
         self._set_type = 'elset'
-
-    @property
-    def generate(self):
-        """bool : if ``True``, automatically generates a set of elements/nodes between the two keys specified."""
-        return self._generate
 
     def _generate_jobdata(self, instance=None):
         return _generate_jobdata(self, instance)
@@ -98,11 +81,15 @@ class AbaqusElementsGroup(ElementsGroup):
 
 class AbaqusFacesGroup(FacesGroup):
     """Abaqus implementation of the :class:`compas_fea2.model.FacesGroup`.\n
+
+    Note
+    ----
+    In Abaqus a FacesGroup is equivalent to a Surface.
     """
     __doc__ += FacesGroup.__doc__
 
-    def __init__(self, name, part, element_face):
-        super(FacesGroup, self).__init__(name, part, element_face)
+    def __init__(self, *, part, element_face, name=None, **kwargs):
+        super(FacesGroup, self).__init__(part=part, element_face=element_face, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -121,3 +108,9 @@ class AbaqusFacesGroup(FacesGroup):
             lines.append(f'{self._part}-1.{key+1}, {face}')
         lines.append('**\n')
         return '\n'.join(lines)
+
+
+class AbaqusPartsGroup(PartsGroup):
+    def __init__(self, *, parts, name=None, **kwargs):
+        super().__init__(parts=parts, name=name, **kwargs)
+        raise NotImplementedError

@@ -6,7 +6,7 @@ from binascii import rlecode_hqx
 # import importlib
 # import numpy as np
 
-# from compas.geometry import normalize_vector
+from compas.geometry import normalize_vector
 from compas.geometry import distance_point_point_sqrd
 
 from compas_fea2 import config
@@ -15,10 +15,8 @@ from compas_fea2.base import FEAData
 from .nodes import Node
 from .elements import _Element, BeamElement, ShellElement
 from .materials import _Material
-from .sections import _Section
+from .sections import _Section, ShellSection, SolidSection
 from .releases import _BeamEndRelease, BeamEndPinRelease
-# from .sections import SolidSection
-# from .sections import ShellSection
 from .groups import NodesGroup, ElementsGroup
 
 
@@ -118,64 +116,54 @@ number of groups   : {}
     #                       Constructor methods
     # =========================================================================
 
-    # @classmethod
-    # def from_network(self, network):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_obj(self, obj):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_volmesh(cls, name, part_name, volmesh):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_solid(cls, name, part_name, solid):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_compas_part(cls, name, part_name, part):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def frame_from_mesh(cls, name, mesh, beam_section):
-    #     """Creates a ``Part`` object from a compas Mesh object [WIP]. The edges of
-    #     the mesh become the BeamElements of the frame. Currently, the same section
-    #     is applied to all the elements.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     beam_section : obj
-    #         compas_fea2 BeamSection object to to apply to the frame elements.
-
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     part = cls(name)
-    #     part.add_section(beam_section)
-
-    #     for v in mesh.vertices():
-    #         part.add_node(m.Node(mesh.vertex_coordinates(v)))
-
-    #     # Generate elements between nodes
-    #     key_index = mesh.key_index()
-    #     # vertices = list(mesh.vertices())
-    #     edges = [(key_index[u], key_index[v]) for u, v in mesh.edges()]
-
-    #     for e in edges:
-    #         # get elements orientation
-    #         v = normalize_vector(mesh.edge_vector(e[0], e[1]))
-    #         v.append(v.pop(0))
-    #         # add element to the model
-    #         part.add_element(m.BeamElement(connectivity=[e[0], e[1]], section=beam_section, orientation=v))
-
-    #     return part
+    @classmethod
+    def from_network(self, network):
+        raise NotImplementedError()
 
     @classmethod
+    def from_obj(self, obj):
+        raise NotImplementedError()
+
+    @classmethod
+    def from_volmesh(cls, name, part_name, volmesh):
+        raise NotImplementedError()
+
+    @classmethod
+    def from_solid(cls, name, part_name, solid):
+        raise NotImplementedError()
+
+    @classmethod
+    def from_compas_part(cls, name, part_name, part):
+        raise NotImplementedError()
+
+    @classmethod
+    def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
+        """Creates a Part object from a a :class:`compas.datastructures.Mesh`.
+        To each edge of the mesh is assigned a :class:`compas_fea2.model.BeamElement`.
+        Currently, the same section is applied to all the elements.
+
+        Parameters
+        ----------
+        mesh : :class:`compas.datastructures.Mesh`
+            Mesh to convert to a Part.
+        section : :class:`compas_fea2.model.BeamSection`
+            Section to assign to the frame elements.
+        name : str, optional
+            name of the new part.
+
+        """
+        part = cls(name=name, **kwargs)
+        vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
+
+        for edge in mesh.edges():
+            nodes = [vertex_node[vertex] for vertex in edge]
+            v = mesh.edge_direction(*edge)
+            v.append(v.pop(0))
+            part.add_element(BeamElement(nodes=[*nodes], section=section, frame=v))
+
+        return part
+
+    @ classmethod
     def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a Part object from a :class:`compas.datastructures.Mesh`.
         To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
@@ -183,8 +171,8 @@ number of groups   : {}
 
         Parameters
         ----------
-        mesh : obj
-            Mesh to convert to import as a Model.
+        mesh : :class:`compas.datastructures.Mesh`
+            Mesh to convert to a Part.
         section : :class:`compas_fea2.model.ShellElement`
             Shell section assigned to each face.
         name : str, optional
@@ -192,14 +180,9 @@ number of groups   : {}
             automatically.
 
         """
-        part = cls(name)
+        part = cls(name, **kwargs)
 
-        vertex_node = {}
-        for vertex in mesh.vertices():
-            point = mesh.vertex_coordinates(vertex)
-            node = Node(point)
-            part.add_node(node)
-            vertex_node[vertex] = node
+        vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
 
         for face in mesh.faces():
             nodes = [vertex_node[vertex] for vertex in mesh.face_vertices(face)]
@@ -208,8 +191,8 @@ number of groups   : {}
 
         return part
 
-    # @classmethod
-    # def from_gmsh(cls, name, gmshModel, section, split=False, verbose=False, check=False):
+    # @ classmethod
+    # def from_gmsh(cls, gmshModel, section, split=False, verbose=False, check=False, name=None, **kwargs):
     #     """Create a Part object from a gmshModel object. According to the `section`
     #     type provided, SolidElement or ShellElement elements are cretated.
     #     The same section is applied to all the elements.
@@ -256,14 +239,13 @@ number of groups   : {}
     #     >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
 
     #     """
-    #     part = cls(name)
-    #     m = importlib.import_module('.'.join(part.__module__.split('.')[:-1]))
+    #     part = cls(name=name, **kwargs)
     #     part.add_section(section)
     #     # add nodes
     #     nodes = gmshModel.mesh.get_nodes()
     #     node_coords = nodes[1].reshape((-1, 3), order='C')
     #     for coords in node_coords:
-    #         k = part.add_node(m.Node(coords.tolist()), check)
+    #         k = part.add_node(Node(coords.tolist()), check)
     #         if verbose:
     #             print(f'node {k} added')
     #     # add elements

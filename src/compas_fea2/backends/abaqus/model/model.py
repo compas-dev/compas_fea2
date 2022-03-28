@@ -9,9 +9,13 @@ from compas_fea2.backends.abaqus.model.parts import AbaqusPart
 
 
 class AbaqusModel(Model):
-    """Abaqus Model object
+    """Abaqus implementation of a Model.
 
+    Note
+    ----
+    For many aspects, in abaqus a `Model` is equivalent to an `Assembly`.
     """
+    __doc__ += Model.__doc__
 
     def __init__(self, name=None, description=None, author=None, **kwargs):
         super(AbaqusModel, self).__init__(name=name, description=description, author=author, **kwargs)

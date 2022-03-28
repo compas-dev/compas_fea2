@@ -151,6 +151,7 @@ from .materials import (
     ElasticPlastic,
     Steel
 )
+from .interfaces import Interface
 from .interactions import HardContactFrictionPenalty
 from .sections import (
     _Section,

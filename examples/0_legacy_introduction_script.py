@@ -39,7 +39,6 @@ frame = model.add_part(Part())
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
 nodes = [Node(xyz=node) for node in coordinates]
 supports = NodesGroup(nodes[1:])
-print(supports)
 beam_elements = []
 shell_elements = []
 for i in range(1, len(nodes)):
@@ -50,8 +49,6 @@ for i in range(1, len(nodes)):
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
-pin_release = BeamEndPinRelease(m1=True)
-frame.add_beam_release(element=beam_elements[0], location='start', release=pin_release)
 
 # Review
 # model.summary()

@@ -2,12 +2,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import ContactPair
+from compas_fea2.model import Interface
 
 
-class AbaqusContactPair(ContactPair):
+class AbaqusInterface(Interface):
+    """Abaqus implementation of an Interface.
+
+    Note
+    ----
+    In abaqus an `Interface` is called `Contact Pair`.
+
+    """
+    __doc__ += Interface.__doc__
+
     def __init__(self, master, slave, interaction, name=None, **kwargs):
-        super(AbaqusContactPair, self).__init__(master, slave, interaction, name=name, **kwargs)
+        super(AbaqusInterface, self).__init__(master, slave, interaction, name=name, **kwargs)
 
     def _generate_jobdata(self):
         return f"""** Interaction: {self._name}

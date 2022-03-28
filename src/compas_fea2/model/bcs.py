@@ -38,8 +38,7 @@ class BoundaryCondition(FEAData):
     __doc__ += docs
 
     def __init__(self, name=None, **kwargs):
-        super(BoundaryCondition, self).__init__(**kwargs)
-        self._name = name or "BC_"+str(id(self))
+        super(BoundaryCondition, self).__init__(name=name, **kwargs)
         self.x = False
         self.y = False
         self.z = False

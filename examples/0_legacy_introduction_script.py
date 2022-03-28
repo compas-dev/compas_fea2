@@ -67,6 +67,6 @@ step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 # problem.write_input_file()
 problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
-# ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-# results = Results.from_problem(problem, fields=['u'])
-# pprint(results.nodal)
+# # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
+# # results = Results.from_problem(problem, fields=['u'])
+# # pprint(results.nodal)

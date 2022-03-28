@@ -60,8 +60,7 @@ class _Element(FEAData):
 # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(_Element, self).__init__(**kwargs)
-        self._name = name or 'Element_'+str(id(self))
+        super(_Element, self).__init__(name, **kwargs)
         self._key = None
         self._nodes = nodes
         self._section = section

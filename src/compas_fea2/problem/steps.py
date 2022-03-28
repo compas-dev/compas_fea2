@@ -48,8 +48,7 @@ class Step(FEAData):
     """
 
     def __init__(self, name=None, **kwargs):
-        super(Step, self).__init__(**kwargs)
-        self._name = name or "Step_"+str(id(self))
+        super(Step, self).__init__(name=name, **kwargs)
         self._field_outputs = None
         self._history_outputs = None
 
@@ -83,7 +82,7 @@ class ModalStep(Step):
         Number of modes to analyse.
     """
 
-    def __init__(self, name, modes=1, **kwargs):
+    def __init__(self, name=None, modes=1, **kwargs):
         super(ModalStep, self).__init__(name=name, **kwargs)
         self._modes = modes
 
@@ -154,7 +153,7 @@ class GeneralStep(Step):
     """
 
     def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
-        super(GeneralStep, self).__init__(name=None, **kwargs)
+        super(GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
@@ -297,7 +296,7 @@ class StaticStep(GeneralStep):
     def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True, name=None, **kwargs):
         super(StaticStep, self).__init__(max_increments=max_increments,
                                          initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
-                                         time=time, nlgeom=nlgeom, modify=modify, name=None, **kwargs)
+                                         time=time, nlgeom=nlgeom, modify=modify, name=name, **kwargs)
         self._displacements = {}
         self._gravity = None
 

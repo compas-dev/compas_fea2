@@ -25,18 +25,9 @@ class _Material(FEAData):
 
     """
 
-    def __init__(self, *, density, **kwargs):
-        super(_Material, self).__init__(**kwargs)
-        self._name = "Material_"+str(id(self))
+    def __init__(self, *, density, name=None, **kwargs):
+        super(_Material, self).__init__(name=name, **kwargs)
         self.density = density
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
 
     def __str__(self):
         return """
@@ -89,8 +80,8 @@ class ElasticOrthotropic(_Material):
 
     """
 
-    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, **kwargs):
-        super(ElasticOrthotropic, self).__init__(density=density, **kwargs)
+    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, name=name, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -142,8 +133,8 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, *, E, v, density, **kwargs):
-        super(ElasticIsotropic, self).__init__(density=density, **kwargs)
+    def __init__(self, *, E, v, density, name=None, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density,  name=name, **kwargs)
         self.E = E
         self.v = v
 
@@ -168,8 +159,8 @@ class Stiff(ElasticIsotropic):
     """Elastic, very stiff and massless material.
     """
 
-    def __init__(self, **kwargs):
-        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, **kwargs)
+    def __init__(self, name=None, **kwargs):
+        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, name=name, **kwargs)
 
     def __str__(self):
         return """
@@ -206,8 +197,8 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, *, E, v, density, strain_stress, **kwargs):
-        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, **kwargs)
+    def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):

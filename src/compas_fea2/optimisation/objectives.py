@@ -18,16 +18,10 @@ class ObjectiveFunction(FEAData):
         target of the optimisation (i.e. 'min', 'MinMax', etc).
     """
 
-    def __init__(self,  design_response, target, name, **kwargs):
-        super(ObjectiveFunction, self).__init__(**kwargs)
-        self._name = name or 'ObjFunc_'+str(id(self))
+    def __init__(self,  design_response, target, name=None, **kwargs):
+        super(ObjectiveFunction, self).__init__(name=name, **kwargs)
         self._design_response = design_response
         self._target = target
-
-    @property
-    def name(self):
-        """str : name of the constraint."""
-        return self._name
 
     @property
     def design_response(self):

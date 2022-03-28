@@ -17,7 +17,7 @@ class DesignVariables(FEAData):
     """
 
     def __init__(self, variables, name=None, **kwargs):
-        super(DesignVariables, self).__init__(**kwargs)
+        super(DesignVariables, self).__init__(name=name, **kwargs)
         self._name = name or 'DesignVar_'+str(id(self))
         self._variables = variables
 

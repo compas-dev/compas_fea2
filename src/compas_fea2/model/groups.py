@@ -10,8 +10,7 @@ class _Group(FEAData):
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Group, self).__init__(**kwargs)
-        self._name = name or 'Group_'+str(id(self))
+        super(_Group, self).__init__(name, **kwargs)
 
 
 class NodesGroup(_Group):

@@ -32,8 +32,7 @@ class _Section(FEAData):
     """
 
     def __init__(self, material, name=None, **kwargs):
-        super(_Section, self).__init__(**kwargs)
-        self._name = name or "Section_"+str(id(self))
+        super(_Section, self).__init__(name, **kwargs)
         self._material = material
 
     @property

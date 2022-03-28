@@ -73,10 +73,9 @@ class Model(FEAData):
     """
 
     def __init__(self, *, name=None, description=None, author=None, **kwargs):
-        super(Model, self).__init__(**kwargs)
+        super(Model, self).__init__(name, **kwargs)
         self.description = description
         self.author = author
-        self._name = name or "Model_"+str(id(self))
         self._parts = set()
         # self._materials = set()
         # self._sections = set()

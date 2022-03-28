@@ -33,8 +33,7 @@ class BeamEndRelease(FEAData):
     """
 
     def __init__(self, element, location, local=False, x=False, y=False, z=False, xx=False, yy=False, zz=False, name=None, **kwargs):
-        super(BeamEndRelease, self).__init__(**kwargs)
-        self._name = name or 'Release_'+str(id(self))
+        super(BeamEndRelease, self).__init__(name, **kwargs)
         self.element = element
         self.location = location
         self.local = local

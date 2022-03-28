@@ -49,8 +49,8 @@ class Concrete(_Material):
 
     """
 
-    def __init__(self, name, *, fck, v=0.2, density=2400, fr=None):
-        super(Concrete, self).__init__(name, density=density)
+    def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
+        super(Concrete, self).__init__(density=density,  name=None, **kwargs)
 
         de = 0.0001
         fcm = fck + 8
@@ -153,8 +153,8 @@ class ConcreteSmearedCrack(_Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        super(ConcreteSmearedCrack, self).__init__(name, density=density)
+    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
+        super(ConcreteSmearedCrack, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v
@@ -230,8 +230,8 @@ class ConcreteDamagedPlasticity(_Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name, density=density)
+    def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
+        super(ConcreteDamagedPlasticity, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v

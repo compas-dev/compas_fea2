@@ -22,6 +22,11 @@ class FEAData(Data):
 
     """
 
+    def __init__(self, name=None):
+        super().__init__()
+        # NOTE the names lenght in abaqus is limited to 80 characters
+        self._name = name or ''.join([c for c in type(self).__name__ if c.isupper()])+"_"+str(id(self))
+
     def __new__(cls, *args, **kwargs):
         imp = compas_fea2.get_backend_implementation(cls)
         if not imp:
@@ -29,7 +34,7 @@ class FEAData(Data):
         return super(FEAData, imp).__new__(imp)
 
     def __repr__(self):
-        return '{0}({1})'.format(type(self).__name__, self._name)
+        return '{0}({1})'.format(self.__class__.__name__, id(self))
 
     # def __str__(self):
     #     """String representation of the object.

@@ -46,8 +46,7 @@ class OptimisationConstraint(FEAData):
     """
 
     def __init__(self, design_response, relative=False, name=None, **kwargs):
-        super(OptimisationConstraint, self).__init__(**kwargs)
-        self._name = name or 'OptConstr_'+str(id(self))
+        super(OptimisationConstraint, self).__init__(name=name, **kwargs)
         self._design_response = design_response
         self._relative = relative
         self._constraint_type = None

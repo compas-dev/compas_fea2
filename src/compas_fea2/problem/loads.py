@@ -32,8 +32,7 @@ class Load(FEAData):
     """
 
     def __init__(self, components, axes='global', name=None, **kwargs):
-        super(Load, self).__init__(**kwargs)
-        self._name = name or "Load_"+str(id(self))
+        super(Load, self).__init__(name=name, **kwargs)
         self._axes = axes
         self._components = components
         for component, attr in self._components.items():

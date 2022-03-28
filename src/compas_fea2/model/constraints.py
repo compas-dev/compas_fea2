@@ -35,8 +35,7 @@ class _Constraint(FEAData):
     """
 
     def __init__(self, *, master, slave, tol, name=None, **kwargs):
-        super(_Constraint, self).__init__(**kwargs)
-        self._name = name or "Constraint_"+str(id(self))
+        super(_Constraint, self).__init__(name, **kwargs)
         self._master = master
         self._slave = slave
         self._tol = tol

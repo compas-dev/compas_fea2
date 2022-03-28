@@ -48,8 +48,7 @@ class Problem(FEAData):
     """
 
     def __init__(self, model, name=None, author=None, description=None, **kwargs):
-        super(Problem, self).__init__(**kwargs)
-        self._name = name or "Problem_"+str(id(self))
+        super(Problem, self).__init__(name=name, **kwargs)
         self.author = author
         self.description = description or f'Problem for {model}'
         self.path = None

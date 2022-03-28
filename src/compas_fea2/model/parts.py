@@ -55,8 +55,7 @@ class Part(FEAData):
     """
 
     def __init__(self, model=None, name=None, **kwargs):
-        super(Part, self).__init__(**kwargs)
-        self._name = name or "Part_"+str(id(self))
+        super(Part, self).__init__(name, **kwargs)
         self._model = model
         self._nodes = set()
         self._materials = set()

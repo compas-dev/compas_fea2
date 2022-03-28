@@ -29,8 +29,7 @@ class FieldOutput(FEAData):
     """
 
     def __init__(self, node_outputs, element_outputs, name=None, **kwargs):
-        super(FieldOutput, self).__init__(**kwargs)
-        self._name = name or "FieldOutput_"+str(id(self))
+        super(FieldOutput, self).__init__(name=name, **kwargs)
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
 

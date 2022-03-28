@@ -6,13 +6,7 @@ from compas_fea2.model import Part
 
 
 class AbaqusPart(Part):
-    """Initialises a ``Part`` object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the ``Part``.
-
+    """Abaqus implementation of a Part.
     """
     __doc__ += Part.__doc__
 

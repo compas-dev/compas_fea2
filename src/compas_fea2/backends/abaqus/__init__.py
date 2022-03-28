@@ -65,6 +65,11 @@ from compas_fea2.model.interactions import (
 from compas_fea2.model.constraints import (
     TieConstraint,
 )
+# Releases
+from compas_fea2.model.releases import (
+    BeamEndPinRelease,
+)
+
 # Boundary Conditions
 from compas_fea2.model.bcs import (
     FixedBC,
@@ -181,6 +186,12 @@ from .model.constraints import (
     AbaqusTieConstraint,
 )
 
+# Abaqus release
+from .model.releases import (
+    AbaqusBeamEndPinRelease,
+)
+
+
 # Abaqus Boundary Conditions
 from .model.bcs import (
     AbaqusFixedBC,
@@ -281,6 +292,8 @@ def register_backend():
     backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
 
     backend[TieConstraint] = AbaqusTieConstraint
+
+    backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
 
     backend[FixedBC] = AbaqusFixedBC
     backend[FixedBCXX] = AbaqusFixedBCXX

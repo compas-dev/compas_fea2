@@ -22,16 +22,16 @@ from compas_fea2.model import TieSection
 from compas_fea2.model import SpringSection
 
 
-class RectangularSection(RectangularSection):
+class OpenseesRectangularSection(RectangularSection):
     """OpenSees implementation of :class:`RectangularSection`. \n
     """
     __doc__ += RectangularSection.__doc__
 
-    def __init__(self, name, b, h, material):
-        super(RectangularSection, self).__init__(name, b, h, material)
+    def __init__(self, b, h, material, name=None, **kwargs):
+        super(OpenseesRectangularSection, self).__init__(b, h, material, name=name, **kwargs)
 
-    # NOTE in opensees the sectional properties are assigned directly to the element UNLESS it is a nonliner thing...in
-    # that case there is a tag for the section....aaaaarrrrhhhh
+    # NOTE in opensees the sectional properties are assigned directly to the element UNLESS it is a nonliner thing...
+    # in that case there is a tag for the section....aaaaarrrrhhhh
 
     def _generate_jobdata(self):
-        return f'section Elastic {self._name} {self.material._E} {self._A} {self._Iyy} {self._Ixx} {self._material.G} {self._J}'
+        return f'section Elastic {self.name} {self.material.E} {self.A} {self.Iyy} {self.Ixx} {self.material.G} {self.J}'

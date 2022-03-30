@@ -5,7 +5,7 @@ from __future__ import print_function
 from compas_fea2.model import Model
 
 
-class Model(Model):
+class OpenseesModel(Model):
     """ OpenSees implementation of the :class::`Model`.
 
     Warning
@@ -15,9 +15,8 @@ class Model(Model):
     """
     __doc__ += Model.__doc__
 
-    def __init__(self, name, description=None, author=None):
-        super(Model, self).__init__(name, description, author)
-        self._backend = 'opensees'
+    def __init__(self, name=None, description=None, author=None, **kwargs):
+        super(OpenseesModel, self).__init__(name=name, description=description, author=author, **kwargs)
         self._ndof = 6
 
     @property

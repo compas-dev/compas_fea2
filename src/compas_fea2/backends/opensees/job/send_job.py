@@ -1,5 +1,5 @@
 
-from compas_fea2.backends.opensees.writer import Writer
+from compas_fea2.backends.opensees.__writer import Writer
 
 from subprocess import Popen
 from subprocess import PIPE

@@ -5,13 +5,8 @@ from __future__ import print_function
 from compas_fea2.problem.outputs import FieldOutput
 from compas_fea2.problem.outputs import HistoryOutput
 
-__all__ = [
-    'FieldOutput',
-    'HistoryOutput',
-]
 
-
-class FieldOutput(FieldOutput):
+class OpenseesFieldOutput(FieldOutput):
     def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
         super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
 
@@ -25,7 +20,7 @@ class FieldOutput(FieldOutput):
         "recorder Node -file C:/temp/introduction/step_loads_u.out -time -nodeRange 1 5 -dof 1 2 3 disp"
 
 
-class HistoryOutput(HistoryOutput):
+class OpenseesHistoryOutput(HistoryOutput):
     def __init__(self, name):
         super(HistoryOutput, self).__init__(name)
 

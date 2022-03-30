@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 try:
-    from job import *
+    from ..job import *
 except:
     pass
 
@@ -280,7 +280,6 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
     with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
 
-
     with open(os.path.join(database_path, '{}-info.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(info, f, pickle.HIGHEST_PROTOCOL)
 
@@ -289,6 +288,7 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
 
     with open(os.path.join(database_path, '{}-info.json'.format(database_name)), 'wb') as f:
         json.dump(results, f)
+
 
 # ============================================================================
 # Main

@@ -48,8 +48,8 @@ class AbaqusPointLoad(PointLoad):
 
     """
 
-    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False):
-        super(AbaqusPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes)
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False, name=None, **kwargs):
+        super(AbaqusPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
         self._modify = 'NEW' if modify else 'MOD'
         self._follow = ', follower' if follow else ''
@@ -90,22 +90,22 @@ class AbaqusPointLoad(PointLoad):
 
 class AbaqusLineLoad(LineLoad):
 
-    def __init__(self, elements, x, y, z, xx, yy, zz, axes):
-        super(AbaqusLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes)
+    def __init__(self, elements, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
+        super(AbaqusLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
         raise NotImplementedError
 
 
 class AbaqusAreaLoad(AreaLoad):
 
-    def __init__(self, elements, x, y, z, axes):
-        super(AbaqusAreaLoad, self).__init__(elements, x, y, z, axes)
+    def __init__(self, elements, x, y, z, axes, name=None, **kwargs):
+        super(AbaqusAreaLoad, self).__init__(elements, x, y, z, axes, name=name, **kwargs)
         raise NotImplementedError
 
 
 class AbaqusGravityLoad(GravityLoad):
 
-    def __init__(self, g=9.81, x=0., y=0., z=-1.):
-        super(AbaqusGravityLoad, self).__init__(g, x, y, z)
+    def __init__(self, g=9.81, x=0., y=0., z=-1., name=None, **kwargs):
+        super(AbaqusGravityLoad, self).__init__(g, x, y, z, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

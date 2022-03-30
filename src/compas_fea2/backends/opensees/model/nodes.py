@@ -6,13 +6,13 @@ from __future__ import print_function
 from compas_fea2.model import Node
 
 
-class Node(Node):
+class OpenseesNode(Node):
     """Opensees implementation of the :class:`Node`. \n
     """
     __doc__ += Node.__doc__
 
-    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
-        super(Node, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)
+    def __init__(self, xyz, part=None, name=None, **kwargs):
+        super(OpenseesNode, self).__init__(xyz=xyz, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

@@ -4,22 +4,17 @@ from __future__ import division
 from __future__ import print_function
 
 
-from compas_fea2.problem import GeneralStaticCase
-from compas_fea2.problem import StaticLinearPerturbationCase
-from compas_fea2.problem import HeatCase
-from compas_fea2.problem import ModalCase
-from compas_fea2.problem import HarmonicCase
-from compas_fea2.problem import BucklingCase
-from compas_fea2.problem import AcousticCase
+from compas_fea2.problem import StaticStep
 
 
-class LinearStaticStep(LinearStaticStep):
-    """Abaqus implementation of the :class:`LinearStaticStep`.\n
+class OpenseesStaticStep(StaticStep):
+    """Opensees implementation of the :class:`LinearStaticStep`.\n
     """
-    __doc__ += LinearStaticStep.__doc__
+    __doc__ += StaticStep.__doc__
 
-    def __init__(self, name):
-        super(LinearStaticStep, self).__init__(name)
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True, name=None, **kwargs):
+        super(OpenseesStaticStep, self).__init__(max_increments, initial_inc_size,
+                                                 min_inc_size, time, nlgeom, modify, name=name, **kwargs)
 
     def _generate_jobdata(self, problem):
         return """#

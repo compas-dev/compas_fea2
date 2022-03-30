@@ -5,12 +5,12 @@ from __future__ import print_function
 
 from compas_fea2.utilities import Writer
 
-from compas_fea2.backends.opensees.writer import Heading
-from compas_fea2.backends.opensees.writer.elements import Elements
-from compas_fea2.backends.opensees.writer.elements import Nodes
-from compas_fea2.backends.opensees.writer.bcs import BCs
-from compas_fea2.backends.opensees.writer.materials import Materials
-from compas_fea2.backends.opensees.writer.steps import Steps
+from compas_fea2.backends.opensees.__writer import Heading
+from compas_fea2.backends.opensees.__writer.elements import Elements
+from compas_fea2.backends.opensees.__writer.elements import Nodes
+from compas_fea2.backends.opensees.__writer.bcs import BCs
+from compas_fea2.backends.opensees.__writer.materials import Materials
+from compas_fea2.backends.opensees.__writer.steps import Steps
 
 
 # Author(s): Andrew Liew (github.com/andrewliew), Francesco Ranaudo (github.com/franaudo)

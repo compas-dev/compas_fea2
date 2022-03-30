@@ -163,31 +163,31 @@ class Results(FEAData):
 
         return data
 
-    # ==========================================================================
-    # Serialization
-    # ==========================================================================
+    # # ==========================================================================
+    # # Serialization
+    # # ==========================================================================
 
-    def save_cfr(self):
-        with open(self.temp_dump, 'wb') as f:
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
-        print("***** .cfr file successfully saved! *****")
+    # def save_cfr(self):
+    #     with open(self.temp_dump, 'wb') as f:
+    #         pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+    #     print("***** .cfr file successfully saved! *****")
 
-    @ classmethod
-    def load_cfr(cls, path):
-        with open(path, 'rb') as f:
-            cls = pickle.load(f)
-        return cls
+    # @ classmethod
+    # def load_cfr(cls, path):
+    #     with open(path, 'rb') as f:
+    #         cls = pickle.load(f)
+    #     return cls
 
-    # ==========================================================================
-    # Save results
-    # ==========================================================================
-    def save_to_json(self, path):
-        with open(path, 'w') as f:
-            json.dump(self, f)
+    # # ==========================================================================
+    # # Save results
+    # # ==========================================================================
+    # def save_to_json(self, path):
+    #     with open(path, 'w') as f:
+    #         json.dump(self, f)
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+    # def toJSON(self):
+    #     return json.dumps(self, default=lambda o: o.__dict__,
+    #                       sort_keys=True, indent=4)
 
 
 class StepResults(FEAData):
@@ -221,3 +221,11 @@ class StepResults(FEAData):
     def save_to_json(self, path=None):
         with open(path, 'w') as f:
             json.dump(self, f)
+
+
+class NodeResults(FEAData):
+    pass
+
+
+class ElementResults(FEAData):
+    pass

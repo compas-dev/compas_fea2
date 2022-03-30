@@ -118,27 +118,27 @@ Sets
 
 """
 
-from .model import Model
-from .parts import Part
-from .nodes import Node
+from .model import OpenseesModel
+from .parts import OpenseesPart
+from .nodes import OpenseesNode
 # from .interactions import *
 # from .sets import *
 # from .constraints import *
-from .elements import (BeamElement,
+from .elements import (OpenseesBeamElement,
                        )
-from .materials import (ElasticIsotropic,
-                        )
-from .sections import (RectangularSection,
+from .materials.material import (OpenseesElasticIsotropic,
+                                 )
+from .sections import (OpenseesRectangularSection,
                        )
-from .bcs import (FixedBC,
-                  PinnedBC,
-                  FixedBCXX,
-                  FixedBCYY,
-                  FixedBCZZ,
-                  RollerBCX,
-                  RollerBCY,
-                  RollerBCZ,
-                  RollerBCXY,
-                  RollerBCYZ,
-                  RollerBCXZ
+from .bcs import (OpenseesFixedBC,
+                  OpenseesPinnedBC,
+                  OpenseesFixedBCXX,
+                  OpenseesFixedBCYY,
+                  OpenseesFixedBCZZ,
+                  OpenseesRollerBCX,
+                  OpenseesRollerBCY,
+                  OpenseesRollerBCZ,
+                  OpenseesRollerBCXY,
+                  OpenseesRollerBCYZ,
+                  OpenseesRollerBCXZ
                   )

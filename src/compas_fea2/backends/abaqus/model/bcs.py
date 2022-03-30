@@ -20,7 +20,7 @@ from compas_fea2.model import RollerBCXZ
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-def _generate_jobdata(obj, instance, nodes):
+def _generate_jobdata(bc, instance, nodes):
     """Generates the string information for the input file.
 
     Note
@@ -40,28 +40,31 @@ def _generate_jobdata(obj, instance, nodes):
 
     .. code-block:: python
 
-        data_section = [f'** Name: {obj.name} Type: BC/Rotation',
+        data_section = [f'** Name: {bc.name} Type: BC/Rotation',
                         '*Boundary, op=NEW']
         for node in nodes:
             for comp, dof in enumerate(dofs, 1):
-                if dof in obj.components:
-                    data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
+                if dof in bc.components:
+                    data_section += [f'{instance}.{node+1}, {comp}, {bc.components[dof]}']
 
     Parameters
     ----------
-    None
+    bc : :class:`compas_fea2.model.BoundaryCondition`
+        The boundary condition.
+    instance : :class:`compas_fea2.backends.abaqus.model._instances._Instance`
+        Instance of a part where the nodes are located.  TODO: remove -> the part is already in the nodes!
+    nodes: list
+        List of the node where the boundary condition is applied.
 
     Returns
     -------
     input file data line (str).
 
     """
-    data_section = ['** Name: {} Type: BC/Rotation', '*Boundary, op=NEW'.format(obj.name)]
+    data_section = ['** Name: {} Type: BC/Rotation', '*Boundary, op=NEW'.format(bc.name)]
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
-            if getattr(obj, dof):
-
-                # if dof in obj.components:
+            if getattr(bc, dof):
                 data_section += [f'{instance}.{node.key+1}, {comp}, 0']
     return '\n'.join(data_section)
 

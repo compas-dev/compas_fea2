@@ -2,12 +2,8 @@ import os.path
 from datetime import datetime
 from compas_fea2.job.input_file import InputFile
 
-__all__ = [
-    'InputFile',
-]
 
-
-class InputFile(InputFile):
+class OpenseesInputFile(InputFile):
     """Input file object for standard analysis.
 
     Parameters

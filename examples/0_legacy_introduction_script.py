@@ -26,7 +26,7 @@ from pprint import pprint
 
 from compas_fea2 import TEMP
 
-compas_fea2.set_backend('abaqus')
+compas_fea2.set_backend('opensees')
 compas_fea2.config.VERBOSE = not True
 
 
@@ -38,7 +38,6 @@ frame = model.add_part(Part())
 
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
 nodes = [Node(xyz=node) for node in coordinates]
-supports = NodesGroup(nodes[1:])
 beam_elements = []
 shell_elements = []
 for i in range(1, len(nodes)):
@@ -51,7 +50,7 @@ model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
 
 # Review
-# model.summary()
+model.summary()
 # model.show()
 
 
@@ -69,12 +68,12 @@ step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 
 
 # Review
-# problem.summary()
+problem.summary()
 # problem.show()
 
 # Solve the problem
 # problem.write_input_file()
-problem.analyse(path=Path(TEMP).joinpath('refactor'))
+# problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 # # # results = Results.from_problem(problem, fields=['u'])

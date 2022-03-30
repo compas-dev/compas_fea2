@@ -96,9 +96,9 @@ class PointLoad(Load):
         Load applied via 'local' or 'global' axes.
     """
 
-    def __init__(self, x, y, z, xx, yy, zz, axes):
+    def __init__(self, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
         super(PointLoad, self).__init__(components={
-            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
+            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes, name=name, **kwargs)
 
 
 class LineLoad(Load):
@@ -145,9 +145,9 @@ class LineLoad(Load):
         Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global'):
+    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', name=None, **kwargs):
         super(LineLoad, self).__init__(components={
-            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes)
+            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes, name=name, **kwargs)
 
 
 class AreaLoad(Load):
@@ -179,8 +179,8 @@ class AreaLoad(Load):
         z component of area load.
     """
 
-    def __init__(self, x=0, y=0, z=0, axes='local'):
-        super(AreaLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes=axes)
+    def __init__(self, x=0, y=0, z=0, axes='local', name=None, **kwargs):
+        super(AreaLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes=axes, name=name, **kwargs)
 
 
 class GravityLoad(Load):
@@ -216,8 +216,8 @@ class GravityLoad(Load):
         Factor to apply to z direction.
     """
 
-    def __init__(self, g, x, y, z):
-        super(GravityLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes='global')
+    def __init__(self, g, x, y, z, name=None, **kwargs):
+        super(GravityLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes='global', name=name, **kwargs)
         self._g = g
 
     @property

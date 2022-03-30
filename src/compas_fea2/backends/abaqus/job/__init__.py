@@ -14,7 +14,7 @@ from .send_job import launch_optimisation
 
 __all__ = [
     'AbaqusInputFile',
-    'AbaqusParamaetersFile',
+    'AbaqusParametersFile',
     'launch_process',
     'launch_optimisation',
 ]

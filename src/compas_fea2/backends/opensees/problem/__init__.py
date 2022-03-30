@@ -4,10 +4,10 @@ from __future__ import print_function
 
 
 # additional software-based classes
-from .problem import Problem
-from .loads import (PointLoad,
+from .problem import OpenseesProblem
+from .loads import (OpenseesPointLoad,
                     )
-from .steps import (LinearStaticStep,
+from .steps import (OpenseesStaticStep,
                     )
 
 __all__ = [name for name in dir() if not name.startswith('_')]

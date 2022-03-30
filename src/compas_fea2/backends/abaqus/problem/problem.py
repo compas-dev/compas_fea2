@@ -30,22 +30,22 @@ class AbaqusProblem(Problem):
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, output=True):
-        """Writes the abaqus input file.
+    # def write_input_file(self, output=True):
+    #     """Writes the abaqus input file.
 
-        Parameters
-        ----------
-        output : bool
-            Print terminal output.
+    #     Parameters
+    #     ----------
+    #     output : bool
+    #         Print terminal output.
 
-        Returns
-        -------
-        None
-        """
-        input_file = AbaqusInputFile().from_problem(self)
-        r = input_file.write_to_file(self.path)
-        if output:
-            print(r)
+    #     Returns
+    #     -------
+    #     None
+    #     """
+    #     input_file = AbaqusInputFile().from_problem(self)
+    #     r = input_file.write_to_file(self.path)
+    #     if output:
+    #         print(r)
 
     def write_parameters_file(self, output=True):
         """Writes the abaqus parameters file for the optimisation.

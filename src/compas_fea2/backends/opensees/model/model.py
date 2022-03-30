@@ -31,7 +31,7 @@ class OpenseesModel(Model):
     def _generate_jobdata(self):
         if len(self._parts) > 1:
             raise NotImplementedError('Currently multiple parts are not supported in OpenSee')
-        part_name = list(self._parts.keys())[0]
+        # part_name = list(self._parts)[0]
         return f"""#
 #
 wipe
@@ -43,7 +43,7 @@ model basic -ndm 3 -ndf {self.ndof}
 #------------------------------------------------------------------
 #
 #    tag        X       Y       Z
-{self._generate_nodes_data(part_name)}
+{self._generate_nodes_data()}
 #
 #
 #
@@ -67,19 +67,23 @@ model basic -ndm 3 -ndf {self.ndof}
 # Elements
 #------------------------------------------------------------------
 #
-{self._generate_elements_data(part_name)}
+{self._generate_elements_data()}
 #
 #
 """
 
-    def _generate_nodes_data(self, part_name):
-        return '\n'.join([node._generate_jobdata() for node in self._nodes[part_name]])
+    def _generate_nodes_data(self):
+        part = list(self._parts)[0]
+        return '\n'.join([node._generate_jobdata() for node in part.nodes])
 
-    def _generate_elements_data(self, part_name):
-        return '\n'.join([element._generate_jobdata() for element in self._elements[part_name]])
+    def _generate_elements_data(self):
+        part = list(self._parts)[0]
+        return '\n'.join([element._generate_jobdata() for element in part._elements])
 
     def _generate_materials_data(self):
-        return '\n'.join([material._generate_jobdata(i) for i, material in enumerate(self._materials.values())])
+        part = list(self._parts)[0]
+        return '\n'.join([material._generate_jobdata(i) for i, material in enumerate(part.materials)])
 
     def _generate_sections_data(self):
-        return '\n'.join([section._generate_jobdata() for section in self._sections.values()])
+        part = list(self._parts)[0]
+        return '\n'.join([section._generate_jobdata() for section in part.sections])

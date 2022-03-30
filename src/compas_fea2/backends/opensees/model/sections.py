@@ -27,8 +27,8 @@ class OpenseesRectangularSection(RectangularSection):
     """
     __doc__ += RectangularSection.__doc__
 
-    def __init__(self, b, h, material, name=None, **kwargs):
-        super(OpenseesRectangularSection, self).__init__(b, h, material, name=name, **kwargs)
+    def __init__(self, w, h, material, name=None, **kwargs):
+        super(OpenseesRectangularSection, self).__init__(w, h, material, name=None, **kwargs)
 
     # NOTE in opensees the sectional properties are assigned directly to the element UNLESS it is a nonliner thing...
     # in that case there is a tag for the section....aaaaarrrrhhhh

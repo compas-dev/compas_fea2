@@ -4,7 +4,7 @@ from compas_fea2.model import Model, elements
 from compas_fea2.model import Part
 from compas_fea2.model import Node
 from compas_fea2.model import ElasticIsotropic
-from compas_fea2.model import CircularSection
+from compas_fea2.model import CircularSection, RectangularSection
 from compas_fea2.model import ShellSection
 from compas_fea2.model import BeamElement
 from compas_fea2.model import ShellElement
@@ -32,7 +32,8 @@ compas_fea2.config.VERBOSE = not True
 
 model = Model()
 mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
-frame_sec = CircularSection(material=mat, r=0.010)
+frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
+# frame_sec = CircularSection(material=mat, r=0.010)
 shell_sec = ShellSection(0.02, mat)
 frame = model.add_part(Part())
 
@@ -42,9 +43,9 @@ beam_elements = []
 shell_elements = []
 for i in range(1, len(nodes)):
     beam_elements.append(frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=frame_sec)))
-    if not i == len(nodes)-1:
-        shell_elements.append(frame.add_element(ShellElement(
-            nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
+    # if not i == len(nodes)-1:
+    #     shell_elements.append(frame.add_element(ShellElement(
+    #         nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
@@ -72,7 +73,7 @@ problem.summary()
 # problem.show()
 
 # Solve the problem
-# problem.write_input_file()
+problem.write_input_file()
 # problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####

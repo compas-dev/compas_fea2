@@ -21,29 +21,9 @@ class OpenseesInputFile(InputFile):
         Final input file text data that will be written in the .tcl file.
     """
 
-    def __init__(self, problem):
-        super(InputFile, self).__init__(problem)
-        self._input_file_type = "Input File"
-        self.name = '{}.tcl'.format(problem.name)
-        self._jobdata = self._generate_jobdata(problem)
-
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        return self._jobdata
-
-    # ==============================================================================
-    # Constructor methods
-    # ==============================================================================
+    def __init__(self):
+        self._extension = 'inp'
+        super().__init__()
 
     def _generate_jobdata(self, problem):
         """Generate the content of the input fileself from the Problem object.
@@ -125,7 +105,7 @@ test NormUnbalance {problem.tolerance} {problem.iterations} 5'
 algorithm NewtonLineSearch
 #
 # Create the integration scheme, the LoadControl scheme using steps of 0.1
-integrator LoadControl {1./problem.increments}
+integrator LoadControl {problem.increments}
 #
 # Create the analysis object
 analysis Static

@@ -9,7 +9,10 @@ class OpenseesProblem(Problem):
 
     def __init__(self, model, author=None, description=None, **kwargs):
         super(OpenseesProblem, self).__init__(model=model, author=author, description=description, **kwargs)
-
+        # FIXME move these to the Steps
+        self.tolerance = None
+        self.iterations = None
+        self.increments = None  # self.increments =1./increments
     # =========================================================================
     #                           Optimisation methods
     # =========================================================================

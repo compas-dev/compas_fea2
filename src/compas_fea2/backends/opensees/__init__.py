@@ -124,6 +124,11 @@ from compas_fea2.results import (
     Results
 )
 
+# Input File
+from compas_fea2.job import (
+    InputFile
+)
+
 # =========================================================================
 #                           ABAQUS CLASSES
 # =========================================================================
@@ -253,6 +258,11 @@ try:
     #     OpenseesResults
     # )
 
+    # InputFile
+    from .job.input_file import (
+        OpenseesInputFile
+    )
+
     @plugin(category='fea_backends')
     def register_backend():
         backend = compas_fea2.BACKENDS['opensees']
@@ -341,6 +351,8 @@ try:
         # backend[HistoryOutput] = OpenseesHistoryOutput
 
         # backend[Results] = OpenseesResults
+
+        backend[InputFile] = OpenseesInputFile
 
         print('Opensees implementations registered...')
 except:

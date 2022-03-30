@@ -8,6 +8,7 @@ import importlib
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.steps import Step
+from compas_fea2.job.input_file import InputFile
 
 
 class Problem(FEAData):
@@ -265,7 +266,21 @@ Steps (in order of application)
     # =========================================================================
 
     def write_input_file(self):
-        raise NotImplementedError("this function is not available for the selceted backend")
+        """Writes the abaqus input file.
+
+        Parameters
+        ----------
+        output : bool
+            Print terminal output.
+
+        Returns
+        -------
+        None
+        """
+        input_file = InputFile.from_problem(self)
+        r = input_file.write_to_file(self.path)
+        if output:
+            print(r)
 
     def analyse(self):
         raise NotImplementedError("this function is not available for the selceted backend")

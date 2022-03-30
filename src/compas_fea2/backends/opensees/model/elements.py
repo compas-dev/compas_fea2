@@ -45,7 +45,7 @@ class OpenseesBeamElement(BeamElement):
     def _generate_jobdata(self):
         line = []
         line.append('geomTransf Corotational {1}\n'.format(
-            self.key, ' '.join([str(i) for i in self.orientation])))
+            self.key, ' '.join([str(i) for i in self.frame])))
         line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self._eltype,
                                                               self.key,
                                                               self.nodes[0],

@@ -15,6 +15,7 @@ class InputFile(FEAData):
         self._job_name = None
         self._job_data = None
         self._file_name = None
+        self._extension = None
 
     @classmethod
     def from_problem(cls, problem):

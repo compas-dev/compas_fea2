@@ -10,10 +10,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 from compas_fea2.results import Results
-from compas_fea2.results import CaseResults
 from compas_fea2.backends.abaqus.results import odb_extract
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
 
 
 class AbaqusResults(Results):
@@ -91,9 +88,3 @@ class AbaqusResults(Results):
 
         if self.output:
             print('***** Data stored successfully : {0:.3f} s *****\n'.format(toc2))
-
-
-class AbaqusStepResults(CaseResults):
-
-    def __init__(self):
-        super(AbaqusStepResults, self).__init__()

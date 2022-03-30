@@ -4,6 +4,7 @@ Abaqus
 ********************************************************************************
 """
 
+from pydoc import ErrorDuringImport
 import compas_fea2
 
 from compas.plugins import plugin
@@ -118,217 +119,229 @@ from compas_fea2.problem.outputs import (
     HistoryOutput,
 )
 
+# Results
+from compas_fea2.results import (
+    Results
+)
+
 # =========================================================================
 #                           ABAQUS CLASSES
 # =========================================================================
 
+try:
+    # Abaqus Models
+    from .model import AbaqusModel
+    from .model import AbaqusPart
+    from .model import AbaqusNode
 
-# Abaqus Models
-from .model import AbaqusModel
-from .model import AbaqusPart
-from .model import AbaqusNode
+    # Abaqus Elements
+    from .model.elements import (
+        # AbaqusMassElement,
+        AbaqusBeamElement,
+        # AbaqusTrussElement,
+        # AbaqusMembraneElement,
+        AbaqusShellElement,
+        # AbaqusSolidElement,
+    )
 
-# Abaqus Elements
-from .model.elements import (
-    # AbaqusMassElement,
-    AbaqusBeamElement,
-    # AbaqusTrussElement,
-    # AbaqusMembraneElement,
-    AbaqusShellElement,
-    # AbaqusSolidElement,
-)
+    # Abaqus Sections
+    from .model.sections import (
+        # AbaqusAngleSection,
+        # AbaqusBeamSection,
+        # AbaqusBoxSection,
+        AbaqusCircularSection,
+        # AbaqusISection,
+        # AbaqusMassSection,
+        # AbaqusMembraneSection,
+        # AbaqusPipeSection,
+        # AbaqusRectangularSection,
+        AbaqusShellSection,
+        # AbaqusSolidSection,
+        # AbaqusSpringSection,
+        # AbaqusStrutSection,
+        # AbaqusTieSection,
+        # AbaqusTrapezoidalSection,
+        # AbaqusTrussSection,
+    )
 
-# Abaqus Sections
-from .model.sections import (
-    # AbaqusAngleSection,
-    # AbaqusBeamSection,
-    # AbaqusBoxSection,
-    AbaqusCircularSection,
-    # AbaqusISection,
-    # AbaqusMassSection,
-    # AbaqusMembraneSection,
-    # AbaqusPipeSection,
-    # AbaqusRectangularSection,
-    AbaqusShellSection,
-    # AbaqusSolidSection,
-    # AbaqusSpringSection,
-    # AbaqusStrutSection,
-    # AbaqusTieSection,
-    # AbaqusTrapezoidalSection,
-    # AbaqusTrussSection,
-)
+    # Abaqus Materials
+    from .model import (
+        AbaqusElasticIsotropic,
+        # AbaqusElasticOrthotropic,
+        # AbaqusElasticPlastic,
+        # AbaqusStiff,
+        # AbaqusConcrete,
+        # AbaqusConcreteDamagedPlasticity,
+        # AbaqusConcreteSmearedCrack,
+        # AbaqusSteel,
+    )
 
-# Abaqus Materials
-from .model import (
-    AbaqusElasticIsotropic,
-    # AbaqusElasticOrthotropic,
-    # AbaqusElasticPlastic,
-    # AbaqusStiff,
-    # AbaqusConcrete,
-    # AbaqusConcreteDamagedPlasticity,
-    # AbaqusConcreteSmearedCrack,
-    # AbaqusSteel,
-)
+    # Abaqus Groups
+    from .model.groups import (
+        AbaqusNodesGroup,
+        AbaqusElementsGroup,
+        AbaqusFacesGroup,
+    )
 
-# Abaqus Groups
-from .model.groups import (
-    AbaqusNodesGroup,
-    AbaqusElementsGroup,
-    AbaqusFacesGroup,
-)
+    # Abaqus Interactions
+    from .model.interactions import (
+        AbaqusHardContactFrictionPenalty,
+    )
+    # Abaqus Constraints
+    from .model.constraints import (
+        AbaqusTieConstraint,
+    )
 
-# Abaqus Interactions
-from .model.interactions import (
-    AbaqusHardContactFrictionPenalty,
-)
-# Abaqus Constraints
-from .model.constraints import (
-    AbaqusTieConstraint,
-)
+    # Abaqus release
+    from .model.releases import (
+        AbaqusBeamEndPinRelease,
+    )
 
-# Abaqus release
-from .model.releases import (
-    AbaqusBeamEndPinRelease,
-)
+    # Abaqus Boundary Conditions
+    from .model.bcs import (
+        AbaqusFixedBC,
+        AbaqusFixedBCXX,
+        AbaqusFixedBCYY,
+        AbaqusFixedBCZZ,
+        AbaqusPinnedBC,
+        AbaqusRollerBCX,
+        AbaqusRollerBCXY,
+        AbaqusRollerBCXZ,
+        AbaqusRollerBCY,
+        AbaqusRollerBCYZ,
+        AbaqusRollerBCZ,
+    )
 
+    # Abaqus Problem
+    from .problem import AbaqusProblem
 
-# Abaqus Boundary Conditions
-from .model.bcs import (
-    AbaqusFixedBC,
-    AbaqusFixedBCXX,
-    AbaqusFixedBCYY,
-    AbaqusFixedBCZZ,
-    AbaqusPinnedBC,
-    AbaqusRollerBCX,
-    AbaqusRollerBCXY,
-    AbaqusRollerBCXZ,
-    AbaqusRollerBCY,
-    AbaqusRollerBCYZ,
-    AbaqusRollerBCZ,
-)
+    # Abaqus Steps
+    from .problem.steps import (
+        AbaqusStaticStep,
+        # AbaqusAcousticStep,
+        # AbaqusBucklingStep,
+        # AbaqusGeneralStaticStep,
+        # AbaqusHarmonicStep,
+        # AbaqusHeatStep,
+        # AbaqusModalStep,
+        # AbaqusStaticLinearPerturbationStep,
+    )
+    # Abaqus Loads
+    from .problem.loads import (
+        AbaqusPointLoad,
+        # AbaqusLineLoad,
+        # AbaqusAreaLoad,
+        AbaqusGravityLoad,
+        # AbaqusHarmonicPointLoad,
+        # AbaqusHarmonicPressureLoad,
+        # AbaqusTributaryLoad,
+    )
 
-# Abaqus Problem
-from .problem import AbaqusProblem
+    # Abaqus Displacements
+    from .problem.displacements import (
+        AbaqusGeneralDisplacement,
+    )
 
-# Abaqus Steps
-from .problem.steps import (
-    AbaqusStaticStep,
-    # AbaqusAcousticStep,
-    # AbaqusBucklingStep,
-    # AbaqusGeneralStaticStep,
-    # AbaqusHarmonicStep,
-    # AbaqusHeatStep,
-    # AbaqusModalStep,
-    # AbaqusStaticLinearPerturbationStep,
-)
-# Abaqus Loads
-from .problem.loads import (
-    AbaqusPointLoad,
-    # AbaqusLineLoad,
-    # AbaqusAreaLoad,
-    AbaqusGravityLoad,
-    # AbaqusHarmonicPointLoad,
-    # AbaqusHarmonicPressureLoad,
-    # AbaqusTributaryLoad,
-)
+    # Abaqus outputs
+    from .problem.outputs import (
+        AbaqusFieldOutput,
+        AbaqusHistoryOutput,
+    )
 
-# Abaqus Displacements
-from .problem.displacements import (
-    AbaqusGeneralDisplacement,
-)
+    # Abaqus Results
+    from .results import (
+        AbaqusResults
+    )
 
-# Abaqus outputs
-from .problem.outputs import (
-    AbaqusFieldOutput,
-    AbaqusHistoryOutput,
-)
+    @plugin(category='fea_backends')
+    def register_backend():
+        backend = compas_fea2.BACKENDS['abaqus']
 
+        backend[Model] = AbaqusModel
+        backend[Part] = AbaqusPart
+        backend[Node] = AbaqusNode
 
-@plugin(category='fea_backends')
-def register_backend():
-    backend = compas_fea2.BACKENDS['abaqus']
+        # backend[MassElement] = AbaqusMassElement
+        backend[BeamElement] = AbaqusBeamElement
+        # backend[TrussElement] = AbaqusTrussElement
+        # backend[MembraneElement] = AbaqusMembraneElement
+        backend[ShellElement] = AbaqusShellElement
+        # backend[SolidElement] = AbaqusSolidElement
 
-    backend[Model] = AbaqusModel
-    backend[Part] = AbaqusPart
-    backend[Node] = AbaqusNode
+        # backend[AngleSection] = AbaqusAngleSection
+        # backend[BeamSection] = AbaqusBeamSection
+        # backend[BoxSection] = AbaqusBoxSection
+        backend[CircularSection] = AbaqusCircularSection
+        # backend[ISection] = AbaqusISection
+        # backend[MassSection] = AbaqusMassSection
+        # backend[MembraneSection] = AbaqusMembraneSection
+        # backend[PipeSection] = AbaqusPipeSection
+        # backend[RectangularSection] = AbaqusRectangularSection
+        backend[ShellSection] = AbaqusShellSection
+        # backend[SolidSection] = AbaqusSolidSection
+        # backend[SpringSection] = AbaqusSpringSection
+        # backend[StrutSection] = AbaqusStrutSection
+        # backend[TieSection] = AbaqusTieSection
+        # backend[TrapezoidalSection] = AbaqusTrapezoidalSection
+        # backend[TrussSection] = AbaqusTrussSection
 
-    # backend[MassElement] = AbaqusMassElement
-    backend[BeamElement] = AbaqusBeamElement
-    # backend[TrussElement] = AbaqusTrussElement
-    # backend[MembraneElement] = AbaqusMembraneElement
-    backend[ShellElement] = AbaqusShellElement
-    # backend[SolidElement] = AbaqusSolidElement
+        backend[ElasticIsotropic] = AbaqusElasticIsotropic
+        # backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
+        # backend[ElasticPlastic] = AbaqusElasticPlastic
+        # backend[Stiff] = AbaqusStiff
+        # backend[Concrete] = AbaqusConcrete
+        # backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
+        # backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
+        # backend[Steel] = AbaqusSteel
 
-    # backend[AngleSection] = AbaqusAngleSection
-    # backend[BeamSection] = AbaqusBeamSection
-    # backend[BoxSection] = AbaqusBoxSection
-    backend[CircularSection] = AbaqusCircularSection
-    # backend[ISection] = AbaqusISection
-    # backend[MassSection] = AbaqusMassSection
-    # backend[MembraneSection] = AbaqusMembraneSection
-    # backend[PipeSection] = AbaqusPipeSection
-    # backend[RectangularSection] = AbaqusRectangularSection
-    backend[ShellSection] = AbaqusShellSection
-    # backend[SolidSection] = AbaqusSolidSection
-    # backend[SpringSection] = AbaqusSpringSection
-    # backend[StrutSection] = AbaqusStrutSection
-    # backend[TieSection] = AbaqusTieSection
-    # backend[TrapezoidalSection] = AbaqusTrapezoidalSection
-    # backend[TrussSection] = AbaqusTrussSection
+        backend[NodesGroup] = AbaqusNodesGroup
+        backend[ElementsGroup] = AbaqusElementsGroup
+        backend[FacesGroup] = AbaqusFacesGroup
 
-    backend[ElasticIsotropic] = AbaqusElasticIsotropic
-    # backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
-    # backend[ElasticPlastic] = AbaqusElasticPlastic
-    # backend[Stiff] = AbaqusStiff
-    # backend[Concrete] = AbaqusConcrete
-    # backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
-    # backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
-    # backend[Steel] = AbaqusSteel
+        backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
 
-    backend[NodesGroup] = AbaqusNodesGroup
-    backend[ElementsGroup] = AbaqusElementsGroup
-    backend[FacesGroup] = AbaqusFacesGroup
+        backend[TieConstraint] = AbaqusTieConstraint
 
-    backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
+        backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
 
-    backend[TieConstraint] = AbaqusTieConstraint
+        backend[FixedBC] = AbaqusFixedBC
+        backend[FixedBCXX] = AbaqusFixedBCXX
+        backend[FixedBCYY] = AbaqusFixedBCYY
+        backend[FixedBCZZ] = AbaqusFixedBCZZ
+        backend[PinnedBC] = AbaqusPinnedBC
+        backend[RollerBCX] = AbaqusRollerBCX
+        backend[RollerBCXY] = AbaqusRollerBCXY
+        backend[RollerBCXZ] = AbaqusRollerBCXZ
+        backend[RollerBCY] = AbaqusRollerBCY
+        backend[RollerBCYZ] = AbaqusRollerBCYZ
+        backend[RollerBCZ] = AbaqusRollerBCZ
 
-    backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
+        backend[Problem] = AbaqusProblem
 
-    backend[FixedBC] = AbaqusFixedBC
-    backend[FixedBCXX] = AbaqusFixedBCXX
-    backend[FixedBCYY] = AbaqusFixedBCYY
-    backend[FixedBCZZ] = AbaqusFixedBCZZ
-    backend[PinnedBC] = AbaqusPinnedBC
-    backend[RollerBCX] = AbaqusRollerBCX
-    backend[RollerBCXY] = AbaqusRollerBCXY
-    backend[RollerBCXZ] = AbaqusRollerBCXZ
-    backend[RollerBCY] = AbaqusRollerBCY
-    backend[RollerBCYZ] = AbaqusRollerBCYZ
-    backend[RollerBCZ] = AbaqusRollerBCZ
+        backend[StaticStep] = AbaqusStaticStep
+        # backend[AcousticStep] = AbaqusAcousticStep
+        # backend[BucklingStep] = AbaqusBucklingStep
+        # backend[GeneralStaticStep] = AbaqusGeneralStaticStep
+        # backend[HarmonicStep] = AbaqusHarmonicStep
+        # backend[HeatStep] = AbaqusHeatStep
+        # backend[ModalStep] = AbaqusModalStep
+        # backend[StaticLinearPerturbationStep] = AbaqusStaticLinearPerturbationStep
 
-    backend[Problem] = AbaqusProblem
+        backend[GravityLoad] = AbaqusGravityLoad
+        backend[PointLoad] = AbaqusPointLoad
+        # backend[LineLoad] = AbaqusLineLoad
+        # backend[AreaLoad] = AbaqusAreaLoad
+        # backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
+        # backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
+        # backend[TributaryLoad] = AbaqusTributaryLoad
 
-    backend[StaticStep] = AbaqusStaticStep
-    # backend[AcousticStep] = AbaqusAcousticStep
-    # backend[BucklingStep] = AbaqusBucklingStep
-    # backend[GeneralStaticStep] = AbaqusGeneralStaticStep
-    # backend[HarmonicStep] = AbaqusHarmonicStep
-    # backend[HeatStep] = AbaqusHeatStep
-    # backend[ModalStep] = AbaqusModalStep
-    # backend[StaticLinearPerturbationStep] = AbaqusStaticLinearPerturbationStep
+        backend[GeneralDisplacement] = AbaqusGeneralDisplacement
 
-    backend[GravityLoad] = AbaqusGravityLoad
-    backend[PointLoad] = AbaqusPointLoad
-    # backend[LineLoad] = AbaqusLineLoad
-    # backend[AreaLoad] = AbaqusAreaLoad
-    # backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
-    # backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
-    # backend[TributaryLoad] = AbaqusTributaryLoad
+        backend[FieldOutput] = AbaqusFieldOutput
+        backend[HistoryOutput] = AbaqusHistoryOutput
 
-    backend[GeneralDisplacement] = AbaqusGeneralDisplacement
+        backend[Results] = AbaqusResults
 
-    backend[FieldOutput] = AbaqusFieldOutput
-    backend[HistoryOutput] = AbaqusHistoryOutput
-
-    print('Abaqus implementations registered...')
+        print('Abaqus implementations registered...')
+except:
+    raise ErrorDuringImport()

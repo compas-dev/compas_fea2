@@ -14,18 +14,16 @@ from compas_fea2.problem import GeneralStep
 # TODO add field and history output requrests
 
 
-class AbaqusGeneralStep(GeneralStep):
-    """
-    Notes
-    -----
-    the data for the input file for this object is generated at runtime.
-    """
+# class AbaqusGeneralStep(GeneralStep):
+#     """
+#     Notes
+#     -----
+#     the data for the input file for this object is generated at runtime.
+#     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify):
-        super(AbaqusGeneralStep, self).__init__(max_increments, initial_inc_size, min_inc_size, time)
-        self._stype = 'Static'
-        self._nlgeom = 'YES' if nlgeom else 'NO'
-        self._modify = modify
+#     def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
+#         super(AbaqusGeneralStep, self).__init__(max_increments, initial_inc_size,
+#                                                 min_inc_size, time, nlgeom, modify, name=name, **kwargs)
 
 
 class AbaqusStaticStep(StaticStep):
@@ -38,8 +36,9 @@ class AbaqusStaticStep(StaticStep):
     """
     __doc__ += StaticStep.__doc__
 
-    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True):
-        super(AbaqusStaticStep, self).__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify)
+    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True, name=None, **kwargs):
+        super(AbaqusStaticStep, self).__init__(max_increments, initial_inc_size,
+                                               min_inc_size, time, nlgeom, modify, name=name, **kwargs)
         self._stype = 'Static'
 
     def _generate_jobdata(self):

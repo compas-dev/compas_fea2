@@ -67,20 +67,17 @@ class Problem(FEAData):
     #                           Step methods
     # =========================================================================
 
-    def is_step_in_problem(self, step):
-        """Check if a step is defined in the Problem. If `step` is of type `str`,
-        check if the step is already defined. If `step` is of type `Step`,
-        add the step to the Problem if not already defined.
+    def is_step_in_problem(self, step, add=True):
+        """Check if a :class:`compas_fea2.problem.Step` is defined in the Problem.
 
         Parameters
         ----------
-        step : str, obj
-            Name of the step (must be already defined) or Step object.
+        step : :class:`compas_fea2.problem.Step`
+            The Step object to find.
 
         Returns
         -------
-        obj
-            Step object
+        :class:`compas_fea2.problem.Step`
 
         Raises
         ------
@@ -90,33 +87,30 @@ class Problem(FEAData):
             `step` must be either an instance of a `compas_fea2` Step class or the
             name of a Step already defined in the Problem.
         """
-        if isinstance(step, str):
-            if step not in self._steps:
-                raise ValueError(f'{step} not found in the Problem')
-            step_name = step
-        elif isinstance(step, Step):
-            if step.name not in self.steps:
-                self.add_step(step)
-                print(f'{step!r} added to the Problem')
-            step_name = step.name
-        else:
-            raise TypeError(
-                f'{step!r} is either not an instance of a `compas_fea2` Step class or not found in the Problem')
 
-        return self.steps[step_name]
+        if not isinstance(step, Step):
+            raise TypeError('{!r} is not a Step'.format(step))
+        if step.name not in self.steps:
+            print('{!r} not found'.format(step))
+            if add:
+                step = self.add_step(step)
+                print('{!r} added to the Problem'.format(step))
+                return step
+            return False
+        return True
 
     def add_step(self, step) -> Step:
         # # type: (Step) -> Step
-        """Adds a Step to the Problem object.
+        """Adds a :class:`compas_fea2.problem.Step` to the problem.
 
         Parameters
         ----------
-        Step : obj
-            :class:`Step` subclass object.
+        Step : :class:`compas_fea2.problem.Step`
+            The analysis step to add to the problem.
 
         Returns
         -------
-        None
+        :class:`compas_fea2.problem.Step`
         """
         if isinstance(step, Step):
             self._steps.append(step)
@@ -125,7 +119,7 @@ class Problem(FEAData):
         return step
 
     def add_steps(self, steps):
-        """Adds multiple steps to the Problem object.
+        """Adds multiple :class:`compas_fea2.problem.Step` objects to the problem.
 
         Parameters
         ----------
@@ -151,8 +145,8 @@ class Problem(FEAData):
         -------
         None
 
-        Note
-        ----
+        Warning
+        -------
         Not implemented yet!
         """
         raise NotImplementedError

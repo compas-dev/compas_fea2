@@ -338,6 +338,10 @@ class StaticStep(GeneralStep):
             moment about the global z axis of the point load, by default None
         axes : str, optional
             'local' or 'global' axes, by default 'global'
+
+        Return
+        ------
+        :class:`compas_fea2.problem.PointLoad`
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')

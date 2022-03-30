@@ -13,7 +13,7 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import _Element, BeamElement, ShellElement
+from .elements import _Element, BeamElement, ShellElement, SolidElement
 from .materials import _Material
 from .sections import _Section, ShellSection, SolidSection
 from .releases import _BeamEndRelease, BeamEndPinRelease
@@ -191,84 +191,87 @@ number of groups   : {}
 
         return part
 
-    # @ classmethod
-    # def from_gmsh(cls, gmshModel, section, split=False, verbose=False, check=False, name=None, **kwargs):
-    #     """Create a Part object from a gmshModel object. According to the `section`
-    #     type provided, SolidElement or ShellElement elements are cretated.
-    #     The same section is applied to all the elements.
+    @ classmethod
+    def from_gmsh(cls, gmshModel, section, split=False, verbose=False, check=False, name=None, **kwargs):
+        """Create a Part object from a gmshModel object. According to the `section`
+        type provided, SolidElement or ShellElement elements are cretated.
+        The same section is applied to all the elements.
 
-    #     Note
-    #     ----
-    #     The gmshModel must have the right dimension corresponding to the section
-    #     provided.
+        Note
+        ----
+        The gmshModel must have the right dimension corresponding to the section
+        provided.
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new part.
-    #     gmshModel : obj
-    #         gmsh Model to convert. See [1]_
-    #     section : obj
-    #         `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
-    #         object to to apply to the elements.
-    #     split : bool, optional
-    #         if ``True`` create an additional node in the middle of the edges of the
-    #         elements to implement more refined element types. Check for example [2]_.
-    #     verbose : bool, optional
-    #         if ``True`` print a log, by default False
-    #     check : bool, optional
-    #         if ``True`` performs sanity checks, by default False. This is a quite
-    #         resource-intense operation! Set to ``False`` for large models (>10000
-    #         nodes).
+        Parameters
+        ----------
+        name : str
+            name of the new part.
+        gmshModel : obj
+            gmsh Model to convert. See [1]_
+        section : obj
+            `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
+            object to to apply to the elements.
+        split : bool, optional
+            if ``True`` create an additional node in the middle of the edges of the
+            elements to implement more refined element types. Check for example [2]_.
+        verbose : bool, optional
+            if ``True`` print a log, by default False
+        check : bool, optional
+            if ``True`` performs sanity checks, by default False. This is a quite
+            resource-intense operation! Set to ``False`` for large models (>10000
+            nodes).
 
-    #     Returns
-    #     -------
-    #     obj
-    #         compas_fea2 `Part` object.
+        Returns
+        -------
+        obj
+            compas_fea2 `Part` object.
 
-    #     References
-    #     ----------
-    #     .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
-    #     .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
+        References
+        ----------
+        .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
+        .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
 
-    #     Examples
-    #     --------
-    #     >>> gmshModel = gmsh.mode.generate(3)
-    #     >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, density=2.5e-9)
-    #     >>> sec = SolidSection('mysec', mat)
-    #     >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
+        Examples
+        --------
+        >>> gmshModel = gmsh.mode.generate(3)
+        >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, density=2.5e-9)
+        >>> sec = SolidSection('mysec', mat)
+        >>> part = Part.from_gmsh('part_gmsh', gmshModel, sec)
 
-    #     """
-    #     part = cls(name=name, **kwargs)
-    #     part.add_section(section)
-    #     # add nodes
-    #     nodes = gmshModel.mesh.get_nodes()
-    #     node_coords = nodes[1].reshape((-1, 3), order='C')
-    #     for coords in node_coords:
-    #         k = part.add_node(Node(coords.tolist()), check)
-    #         if verbose:
-    #             print(f'node {k} added')
-    #     # add elements
-    #     elements = gmshModel.mesh.get_elements()
-    #     if isinstance(section, SolidSection):
-    #         ntags_per_element = np.split(elements[2][2]-1, len(elements[1][2]))  # gmsh keys start from 1
-    #         for ntags in ntags_per_element:
-    #             # if split:
-    #             # iteritools combinations
-    #             # for comb in combs:
-    #             # midpoint a b
-    #             # k = add node
-    #             k = part.add_element(m.SolidElement(ntags, section), check)
-    #             if verbose:
-    #                 print(f'element {k} added')
-    #     if isinstance(section, ShellSection):
-    #         ntags_per_element = np.split(elements[2][1]-1, len(elements[1][1]))  # gmsh keys start from 1
-    #         for ntags in ntags_per_element:
-    #             k = part.add_element(m.ShellElement(ntags, section), check)
-    #             if verbose:
-    #                 print(f'element {k} added')
-    #     print('\ncompas_fea2 model generated!\n')
-    #     return part
+        """
+        import numpy as np
+        part = cls(name=name, **kwargs)
+        # part.add_section(section)
+        # add nodes
+        gmsh_nodes = gmshModel.mesh.get_nodes()
+        node_coords = gmsh_nodes[1].reshape((-1, 3), order='C')
+        gmsh_elements = gmshModel.mesh.get_elements()
+        fea2_nodes = [part.add_node(Node(coords.tolist())) for coords in node_coords]
+
+        # for coords in node_coords:
+        #     k = part.add_node(Node(coords.tolist()))
+        #     if verbose:
+        #         print(f'node {k} added')
+        # add elements
+        if isinstance(section, SolidSection):
+            ntags_per_element = np.split(gmsh_elements[2][2]-1, len(gmsh_elements[1][2]))  # gmsh keys start from 1
+            for ntags in ntags_per_element:
+                # if split:
+                # iteritools combinations
+                # for comb in combs:
+                # midpoint a b
+                # k = add node
+                k = part.add_element(SolidElement(nodes=[fea2_nodes[ntag] for ntag in ntags], section=section), check)
+                if verbose:
+                    print(f'element {k} added')
+        if isinstance(section, ShellSection):
+            ntags_per_element = np.split(gmsh_elements[2][1]-1, len(gmsh_elements[1][1]))  # gmsh keys start from 1
+            for ntags in ntags_per_element:
+                k = part.add_element(ShellElement(nodes=[fea2_nodes[ntag] for ntag in ntags], section=section))
+                if verbose:
+                    print(f'element {k} added')
+        print('\ncompas_fea2 model generated!\n')
+        return part
 
     # @classmethod
     # def from_compas_part(cls, name, part):

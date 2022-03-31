@@ -124,6 +124,11 @@ from compas_fea2.results import (
     Results
 )
 
+# Input File
+from compas_fea2.job import (
+    InputFile,
+    ParametersFile,
+)
 # =========================================================================
 #                           ABAQUS CLASSES
 # =========================================================================
@@ -253,6 +258,12 @@ try:
         AbaqusResults
     )
 
+    # Abaqus Input File
+    from .job import(
+        AbaqusInputFile,
+        AbaqusParametersFile,
+    )
+
     @plugin(category='fea_backends')
     def register_backend():
         backend = compas_fea2.BACKENDS['abaqus']
@@ -341,6 +352,9 @@ try:
         backend[HistoryOutput] = AbaqusHistoryOutput
 
         backend[Results] = AbaqusResults
+
+        backend[InputFile] = AbaqusInputFile
+        backend[ParametersFile] = AbaqusParametersFile
 
         print('Abaqus implementations registered...')
 except:

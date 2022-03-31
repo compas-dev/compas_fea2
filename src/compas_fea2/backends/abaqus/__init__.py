@@ -159,7 +159,7 @@ try:
         # AbaqusMassSection,
         # AbaqusMembraneSection,
         # AbaqusPipeSection,
-        # AbaqusRectangularSection,
+        AbaqusRectangularSection,
         AbaqusShellSection,
         # AbaqusSolidSection,
         # AbaqusSpringSection,
@@ -287,7 +287,7 @@ try:
         # backend[MassSection] = AbaqusMassSection
         # backend[MembraneSection] = AbaqusMembraneSection
         # backend[PipeSection] = AbaqusPipeSection
-        # backend[RectangularSection] = AbaqusRectangularSection
+        backend[RectangularSection] = AbaqusRectangularSection
         backend[ShellSection] = AbaqusShellSection
         # backend[SolidSection] = AbaqusSolidSection
         # backend[SpringSection] = AbaqusSpringSection

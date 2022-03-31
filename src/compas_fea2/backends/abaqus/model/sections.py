@@ -6,6 +6,7 @@ from compas_fea2.model import BoxSection
 # from compas_fea2.model import HexSection
 from compas_fea2.model import ISection
 from compas_fea2.model import CircularSection
+from compas_fea2.model import RectangularSection
 from compas_fea2.model import MassSection
 from compas_fea2.model import ShellSection
 from compas_fea2.model import MembraneSection
@@ -206,24 +207,25 @@ class AbaqusCircularSection(CircularSection):
 #         self.properties = [r, t]
 
 
-# class AbaqusRectangularSection(AbaqusBeamSection):
-#     """Rectangular filled section.
+class AbaqusRectangularSection(RectangularSection):
+    """Rectangular filled section.
 
-#     Parameters
-#     ----------
-#     a : float
-#         base of the section.
-#     b : float
-#         height of the section.
-#     material : str
-#         material name to be assigned to the section.
-#     """
+    Parameters
+    ----------
+    a : float
+        base of the section.
+    b : float
+        height of the section.
+    material : str
+        material name to be assigned to the section.
+    """
 
-#     def __init__(self, name, b, h, material):
-#         super(AbaqusRectangularSection, self).__init__(name, material)
-#         self._stype = 'rect'
-#         self.properties = [b, h]
+    def __init__(self,  w, h, material, name=None, **kwargs):
+        super(AbaqusRectangularSection, self).__init__(w=w, h=h, material=material, name=name, **kwargs)
+        self._properties = [w, h]
 
+    def _generate_jobdata(self, set_name, orientation):
+        return _generate_beams_jobdata(self, set_name, orientation, 'rect')
 
 # class AbaqusTrapezoidalSection(AbaqusBeamSection):
 #     """Rectangular filled section.

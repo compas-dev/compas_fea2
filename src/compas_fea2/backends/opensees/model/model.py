@@ -70,6 +70,14 @@ model basic -ndm 3 -ndf {self.ndof}
 {self._generate_elements_data()}
 #
 #
+#------------------------------------------------------------------
+# Initial conditions
+#------------------------------------------------------------------
+#
+#    tag   DX   DY   RZ   MX   MY   MZ
+{self._generate_bc_data()}
+#
+#
 """
 
     def _generate_nodes_data(self):
@@ -87,3 +95,8 @@ model basic -ndm 3 -ndf {self.ndof}
     def _generate_sections_data(self):
         part = list(self._parts)[0]
         return '\n'.join([section._generate_jobdata() for section in part.sections])
+
+    def _generate_bc_data(self):
+        part = list(self.parts)[0]
+        bc_nodes = self.bcs[part]
+        return '\n'.join([bc._generate_jobdata(nodes) for bc, nodes in bc_nodes.items()])

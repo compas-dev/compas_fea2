@@ -48,8 +48,8 @@ class OpenseesBeamElement(BeamElement):
             self.key, ' '.join([str(i) for i in self.frame])))
         line.append('{} {} {} {} {} {} {} {} {} {} {}'.format(self._eltype,
                                                               self.key,
-                                                              self.nodes[0],
-                                                              self.nodes[1],
+                                                              self.nodes[0].key,
+                                                              self.nodes[1].key,
                                                               self.section.A,
                                                               self.section.material.E,
                                                               self.section.material.G,

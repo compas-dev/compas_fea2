@@ -26,4 +26,5 @@ class OpenseesNode(Node):
         input file data line (str).
         """
         x, y, z = self.xyz
+        # FIXME: the approximation on the floating point is not correct because it depends on the units
         return '{0}{1}{2}{3:.3f}{2}{4:.3f}{2}{5:.3f}'.format('node ', self.key, ' ', x, y, z)

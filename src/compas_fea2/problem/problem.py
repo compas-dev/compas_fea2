@@ -265,7 +265,7 @@ Steps (in order of application)
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self):
+    def write_input_file(self, path, output=True):
         """Writes the abaqus input file.
 
         Parameters
@@ -278,7 +278,7 @@ Steps (in order of application)
         None
         """
         input_file = InputFile.from_problem(self)
-        r = input_file.write_to_file(self.path)
+        r = input_file.write_to_file(path)
         if output:
             print(r)
 

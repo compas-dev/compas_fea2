@@ -10,8 +10,8 @@ class InputFile(FEAData):
     """Input file object for standard FEA.
     """
 
-    def __init__(self):
-        self._name = 'InputFile_'+str(id(self))
+    def __init__(self, name=None, **kwargs):
+        super(InputFile, self).__init__(name=name, **kwargs)
         self._job_name = None
         self._job_data = None
         self._file_name = None

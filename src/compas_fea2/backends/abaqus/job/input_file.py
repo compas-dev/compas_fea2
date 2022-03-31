@@ -19,9 +19,9 @@ class AbaqusInputFile(InputFile):
     None
     """
 
-    def __init__(self):
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusInputFile, self).__init__(name=name, **kwargs)
         self._extension = 'inp'
-        super().__init__()
 
     # ==============================================================================
     # Constructor methods
@@ -76,10 +76,9 @@ class AbaqusParametersFile(InputFile):
     None
     """
 
-    def __init__(self):
-        self.__name__ = "Parameters File"
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusParametersFile, self).__init__(name, **kwargs)
         self._extension = 'par'
-        super().__init__()
 
     @classmethod
     def from_problem(cls, problem, smooth):

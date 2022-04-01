@@ -5,6 +5,7 @@ from __future__ import print_function
 
 
 from compas_fea2.problem import StaticStep
+from compas_fea2.problem import ModalStep
 
 
 class OpenseesStaticStep(StaticStep):
@@ -25,3 +26,9 @@ timeSeries Constant {1} -factor 1.0
 pattern Plain {1} {1} -fact 1 {{
 {2}
 }}""".format(self.name, problem.steps_order.index(self.name), '\n'.join([load._generate_jobdata() for load in self.loads]))
+
+
+class OpenseesModalStep(ModalStep):
+    def __init__(self, name=None, modes=1, **kwargs):
+        super().__init__(name, modes, **kwargs)
+        raise NotImplementedError

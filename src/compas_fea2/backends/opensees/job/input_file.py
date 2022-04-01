@@ -2,6 +2,8 @@ import os.path
 from datetime import datetime
 from compas_fea2.job.input_file import InputFile
 
+from ..problem.steps import OpenseesModalStep
+
 
 class OpenseesInputFile(InputFile):
     """Input file object for standard analysis.
@@ -249,7 +251,7 @@ remove recorders
         """
         section_data = []
         for step in problem.steps:
-            if isinstance(step, ModalStep):  # TODO too messy - check!
+            if isinstance(step, OpenseesModalStep):  # TODO too messy - check!
                 section_data.append(step._generate_jobdata())
             else:
                 section_data.append(step._generate_jobdata(problem))

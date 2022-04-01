@@ -5,9 +5,12 @@ from __future__ import print_function
 
 # additional software-based classes
 from .problem import OpenseesProblem
-from .loads import (OpenseesPointLoad,
-                    )
-from .steps import (OpenseesStaticStep,
-                    )
+from .loads import (
+    OpenseesPointLoad,
+)
+from .steps import (
+    OpenseesStaticStep,
+    OpenseesModalStep,
+)
 
 __all__ = [name for name in dir() if not name.startswith('_')]

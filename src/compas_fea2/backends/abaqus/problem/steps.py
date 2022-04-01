@@ -64,7 +64,7 @@ class AbaqusStaticStep(StaticStep):
 ** - Output Requests
 **   ---------------
 {self._generate_output_section()}**
-"""
+*End Step"""
 
     def _generate_header_section(self):
         data_section = []
@@ -104,8 +104,6 @@ class AbaqusStaticStep(StaticStep):
         if self._history_outputs:
             for houtput in self._history_outputs.values():
                 data_section.append(houtput._generate_jobdata())
-        data_section.append('*End Step\n')
-
         return '\n'.join(data_section)
 
 

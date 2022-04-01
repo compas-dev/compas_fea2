@@ -1,5 +1,4 @@
 
-from compas_fea2.model import _Section
 from compas_fea2.model import BeamSection
 from compas_fea2.model import AngleSection
 from compas_fea2.model import BoxSection
@@ -15,10 +14,10 @@ from compas_fea2.model import TrussSection
 from compas_fea2.model import StrutSection
 from compas_fea2.model import TieSection
 from compas_fea2.model import SpringSection
+from compas_fea2.model import PipeSection
 
 
-# NOTE: these classes are sometimes overwriting the _base ones because Abaqus
-# offers internal ways of computing beam sections' properties
+# NOTE: these classes are sometimes overwriting the _base ones because Abaqus offers internal ways of computing beam sections' properties
 
 def _generate_beams_jobdata(obj, set_name, orientation, stype):
     """Generates the string information for the input file.
@@ -154,57 +153,61 @@ class AbaqusCircularSection(CircularSection):
 #         self.properties = [r, t]
 
 
-# class AbaqusISection(ISection):
-#     """I or T section.
+class AbaqusISection(ISection):
+    """I or T section.
 
-#     Parameters
-#     ----------
-#     b : float or list
-#         base(s) of the section. If the two bases are different, provide a list
-#         with the two values [b1, b2]
-#     h : float
-#         total height of the section (including the flanges).
-#     t : float or list
-#         thickness(es) of the section. If the three thicknesses are different,
-#         provide a list the three values [t1, t2, t3]
-#     material : str
-#         material name to be assigned to the section.
-#     l : float, optional
-#         distance of the origin of the local cross-section axis from the origin
-#         of the beam axis along the 2-axis, by default 0.
+    Note
+    ----
+    This is temporarily inconsistent with the base class. WIP
 
-#     Notes
-#     -----
-#     Set b1 and t1 or b2 and t2 to zero to model a T-section
-#     """
+    Parameters
+    ----------
+    b : float or list
+        base(s) of the section. If the two bases are different, provide a list
+        with the two values [b1, b2]
+    h : float
+        total height of the section (including the flanges).
+    t : float or list
+        thickness(es) of the section. If the three thicknesses are different,
+        provide a list the three values [t1, t2, t3]
+    material : str
+        material name to be assigned to the section.
+    l : float, optional
+        distance of the origin of the local cross-section axis from the origin
+        of the beam axis along the 2-axis, by default 0.
 
-#     def __init__(self, name, b, h, t, material, l=0):
-#         super(AbaqusISection, self).__init__(name, material)
-#         self._stype = 'I'
-#         if not isinstance(b, list):
-#             b = [b]*2
-#         if not isinstance(t, list):
-#             t = [t]*3
-#         self.properties = [l, h, *b, *t]
+    Notes
+    -----
+    Set b1 and t1 or b2 and t2 to zero to model a T-section
+    """
+
+    def __init__(self,  w, h, t, material, l=0, name=None, **kwargs):
+        super(AbaqusISection, self).__init__(w, h, t, t, material, name=name, **kwargs)
+        self._stype = 'I'
+        if not isinstance(w, list):
+            w = [w]*2
+        if not isinstance(h, list):
+            t = [t]*3
+        self.properties = [l, h, *w, *t]
 
 
-# class AbaqusPipeSection(AbaqusBeamSection):
-#     """Pipe section.
+class AbaqusPipeSection(PipeSection):
+    """Pipe section.
 
-#     Parameters
-#     ----------
-#     r : float
-#         outside radius
-#     t : float
-#         wall thickness
-#     material : str
-#         material name to be assigned to the section.
-#     """
+    Parameters
+    ----------
+    r : float
+        outside radius
+    t : float
+        wall thickness
+    material : str
+        material name to be assigned to the section.
+    """
 
-#     def __init__(self, name, r, t, material):
-#         super(AbaqusPipeSection, self).__init__(name, material)
-#         self._stype = 'pipe'
-#         self.properties = [r, t]
+    def __init__(self, r, t, material, name=None, **kwarg):
+        super(AbaqusPipeSection, self).__init__(r, t, material, name=None, **kwarg)
+        self._stype = 'pipe'
+        self.properties = [r, t]
 
 
 class AbaqusRectangularSection(RectangularSection):

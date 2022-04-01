@@ -8,7 +8,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 
-def launch_process(problem, exe, output, overwrite):
+def launch_process(problem, *, exe, output, overwrite, cpus):
     """ Run the analysis through Abaqus.
 
     Parameters
@@ -21,6 +21,8 @@ def launch_process(problem, exe, output, overwrite):
         Print terminal output.
     overwrite : bool
         Automatically overwrite results
+    cpus : int
+        Number of CPU cores to use.
 
 
     Returns
@@ -46,8 +48,8 @@ def launch_process(problem, exe, output, overwrite):
     # Analyse
     tic = time()
     success = False
-    cmd = 'cd {} && {} {} job={} interactive resultsformat=odb {}'.format(
-        problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
+    cmd = 'cd {} && {} {} cpus={} job={} interactive resultsformat=odb {}'.format(
+        problem.path, exe_kw, user_sub_kw, cpus, problem.name, overwrite_kw)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:

@@ -80,7 +80,7 @@ class AbaqusProblem(Problem):
         if save:
             self.save_to_cfp()
 
-        self.write_input_file(output)
+        self.write_input_file(self.path, output)
         launch_process(self, exe, output, overwrite, user_mat)
 
     def optimise(self, path='C:/temp', output=True, save=False):

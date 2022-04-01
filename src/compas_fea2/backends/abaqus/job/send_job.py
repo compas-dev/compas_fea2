@@ -8,7 +8,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 
-def launch_process(problem, exe, output, overwrite, user_mat):
+def launch_process(problem, exe, output, overwrite):
     """ Run the analysis through Abaqus.
 
     Parameters
@@ -21,8 +21,7 @@ def launch_process(problem, exe, output, overwrite, user_mat):
         Print terminal output.
     overwrite : bool
         Automatically overwrite results
-    user_mat : str TODO: REMOVE!
-        Name of the material defined through a subroutine (currently only one material is supported)
+
 
     Returns
     -------
@@ -37,9 +36,10 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     exe_kw = 'abaqus'
     if overwrite:
         overwrite_kw = 'ask_delete=OFF'
-    if user_mat:
-        umat_path = problem.materials[user_mat].sub_path
-        user_sub_kw = 'user={}'.format(umat_path)
+
+    # if user_mat:
+    #     umat_path = problem.materials[user_mat].sub_path
+    #     user_sub_kw = 'user={}'.format(umat_path)
     if exe:
         exe_kw = exe
 

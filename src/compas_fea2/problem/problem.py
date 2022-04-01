@@ -3,10 +3,9 @@ from __future__ import division
 from __future__ import print_function
 
 import pickle
-import importlib
+from pathlib import Path
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.steps import Step
 from compas_fea2.job.input_file import InputFile
 
@@ -52,7 +51,7 @@ class Problem(FEAData):
         super(Problem, self).__init__(name=name, **kwargs)
         self.author = author
         self.description = description or f'Problem for {model}'
-        self.path = None
+        self._path = None
         self._model = model
         self._steps = []
 
@@ -63,6 +62,14 @@ class Problem(FEAData):
     @property
     def steps(self):
         return self._steps
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        self._path = value if isinstance(value, Path) else Path(value)
 
     # =========================================================================
     #                           Step methods
@@ -265,25 +272,44 @@ Steps (in order of application)
     #                         Analysis methods
     # =========================================================================
 
-    def write_input_file(self, path, output=True):
+    def write_input_file(self, path):
         """Writes the abaqus input file.
 
         Parameters
         ----------
-        output : bool
-            Print terminal output.
+        path : str, :class:`pathlib.Path`
+            Path to the folder where the input file is saved. In case the folder
+            does not exist, one is created.
 
         Returns
         -------
         None
         """
+        self.path = path
+        if not self.path.exists():
+            self.path.mkdir()
         input_file = InputFile.from_problem(self)
-        r = input_file.write_to_file(path)
-        if output:
-            print(r)
+        return input_file.write_to_file(self.path)
 
-    def analyse(self):
-        raise NotImplementedError("this function is not available for the selceted backend")
+    def analyse(self, path, save=False):
+        """Run the analysis through the registered backend.
+
+        Parameters
+        ----------
+        path : str, :class:`pathlib.Path`
+            Path to the folder where the input file is saved. In case the folder
+            does not exist, one is created.
+        save : bool
+            Save structure to .cfp before the analysis.
+
+        Returns
+        -------
+        None
+
+        """
+        print(self.write_input_file(path))
+        if save:
+            self.save_to_cfp()
 
     # =========================================================================
     #                         Results methods

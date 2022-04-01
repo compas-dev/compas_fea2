@@ -30,69 +30,35 @@ class AbaqusProblem(Problem):
     #                         Analysis methods
     # =========================================================================
 
-    def write_parameters_file(self, output=True):
-        """Writes the abaqus parameters file for the optimisation.
-
-        Parameters
-        ----------
-        output : bool
-            Print terminal output.
-
-        Returns
-        -------
-        None
-        """
-        par_file = AbaqusParametersFile(self)
-        par = par_file.write_to_file(self.path)
-        if output:
-            print(par)
-
     # TODO: try to make this an abstract method of the base class
     # TODO: add cpu parallelization option. Parallel execution requested but no parallel feature present in the setup
 
-    def analyse(self, path='C:/temp', exe=None, cpus=1, output=True, overwrite=True, user_mat=False, save=False):
+    def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True, save=False):
         """Runs the analysis through abaqus.
 
         Parameters
         ----------
         path : str
             Path to the folder where the input file is saved.
-        exe : str
-            Full terminal command to bypass subprocess defaults.
-        cpus : int
-            Number of CPU cores to use.
-        output : bool
-            Print terminal output.
-        user_mat : str TODO: REMOVE!
-            Name of the material defined through a subroutine (currently only one material is supported)
-        save : bool
-            Save structure to .cfp before file writing.
+        exe : str, optional
+            Full terminal command to bypass subprocess defaults, by default ``None``.
+        cpus : int, optional
+            Number of CPU cores to use, , by default ``1``.
+        output : bool, optional
+            Print terminal output, by default ``True``.
+        save : bool, optional
+            Save structure to .cfp before the analysis, by default ``False``.
 
         Returns
         -------
         None
 
         """
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
-
-        self.write_input_file(self.path, output)
-        launch_process(self, exe, output, overwrite, user_mat)
+        super().analyse(path, save)
+        launch_process(self, exe, output, overwrite)
 
     def optimise(self, path='C:/temp', output=True, save=False):
-        self.path = path if isinstance(path, Path) else Path(path)
-        if not self.path.exists():
-            self.path.mkdir()
-
-        if save:
-            self.save_to_cfp()
-
-        self.write_input_file(output)
-        self.write_parameters_file(output)
+        super().optimise(path, save)
         launch_optimisation(self, output)
 
     # =============================================================================

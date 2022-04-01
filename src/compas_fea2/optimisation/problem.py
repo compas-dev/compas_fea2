@@ -93,26 +93,26 @@ class OptimisationProblem(FEAData):
     def add_constraint(self, constraint):
         raise NotImplementedError()
 
-    def write_parameters_file(self, path, output, smooth):
-        """Writes the abaqus parameters file for the optimisation.
+    def write_parameters_file(self, path):
+        """Writes the parameters file for the optimisation.
 
         Parameters
         ----------
-        path : str, path
-            path to the folder where the file will be written
-        output : bool
-            Print terminal output.
+        path : str, :class:`pathlib.Path`
+            Path to the folder where the input file is saved. In case the folder
+            does not exist, one is created.
 
         Returns
         -------
         None
         """
-        par_file = ParametersFile.from_problem(self, smooth)
-        par = par_file.write_to_file(path)
-        if output:
-            print(par)
+        self.path = path
+        if not self.path.exists():
+            self.path.mkdir()
+        par_file = ParametersFile.from_problem(self)
+        return par_file.write_to_file(self.path)
 
-    def solve(self, path='C:/temp', cpus=1, output=True, save=False, smooth=None):
+    def solve(self, path, cpus=1, output=True, save=False, smooth=None):
         """Run Topology Optimisation procedure
 
         Warning
@@ -145,7 +145,6 @@ class OptimisationProblem(FEAData):
             raise NotImplementedError()
         self._problem.write_input_file(output)
         self.write_parameters_file(self._path, output, smooth)
-        launch_optimisation(self, cpus, output)
 
 
 class TopOptSensitivity(OptimisationProblem):

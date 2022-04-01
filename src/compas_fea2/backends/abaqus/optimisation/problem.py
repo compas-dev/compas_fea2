@@ -21,3 +21,9 @@ OPTIMIZE
   STRATEGY       = {self._strategy}
 END_
 """
+
+    def solve(self, path='C:/temp', output=True, save=False):
+        super().solve(path, save)
+        launch_optimisation(self, output)
+
+# launch_optimisation(self, cpus, output)

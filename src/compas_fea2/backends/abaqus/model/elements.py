@@ -46,8 +46,8 @@ class AbaqusMassElement(MassElement):
 
     """
 
-    def __init__(self, key, node, mass, elset, name=None, **kwargs):
-        super(AbaqusMassElement, self).__init__(key, node, mass, elset, name=name, **kwargs)
+    def __init__(self, key, node, mass, elset, part=None, name=None, **kwargs):
+        super(AbaqusMassElement, self).__init__(key, node, mass, elset, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -89,8 +89,8 @@ class AbaqusTrussElement(TrussElement):
     """
     __doc__ += TrussElement.__doc__
 
-    def __init__(self, nodes, section, name=None, **kwargs):
-        super(AbaqusTrussElement, self).__init__(nodes=nodes, section=section, name=name, **kwargs)
+    def __init__(self, nodes, section, part=None, name=None, **kwargs):
+        super(AbaqusTrussElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
         self._elset = None
         self._eltype = 'T3D2'
         self._orientation = None
@@ -104,29 +104,28 @@ class AbaqusTrussElement(TrussElement):
 
 
 class AbaqusShellElement(ShellElement):
-    """A 2D element that resists axial, shear, bending and torsion.
+    """"""
+    __doc__ += ShellElement.__doc__
+    """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
 
-    Parameters
-    ----------
-    connectivity : list
-        List containing the nodes sequence building the shell element.
-    section : obj
-        compas_fea2 ShellSection object
-    elset : obj
-        compas_fea2 Set object, optional
-    thermal : bool
-        NotImplemented
 
     """
     __doc__ += ShellElement.__doc__
 
-    def __init__(self, nodes, section, name=None, **kwargs):
-        super(AbaqusShellElement, self).__init__(nodes=nodes, section=section, name=name, **kwargs)
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusShellElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
+        self._reduced = reduced
         self._elset = None
         eltypes = {3: 'S3', 4: 'S4'}
         if not len(self.nodes) in eltypes:
             raise NotImplementedError('Shells must currently have either 3 or 4 nodes')
         self._eltype = eltypes[len(self.nodes)]
+        if self._reduced:
+            self._eltype += 'R'
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)
@@ -134,45 +133,57 @@ class AbaqusShellElement(ShellElement):
 
 class AbaqusMembraneElement(MembraneElement):
 
-    def __init__(self):
-        super(AbaqusMembraneElement, self).__init__()
-        raise NotImplementedError
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusMembraneElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
+        self._elset = None
+        self._reduced = reduced
+        eltypes = {3: 'M3D3', 4: 'M3D4'}
+        if not len(self.nodes) in eltypes:
+            raise NotImplementedError('Membrane elements must currently have either 3 or 4 nodes')
+        self._eltype = eltypes[len(self.nodes)]
+        if self._reduced and len(self.nodes) > 3:
+            self._eltype += 'R'
 
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 # ==============================================================================
 # 3D elements
 # ==============================================================================
 
+
 class AbaqusSolidElement(SolidElement):
 
-    def __init__(self, nodes, section, name=None, **kwargs):
-        super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section, name=name, **kwargs)
-
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
         eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8', 10: 'C3D10'}
+        self._reduced = reduced
         if not len(self.nodes) in eltypes:
             raise NotImplementedError('Solid element with {} nodes is not currently supported'.fromat(len(self.nodes)))
         self._eltype = eltypes[len(self.nodes)]
+        if self._reduced:
+            self._eltype += 'R'
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)
 
 
 class AbaqusTetrahedonElement(TetrahedronElement):
-    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusTetrahedonElement, self).__init__(nodes=nodes,
                                                       section=section, frame=None, part=part, name=name, **kwargs)
         raise NotImplementedError()
 
 
 class AbaqusPentahedronElement(PentahedronElement):
-    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusPentahedronElement, self).__init__(nodes=nodes,
                                                        section=section, frame=None, part=part, name=name, **kwargs)
         raise NotImplementedError()
 
 
 class AbaqusHexahedronElement(HexahedronElement):
-    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusHexahedronElement, self).__init__(nodes=nodes,
                                                       section=section, frame=None, part=part, name=name, **kwargs)
         raise NotImplementedError()

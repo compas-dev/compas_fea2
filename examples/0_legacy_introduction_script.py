@@ -4,10 +4,9 @@ from compas_fea2.model import Model, elements
 from compas_fea2.model import Part
 from compas_fea2.model import Node
 from compas_fea2.model import ElasticIsotropic, Steel
-from compas_fea2.model import CircularSection, RectangularSection
+from compas_fea2.model import CircularSection, RectangularSection, MembraneSection
 from compas_fea2.model import ShellSection
-from compas_fea2.model import BeamElement
-from compas_fea2.model import ShellElement
+from compas_fea2.model import BeamElement, MembraneElement, ShellElement
 from compas_fea2.model import RollerBCXY
 from compas_fea2.model.bcs import FixedBC, PinnedBC
 from compas_fea2.model import NodesGroup
@@ -36,7 +35,8 @@ mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
 # mat_steel = Steel.S355()
 frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
 # frame_sec = CircularSection(material=mat, r=0.010)
-shell_sec = ShellSection(0.02, mat)
+membrane_sec = MembraneSection(0.02, mat)
+# shell_sec = ShellSection(0.02, mat)
 frame = model.add_part(Part())
 
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
@@ -46,8 +46,10 @@ shell_elements = []
 for i in range(1, len(nodes)):
     beam_elements.append(frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=frame_sec)))
     if not i == len(nodes)-1:
-        shell_elements.append(frame.add_element(ShellElement(
-            nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
+        # shell_elements.append(frame.add_element(ShellElement(
+        #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
+        shell_elements.append(frame.add_element(MembraneElement(
+            nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
@@ -63,13 +65,13 @@ problem = Problem(model=model, name='test')
 
 step_modal = ModalStep()
 problem.add_step(step_modal)
-step_0 = problem.add_step(StaticStep())
-step_0.add_gravity_load()
+# step_0 = problem.add_step(StaticStep())
+# step_0.add_gravity_load()
 
-step_1 = problem.add_step(StaticStep())
-step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
-# Define the field outputs required
-fout = step_0.add_output(FieldOutput())
+# step_1 = problem.add_step(StaticStep())
+# step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
+# # Define the field outputs required
+# fout = step_0.add_output(FieldOutput())
 
 
 # Review
@@ -77,8 +79,8 @@ problem.summary()
 # problem.show()
 
 # Solve the problem
-problem.write_input_file(path=Path(TEMP).joinpath('refactor'))
-# problem.analyse(path=Path(TEMP).joinpath('refactor'))
+# problem.write_input_file(path=Path(TEMP).joinpath('refactor'))
+problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 # # # results = Results.from_problem(problem, fields=['u'])

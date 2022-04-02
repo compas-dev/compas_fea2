@@ -92,17 +92,17 @@ from compas_fea2.model.bcs import (
 )
 
 # Problem
-from compas_fea2.problem import Problem, displacements
+from compas_fea2.problem import Problem
 # Steps
 from compas_fea2.problem.steps import (
-    ModalStep,
+    ModalAnalysis,
+    ComplexEigenValue,
     StaticStep,
-    # AcousticStep,
-    # BucklingStep,
-    # GeneralStaticStep,
-    # HarmonicStep,
-    # HeatStep,
-    # StaticLinearPerturbationStep,
+    LinearStaticPerturbation,
+    BucklingAnalysis,
+    DynamicStep,
+    QuasiStaticStep,
+    DirectCyclicStep,
 )
 # Loads
 from compas_fea2.problem.loads import (
@@ -232,14 +232,14 @@ try:
 
     # Abaqus Steps
     from .problem.steps import (
-        AbaqusModalStep,
+        AbaqusModalAnalysis,
+        AbaqusComplexEigenValue,
         AbaqusStaticStep,
-        # AbaqusAcousticStep,
-        # AbaqusBucklingStep,
-        # AbaqusGeneralStaticStep,
-        # AbaqusHarmonicStep,
-        # AbaqusHeatStep,
-        # AbaqusStaticLinearPerturbationStep,
+        AbaqusLinearStaticPerturbation,
+        AbaqusBucklingAnalysis,
+        AbaqusDynamicStep,
+        AbaqusQuasiStaticStep,
+        AbaqusDirectCyclicStep,
     )
     # Abaqus Loads
     from .problem.loads import (
@@ -346,14 +346,14 @@ try:
 
         backend[Problem] = AbaqusProblem
 
-        backend[ModalStep] = AbaqusModalStep
+        backend[ModalAnalysis] = AbaqusModalAnalysis
+        backend[ComplexEigenValue, StaticStep] = AbaqusComplexEigenValue
         backend[StaticStep] = AbaqusStaticStep
-        # backend[AcousticStep] = AbaqusAcousticStep
-        # backend[BucklingStep] = AbaqusBucklingStep
-        # backend[GeneralStaticStep] = AbaqusGeneralStaticStep
-        # backend[HarmonicStep] = AbaqusHarmonicStep
-        # backend[HeatStep] = AbaqusHeatStep
-        # backend[StaticLinearPerturbationStep] = AbaqusStaticLinearPerturbationStep
+        backend[LinearStaticPerturbation] = AbaqusLinearStaticPerturbation
+        backend[BucklingAnalysis] = AbaqusBucklingAnalysis
+        backend[DynamicStep] = AbaqusDynamicStep
+        backend[QuasiStaticStep] = AbaqusQuasiStaticStep
+        backend[DirectCyclicStep] = AbaqusDirectCyclicStep
 
         backend[GravityLoad] = AbaqusGravityLoad
         backend[PointLoad] = AbaqusPointLoad

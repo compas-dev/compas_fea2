@@ -6,6 +6,14 @@ from compas_fea2.base import FEAData
 
 
 class _Output(FEAData):
+    """Base class for output requests.
+
+    Parameters
+    ----------
+    FEAData : _type_
+        _description_
+    """
+
     def __init__(self, name=None, **kwargs):
         super(_Output, self).__init__(name, **kwargs)
 

@@ -7,21 +7,21 @@ from .problem import AbaqusProblem
 
 # Abaqus Steps
 from .steps import (
+    AbaqusModalAnalysis,
+    AbaqusComplexEigenValue,
     AbaqusStaticStep,
-    # AbaqusAcousticStep,
-    # AbaqusBucklingStep,
-    # AbaqusGeneralStaticStep,
-    # AbaqusHarmonicStep,
-    # AbaqusHeatStep,
-    # AbaqusModalStep,
-    # AbaqusStaticLinearPerturbationStep,
+    AbaqusLinearStaticPerturbation,
+    AbaqusBucklingAnalysis,
+    AbaqusDynamicStep,
+    AbaqusQuasiStaticStep,
+    AbaqusDirectCyclicStep,
 )
 # Abaqus Loads
 from .loads import (
     AbaqusPointLoad,
-    # AbaqusLineLoad,
-    # AbaqusAreaLoad,
-    # AbaqusGravityLoad,
+    AbaqusLineLoad,
+    AbaqusAreaLoad,
+    AbaqusGravityLoad,
     # AbaqusHarmonicPointLoad,
     # AbaqusHarmonicPressureLoad,
     # AbaqusTributaryLoad,

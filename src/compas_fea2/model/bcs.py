@@ -33,7 +33,7 @@ zz : bool
 
 
 class BoundaryCondition(FEAData):
-    """Base class for all boundary conditions.
+    """Base class for all zero-valued boundary conditions.
     """
     __doc__ += docs
 

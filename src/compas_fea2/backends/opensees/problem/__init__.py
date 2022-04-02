@@ -9,8 +9,14 @@ from .loads import (
     OpenseesPointLoad,
 )
 from .steps import (
+    OpenseesModalAnalysis,
+    OpenseesComplexEigenValue,
     OpenseesStaticStep,
-    OpenseesModalStep,
+    OpenseesLinearStaticPerturbation,
+    OpenseesBucklingAnalysis,
+    OpenseesDynamicStep,
+    OpenseesQuasiStaticStep,
+    OpenseesDirectCyclicStep,
 )
 
 __all__ = [name for name in dir() if not name.startswith('_')]

@@ -6,7 +6,7 @@ import pickle
 from pathlib import Path
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.steps import _Step
+from compas_fea2.problem.steps.step import _Step
 from compas_fea2.job.input_file import InputFile
 
 

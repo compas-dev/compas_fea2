@@ -90,14 +90,14 @@ from compas_fea2.model.bcs import (
 from compas_fea2.problem import Problem, displacements
 # Steps
 from compas_fea2.problem.steps import (
+    ModalAnalysis,
+    ComplexEigenValue,
     StaticStep,
-    # AcousticStep,
-    # BucklingStep,
-    # GeneralStaticStep,
-    # HarmonicStep,
-    # HeatStep,
-    # ModalStep,
-    # StaticLinearPerturbationStep,
+    LinearStaticPerturbation,
+    BucklingAnalysis,
+    DynamicStep,
+    QuasiStaticStep,
+    DirectCyclicStep,
 )
 # Loads
 from compas_fea2.problem.loads import (
@@ -222,14 +222,14 @@ try:
 
     # Opensees Steps
     from .problem.steps import (
+        OpenseesModalAnalysis,
+        OpenseesComplexEigenValue,
         OpenseesStaticStep,
-        # OpenseesAcousticStep,
-        # OpenseesBucklingStep,
-        # OpenseesGeneralStaticStep,
-        # OpenseesHarmonicStep,
-        # OpenseesHeatStep,
-        # OpenseesModalStep,
-        # OpenseesStaticLinearPerturbationStep,
+        OpenseesLinearStaticPerturbation,
+        OpenseesBucklingAnalysis,
+        OpenseesDynamicStep,
+        OpenseesQuasiStaticStep,
+        OpenseesDirectCyclicStep,
     )
     # Opensees Loads
     from .problem.loads import (
@@ -328,14 +328,14 @@ try:
 
         backend[Problem] = OpenseesProblem
 
+        backend[ModalAnalysis] = OpenseesModalAnalysis
+        backend[ComplexEigenValue, StaticStep] = OpenseesComplexEigenValue
         backend[StaticStep] = OpenseesStaticStep
-        # backend[AcousticStep] = OpenseesAcousticStep
-        # backend[BucklingStep] = OpenseesBucklingStep
-        # backend[GeneralStaticStep] = OpenseesGeneralStaticStep
-        # backend[HarmonicStep] = OpenseesHarmonicStep
-        # backend[HeatStep] = OpenseesHeatStep
-        # backend[ModalStep] = OpenseesModalStep
-        # backend[StaticLinearPerturbationStep] = OpenseesStaticLinearPerturbationStep
+        backend[LinearStaticPerturbation] = OpenseesLinearStaticPerturbation
+        backend[BucklingAnalysis] = OpenseesBucklingAnalysis
+        backend[DynamicStep] = OpenseesDynamicStep
+        backend[QuasiStaticStep] = OpenseesQuasiStaticStep
+        backend[DirectCyclicStep] = OpenseesDirectCyclicStep
 
         # backend[GravityLoad] = OpenseesGravityLoad
         backend[PointLoad] = OpenseesPointLoad

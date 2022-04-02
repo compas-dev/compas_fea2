@@ -24,7 +24,7 @@ from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import FixedBC
 
 from compas_fea2.problem.loads import GravityLoad, PointLoad
-from compas_fea2.problem.steps import ModalStep
+from compas_fea2.problem.steps.step import ModalStep
 
 # class Viewer():
 #     """Viewer for analysis results.

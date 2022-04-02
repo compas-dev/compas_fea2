@@ -2,7 +2,7 @@
 from compas_fea2.model import BeamSection
 from compas_fea2.model import AngleSection
 from compas_fea2.model import BoxSection
-# from compas_fea2.model import HexSection
+from compas_fea2.model import HexSection
 from compas_fea2.model import ISection
 from compas_fea2.model import CircularSection
 from compas_fea2.model import RectangularSection
@@ -11,6 +11,7 @@ from compas_fea2.model import ShellSection
 from compas_fea2.model import MembraneSection
 from compas_fea2.model import SolidSection
 from compas_fea2.model import TrussSection
+from compas_fea2.model import TrapezoidalSection
 from compas_fea2.model import StrutSection
 from compas_fea2.model import TieSection
 from compas_fea2.model import SpringSection
@@ -69,12 +70,30 @@ class AbaqusMassSection(MassSection):
 {}\n""".format(self.name, set_name, self.mass)
 
 
+class AbaqusSpringSection(SpringSection):
+    def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
+        super().__init__(forces, displacements, stiffness, name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
+
 # ==============================================================================
 # 1D
 # ==============================================================================
 
+
+class AbaqusBeamSection(BeamSection):
+    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
+        super().__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
+
+
 class AbaqusAngleSection(AngleSection):
-    """
+    """"""
+    __doc__ += AngleSection.__doc__
+    __doc__ += """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
+
     """
 
     def __init__(self, w, h, t, material, name=None, **kwargs):
@@ -87,42 +106,39 @@ class AbaqusAngleSection(AngleSection):
         return _generate_beams_jobdata(self, set_name, orientation, 'L')
 
 
-# class AbaqusBoxSection(BoxSection):
-#     """Box section.
+class AbaqusBoxSection(BoxSection):
+    """"""
+    __doc__ += BoxSection.__doc__
+    __doc__ += """Box section.
 
-#     Parameters
-#     ----------
-#     b : float
-#         base of the section.
-#     h : float
-#         total height of the section (including the flanges).
-#     t : float or list
-#         thickness(es) of the section. If the four thicknesses are different,
-#         provide a list the four values [t1, t2, t3, t4]
-#     material : str
-#         material name to be assigned to the section.
+    Note
+    ----
+    This is temporarily inconsistent with the base class. WIP
 
-#     """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
 
-#     def __init__(self, w, h, t, material, **kwargs):
-#         super(AbaqusBoxSection, self).__init__(self, w, h, t, material, **kwargs)
-#         if not isinstance(t, list):
-#             t = [t]*4
-#         self._properties = [w, h, *self._t]
+    """
 
-#     def _generate_jobdata(self, set_name, orientation):
-#         return _generate_beams_jobdata(self, set_name, orientation, 'box')
+    def __init__(self, w, h, t, material, **kwargs):
+        super(AbaqusBoxSection, self).__init__(self, w, h, t, material, **kwargs)
+        if not isinstance(t, list):
+            t = [t]*4
+        self._properties = [w, h, *self._t]
+
+    def _generate_jobdata(self, set_name, orientation):
+        return _generate_beams_jobdata(self, set_name, orientation, 'box')
 
 
 class AbaqusCircularSection(CircularSection):
-    """Circular filled section.
+    """"""
+    __doc__ += CircularSection.__doc__
+    __doc__ += """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
 
-    Parameters
-    ----------
-    r : float
-        outside radius
-    material : str
-        material name to be assigned to the section.
     """
 
     def __init__(self, r, material, name=None, **kwargs):
@@ -133,52 +149,38 @@ class AbaqusCircularSection(CircularSection):
         return _generate_beams_jobdata(self, set_name, orientation, 'circ')
 
 
-# class AbaqusHexSection(HexSection):
-#     """Hexagonal hollow section.
+class AbaqusHexSection(HexSection):
+    """"""
+    __doc__ += HexSection.__doc__
+    __doc__ += """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
 
-#     Parameters
-#     ----------
-#     r : float
-#         outside radius
-#     t : float
-#         wall thickness
-#     material : str
-#         material name to be assigned to the section.
+    """
 
-#     """
-
-#     def __init__(self, name, r, t, material):
-#         super(AbaqusHexSection, self).__init__(name, r, material)
-#         self._stype = 'hex'
-#         self.properties = [r, t]
+    def __init__(self, r, t, material, name=None, **kwargs):
+        super(AbaqusHexSection, self).__init__(r, t, material, name=name, **kwargs)
+        self._stype = 'hex'
+        self.properties = [r, t]
 
 
 class AbaqusISection(ISection):
-    """I or T section.
+    """"""
+    __doc__ += ISection.__doc__
+    __doc__ += """I or T section.
 
     Note
     ----
     This is temporarily inconsistent with the base class. WIP
 
-    Parameters
-    ----------
-    b : float or list
-        base(s) of the section. If the two bases are different, provide a list
-        with the two values [b1, b2]
-    h : float
-        total height of the section (including the flanges).
-    t : float or list
-        thickness(es) of the section. If the three thicknesses are different,
-        provide a list the three values [t1, t2, t3]
-    material : str
-        material name to be assigned to the section.
-    l : float, optional
-        distance of the origin of the local cross-section axis from the origin
-        of the beam axis along the 2-axis, by default 0.
-
-    Notes
-    -----
+    Note
+    ----
     Set b1 and t1 or b2 and t2 to zero to model a T-section
+
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
     """
 
     def __init__(self,  w, h, t, material, l=0, name=None, **kwargs):
@@ -192,35 +194,29 @@ class AbaqusISection(ISection):
 
 
 class AbaqusPipeSection(PipeSection):
-    """Pipe section.
+    """"""
+    __doc__ += PipeSection.__doc__
+    __doc__ += """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
 
-    Parameters
-    ----------
-    r : float
-        outside radius
-    t : float
-        wall thickness
-    material : str
-        material name to be assigned to the section.
     """
 
     def __init__(self, r, t, material, name=None, **kwarg):
-        super(AbaqusPipeSection, self).__init__(r, t, material, name=None, **kwarg)
+        super(AbaqusPipeSection, self).__init__(r, t, material, name=name, **kwarg)
         self._stype = 'pipe'
         self.properties = [r, t]
 
 
 class AbaqusRectangularSection(RectangularSection):
-    """Rectangular filled section.
+    """"""
+    __doc__ += RectangularSection.__doc__
+    __doc__ += """
+    Note
+    ----
+    The section properties are automatically computed by Abaqus.
 
-    Parameters
-    ----------
-    a : float
-        base of the section.
-    b : float
-        height of the section.
-    material : str
-        material name to be assigned to the section.
     """
 
     def __init__(self,  w, h, material, name=None, **kwargs):
@@ -230,50 +226,66 @@ class AbaqusRectangularSection(RectangularSection):
     def _generate_jobdata(self, set_name, orientation):
         return _generate_beams_jobdata(self, set_name, orientation, 'rect')
 
-# class AbaqusTrapezoidalSection(AbaqusBeamSection):
-#     """Rectangular filled section.
 
-#     Parameters
-#     ----------
-#     a : float
-#         bottom base of the section.
-#     b : float
-#         height of the section.
-#     c : float
-#         top base of the section.
-#     d : float
-#         distance of the origin of the local cross-section axis from the origin
-#         of the beam axis along the 2-axis, by default 0.
-#     material : str
-#         material name to be assigned to the section.
-#     """
+class AbaqusTrapezoidalSection(TrapezoidalSection):
+    """"""
+    __doc__ += TrapezoidalSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
 
-#     def __init__(self, name, a, b, c, d, material):
-#         super(AbaqusTrapezoidalSection, self).__init__(name, material)
-#         self._stype = 'rect'
-#         self.properties = [a, b, c, d]
+    """
+
+    def __init__(self, w1, w2, h, material, name=None, **kwargs):
+        super(AbaqusTrapezoidalSection, self).__init__(w1, w2, h, material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
 
 
 # TODO -> check how these sections are implemented in ABAQUS
 class AbaqusTrussSection(TrussSection):
+    """"""
+    __doc__ += TrussSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
+
+    """
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AbaqusTrussSection, self).__init__(A, material, name=name, **kwargs)
-        raise NotImplementedError
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
 
 
 class AbaqusStrutSection(StrutSection):
+    """"""
+    __doc__ += StrutSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
+
+    """
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AbaqusStrutSection, self).__init__(A, material, name=name, **kwargs)
-        raise NotImplementedError
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
 
 
 class AbaqusTieSection(TieSection):
+    """"""
+    __doc__ += TieSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
+
+    """
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AbaqusTieSection, self).__init__(A, material, name=name, **kwargs)
-        raise NotImplementedError
+        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
 
 
 # ==============================================================================
@@ -311,6 +323,8 @@ class AbaqusShellSection(ShellSection):
 
 
 class AbaqusMembraneSection(MembraneSection):
+    """"""
+    __doc__ += MembraneSection.__doc__
 
     def __init__(self, t, material, name=None, **kwargs):
         super(AbaqusMembraneSection, self).__init__(t, material, name=name, **kwargs)
@@ -336,6 +350,8 @@ class AbaqusMembraneSection(MembraneSection):
 # ==============================================================================
 
 class AbaqusSolidSection(SolidSection):
+    """"""
+    __doc__ += SolidSection.__doc__
 
     def __init__(self, material, name=None, **kwargs):
         super(AbaqusSolidSection, self).__init__(material, name=name, **kwargs)

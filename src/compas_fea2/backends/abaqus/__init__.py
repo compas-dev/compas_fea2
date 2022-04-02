@@ -28,18 +28,19 @@ from compas_fea2.model.sections import (
     BeamSection,
     BoxSection,
     CircularSection,
+    HexSection,
     ISection,
     MassSection,
-    MembraneSection,
     PipeSection,
     RectangularSection,
-    ShellSection,
-    SolidSection,
     SpringSection,
     StrutSection,
     TieSection,
     TrapezoidalSection,
     TrussSection,
+    MembraneSection,
+    ShellSection,
+    SolidSection,
 )
 # Materials
 from compas_fea2.model.materials import (
@@ -151,22 +152,23 @@ try:
 
     # Abaqus Sections
     from .model.sections import (
-        # AbaqusAngleSection,
-        # AbaqusBeamSection,
-        # AbaqusBoxSection,
+        AbaqusAngleSection,
+        AbaqusBeamSection,
+        AbaqusBoxSection,
         AbaqusCircularSection,
-        # AbaqusISection,
-        # AbaqusMassSection,
-        # AbaqusMembraneSection,
-        # AbaqusPipeSection,
+        AbaqusHexSection,
+        AbaqusISection,
+        AbaqusMassSection,
+        AbaqusPipeSection,
         AbaqusRectangularSection,
+        AbaqusSpringSection,
+        AbaqusStrutSection,
+        AbaqusTieSection,
+        AbaqusTrapezoidalSection,
+        AbaqusTrussSection,
+        AbaqusMembraneSection,
         AbaqusShellSection,
-        # AbaqusSolidSection,
-        # AbaqusSpringSection,
-        # AbaqusStrutSection,
-        # AbaqusTieSection,
-        # AbaqusTrapezoidalSection,
-        # AbaqusTrussSection,
+        AbaqusSolidSection,
     )
 
     # Abaqus Materials
@@ -279,22 +281,23 @@ try:
         backend[ShellElement] = AbaqusShellElement
         # backend[SolidElement] = AbaqusSolidElement
 
-        # backend[AngleSection] = AbaqusAngleSection
-        # backend[BeamSection] = AbaqusBeamSection
-        # backend[BoxSection] = AbaqusBoxSection
+        backend[AngleSection] = AbaqusAngleSection
+        backend[BeamSection] = AbaqusBeamSection
+        backend[BoxSection] = AbaqusBoxSection
         backend[CircularSection] = AbaqusCircularSection
-        # backend[ISection] = AbaqusISection
-        # backend[MassSection] = AbaqusMassSection
-        # backend[MembraneSection] = AbaqusMembraneSection
-        # backend[PipeSection] = AbaqusPipeSection
+        backend[HexSection] = AbaqusHexSection
+        backend[ISection] = AbaqusISection
+        backend[MassSection] = AbaqusMassSection
+        backend[MembraneSection] = AbaqusMembraneSection
+        backend[PipeSection] = AbaqusPipeSection
         backend[RectangularSection] = AbaqusRectangularSection
         backend[ShellSection] = AbaqusShellSection
-        # backend[SolidSection] = AbaqusSolidSection
-        # backend[SpringSection] = AbaqusSpringSection
-        # backend[StrutSection] = AbaqusStrutSection
-        # backend[TieSection] = AbaqusTieSection
-        # backend[TrapezoidalSection] = AbaqusTrapezoidalSection
-        # backend[TrussSection] = AbaqusTrussSection
+        backend[SolidSection] = AbaqusSolidSection
+        backend[SpringSection] = AbaqusSpringSection
+        backend[StrutSection] = AbaqusStrutSection
+        backend[TieSection] = AbaqusTieSection
+        backend[TrapezoidalSection] = AbaqusTrapezoidalSection
+        backend[TrussSection] = AbaqusTrussSection
 
         backend[ElasticIsotropic] = AbaqusElasticIsotropic
         # backend[ElasticOrthotropic] = AbaqusElasticOrthotropic

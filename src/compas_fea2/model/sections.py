@@ -196,7 +196,7 @@ class BeamSection(_Section):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -294,7 +294,7 @@ class AngleSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -381,7 +381,7 @@ class BoxSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -447,7 +447,7 @@ class CircularSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
     """
@@ -467,6 +467,53 @@ class CircularSection(BeamSection):
 
         super(CircularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
                                               Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+
+
+class HexSection(BeamSection):
+    """Hexagonal hollow section.
+
+    Parameters
+    ----------
+    r : float
+        outside radius
+    t : float
+        wall thickness
+    material : str
+        material name to be assigned to the section.
+
+    Attributes
+    ----------
+    r : float
+        outside radius
+    t : float
+        wall thickness
+    A : float
+        Cross section.
+    Ixx : float
+        Inertia wrt XX.
+    Iyy : float
+        Inertia wrt YY.
+    Ixy : float
+        Inertia wrt XY.
+    Avx : float
+        Shear area along x.
+    Avy : float
+        Shear area along y
+    J : float
+        Torsion modulus.
+    g0 : float
+        ???
+    gw : float
+        ???
+    material : :class:`compas_fea2.model.Material`
+        The section material.
+    name : str
+        Section name. If not provided, a unique identifier is automatically
+        assigned.
+    """
+
+    def __init__(self, r, t, material, name=None, **kwargs):
+        raise NotImplementedError('This section is not available for the selected backend')
 
 
 class ISection(BeamSection):
@@ -522,7 +569,7 @@ class ISection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
     """
@@ -588,7 +635,7 @@ class PipeSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
     """
@@ -653,7 +700,7 @@ class RectangularSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -729,7 +776,7 @@ class TrapezoidalSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -791,7 +838,7 @@ class TrussSection(BeamSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -845,7 +892,7 @@ class StrutSection(TrussSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -890,7 +937,7 @@ class TieSection(TrussSection):
         ???
     material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
     """
@@ -916,6 +963,16 @@ class ShellSection(_Section):
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
+    Attributes
+    ----------
+    t : float
+        Thickness.
+    material : :class:`compas_fea2.model.Material`
+        The section material.
+    name : str
+        Section name. If not provided, a unique identifier is automatically
+        assigned.
+
     """
 
     def __init__(self, t, material, name=None, **kwargs):
@@ -933,6 +990,16 @@ class MembraneSection(_Section):
     material : :class:`compas_fea2.model.Material`
         The section material.
     name : str, optional
+        Section name. If not provided, a unique identifier is automatically
+        assigned.
+
+    Attributes
+    ----------
+    t : float
+        Thickness.
+    material : :class:`compas_fea2.model.Material`
+        The section material.
+    name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
@@ -958,6 +1025,13 @@ class SolidSection(_Section):
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
+    Attributes
+    ----------
+    material : :class:`compas_fea2.model.Material`
+        The section material.
+    name : str
+        Section name. If not provided, a unique identifier is automatically
+        assigned.
     """
 
     def __init__(self, material, name=None, **kwargs):

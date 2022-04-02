@@ -14,8 +14,6 @@ from compas_fea2.model import RollerBCXY
 from compas_fea2.model import RollerBCYZ
 from compas_fea2.model import RollerBCXZ
 
-# TODO: add the possibility to add bcs to nodes/elements and not only to sets
-
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 

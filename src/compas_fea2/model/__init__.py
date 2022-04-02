@@ -77,6 +77,7 @@ Sections
     AngleSection
     BoxSection
     CircularSection
+    HexSection
     ISection
     PipeSection
     RectangularSection
@@ -161,6 +162,7 @@ from .sections import (
     AngleSection,
     BoxSection,
     CircularSection,
+    HexSection,
     ISection,
     PipeSection,
     RectangularSection,

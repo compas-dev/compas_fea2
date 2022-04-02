@@ -15,22 +15,13 @@ class OpenseesModel(Model):
     """
     __doc__ += Model.__doc__
 
-    def __init__(self, name=None, description=None, author=None, **kwargs):
+    def __init__(self, name=None, description=None, ndof=6, author=None, **kwargs):
         super(OpenseesModel, self).__init__(name=name, description=description, author=author, **kwargs)
-        self._ndof = 6
-
-    @property
-    def ndof(self):
-        """The ndof property."""
-        return self._ndof
-
-    @ndof.setter
-    def ndof(self, value):
-        self._ndof = value
+        self.ndof = ndof
 
     def _generate_jobdata(self):
         if len(self._parts) > 1:
-            raise NotImplementedError('Currently multiple parts are not supported in OpenSee')
+            raise NotImplementedError('Currently multiple parts are not supported in OpenSees')
         # part_name = list(self._parts)[0]
         return f"""#
 #

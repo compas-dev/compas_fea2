@@ -1,9 +1,13 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from compas_fea2.optimisation.constraints import OptimisationConstraint
 
 
 class AbaqusOptimisationConstraint(OptimisationConstraint):
-    def __init__(self, name, design_response, relative=False) -> None:
-        super().__init__(name, design_response, relative)
+    def __init__(self, design_response, relative=False, name=None, **kwargs):
+        super(AbaqusOptimisationConstraint, self).__init__(design_response, relative, name=name, **kwargs)
 
     def _generate_jobdata(self):
         equalities = {'=': 'EQ_VALUE', '<=': 'LE_VALUE', '<>=': 'GE_VALUE'}

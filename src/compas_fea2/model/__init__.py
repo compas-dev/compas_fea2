@@ -188,6 +188,7 @@ from .groups import (
 )
 from .releases import (
     _BeamEndRelease,
+    BeamEndPinRelease,
 )
 from .bcs import (
     BoundaryCondition,

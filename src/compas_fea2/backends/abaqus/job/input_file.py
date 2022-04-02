@@ -5,19 +5,11 @@ from __future__ import print_function
 from datetime import datetime
 import compas_fea2
 from compas_fea2.job import InputFile
+from compas_fea2.job.input_file import ParametersFile
 
 
 class AbaqusInputFile(InputFile):
-    """Input file object for standard analysis.
-
-    Parameters
-    ----------
-    None
-
-    Attributes
-    ----------
-    None
-    """
+    """"""
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusInputFile, self).__init__(name=name, **kwargs)
@@ -64,17 +56,8 @@ class AbaqusInputFile(InputFile):
 {problem._generate_jobdata()}"""
 
 
-class AbaqusParametersFile(InputFile):
-    """ParFile object for optimisation.
-
-    Parameters
-    ----------
-    None
-
-    Attributes
-    ----------
-    None
-    """
+class AbaqusParametersFile(ParametersFile):
+    """"""
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusParametersFile, self).__init__(name, **kwargs)

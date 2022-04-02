@@ -21,6 +21,9 @@ from compas_fea2.model.elements import (
     MembraneElement,
     ShellElement,
     SolidElement,
+    TetrahedronElement,
+    PentahedronElement,
+    HexahedronElement,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -28,18 +31,19 @@ from compas_fea2.model.sections import (
     BeamSection,
     BoxSection,
     CircularSection,
+    HexSection,
     ISection,
     MassSection,
-    MembraneSection,
     PipeSection,
     RectangularSection,
-    ShellSection,
-    SolidSection,
     SpringSection,
     StrutSection,
     TieSection,
     TrapezoidalSection,
     TrussSection,
+    MembraneSection,
+    ShellSection,
+    SolidSection,
 )
 # Materials
 from compas_fea2.model.materials import (
@@ -47,6 +51,7 @@ from compas_fea2.model.materials import (
     ElasticOrthotropic,
     ElasticPlastic,
     Stiff,
+    UserMaterial,
     Concrete,
     ConcreteDamagedPlasticity,
     ConcreteSmearedCrack,
@@ -87,7 +92,7 @@ from compas_fea2.model.bcs import (
 )
 
 # Problem
-from compas_fea2.problem import Problem, displacements
+from compas_fea2.problem import Problem
 # Steps
 from compas_fea2.problem.steps import (
     ModalAnalysis,
@@ -102,12 +107,13 @@ from compas_fea2.problem.steps import (
 # Loads
 from compas_fea2.problem.loads import (
     PointLoad,
-    # LineLoad,
-    # AreaLoad,
+    LineLoad,
+    AreaLoad,
+    TributaryLoad,
+    PrestressLoad,
     GravityLoad,
-    # HarmonicPointLoad,
-    # HarmonicPressureLoad,
-    # TributaryLoad,
+    HarmonicPointLoad,
+    HarmonicPressureLoad,
 )
 # Displacements
 from compas_fea2.problem.displacements import (
@@ -126,9 +132,9 @@ from compas_fea2.results import (
 
 # Input File
 from compas_fea2.job import (
-    InputFile
+    InputFile,
+    ParametersFile,
 )
-
 # =========================================================================
 #                           ABAQUS CLASSES
 # =========================================================================
@@ -141,66 +147,71 @@ try:
 
     # Opensees Elements
     from .model.elements import (
-        # OpenseesMassElement,
+        OpenseesMassElement,
         OpenseesBeamElement,
-        # OpenseesTrussElement,
-        # OpenseesMembraneElement,
-        # OpenseesShellElement,
-        # OpenseesSolidElement,
+        OpenseesTrussElement,
+        OpenseesMembraneElement,
+        OpenseesShellElement,
+        OpenseesSolidElement,
+        OpenseesTetrahedonElement,
+        OpenseesPentahedronElement,
+        OpenseesHexahedronElement,
     )
 
     # Opensees Sections
     from .model.sections import (
-        # OpenseesAngleSection,
-        # OpenseesBeamSection,
-        # OpenseesBoxSection,
-        # OpenseesCircularSection,
-        # OpenseesISection,
-        # OpenseesMassSection,
-        # OpenseesMembraneSection,
-        # OpenseesPipeSection,
+        OpenseesAngleSection,
+        OpenseesBeamSection,
+        OpenseesBoxSection,
+        OpenseesCircularSection,
+        OpenseesHexSection,
+        OpenseesISection,
+        OpenseesMassSection,
+        OpenseesPipeSection,
         OpenseesRectangularSection,
-        # OpenseesShellSection,
-        # OpenseesSolidSection,
-        # OpenseesSpringSection,
-        # OpenseesStrutSection,
-        # OpenseesTieSection,
-        # OpenseesTrapezoidalSection,
-        # OpenseesTrussSection,
+        OpenseesSpringSection,
+        OpenseesStrutSection,
+        OpenseesTieSection,
+        OpenseesTrapezoidalSection,
+        OpenseesTrussSection,
+        OpenseesMembraneSection,
+        OpenseesShellSection,
+        OpenseesSolidSection,
     )
 
     # Opensees Materials
-    from .model import (
+    from .model.materials import (
         OpenseesElasticIsotropic,
-        # OpenseesElasticOrthotropic,
-        # OpenseesElasticPlastic,
-        # OpenseesStiff,
-        # OpenseesConcrete,
-        # OpenseesConcreteDamagedPlasticity,
-        # OpenseesConcreteSmearedCrack,
-        # OpenseesSteel,
+        OpenseesElasticOrthotropic,
+        OpenseesElasticPlastic,
+        OpenseesStiff,
+        OpenseesUserMaterial,
+        OpenseesConcrete,
+        OpenseesConcreteDamagedPlasticity,
+        OpenseesConcreteSmearedCrack,
+        OpenseesSteel,
     )
 
-    # # Opensees Groups
-    # from .model.groups import (
-    #     OpenseesNodesGroup,
-    #     OpenseesElementsGroup,
-    #     OpenseesFacesGroup,
-    # )
+    # Opensees Groups
+    from .model.groups import (
+        OpenseesNodesGroup,
+        OpenseesElementsGroup,
+        OpenseesFacesGroup,
+    )
 
-    # # Opensees Interactions
-    # from .model.interactions import (
-    #     OpenseesHardContactFrictionPenalty,
-    # )
+    # Opensees Interactions
+    from .model.interactions import (
+        OpenseesHardContactFrictionPenalty,
+    )
     # Opensees Constraints
     from .model.constraints import (
         OpenseesTieConstraint,
     )
 
-    # # Opensees release
-    # from .model.releases import (
-    #     OpenseesBeamEndPinRelease,
-    # )
+    # Opensees release
+    from .model.releases import (
+        OpenseesBeamEndPinRelease,
+    )
 
     # Opensees Boundary Conditions
     from .model.bcs import (
@@ -234,85 +245,94 @@ try:
     # Opensees Loads
     from .problem.loads import (
         OpenseesPointLoad,
-        # OpenseesLineLoad,
-        # OpenseesAreaLoad,
-        # OpenseesGravityLoad,
-        # OpenseesHarmonicPointLoad,
-        # OpenseesHarmonicPressureLoad,
-        # OpenseesTributaryLoad,
+        OpenseesLineLoad,
+        OpenseesAreaLoad,
+        OpenseesTributaryLoad,
+        OpenseesPrestressLoad,
+        OpenseesGravityLoad,
+        OpenseesHarmonicPointLoad,
+        OpenseesHarmonicPressureLoad,
     )
 
-    # # Opensees Displacements
-    # from .problem.displacements import (
-    #     OpenseesGeneralDisplacement,
-    # )
+    # Opensees Displacements
+    from .problem.displacements import (
+        OpenseesGeneralDisplacement,
+    )
 
     # Opensees outputs
-    # from .problem.outputs import (
-    #     OpenseesFieldOutput,
-    #     OpenseesHistoryOutput,
-    # )
+    from .problem.outputs import (
+        OpenseesFieldOutput,
+        OpenseesHistoryOutput,
+    )
 
     # Opensees Results
-    # from .results import (
-    #     OpenseesResults
-    # )
+    from .results import (
+        OpenseesResults
+    )
 
-    # InputFile
-    from .job.input_file import (
-        OpenseesInputFile
+    # Opensees Input File
+    from .job import(
+        OpenseesInputFile,
+        OpenseesParametersFile,
     )
 
     @plugin(category='fea_backends')
     def register_backend():
-        backend = compas_fea2.BACKENDS['opensees']
+        backend = compas_fea2.BACKENDS['abaqus']
 
         backend[Model] = OpenseesModel
         backend[Part] = OpenseesPart
         backend[Node] = OpenseesNode
 
-        # backend[MassElement] = OpenseesMassElement
+        backend[MassElement] = OpenseesMassElement
         backend[BeamElement] = OpenseesBeamElement
-        # backend[TrussElement] = OpenseesTrussElement
-        # backend[MembraneElement] = OpenseesMembraneElement
-        # backend[ShellElement] = OpenseesShellElement
-        # backend[SolidElement] = OpenseesSolidElement
+        backend[TrussElement] = OpenseesTrussElement
+        backend[MembraneElement] = OpenseesMembraneElement
+        backend[ShellElement] = OpenseesShellElement
+        backend[SolidElement] = OpenseesSolidElement
+        backend[SolidElement] = OpenseesSolidElement
+        backend[SolidElement] = OpenseesSolidElement
+        backend[TetrahedronElement] = OpenseesTetrahedonElement
+        backend[PentahedronElement] = OpenseesPentahedronElement
+        backend[HexahedronElement] = OpenseesHexahedronElement
 
-        # backend[AngleSection] = OpenseesAngleSection
-        # backend[BeamSection] = OpenseesBeamSection
-        # backend[BoxSection] = OpenseesBoxSection
-        # backend[CircularSection] = OpenseesCircularSection
-        # backend[ISection] = OpenseesISection
-        # backend[MassSection] = OpenseesMassSection
-        # backend[MembraneSection] = OpenseesMembraneSection
-        # backend[PipeSection] = OpenseesPipeSection
+        backend[AngleSection] = OpenseesAngleSection
+        backend[BeamSection] = OpenseesBeamSection
+        backend[BoxSection] = OpenseesBoxSection
+        backend[CircularSection] = OpenseesCircularSection
+        backend[HexSection] = OpenseesHexSection
+        backend[ISection] = OpenseesISection
+        backend[MassSection] = OpenseesMassSection
+        backend[MembraneSection] = OpenseesMembraneSection
+        backend[PipeSection] = OpenseesPipeSection
         backend[RectangularSection] = OpenseesRectangularSection
-        # backend[ShellSection] = OpenseesShellSection
-        # backend[SolidSection] = OpenseesSolidSection
-        # backend[SpringSection] = OpenseesSpringSection
-        # backend[StrutSection] = OpenseesStrutSection
-        # backend[TieSection] = OpenseesTieSection
-        # backend[TrapezoidalSection] = OpenseesTrapezoidalSection
-        # backend[TrussSection] = OpenseesTrussSection
+        backend[ShellSection] = OpenseesShellSection
+        backend[SolidSection] = OpenseesSolidSection
+        backend[SpringSection] = OpenseesSpringSection
+        backend[StrutSection] = OpenseesStrutSection
+        backend[TieSection] = OpenseesTieSection
+        backend[TrapezoidalSection] = OpenseesTrapezoidalSection
+        backend[TrussSection] = OpenseesTrussSection
 
         backend[ElasticIsotropic] = OpenseesElasticIsotropic
-        # backend[ElasticOrthotropic] = OpenseesElasticOrthotropic
-        # backend[ElasticPlastic] = OpenseesElasticPlastic
-        # backend[Stiff] = OpenseesStiff
-        # backend[Concrete] = OpenseesConcrete
-        # backend[ConcreteDamagedPlasticity] = OpenseesConcreteDamagedPlasticity
-        # backend[ConcreteSmearedCrack] = OpenseesConcreteSmearedCrack
-        # backend[Steel] = OpenseesSteel
+        backend[ElasticOrthotropic] = OpenseesElasticOrthotropic
+        backend[ElasticPlastic] = OpenseesElasticPlastic
+        backend[Stiff] = OpenseesStiff
+        backend[UserMaterial] = OpenseesUserMaterial
+        backend[Concrete] = OpenseesConcrete
+        backend[ConcreteDamagedPlasticity] = OpenseesConcreteDamagedPlasticity
+        backend[ConcreteSmearedCrack] = OpenseesConcreteSmearedCrack
+        backend[Steel] = OpenseesSteel
 
-        # backend[NodesGroup] = OpenseesNodesGroup
-        # backend[ElementsGroup] = OpenseesElementsGroup
-        # backend[FacesGroup] = OpenseesFacesGroup
+        backend[NodesGroup] = OpenseesNodesGroup
+        backend[ElementsGroup] = OpenseesElementsGroup
+        backend[FacesGroup] = OpenseesFacesGroup
 
-        # backend[HardContactFrictionPenalty] = OpenseesHardContactFrictionPenalty
+        backend[HardContactFrictionPenalty] = OpenseesHardContactFrictionPenalty
 
         backend[TieConstraint] = OpenseesTieConstraint
 
-        # backend[BeamEndPinRelease] = OpenseesBeamEndPinRelease
+        backend[BeamEndPinRelease] = OpenseesBeamEndPinRelease
 
         backend[FixedBC] = OpenseesFixedBC
         backend[FixedBCXX] = OpenseesFixedBCXX
@@ -337,22 +357,24 @@ try:
         backend[QuasiStaticStep] = OpenseesQuasiStaticStep
         backend[DirectCyclicStep] = OpenseesDirectCyclicStep
 
-        # backend[GravityLoad] = OpenseesGravityLoad
+        backend[GravityLoad] = OpenseesGravityLoad
         backend[PointLoad] = OpenseesPointLoad
-        # backend[LineLoad] = OpenseesLineLoad
-        # backend[AreaLoad] = OpenseesAreaLoad
-        # backend[HarmonicPointLoad] = OpenseesHarmonicPointLoad
-        # backend[HarmonicPressureLoad] = OpenseesHarmonicPressureLoad
-        # backend[TributaryLoad] = OpenseesTributaryLoad
+        backend[LineLoad] = OpenseesLineLoad
+        backend[AreaLoad] = OpenseesAreaLoad
+        backend[TributaryLoad] = OpenseesTributaryLoad
+        backend[PrestressLoad] = OpenseesPrestressLoad
+        backend[HarmonicPointLoad] = OpenseesHarmonicPointLoad
+        backend[HarmonicPressureLoad] = OpenseesHarmonicPressureLoad
 
-        # backend[GeneralDisplacement] = OpenseesGeneralDisplacement
+        backend[GeneralDisplacement] = OpenseesGeneralDisplacement
 
-        # backend[FieldOutput] = OpenseesFieldOutput
-        # backend[HistoryOutput] = OpenseesHistoryOutput
+        backend[FieldOutput] = OpenseesFieldOutput
+        backend[HistoryOutput] = OpenseesHistoryOutput
 
-        # backend[Results] = OpenseesResults
+        backend[Results] = OpenseesResults
 
         backend[InputFile] = OpenseesInputFile
+        backend[ParametersFile] = OpenseesParametersFile
 
         print('Opensees implementations registered...')
 except:

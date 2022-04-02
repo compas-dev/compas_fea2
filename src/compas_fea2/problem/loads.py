@@ -223,3 +223,35 @@ class GravityLoad(_Load):
     @property
     def g(self):
         return self._g
+
+
+class PrestressLoad(_Load):
+    """"""
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError()
+
+
+class TributaryLoad(_Load):
+    """"""
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError()
+
+
+class HarmonicPointLoad(_Load):
+    """"""
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(HarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError()
+
+
+class HarmonicPressureLoad(_Load):
+    """"""
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(HarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError()

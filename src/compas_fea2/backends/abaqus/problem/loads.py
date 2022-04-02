@@ -2,15 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# from compas_fea2.problem import PrestressLoad
 from compas_fea2.problem import PointLoad
 from compas_fea2.problem import LineLoad
 from compas_fea2.problem import AreaLoad
 from compas_fea2.problem import GravityLoad
-# from compas_fea2.problem import TributaryLoad
-# from compas_fea2.problem import HarmonicPointLoad
-# from compas_fea2.problem import HarmonicPressureLoad
-# from compas_fea2.problem import AcousticDiffuseFieldLoad
+from compas_fea2.problem import TributaryLoad
+from compas_fea2.problem import PrestressLoad
+from compas_fea2.problem import HarmonicPointLoad
+from compas_fea2.problem import HarmonicPressureLoad
 
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
@@ -124,27 +123,28 @@ class AbaqusGravityLoad(GravityLoad):
                                                    self.components['y'], self.components['z'])
 
 
-# class AbaqusTributaryLoad(TributaryLoad):
+class AbaqusPrestressLoad(PrestressLoad):
 
-#     def __init__(self, structure, mesh, x, y, z, axes):
-#         super(AbaqusTributaryLoad, self).__init__(structure, mesh, x, y, z, axes)
-#         raise NotImplementedError
-
-
-# class AbaqusHarmonicPointLoad(HarmonicPointLoad):
-
-#     def __init__(self, nodes, x, y, z, xx, yy, zz):
-#         super(AbaqusHarmonicPointLoad, self).__init__(nodes, x, y, z, xx, yy, zz)
-#         raise NotImplementedError
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusPrestressLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-# class AbaqusHarmonicPressureLoad(HarmonicPressureLoad):
-#     def __init__(self, elements, pressure, phase):
-#         super(AbaqusHarmonicPressureLoad, self).__init__(elements, pressure, phase)
-#         raise NotImplementedError
+class AbaqusTributaryLoad(TributaryLoad):
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusTributaryLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-# class AbaqusAcousticDiffuseFieldLoad(AcousticDiffuseFieldLoad):
-#     def __init__(self, elements, air_density, sound_speed, max_inc_angle):
-#         super(AbaqusAcousticDiffuseFieldLoad, self).__init__(elements, air_density, sound_speed, max_inc_angle)
-#         raise NotImplementedError
+class AbaqusHarmonicPointLoad(HarmonicPointLoad):
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusHarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
+
+
+class AbaqusHarmonicPressureLoad(HarmonicPressureLoad):
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusHarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError

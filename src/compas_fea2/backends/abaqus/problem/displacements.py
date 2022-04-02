@@ -10,9 +10,19 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
 class AbaqusGeneralDisplacement(GeneralDisplacement):
+    """OpenSees implementation of :class:`compas_fea2.problem.PointLoad`.\n
+    """
+    __doc__ += GeneralDisplacement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    modify : bool, optional
+        If ``True``, change previous displacements applied at the same location, otherwise
+        add the displacement to the previous. By defult is ``True``.
+    """
 
-    def __init__(self, name, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=True):
-        super(AbaqusGeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes)
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=True, name=None, **kwargs):
+        super(AbaqusGeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
         self._op = 'NEW' if modify else 'MOD'
 
     def _generate_jobdata(self, instance, nodes):

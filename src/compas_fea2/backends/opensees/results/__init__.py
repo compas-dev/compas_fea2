@@ -1,23 +1,25 @@
 """
 ********************************************************************************
-opensees.job
+abaqus.results
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.backends.opensees.job
+.. currentmodule:: compas_fea2.backends.abaqus.problem
 
+Results
+=======
+.. autosummary::
+    :toctree: generated/
+
+    Results
 
 """
-
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .input_file import (
-    OpenseesInputFile,
-    OpenseesParametersFile
-)
-from .send_job import *
+# additional software-based classes
+from .results import OpenseesResults
 
 
-__all__ = [name for name in dir() if not name.startswith('_')]
+# __all__ = [name for name in dir() if not name.startswith('_')]

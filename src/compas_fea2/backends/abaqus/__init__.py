@@ -109,10 +109,11 @@ from compas_fea2.problem.loads import (
     PointLoad,
     LineLoad,
     AreaLoad,
-    # TributaryLoad,
+    TributaryLoad,
+    PrestressLoad,
     GravityLoad,
-    # HarmonicPointLoad,
-    # HarmonicPressureLoad,
+    HarmonicPointLoad,
+    HarmonicPressureLoad,
 )
 # Displacements
 from compas_fea2.problem.displacements import (
@@ -246,10 +247,11 @@ try:
         AbaqusPointLoad,
         AbaqusLineLoad,
         AbaqusAreaLoad,
-        # AbaqusTributaryLoad,
+        AbaqusTributaryLoad,
+        AbaqusPrestressLoad,
         AbaqusGravityLoad,
-        # AbaqusHarmonicPointLoad,
-        # AbaqusHarmonicPressureLoad,
+        AbaqusHarmonicPointLoad,
+        AbaqusHarmonicPressureLoad,
     )
 
     # Abaqus Displacements
@@ -359,9 +361,10 @@ try:
         backend[PointLoad] = AbaqusPointLoad
         backend[LineLoad] = AbaqusLineLoad
         backend[AreaLoad] = AbaqusAreaLoad
-        # backend[TributaryLoad] = AbaqusTributaryLoad
-        # backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
-        # backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
+        backend[TributaryLoad] = AbaqusTributaryLoad
+        backend[PrestressLoad] = AbaqusPrestressLoad
+        backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
+        backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
 
         backend[GeneralDisplacement] = AbaqusGeneralDisplacement
 

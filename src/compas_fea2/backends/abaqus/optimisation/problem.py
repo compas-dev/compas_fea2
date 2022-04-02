@@ -1,15 +1,16 @@
-import importlib
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from pathlib import Path
 from compas_fea2.optimisation.problem import TopOptSensitivity
-from compas_fea2.backends.abaqus.job.input_file import AbaqusParametersFile
-from compas_fea2.backends.abaqus.job.input_file import AbaqusInputFile
 from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
 
 
 class AbaqusTopOptSensitivity(TopOptSensitivity):
 
-    def __init__(self, problem, design_variables, vf, lc='ALL,ALL,All', **kwargs):
-        super().__init__(problem, design_variables, vf, lc, **kwargs)
+    def __init__(self, problem, design_variables, vf, lc='ALL,ALL,All', name=None, **kwargs):
+        super(AbaqusTopOptSensitivity).__init__(problem, design_variables, vf, lc, name=name, **kwargs)
 
     def _generate_jobdata(self):
         return f"""!
@@ -25,5 +26,3 @@ END_
     def solve(self, path='C:/temp', output=True, save=False):
         super().solve(path, save)
         launch_optimisation(self, output)
-
-# launch_optimisation(self, cpus, output)

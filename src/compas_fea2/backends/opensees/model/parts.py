@@ -6,7 +6,11 @@ from compas_fea2.model import Part
 
 
 class OpenseesPart(Part):
-    """OpenSees implementation of :class:`compas_fea2.model.Part`.\n
+    """OpenSees implementation of :class:`compas_fea2.model.Part`.
+
+    Note
+    ----
+    Models with multiple parts are not currently supported in Opensees.
     """
     __doc__ += Part.__doc__
 

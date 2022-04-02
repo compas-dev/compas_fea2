@@ -46,8 +46,9 @@ class AbaqusMassElement(MassElement):
 
     """
 
-    def __init__(self, key, node, mass, elset, part=None, name=None, **kwargs):
-        super(AbaqusMassElement, self).__init__(key, node, mass, elset, part=part, name=name, **kwargs)
+    def __init__(self, *, node, section, frame=None, part=None, name=None, **kwargs):
+        super(AbaqusMassElement, self).__init__(nodes=[node],
+                                                section=section, frame=frame, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

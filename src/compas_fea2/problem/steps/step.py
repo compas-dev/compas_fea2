@@ -213,12 +213,3 @@ class _GeneralStep(_Step):
 
     def add_loads(self, load, nodes):
         return [self.add_load(load, node) for node in nodes]
-
-
-class AcousticStep(_GeneralStep):
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
-        super().__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name, **kwargs)
-        raise NotImplementedError()
-
-    def add_acoustic_diffuse_field_load(self):
-        raise NotImplementedError

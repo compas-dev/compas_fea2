@@ -1,6 +1,7 @@
 import os.path
 from datetime import datetime
 from compas_fea2.job.input_file import InputFile
+from compas_fea2.job.input_file import ParametersFile
 
 
 class OpenseesInputFile(InputFile):
@@ -16,7 +17,7 @@ class OpenseesInputFile(InputFile):
     name : str
         Input file name.
     job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
+        Name of the Opensees job. This is the same as the input file name.
     data : str
         Final input file text data that will be written in the .tcl file.
     """
@@ -252,3 +253,11 @@ remove recorders
             section_data.append(step._generate_jobdata(problem))
 
         return ''.join(section_data)
+
+
+class OpenseesParametersFile(ParametersFile):
+    """"""
+
+    def __init__(self, name=None, **kwargs):
+        super(OpenseesParametersFile, self).__init__(name, **kwargs)
+        self._extension = 'par'

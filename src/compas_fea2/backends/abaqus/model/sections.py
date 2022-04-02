@@ -1,4 +1,8 @@
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from compas_fea2.model import BeamSection
 from compas_fea2.model import AngleSection
 from compas_fea2.model import BoxSection
@@ -41,18 +45,11 @@ def _generate_beams_jobdata(obj, set_name, orientation, stype):
 # 0D
 # ==============================================================================
 class AbaqusMassSection(MassSection):
-    """Section for mass elements.
+    """"""
+    __doc__ += MassSection.__doc__
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    mass : float
-        Point mass value.
-    """
-
-    def __init__(self, name, mass):
-        super(AbaqusMassSection, self).__init__(name, mass)
+    def __init__(self, mass, name=None, **kwargs):
+        super(AbaqusMassSection, self).__init__(mass, name=name, **kwargs)
 
     def _generate_jobdata(self, set_name):
         """Generates the string information for the input file.

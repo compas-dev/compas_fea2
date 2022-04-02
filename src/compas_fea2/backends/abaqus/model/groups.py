@@ -111,6 +111,10 @@ class AbaqusFacesGroup(FacesGroup):
 
 
 class AbaqusPartsGroup(PartsGroup):
+    """Abaqus implementation of the :class:`compas_fea2.model.FacesGroup`.\n
+    """
+    __doc__ += PartsGroup.__doc__
+
     def __init__(self, *, parts, name=None, **kwargs):
-        super().__init__(parts=parts, name=name, **kwargs)
+        super(AbaqusPartsGroup, self).__init__(parts=parts, name=name, **kwargs)
         raise NotImplementedError

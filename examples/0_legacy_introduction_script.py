@@ -34,7 +34,7 @@ mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
 # mat_steel = Steel.S355()
 frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
 # frame_sec = CircularSection(material=mat, r=0.010)
-membrane_sec = MembraneSection(0.02, mat)
+# membrane_sec = MembraneSection(0.02, mat)
 # shell_sec = ShellSection(0.02, mat)
 frame = model.add_part(Part())
 
@@ -44,11 +44,11 @@ beam_elements = []
 shell_elements = []
 for i in range(1, len(nodes)):
     beam_elements.append(frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=frame_sec)))
-    if not i == len(nodes)-1:
-        # shell_elements.append(frame.add_element(ShellElement(
-        #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
-        shell_elements.append(frame.add_element(MembraneElement(
-            nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
+    # if not i == len(nodes)-1:
+    #     # shell_elements.append(frame.add_element(ShellElement(
+    #     #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
+    #     shell_elements.append(frame.add_element(MembraneElement(
+    #         nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
@@ -62,13 +62,13 @@ model.summary()
 # Create the Problem object
 problem = Problem(model=model, name='test')
 
-step_modal = ModalAnalysis(modes=3)
-problem.add_step(step_modal)
+# step_modal = ModalAnalysis(modes=3)
+# problem.add_step(step_modal)
 # step_0 = problem.add_step(StaticStep())
 # step_0.add_gravity_load()
 
-# step_1 = problem.add_step(StaticStep())
-# step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
+step_1 = problem.add_step(StaticStep())
+step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 # # Define the field outputs required
 # fout = step_0.add_output(FieldOutput())
 

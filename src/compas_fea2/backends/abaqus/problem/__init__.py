@@ -22,9 +22,10 @@ from .loads import (
     AbaqusLineLoad,
     AbaqusAreaLoad,
     AbaqusGravityLoad,
-    # AbaqusHarmonicPointLoad,
-    # AbaqusHarmonicPressureLoad,
-    # AbaqusTributaryLoad,
+    AbaqusPrestressLoad,
+    AbaqusHarmonicPointLoad,
+    AbaqusHarmonicPressureLoad,
+    AbaqusTributaryLoad,
 )
 
 # Abaqus Displacements

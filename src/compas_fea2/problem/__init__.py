@@ -71,15 +71,14 @@ from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
     _Load,
-    # PrestressLoad,
+    PrestressLoad,
     PointLoad,
     LineLoad,
     AreaLoad,
     GravityLoad,
-    # TributaryLoad,
-    # HarmonicPointLoad,
-    # HarmonicPressureLoad,
-    # AcousticDiffuseFieldLoad
+    TributaryLoad,
+    HarmonicPointLoad,
+    HarmonicPressureLoad,
 )
 from .steps import (
     _Step,
@@ -106,15 +105,14 @@ __all__ = [
     'GeneralDisplacement',
 
     '_Load',
-    # 'PrestressLoad',
+    'PrestressLoad',
     'PointLoad',
     'LineLoad',
     'AreaLoad',
     'GravityLoad',
-    # 'TributaryLoad',
-    # 'HarmonicPointLoad',
-    # 'HarmonicPressureLoad',
-    # 'AcousticDiffuseFieldLoad',
+    'TributaryLoad',
+    'HarmonicPointLoad',
+    'HarmonicPressureLoad',
 
     '_Step'
     '_GeneralStep'

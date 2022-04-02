@@ -71,3 +71,7 @@ def launch_process(structure, exe, output):
     except:
 
         print('\n***** OpenSees analysis failed')
+
+
+def launch_optimisation():
+    raise NotImplementedError()

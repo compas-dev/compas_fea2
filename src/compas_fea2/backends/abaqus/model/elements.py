@@ -8,6 +8,9 @@ from compas_fea2.model import TrussElement
 from compas_fea2.model import ShellElement
 from compas_fea2.model import MembraneElement
 from compas_fea2.model import SolidElement
+from compas_fea2.model import TetrahedronElement
+from compas_fea2.model import PentahedronElement
+from compas_fea2.model import HexahedronElement
 
 
 def _generate_jobdata(element):
@@ -152,3 +155,24 @@ class AbaqusSolidElement(SolidElement):
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)
+
+
+class AbaqusTetrahedonElement(TetrahedronElement):
+    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+        super(AbaqusTetrahedonElement, self).__init__(nodes=nodes,
+                                                      section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()
+
+
+class AbaqusPentahedronElement(PentahedronElement):
+    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+        super(AbaqusPentahedronElement, self).__init__(nodes=nodes,
+                                                       section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()
+
+
+class AbaqusHexahedronElement(HexahedronElement):
+    def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
+        super(AbaqusHexahedronElement, self).__init__(nodes=nodes,
+                                                      section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()

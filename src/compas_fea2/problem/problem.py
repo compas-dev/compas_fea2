@@ -6,7 +6,7 @@ import pickle
 from pathlib import Path
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.steps import Step
+from compas_fea2.problem.steps import _Step
 from compas_fea2.job.input_file import InputFile
 
 
@@ -40,7 +40,7 @@ class Problem(FEAData):
     describption : str
         Brief description of the Problem. This will be added to the input file and
         can be useful for future reference.
-    steps : list of :class:`compas_fea2.problem.Step`
+    steps : list of :class:`compas_fea2.problem._Step`
         list of analysis steps in the order they are applied.
     path : str, :class:`pathlib.Path`
         Path to the analysis folder where all the files will be saved.
@@ -76,16 +76,16 @@ class Problem(FEAData):
     # =========================================================================
 
     def is_step_in_problem(self, step, add=True):
-        """Check if a :class:`compas_fea2.problem.Step` is defined in the Problem.
+        """Check if a :class:`compas_fea2.problem._Step` is defined in the Problem.
 
         Parameters
         ----------
-        step : :class:`compas_fea2.problem.Step`
+        step : :class:`compas_fea2.problem._Step`
             The Step object to find.
 
         Returns
         -------
-        :class:`compas_fea2.problem.Step`
+        :class:`compas_fea2.problem._Step`
 
         Raises
         ------
@@ -96,7 +96,7 @@ class Problem(FEAData):
             name of a Step already defined in the Problem.
         """
 
-        if not isinstance(step, Step):
+        if not isinstance(step, _Step):
             raise TypeError('{!r} is not a Step'.format(step))
         if step.name not in self.steps:
             print('{!r} not found'.format(step))
@@ -107,36 +107,36 @@ class Problem(FEAData):
             return False
         return True
 
-    def add_step(self, step) -> Step:
+    def add_step(self, step) -> _Step:
         # # type: (Step) -> Step
-        """Adds a :class:`compas_fea2.problem.Step` to the problem.
+        """Adds a :class:`compas_fea2.problem._Step` to the problem.
 
         Parameters
         ----------
-        Step : :class:`compas_fea2.problem.Step`
+        Step : :class:`compas_fea2.problem._Step`
             The analysis step to add to the problem.
 
         Returns
         -------
-        :class:`compas_fea2.problem.Step`
+        :class:`compas_fea2.problem._Step`
         """
-        if isinstance(step, Step):
+        if isinstance(step, _Step):
             self._steps.append(step)
         else:
             raise TypeError('You must provide a valid compas_fea2 Step object')
         return step
 
     def add_steps(self, steps):
-        """Adds multiple :class:`compas_fea2.problem.Step` objects to the problem.
+        """Adds multiple :class:`compas_fea2.problem._Step` objects to the problem.
 
         Parameters
         ----------
-        steps : list[:class:`compas_fea2.problem.Step`]
+        steps : list[:class:`compas_fea2.problem._Step`]
             List of steps objects in the order they will be applied.
 
         Returns
         -------
-        list[:class:`compas_fea2.problem.Step`]
+        list[:class:`compas_fea2.problem._Step`]
         """
         return [self.add_step(step) for step in steps]
 

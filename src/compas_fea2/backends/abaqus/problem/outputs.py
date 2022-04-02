@@ -6,13 +6,26 @@ from compas_fea2.problem.outputs import FieldOutput, HistoryOutput
 
 
 class AbaqusFieldOutput(FieldOutput):
-    def __init__(self, node_outputs=None, element_outputs=None, frequency=1):
-        super(AbaqusFieldOutput, self).__init__(node_outputs, element_outputs)
+    """"""
+    __doc__ += FieldOutput.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    frequency : int
+        ???
+
+    Additional Attributes
+    ---------------------
+    frequency : int
+        ???
+    """
+
+    def __init__(self, node_outputs=None, element_outputs=None, frequency=1, name=None, **kwargs):
+        super(AbaqusFieldOutput, self).__init__(node_outputs, element_outputs, name=name, **kwargs)
         self._frequency = frequency
 
     @property
     def frequency(self):
-        """????"""
         return self._frequency
 
     def _generate_jobdata(self):
@@ -39,6 +52,9 @@ class AbaqusFieldOutput(FieldOutput):
 
 
 class AbaqusHistoryOutput(HistoryOutput):
+    """"""
+    __doc__ += HistoryOutput.__doc__
+
     def __init__(self):
         super(AbaqusHistoryOutput, self).__init__()
 

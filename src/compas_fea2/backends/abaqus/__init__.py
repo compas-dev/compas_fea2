@@ -95,24 +95,24 @@ from compas_fea2.model.bcs import (
 from compas_fea2.problem import Problem, displacements
 # Steps
 from compas_fea2.problem.steps import (
+    ModalStep,
     StaticStep,
     # AcousticStep,
     # BucklingStep,
     # GeneralStaticStep,
     # HarmonicStep,
     # HeatStep,
-    # ModalStep,
     # StaticLinearPerturbationStep,
 )
 # Loads
 from compas_fea2.problem.loads import (
     PointLoad,
-    # LineLoad,
-    # AreaLoad,
+    LineLoad,
+    AreaLoad,
+    # TributaryLoad,
     GravityLoad,
     # HarmonicPointLoad,
     # HarmonicPressureLoad,
-    # TributaryLoad,
 )
 # Displacements
 from compas_fea2.problem.displacements import (
@@ -232,24 +232,24 @@ try:
 
     # Abaqus Steps
     from .problem.steps import (
+        AbaqusModalStep,
         AbaqusStaticStep,
         # AbaqusAcousticStep,
         # AbaqusBucklingStep,
         # AbaqusGeneralStaticStep,
         # AbaqusHarmonicStep,
         # AbaqusHeatStep,
-        # AbaqusModalStep,
         # AbaqusStaticLinearPerturbationStep,
     )
     # Abaqus Loads
     from .problem.loads import (
         AbaqusPointLoad,
-        # AbaqusLineLoad,
-        # AbaqusAreaLoad,
+        AbaqusLineLoad,
+        AbaqusAreaLoad,
+        # AbaqusTributaryLoad,
         AbaqusGravityLoad,
         # AbaqusHarmonicPointLoad,
         # AbaqusHarmonicPressureLoad,
-        # AbaqusTributaryLoad,
     )
 
     # Abaqus Displacements
@@ -346,22 +346,22 @@ try:
 
         backend[Problem] = AbaqusProblem
 
+        backend[ModalStep] = AbaqusModalStep
         backend[StaticStep] = AbaqusStaticStep
         # backend[AcousticStep] = AbaqusAcousticStep
         # backend[BucklingStep] = AbaqusBucklingStep
         # backend[GeneralStaticStep] = AbaqusGeneralStaticStep
         # backend[HarmonicStep] = AbaqusHarmonicStep
         # backend[HeatStep] = AbaqusHeatStep
-        # backend[ModalStep] = AbaqusModalStep
         # backend[StaticLinearPerturbationStep] = AbaqusStaticLinearPerturbationStep
 
         backend[GravityLoad] = AbaqusGravityLoad
         backend[PointLoad] = AbaqusPointLoad
-        # backend[LineLoad] = AbaqusLineLoad
-        # backend[AreaLoad] = AbaqusAreaLoad
+        backend[LineLoad] = AbaqusLineLoad
+        backend[AreaLoad] = AbaqusAreaLoad
+        # backend[TributaryLoad] = AbaqusTributaryLoad
         # backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
         # backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
-        # backend[TributaryLoad] = AbaqusTributaryLoad
 
         backend[GeneralDisplacement] = AbaqusGeneralDisplacement
 

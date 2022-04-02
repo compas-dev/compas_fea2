@@ -4,21 +4,22 @@ from compas_fea2.model.nodes import Node
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import ElementsGroup
 
-from compas_fea2.problem.outputs import FieldOutput
-from compas_fea2.problem.outputs import HistoryOutput
-
-from compas_fea2.problem.loads import Load
+from compas_fea2.problem.loads import _Load
 from compas_fea2.problem.loads import GravityLoad
 from compas_fea2.problem.loads import PointLoad
 
 from compas_fea2.problem.displacements import GeneralDisplacement
 
+from compas_fea2.problem.outputs import _Output
+from compas_fea2.problem.outputs import FieldOutput
+from compas_fea2.problem.outputs import HistoryOutput
 
 # ==============================================================================
 #                                Base Steps
 # ==============================================================================
 
-class Step(FEAData):
+
+class _Step(FEAData):
     """Initialises base Step object.
 
     Note
@@ -48,9 +49,9 @@ class Step(FEAData):
     """
 
     def __init__(self, name=None, **kwargs):
-        super(Step, self).__init__(name=name, **kwargs)
-        self._field_outputs = None
-        self._history_outputs = None
+        super(_Step, self).__init__(name=name, **kwargs)
+        self._field_outputs = set()
+        self._history_outputs = set()
 
     @property
     def field_outputs(self):
@@ -60,13 +61,18 @@ class Step(FEAData):
     def history_outputs(self):
         return self._history_outputs
 
-    # def add_output(self, output):
-    #     if not isinstance()
+    def add_output(self, output):
+        if isinstance(output, FieldOutput):
+            self._field_outputs.add(output)
+        elif isinstance(output, HistoryOutput):
+            self._history_outputs.add(output)
+        else:
+            raise TypeError('{!r} is not a Load.'.format(output))
+        return output
+
 
 # NOTE: this is not really a step, but rather a type of anlysis
-
-
-class ModalStep(Step):
+class ModalStep(_Step):
     """Initialises ModalStep object for use in a modal analysis.
 
     Note
@@ -82,19 +88,15 @@ class ModalStep(Step):
         Number of modes to analyse.
     """
 
-    def __init__(self, name=None, modes=1, **kwargs):
+    def __init__(self, modes=1, name=None, **kwargs):
         super(ModalStep, self).__init__(name=name, **kwargs)
-        self._modes = modes
-
-    @property
-    def modes(self):
-        return self._modes
+        self.modes = modes
 
 
 # ==============================================================================
 #                                General Steps
 # ==============================================================================
-class GeneralStep(Step):
+class GeneralStep(_Step):
     """General Step object for use in a general static, dynamic or
     multiphysics analysis.
 
@@ -197,7 +199,7 @@ class GeneralStep(Step):
     # =========================================================================
 
     def add_load(self, load, node):
-        # type: (Load, Node) -> Load
+        # type: (_Load, Node) -> _Load
         """Add a load to Step object.
 
         Warning
@@ -209,7 +211,7 @@ class GeneralStep(Step):
         Parameters
         ----------
         load : obj
-            any ``compas_fea2`` :class:`compas_fea2.problem.Load` subclass object
+            any ``compas_fea2`` :class:`compas_fea2.problem._Load` subclass object
         node : :class:`compas_fea2.model.Node`
             Node where the load is applied
 
@@ -218,7 +220,7 @@ class GeneralStep(Step):
         None
         """
 
-        if not isinstance(load, Load):
+        if not isinstance(load, _Load):
             raise TypeError('{!r} is not a Load.'.format(load))
 
         if not isinstance(node, Node):

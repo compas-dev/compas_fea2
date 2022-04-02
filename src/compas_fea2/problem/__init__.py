@@ -19,13 +19,11 @@ Steps
 .. autosummary::
     :toctree: generated/
 
-    Step
-    GeneralStep
-    HeatStep
+    _Step
     ModalStep
-    HarmonicStep
-    BucklingStep
-    AcousticStep
+    GeneralStep
+    StaticStep
+
 
 Loads
 =====
@@ -33,17 +31,13 @@ Loads
 .. autosummary::
     :toctree: generated/
 
-    Load
+    _Load
     PointLoad
     PrestressLoad
     LineLoad
     AreaLoad
     GravityLoad
-    ThermalLoad
     TributaryLoad
-    HarmonicPointLoad
-    HarmonicPressureLoad
-    AcousticDiffuseFieldLoad
 
 Displacements
 =============
@@ -53,6 +47,14 @@ Displacements
 
     GeneralDisplacement
 
+Outputs
+=======
+
+.. autosummary::
+    :toctree: generated/
+
+    FieldOutput
+    HistoryOutput
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -61,7 +63,7 @@ from __future__ import print_function
 from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
-    Load,
+    _Load,
     # PrestressLoad,
     PointLoad,
     LineLoad,
@@ -73,12 +75,12 @@ from .loads import (
     # AcousticDiffuseFieldLoad
 )
 from .steps import (
-    Step,
+    _Step,
+    ModalStep,
     GeneralStep,
     StaticStep,
     # StaticLinearPerturbationStep,
     # HeatStep,
-    ModalStep,
     # HarmonicStep,
     # BucklingStep,
     AcousticStep
@@ -92,24 +94,28 @@ __all__ = [
     'Problem',
 
     'GeneralDisplacement',
-    'Load',
-    'PrestressLoad',
+
+    '_Load',
+    # 'PrestressLoad',
     'PointLoad',
     'LineLoad',
     'AreaLoad',
     'GravityLoad',
-    'TributaryLoad',
-    'HarmonicPointLoad',
-    'HarmonicPressureLoad',
-    'AcousticDiffuseFieldLoad',
-    'Step',
-    'GeneralStaticStep',
-    'StaticLinearPerturbationStep',
-    'HeatStep',
+    # 'TributaryLoad',
+    # 'HarmonicPointLoad',
+    # 'HarmonicPressureLoad',
+    # 'AcousticDiffuseFieldLoad',
+
+    '_Step',
+    'GeneralStep',
+    'StaticStep',
+    # 'StaticLinearPerturbationStep',
+    # 'HeatStep',
     'ModalStep',
-    'HarmonicStep',
-    'BucklingStep',
+    # 'HarmonicStep',
+    # 'BucklingStep',
     'AcousticStep',
+
     'FieldOutput',
     'HistoryOutput'
 ]

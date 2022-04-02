@@ -7,7 +7,7 @@ from compas_fea2.base import FEAData
 # TODO: make units independent using the utilities function
 
 
-class Load(FEAData):
+class _Load(FEAData):
     """Initialises base Load object.
 
     Parameters
@@ -32,7 +32,7 @@ class Load(FEAData):
     """
 
     def __init__(self, components, axes='global', name=None, **kwargs):
-        super(Load, self).__init__(name=name, **kwargs)
+        super(_Load, self).__init__(name=name, **kwargs)
         self._axes = axes
         self._components = components
         for component, attr in self._components.items():
@@ -52,7 +52,7 @@ class Load(FEAData):
         return self._components
 
 
-class PointLoad(Load):
+class PointLoad(_Load):
     """Concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
@@ -101,7 +101,7 @@ class PointLoad(Load):
             'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes, name=name, **kwargs)
 
 
-class LineLoad(Load):
+class LineLoad(_Load):
     """Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
 
     Parameters
@@ -150,7 +150,7 @@ class LineLoad(Load):
             'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes, name=name, **kwargs)
 
 
-class AreaLoad(Load):
+class AreaLoad(_Load):
     """Distributed area force [e.g. units:N/m2] applied to element(s).
 
     Parameters
@@ -183,7 +183,7 @@ class AreaLoad(Load):
         super(AreaLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes=axes, name=name, **kwargs)
 
 
-class GravityLoad(Load):
+class GravityLoad(_Load):
     """Gravity load [units:N/m3] applied to element(s).
 
     Parameters

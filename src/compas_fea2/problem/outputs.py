@@ -5,7 +5,12 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class FieldOutput(FEAData):
+class _Output(FEAData):
+    def __init__(self, name=None, **kwargs):
+        super(_Output, self).__init__(name, **kwargs)
+
+
+class FieldOutput(_Output):
     """FieldOutput object for specification of the fields (stresses, displacements,
     etc..) to output from the analysis.
 
@@ -35,16 +40,14 @@ class FieldOutput(FEAData):
 
     @property
     def node_outputs(self):
-        """list : list of node fields to output."""
         return self._node_outputs
 
     @property
     def element_outputs(self):
-        """list : list of elements fields to output."""
         return self._element_outputs
 
 
-class HistoryOutput(FEAData):
+class HistoryOutput(_Output):
     """HistoryOutput object for recording the fields (stresses, displacements,
     etc..) from the analysis.
 
@@ -63,4 +66,3 @@ class HistoryOutput(FEAData):
 
     def __init__(self,  name=None, **kwargs):
         super(HistoryOutput, self).__init__(**kwargs)
-        self._name = name or "HistoryOutput_"+str(id(self))

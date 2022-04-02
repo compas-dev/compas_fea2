@@ -18,6 +18,7 @@ from compas_fea2.problem import PointLoad
 from compas_fea2.problem import GravityLoad
 from compas_fea2.problem import FieldOutput
 from compas_fea2.problem import StaticStep
+from compas_fea2.problem import ModalStep
 from compas_fea2.problem import GeneralDisplacement
 
 from compas_fea2.results import Results
@@ -60,13 +61,15 @@ model.summary()
 # Create the Problem object
 problem = Problem(model=model, name='test')
 
+step_modal = ModalStep()
+problem.add_step(step_modal)
 step_0 = problem.add_step(StaticStep())
 step_0.add_gravity_load()
 
 step_1 = problem.add_step(StaticStep())
 step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 # Define the field outputs required
-# fout = step_0.add_output(FieldOutput(name='fout'))
+fout = step_0.add_output(FieldOutput())
 
 
 # Review

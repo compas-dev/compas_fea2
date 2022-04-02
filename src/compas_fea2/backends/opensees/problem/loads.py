@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem import Load
+from compas_fea2.problem import _Load
 from compas_fea2.problem import PointLoad
 from compas_fea2.problem import LineLoad
 from compas_fea2.problem import AreaLoad
@@ -17,7 +17,7 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
 class OpenseesPointLoad(PointLoad):
-    """OpenSees implementation of :class:`PointLoad`.\n
+    """OpenSees implementation of :class:`compas_fea2.problem.PointLoad`.\n
     """
     __doc__ += PointLoad.__doc__
 

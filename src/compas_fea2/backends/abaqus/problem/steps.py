@@ -4,31 +4,48 @@ from __future__ import print_function
 
 from compas_fea2.problem import StaticStep
 from compas_fea2.problem import GeneralStep
-# from compas_fea2.problem import StaticLinearPerturbationCase
-# from compas_fea2.problem import HeatCase
-# from compas_fea2.problem import ModalCase
-# from compas_fea2.problem import HarmonicCase
-# from compas_fea2.problem import BucklingCase
-# from compas_fea2.problem import AcousticCase
+# from compas_fea2.problem import StaticLinearPerturbationStep
+# from compas_fea2.problem import HeatStep
+from compas_fea2.problem import ModalStep
+# from compas_fea2.problem import HarmonicStep
+# from compas_fea2.problem import BucklingStep
+# from compas_fea2.problem import AcousticStep
 
 # TODO add field and history output requrests
 
 
-# class AbaqusGeneralStep(GeneralStep):
-#     """
-#     Notes
-#     -----
-#     the data for the input file for this object is generated at runtime.
-#     """
+class AbaqusModalStep(ModalStep):
+    """"""
+    __doc__ += ModalStep.__doc__
 
-#     def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
-#         super(AbaqusGeneralStep, self).__init__(max_increments, initial_inc_size,
-#                                                 min_inc_size, time, nlgeom, modify, name=name, **kwargs)
+    def __init__(self, modes=1, name=None, **kwargs):
+        super(AbaqusModalStep, self).__init__(modes, name=name, **kwargs)
+
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+       Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line(str).
+        """
+        return ("** ----------------------------------------------------------------\n"
+                "**\n"
+                "** STEP: {0}\n"
+                "**\n"
+                "*Step, name={0}\n"
+                "*FREQUENCY, EIGENSOLVER=LANCZOS, NORMALIZATION=DISPLACEMENT\n"
+                "{1}\n"
+                "*END STEP").format(self.name, self.modes)
 
 
 class AbaqusStaticStep(StaticStep):
-    """Abaqus implementation of the :class:`compas_fea2.Proble.StaticStep`.
-
+    """"""
+    __doc__ += StaticStep.__doc__
+    """
     Note
     ----
     the data for the input file for this object is generated at runtime.
@@ -99,10 +116,10 @@ class AbaqusStaticStep(StaticStep):
                         "**"]
 
         if self._field_outputs:
-            for foutput in self._field_outputs.values():
+            for foutput in self._field_outputs:
                 data_section.append(foutput._generate_jobdata())
         if self._history_outputs:
-            for houtput in self._history_outputs.values():
+            for houtput in self._history_outputs:
                 data_section.append(houtput._generate_jobdata())
         return '\n'.join(data_section)
 
@@ -110,14 +127,15 @@ class AbaqusStaticStep(StaticStep):
 # TODO fix also the steps below
 
 
-class AbaqusStaticRiksStep(StaticStep):
+# class AbaqusStaticRiksStep(StaticStep):
+#     """"""
+#     __doc__ += StaticStep.__doc__
+#     def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
+#         super(AbaqusStaticRiksStep).__init__(max_increments, initial_inc_size, min_inc_size, time)
+#         raise NotImplementedError()
 
-    def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False):
-        super(AbaqusStaticRiksStep).__init__(max_increments, initial_inc_size, min_inc_size, time)
-        raise NotImplementedError
 
-
-# class AbaqusStaticLinearPertubationStep(StaticLinearPerturbationCase):
+# class AbaqusStaticLinearPertubationStep(StaticLinearPerturbationStep):
 #     """Initialises the StaticLinearPertubationStep object for use in a static analysis.
 
 #     Parameters
@@ -130,7 +148,7 @@ class AbaqusStaticRiksStep(StaticStep):
 #         Load objects.
 
 #    """
-#     __doc__ += StaticLinearPerturbationCase.__doc__
+#     __doc__ += StaticLinearPerturbationStep.__doc__
 
 #     def __init__(self, name):
 #         super(AbaqusStaticLinearPertubationStep, self).__init__(name)
@@ -158,7 +176,7 @@ class AbaqusStaticRiksStep(StaticStep):
 #                 "**\n").format(self._name, self._nlgeom, self._stype)
 
 
-# class AbaqusBuckleStep(StaticLinearPerturbationCase):
+# class AbaqusBuckleStep(StaticLinearPerturbationStep):
 #     """Initialises BuckleStep object for use in a buckling analysis.
 #     """
 
@@ -167,37 +185,11 @@ class AbaqusStaticRiksStep(StaticStep):
 #         raise NotImplementedError
 
 
-# class AbaqusHeatStep(HeatCase):
+# class AbaqusHeatStep(HeatStep):
 
 #     def __init__(self, name, interaction, increments, temp0, dTmax, type, duration):
 #         super(AbaqusHeatStep, self).__init__(name, interaction, increments, temp0, dTmax, type, duration)
 #         raise NotImplementedError
-
-
-# class AbaqusModalStep(ModalCase):
-
-#     def __init__(self, name, modes):
-#         super(AbaqusModalStep, self).__init__(name, modes)
-
-#     def _generate_jobdata(self):
-#         """Generates the string information for the input file.
-
-#        Parameters
-#         ----------
-#         None
-
-#         Returns
-#         -------
-#         input file data line(str).
-#         """
-#         return ("** ----------------------------------------------------------------\n"
-#                 "**\n"
-#                 "** STEP: {0}\n"
-#                 "**\n"
-#                 "* Step, name={0}\n"
-#                 "*FREQUENCY, EIGENSOLVER=LANCZOS, NORMALIZATION=DISPLACEMENT\n"
-#                 "{1}\n"
-#                 "*END STEP").format(self.name, self.modes)
 
 
 # class AbaqusHarmoniStep(HarmonicStep):

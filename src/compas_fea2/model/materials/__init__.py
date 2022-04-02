@@ -7,6 +7,7 @@ from .material import ElasticIsotropic  # noqa : F401
 from .material import ElasticOrthotropic  # noqa : F401
 from .material import ElasticPlastic  # noqa : F401
 from .material import Stiff  # noqa : F401
+from .material import UserMaterial  # noqa : F401
 
 from .steel import Steel  # noqa : F401
 

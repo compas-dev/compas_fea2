@@ -3,7 +3,7 @@ import compas_fea2
 from compas_fea2.model import Model, elements
 from compas_fea2.model import Part
 from compas_fea2.model import Node
-from compas_fea2.model import ElasticIsotropic
+from compas_fea2.model import ElasticIsotropic, Steel
 from compas_fea2.model import CircularSection, RectangularSection
 from compas_fea2.model import ShellSection
 from compas_fea2.model import BeamElement
@@ -26,12 +26,13 @@ from pprint import pprint
 
 from compas_fea2 import TEMP
 
-compas_fea2.set_backend('opensees')
+compas_fea2.set_backend('abaqus')
 compas_fea2.config.VERBOSE = not True
 
 
 model = Model()
 mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
+mat_steel = Steel.S355()
 frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
 # frame_sec = CircularSection(material=mat, r=0.010)
 shell_sec = ShellSection(0.02, mat)
@@ -73,7 +74,7 @@ problem.summary()
 # problem.show()
 
 # Solve the problem
-problem.write_input_file()
+problem.write_input_file(path=Path(TEMP).joinpath('refactor'))
 # problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####

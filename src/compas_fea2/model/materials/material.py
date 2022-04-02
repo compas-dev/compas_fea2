@@ -214,3 +214,19 @@ G  : {}
 
 strain_stress : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.strain_stress)
+
+
+# ==============================================================================
+# User-defined Materials
+# ==============================================================================
+
+
+class UserMaterial(FEAData):
+    """ User Defined Material. Tho implement this type of material, a
+    separate subroutine is required
+
+    """
+
+    def __init__(self, name=None, **kwargs):
+        super(UserMaterial, self).__init__(self, name=name, **kwargs)
+        raise NotImplementedError('This class is not available for the selcted backend')

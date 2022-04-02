@@ -56,6 +56,7 @@ Materials
     :toctree: generated/
 
     Material
+    UserMaterial
     Stiff
     ElasticIsotropic
     ElasticOrthotropic
@@ -148,6 +149,7 @@ from .materials import (
     ConcreteDamagedPlasticity,
     ElasticIsotropic,
     Stiff,
+    UserMaterial,
     ElasticOrthotropic,
     ElasticPlastic,
     Steel

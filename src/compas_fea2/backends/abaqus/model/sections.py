@@ -71,6 +71,15 @@ class AbaqusMassSection(MassSection):
 
 
 class AbaqusSpringSection(SpringSection):
+    """"""
+    __doc__ += SpringSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
+
+    """
+
     def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
         super().__init__(forces, displacements, stiffness, name, **kwargs)
         raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
@@ -81,6 +90,15 @@ class AbaqusSpringSection(SpringSection):
 
 
 class AbaqusBeamSection(BeamSection):
+    """"""
+    __doc__ += BeamSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Abaqus.
+
+    """
+
     def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
         super().__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
         raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')

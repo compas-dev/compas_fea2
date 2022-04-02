@@ -48,6 +48,7 @@ from compas_fea2.model.materials import (
     ElasticOrthotropic,
     ElasticPlastic,
     Stiff,
+    UserMaterial,
     Concrete,
     ConcreteDamagedPlasticity,
     ConcreteSmearedCrack,
@@ -172,15 +173,16 @@ try:
     )
 
     # Abaqus Materials
-    from .model import (
+    from .model.materials import (
         AbaqusElasticIsotropic,
-        # AbaqusElasticOrthotropic,
-        # AbaqusElasticPlastic,
-        # AbaqusStiff,
-        # AbaqusConcrete,
-        # AbaqusConcreteDamagedPlasticity,
-        # AbaqusConcreteSmearedCrack,
-        # AbaqusSteel,
+        AbaqusElasticOrthotropic,
+        AbaqusElasticPlastic,
+        AbaqusStiff,
+        AbaqusUserMaterial,
+        AbaqusConcrete,
+        AbaqusConcreteDamagedPlasticity,
+        AbaqusConcreteSmearedCrack,
+        AbaqusSteel,
     )
 
     # Abaqus Groups
@@ -300,13 +302,14 @@ try:
         backend[TrussSection] = AbaqusTrussSection
 
         backend[ElasticIsotropic] = AbaqusElasticIsotropic
-        # backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
-        # backend[ElasticPlastic] = AbaqusElasticPlastic
-        # backend[Stiff] = AbaqusStiff
-        # backend[Concrete] = AbaqusConcrete
-        # backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
-        # backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
-        # backend[Steel] = AbaqusSteel
+        backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
+        backend[ElasticPlastic] = AbaqusElasticPlastic
+        backend[Stiff] = AbaqusStiff
+        backend[UserMaterial] = AbaqusUserMaterial
+        backend[Concrete] = AbaqusConcrete
+        backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
+        backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
+        backend[Steel] = AbaqusSteel
 
         backend[NodesGroup] = AbaqusNodesGroup
         backend[ElementsGroup] = AbaqusElementsGroup

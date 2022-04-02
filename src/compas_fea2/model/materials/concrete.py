@@ -50,7 +50,7 @@ class Concrete(_Material):
     """
 
     def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
-        super(Concrete, self).__init__(density=density,  name=None, **kwargs)
+        super(Concrete, self).__init__(density=density,  name=name, **kwargs)
 
         de = 0.0001
         fcm = fck + 8

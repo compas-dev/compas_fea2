@@ -41,13 +41,14 @@ from .sections import (
 # Abaqus Materials
 from .materials import (
     AbaqusElasticIsotropic,
-    # AbaqusElasticOrthotropic,
-    # AbaqusElasticPlastic,
-    # AbaqusStiff,
-    # AbaqusConcrete,
-    # AbaqusConcreteDamagedPlasticity,
-    # AbaqusConcreteSmearedCrack,
-    # AbaqusSteel,
+    AbaqusElasticOrthotropic,
+    AbaqusElasticPlastic,
+    AbaqusStiff,
+    AbaqusUserMaterial,
+    AbaqusConcrete,
+    AbaqusConcreteDamagedPlasticity,
+    AbaqusConcreteSmearedCrack,
+    AbaqusSteel,
 )
 
 

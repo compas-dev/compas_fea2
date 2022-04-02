@@ -50,7 +50,7 @@ class Steel(ElasticIsotropic):
     """
 
     def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
-        super(Steel, self).__init__(E=E, v=v, density=density, name=None, **kwargs)
+        super(Steel, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
 
         fu = fu or fy
 

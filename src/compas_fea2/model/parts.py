@@ -461,6 +461,7 @@ number of groups   : {}
                 print('SKIPPED: Material {!r} already in part.'.format(material))
             return
 
+        material._key = len(self._material)
         self._materials.add(material)
 
     def add_materials(self, materials):
@@ -536,6 +537,7 @@ number of groups   : {}
             return
 
         self.add_material(section.material)
+        section._key = len(self.sections)
         self._sections.add(section)
 
     def add_sections(self, sections):

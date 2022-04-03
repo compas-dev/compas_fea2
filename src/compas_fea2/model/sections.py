@@ -33,7 +33,12 @@ class _Section(FEAData):
 
     def __init__(self, material, name=None, **kwargs):
         super(_Section, self).__init__(name=name, **kwargs)
+        self._key = None
         self._material = material
+
+    @property
+    def key(self):
+        return self._key
 
     @property
     def material(self):

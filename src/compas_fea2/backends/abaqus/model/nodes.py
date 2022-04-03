@@ -20,8 +20,8 @@ class AbaqusNode(Node):
     """
     __doc__ += Node.__doc__
 
-    def __init__(self, xyz, part=None, name=None, **kwargs):
-        super(AbaqusNode, self).__init__(xyz=xyz, part=part, name=name, **kwargs)
+    def __init__(self, xyz, mass=None, part=None, name=None, **kwargs):
+        super(AbaqusNode, self).__init__(xyz=xyz, mass=mass, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

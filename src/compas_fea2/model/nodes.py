@@ -21,6 +21,11 @@ class Node(FEAData):
     name : str, optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
+    mass : float or tuple, optional
+        Lumped nodal mass, by default ``None``. If ``float``, the same value is
+        used in all 3 directions. if you want to specify a different mass for each
+        direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
+        coordinates.
     xyz : list[float, float, float] | :class:`compas.geometry.Point`
         The location of the node in the global coordinate system.
     part : `compas_fea2.model.Part`, optional
@@ -31,6 +36,8 @@ class Node(FEAData):
     name : str
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
+    mass : tuple
+        Lumped nodal mass in the 3 global directions (mass_x, mass_y, mass_z).
     key : str, read-only
         The identifier of the node.
     xyz : list[float]
@@ -54,7 +61,7 @@ class Node(FEAData):
 
     """
 
-    def __init__(self, xyz, part=None, name=None, **kwargs):
+    def __init__(self, xyz, mass=None, part=None, name=None, **kwargs):
         super(Node, self).__init__(name=name, **kwargs)
         self._key = None
         self._x = None
@@ -64,6 +71,7 @@ class Node(FEAData):
         self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
         self._loads = set()
         self._displacements = set()
+        self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
         self.xyz = xyz
 
     @property
@@ -103,6 +111,14 @@ class Node(FEAData):
     @z.setter
     def z(self, value):
         self._z = float(value)
+
+    @property
+    def mass(self):
+        return self._mass
+
+    @mass.setter
+    def mass(self, value):
+        self._mass = value if isinstance(value, tuple) else tuple([value]*3)
 
     @property
     def gkey(self):

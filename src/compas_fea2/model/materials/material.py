@@ -28,6 +28,11 @@ class _Material(FEAData):
     def __init__(self, *, density, name=None, **kwargs):
         super(_Material, self).__init__(name=name, **kwargs)
         self.density = density
+        self._key = None
+
+    @property
+    def key(self):
+        return self._key
 
     def __str__(self):
         return """

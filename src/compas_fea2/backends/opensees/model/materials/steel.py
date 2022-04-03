@@ -15,4 +15,11 @@ class OpenseesSteel(Steel):
 
     def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
         super(OpenseesSteel, self).__init__(fy=fy, fu=fu, eu=eu, E=E, v=v, density=density, name=name, **kwargs)
-        raise NotImplementedError()
+        self._EshE = (self.fu - self.fy) / self.ep
+
+    @property
+    def EshE(self):
+        return self._EshE
+
+    def _generate_jobdata(self):
+        return 'uniaxialMaterial Steel01 {0} {1} {2} {3}'.format(self.key, self.fy, self.E, self.EshE)

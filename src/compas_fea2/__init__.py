@@ -64,6 +64,8 @@ def register_backend():
 
 
 def set_backend(name):
+    if name not in ('abaqus', 'opensees'):
+        raise ValueError('{} is not a backend!'.format(name))
     global BACKEND
     BACKEND = name
     register_backend()
@@ -77,5 +79,5 @@ __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
 
 __all_plugins__ = [
     'compas_fea2.backends.abaqus',
-    'compas_fea2.backends.opensees'
+    'compas_fea2.backends.opensees',
 ]

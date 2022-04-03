@@ -2,6 +2,9 @@
 ********************************************************************************
 Opensees
 ********************************************************************************
+
+reference for OpenSees commands:
+https://opensees.github.io/OpenSeesDocumentation/user/userManual.html
 """
 
 from pydoc import ErrorDuringImport
@@ -136,7 +139,7 @@ from compas_fea2.job import (
     ParametersFile,
 )
 # =========================================================================
-#                           ABAQUS CLASSES
+#                           OPENSEES CLASSES
 # =========================================================================
 
 try:
@@ -278,7 +281,7 @@ try:
 
     @plugin(category='fea_backends')
     def register_backend():
-        backend = compas_fea2.BACKENDS['abaqus']
+        backend = compas_fea2.BACKENDS['opensees']
 
         backend[Model] = OpenseesModel
         backend[Part] = OpenseesPart

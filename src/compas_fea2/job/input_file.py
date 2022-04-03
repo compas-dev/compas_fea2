@@ -65,6 +65,9 @@ class InputFile(FEAData):
 
         return out
 
+    def _generate_jobdata(self, *args, **kwargs):
+        raise NotImplementedError('This method is not available for the selected backend!')
+
 
 class ParametersFile(InputFile):
     pass

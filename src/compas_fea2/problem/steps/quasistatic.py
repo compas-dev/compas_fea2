@@ -7,7 +7,17 @@ from .step import _Step
 
 
 class QuasiStaticStep(_Step):
-    """"""
+    """Step for quasi-static analysis.
+
+    Parameters
+    ----------
+    None
+
+    Attributes
+    ----------
+    None
+
+    """
 
     def __init__(self, name=None, **kwargs):
         super(QuasiStaticStep, self).__init__(name=name, **kwargs)
@@ -15,7 +25,17 @@ class QuasiStaticStep(_Step):
 
 
 class DirectCyclicStep(_Step):
-    """"""
+    """Step for a direct cyclic analysis.
+
+    Parameters
+    ----------
+    None
+
+    Attributes
+    ----------
+    None
+
+    """
 
     def __init__(self, name=None, **kwargs):
         super(DirectCyclicStep, self).__init__(name=name, **kwargs)

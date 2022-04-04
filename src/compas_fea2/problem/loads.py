@@ -226,7 +226,7 @@ class GravityLoad(_Load):
 
 
 class PrestressLoad(_Load):
-    """"""
+    """Prestress load"""
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
@@ -234,7 +234,7 @@ class PrestressLoad(_Load):
 
 
 class TributaryLoad(_Load):
-    """"""
+    """Tributary load"""
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)

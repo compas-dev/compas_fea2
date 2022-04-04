@@ -60,7 +60,31 @@ class Contact(_Interaction):
 
 
 class HardContactNoFriction(Contact):
-    pass
+    """Hard contact interaction property with friction using a penalty
+    formulation.
+
+    Parameters
+    ----------
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
+
+    Attributes
+    ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
+    """
+
+    def __init__(self, mu, tollerance, name=None, **kwargs) -> None:
+        super(HardContactFrictionPenalty, self).__init__(name=name, normal='HARD', tangent=mu, **kwargs)
+        self.tollerance = tollerance
+        raise NotImplementedError()
 
 
 class HardContactFrictionPenalty(Contact):

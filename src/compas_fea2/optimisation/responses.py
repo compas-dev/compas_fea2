@@ -6,7 +6,7 @@ from compas_fea2.base import FEAData
 
 
 class DesignResponse(FEAData):
-    """
+    """Design response to record for the optimisation.
 
     Parameters
     ----------

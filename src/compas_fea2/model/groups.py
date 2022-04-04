@@ -78,8 +78,6 @@ class ElementsGroup(_Group):
     def members(self):
         return self.elements
 
-# NOTE this used to be called Surface
-
 
 class FacesGroup(_Group):
     """Base class elements faces groups.

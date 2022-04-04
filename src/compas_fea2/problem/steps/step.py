@@ -212,4 +212,18 @@ class _GeneralStep(_Step):
         return load
 
     def add_loads(self, load, nodes):
+        """Add a load to multiple nodes.
+
+        Parameters
+        ----------
+        load : :class:`_Load`
+            Load to assign to the node
+        nodes : list
+            Nodes where the load is assigned.
+
+        Returns
+        -------
+        load : :class:`_Load`
+            Load to assign to the node
+        """
         return [self.add_load(load, node) for node in nodes]

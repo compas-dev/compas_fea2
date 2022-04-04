@@ -7,7 +7,17 @@ from .step import _Step
 
 
 class DynamicStep(_Step):
-    """"""
+    """Step for dynamic analysis.
+
+    Parameters
+    ----------
+    None
+
+    Attributes
+    ----------
+    None
+
+    """
 
     def __init__(self, name=None, **kwargs):
         super(DynamicStep, self).__init__(name=name, **kwargs)

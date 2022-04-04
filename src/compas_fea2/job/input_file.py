@@ -9,6 +9,13 @@ from compas_fea2.utilities._utils import timer
 
 class InputFile(FEAData):
     """Input file object for standard FEA.
+
+    Parameters
+    ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+
     """
 
     def __init__(self, name=None, **kwargs):

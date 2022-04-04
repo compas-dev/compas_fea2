@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 from compas_fea2.base import FEAData
+from compas_fea2.utilities._utils import timer
 
 
 class InputFile(FEAData):
@@ -40,7 +41,7 @@ class InputFile(FEAData):
     # ==============================================================================
     # General methods
     # ==============================================================================
-
+    @timer
     def write_to_file(self, path):
         """Writes the InputFile to a file in a specified location.
 
@@ -59,9 +60,9 @@ class InputFile(FEAData):
             file_path = os.path.join(path, self._file_name)
             with open(file_path, 'w') as f:
                 f.writelines(self._job_data)
-            out = '***** {!r} generated in: {} *****\n'.format(self, file_path)
+            out = 'Input file generated in: {}\n'.format(file_path)
         except:
-            out = '***** ERROR: {!r} not generated ****'.format(self)
+            out = 'ERROR: input file not generated!\n'
 
         return out
 

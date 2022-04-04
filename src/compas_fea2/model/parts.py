@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from binascii import rlecode_hqx
 
 # import importlib
 # import numpy as np
@@ -18,6 +17,8 @@ from .materials import _Material
 from .sections import _Section, ShellSection, SolidSection
 from .releases import _BeamEndRelease, BeamEndPinRelease
 from .groups import NodesGroup, ElementsGroup
+
+from compas_fea2.utilities._utils import timer
 
 
 class Part(FEAData):
@@ -137,6 +138,7 @@ number of groups   : {}
         raise NotImplementedError()
 
     @classmethod
+    @timer(message='compas Mesh successfully imported in ')
     def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a Part object from a a :class:`compas.datastructures.Mesh`.
         To each edge of the mesh is assigned a :class:`compas_fea2.model.BeamElement`.
@@ -164,6 +166,7 @@ number of groups   : {}
         return part
 
     @ classmethod
+    @timer(message='compas Mesh successfully imported in ')
     def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a Part object from a :class:`compas.datastructures.Mesh`.
         To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
@@ -191,7 +194,8 @@ number of groups   : {}
 
         return part
 
-    @ classmethod
+    @classmethod
+    @timer(message='gmsh model successfully imported in ')
     def from_gmsh(cls, gmshModel, section, split=False, verbose=False, check=False, name=None, **kwargs):
         """Create a Part object from a gmshModel object. According to the `section`
         type provided, SolidElement or ShellElement elements are cretated.
@@ -270,7 +274,6 @@ number of groups   : {}
                 k = part.add_element(ShellElement(nodes=[fea2_nodes[ntag] for ntag in ntags], section=section))
                 if verbose:
                     print(f'element {k} added')
-        print('\ncompas_fea2 model generated!\n')
         return part
 
     # @classmethod
@@ -461,7 +464,7 @@ number of groups   : {}
                 print('SKIPPED: Material {!r} already in part.'.format(material))
             return
 
-        material._key = len(self._material)
+        material._key = len(self._materials)
         self._materials.add(material)
 
     def add_materials(self, materials):

@@ -1,10 +1,8 @@
-from pathlib import Path
 from compas_fea2.problem import Problem
 
-from compas_fea2.backends.abaqus.job import AbaqusInputFile
-from compas_fea2.backends.abaqus.job import AbaqusParametersFile
 from compas_fea2.backends.abaqus.job import launch_process
 from compas_fea2.backends.abaqus.job import launch_optimisation
+from compas_fea2.utilities._utils import timer
 
 
 class AbaqusProblem(Problem):
@@ -19,7 +17,7 @@ class AbaqusProblem(Problem):
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
-
+    @timer(message='Analysis completed in')
     def analyse(self, path, exe=None, cpus=1, output=True, overwrite=True, save=False):
         """Runs the analysis through abaqus.
 
@@ -49,6 +47,6 @@ class AbaqusProblem(Problem):
     # =============================================================================
     #                               Job data
     # =============================================================================
-
+    @timer(message='Problem generated in ')
     def _generate_jobdata(self):
         return '\n'.join([step._generate_jobdata() for step in self.steps])

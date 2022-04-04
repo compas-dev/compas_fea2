@@ -6,6 +6,7 @@ from compas_fea2 import config
 from compas_fea2.model import Model
 from compas_fea2.backends.abaqus.model._instances import _Instance
 from compas_fea2.backends.abaqus.model.parts import AbaqusPart
+from compas_fea2.utilities._utils import timer
 
 
 class AbaqusModel(Model):
@@ -154,7 +155,7 @@ class AbaqusModel(Model):
 # =============================================================================
 #                               Job data
 # =============================================================================
-
+    @timer(message='Model generated in ')
     def _generate_jobdata(self):
         return f"""**
 ** PARTS

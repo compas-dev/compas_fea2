@@ -6,9 +6,7 @@ from compas_fea2.utilities._utils import timer
 
 
 class AbaqusProblem(Problem):
-    """Abaqus implementation of the Problem class.
-
-    """
+    """Abaqus implementation of :class:`Problem`.\n"""
     __doc__ += Problem.__doc__
 
     def __init__(self, model, author=None, description=None, **kwargs):
@@ -49,4 +47,14 @@ class AbaqusProblem(Problem):
     # =============================================================================
     @timer(message='Problem generated in ')
     def _generate_jobdata(self):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
         return '\n'.join([step._generate_jobdata() for step in self.steps])

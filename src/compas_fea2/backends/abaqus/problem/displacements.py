@@ -10,8 +10,7 @@ dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
 class AbaqusGeneralDisplacement(GeneralDisplacement):
-    """OpenSees implementation of :class:`compas_fea2.problem.PointLoad`.\n
-    """
+    """Abaqus implementation of :class:`GeneralDisplacement`.\n"""
     __doc__ += GeneralDisplacement.__doc__
     __doc__ += """
     Additional Parameters

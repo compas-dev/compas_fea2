@@ -14,7 +14,13 @@ from compas_fea2.model import HexahedronElement
 
 
 def _generate_jobdata(element):
-    """Generates the string information for the input file.
+    """Generates the common string information for the input file of all the
+    elements.
+
+    Note
+    ----
+    the string portion `*Element, type=___` is generated in the part section
+    to group elements with the same type.
 
     Parameters
     ----------
@@ -25,7 +31,6 @@ def _generate_jobdata(element):
     input file data line (str).
 
     """
-    # note: the string `*Element, type=___` is generated in the part section to group elements with the same type
     return '{0}, {1}\n'.format(element.key+1, ','.join(str(node.key+1) for node in element.nodes))
 
 
@@ -33,18 +38,8 @@ def _generate_jobdata(element):
 # 0D elements
 # ==============================================================================
 class AbaqusMassElement(MassElement):
-    """A 0D element for concentrated point mass.
-
-    Parameters
-    ----------
-    key : int
-        Number of the element.
-    elset : str
-        Name of the automatically generated element set where the masses is applied.
-    mass : float
-        Concentrated mass (mass of each point of the set).
-
-    """
+    """Abaqus implementation of :class:`MassElement`\n"""
+    __doc__ += MassElement.__doc__
 
     def __init__(self, *, node, section, frame=None, part=None, name=None, **kwargs):
         super(AbaqusMassElement, self).__init__(nodes=[node],
@@ -74,6 +69,8 @@ class AbaqusMassElement(MassElement):
 # ==============================================================================
 
 class AbaqusBeamElement(BeamElement):
+    """Abaqus implementation of :class:`BeamElement`\n"""
+    __doc__ += BeamElement.__doc__
 
     def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
         super(AbaqusBeamElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
@@ -86,8 +83,7 @@ class AbaqusBeamElement(BeamElement):
 
 
 class AbaqusTrussElement(TrussElement):
-    """A 1D element that resists axial loads.
-    """
+    """Abaqus implementation of :class:`TrussElement`\n"""
     __doc__ += TrussElement.__doc__
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
@@ -105,17 +101,15 @@ class AbaqusTrussElement(TrussElement):
 
 
 class AbaqusShellElement(ShellElement):
-    """"""
+    """Abaqus implementation of :class:`ShellElement`\n"""
     __doc__ += ShellElement.__doc__
-    """
+    __doc__ += """
     Additional Parameters
     ---------------------
     reduced : bool, optional
         Reduce the integration points, by default ``False``.
 
-
     """
-    __doc__ += ShellElement.__doc__
 
     def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusShellElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
@@ -133,6 +127,15 @@ class AbaqusShellElement(ShellElement):
 
 
 class AbaqusMembraneElement(MembraneElement):
+    """Abaqus implementation of :class:`MembraneElement`\n"""
+    __doc__ += MembraneElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
+
+    """
 
     def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusMembraneElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
@@ -154,6 +157,15 @@ class AbaqusMembraneElement(MembraneElement):
 
 
 class AbaqusSolidElement(SolidElement):
+    """Abaqus implementation of :class:`SolidElement`\n"""
+    __doc__ += SolidElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
+
+    """
 
     def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)

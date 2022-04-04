@@ -13,7 +13,7 @@ from compas_fea2.model import ConcreteDamagedPlasticity
 
 
 class AbaqusConcrete(Concrete):
-    """"""
+    """Abaqus implementation of :class:`Concrete`\n"""
     __doc__ += Concrete.__doc__
 
     def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
@@ -57,7 +57,7 @@ class AbaqusConcrete(Concrete):
 
 
 class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
-    """"""
+    """Abaqus implementation of :class:`ConcreteSmearedCrack`\n"""
     __doc__ += ConcreteSmearedCrack.__doc__
 
     def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
@@ -102,7 +102,7 @@ class AbaqusConcreteSmearedCrack(ConcreteSmearedCrack):
 
 
 class AbaqusConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
-    """"""
+    """Abaqus implementation of :class:`ConcreteDamagedPlasticity`\n"""
     __doc__ += ConcreteDamagedPlasticity.__doc__
 
     def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):

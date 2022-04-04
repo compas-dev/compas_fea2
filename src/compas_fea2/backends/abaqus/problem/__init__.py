@@ -2,9 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Abaqus Problem
-from .problem import AbaqusProblem
-
 # Abaqus Steps
 from .steps import (
     AbaqusModalAnalysis,
@@ -16,6 +13,12 @@ from .steps import (
     AbaqusQuasiStaticStep,
     AbaqusDirectCyclicStep,
 )
+
+# Abaqus Displacements
+from .displacements import (
+    AbaqusGeneralDisplacement,
+)
+
 # Abaqus Loads
 from .loads import (
     AbaqusPointLoad,
@@ -28,37 +31,11 @@ from .loads import (
     AbaqusTributaryLoad,
 )
 
-# Abaqus Displacements
-from .displacements import (
-    AbaqusGeneralDisplacement,
-)
-
 # Abaqus outputs
 from .outputs import (
     AbaqusFieldOutput,
     AbaqusHistoryOutput,
 )
 
-
-# __all__ = [
-#     'AbaqusProblem',
-
-#     'AbaqusStaticStep',
-#     'AbaqusStaticLinearPertubationStep',
-#     'AbaqusModalStep',
-#     'AbaqusBucklingStep',
-
-#     'AbaqusGeneralDisplacement',
-
-#     'AbaqusPointLoad',
-#     'AbaqusLineLoad',
-#     'AbaqusAreaLoad',
-#     'AbaqusGravityLoad',
-#     'AbaqusTributaryLoad',
-#     'AbaqusHarmonicPointLoad',
-#     'AbaqusHarmonicPressureLoad',
-#     'AbaqusAcousticDiffuseFieldLoad',
-
-#     'AbaqusFieldOutput',
-#     'AbaqusHistoryOutput',
-# ]
+# Abaqus Problem
+from .problem import AbaqusProblem

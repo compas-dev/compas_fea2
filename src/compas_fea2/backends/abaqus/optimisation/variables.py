@@ -6,6 +6,9 @@ from compas_fea2.optimisation.variables import DesignVariables
 
 
 class AbaqusDesignVariables(DesignVariables):
+    """Abaqus implementation of :class:`DesignVariables`\n"""
+    __doc__ += DesignVariables.__doc__
+
     def __init__(self, variables, name=None, **kwargs):
         super(AbaqusDesignVariables, self).__init__(variables, name=name, **kwargs)
 

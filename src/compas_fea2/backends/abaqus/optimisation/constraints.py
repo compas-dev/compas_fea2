@@ -6,6 +6,9 @@ from compas_fea2.optimisation.constraints import OptimisationConstraint
 
 
 class AbaqusOptimisationConstraint(OptimisationConstraint):
+    """Abaqus implementation of :class:`OptimisationConstraint`\n"""
+    __doc__ += OptimisationConstraint.__doc__
+
     def __init__(self, design_response, relative=False, name=None, **kwargs):
         super(AbaqusOptimisationConstraint, self).__init__(design_response, relative, name=name, **kwargs)
 

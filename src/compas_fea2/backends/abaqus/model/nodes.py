@@ -10,7 +10,7 @@ from compas_fea2.model import Node
 # =============================================================================
 
 class AbaqusNode(Node):
-    """Node class
+    """Abaqus implementation of :class:`Interface`.
 
     Note
     ----

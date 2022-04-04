@@ -8,7 +8,8 @@ from compas_fea2.model.groups import FacesGroup, PartsGroup
 
 
 def _generate_jobdata(self, instance):
-    """Generates the string information for the input file.
+    """Generates the common string information for the input file for all the
+    groups.
 
     Parameters
     ----------
@@ -36,18 +37,14 @@ def _generate_jobdata(self, instance):
 
 
 class AbaqusNodesGroup(NodesGroup):
-    """Initialises the Set object.
-
-    Parameters
-    ----------
-    generate : bool
-        Automatically generates a set of elements/nodes between the two keys specified.
+    """Abaqus implementation of :class:`NodesGroup`
 
     Notes
     -----
     This is equivalent to a node set in Abaqus
 
     """
+    __doc__ += NodesGroup.__doc__
 
     def __init__(self, nodes, name=None, **kwargs):
         super(AbaqusNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
@@ -58,18 +55,14 @@ class AbaqusNodesGroup(NodesGroup):
 
 
 class AbaqusElementsGroup(ElementsGroup):
-    """Initialises the Set object.
-
-    Parameters
-    ----------
-    generate : bool
-        Automatically generates a set of elements/nodes between the two keys specified.
+    """Abaqus implementation of :class:`ElementsGroup`
 
     Notes
     -----
-    This is equivalent to a node set in Abaqus
+    This is equivalent to a element set in Abaqus
 
     """
+    __doc__ += ElementsGroup.__doc__
 
     def __init__(self, *, elements, name=None, **kwargs):
         super(AbaqusElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
@@ -80,13 +73,14 @@ class AbaqusElementsGroup(ElementsGroup):
 
 
 class AbaqusFacesGroup(FacesGroup):
-    """Abaqus implementation of the :class:`compas_fea2.model.FacesGroup`.\n
+    """Abaqus implementation of :class:`NodesGroup`
 
-    Note
-    ----
-    In Abaqus a FacesGroup is equivalent to a Surface.
+    Notes
+    -----
+    This is equivalent to a `Surface` in Abaqus
+
     """
-    __doc__ += FacesGroup.__doc__
+    __doc__ += NodesGroup.__doc__
 
     def __init__(self, *, part, element_face, name=None, **kwargs):
         super(FacesGroup, self).__init__(part=part, element_face=element_face, name=name, **kwargs)
@@ -111,8 +105,7 @@ class AbaqusFacesGroup(FacesGroup):
 
 
 class AbaqusPartsGroup(PartsGroup):
-    """Abaqus implementation of the :class:`compas_fea2.model.FacesGroup`.\n
-    """
+    """Abaqus implementation of the :class:`PartsGroup`.\n"""
     __doc__ += PartsGroup.__doc__
 
     def __init__(self, *, parts, name=None, **kwargs):

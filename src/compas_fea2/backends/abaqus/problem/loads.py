@@ -15,36 +15,25 @@ from compas_fea2.problem import HarmonicPressureLoad
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-# class AbaqusPrestressLoad(PrestressLoad):
-
-#     def __init__(self):
-#         super(AbaqusPrestressLoad, self).__init__()
-
-
 class AbaqusPointLoad(PointLoad):
-    """PointLoad class Abaqusfor Abaqus.
-
-    Parameters
-    ----------
-    x : float, optional
-        x component of force, by default `0.`.
-    y : float, optional
-        y component of force, by default `0.`.
-    z : float, optional
-        z component of force, by default `0.`.
-    xx : float, optional
-        xx component of moment, by default `0.`.
-    yy : float, optional
-        yy component of moment, by default `0.`.
-    zz : float, optional
-        zz component of moment, by default `0.`.
-    axes : str, optional
-        Load applied via 'local' or 'global' axes, by default 'global'.
+    """Abaqus implementation of :class:`PointLoad`.\n"""
+    __doc__ += PointLoad.__doc__
+    """
+    Additional Parameters
+    ---------------------
     modify : bool, optional
-        if `True`
+        If ``True``, change previous displacements applied at the same location, otherwise
+        add the displacement to the previous. By defult is ``True``.
     follow : bool, optional
         if `True` the load follows the deformation of the element.
 
+    Additional Attributes
+    ---------------------
+    op : bool
+        If ``True``, change previous displacements applied at the same location, otherwise
+        add the displacement to the previous.
+    follow : bool
+        if `True` the load follows the deformation of the element.
     """
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False, name=None, **kwargs):
@@ -55,12 +44,10 @@ class AbaqusPointLoad(PointLoad):
 
     @property
     def op(self):
-        """bool : if `True` create a new PointLoad otherwise modify the existing one, by default ``False``."""
         return self._op
 
     @property
     def follow(self):
-        """bool : if `True` the load follows the deformation of the element."""
         return self._follow
 
     def _generate_jobdata(self, instance_name, nodes):
@@ -88,6 +75,8 @@ class AbaqusPointLoad(PointLoad):
 
 
 class AbaqusLineLoad(LineLoad):
+    """Abaqus implementation of :class:`LineLoad`.\n"""
+    __doc__ += LineLoad.__doc__
 
     def __init__(self, elements, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
         super(AbaqusLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
@@ -95,6 +84,8 @@ class AbaqusLineLoad(LineLoad):
 
 
 class AbaqusAreaLoad(AreaLoad):
+    """Abaqus implementation of :class:`AreaLoad`.\n"""
+    __doc__ += AreaLoad.__doc__
 
     def __init__(self, elements, x, y, z, axes, name=None, **kwargs):
         super(AbaqusAreaLoad, self).__init__(elements, x, y, z, axes, name=name, **kwargs)
@@ -102,6 +93,8 @@ class AbaqusAreaLoad(AreaLoad):
 
 
 class AbaqusGravityLoad(GravityLoad):
+    """Abaqus implementation of :class:`GravityLoad`.\n"""
+    __doc__ += GravityLoad.__doc__
 
     def __init__(self, g=9.81, x=0., y=0., z=-1., name=None, **kwargs):
         super(AbaqusGravityLoad, self).__init__(g, x, y, z, name=name, **kwargs)
@@ -124,6 +117,8 @@ class AbaqusGravityLoad(GravityLoad):
 
 
 class AbaqusPrestressLoad(PrestressLoad):
+    """Abaqus implementation of :class:`PrestressLoad`.\n"""
+    __doc__ += PrestressLoad.__doc__
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AbaqusPrestressLoad, self).__init__(components, axes, name, **kwargs)
@@ -131,6 +126,8 @@ class AbaqusPrestressLoad(PrestressLoad):
 
 
 class AbaqusTributaryLoad(TributaryLoad):
+    """Abaqus implementation of :class:`TributaryLoad`.\n"""
+    __doc__ += TributaryLoad.__doc__
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AbaqusTributaryLoad, self).__init__(components, axes, name, **kwargs)
@@ -138,6 +135,8 @@ class AbaqusTributaryLoad(TributaryLoad):
 
 
 class AbaqusHarmonicPointLoad(HarmonicPointLoad):
+    """Abaqus implementation of :class:`HarmonicPointLoad`.\n"""
+    __doc__ += HarmonicPointLoad.__doc__
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AbaqusHarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
@@ -145,6 +144,9 @@ class AbaqusHarmonicPointLoad(HarmonicPointLoad):
 
 
 class AbaqusHarmonicPressureLoad(HarmonicPressureLoad):
+    """Abaqus implementation of :class:`HarmonicPressureLoad`.\n"""
+    __doc__ += HarmonicPressureLoad.__doc__
+
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AbaqusHarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
         raise NotImplementedError

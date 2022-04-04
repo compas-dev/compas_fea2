@@ -6,6 +6,9 @@ from compas_fea2.optimisation.responses import VolumeResponse, EnergyStiffnessRe
 
 
 class AbaqusVolumeResponse(VolumeResponse):
+    """Abaqus implementation of :class:`VolumeResponse`\n"""
+    __doc__ += VolumeResponse.__doc__
+
     def __init__(self, group, group_operator, name=None, **kwargs):
         super(AbaqusVolumeResponse, self).__init__(group, group_operator, name=name, **kwargs)
 
@@ -23,6 +26,9 @@ END_
 
 
 class AbaqusEnergyStiffnessResponse(EnergyStiffnessResponse):
+    """Abaqus implementation of :class:`EnergyStiffnessResponse`\n"""
+    __doc__ += EnergyStiffnessResponse.__doc__
+
     def __init__(self, group, group_operator, lc, name=None, **kwargs):
         super(AbaqusEnergyStiffnessResponse, self).__init__(group, group_operator, lc, name=name, **kwargs)
 

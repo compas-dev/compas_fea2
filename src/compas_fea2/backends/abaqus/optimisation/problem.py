@@ -8,6 +8,8 @@ from compas_fea2.backends.abaqus.job.send_job import launch_optimisation
 
 
 class AbaqusTopOptSensitivity(TopOptSensitivity):
+    """Abaqus implementation of :class:`TopOptSensitivity`\n"""
+    __doc__ += TopOptSensitivity.__doc__
 
     def __init__(self, problem, design_variables, vf, lc='ALL,ALL,All', name=None, **kwargs):
         super(AbaqusTopOptSensitivity).__init__(problem, design_variables, vf, lc, name=name, **kwargs)

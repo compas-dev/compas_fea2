@@ -10,11 +10,12 @@ from compas_fea2.utilities._utils import timer
 
 
 class AbaqusModel(Model):
-    """Abaqus implementation of a Model.
+    """Abaqus implementation of :class:`Model`.
 
     Note
     ----
-    For many aspects, in abaqus a `Model` is equivalent to an `Assembly`.
+    For many aspects, this is equivalent to an `Assembly` in Abaqus.
+
     """
     __doc__ += Model.__doc__
 

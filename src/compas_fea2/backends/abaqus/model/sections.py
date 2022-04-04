@@ -25,11 +25,20 @@ from compas_fea2.model import PipeSection
 # NOTE: these classes are sometimes overwriting the _base ones because Abaqus offers internal ways of computing beam sections' properties
 
 def _generate_beams_jobdata(obj, set_name, orientation, stype):
-    """Generates the string information for the input file.
+    """Generates the common string information for the input file of all the
+    abaqus predefined beam sections.
 
     Parameters
     ----------
-    None
+    obj : :class:`compas_fea2.model.sections.BeamSection`
+        Section to write in the input file.
+    set_name : str
+        Name of the element set to which the section is assigned.
+    orientation : str
+        Section orientation information.
+    stype : str
+        Abaqus identifier for the section. This is used to automatically generate
+        the sectional properties.
 
     Returns
     -------
@@ -45,7 +54,7 @@ def _generate_beams_jobdata(obj, set_name, orientation, stype):
 # 0D
 # ==============================================================================
 class AbaqusMassSection(MassSection):
-    """"""
+    """Abaqus implementation of the :class:`MassSection`.\n"""
     __doc__ += MassSection.__doc__
 
     def __init__(self, mass, name=None, **kwargs):
@@ -68,7 +77,7 @@ class AbaqusMassSection(MassSection):
 
 
 class AbaqusSpringSection(SpringSection):
-    """"""
+    """Abaqus implementation of the :class:`SpringSection`.\n"""
     __doc__ += SpringSection.__doc__
     __doc__ += """
     Warning
@@ -87,7 +96,7 @@ class AbaqusSpringSection(SpringSection):
 
 
 class AbaqusBeamSection(BeamSection):
-    """"""
+    """Abaqus implementation of the :class:`BeamSection`.\n"""
     __doc__ += BeamSection.__doc__
     __doc__ += """
     Warning
@@ -102,7 +111,7 @@ class AbaqusBeamSection(BeamSection):
 
 
 class AbaqusAngleSection(AngleSection):
-    """"""
+    """Abaqus implementation of the :class:`AngleSection`.\n"""
     __doc__ += AngleSection.__doc__
     __doc__ += """
     Note
@@ -122,7 +131,7 @@ class AbaqusAngleSection(AngleSection):
 
 
 class AbaqusBoxSection(BoxSection):
-    """"""
+    """Abaqus implementation of the :class:`BoxSection`.\n"""
     __doc__ += BoxSection.__doc__
     __doc__ += """Box section.
 
@@ -147,7 +156,7 @@ class AbaqusBoxSection(BoxSection):
 
 
 class AbaqusCircularSection(CircularSection):
-    """"""
+    """Abaqus implementation of the :class:`CircularSection`.\n"""
     __doc__ += CircularSection.__doc__
     __doc__ += """
     Note
@@ -165,7 +174,7 @@ class AbaqusCircularSection(CircularSection):
 
 
 class AbaqusHexSection(HexSection):
-    """"""
+    """Abaqus implementation of the :class:`HexSection`.\n"""
     __doc__ += HexSection.__doc__
     __doc__ += """
     Note
@@ -181,7 +190,7 @@ class AbaqusHexSection(HexSection):
 
 
 class AbaqusISection(ISection):
-    """"""
+    """Abaqus implementation of the :class:`ISection`.\n"""
     __doc__ += ISection.__doc__
     __doc__ += """I or T section.
 
@@ -209,7 +218,7 @@ class AbaqusISection(ISection):
 
 
 class AbaqusPipeSection(PipeSection):
-    """"""
+    """Abaqus implementation of the :class:`PipeSection`.\n"""
     __doc__ += PipeSection.__doc__
     __doc__ += """
     Note
@@ -225,7 +234,7 @@ class AbaqusPipeSection(PipeSection):
 
 
 class AbaqusRectangularSection(RectangularSection):
-    """"""
+    """Abaqus implementation of the :class:`RectangularSection`.\n"""
     __doc__ += RectangularSection.__doc__
     __doc__ += """
     Note
@@ -243,7 +252,7 @@ class AbaqusRectangularSection(RectangularSection):
 
 
 class AbaqusTrapezoidalSection(TrapezoidalSection):
-    """"""
+    """Abaqus implementation of the :class:`TrapezoidalSection`.\n"""
     __doc__ += TrapezoidalSection.__doc__
     __doc__ += """
     Warning
@@ -259,7 +268,7 @@ class AbaqusTrapezoidalSection(TrapezoidalSection):
 
 # TODO -> check how these sections are implemented in ABAQUS
 class AbaqusTrussSection(TrussSection):
-    """"""
+    """Abaqus implementation of the :class:`TrussSection`.\n"""
     __doc__ += TrussSection.__doc__
     __doc__ += """
     Warning
@@ -274,7 +283,7 @@ class AbaqusTrussSection(TrussSection):
 
 
 class AbaqusStrutSection(StrutSection):
-    """"""
+    """Abaqus implementation of the :class:`StrutSection`.\n"""
     __doc__ += StrutSection.__doc__
     __doc__ += """
     Warning
@@ -289,7 +298,7 @@ class AbaqusStrutSection(StrutSection):
 
 
 class AbaqusTieSection(TieSection):
-    """"""
+    """Abaqus implementation of the :class:`TieSection`.\n"""
     __doc__ += TieSection.__doc__
     __doc__ += """
     Warning
@@ -308,7 +317,7 @@ class AbaqusTieSection(TieSection):
 # ==============================================================================
 
 class AbaqusShellSection(ShellSection):
-    """"""
+    """Abaqus implementation of the :class:`ShellSection`.\n"""
     __doc__ += ShellSection.__doc__
     __doc__ += """
     Additional Parameters
@@ -338,7 +347,7 @@ class AbaqusShellSection(ShellSection):
 
 
 class AbaqusMembraneSection(MembraneSection):
-    """"""
+    """Abaqus implementation of the :class:`MembraneSection`.\n"""
     __doc__ += MembraneSection.__doc__
 
     def __init__(self, t, material, name=None, **kwargs):
@@ -365,7 +374,7 @@ class AbaqusMembraneSection(MembraneSection):
 # ==============================================================================
 
 class AbaqusSolidSection(SolidSection):
-    """"""
+    """Abaqus implementation of the :class:`SolidSection`.\n"""
     __doc__ += SolidSection.__doc__
 
     def __init__(self, material, name=None, **kwargs):

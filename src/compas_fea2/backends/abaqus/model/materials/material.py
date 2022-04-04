@@ -15,7 +15,7 @@ from compas_fea2.model import UserMaterial
 # ==============================================================================
 
 class AbaqusElasticOrthotropic(ElasticOrthotropic):
-    """"""
+    """Abaqus implementation of :class:`ElasticOrthotropic`\n"""
     __doc__ += ElasticOrthotropic.__doc__
     __doc__ += """
     Warning
@@ -31,7 +31,7 @@ class AbaqusElasticOrthotropic(ElasticOrthotropic):
 
 
 class AbaqusElasticIsotropic(ElasticIsotropic):
-    """"""
+    """Abaqus implementation of :class:`ElasticIsotropic`\n"""
     __doc__ += ElasticIsotropic.__doc__
 
     def __init__(self, *, E, v, density, unilateral=None, name=None, **kwargs):
@@ -68,7 +68,7 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
 
 
 class AbaqusStiff(Stiff):
-    """"""
+    """Abaqus implementation of :class:`Stiff`\n"""
     __doc__ += Stiff.__doc__
 
     def _generate_jobdata(self):
@@ -94,7 +94,7 @@ class AbaqusStiff(Stiff):
 # ==============================================================================
 
 class AbaqusElasticPlastic(ElasticPlastic):
-    """"""
+    """Abaqus implementation of :class:`ElasticPlastic`\n"""
     __doc__ += ElasticPlastic.__doc__
     __doc__ += """
     Warning
@@ -142,9 +142,11 @@ class AbaqusElasticPlastic(ElasticPlastic):
 
 
 class AbaqusUserMaterial(UserMaterial):
+    """Abaqus implementation of :class:`UserMaterial`\n"""
+    __doc__ += UserMaterial.__doc__
+    __doc__ += """ User Defined Material (UMAT).
 
-    """ User Defined Material (UMAT). Tho implement this type of material, a
-    separate subroutine is required
+    Tho implement this type of material, a separate subroutine is required.
 
     Parameters
     ----------

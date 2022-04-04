@@ -16,11 +16,6 @@ import sys
 # Author(s): Andrew Liew (github.com/andrewliew)
 
 
-__all__ = [
-    'extract_odb_data'
-]
-
-
 convert = {
     'CF1':   'cfx',  'CF2':  'cfy',  'CF3':  'cfz', 'CFM': 'cfm',
     'CM1':   'cmx',  'CM2':  'cmy',  'CM3':  'cmz', 'CMM': 'cmm',
@@ -275,7 +270,6 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
                                             refe['eminp'][element][id] = None
             except:
                 sys.__stderr__.write('Element output failed\n')  # TODO change
-                sys.__stdout__.write('Element output failed\n')
 
     with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
@@ -293,7 +287,7 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
 # ============================================================================
 # Main
 # ============================================================================
-# NOTE: this is used while calling the module through abaqus -> DON'T DELETE!
+# NOTE: this is used while calling the module through abaqus -> !!!DO NOT DELETE!!!
 if __name__ == "__main__":
 
     database_path = sys.argv[-1]

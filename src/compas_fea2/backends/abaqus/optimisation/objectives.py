@@ -6,6 +6,9 @@ from compas_fea2.optimisation.objectives import ObjectiveFunction
 
 
 class AbaqusObjectiveFunction(ObjectiveFunction):
+    """Abaqus implementation of :class:`ObjectiveFunction`\n"""
+    __doc__ += ObjectiveFunction.__doc__
+
     def __init__(self, design_respone, target, name=None, **kwargs) -> None:
         super(AbaqusObjectiveFunction, self).__init__(name, design_respone, target, name=name, **kwargs)
 

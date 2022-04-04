@@ -6,7 +6,7 @@ from compas_fea2.model import HardContactFrictionPenalty
 
 
 class AbaqusHardContactFrictionPenalty(HardContactFrictionPenalty):
-    """"""
+    """Abaqus implementation of the :class:`HardContactFrictionPenalty`.\n"""
     __doc__ += HardContactFrictionPenalty.__doc__
 
     def __init__(self, mu, tollerance=0.005, name=None, **kwargs) -> None:

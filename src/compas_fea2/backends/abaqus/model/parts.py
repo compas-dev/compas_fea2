@@ -6,7 +6,7 @@ from compas_fea2.model import Part
 
 
 class AbaqusPart(Part):
-    """Abaqus implementation of a Part.
+    """Abaqus implementation of :class:`Part`.
     """
     __doc__ += Part.__doc__
 

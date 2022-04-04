@@ -10,7 +10,7 @@ from compas_fea2.model import Steel
 
 
 class AbaqusSteel(Steel):
-    """"""
+    """Abaqus implementation of :class:`Steel`\n"""
     __doc__ += Steel.__doc__
 
     def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):

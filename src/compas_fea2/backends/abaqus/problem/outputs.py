@@ -6,7 +6,7 @@ from compas_fea2.problem.outputs import FieldOutput, HistoryOutput
 
 
 class AbaqusFieldOutput(FieldOutput):
-    """"""
+    """Abaqus implementation of :class:`FieldOutput`.\n"""
     __doc__ += FieldOutput.__doc__
     __doc__ += """
     Additional Parameters
@@ -52,7 +52,7 @@ class AbaqusFieldOutput(FieldOutput):
 
 
 class AbaqusHistoryOutput(HistoryOutput):
-    """"""
+    """Abaqus implementation of :class:`HistoryOutput`.\n"""
     __doc__ += HistoryOutput.__doc__
 
     def __init__(self):

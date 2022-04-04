@@ -6,11 +6,11 @@ from compas_fea2.model import Interface
 
 
 class AbaqusInterface(Interface):
-    """Abaqus implementation of an Interface.
+    """Abaqus implementation of :class:`Interface`.
 
     Note
     ----
-    In abaqus an `Interface` is called `Contact Pair`.
+    This is equivalent to a `Contact Pair` in Abaqus.
 
     """
     __doc__ += Interface.__doc__

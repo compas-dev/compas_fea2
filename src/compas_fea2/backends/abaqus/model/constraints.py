@@ -6,6 +6,8 @@ from compas_fea2.model import TieConstraint
 
 
 class AbaqusTieConstraint(TieConstraint):
+    """Abaqus implementation of :class:`TieConstraint`\n"""
+    __doc__ += TieConstraint.__doc__
 
     def __init__(self, master, slave, name=None, **kwargs):
         super(AbaqusTieConstraint, self).__init__(master, slave, tol=None, name=name, **kwargs)

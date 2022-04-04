@@ -68,6 +68,8 @@ def _generate_jobdata(bc, instance, nodes):
 
 
 class AbaqusFixedBC(FixedBC):
+    """Abaqus implementation of :class:`FixedBC`\n"""
+    __doc__ += FixedBC.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBC, self).__init__(name=name, **kwargs)
@@ -77,6 +79,8 @@ class AbaqusFixedBC(FixedBC):
 
 
 class AbaqusPinnedBC(PinnedBC):
+    """Abaqus implementation of :class:`PinnedBC`\n"""
+    __doc__ += PinnedBC.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusPinnedBC, self).__init__(name=name, **kwargs)
@@ -86,6 +90,8 @@ class AbaqusPinnedBC(PinnedBC):
 
 
 class AbaqusFixedBCXX(FixedBCXX):
+    """Abaqus implementation of :class:`FixedBCXX`\n"""
+    __doc__ += FixedBCXX.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCXX, self).__init__(name=name, **kwargs)
@@ -95,6 +101,8 @@ class AbaqusFixedBCXX(FixedBCXX):
 
 
 class AbaqusFixedBCYY(FixedBCYY):
+    """Abaqus implementation of :class:`FixedBCYY`\n"""
+    __doc__ += FixedBCYY.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCYY, self).__init__(name=name, **kwargs)
@@ -104,6 +112,8 @@ class AbaqusFixedBCYY(FixedBCYY):
 
 
 class AbaqusFixedBCZZ(FixedBCZZ):
+    """Abaqus implementation of :class:`FixedBCZZ`\n"""
+    __doc__ += FixedBCZZ.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCZZ, self).__init__(name=name, **kwargs)
@@ -113,6 +123,8 @@ class AbaqusFixedBCZZ(FixedBCZZ):
 
 
 class AbaqusRollerBCX(RollerBCX):
+    """Abaqus implementation of :class:`RollerBCX`\n"""
+    __doc__ += RollerBCX.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusRollerBCX, self).__init__(name=name, **kwargs)
@@ -122,6 +134,8 @@ class AbaqusRollerBCX(RollerBCX):
 
 
 class AbaqusRollerBCY(RollerBCY):
+    """Abaqus implementation of :class:`RollerBCY`\n"""
+    __doc__ += RollerBCY.__doc__
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusRollerBCY, self).__init__(name=name, **kwargs)
@@ -131,6 +145,8 @@ class AbaqusRollerBCY(RollerBCY):
 
 
 class AbaqusRollerBCZ(RollerBCZ):
+    """Abaqus implementation of :class:`RollerBCZ`\n"""
+    __doc__ += RollerBCZ.__doc__
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusRollerBCZ, self).__init__(name=name, **kwargs)
@@ -140,6 +156,8 @@ class AbaqusRollerBCZ(RollerBCZ):
 
 
 class AbaqusRollerBCXY(RollerBCXY):
+    """Abaqus implementation of :class:`RollerBCXY`\n"""
+    __doc__ += RollerBCXY.__doc__
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusRollerBCXY, self).__init__(name=name, **kwargs)
@@ -149,6 +167,8 @@ class AbaqusRollerBCXY(RollerBCXY):
 
 
 class AbaqusRollerBCYZ(RollerBCYZ):
+    """Abaqus implementation of :class:`RollerBCYZ`\n"""
+    __doc__ += RollerBCYZ.__doc__
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusRollerBCYZ, self).__init__(name=name, **kwargs)
@@ -158,6 +178,8 @@ class AbaqusRollerBCYZ(RollerBCYZ):
 
 
 class AbaqusRollerBCXZ(RollerBCXZ):
+    """Abaqus implementation of :class:`RollerBCXZ`\n"""
+    __doc__ += RollerBCXZ.__doc__
 
     def __init__(self, name=None, **kwargs):
         super(AbaqusRollerBCXZ, self).__init__(name=name, **kwargs)

@@ -18,29 +18,29 @@ class _Instance(FEAData):
         Name of the set.
     part : obj
         The Part from which the instance is created.
+
+    Attributes
+    ----------
+    name : str
+        Name of the set.
+    part : obj
+        The Part from which the instance is created.
+    groups : dict
+        Dictionary with the instance level sets.
+
     """
 
-    def __init__(self, name, part):
-        self._name = name
+    def __init__(self, name, part, **kwargs):
+        super(_Instance, self).__init__(name=name, **kwargs)
         self._part = part
-        self._groups = {}
-
-    def __repr__(self):
-        return '{0}({1})'.format(self.__name__, self.part.name)
-
-    @property
-    def name(self):
-        """The name property."""
-        return self._name
+        self._groups = {}  # TODO consider to change to set
 
     @property
     def part(self):
-        """The part property."""
         return self._part
 
     @property
     def groups(self):
-        """The sets property."""
         return self._groups
 
     def add_group(self, group):

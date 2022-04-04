@@ -2,10 +2,41 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Abaqus Models
-from .model import AbaqusModel
-from .parts import AbaqusPart
-from .nodes import AbaqusNode
+
+# Abaqus Materials
+from .materials import (
+    AbaqusElasticIsotropic,
+    AbaqusElasticOrthotropic,
+    AbaqusElasticPlastic,
+    AbaqusStiff,
+    AbaqusUserMaterial,
+    AbaqusConcrete,
+    AbaqusConcreteDamagedPlasticity,
+    AbaqusConcreteSmearedCrack,
+    AbaqusSteel,
+    AbaqusTimber,
+)
+
+
+# Abaqus Boundary Conditions
+from .bcs import (
+    AbaqusFixedBC,
+    AbaqusFixedBCXX,
+    AbaqusFixedBCYY,
+    AbaqusFixedBCZZ,
+    AbaqusPinnedBC,
+    AbaqusRollerBCX,
+    AbaqusRollerBCXY,
+    AbaqusRollerBCXZ,
+    AbaqusRollerBCY,
+    AbaqusRollerBCYZ,
+    AbaqusRollerBCZ,
+)
+
+# Abaqus Constraints
+from .constraints import (
+    AbaqusTieConstraint,
+)
 
 # Abaqus Elements
 from .elements import (
@@ -18,6 +49,37 @@ from .elements import (
     AbaqusTetrahedonElement,
     AbaqusPentahedronElement,
     AbaqusHexahedronElement,
+)
+
+# Abaqus Groups
+from .groups import (
+    AbaqusNodesGroup,
+    AbaqusElementsGroup,
+    AbaqusFacesGroup,
+)
+
+
+# Abaqus Interactions
+from .interactions import (
+    AbaqusHardContactFrictionPenalty,
+)
+
+from .interfaces import (
+    AbaqusInterface
+)
+
+# Abaqus Models
+from .model import AbaqusModel
+
+# Abaqus Nodes
+from .nodes import AbaqusNode
+
+# Abaqus Parts
+from .parts import AbaqusPart
+
+# Abaqus Relseases
+from .releases import (
+    AbaqusBeamEndPinRelease
 )
 
 # Abaqus Sections
@@ -39,58 +101,4 @@ from .sections import (
     AbaqusMembraneSection,
     AbaqusShellSection,
     AbaqusSolidSection,
-)
-
-# Abaqus Materials
-from .materials import (
-    AbaqusElasticIsotropic,
-    AbaqusElasticOrthotropic,
-    AbaqusElasticPlastic,
-    AbaqusStiff,
-    AbaqusUserMaterial,
-    AbaqusConcrete,
-    AbaqusConcreteDamagedPlasticity,
-    AbaqusConcreteSmearedCrack,
-    AbaqusSteel,
-)
-
-
-# Abaqus Groups
-from .groups import (
-    AbaqusNodesGroup,
-    AbaqusElementsGroup,
-    AbaqusFacesGroup,
-)
-
-# Abaqus Interactions
-from .interactions import (
-    AbaqusHardContactFrictionPenalty,
-)
-# Abaqus Constraints
-from .constraints import (
-    AbaqusTieConstraint,
-)
-
-# Abaqus Boundary Conditions
-from .bcs import (
-    AbaqusFixedBC,
-    AbaqusFixedBCXX,
-    AbaqusFixedBCYY,
-    AbaqusFixedBCZZ,
-    AbaqusPinnedBC,
-    AbaqusRollerBCX,
-    AbaqusRollerBCXY,
-    AbaqusRollerBCXZ,
-    AbaqusRollerBCY,
-    AbaqusRollerBCYZ,
-    AbaqusRollerBCZ,
-)
-
-
-from .releases import (
-    AbaqusBeamEndPinRelease
-)
-
-from .interfaces import (
-    AbaqusInterface
 )

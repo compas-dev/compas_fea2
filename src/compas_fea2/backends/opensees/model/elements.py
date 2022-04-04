@@ -157,7 +157,7 @@ class OpenseesShellElement(ShellElement):
         For more information about this element in OpenSees check
         `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/ASDShellQ4.html>`_
         """
-        return OpenseesShellElement(nodes, section, 'ASDShellQ4', mat_behaviour=None, part=None, name=None, **kwargs)
+        return OpenseesShellElement(nodes, section, 'ASDShellQ4', mat_behaviour=None, part=part, name=name, **kwargs)
 
     @staticmethod
     def FourNodeQuad(nodes, section, part=None, name=None, mat_behavior='PlainStess', **kwargs):
@@ -171,7 +171,7 @@ class OpenseesShellElement(ShellElement):
         The optional arguments are not implemented.
 
         """
-        return OpenseesShellElement(nodes, section, 'FourNodeQuad', mat_behaviour=mat_behavior, part=None, name=None, **kwargs)
+        return OpenseesShellElement(nodes, section, 'FourNodeQuad', mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
 
     @staticmethod
     def SSPQuad(nodes, section, part=None, name=None, mat_behavior='PlainStess', **kwargs):
@@ -185,7 +185,7 @@ class OpenseesShellElement(ShellElement):
         The optional arguments are not implemented.
 
         """
-        return OpenseesShellElement(nodes, section, 'SSPQuad', mat_behaviour=None, part=None, name=None, **kwargs)
+        return OpenseesShellElement(nodes, section, 'SSPQuad', mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         elements_formulations = {

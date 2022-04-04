@@ -103,7 +103,6 @@ def launch_optimisation(problem, cpus, output):
     # Set options
     exe_kw = 'ToscaStructure'
     # Analyse
-    tic = time()
     success = False
 
     # cmd = f'cd {problem.path} && abaqus optimization task=c:/code/myrepos/from_compas/fea2/temp/topopt_hypar_gmsh/hypar.par job=c:/temp/test_opt interactive'
@@ -128,8 +127,6 @@ def launch_optimisation(problem, cpus, output):
         print(stdout.decode())
         print(stderr.decode())
 
-    toc = time() - tic
-
     if not success:
         try:
             with open(problem.path + problem.name + '.sta', 'r') as f:
@@ -138,11 +135,7 @@ def launch_optimisation(problem, cpus, output):
         except Exception:
             pass
 
-    if success:
-        if output:
-            print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
-    else:
-        print('***** Analysis failed *****')
+    print('***** Analysis {} *****'.format('successful' if success else 'failed'))
 
 
 def smooth_optimisation(problem, output):

@@ -1,6 +1,5 @@
 from functools import wraps
 from time import perf_counter
-from compas_fea2.config import TEST
 
 
 def timer(_func=None, *, message=None):

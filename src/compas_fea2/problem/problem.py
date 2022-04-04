@@ -9,6 +9,8 @@ from compas_fea2.base import FEAData
 from compas_fea2.problem.steps.step import _Step
 from compas_fea2.job.input_file import InputFile
 
+from compas_fea2.utilities._utils import timer
+
 
 class Problem(FEAData):
     """Initialises the Problem object.
@@ -271,7 +273,7 @@ Steps (in order of application)
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
-
+    @timer(message='Finished writing input file in')
     def write_input_file(self, path):
         """Writes the abaqus input file.
 
@@ -289,7 +291,7 @@ Steps (in order of application)
         if not self.path.exists():
             self.path.mkdir()
         input_file = InputFile.from_problem(self)
-        return input_file.write_to_file(self.path)
+        input_file.write_to_file(self.path)
 
     def analyse(self, path, save=False):
         """Run the analysis through the registered backend.
@@ -307,7 +309,7 @@ Steps (in order of application)
         None
 
         """
-        print(self.write_input_file(path))
+        self.write_input_file(path)
         if save:
             self.save_to_cfp()
 

@@ -41,7 +41,6 @@ class InputFile(FEAData):
     # ==============================================================================
     # General methods
     # ==============================================================================
-    @timer
     def write_to_file(self, path):
         """Writes the InputFile to a file in a specified location.
 
@@ -60,11 +59,11 @@ class InputFile(FEAData):
             file_path = os.path.join(path, self._file_name)
             with open(file_path, 'w') as f:
                 f.writelines(self._job_data)
-            out = 'Input file generated in: {}\n'.format(file_path)
+            out = 'Input file generated in: {}'.format(file_path)
         except:
-            out = 'ERROR: input file not generated!\n'
+            out = 'ERROR: input file not generated!'
 
-        return out
+        print(out)
 
     def _generate_jobdata(self, *args, **kwargs):
         raise NotImplementedError('This method is not available for the selected backend!')

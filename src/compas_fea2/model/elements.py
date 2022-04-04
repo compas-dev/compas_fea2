@@ -162,6 +162,13 @@ class TieElement(TrussElement):
 class ShellElement(_Element):
     """A 2D element that resists axial, shear, bending and torsion.
     """
+    # @staticmethod
+    # def SSPQuad(*args, **kwargs):
+    #     raise NotImplementedError('This element is not available for the selected backend.')
+
+    # @staticmethod
+    # def FourNodeQuad(*args, **kwargs):
+    #     raise NotImplementedError('This element is not available for the selected backend.')
 
 
 class MembraneElement(ShellElement):

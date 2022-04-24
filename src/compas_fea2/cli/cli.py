@@ -45,16 +45,23 @@ def init_backend(backend, clean):
         The name of the backend. This is must be lower case.
     """
     backend = backend.lower()
-    classes_data = scan_package(compas_fea2.problem, ignore_protected=True)
+
     base_path = os.path.join(HOME, 'src', 'compas_fea2', 'backends')
     path = os.path.join(base_path, backend)
     if clean and os.path.exists(path):
         shutil.rmtree(path)
     os.mkdir(path)
 
-    mirror_package(path=path, package_data=classes_data, backend='backend')
+    for module_name in ['model', 'problem', 'optimisation', 'results', 'job']:
+        module_path = os.path.join(path, module_name)
+        if not os.path.exists(module_path):
+            os.mkdir(module_path)
+        module = importlib.import_module(".".join(['compas_fea2', module_name]))
+        classes_data = scan_package(module, ignore_protected=True)
+
+        mirror_package(path=module_path, package_data=classes_data, backend=backend)
 
 
 # -------------------------------- DEBUG ----------------------------------#
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main.init_backend())

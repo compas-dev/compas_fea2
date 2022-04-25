@@ -5,36 +5,58 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class Group(FEAData):
+class _Group(FEAData):
     """Base class for all groups.
     """
 
-    def __init__(self, **kwargs):
-        super(Group, self).__init__(**kwargs)
+    def __init__(self, name=None, **kwargs):
+        super(_Group, self).__init__(name, **kwargs)
+        self._members = None
+
+    def __str__(self):
+        return """
+{}
+{}
+name            : {}
+# of members    : {}
+""".format(self.__class__.__name__,
+           len(self.__class__.__name__) * '-',
+           self.name,
+           len(self.members))
 
 
-class NodesGroup(Group):
-    """Base class for all node groups.
+class NodesGroup(_Group):
+    """Base class nodes groups.
 
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
     """
 
-    def __init__(self, *, nodes, **kwargs):
-        super(NodesGroup, self).__init__(**kwargs)
+    def __init__(self, *, nodes, name=None, **kwargs):
+        super(NodesGroup, self).__init__(name=name, **kwargs)
         self.nodes = nodes
 
+    @property
+    def members(self):
+        return self.nodes
 
-class ElementsGroup(Group):
-    """Base class for all element groups.
+
+class ElementsGroup(_Group):
+    """Base class for elements groups.
 
     Parameters
     ----------
@@ -48,13 +70,38 @@ class ElementsGroup(Group):
 
     """
 
-    def __init__(self, *, elements, **kwargs):
-        super(ElementsGroup, self).__init__(**kwargs)
+    def __init__(self, *, elements, name=None, **kwargs):
+        super(ElementsGroup, self).__init__(name=name, **kwargs)
         self.elements = elements
 
+    @property
+    def members(self):
+        return self.elements
 
-class PartsGroup(Group):
-    """Base class for all element groups.
+
+class FacesGroup(_Group):
+    """Base class elements faces groups.
+
+    Parameters
+    ----------
+    part : :class:`compas_fea2.model.Part`
+        Part where the elements are located
+    element_face : dict
+        element_key, face pairs of the elements faces creating the surface
+    """
+
+    def __init__(self, part, element_face, name=None, **kwargs):
+        super(FacesGroup, self).__init__(name=name, **kwargs)
+        self._part = part
+        self._element_face = element_face
+
+    @property
+    def members(self):
+        return self._element_face
+
+
+class PartsGroup(_Group):
+    """Base class for parts groups.
 
     Parameters
     ----------
@@ -68,6 +115,10 @@ class PartsGroup(Group):
 
     """
 
-    def __init__(self, *, parts, **kwargs):
-        super(PartsGroup, self).__init__(**kwargs)
+    def __init__(self, *, parts, name=None, **kwargs):
+        super(PartsGroup, self).__init__(name=name, **kwargs)
         self.parts = parts
+
+    @property
+    def members(self):
+        return self.parts

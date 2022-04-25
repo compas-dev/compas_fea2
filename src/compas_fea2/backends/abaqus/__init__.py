@@ -2,420 +2,380 @@
 ********************************************************************************
 Abaqus
 ********************************************************************************
-<<<<<<< HEAD
-=======
-
-This is the Abaqus implementation of compas_fea2.
-
-The following classes are used for the generation of the Model to be analysed in
-Abaqus
-
-
-MODEL
-=====
-
-.. currentmodule:: compas_fea2.backends.abaqus.model
-
-Model
------
-
-.. autosummary::
-    :toctree: generated/
-
-    Model
-
-Parts
------
-
-.. autosummary::
-    :toctree: generated/
-
-    Part
-
-Nodes
------
-
-.. autosummary::
-    :toctree: generated/
-
-    Node
-
-Elements
---------
-
-.. autosummary::
-    :toctree: generated/
-
-    MassElement
-    BeamElement
-    TrussElement
-    ShellElement
-    SolidElement
-
-Constraints
------------
-
-.. autosummary::
-    :toctree: generated/
-
-    NodeTieConstraint
-
-Materials
----------
-
-.. autosummary::
-    :toctree: generated/
-
-    ElasticIsotropic
-    ElasticPlastic
-    Stiff
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    Steel
-    UserMaterial
-
-Sections
---------
-
-.. autosummary::
-    :toctree: generated/
-
-    MassSection
-    AngleSection
-    BoxSection
-    CircularSection
-    HexSection
-    ISection
-    PipeSection
-    RectangularSection
-    TrapezoidalSection
-    TrussSection
-    ShellSection
-    MembraneSection
-    SolidSection
-
-Boundary Conditions
--------------------
-
-.. autosummary::
-    :toctree: generated/
-
-    FixedBC
-    PinnedBC
-    FixedBCXX
-    FixedBCYY
-    FixedBCZZ
-    RollerBCX
-    RollerBCY
-    RollerBCZ
-    RollerBCXY
-    RollerBCYZ
-    RollerBCXZ
-
-Groups
-------
-
-.. autosummary::
-    :toctree: generated/
-
-    NodesGroup
-    ElementsGroup
-
-PROBLEM
-=======
-
-.. currentmodule:: compas_fea2.backends.abaqus.problem
-
-.. autosummary::
-    :toctree: generated/
-
-    Problem
-
-Steps
------
-
-.. autosummary::
-    :toctree: generated/
-
-    GeneralStep
-    ModalStep
-
-Loads
------
-
-.. autosummary::
-    :toctree: generated/
-
-    PointLoad
-    GravityLoad
-
-Displacements
--------------
-
-.. autosummary::
-    :toctree: generated/
-
-    GeneralDisplacement
-
-
-OPTIMISATION
-============
-
-.. currentmodule:: compas_fea2.backends.abaqus.optimisation
-
-.. autosummary::
-    :toctree: generated/
-
-    OptimisationProblem
-    OptimisationParameters
-    OptimisationConstraint
-    ObjectiveFunction
-    DesignVariables
-    VolumeResponse
-    EnergyStiffnessResponse
-
-
-RESULTS
-=======
-
-.. currentmodule:: compas_fea2.backends.abaqus.results
-
-.. autosummary::
-    :toctree: generated/
-
-    Results
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 """
 
+from pydoc import ErrorDuringImport
 import compas_fea2
 
 from compas.plugins import plugin
-from compas_fea2.backends.abaqus.problem.displacements import AbaqusGeneralDisplacement
-from compas_fea2.backends.abaqus.problem.loads import AbaqusAcousticDiffuseFieldLoad
 
+# Models
 from compas_fea2.model import Model
 from compas_fea2.model import Part
 from compas_fea2.model import Node
 # Elements
-from compas_fea2.model import BeamElement
-from compas_fea2.model import MassElement
-from compas_fea2.model import MembraneElement
-from compas_fea2.model import ShellElement
-from compas_fea2.model import SolidElement
-from compas_fea2.model import TrussElement
-# Groups
-from compas_fea2.model import ElementsGroup
-from compas_fea2.model import NodesGroup
+from compas_fea2.model.elements import (
+    MassElement,
+    BeamElement,
+    TrussElement,
+    MembraneElement,
+    ShellElement,
+    SolidElement,
+    TetrahedronElement,
+    PentahedronElement,
+    HexahedronElement,
+)
 # Sections
-from compas_fea2.model import AngleSection
-from compas_fea2.model import BeamSection
-from compas_fea2.model import BoxSection
-from compas_fea2.model import CircularSection
-from compas_fea2.model import ISection
-from compas_fea2.model import MassSection
-from compas_fea2.model import MembraneSection
-from compas_fea2.model import PipeSection
-from compas_fea2.model import RectangularSection
-from compas_fea2.model import ShellSection
-from compas_fea2.model import SolidSection
-from compas_fea2.model import SpringSection
-from compas_fea2.model import StrutSection
-from compas_fea2.model import TieSection
-from compas_fea2.model import TrapezoidalSection
-from compas_fea2.model import TrussSection
+from compas_fea2.model.sections import (
+    AngleSection,
+    BeamSection,
+    BoxSection,
+    CircularSection,
+    HexSection,
+    ISection,
+    MassSection,
+    PipeSection,
+    RectangularSection,
+    SpringSection,
+    StrutSection,
+    TieSection,
+    TrapezoidalSection,
+    TrussSection,
+    MembraneSection,
+    ShellSection,
+    SolidSection,
+)
 # Materials
-from compas_fea2.model import Concrete
-from compas_fea2.model import ConcreteDamagedPlasticity
-from compas_fea2.model import ConcreteSmearedCrack
-from compas_fea2.model import ElasticIsotropic
-from compas_fea2.model import ElasticOrthotropic
-from compas_fea2.model import ElasticPlastic
-from compas_fea2.model import Steel
-from compas_fea2.model import Stiff
+from compas_fea2.model.materials import (
+    ElasticIsotropic,
+    ElasticOrthotropic,
+    ElasticPlastic,
+    Stiff,
+    UserMaterial,
+    Concrete,
+    ConcreteDamagedPlasticity,
+    ConcreteSmearedCrack,
+    Steel,
+)
+# Groups
+from compas_fea2.model.groups import (
+    NodesGroup,
+    ElementsGroup,
+    FacesGroup,
+)
 # Interactions
-from compas_fea2.model import ContactHardFrictionPenalty
+from compas_fea2.model.interactions import (
+    HardContactFrictionPenalty,
+)
 # Constraints
-from compas_fea2.model import Constraint
-# from compas_fea2.model import TieConstraint
+from compas_fea2.model.constraints import (
+    TieConstraint,
+)
+# Releases
+from compas_fea2.model.releases import (
+    BeamEndPinRelease,
+)
+
 # Boundary Conditions
-from compas_fea2.model import FixedBC
-from compas_fea2.model import FixedBCXX
-from compas_fea2.model import FixedBCYY
-from compas_fea2.model import FixedBCZZ
-from compas_fea2.model import PinnedBC
-from compas_fea2.model import RollerBCX
-from compas_fea2.model import RollerBCXY
-from compas_fea2.model import RollerBCXZ
-from compas_fea2.model import RollerBCY
-from compas_fea2.model import RollerBCYZ
-from compas_fea2.model import RollerBCZ
+from compas_fea2.model.bcs import (
+    FixedBC,
+    FixedBCXX,
+    FixedBCYY,
+    FixedBCZZ,
+    PinnedBC,
+    RollerBCX,
+    RollerBCXY,
+    RollerBCXZ,
+    RollerBCY,
+    RollerBCYZ,
+    RollerBCZ,
+)
 
-# Problems
+# Problem
 from compas_fea2.problem import Problem
+# Steps
+from compas_fea2.problem.steps import (
+    ModalAnalysis,
+    ComplexEigenValue,
+    StaticStep,
+    LinearStaticPerturbation,
+    BucklingAnalysis,
+    DynamicStep,
+    QuasiStaticStep,
+    DirectCyclicStep,
+)
 # Loads
-from compas_fea2.problem import AcousticDiffuseFieldLoad
-from compas_fea2.problem import AreaLoad
-from compas_fea2.problem import GravityLoad
-from compas_fea2.problem import HarmonicPointLoad
-from compas_fea2.problem import HarmonicPressureLoad
-from compas_fea2.problem import LineLoad
-from compas_fea2.problem import PointLoad
-from compas_fea2.problem import TributaryLoad
+from compas_fea2.problem.loads import (
+    PointLoad,
+    LineLoad,
+    AreaLoad,
+    TributaryLoad,
+    PrestressLoad,
+    GravityLoad,
+    HarmonicPointLoad,
+    HarmonicPressureLoad,
+)
 # Displacements
-from compas_fea2.problem import GeneralDisplacement
-# Cases/Steps
-# from compas_fea2.problem import AcousticCase
-# from compas_fea2.problem import BucklingCase
-# from compas_fea2.problem import GeneralStaticCase
-# from compas_fea2.problem import HarmonicCase
-# from compas_fea2.problem import HeatCase
-# from compas_fea2.problem import ModalCase
-# from compas_fea2.problem import StaticLinearPerturbationCase
+from compas_fea2.problem.displacements import (
+    GeneralDisplacement,
+)
 # Outputs
+from compas_fea2.problem.outputs import (
+    FieldOutput,
+    HistoryOutput,
+)
 
-# Abaqus Models
-from .model import AbaqusModel
-from .model import AbaqusPart
-from .model import AbaqusNode
-# Abaqus Elements
-from .model import AbaqusBeamElement
-from .model import AbaqusMassElement
-from .model import AbaqusMembraneElement
-from .model import AbaqusShellElement
-from .model import AbaqusSolidElement
-from .model import AbaqusTrussElement
-# Abaqus Groups
-from .model import AbaqusElementsGroup
-from .model import AbaqusNodesGroup
-# Abaqus Sections
-from .model import AbaqusAngleSection
-# from .model import AbaqusBeamSection
-from .model import AbaqusBoxSection
-from .model import AbaqusCircularSection
-from .model import AbaqusISection
-from .model import AbaqusMassSection
-from .model import AbaqusMembraneSection
-from .model import AbaqusPipeSection
-from .model import AbaqusRectangularSection
-from .model import AbaqusShellSection
-from .model import AbaqusSolidSection
-from .model import AbaqusSpringSection
-from .model import AbaqusStrutSection
-from .model import AbaqusTieSection
-from .model import AbaqusTrapezoidalSection
-from .model import AbaqusTrussSection
-# Abaqus Materials
-from .model import AbaqusConcrete
-from .model import AbaqusConcreteDamagedPlasticity
-from .model import AbaqusConcreteSmearedCrack
-from .model import AbaqusElasticIsotropic
-from .model import AbaqusElasticOrthotropic
-from .model import AbaqusElasticPlastic
-from .model import AbaqusSteel
-from .model import AbaqusStiff
-# Abaqus Interactions
-from .model import AbaqusContactHardFrictionPenalty
-# Abaqus Constraints
-from .model import AbaqusConstraint
-# from .model import AbaqusTieConstraint
-# Abaqus Boundary Conditions
-from .model import AbaqusFixedBC
-from .model import AbaqusFixedBCXX
-from .model import AbaqusFixedBCYY
-from .model import AbaqusFixedBCZZ
-from .model import AbaqusPinnedBC
-from .model import AbaqusRollerBCX
-from .model import AbaqusRollerBCXY
-from .model import AbaqusRollerBCXZ
-from .model import AbaqusRollerBCY
-from .model import AbaqusRollerBCYZ
-from .model import AbaqusRollerBCZ
+# Results
+from compas_fea2.results import (
+    Results
+)
 
-# Abaqus Problems
-from .problem import AbaqusProblem
-# Abaqus Loads
-from .problem import AbaqusAreaLoad
-from .problem import AbaqusGravityLoad
-from .problem import AbaqusHarmonicPointLoad
-from .problem import AbaqusHarmonicPressureLoad
-from .problem import AbaqusLineLoad
-from .problem import AbaqusPointLoad
-from .problem import AbaqusTributaryLoad
+# Input File
+from compas_fea2.job import (
+    InputFile,
+    ParametersFile,
+)
+# =========================================================================
+#                           ABAQUS CLASSES
+# =========================================================================
 
+try:
+    # Abaqus Models
+    from .model import AbaqusModel
+    from .model import AbaqusPart
+    from .model import AbaqusNode
 
-@plugin(category='fea_backends')
-def register_backend():
-    backend = compas_fea2.BACKENDS['abaqus']
+    # Abaqus Elements
+    from .model.elements import (
+        AbaqusMassElement,
+        AbaqusBeamElement,
+        AbaqusTrussElement,
+        AbaqusMembraneElement,
+        AbaqusShellElement,
+        AbaqusSolidElement,
+        AbaqusTetrahedonElement,
+        AbaqusPentahedronElement,
+        AbaqusHexahedronElement,
+    )
 
-    backend[Model] = AbaqusModel
-    backend[Part] = AbaqusPart
-    backend[Node] = AbaqusNode
+    # Abaqus Sections
+    from .model.sections import (
+        AbaqusAngleSection,
+        AbaqusBeamSection,
+        AbaqusBoxSection,
+        AbaqusCircularSection,
+        AbaqusHexSection,
+        AbaqusISection,
+        AbaqusMassSection,
+        AbaqusPipeSection,
+        AbaqusRectangularSection,
+        AbaqusSpringSection,
+        AbaqusStrutSection,
+        AbaqusTieSection,
+        AbaqusTrapezoidalSection,
+        AbaqusTrussSection,
+        AbaqusMembraneSection,
+        AbaqusShellSection,
+        AbaqusSolidSection,
+    )
 
-    backend[BeamElement] = AbaqusBeamElement
-    backend[MassElement] = AbaqusMassElement
-    backend[MembraneElement] = AbaqusMembraneElement
-    backend[ShellElement] = AbaqusShellElement
-    backend[SolidElement] = AbaqusSolidElement
-    backend[TrussElement] = AbaqusTrussElement
+    # Abaqus Materials
+    from .model.materials import (
+        AbaqusElasticIsotropic,
+        AbaqusElasticOrthotropic,
+        AbaqusElasticPlastic,
+        AbaqusStiff,
+        AbaqusUserMaterial,
+        AbaqusConcrete,
+        AbaqusConcreteDamagedPlasticity,
+        AbaqusConcreteSmearedCrack,
+        AbaqusSteel,
+    )
 
-    backend[ElementsGroup] = AbaqusElementsGroup
-    backend[NodesGroup] = AbaqusNodesGroup
+    # Abaqus Groups
+    from .model.groups import (
+        AbaqusNodesGroup,
+        AbaqusElementsGroup,
+        AbaqusFacesGroup,
+    )
 
-    backend[AngleSection] = AbaqusAngleSection
-    # backend[BeamSection] = AbaqusBeamSection
-    backend[BoxSection] = AbaqusBoxSection
-    backend[CircularSection] = AbaqusCircularSection
-    backend[ISection] = AbaqusISection
-    backend[MassSection] = AbaqusMassSection
-    backend[MembraneSection] = AbaqusMembraneSection
-    backend[PipeSection] = AbaqusPipeSection
-    backend[RectangularSection] = AbaqusRectangularSection
-    backend[ShellSection] = AbaqusShellSection
-    backend[SolidSection] = AbaqusSolidSection
-    backend[SpringSection] = AbaqusSpringSection
-    backend[StrutSection] = AbaqusStrutSection
-    backend[TieSection] = AbaqusTieSection
-    backend[TrapezoidalSection] = AbaqusTrapezoidalSection
-    backend[TrussSection] = AbaqusTrussSection
+    # Abaqus Interactions
+    from .model.interactions import (
+        AbaqusHardContactFrictionPenalty,
+    )
+    # Abaqus Constraints
+    from .model.constraints import (
+        AbaqusTieConstraint,
+    )
 
-    backend[Concrete] = AbaqusConcrete
-    backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
-    backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
-    backend[ElasticIsotropic] = AbaqusElasticIsotropic
-    backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
-    backend[ElasticPlastic] = AbaqusElasticPlastic
-    backend[Steel] = AbaqusSteel
-    backend[Stiff] = AbaqusStiff
+    # Abaqus release
+    from .model.releases import (
+        AbaqusBeamEndPinRelease,
+    )
 
-    backend[ContactHardFrictionPenalty] = AbaqusContactHardFrictionPenalty
+    # Abaqus Boundary Conditions
+    from .model.bcs import (
+        AbaqusFixedBC,
+        AbaqusFixedBCXX,
+        AbaqusFixedBCYY,
+        AbaqusFixedBCZZ,
+        AbaqusPinnedBC,
+        AbaqusRollerBCX,
+        AbaqusRollerBCXY,
+        AbaqusRollerBCXZ,
+        AbaqusRollerBCY,
+        AbaqusRollerBCYZ,
+        AbaqusRollerBCZ,
+    )
 
-    backend[Constraint] = AbaqusConstraint
-    # backend[TieConstraint] = AbaqusTieConstraint
+    # Abaqus Problem
+    from .problem import AbaqusProblem
 
-    backend[FixedBC] = AbaqusFixedBC
-    backend[FixedBCXX] = AbaqusFixedBCXX
-    backend[FixedBCYY] = AbaqusFixedBCYY
-    backend[FixedBCZZ] = AbaqusFixedBCZZ
-    backend[PinnedBC] = AbaqusPinnedBC
-    backend[RollerBCX] = AbaqusRollerBCX
-    backend[RollerBCXY] = AbaqusRollerBCXY
-    backend[RollerBCXZ] = AbaqusRollerBCXZ
-    backend[RollerBCY] = AbaqusRollerBCY
-    backend[RollerBCYZ] = AbaqusRollerBCYZ
-    backend[RollerBCZ] = AbaqusRollerBCZ
+    # Abaqus Steps
+    from .problem.steps import (
+        AbaqusModalAnalysis,
+        AbaqusComplexEigenValue,
+        AbaqusStaticStep,
+        AbaqusLinearStaticPerturbation,
+        AbaqusBucklingAnalysis,
+        AbaqusDynamicStep,
+        AbaqusQuasiStaticStep,
+        AbaqusDirectCyclicStep,
+    )
+    # Abaqus Loads
+    from .problem.loads import (
+        AbaqusPointLoad,
+        AbaqusLineLoad,
+        AbaqusAreaLoad,
+        AbaqusTributaryLoad,
+        AbaqusPrestressLoad,
+        AbaqusGravityLoad,
+        AbaqusHarmonicPointLoad,
+        AbaqusHarmonicPressureLoad,
+    )
 
-    backend[Problem] = AbaqusProblem
+    # Abaqus Displacements
+    from .problem.displacements import (
+        AbaqusGeneralDisplacement,
+    )
 
-    backend[AcousticDiffuseFieldLoad] = AbaqusAcousticDiffuseFieldLoad
-    backend[AreaLoad] = AbaqusAreaLoad
-    backend[GravityLoad] = AbaqusGravityLoad
-    backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
-    backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
-    backend[LineLoad] = AbaqusLineLoad
-    backend[PointLoad] = AbaqusPointLoad
-    backend[TributaryLoad] = AbaqusTributaryLoad
+    # Abaqus outputs
+    from .problem.outputs import (
+        AbaqusFieldOutput,
+        AbaqusHistoryOutput,
+    )
 
-    backend[GeneralDisplacement] = AbaqusGeneralDisplacement
+    # Abaqus Results
+    from .results import (
+        AbaqusResults
+    )
 
-    print('Abaqus implementations registered...')
+    # Abaqus Input File
+    from .job import(
+        AbaqusInputFile,
+        AbaqusParametersFile,
+    )
+
+    @plugin(category='fea_backends')
+    def register_backend():
+        backend = compas_fea2.BACKENDS['abaqus']
+
+        backend[Model] = AbaqusModel
+        backend[Part] = AbaqusPart
+        backend[Node] = AbaqusNode
+
+        backend[MassElement] = AbaqusMassElement
+        backend[BeamElement] = AbaqusBeamElement
+        backend[TrussElement] = AbaqusTrussElement
+        backend[MembraneElement] = AbaqusMembraneElement
+        backend[ShellElement] = AbaqusShellElement
+        backend[SolidElement] = AbaqusSolidElement
+        backend[SolidElement] = AbaqusSolidElement
+        backend[SolidElement] = AbaqusSolidElement
+        backend[TetrahedronElement] = AbaqusTetrahedonElement
+        backend[PentahedronElement] = AbaqusPentahedronElement
+        backend[HexahedronElement] = AbaqusHexahedronElement
+
+        backend[AngleSection] = AbaqusAngleSection
+        backend[BeamSection] = AbaqusBeamSection
+        backend[BoxSection] = AbaqusBoxSection
+        backend[CircularSection] = AbaqusCircularSection
+        backend[HexSection] = AbaqusHexSection
+        backend[ISection] = AbaqusISection
+        backend[MassSection] = AbaqusMassSection
+        backend[MembraneSection] = AbaqusMembraneSection
+        backend[PipeSection] = AbaqusPipeSection
+        backend[RectangularSection] = AbaqusRectangularSection
+        backend[ShellSection] = AbaqusShellSection
+        backend[SolidSection] = AbaqusSolidSection
+        backend[SpringSection] = AbaqusSpringSection
+        backend[StrutSection] = AbaqusStrutSection
+        backend[TieSection] = AbaqusTieSection
+        backend[TrapezoidalSection] = AbaqusTrapezoidalSection
+        backend[TrussSection] = AbaqusTrussSection
+
+        backend[ElasticIsotropic] = AbaqusElasticIsotropic
+        backend[ElasticOrthotropic] = AbaqusElasticOrthotropic
+        backend[ElasticPlastic] = AbaqusElasticPlastic
+        backend[Stiff] = AbaqusStiff
+        backend[UserMaterial] = AbaqusUserMaterial
+        backend[Concrete] = AbaqusConcrete
+        backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
+        backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
+        backend[Steel] = AbaqusSteel
+
+        backend[NodesGroup] = AbaqusNodesGroup
+        backend[ElementsGroup] = AbaqusElementsGroup
+        backend[FacesGroup] = AbaqusFacesGroup
+
+        backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
+
+        backend[TieConstraint] = AbaqusTieConstraint
+
+        backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
+
+        backend[FixedBC] = AbaqusFixedBC
+        backend[FixedBCXX] = AbaqusFixedBCXX
+        backend[FixedBCYY] = AbaqusFixedBCYY
+        backend[FixedBCZZ] = AbaqusFixedBCZZ
+        backend[PinnedBC] = AbaqusPinnedBC
+        backend[RollerBCX] = AbaqusRollerBCX
+        backend[RollerBCXY] = AbaqusRollerBCXY
+        backend[RollerBCXZ] = AbaqusRollerBCXZ
+        backend[RollerBCY] = AbaqusRollerBCY
+        backend[RollerBCYZ] = AbaqusRollerBCYZ
+        backend[RollerBCZ] = AbaqusRollerBCZ
+
+        backend[Problem] = AbaqusProblem
+
+        backend[ModalAnalysis] = AbaqusModalAnalysis
+        backend[ComplexEigenValue, StaticStep] = AbaqusComplexEigenValue
+        backend[StaticStep] = AbaqusStaticStep
+        backend[LinearStaticPerturbation] = AbaqusLinearStaticPerturbation
+        backend[BucklingAnalysis] = AbaqusBucklingAnalysis
+        backend[DynamicStep] = AbaqusDynamicStep
+        backend[QuasiStaticStep] = AbaqusQuasiStaticStep
+        backend[DirectCyclicStep] = AbaqusDirectCyclicStep
+
+        backend[GravityLoad] = AbaqusGravityLoad
+        backend[PointLoad] = AbaqusPointLoad
+        backend[LineLoad] = AbaqusLineLoad
+        backend[AreaLoad] = AbaqusAreaLoad
+        backend[TributaryLoad] = AbaqusTributaryLoad
+        backend[PrestressLoad] = AbaqusPrestressLoad
+        backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
+        backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
+
+        backend[GeneralDisplacement] = AbaqusGeneralDisplacement
+
+        backend[FieldOutput] = AbaqusFieldOutput
+        backend[HistoryOutput] = AbaqusHistoryOutput
+
+        backend[Results] = AbaqusResults
+
+        backend[InputFile] = AbaqusInputFile
+        backend[ParametersFile] = AbaqusParametersFile
+
+        print('Abaqus implementations registered...')
+except:
+    raise ErrorDuringImport()

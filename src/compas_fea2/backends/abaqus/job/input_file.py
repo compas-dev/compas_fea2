@@ -5,43 +5,15 @@ from __future__ import print_function
 from datetime import datetime
 import compas_fea2
 from compas_fea2.job import InputFile
+from compas_fea2.job.input_file import ParametersFile
 
 
 class AbaqusInputFile(InputFile):
-    """Input file object for standard analysis.
+    """"""
 
-    Parameters
-    ----------
-    problem : obj
-        Problem object.
-
-    Attributes
-    ----------
-    name : str
-        Input file name.
-    job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
-
-    """
-
-    def __init__(self, problem):
-        super(AbaqusInputFile, self).__init__(problem)
-        self._input_file_type = "Input File"
-        self._jobdata = self._generate_jobdata(problem)
-
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        return self._jobdata
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusInputFile, self).__init__(name=name, **kwargs)
+        self._extension = 'inp'
 
     # ==============================================================================
     # Constructor methods
@@ -84,26 +56,12 @@ class AbaqusInputFile(InputFile):
 {problem._generate_jobdata()}"""
 
 
-class AbaqusParametersFile(InputFile):
-    """ParFile object for optimisation.
+class AbaqusParametersFile(ParametersFile):
+    """"""
 
-    Parameters
-    ----------
-    problem : obj
-        Problem object.
-
-    Attributes
-    ----------
-    name : str
-        Par file name.
-    job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
-    """
-
-    def __init__(self):
-        self.__name__ = "Parameters File"
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusParametersFile, self).__init__(name, **kwargs)
         self._extension = 'par'
-        super().__init__()
 
     @classmethod
     def from_problem(cls, problem, smooth):
@@ -112,9 +70,9 @@ class AbaqusParametersFile(InputFile):
         Parameters
         ----------
         problem : obj
-            :class:`ProblemBase` sub class object.
+            :class:`compas_fea2.problem.Problem` sub class object.
         smooth : obj, optional
-            if a :class:`SmoothingParametersBase` subclass object is passed, the
+            if a :class:`compas_fea2.optimisation.SmoothingParameters` subclass object is passed, the
             optimisation results will be postprocessed and smoothed, by defaut
             ``None`` (no smoothing)
 

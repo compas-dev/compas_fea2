@@ -3,10 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
-from .material import Material
+from .material import _Material
 
 
-class Concrete(Material):
+class Concrete(_Material):
     """Elastic and plastic-cracking Eurocode based concrete material.
 
     Parameters
@@ -49,8 +49,8 @@ class Concrete(Material):
 
     """
 
-    def __init__(self, name, *, fck, v=0.2, density=2400, fr=None):
-        super(Concrete, self).__init__(name, density=density)
+    def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
+        super(Concrete, self).__init__(density=density,  name=name, **kwargs)
 
         de = 0.0001
         fcm = fck + 8
@@ -100,7 +100,7 @@ fr  : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
 
 
-class ConcreteSmearedCrack(Material):
+class ConcreteSmearedCrack(_Material):
     """Elastic and plastic, cracking concrete material.
 
     Parameters
@@ -153,8 +153,8 @@ class ConcreteSmearedCrack(Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836]):
-        super(ConcreteSmearedCrack, self).__init__(name, density=density)
+    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
+        super(ConcreteSmearedCrack, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v
@@ -189,7 +189,7 @@ fr : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
 
 
-class ConcreteDamagedPlasticity(Material):
+class ConcreteDamagedPlasticity(_Material):
     """Damaged plasticity isotropic and homogeneous material.
 
     Parameters
@@ -230,8 +230,8 @@ class ConcreteDamagedPlasticity(Material):
 
     """
 
-    def __init__(self, name, *, E, v, density, damage, hardening, stiffening):
-        super(ConcreteDamagedPlasticity, self).__init__(name, density=density)
+    def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
+        super(ConcreteDamagedPlasticity, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v

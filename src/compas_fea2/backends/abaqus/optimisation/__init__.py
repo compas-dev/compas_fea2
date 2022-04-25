@@ -1,6 +1,10 @@
-from .constraints import OptimisationConstraint
-from .response import EnergyStiffnessResponse, VolumeResponse
-from .objectives import ObjectiveFunction
-from .variables import DesignVariables
-from .parameters import OptimisationParameters, SmoothingParameters
-from .problem import TopOptSensitivity
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from .constraints import AbaqusOptimisationConstraint
+from .response import AbaqusEnergyStiffnessResponse, AbaqusVolumeResponse
+from .objectives import AbaqusObjectiveFunction
+from .variables import AbaqusDesignVariables
+from .parameters import AbaqusOptimisationParameters, AbaqusSmoothingParameters
+from .problem import AbaqusTopOptSensitivity

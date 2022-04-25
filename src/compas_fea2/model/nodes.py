@@ -5,17 +5,39 @@ from __future__ import print_function
 from compas.utilities.maps import geometric_key
 from compas_fea2.base import FEAData
 
+from .bcs import BoundaryCondition
+
 
 class Node(FEAData):
     """Initialises base Node object.
 
+    Note
+    ----
+    Nodes can belong to only one Part. Every time a node is added to a part, it
+    gets registered to that part.
+
     Parameters
     ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    mass : float or tuple, optional
+        Lumped nodal mass, by default ``None``. If ``float``, the same value is
+        used in all 3 directions. if you want to specify a different mass for each
+        direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
+        coordinates.
     xyz : list[float, float, float] | :class:`compas.geometry.Point`
         The location of the node in the global coordinate system.
+    part : `compas_fea2.model.Part`, optional
+        Part object where the node will be registered, by default ``None``
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    mass : tuple
+        Lumped nodal mass in the 3 global directions (mass_x, mass_y, mass_z).
     key : str, read-only
         The identifier of the node.
     xyz : list[float]
@@ -30,6 +52,8 @@ class Node(FEAData):
         The geometric key.
     part : :class:`compas_fea2.model.Part` | None
         The parent part of the node.
+    dof : dict
+        Dictionary with the active degrees of freedom
 
     Examples
     --------
@@ -37,15 +61,18 @@ class Node(FEAData):
 
     """
 
-    def __init__(self, xyz, part=None, **kwargs):
-        super(Node, self).__init__(**kwargs)
+    def __init__(self, xyz, mass=None, part=None, name=None, **kwargs):
+        super(Node, self).__init__(name=name, **kwargs)
         self._key = None
         self._x = None
         self._y = None
         self._z = None
-        self._part = None
+        self._part = part
+        self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
+        self._loads = set()
+        self._displacements = set()
+        self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
         self.xyz = xyz
-        self.part = part
 
     @property
     def key(self):
@@ -53,13 +80,13 @@ class Node(FEAData):
 
     @property
     def xyz(self):
-        return [self.x, self.y, self.z]
+        return [self._x, self._y, self._z]
 
     @xyz.setter
     def xyz(self, value):
-        self.x = value[0]
-        self.y = value[1]
-        self.z = value[2]
+        self._x = value[0]
+        self._y = value[1]
+        self._z = value[2]
 
     @property
     def x(self):
@@ -86,6 +113,14 @@ class Node(FEAData):
         self._z = float(value)
 
     @property
+    def mass(self):
+        return self._mass
+
+    @mass.setter
+    def mass(self, value):
+        self._mass = value if isinstance(value, tuple) else tuple([value]*3)
+
+    @property
     def gkey(self):
         return geometric_key(self.xyz)
 
@@ -96,3 +131,21 @@ class Node(FEAData):
     @part.setter
     def part(self, value):
         self._part = value
+
+    @property
+    def dof(self):
+        return self._dof
+
+    @dof.setter
+    def dof(self, bc):
+        if not isinstance(bc, BoundaryCondition):
+            raise TypeError('{!r} is not a Boundary Condition'.format(bc))
+        self._dof = {attr: not bool(getattr(bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+
+    @property
+    def loads(self):
+        return self._loads
+
+    @property
+    def displacements(self):
+        return self._displacements

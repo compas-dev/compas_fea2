@@ -1,11 +1,9 @@
 import pytest
 import compas_fea2
 
-from compas_fea2.model import ConcreteBase
+from compas_fea2.model import Concrete
 
-from compas_fea2.backends.abaqus.model import materials
-from compas_fea2.backends.abaqus.model.materials import Concrete, ElasticIsotropic, Stiff, Steel, UserMaterial,\
-    UserMaterial
+from compas_fea2.backends.abaqus.model.materials.material import Concrete, ElasticIsotropic, Stiff, Steel
 
 young_mod = 1000
 poisson_ratio = 0.3
@@ -93,7 +91,7 @@ def test_Steel_generate_data():
     fy = 400.0
     fu = 500.0
     eu = 30.0
-    # Done in SteelBase constructor
+    # Done in Steel constructor
     ep = eu * 1E-2 - (fy * 1E6) / (E * 1E9)
     # My material
     material_input = Steel("steely", fy, fu, eu, E, 0.3, 1.0)
@@ -121,7 +119,7 @@ def test_Concrete_generate_data():
     # v = poisson_ratio
     # p = 1.0
     # fr = [2.5, 1.0]
-    # material_base = ConcreteBase(name, fck, v, p, fr)
+    # material_base = Concrete(name, fck, v, p, fr)
     # # My material
     # material_input = Concrete(name, fck, v, p, fr)
     # function_out = material_input._generate_jobdata()

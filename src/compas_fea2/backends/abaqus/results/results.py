@@ -5,30 +5,17 @@ from __future__ import print_function
 import os
 import pickle
 from pathlib import Path
-from time import time
 from subprocess import Popen
 from subprocess import PIPE
 
-<<<<<<< HEAD
 from compas_fea2.results import Results
-from compas_fea2.results import CaseResults
-=======
-from compas_fea2._base.results import ResultsBase
-from compas_fea2._base.results import StepResultsBase
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
 from compas_fea2.backends.abaqus.results import odb_extract
+from compas_fea2.utilities._utils import timer
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
 
-
-<<<<<<< HEAD
 class AbaqusResults(Results):
-=======
-class Results(ResultsBase):
-    """Abaqus implementation of the :class:`ResultsBase`.\n
-    """
-    __doc__ += ResultsBase.__doc__
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
+    """Abaqus implementation of :class:`Results`.\n"""
+    __doc__ += Results.__doc__
 
     def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True, components=None, exe=None, license='research',):
         super(AbaqusResults, self).__init__(database_name, database_path, fields, steps, sets, components, output)
@@ -38,7 +25,7 @@ class Results(ResultsBase):
     # ==========================================================================
     # Extract results
     # ==========================================================================
-
+    @timer(message='Data extracted from Abaqus .odb file in')
     def extract_data(self):
         """Extract data from the Abaqus .odb file.
 
@@ -47,8 +34,6 @@ class Results(ResultsBase):
         None
 
         """
-        # TODO create a timer decorator
-        tic1 = time()
 
         odb_args = []
         for arg in [self.steps, self.components, self.fields]:
@@ -76,12 +61,7 @@ class Results(ResultsBase):
             # os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
             #                                              odb_args, self.database_name, self.database_path))
 
-        toc1 = time() - tic1
-        if self.output:
-            print('\n***** Data extracted from Abaqus .odb file : {0:.3f} s *****\n'.format(toc1))
-
         # Save results back into the Results object
-        tic2 = time()
         for result_type in ['results', 'info']:
             file = Path(self.database_path).joinpath('{}-{}.pkl'.format(self.database_name, result_type))
             with open(file, 'rb') as f:
@@ -99,17 +79,5 @@ class Results(ResultsBase):
                 for step in results:
                     self.__getattribute__(result_type)[step] = results[step]
             os.remove(file)
-        toc2 = time() - tic2
 
-        if self.output:
-            print('***** Data stored successfully : {0:.3f} s *****\n'.format(toc2))
-
-
-<<<<<<< HEAD
-class AbaqusStepResults(CaseResults):
-=======
-class StepResults(StepResultsBase):
->>>>>>> 0fcf42ed8e1eb38788d736a3e47f207522be8a7c
-
-    def __init__(self):
-        super(AbaqusStepResults, self).__init__()
+            print('Data stored successfully in {}'.format(file))

@@ -1,6 +1,4 @@
 
-from compas_fea2.backends.opensees.writer import Writer
-
 from subprocess import Popen
 from subprocess import PIPE
 
@@ -9,40 +7,6 @@ from math import sqrt
 
 import json
 import os
-
-
-def input_generate(structure, fields, output, ndof):
-    """ Creates the OpenSees .tcl file from the Structure object.
-
-    Parameters
-    ----------
-    structure : obj
-        The Structure object to read from.
-    fields : list
-        Data field requests.
-    output : bool
-        Print terminal output.
-    ndof : int
-        Number of degrees-of-freedom in the model, 3 or 6.
-
-    Returns
-    -------
-    None
-
-    """
-
-    filename = '{0}{1}.tcl'.format(structure.path, structure.name)
-
-    with Writer(structure=structure, filename=filename, fields=fields, ndof=ndof) as writer:
-
-        writer.write_heading()
-        writer.write_nodes()
-        writer.write_boundary_conditions()
-        writer.write_materials()
-        writer.write_elements()
-        writer.write_steps()
-
-    print('***** OpenSees input file generated: {0} *****\n'.format(filename))
 
 
 def launch_process(structure, exe, output):
@@ -107,3 +71,7 @@ def launch_process(structure, exe, output):
     except:
 
         print('\n***** OpenSees analysis failed')
+
+
+def launch_optimisation():
+    raise NotImplementedError()

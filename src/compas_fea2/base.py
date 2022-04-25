@@ -10,7 +10,7 @@ class FEAData(Data):
     """Base class for all FEA model objects.
 
     This base class inherits the serialisation infrastructure
-    from the base class for core COMPAS objects: :class:`compas.base.Base`.
+    from the base class for core COMPAS objects: :class:`compas.base.`.
 
     It adds the abstract functionality for the representation of FEA objects
     in a model and/or problem summary,
@@ -22,11 +22,19 @@ class FEAData(Data):
 
     """
 
+    def __init__(self, name=None):
+        super().__init__()
+        # NOTE the names lenght in abaqus is limited to 80 characters
+        self._name = name or ''.join([c for c in type(self).__name__ if c.isupper()])+"_"+str(id(self))
+
     def __new__(cls, *args, **kwargs):
         imp = compas_fea2.get_backend_implementation(cls)
         if not imp:
             return super(FEAData, cls).__new__(cls)
         return super(FEAData, imp).__new__(imp)
+
+    def __repr__(self):
+        return '{0}({1})'.format(self.__class__.__name__, id(self))
 
     # def __str__(self):
     #     """String representation of the object.

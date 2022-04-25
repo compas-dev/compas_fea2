@@ -2,37 +2,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.problem.outputs import FieldOutputBase
-from compas_fea2.problem.outputs import HistoryOutputBase
-
-__all__ = [
-    'FieldOutput',
-    'HistoryOutput',
-]
+from compas_fea2.problem.outputs import FieldOutput, HistoryOutput
 
 
-class FieldOutput(FieldOutputBase):
-    def __init__(self, name, node_outputs=None, element_outputs=None, frequency=1):
-        super(FieldOutput, self).__init__(name, node_outputs, element_outputs, frequency)
+class OpenseesFieldOutput(FieldOutput):
+    """"""
+    __doc__ += FieldOutput.__doc__
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file."""
-        return self._generate_jobdata()
-
-    def _generate_jobdata(self):
-        # for no
-        "recorder Node -file C:/temp/introduction/step_loads_u.out -time -nodeRange 1 5 -dof 1 2 3 disp"
+    def __init__(self, node_outputs=None, element_outputs=None, frequency=1, name=None, **kwargs):
+        super(OpenseesFieldOutput, self).__init__(node_outputs, element_outputs, name=name, **kwargs)
+        raise NotImplementedError()
 
 
-class HistoryOutput(HistoryOutputBase):
-    def __init__(self, name):
-        super(HistoryOutput, self).__init__(name)
+class OpenseesHistoryOutput(HistoryOutput):
+    """"""
+    __doc__ += HistoryOutput.__doc__
 
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file."""
-        return self._jobdata
-
-    def _generate_jobdata(self):
-        pass
+    def __init__(self):
+        super(OpenseesHistoryOutput, self).__init__()
+        raise NotImplementedError()

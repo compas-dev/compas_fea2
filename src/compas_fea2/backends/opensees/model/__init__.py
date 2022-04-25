@@ -1,144 +1,95 @@
-"""
-********************************************************************************
-opensees.model
-********************************************************************************
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-.. currentmodule:: compas_fea2.backends.opensees.model
+# Opensees Models
+from .model import OpenseesModel
+from .parts import OpenseesPart
+from .nodes import OpenseesNode
 
-Model
-=====
+# Opensees Elements
+from .elements import (
+    OpenseesMassElement,
+    OpenseesBeamElement,
+    OpenseesTrussElement,
+    OpenseesMembraneElement,
+    OpenseesShellElement,
+    OpenseesSolidElement,
+    OpenseesTetrahedonElement,
+    OpenseesPentahedronElement,
+    OpenseesHexahedronElement,
+)
 
-.. autosummary::
-    :toctree: generated/
+# Opensees Sections
+from .sections import (
+    OpenseesBeamSection,
+    OpenseesAngleSection,
+    OpenseesBoxSection,
+    OpenseesCircularSection,
+    OpenseesHexSection,
+    OpenseesISection,
+    OpenseesMassSection,
+    OpenseesPipeSection,
+    OpenseesRectangularSection,
+    OpenseesSpringSection,
+    OpenseesStrutSection,
+    OpenseesTieSection,
+    OpenseesTrapezoidalSection,
+    OpenseesTrussSection,
+    OpenseesMembraneSection,
+    OpenseesShellSection,
+    OpenseesSolidSection,
+)
 
-    Model
-
-Instances
-=========
-
-.. autosummary::
-    :toctree: generated/
-
-    Instance
-
-Parts
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Part
-
-Nodes
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Node
-
-Elements
-========
-
-.. autosummary::
-    :toctree: generated/
-
-    MassElement
-    BeamElement
-    TrussElement
-    ShellElement
-    MembraneElement
-    SolidElement
-
-Constraints
-===========
-
-.. autosummary::
-    :toctree: generated/
-
-    Constraint
-    TieConstraint
-
-Interactions
-============
-
-.. autosummary::
-    :toctree: generated/
-
-    Interaction
-
-Materials
-=========
-
-.. autosummary::
-    :toctree: generated/
-
-    ElasticIsotropic
-    Stiff
-    ElasticOrthotropic
-    ElasticPlastic
-    Steel
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    UserMaterial
+# Opensees Materials
+from .materials import (
+    OpenseesElasticIsotropic,
+    OpenseesElasticOrthotropic,
+    OpenseesElasticPlastic,
+    OpenseesStiff,
+    OpenseesUserMaterial,
+    OpenseesConcrete,
+    OpenseesConcreteDamagedPlasticity,
+    OpenseesConcreteSmearedCrack,
+    OpenseesSteel,
+)
 
 
-Sections
-========
+# Opensees Groups
+from .groups import (
+    OpenseesNodesGroup,
+    OpenseesElementsGroup,
+    OpenseesFacesGroup,
+)
 
-.. autosummary::
-    :toctree: generated/
+# Opensees Interactions
+from .interactions import (
+    OpenseesHardContactFrictionPenalty,
+)
+# Opensees Constraints
+from .constraints import (
+    OpenseesTieConstraint,
+)
 
-    MassSection
-    AngleSection
-    BoxSection
-    CircularSection
-    GeneralSection
-    ISection
-    PipeSection
-    RectangularSection
-    ShellSection
-    MembraneSection
-    SolidSection
-    TrapezoidalSection
-    TrussSection
-    StrutSection
-    TieSection
-    SpringSection
+# Opensees Boundary Conditions
+from .bcs import (
+    OpenseesFixedBC,
+    OpenseesFixedBCXX,
+    OpenseesFixedBCYY,
+    OpenseesFixedBCZZ,
+    OpenseesPinnedBC,
+    OpenseesRollerBCX,
+    OpenseesRollerBCXY,
+    OpenseesRollerBCXZ,
+    OpenseesRollerBCY,
+    OpenseesRollerBCYZ,
+    OpenseesRollerBCZ,
+)
 
-Sets
-====
+from .releases import (
+    OpenseesBeamEndPinRelease
+)
 
-.. autosummary::
-    :toctree: generated/
-
-    Set
-    Surface
-
-"""
-
-from .model import Model
-from .parts import Part
-from .nodes import Node
-# from .interactions import *
-# from .sets import *
-# from .constraints import *
-from .elements import (BeamElement,
-                       )
-from .materials import (ElasticIsotropic,
-                        )
-from .sections import (RectangularSection,
-                       )
-from .bcs import (FixedBC,
-                  PinnedBC,
-                  FixedBCXX,
-                  FixedBCYY,
-                  FixedBCZZ,
-                  RollerBCX,
-                  RollerBCY,
-                  RollerBCZ,
-                  RollerBCXY,
-                  RollerBCYZ,
-                  RollerBCXZ
-                  )
+from .interfaces import (
+    OpenseesInterface
+)

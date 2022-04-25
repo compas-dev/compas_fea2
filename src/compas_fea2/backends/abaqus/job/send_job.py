@@ -2,13 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from time import time
 import os
 from subprocess import Popen
 from subprocess import PIPE
 
 
-def launch_process(problem, exe, output, overwrite, user_mat):
+def launch_process(problem, *, exe, output, overwrite, cpus):
     """ Run the analysis through Abaqus.
 
     Parameters
@@ -21,8 +20,9 @@ def launch_process(problem, exe, output, overwrite, user_mat):
         Print terminal output.
     overwrite : bool
         Automatically overwrite results
-    user_mat : str TODO: REMOVE!
-        Name of the material defined through a subroutine (currently only one material is supported)
+    cpus : int
+        Number of CPU cores to use.
+
 
     Returns
     -------
@@ -37,17 +37,17 @@ def launch_process(problem, exe, output, overwrite, user_mat):
     exe_kw = 'abaqus'
     if overwrite:
         overwrite_kw = 'ask_delete=OFF'
-    if user_mat:
-        umat_path = problem.materials[user_mat].sub_path
-        user_sub_kw = 'user={}'.format(umat_path)
+
+    # if user_mat:
+    #     umat_path = problem.materials[user_mat].sub_path
+    #     user_sub_kw = 'user={}'.format(umat_path)
     if exe:
         exe_kw = exe
 
     # Analyse
-    tic = time()
     success = False
-    cmd = 'cd {} && {} {} job={} interactive resultsformat=odb {}'.format(
-        problem.path, exe_kw, user_sub_kw, problem.name, overwrite_kw)
+    cmd = 'cd {} && {} {} cpus={} job={} interactive resultsformat=odb {}'.format(
+        problem.path, exe_kw, user_sub_kw, cpus, problem.name, overwrite_kw)
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=problem.path, shell=True, env=os.environ)
 
     while True:
@@ -67,8 +67,6 @@ def launch_process(problem, exe, output, overwrite, user_mat):
         print(stdout.decode())
         print(stderr.decode())
 
-    toc = time() - tic
-
     if not success:
         try:
             with open(problem.path + problem.name + '.sta', 'r') as f:
@@ -77,15 +75,10 @@ def launch_process(problem, exe, output, overwrite, user_mat):
         except Exception:
             pass
 
-    if success:
-        if output:
-            print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
-    else:
-        print('***** Analysis failed *****')
+    print('***** Analysis {} *****'.format('successful' if success else 'failed'))
+
 
 # TODO combine with previous
-
-
 def launch_optimisation(problem, cpus, output):
     """ Run the topology optimisation through Tosca.
 
@@ -110,7 +103,6 @@ def launch_optimisation(problem, cpus, output):
     # Set options
     exe_kw = 'ToscaStructure'
     # Analyse
-    tic = time()
     success = False
 
     # cmd = f'cd {problem.path} && abaqus optimization task=c:/code/myrepos/from_compas/fea2/temp/topopt_hypar_gmsh/hypar.par job=c:/temp/test_opt interactive'
@@ -135,8 +127,6 @@ def launch_optimisation(problem, cpus, output):
         print(stdout.decode())
         print(stderr.decode())
 
-    toc = time() - tic
-
     if not success:
         try:
             with open(problem.path + problem.name + '.sta', 'r') as f:
@@ -145,11 +135,7 @@ def launch_optimisation(problem, cpus, output):
         except Exception:
             pass
 
-    if success:
-        if output:
-            print('***** Analysis successful - analysis time : {0} s *****'.format(toc))
-    else:
-        print('***** Analysis failed *****')
+    print('***** Analysis {} *****'.format('successful' if success else 'failed'))
 
 
 def smooth_optimisation(problem, output):

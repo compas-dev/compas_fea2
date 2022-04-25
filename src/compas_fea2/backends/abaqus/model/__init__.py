@@ -2,125 +2,103 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .model import AbaqusModel
-from .parts import AbaqusPart
-from .nodes import AbaqusNode
-from .interactions import AbaqusContactHardFrictionPenalty
-from .groups import (
-    AbaqusNodesGroup,
-    AbaqusElementsGroup,
+
+# Abaqus Materials
+from .materials import (
+    AbaqusElasticIsotropic,
+    AbaqusElasticOrthotropic,
+    AbaqusElasticPlastic,
+    AbaqusStiff,
+    AbaqusUserMaterial,
+    AbaqusConcrete,
+    AbaqusConcreteDamagedPlasticity,
+    AbaqusConcreteSmearedCrack,
+    AbaqusSteel,
+    AbaqusTimber,
 )
+
+
+# Abaqus Boundary Conditions
+from .bcs import (
+    AbaqusFixedBC,
+    AbaqusFixedBCXX,
+    AbaqusFixedBCYY,
+    AbaqusFixedBCZZ,
+    AbaqusPinnedBC,
+    AbaqusRollerBCX,
+    AbaqusRollerBCXY,
+    AbaqusRollerBCXZ,
+    AbaqusRollerBCY,
+    AbaqusRollerBCYZ,
+    AbaqusRollerBCZ,
+)
+
+# Abaqus Constraints
 from .constraints import (
-    AbaqusConstraint,
-    AbaqusNodeTieConstraint
+    AbaqusTieConstraint,
 )
+
+# Abaqus Elements
 from .elements import (
     AbaqusMassElement,
     AbaqusBeamElement,
     AbaqusTrussElement,
-    AbaqusShellElement,
     AbaqusMembraneElement,
+    AbaqusShellElement,
     AbaqusSolidElement,
+    AbaqusTetrahedonElement,
+    AbaqusPentahedronElement,
+    AbaqusHexahedronElement,
 )
-from .materials import (
-    AbaqusElasticIsotropic,
-    AbaqusStiff,
-    AbaqusElasticOrthotropic,
-    AbaqusElasticPlastic,
-    AbaqusSteel,
-    AbaqusConcrete,
-    AbaqusConcreteSmearedCrack,
-    AbaqusConcreteDamagedPlasticity,
-    AbaqusUserMaterial
+
+# Abaqus Groups
+from .groups import (
+    AbaqusNodesGroup,
+    AbaqusElementsGroup,
+    AbaqusFacesGroup,
 )
+
+
+# Abaqus Interactions
+from .interactions import (
+    AbaqusHardContactFrictionPenalty,
+)
+
+from .interfaces import (
+    AbaqusInterface
+)
+
+# Abaqus Models
+from .model import AbaqusModel
+
+# Abaqus Nodes
+from .nodes import AbaqusNode
+
+# Abaqus Parts
+from .parts import AbaqusPart
+
+# Abaqus Relseases
+from .releases import (
+    AbaqusBeamEndPinRelease
+)
+
+# Abaqus Sections
 from .sections import (
-    AbaqusMassSection,
+    AbaqusBeamSection,
     AbaqusAngleSection,
     AbaqusBoxSection,
     AbaqusCircularSection,
+    AbaqusHexSection,
     AbaqusISection,
+    AbaqusMassSection,
     AbaqusPipeSection,
     AbaqusRectangularSection,
-    AbaqusShellSection,
-    AbaqusMembraneSection,
-    AbaqusSolidSection,
-    AbaqusTrapezoidalSection,
-    AbaqusTrussSection,
+    AbaqusSpringSection,
     AbaqusStrutSection,
     AbaqusTieSection,
-    AbaqusSpringSection,
+    AbaqusTrapezoidalSection,
+    AbaqusTrussSection,
+    AbaqusMembraneSection,
+    AbaqusShellSection,
+    AbaqusSolidSection,
 )
-from .bcs import (
-    AbaqusFixedBC,
-    AbaqusPinnedBC,
-    AbaqusFixedBCXX,
-    AbaqusFixedBCYY,
-    AbaqusFixedBCZZ,
-    AbaqusRollerBCX,
-    AbaqusRollerBCY,
-    AbaqusRollerBCZ,
-    AbaqusRollerBCXY,
-    AbaqusRollerBCYZ,
-    AbaqusRollerBCXZ
-)
-
-
-__all__ = [
-    'AbaqusModel',
-
-    'AbaqusPart',
-    'AbaqusNode',
-
-    'AbaqusMassElement',
-    'AbaqusBeamElement',
-    'AbaqusTrussElement',
-    'AbaqusShellElement',
-    'AbaqusMembraneElement',
-    'AbaqusSolidElement',
-
-    'AbaqusConcrete',
-    'AbaqusConcreteSmearedCrack',
-    'AbaqusConcreteDamagedPlasticity',
-    'AbaqusElasticIsotropic',
-    'AbaqusStiff',
-    'AbaqusElasticOrthotropic',
-    'AbaqusElasticPlastic',
-    'AbaqusSteel',
-    'AbaqusUserMaterial',
-
-    'AbaqusContactHardFrictionPenalty',
-
-    'AbaqusMassSection',
-    'AbaqusSpringSection',
-    'AbaqusAngleSection',
-    'AbaqusBoxSection',
-    'AbaqusCircularSection',
-    'AbaqusISection',
-    'AbaqusPipeSection',
-    'AbaqusRectangularSection',
-    'AbaqusShellSection',
-    'AbaqusMembraneSection',
-    'AbaqusSolidSection',
-    'AbaqusTrapezoidalSection',
-    'AbaqusTrussSection',
-    'AbaqusStrutSection',
-    'AbaqusTieSection',
-
-    'AbaqusConstraint',
-    'AbaqusNodeTieConstraint',
-
-    'AbaqusNodesGroup',
-    'AbaqusElementsGroup',
-
-    'AbaqusFixedBC',
-    'AbaqusPinnedBC',
-    'AbaqusFixedBCXX',
-    'AbaqusFixedBCYY',
-    'AbaqusFixedBCZZ',
-    'AbaqusRollerBCX',
-    'AbaqusRollerBCY',
-    'AbaqusRollerBCZ',
-    'AbaqusRollerBCXY',
-    'AbaqusRollerBCYZ',
-    'AbaqusRollerBCXZ',
-]

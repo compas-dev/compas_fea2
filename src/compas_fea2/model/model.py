@@ -11,11 +11,16 @@ from compas_fea2 import config
 
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import Part
-from compas_fea2.model.materials import Material
-from compas_fea2.model.sections import Section
+from compas_fea2.model.nodes import Node
+from compas_fea2.model.materials import _Material, material
+from compas_fea2.model.sections import _Section
 from compas_fea2.model.bcs import BoundaryCondition
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import ElementsGroup
+from compas_fea2.model.groups import FacesGroup
+from compas_fea2.model.interfaces import Interface
+from compas_fea2.model.constraints import _Constraint
+from compas_fea2.model.bcs import BoundaryCondition
 
 
 class Model(FEAData):
@@ -23,15 +28,21 @@ class Model(FEAData):
 
     Parameters
     ----------
-    description : str
-        Some description of the model.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    description : str, optional
+        Some description of the model, by default ``None``.
         This will be added to the input file and can be useful for future reference.
-    author : str
-        The name of the author of the model.
+    author : str, optional
+        The name of the author of the model, by default ``None``.
         This will be added to the input file and can be useful for future reference.
 
     Attributes
     ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     description : str
         Some description of the model.
         This will be added to the input file and can be useful for future reference.
@@ -46,7 +57,7 @@ class Model(FEAData):
         The materials used in the model.
     sections : Set[:class:`compas_fea2.model.Section`]
         The sections used in the model.
-    bcs : Set[:class:`compas_fea2.model.BoundaryCondition`]
+    bcs : dict
         The boundary conditions of the model.
     constraints : Set[:class:`compas_fea2.model.Constraint`]
         The constraints of the model.
@@ -61,19 +72,17 @@ class Model(FEAData):
 
     """
 
-    def __init__(self, *, description, author, **kwargs):
-        super(Model, self).__init__(**kwargs)
+    def __init__(self, *, name=None, description=None, author=None, **kwargs):
+        super(Model, self).__init__(name=name, **kwargs)
         self.description = description
         self.author = author
         self._parts = set()
-        self._materials = set()
-        self._sections = set()
-        self._bcs = set()
+        self._bcs = {}
         self._constraints = set()
         self._interactions = set()
         self._contacts = set()
-        self._partgroups = set()
-        self._surfaces = set()
+        self._partsgroups = set()
+        self._facesgroups = set()
 
     @property
     def parts(self):
@@ -89,7 +98,7 @@ class Model(FEAData):
 
     @property
     def partgroups(self):
-        return self._partgroups
+        return self._partsgroups
 
     @property
     def bcs(self):
@@ -108,148 +117,74 @@ class Model(FEAData):
         return self._interactions
 
     @property
-    def surfaces(self):
-        return self._surfaces
+    def facesgroups(self):
+        return self._facesgroups
 
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
 
-    def from_network(self, network):
-        raise NotImplementedError
-
-    def from_assembly(self, assembly):
-        raise NotImplementedError
-
     # @classmethod
-    # def frame_from_mesh(cls, name, part_name, mesh, beam_section, author=None, description=None):
-    #     """Creates a Model object from a compas Mesh object [WIP]. The edges of
-    #     the mesh become the BeamElements of the frame. Currently, the same section
-    #     is applied to all the elements.
+    # def from_compas_assembly(cls, name, assembly, mesh_size, section, contact):
+    #     from compas_fea2.preprocessor.meshing import compas_to_gmsh_3d
+    #     from compas_fea2.utilities.interfaces import nodes_on_plane, elements_on_plane
+    #     from compas.geometry import Plane
+    #     from compas.datastructures import mesh_weld
+    #     # import compas_gmsh
+    #     from compas_gmsh.models import MeshModel
 
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     beam_section : obj
-    #         compas_fea2 BeamSection object to to apply to the frame elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.frame_from_mesh(part_name, mesh, beam_section)
-    #     model.add_part(part)
+    #     gmshModel = MeshModel()
+
+    #     # m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
+
+    #     model = cls(name=name)
+
+    #     blocks = [assembly.node_attribute(node, 'block') for node in assembly.nodes()]
+
+    #     for i, block in enumerate(blocks):
+    #         # block = mesh_weld(block)
+    #         # gmshModel.from_mesh(block)
+    #         # mesh = gmshModel.mesh_to_compas()
+    #         # gmshModel.synchronize()
+    #         # gmshModel.generate_mesh(3)
+    #         # part = m.Part.from_gmsh(name=f'block-{i}', gmshModel=gmshModel, section=section)
+    #         if mesh_size:
+    #             meshModel = compas_to_gmsh_3d(block, mesh_size)
+    #             part = Part.from_gmsh(name=f'block-{i}', gmshModel=meshModel, section=section)
+    #         else:
+    #             part = Part.from_compas_mesh(name=f'block-{i}', mesh=block, section=section)
+    #         model.add_part(part)
+
+    #     first_block = list(model.parts.values())[0]
+    #     last_block = list(model.parts.values())[-1]
+
+    #     supp_a = nodes_on_plane(first_block, Plane([0, 0, 0], [0, 0, 1]))
+    #     supp_b = nodes_on_plane(last_block, Plane([0, 0, 0], [0, 0, 1]))
+    #     model.add_fix_bc(name='left_support', part=first_block, where=supp_a)
+    #     model.add_fix_bc(name='right_support', part=last_block, where=supp_b)
+
+    #     blocks_interface = [assembly.edge_attribute(edge, 'interface') for edge in assembly.edges()]
+    #     for i, interface in enumerate(blocks_interface):
+    #         if i == len(blocks):
+    #             break
+    #         master = elements_on_plane(model.parts[f'block-{i}'], Plane.from_frame(interface.frame))
+    #         slave = elements_on_plane(model.parts[f'block-{i+1}'], Plane.from_frame(interface.frame))
+    #         model.add_contact(ContactPair(master=FacesGroup(name=f'master_{i}_{i+1}',
+    #                                                         part=f'block-{i}',
+    #                                                         element_face=master),
+    #                                       slave=FacesGroup(name=f'slave_{i}_{i+1}',
+    #                                                        part=f'block-{i+1}',
+    #                                                        element_face=slave),
+    #                                       interaction=contact))
+
     #     return model
-
-    # @classmethod
-    # def shell_from_mesh(cls, name, part_name, mesh, shell_section):
-    #     """Create a Model object from a compas Mesh object [WIP]. The faces of
-    #     the mesh become ShellElement objects. Currently, the same section
-    #     is applied to all the elements.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new part.
-    #     mesh : obj
-    #         Mesh to convert to import as a Model.
-    #     shell_section : obj
-    #         compas_fea2 ShellSection object to to apply to the shell elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.shell_from_mesh(part_name, mesh, shell_section)
-    #     model.add_part(part)
-    #     return model
-
-    # @classmethod
-    # def shell_from_gmesh(cls, name, part_name, gmshModel, shell_section):
-    #     """Creates a Model object from a gmsh Model object [WIP]. The faces of
-    #     the mesh become the elements of the shell. Currently, the same section
-    #     is applied to all the elements.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the new Model.
-    #     part_name : str
-    #         name of the new Part.
-    #     gmshModel : obj
-    #         gmsh Model to convert.
-    #     shell_section : obj
-    #         compas_fea2 ShellSection object to to apply to the shell elements.
-    #     """
-    #     m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-    #     model = cls(name)
-    #     part = m.Part.shell_from_gmesh(part_name, gmshModel, shell_section)
-    #     model.add_part(part)
-    #     return model
-
-    # @classmethod
-    # def from_volmesh(cls, name, part_name, volmesh):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_solid(cls, name, part_name, solid):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_compas_part(cls, name, part_name, part):
-    #     raise NotImplementedError()
-
-    # @classmethod
-    # def from_compas_assembly(cls, name, part_name, assembly):
-    #     raise NotImplementedError()
 
     # =========================================================================
     #                             Parts methods
     # =========================================================================
 
-    # def _check_part_in_model(self, part):
-    #     """Check if the part is already in the model and in case add it.
-    #     If `part` is of type :class:`str`, check if the part is already defined.
-    #     If `part` is of type :class:`Part`, add the part to the Model if not
-    #     already defined.
-
-    #     Parameters
-    #     ----------
-    #     part : str or obj
-    #         Name of the Part or Part object to check.
-
-    #     Returns
-    #     -------
-    #     obj
-    #         type :class:`Part` object
-
-    #     Raises
-    #     ------
-    #     ValueError
-    #         if `part` is a string and the part is not defined in the model
-    #     TypeError
-    #         `part` must be either an instance of a `compas_fea2` :class:`Part`
-    #         or the name of a :class:`Part` already defined in the Model.
-    #     """
-    #     if isinstance(part, str):
-    #         if part not in self.parts:
-    #             raise ValueError(f'{part} not found in the Model')
-    #         part_name = part
-    #     elif isinstance(part, Part):
-    #         if part.name not in self.parts:
-    #             self.add_part(part)
-    #             print(f'{part.__repr__()} added to the Model')
-    #         part_name = part.name
-    #     else:
-    #         raise TypeError(
-    #             f'{part} is either not an instance of a compas_fea2 Part class or not found in the Model')
-
-    #     return self.parts[part_name]
-
     def find_parts_by_name(self, name):
+        # type: (str) -> Part
         """Find all the parts with a given name.
 
         Parameters
@@ -264,6 +199,7 @@ class Model(FEAData):
         return [part for part in self.parts if part.name == name]
 
     def contains_part(self, part):
+        # type: (Part) -> Part
         """Verify that the model contains a specific part.
 
         Parameters
@@ -278,6 +214,7 @@ class Model(FEAData):
         return part in self.parts
 
     def add_part(self, part):
+        # type: (Part) -> Part
         """Adds a Part to the Model.
 
         Parameters
@@ -286,7 +223,7 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Part`
 
         Raises
         ------
@@ -302,13 +239,15 @@ class Model(FEAData):
                 print("SKIPPED: Part {!r} is already in the model.".format(part))
             return
 
-        part.model = self
+        part._model = self
+        if config.VERBOSE:
+            print("{!r} registered to {!r}.".format(part, self))
 
-        self.add_materials(part.materials)
-        self.add_sections(part.sections)
         self._parts.add(part)
+        return part
 
     def add_parts(self, parts):
+        # type: (list) -> list
         """Add multiple parts to the model.
 
         Parameters
@@ -317,13 +256,13 @@ class Model(FEAData):
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Part`]
 
         """
-        for part in parts:
-            self.add_part(part)
+        return [self.add_part(part) for part in parts]
 
     def get_node_from_coordinates(self, xyz, tol):
+        # type: (list, float) -> dict
         """Finds (if any) the Node object in the model with the specified coordinates.
         A tollerance factor can be specified.
 
@@ -344,235 +283,18 @@ class Model(FEAData):
         return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
 
     # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def add_material(self, material):
-        """Add a :class:`Material` subclass object to the Model so that it can be
-        later refernced and used in the section and element definitions.
-
-        Parameters
-        ----------
-        material : obj
-            :class:`Material` object to be added.
-
-        Returns
-        -------
-        None
-        """
-        if material.name not in self.materials:
-            self._materials[material._name] = material
-        else:
-            print('NOTE: {} already added to the model. skipped!'.format(material))
-
-    def add_materials(self, materials):
-        """Add multiple :class:`Material` subclass objects to the Model so
-        that they can be later refernced and used in section and element definitions.
-
-        Parameters
-        ----------
-        material : list
-            List of :class:`Material` objects.
-
-        Returns
-        -------
-        None
-        """
-        for material in materials:
-            self.add_material(material)
-
-    # =========================================================================
-    #                           Sections methods
-    # =========================================================================
-
-    def add_section(self, section):
-        """Add a :class:`Section` subclass object to the Model o that it can be later
-        refernced and used in an element definition.
-
-        Parameters
-        ----------
-        section : obj
-            :class:`Section` subclass object to be added.
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        ValueError
-            if the material associated to the section is a string and it has not
-            been defined previously in the model
-        """
-
-        if isinstance(section.material, str):
-            if section.material not in self.materials:
-                raise ValueError(f'** ERROR! **: section {section.material.__repr__()} not found in the Model!')
-            else:
-                section._material = self.materials[section.material]
-        elif isinstance(section.material, Material):
-            if section.material.name not in self.materials:
-                self._materials[section.material.name] = section.material
-        else:
-            raise TypeError(
-                "The material for the the section must be either the name of a previously added Material or an instance of a Material object")
-
-        if isinstance(section, Section):
-            if section._name not in self._sections:
-                self._sections[section._name] = section
-            else:
-                print('WARNING: {} already added to the model. skipped!'.format(section))
-        else:
-            raise TypeError('Provide a valid Section subclass object')
-
-    def add_sections(self, sections):
-        """Add multiple :class:`Section`subclass  objects to the Model.
-
-        Parameters
-        ----------
-        sections : list
-            list of :class:`Section` subclass objects.
-
-        Returns
-        -------
-        None
-        """
-        for section in sections:
-            self.add_section(section)
-
-    # =========================================================================
-    #                           Elements methods
-    # =========================================================================
-
-    # def add_element(self, element, part, check=False):
-    #     """Add a :class:`ElementBase` subclass object to a part in the Model.
-
-    #     Note
-    #     ----
-    #     Elements are defined at the part level. The element added is stored in
-    #     the specified part. However, the section and material associaceted are
-    #     added to tthe model, if not already present.
-
-    #     Parameters
-    #     ----------
-    #     element : obj
-    #         :class:`ElementBase` subclass object to be added.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool, optional
-    #         If ``True``, checks if the node connected by the element are present.
-    #         This is a quite resource-intense operation! Set to ``False`` for large
-    #         parts (>10000 nodes). By default ``False``
-
-    #     Returns
-    #     -------
-    #     int
-    #         element key
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     if isinstance(element.section, str):
-    #         if element.section not in self.sections:
-    #             if element.section in part.sections:
-    #                 self.sections[element.section] = part.sections[element.section]
-    #             else:
-    #                 raise ValueError(f'ERROR: section {element.section.__repr__()} not found in the Model!')
-    #         else:
-    #             element._section = self.sections[element.section]
-    #     return part.add_element(element, check)
-
-    # def add_elements(self, elements, part, check=False):
-    #     """Adds multiple :class:`ElementBase` subclass objects to a part in the Model.
-
-    #     Parameters
-    #     ----------
-    #     elements : list
-    #         List of compas_fea2 Element subclass objects.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-    #     check : bool
-    #         If True, checks if the element keys are in the model. This is a quite
-    #         resource-intense operation! Set to `False` for large models (>10000
-    #         nodes)
-
-    #     Return
-    #     ------
-    #     list of int
-    #         list with the keys of the added nodes.
-    #     """
-    #     return [self.add_element(element, part, check) for element in elements]
-
-    # =========================================================================
-    #                           Releases methods
-    # =========================================================================
-
-    # def add_release(self, release, part):
-    #     """Add an Element EndRelease object to the Model.
-
-    #     Parameters
-    #     ----------
-    #     release : obj
-    #         `EndRelase` object.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_release(release)
-
-    # def add_releases(self, releases, part):
-    #     """Add multiple Element EndRelease objects to the Model.
-
-    #     Parameters
-    #     ----------
-    #     releases : list
-    #         list of `EndRelase` object.
-    #     part : str
-    #         Name of the part where the nodes will be removed from.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     for release in releases:
-    #         self.add_release(release, part)
-
-    # =========================================================================
     #                           Groups methods
     # =========================================================================
-
-    # def group_parts(self, name, parts):
-    #     """Group parts together.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group
-    #     parts : list of str
-    #         list containing the parts names to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-    #     group = m.PartsGroup(name=name, parts=parts)
-    #     self._parts_partgroups[group.name] = group
 
     # # NOTE: Nodes and Elements groups should not be added but defined (similarly to what happens for Parts)
     # def add_group(self, group, part):
     #     """Add a Group object to a part in the Model. it can be either a
-    #     :class:`NodesGroupBase` or an :class:`ElementsGroupBase`.
+    #     :class:`NodesGroup` or an :class:`ElementsGroup`.
 
     #     Parameters
     #     ----------
     #     group : obj
-    #         :class:`NodesGroupBase` or :class:`ElementsGroupBase` object to add.
+    #         :class:`NodesGroup` or :class:`ElementsGroup` object to add.
     #     part : str, obj
     #         Name of the part or :class:`Part` object where the node will be
     #         added.
@@ -603,257 +325,159 @@ class Model(FEAData):
     #     for group in groups:
     #         self.add_group(group, part)
 
-    # def add_nodes_group(self, name, part, nodes):
-    #     """Add a :class:`NodeGroupBase` object to the the part in the model.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     part : str
-    #         name of the part
-    #     nodes : list
-    #         list of nodes keys to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_nodes_group(name, nodes)
-
-    # def add_elements_group(self, name, part, elements):
-    #     """Add a :class:`ElementGroupBase` object to a part in the model.
-
-    #     Parameters
-    #     ----------
-    #     name : str
-    #         name of the group.
-    #     part : str
-    #         name of the part
-    #     elements : list
-    #         list of elements keys to group
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_elements_group(name, elements)
-
-    # =========================================================================
-    #                        Surfaces methods
-    # =========================================================================
-
-    def add_surface(self, surface):
-        """Add a :class:`SurfaceBase` object to the model.
-
-        Parameters
-        ----------
-        surface : obj
-            type :class:`SurfaceBase` object to be added
-
-        Returns
-        -------
-        None
-        """
-        self._surfaces[surface.name] = surface
-
-    def add_surfaces(self, surfaces):
-        """Add multiple :class:`SurfaceBase` objects to the Model.
-
-        Parameters
-        ----------
-        surfaces : list
-            list with the type :class:`SurfaceBase` objects to be added
-
-        Returns
-        -------
-        None
-        """
-        for surface in surfaces:
-            self.add_surface(surface)
-
     # =========================================================================
     #                       Constraints methods
     # =========================================================================
 
     def add_constraint(self, constraint):
-        """Add a :class:`ConstraintBase` object to the Model.
+        # type: (_Constraint) -> _Constraint
+        """Add a :class:`compas_fea2.model._Constraint` object to the Model.
 
         Parameters
         ----------
-        constraint : obj
-            :class:`ConstraintBase` object to add.
+        constraint : :class:`compas_fea2.model._Constraint`
+            Constraint object to add to the model.
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Constraint`
         """
-        self._constraints[constraint.name] = constraint
+        if isinstance(constraint, _Constraint):
+            self._constraints.add(constraint)
+        else:
+            raise TypeError('{!r} is not a constraint.'.format(constraint))
+        return constraint
 
     def add_constraints(self, constraints):
-        """Add multiple :class:`ConstraintBase` objects to the Model.
+        # type: (list) -> list
+        """Add multiple :class:`compas_fea2.model._Constraint` objects to the Model.
 
         Parameters
         ----------
-        constraints : list
-            list of :class:`ConstraintBase` objects to add.
+        constraints : list[:class:`compas_fea2.model._Constraint`]
+            list of constraints objects to add to the model.
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model._Constraint`]
         """
-        for constraint in constraints:
-            self.add_constraint(constraint)
+        return [self.add_constraint(constraint) for constraint in constraints]
 
     # =========================================================================
     #                        ContactPair methods
     # =========================================================================
 
-    def add_contact(self, contact):
-        """Add a :class:`ContactPairBase` object to the model.
+    def add_interface(self, interface):
+        # type: (Interface) -> Interface
+        """Add a :class:`compas_fea2.model.Interface` object to the model.
 
         Parameters
         ----------
-        surface : obj
-            type :class:`ContactPairBase` object to be added
+        interface : :class:`compas_fea2.model.Interface`
+            Interface object to add to the model.
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Interface`
         """
-        self._contacts[contact.name] = contact
+        if isinstance(interface, Interface):
+            self._contacts.add(interface)
+        else:
+            raise TypeError('{!r} is not an interface.'.format(interface))
+        return interface
 
-        if isinstance(contact.master, str):
-            if contact.master in self._surfaces:
-                contact._master = self._surfaces[contact.master]
-            else:
-                raise ValueError(f'{contact.master} not found in {self.__repr__()}')
-        if contact.master.name not in self._surfaces:
-            self._surfaces[contact.master.name] = contact.master
-
-        if isinstance(contact.slave, str):
-            if contact.slave in self._surfaces:
-                contact._slave = self._surfaces[contact.slave]
-            else:
-                raise ValueError(f'{contact.slave} not found in {self.__repr__()}')
-        if contact.slave.name not in self._surfaces:
-            self._surfaces[contact.slave.name] = contact.slave
-
-        if isinstance(contact.interaction, str):
-            if contact.interaction in self._interaction:
-                contact._interactions = self._interactions[contact.interaction]
-            else:
-                raise ValueError(f'{contact.interaction} not found in {self.__repr__()}')
-        if contact.interaction.name not in self._interactions:
-            self._interactions[contact.interaction.name] = contact.interaction
-
-    def add_contacts(self, contacts):
-        """Add multiple :class:`ContactPairBase` objects to the Model.
+    def add_interfaces(self, interfaces):
+        # type: (list) -> list
+        """Add multiple :class:`compas_fea2.model.Interface` objects to the Model.
 
         Parameters
         ----------
-        surfaces : list
-            list with the type :class:`ContactPairBase` objects to be added
+        interfaces : list[:class:`compas_fea2.model.Interface`]
+            List with interfaces to add to the model.
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model.Interface`]
         """
-        for contact in contacts:
-            self.add_contact(contact)
-
-    # =========================================================================
-    #                        Interaction methods
-    # =========================================================================
-
-    # FIXME choose between Contact and Interaction for the name
-    def add_interaction(self, interaction):
-        """Add a :class:`ContactBase` object to the model.
-
-        Parameters
-        ----------
-        surface : obj
-            type :class:`ContactBase` object to be added
-
-        Returns
-        -------
-        None
-        """
-        self._interactions[interaction.name] = interaction
-
-    def add_interactions(self, interactions):
-        """Add multiple :class:`ContactBase` objects to the Model.
-
-        Parameters
-        ----------
-        surfaces : list
-            list with the type :class:`ContactBase` objects to be added
-
-        Returns
-        -------
-        None
-        """
-        for interaction in interactions:
-            self.add_interaction(interaction)
+        return [self.add_interface(interface) for interface in interfaces]
 
     # =========================================================================
     #                           BCs methods
     # =========================================================================
 
-    # FIXME missing axes
-    def add_bc(self, bc, where, part):
-        """Adds a :class:`compas_fea2.model.GeneralBC` to the Problem object.
+    # TODO implement NodesGroup assignment
+    def add_bc(self, bc, node):
+        # type: (BoundaryCondition, Node) -> BoundaryCondition
+        """Add a :class:`compas_fea2.model.BoundaryCondition` to the model.
+
+        Note
+        ----
+        Currently global axes are used in the Boundary Conditions definition.
 
         Parameters
         ----------
-        bc : obj
-            :class:`BoundaryCondition` object.
-        nodes : list
-            list with the node keys where to assign the boundary condition.
-        part : str, obj
-            Name of the part or :class:`Part` object where the node will be
-            added.
+        bc : :class:`compas_fea2.model.BoundaryCondition`
+            Boundary condition object to add to the model.
+        node : :class:`compas_fea2.model.Node
+            Node where the boundary condition is applied.
 
         Returns
         -------
         None
-        """
-        part = self._check_part_in_model(part)
 
-        if isinstance(where, int):
-            nodes = [where]
-        elif isinstance(where, (list, tuple)):
-            nodes = where
-        elif isinstance(where, NodesGroup):
-            nodes = where.keys
-        else:
-            raise TypeError('You must provide either a key or a list of keys, or a NodesGroupBase subclass instance')
-        # self._check_nodes_in_model(nodes) #TODO implement method
+        """
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a Node.'.format(node))
 
         if not isinstance(bc, BoundaryCondition):
-            raise TypeError(f'{bc} not instance of a BC class')
+            raise TypeError('{!r} is not a BoundaryCondition.'.format(bc))
 
-        self._bcs.setdefault(part.name, {})[bc] = nodes
+        # self.contains_node(node) #TODO implement method
+        node.dof = bc
+        self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
+        return bc
 
-    def add_bc_type(self, name, bc_type, part, where, axes='global'):
-        """Add a :class:`GeneralBCBase` subclass to some nodes in a part by type.
+    def add_bcs(self, bc, nodes):
+        # type: (BoundaryCondition, list) -> list
+        """Add a :class:`compas_fea2.model.BoundaryCondition` objects to
+        multiple nodes.
+
+        Parameters
+        ----------
+        bc : :class:`compas_fea2.model.BoundaryCondition`
+            Boundary condition object to add to the model.
+        nodes : list[:class:`compas_fea2.model.Node`]
+            List with the nodes where the boundary condition is assigned.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Interface`]
+        """
+        return [self.add_bc(bc, node) for node in nodes]
+
+    def _add_bc_type(self, bc_type, node, axes='global'):
+        # type: (str, Node, str) -> BoundaryCondition
+        """Add a :class:`compas_fea2.model.BoundaryCondition` by type.
 
         Note
         ----
         The bc_type must be one of the following:
-        +------------------------+-------------------------+
-        | bc_type                | BC                      |
-        +========================+=========================+
-        | fix                    | :class:`FixedBCBase`    |
-        +------------------------+-------------------------+
-        | body row 2             | ...                     |
-        +------------------------+-------------------------+
-        'fix': 'FixedBC', 'fixXX': 'FixedBCXX', 'fixYY': 'FixedBCYY',
-        'fixZZ': 'FixedBCZZ', 'pin': 'PinnedBC', 'rollerX': 'RollerBCX',
-        'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
-        'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
+
+        .. csv-table::
+            :header: bc_type , BC
+
+            fix, :class:`compas_fea2.model.bcs.FixedBC`
+            fixXX, :class:`compas_fea2.model.bcs.FixedBCXX`
+            fixYY, :class:`compas_fea2.model.bcs.FixedBCYY`
+            fixZZ, :class:`compas_fea2.model.bcs.FixedBCZZ`
+            pin, :class:`compas_fea2.model.bcs.PinnedBC`
+            rollerX, :class:`compas_fea2.model.bcs.RollerBCX`
+            rollerY, :class:`compas_fea2.model.bcs.RollerBCY`
+            rollerZ, :class:`compas_fea2.model.bcs.RollerBCZ`
+            rollerXY, :class:`compas_fea2.model.bcs.RollerBCXY`
+            rollerYZ, :class:`compas_fea2.model.bcs.RollerBCYZ`
+            rollerXZ, :class:`compas_fea2.model.bcs.RollerBCXZ`
+
 
         Parameters
         ----------
@@ -861,11 +485,8 @@ class Model(FEAData):
             name of the boundary condition
         bc_type : str
             one of the boundary condition types specified above
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
@@ -874,213 +495,176 @@ class Model(FEAData):
                  'rollerY': 'RollerBCY', 'rollerZ': 'RollerBCZ', 'rollerXY': 'RollerBCXY',
                  'rollerYZ': 'RollerBCYZ', 'rollerXZ': 'RollerBCXZ',
                  }
-        m = importlib.import_module('.'.join(self.__module__.split('.')[:-1]))
-        bc = getattr(m, types[bc_type])(name, axes)
-        self.add_bc(bc, where, part)
+        m = importlib.import_module('compas_fea2.model.bcs')
+        bc = getattr(m, types[bc_type])()
+        return self.add_bc(bc, node)
 
-    def add_fix_bc(self, name, part, where, axes='global'):
-        """Add a :class:`FixedBCBase` to the nodes in a part.
+    def add_fix_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
+        """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fix', part, where)
+        return self._add_bc_type('fix', node, axes)
 
-    def add_fixXX_bc(self, name, part, where, axes='global'):
+    def add_fixXX_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition type free about XX to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixXX', part, where)
+        return self._add_bc_type('fixXX', node, axes)
 
-    def add_fixYY_bc(self, name, part, where, axes='global'):
+    def add_fixYY_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition free about YY type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixYY', part, where)
+        return self._add_bc_type('fixYY', node, axes)
 
-    def add_fixZZ_bc(self, name, part, where, axes='global'):
+    def add_fixZZ_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a fixed boundary condition free about ZZ type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'fixZZ', part, where)
+        return self._add_bc_type('fixZZ', node, axes)
 
-    def add_pin_bc(self, name, part, where):
+    def add_pin_bc(self, node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a pinned boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'pin', part, where)
+        return self._add_bc_type('pin', node, axes)
 
-    def add_rollerX_bc(self, name, part, where):
+    def add_rollerX_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on X boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerX', part, where)
+        return self._add_bc_type('rollerX',  node, axes)
 
-    def add_rollerY_bc(self, name, part, where):
+    def add_rollerY_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on Y boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerY', part, where)
+        return self._add_bc_type('rollerY',  node, axes)
 
-    def add_rollerZ_bc(self, name, part, where):
+    def add_rollerZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on Z boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerZ', part, where)
+        return self._add_bc_type('rollerZ', node, axes)
 
-    def add_rollerXY_bc(self, name, part, where):
+    def add_rollerXY_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on XY boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerXY', part, where)
+        return self._add_bc_type('rollerXY',  node, axes)
 
-    def add_rollerXZ_bc(self, name, part, where):
+    def add_rollerXZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on XZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerXZ', part, where)
+        return self._add_bc_type('rollerXZ',  node, axes)
 
-    def add_rollerYZ_bc(self, name, part, where):
+    def add_rollerYZ_bc(self,  node, axes='global'):
+        # type: (Node, str) -> BoundaryCondition
         """Add a roller free on YZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        part : str
-            name of the part where the boundary condition is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a :class:`NodesGroupBase` subclass instance
-            of the nodes where the boundary condition is applied.
+        node : :class:`copmpas_fea2.model.nodes.Node`
+            Node to apply the boundary condition to.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        self.add_bc_type(name, 'rollerYZ', part, where)
+        return self._add_bc_type('rollerYZ',  node, axes)
 
-    def add_bcs(self, bcs):
-        """Adds multiple boundary conditions to the Problem object.
-
-        Parameters
-        ----------
-        bcs : list
-            List of `compas_fea2` BoundaryCondtion objects.
-
-        Returns
-        -------
-        None
-        """
-        for bc in bcs:
-            self.add_bc(bc)
-
-    def remove_bc(self, bc_name):
+    def remove_bc(self, bc):
         """Removes a boundary condition from the Model.
 
         Parameters
@@ -1094,7 +678,7 @@ class Model(FEAData):
         """
         raise NotImplementedError
 
-    def remove_bcs(self, bc_names):
+    def remove_bcs(self, bcs):
         """Removes multiple boundary conditions from the Model.
 
         Parameters
@@ -1126,6 +710,7 @@ class Model(FEAData):
     # ==============================================================================
 
     def summary(self):
+        # type: () -> str
         """Prints a summary of the Model object.
 
         Parameters
@@ -1137,46 +722,44 @@ class Model(FEAData):
         str
             Model summary
         """
-        parts_info = ['\n'.join([f'{part.name}',
-                                 f'    # of nodes: {len(part.nodes)}',
-                                 f'    # of elements: {len(part.elements)}']) for part in self.parts.values()]
-        materials_info = '\n'.join([e.__repr__() for e in self.materials.values()])
-        sections_info = '\n'.join([e.__repr__() for e in self.sections.values()])
-        interactions_info = '\n'.join([e.__repr__() for e in self.interactions.values()])
-        constraints_info = '\n'.join([e.__repr__() for e in self.constraints.values()])
-        bc_info = '\n'.join([f'{part}: {node}' for part, node in self.bcs.items()])
-        data = f"""
+        parts_info = ['\n'.join(['{}'.format(part.name),
+                                 '    # of nodes: {}'.format(len(part.nodes)),
+                                 '    # of elements: {}'.format(len(part.elements))]) for part in self.parts]
+        interactions_info = '\n'.join([e.name for e in self.interactions])
+        constraints_info = '\n'.join([e.__repr__() for e in self.constraints])
+        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - {!r}'.format(bc, [node for node in nodes])
+                                                                     for bc, nodes in bc_nodes.items()])) for part, bc_nodes in self.bcs.items()])
+        data = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-compas_fea2 Model: {self.name}
+compas_fea2 Model: {}
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-description: {self.description or 'N/A'}
-author: {self.author or 'N/A'}
+description: {}
+author: {}
 
 Parts
 -----
-{''.join(parts_info)}
-
-Materials
----------
-{materials_info}
-
-Sections
---------
-{sections_info}
+{}
 
 Interactions
 ------------
-{interactions_info}
+{}
 
 Constraints
 -----------
-{constraints_info}
+{}
 
 Boundary Conditions
 -------------------
-{bc_info}
-"""
+{}
+""".format(self.name,
+           self.description or 'N/A',
+           self.author or 'N/A',
+           ''.join(parts_info),
+           interactions_info or 'N/A',
+           constraints_info or 'N/A',
+           bc_info or 'N/A'
+           )
         print(data)
         return data
 
@@ -1217,6 +800,10 @@ Boundary Conditions
     # ==============================================================================
     # Viewer
     # ==============================================================================
+    def show(self, width=800, height=500, scale_factor=1, node_labels=None):
+        from compas_fea2.UI.viewer import ModelViewer
+        v = ModelViewer(self, width, height, scale_factor, node_labels)
+        v.show()
 
     # def save_to_cfm(self, path, output=True):
     #     """Exports the Model object to an .cfm file through Pickle.

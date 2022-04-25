@@ -4,33 +4,46 @@ from __future__ import print_function
 
 from compas_fea2.model import MassElement
 from compas_fea2.model import BeamElement
-from compas_fea2.model import SpringElement
 from compas_fea2.model import TrussElement
 from compas_fea2.model import ShellElement
 from compas_fea2.model import MembraneElement
 from compas_fea2.model import SolidElement
+from compas_fea2.model import TetrahedronElement
+from compas_fea2.model import PentahedronElement
+from compas_fea2.model import HexahedronElement
+
+
+def _generate_jobdata(element):
+    """Generates the common string information for the input file of all the
+    elements.
+
+    Note
+    ----
+    the string portion `*Element, type=___` is generated in the part section
+    to group elements with the same type.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    input file data line (str).
+
+    """
+    return '{0}, {1}\n'.format(element.key+1, ','.join(str(node.key+1) for node in element.nodes))
 
 
 # ==============================================================================
 # 0D elements
 # ==============================================================================
-
 class AbaqusMassElement(MassElement):
-    """A 0D element for concentrated point mass.
+    """Abaqus implementation of :class:`MassElement`\n"""
+    __doc__ += MassElement.__doc__
 
-    Parameters
-    ----------
-    key : int
-        Number of the element.
-    elset : str
-        Name of the automatically generated element set where the masses is applied.
-    mass : float
-        Concentrated mass (mass of each point of the set).
-
-    """
-
-    def __init__(self, key, node, mass, elset):
-        super(AbaqusMassElement, self).__init__(key, node, mass, elset)
+    def __init__(self, *, node, section, frame=None, part=None, name=None, **kwargs):
+        super(AbaqusMassElement, self).__init__(nodes=[node],
+                                                section=section, frame=frame, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -56,151 +69,134 @@ class AbaqusMassElement(MassElement):
 # ==============================================================================
 
 class AbaqusBeamElement(BeamElement):
+    """Abaqus implementation of :class:`BeamElement`\n"""
+    __doc__ += BeamElement.__doc__
 
-    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], elset=None, thermal=None):
-        super(AbaqusBeamElement, self).__init__(connectivity, section, thermal)
-        self.elset = elset
-        self.eltype = 'B31'
-        self.orientation = orientation
-
-    def _generate_jobdata(element):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-
-        """
-        # note: the string `*Element, type=B31` is generated in the part section to group elements with the same type
-        return '{0}, {1}, {2}\n'.format(self.key + 1, self.connectivity[0] + 1, self.connectivity[1] + 1)
-
-
-class AbaqusSpringElement(SpringElement):
-    """A 1D spring element.
-    """
-
-    def __init__(self, connectivity, section, orientation=[0.0, 0.0, -1.0], thermal=None):
-        super(BeamElement, self).__init__(connectivity, section, orientation, thermal)
+    def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
+        super(AbaqusBeamElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
+        self._elset = None
         self._eltype = 'B31'
+        self._orientation = frame
+
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
 class AbaqusTrussElement(TrussElement):
-    """A 1D element that resists axial loads.
-    """
-    __doc__ += TrussElementBase.__doc__
+    """Abaqus implementation of :class:`TrussElement`\n"""
+    __doc__ += TrussElement.__doc__
 
-    def __init__(self, connectivity, section, elset=None, thermal=None):
-        super(AbaqusTrussElement, self).__init__(connectivity, section, thermal)
-        self.elset = elset
-        self.eltype = 'T3D2'
-        self.orientation = None
+    def __init__(self, nodes, section, part=None, name=None, **kwargs):
+        super(AbaqusTrussElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
+        self._elset = None
+        self._eltype = 'T3D2'
+        self._orientation = None
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-
-        """
-        return '{0}, {1}, {2}\n'.format(self.key+1, self.connectivity[0]+1, self.connectivity[1]+1)
-
+        return _generate_jobdata(self)
 
 # ==============================================================================
 # 2D elements
 # ==============================================================================
 
-class AbaqusShellElement(ShellElement):
-    """A 2D element that resists axial, shear, bending and torsion.
 
-    Parameters
-    ----------
-    connectivity : list
-        List containing the nodes sequence building the shell element.
-    section : obj
-        compas_fea2 ShellSection object
-    elset : obj
-        compas_fea2 Set object, optional
-    thermal : bool
-        NotImplemented
+class AbaqusShellElement(ShellElement):
+    """Abaqus implementation of :class:`ShellElement`\n"""
+    __doc__ += ShellElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
 
     """
-    __doc__ += ShellElementBase.__doc__
 
-    def __init__(self, connectivity, section, elset=None, thermal=None):
-        super(AbaqusShellElement, self).__init__(connectivity, section, thermal)
-        if not elset:
-            self.elset = self.section
-        else:
-            self.elset = elset
-
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusShellElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
+        self._reduced = reduced
+        self._elset = None
         eltypes = {3: 'S3', 4: 'S4'}
-        if not len(self.connectivity) in eltypes:
+        if not len(self.nodes) in eltypes:
             raise NotImplementedError('Shells must currently have either 3 or 4 nodes')
-        self._eltype = eltypes[len(self.connectivity)]
+        self._eltype = eltypes[len(self.nodes)]
+        if self._reduced:
+            self._eltype += 'R'
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-        """
-        return '{0}, {1}\n'.format(self.key+1, ','.join(str(nk+1) for nk in self.connectivity))
+        return _generate_jobdata(self)
 
 
 class AbaqusMembraneElement(MembraneElement):
+    """Abaqus implementation of :class:`MembraneElement`\n"""
+    __doc__ += MembraneElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
 
-    def __init__(self):
-        super(AbaqusMembraneElement, self).__init__()
-        raise NotImplementedError
+    """
 
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusMembraneElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
+        self._elset = None
+        self._reduced = reduced
+        eltypes = {3: 'M3D3', 4: 'M3D4'}
+        if not len(self.nodes) in eltypes:
+            raise NotImplementedError('Membrane elements must currently have either 3 or 4 nodes')
+        self._eltype = eltypes[len(self.nodes)]
+        if self._reduced and len(self.nodes) > 3:
+            self._eltype += 'R'
+
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 # ==============================================================================
 # 3D elements
 # ==============================================================================
-class SolidElement(_AbaqusElement, SolidElement):
-    """Abaqus implementation of a :class:`SolidElementBase`.\n
-    """
-    __doc__ += SolidElement.__doc__
 
 
 class AbaqusSolidElement(SolidElement):
+    """Abaqus implementation of :class:`SolidElement`\n"""
+    __doc__ += SolidElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    reduced : bool, optional
+        Reduce the integration points, by default ``False``.
 
-    def __init__(self, connectivity, section, eltype=None, elset=None, thermal=None):
-        super(AbaqusSolidElement, self).__init__(connectivity, section, thermal)
-        if not elset:
-            self.elset = self.section
-        else:
-            self.elset = elset
+    """
 
-        if not eltype:
-            eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8', 10: 'C3D10'}
-            self.eltype = eltypes[len(self.connectivity)]
-        else:
-            self.eltype = eltype
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
+        eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8', 10: 'C3D10'}
+        self._reduced = reduced
+        if not len(self.nodes) in eltypes:
+            raise NotImplementedError('Solid element with {} nodes is not currently supported'.fromat(len(self.nodes)))
+        self._eltype = eltypes[len(self.nodes)]
+        if self._reduced:
+            self._eltype += 'R'
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
+        return _generate_jobdata(self)
 
-        Parameters
-        ----------
-        None
 
-        Returns
-        -------
-        input file data line (str).
-        """
-        return '{0}, {1}\n'.format(self.key+1, ','.join(str(node_key+1) for node_key in self.connectivity))
+class AbaqusTetrahedonElement(TetrahedronElement):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusTetrahedonElement, self).__init__(nodes=nodes,
+                                                      section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()
+
+
+class AbaqusPentahedronElement(PentahedronElement):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusPentahedronElement, self).__init__(nodes=nodes,
+                                                       section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()
+
+
+class AbaqusHexahedronElement(HexahedronElement):
+    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(AbaqusHexahedronElement, self).__init__(nodes=nodes,
+                                                      section=section, frame=None, part=part, name=name, **kwargs)
+        raise NotImplementedError()

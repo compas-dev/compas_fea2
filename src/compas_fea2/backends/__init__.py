@@ -3,9 +3,6 @@
 backends
 ********************************************************************************
 
-for users
----------
-
 API for each backend.
 
 .. toctree::
@@ -13,5 +10,4 @@ API for each backend.
 
     compas_fea2.backends.abaqus
     compas_fea2.backends.opensees
-    compas_fea2.backends.ansys
 """

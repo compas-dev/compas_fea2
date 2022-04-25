@@ -56,6 +56,7 @@ Materials
     :toctree: generated/
 
     Material
+    UserMaterial
     Stiff
     ElasticIsotropic
     ElasticOrthotropic
@@ -77,6 +78,7 @@ Sections
     AngleSection
     BoxSection
     CircularSection
+    HexSection
     ISection
     PipeSection
     RectangularSection
@@ -126,7 +128,7 @@ from .model import Model
 from .parts import Part
 from .nodes import Node
 from .elements import (
-    Element,
+    _Element,
     MassElement,
     BeamElement,
     SpringElement,
@@ -141,25 +143,28 @@ from .elements import (
     HexahedronElement,
 )
 from .materials import (
-    Material,
+    _Material,
     Concrete,
     ConcreteSmearedCrack,
     ConcreteDamagedPlasticity,
     ElasticIsotropic,
     Stiff,
+    UserMaterial,
     ElasticOrthotropic,
     ElasticPlastic,
     Steel
 )
-from .interactions import ContactHardFrictionPenalty
+from .interfaces import Interface
+from .interactions import HardContactFrictionPenalty
 from .sections import (
-    Section,
+    _Section,
     MassSection,
     BeamSection,
     SpringSection,
     AngleSection,
     BoxSection,
     CircularSection,
+    HexSection,
     ISection,
     PipeSection,
     RectangularSection,
@@ -172,17 +177,18 @@ from .sections import (
     TieSection,
 )
 from .constraints import (
-    Constraint,
+    _Constraint,
     TieConstraint,
 )
 from .groups import (
-    Group,
+    _Group,
     NodesGroup,
     ElementsGroup,
     PartsGroup
 )
 from .releases import (
-    BeamEndRelease,
+    _BeamEndRelease,
+    BeamEndPinRelease,
 )
 from .bcs import (
     BoundaryCondition,
@@ -206,7 +212,7 @@ __all__ = [
     'Part',
     'Node',
 
-    'Element',
+    '_Element',
     'MassElement',
     'BeamElement',
     'SpringElement',
@@ -220,7 +226,7 @@ __all__ = [
     'TetrahedronElement',
     'HexahedronElement',
 
-    'Material',
+    '_Material',
     'Concrete',
     'ConcreteSmearedCrack',
     'ConcreteDamagedPlasticity',
@@ -230,9 +236,9 @@ __all__ = [
     'ElasticPlastic',
     'Steel',
 
-    'ContactHardFrictionPenalty',
+    'HArdContactFrictionPenalty',
 
-    'Section',
+    '_Section',
     'MassSection',
     'BeamSection',
     'SpringSection',
@@ -250,15 +256,15 @@ __all__ = [
     'StrutSection',
     'TieSection',
 
-    'Constraint',
+    '_Constraint',
     'TieConstraint',
 
-    'Group',
+    '_Group',
     'NodesGroup',
     'ElementsGroup',
     'PartsGroup',
 
-    'BeamEndRelease',
+    '_BeamEndRelease',
 
     'BoundaryCondition',
     'FixedBC',

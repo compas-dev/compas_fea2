@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 try:
-    from job import *
+    from ..job import *
 except:
     pass
 
@@ -14,11 +14,6 @@ import sys
 
 
 # Author(s): Andrew Liew (github.com/andrewliew)
-
-
-__all__ = [
-    'extract_odb_data'
-]
 
 
 convert = {
@@ -275,11 +270,9 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
                                             refe['eminp'][element][id] = None
             except:
                 sys.__stderr__.write('Element output failed\n')  # TODO change
-                sys.__stdout__.write('Element output failed\n')
 
     with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
-
 
     with open(os.path.join(database_path, '{}-info.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(info, f, pickle.HIGHEST_PROTOCOL)
@@ -290,10 +283,11 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
     with open(os.path.join(database_path, '{}-info.json'.format(database_name)), 'wb') as f:
         json.dump(results, f)
 
+
 # ============================================================================
 # Main
 # ============================================================================
-# NOTE: this is used while calling the module through abaqus -> DON'T DELETE!
+# NOTE: this is used while calling the module through abaqus -> !!!DO NOT DELETE!!!
 if __name__ == "__main__":
 
     database_path = sys.argv[-1]

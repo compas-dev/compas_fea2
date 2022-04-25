@@ -1,0 +1,13 @@
+class {{ backend_cap }}{{ class_name }}({{ class_name }}):
+    """ {{ backend_cap }} implementation of :class:`{{ class_module }}.{{ class_name }}`.\n
+    """
+    __doc__ += {{ class_name }}.__doc__
+
+    def __init__{{ class_parameters }}:
+        super({{ backend_cap }}{{ class_name }}, self).__init__({{ base_class_parameters }})
+        raise NotImplementedError()
+
+    def _generate_jobdata(self):
+        raise NotImplementedError()
+
+

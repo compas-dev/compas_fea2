@@ -7,7 +7,7 @@ from abc import abstractmethod
 from compas_fea2.base import FEAData
 
 
-class Material(FEAData):
+class _Material(FEAData):
     """Initialises base Material object.
 
     Parameters
@@ -17,14 +17,22 @@ class Material(FEAData):
 
     Attributes
     ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
     density : float
         Density of the material.
 
     """
 
-    def __init__(self, *, density, **kwargs):
-        super(Material, self).__init__(**kwargs)
+    def __init__(self, *, density, name=None, **kwargs):
+        super(_Material, self).__init__(name=name, **kwargs)
         self.density = density
+        self._key = None
+
+    @property
+    def key(self):
+        return self._key
 
     def __str__(self):
         return """
@@ -45,7 +53,7 @@ density : {}
 # ==============================================================================
 
 
-class ElasticOrthotropic(Material):
+class ElasticOrthotropic(_Material):
     """Elastic, orthotropic and homogeneous material.
 
     Parameters
@@ -77,8 +85,8 @@ class ElasticOrthotropic(Material):
 
     """
 
-    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, **kwargs):
-        super(ElasticOrthotropic, self).__init__(density=density, **kwargs)
+    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, name=name, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -110,7 +118,7 @@ Gzx : {}
            self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
 
-class ElasticIsotropic(Material):
+class ElasticIsotropic(_Material):
     """Elastic, isotropic and homogeneous material.
 
     Parameters
@@ -130,8 +138,8 @@ class ElasticIsotropic(Material):
 
     """
 
-    def __init__(self, *, E, v, density, **kwargs):
-        super(ElasticIsotropic, self).__init__(density=density, **kwargs)
+    def __init__(self, *, E, v, density, name=None, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density,  name=name, **kwargs)
         self.E = E
         self.v = v
 
@@ -156,8 +164,8 @@ class Stiff(ElasticIsotropic):
     """Elastic, very stiff and massless material.
     """
 
-    def __init__(self, **kwargs):
-        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, **kwargs)
+    def __init__(self, name=None, **kwargs):
+        super(Stiff, self).__init__(E=1e+16, v=0.3, density=1e-16, name=name, **kwargs)
 
     def __str__(self):
         return """
@@ -194,8 +202,8 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, *, E, v, density, strain_stress, **kwargs):
-        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, **kwargs)
+    def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):
@@ -211,3 +219,19 @@ G  : {}
 
 strain_stress : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.strain_stress)
+
+
+# ==============================================================================
+# User-defined Materials
+# ==============================================================================
+
+
+class UserMaterial(FEAData):
+    """ User Defined Material. Tho implement this type of material, a
+    separate subroutine is required
+
+    """
+
+    def __init__(self, name=None, **kwargs):
+        super(UserMaterial, self).__init__(self, name=name, **kwargs)
+        raise NotImplementedError('This class is not available for the selcted backend')

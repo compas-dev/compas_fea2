@@ -1,13 +1,10 @@
 import os.path
 from datetime import datetime
-from compas_fea2.job.input_file import InputFileBase
-
-__all__ = [
-    'InputFile',
-]
+from compas_fea2.job.input_file import InputFile
+from compas_fea2.job.input_file import ParametersFile
 
 
-class InputFile(InputFileBase):
+class OpenseesInputFile(InputFile):
     """Input file object for standard analysis.
 
     Parameters
@@ -20,34 +17,14 @@ class InputFile(InputFileBase):
     name : str
         Input file name.
     job_name : str
-        Name of the Abaqus job. This is the same as the input file name.
+        Name of the Opensees job. This is the same as the input file name.
     data : str
         Final input file text data that will be written in the .tcl file.
     """
 
-    def __init__(self, problem):
-        super(InputFile, self).__init__(problem)
-        self._input_file_type = "Input File"
-        self.name = '{}.tcl'.format(problem.name)
-        self._jobdata = self._generate_jobdata(problem)
-
-    @property
-    def jobdata(self):
-        """This property is the representation of the object in a software-specific inout file.
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>
-        """
-        return self._jobdata
-
-    # ==============================================================================
-    # Constructor methods
-    # ==============================================================================
+    def __init__(self, name=None, **kwargs):
+        super(OpenseesInputFile, self).__init__(name=name, **kwargs)
+        self._extension = 'tcl'
 
     def _generate_jobdata(self, problem):
         """Generate the content of the input fileself from the Problem object.
@@ -82,14 +59,6 @@ class InputFile(InputFileBase):
 #------------------------------------------------------------------
 #
 #{problem.model._generate_jobdata()}
-#
-#
-#------------------------------------------------------------------
-# Initial conditions
-#------------------------------------------------------------------
-#
-#    tag   DX   DY   RZ   MX   MY   MZ
-{problem}
 #
 #
 # -----------------------------------------------------------------
@@ -129,7 +98,7 @@ test NormUnbalance {problem.tolerance} {problem.iterations} 5'
 algorithm NewtonLineSearch
 #
 # Create the integration scheme, the LoadControl scheme using steps of 0.1
-integrator LoadControl {1./problem.increments}
+integrator LoadControl {problem.increments}
 #
 # Create the analysis object
 analysis Static
@@ -281,9 +250,14 @@ remove recorders
         """
         section_data = []
         for step in problem.steps:
-            if isinstance(step, ModalStep):  # TODO too messy - check!
-                section_data.append(step._generate_jobdata())
-            else:
-                section_data.append(step._generate_jobdata(problem))
+            section_data.append(step._generate_jobdata(problem))
 
         return ''.join(section_data)
+
+
+class OpenseesParametersFile(ParametersFile):
+    """"""
+
+    def __init__(self, name=None, **kwargs):
+        super(OpenseesParametersFile, self).__init__(name, **kwargs)
+        self._extension = 'par'

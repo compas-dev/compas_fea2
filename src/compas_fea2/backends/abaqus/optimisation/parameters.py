@@ -1,9 +1,14 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+# TODO remove dataclasses
 from dataclasses import dataclass
-from compas_fea2._base.optimisation.parameters import OptimisationParametersBase, SmoothingParametersBase
+from compas_fea2.optimisation.parameters import OptimisationParameters, SmoothingParameters
 
 
 @dataclass
-class OptimisationParameters(OptimisationParametersBase):
+class AbaqusOptimisationParameters(OptimisationParameters):
 
     def _generate_jobdata(self, opti_problem_name):
         return f"""!
@@ -31,7 +36,7 @@ END_
 
 
 @dataclass
-class SmoothingParameters(SmoothingParametersBase):
+class AbaqusSmoothingParameters(SmoothingParameters):
 
     def _generate_jobdata(self):
         return f"""!

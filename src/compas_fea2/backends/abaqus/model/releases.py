@@ -2,13 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import BeamEndRelease
+from compas_fea2.model.releases import BeamEndPinRelease
 
 
-class AbaqusBeamEndRelease(BeamEndRelease):
-    def __init__(self, name, elem_end_dof):
-        super(AbaqusBeamEndRelease).__init__(name=name)
-        self.elem_end_dof = elem_end_dof
+class AbaqusBeamEndPinRelease(BeamEndPinRelease):
+    """Abaqus implementation of the :class:`BeamEndPinRelease`.\n"""
+    __doc__ += BeamEndPinRelease.__doc__
+
+    def __init__(self, m1=False, m2=False, t=False, name=None, **kwargs):
+        super(AbaqusBeamEndPinRelease, self).__init__(m1=m1, m2=m2, t=t, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -21,8 +23,6 @@ class AbaqusBeamEndRelease(BeamEndRelease):
         -------
         input file data line (str).
         """
-        data = ''
-        for k, v in self.end_dof.items():
-            for end, dofs in v.items():
-                data += '{},{},{}\n'.format(k, end, ','.join(dofs))
-        return data
+        ends = {'start': 'S1', 'end': 'S2'}
+        dofs = {'m1': 'M1', 'm2': 'M2', 't': 'T'}
+        return '{},{},{}\n'.format(self.element.key, ends[self.location], ', '.join(dofs[dof] for dof in dofs if getattr(self, dof)))

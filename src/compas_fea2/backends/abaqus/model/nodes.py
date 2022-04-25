@@ -10,7 +10,7 @@ from compas_fea2.model import Node
 # =============================================================================
 
 class AbaqusNode(Node):
-    """Node class
+    """Abaqus implementation of :class:`Interface`.
 
     Note
     ----
@@ -20,8 +20,8 @@ class AbaqusNode(Node):
     """
     __doc__ += Node.__doc__
 
-    def __init__(self, xyz, ex=None, ey=None, ez=None, mass=None, name=None):
-        super(AbaqusNode, self).__init__(xyz=xyz, ex=ex, ey=ey, ez=ez, mass=mass, name=name)
+    def __init__(self, xyz, mass=None, part=None, name=None, **kwargs):
+        super(AbaqusNode, self).__init__(xyz=xyz, mass=mass, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

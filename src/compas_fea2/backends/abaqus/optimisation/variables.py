@@ -1,9 +1,16 @@
-from compas_fea2._base.optimisation.variables import DesignVariablesBase
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from compas_fea2.optimisation.variables import DesignVariables
 
 
-class DesignVariables(DesignVariablesBase):
-    def __init__(self, name, variables) -> None:
-        super().__init__(name, variables)
+class AbaqusDesignVariables(DesignVariables):
+    """Abaqus implementation of :class:`DesignVariables`\n"""
+    __doc__ += DesignVariables.__doc__
+
+    def __init__(self, variables, name=None, **kwargs):
+        super(AbaqusDesignVariables, self).__init__(variables, name=name, **kwargs)
 
     def _generate_jobdata(self):
         return f"""!

@@ -19,7 +19,4 @@ from __future__ import division
 from __future__ import print_function
 
 # additional software-based classes
-from .results import *
-
-
-__all__ = [name for name in dir() if not name.startswith('_')]
+from .results import AbaqusResults

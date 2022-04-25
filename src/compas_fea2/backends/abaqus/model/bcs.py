@@ -14,13 +14,11 @@ from compas_fea2.model import RollerBCXY
 from compas_fea2.model import RollerBCYZ
 from compas_fea2.model import RollerBCXZ
 
-# TODO: add the possibility to add bcs to nodes/elements and not only to sets
-
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-def _generate_jobdata(obj, instance, nodes):
+def _generate_jobdata(bc, instance, nodes):
     """Generates the string information for the input file.
 
     Note
@@ -40,124 +38,151 @@ def _generate_jobdata(obj, instance, nodes):
 
     .. code-block:: python
 
-        data_section = [f'** Name: {obj.name} Type: BC/Rotation',
+        data_section = [f'** Name: {bc.name} Type: BC/Rotation',
                         '*Boundary, op=NEW']
         for node in nodes:
             for comp, dof in enumerate(dofs, 1):
-                if dof in obj.components:
-                    data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
+                if dof in bc.components:
+                    data_section += [f'{instance}.{node+1}, {comp}, {bc.components[dof]}']
 
     Parameters
     ----------
-    None
+    bc : :class:`compas_fea2.model.BoundaryCondition`
+        The boundary condition.
+    instance : :class:`compas_fea2.backends.abaqus.model._instances._Instance`
+        Instance of a part where the nodes are located.  TODO: remove -> the part is already in the nodes!
+    nodes: list
+        List of the node where the boundary condition is applied.
 
     Returns
     -------
     input file data line (str).
 
     """
-    data_section = [f'** Name: {obj.name} Type: BC/Rotation\n', '*Boundary, op=NEW']
+    data_section = ['** Name: {} Type: BC/Rotation', '*Boundary, op=NEW'.format(bc.name)]
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
-            if dof in obj.components:
-                data_section += [f'{instance}.{node+1}, {comp}, {obj.components[dof]}']
+            if getattr(bc, dof):
+                data_section += [f'{instance}.{node.key+1}, {comp}, 0']
     return '\n'.join(data_section)
 
 
 class AbaqusFixedBC(FixedBC):
+    """Abaqus implementation of :class:`FixedBC`\n"""
+    __doc__ += FixedBC.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBC, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusFixedBC, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusPinnedBC(PinnedBC):
+    """Abaqus implementation of :class:`PinnedBC`\n"""
+    __doc__ += PinnedBC.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusPinnedBC, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusPinnedBC, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusFixedBCXX(FixedBCXX):
+    """Abaqus implementation of :class:`FixedBCXX`\n"""
+    __doc__ += FixedBCXX.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCXX, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusFixedBCXX, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusFixedBCYY(FixedBCYY):
+    """Abaqus implementation of :class:`FixedBCYY`\n"""
+    __doc__ += FixedBCYY.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCYY, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusFixedBCYY, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusFixedBCZZ(FixedBCZZ):
+    """Abaqus implementation of :class:`FixedBCZZ`\n"""
+    __doc__ += FixedBCZZ.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusFixedBCZZ, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusFixedBCZZ, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCX(RollerBCX):
+    """Abaqus implementation of :class:`RollerBCX`\n"""
+    __doc__ += RollerBCX.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCX, self).__init__(name, axes)
+    def __init__(self,  name=None, **kwargs):
+        super(AbaqusRollerBCX, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCY(RollerBCY):
+    """Abaqus implementation of :class:`RollerBCY`\n"""
+    __doc__ += RollerBCY.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCY, self).__init__(name, axes)
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusRollerBCY, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCZ(RollerBCZ):
+    """Abaqus implementation of :class:`RollerBCZ`\n"""
+    __doc__ += RollerBCZ.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCZ, self).__init__(name, axes)
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusRollerBCZ, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCXY(RollerBCXY):
+    """Abaqus implementation of :class:`RollerBCXY`\n"""
+    __doc__ += RollerBCXY.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCXY, self).__init__(name, axes)
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusRollerBCXY, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCYZ(RollerBCYZ):
+    """Abaqus implementation of :class:`RollerBCYZ`\n"""
+    __doc__ += RollerBCYZ.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCYZ, self).__init__(name, axes)
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusRollerBCYZ, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusRollerBCXZ(RollerBCXZ):
+    """Abaqus implementation of :class:`RollerBCXZ`\n"""
+    __doc__ += RollerBCXZ.__doc__
 
-    def __init__(self, name, axes='global'):
-        super(AbaqusRollerBCXZ, self).__init__(name, axes)
+    def __init__(self, name=None, **kwargs):
+        super(AbaqusRollerBCXZ, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self, instance, nodes):
         return _generate_jobdata(self, instance, nodes)

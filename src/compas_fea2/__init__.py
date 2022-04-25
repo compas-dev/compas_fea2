@@ -23,7 +23,7 @@ Dev Packages
     :maxdepth: 1
 
     compas_fea2.backends
-    compas_fea2.interfaces
+    compas_fea2.UI
     compas_fea2.job
     compas_fea2.postprocessor
     compas_fea2.preprocessor
@@ -64,6 +64,8 @@ def register_backend():
 
 
 def set_backend(name):
+    if name not in ('abaqus', 'opensees', 'ansys'):
+        raise ValueError('{} is not a backend!'.format(name))
     global BACKEND
     BACKEND = name
     register_backend()
@@ -76,5 +78,7 @@ def get_backend_implementation(cls):
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
 
 __all_plugins__ = [
-    'compas_fea2.backends.abaqus'
+    'compas_fea2.backends.abaqus',
+    'compas_fea2.backends.opensees',
+    'compas_fea2.backends.ansys',
 ]

@@ -68,15 +68,49 @@ def mirror_package(path, package_data, **kwargs):
     def init_modules(module_data, backend, path):
         for sub_module_data in module_data['sub_modules'].values():
             mirror_package(path=path, package_data=sub_module_data, backend=backend)
-            with open(os.path.join(path, '__init__.py'), 'w') as f:
-                f.write('')
+
+            env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), '_templates')))
+            import_template = env.get_template('import.template')
+
+            imports_data = {}
+            class_module = sub_module_data["module"].__name__
+            if not os.path.exists(os.path.join(path, '__init__.py')):
+                with open(os.path.join(path, '__init__.py'), 'w') as f:
+                    for c in sub_module_data['classes']:
+                        imports_data.setdefault('imports', []).append(
+                            f'from {class_module.replace("compas_fea2", ".".join(["compas_fea2.backends", backend]))} import {backend.capitalize()}{c[0]}')
+                    imports_data['imports'] = '\n'.join(imports_data['imports'])
+                    f.write(import_template.render(imports_data))
+            else:
+                try:
+                    with open(os.path.join(path, '__init__.py'), 'a') as f:
+                        for c in sub_module_data['classes']:
+                            imports_data.setdefault('imports', []).append(
+                                f'from {class_module.replace("compas_fea2", ".".join(["compas_fea2.backends", backend]))} import {backend.capitalize()}{c[0]}')
+                        imports_data['imports'] = '\n'.join(imports_data['imports'])
+                        f.write(imports_data['imports'])
+                        f.write('\n\n')
+                except:
+                    pass
 
     def init_classes(classes_data, backend, path):
+        """Mirror the classes.
+
+        Parameters
+        ----------
+        classes_data : dict
+            Dictionary from the package scan.
+        backend : str
+            name of the backend.
+        path : str
+            Path to the module to be mirrored.
+        """
         env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), '_templates')))
         class_template = env.get_template('class.template')
         import_template = env.get_template('import.template')
         class_module = classes_data["module"].__name__
         class_module_name = class_module.split(".")[-1]
+
         imports_data = {}
         with open(os.path.join(path, f'{class_module_name}.py'), "a") as f:
             for c in classes_data['classes']:
@@ -124,20 +158,43 @@ def mirror_package(path, package_data, **kwargs):
         init_classes(package_data, kwargs['backend'], path)
 
 
-# if __name__ == '__main__':
-#     import compas_fea2.problem
-#     import compas_fea2
-#     from pprint import pprint
+if __name__ == '__main__':
+    import compas_fea2.problem
+    import compas_fea2
+    from pprint import pprint
 
-#     classes_data = scan_package(compas_fea2.problem, ignore_protected=True)
-#     pprint(classes_data)
+    # classes_data = scan_package(compas_fea2.problem, ignore_protected=True)
+    # pprint(classes_data)
 
-#     backend = 'ansys'
-#     clean = True
+    backend = 'ansys'
+    clean = True
 
-#     path = os.path.join(compas_fea2.TEMP, backend)
-#     if clean and os.path.exists(path):
-#         shutil.rmtree(path)
-#     os.mkdir(path)
+    backend = backend.lower()
 
-#     mirror_package(path=path, package_data=classes_data, backend='abaqus')
+    base_path = os.path.join(HOME, 'src', 'compas_fea2', 'backends')
+    path = os.path.join(base_path, backend)
+    if clean and os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
+    # Build the __init__ file from the abaqus one
+    # TODO change with automated jinja template
+    base_path = os.path.join(HOME, 'src', 'compas_fea2', 'backends', 'abaqus', '__init__.py')
+    with open(base_path, 'r') as file:
+        filedata = file.read()
+    # Replace the target string
+    filedata = filedata.replace('abaqus', backend)
+    filedata = filedata.replace('Abaqus', backend.capitalize())
+    filedata = filedata.replace('ABAQUS', backend.upper())
+
+    # Write the file out again
+    with open(os.path.join(path, '__init__.py'), 'w') as file:
+        file.write(filedata)
+    for module_name in ['model', 'problem', 'optimisation', 'results', 'job']:
+        module_path = os.path.join(path, module_name)
+        if not os.path.exists(module_path):
+            os.mkdir(module_path)
+        module = importlib.import_module(".".join(['compas_fea2', module_name]))
+        classes_data = scan_package(module, ignore_protected=True)
+
+        mirror_package(path=module_path, package_data=classes_data, backend=backend)

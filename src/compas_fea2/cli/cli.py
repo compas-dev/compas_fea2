@@ -52,8 +52,8 @@ def init_backend(backend, clean):
         shutil.rmtree(path)
     os.mkdir(path)
 
+    # Build the __init__ file from the abaqus one
     # TODO change with automated jinja template
-    # Read in the file
     base_path = os.path.join(HOME, 'src', 'compas_fea2', 'backends', 'abaqus', '__init__.py')
     with open(base_path, 'r') as file:
         filedata = file.read()

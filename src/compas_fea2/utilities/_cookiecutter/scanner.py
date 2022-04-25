@@ -68,6 +68,8 @@ def mirror_package(path, package_data, **kwargs):
     def init_modules(module_data, backend, path):
         for sub_module_data in module_data['sub_modules'].values():
             mirror_package(path=path, package_data=sub_module_data, backend=backend)
+            with open(os.path.join(path, '__init__.py'), 'w') as f:
+                f.write('')
 
     def init_classes(classes_data, backend, path):
         env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), '_templates')))
@@ -102,6 +104,14 @@ def mirror_package(path, package_data, **kwargs):
 
     if not os.path.exists(path):
         os.mkdir(path)
+
+    #     init_data = {
+    #         'backend': kwargs['backend'],
+    #         'backend_cap': kwargs['backend'].capitalize()
+    #                 }
+    #     with open(os.path.join(path, '__init__.py'), "a") as f:
+    #             f.write(class_template.render(class_data))
+
     if 'sub_packages' in package_data:
         for sub_package_data in package_data['sub_packages'].values():
             sub_package_path = os.path.join(path, sub_package_data['module'].__name__.split(".")[-1])

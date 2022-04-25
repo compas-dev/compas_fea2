@@ -52,6 +52,19 @@ def init_backend(backend, clean):
         shutil.rmtree(path)
     os.mkdir(path)
 
+    # TODO change with automated jinja template
+    # Read in the file
+    base_path = os.path.join(HOME, 'src', 'compas_fea2', 'backends', 'abaqus', '__init__.py')
+    with open(base_path, 'r') as file:
+        filedata = file.read()
+    # Replace the target string
+    filedata = filedata.replace('abaqus', backend)
+    filedata = filedata.replace('Abaqus', backend.capitalize())
+    filedata = filedata.replace('ABAQUS', backend.upper())
+
+    # Write the file out again
+    with open(os.path.join(path, '__init__.py'), 'w') as file:
+        file.write(filedata)
     for module_name in ['model', 'problem', 'optimisation', 'results', 'job']:
         module_path = os.path.join(path, module_name)
         if not os.path.exists(module_path):

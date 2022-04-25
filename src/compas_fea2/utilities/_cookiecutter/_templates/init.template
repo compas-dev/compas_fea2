@@ -1,0 +1,29 @@
+"""
+********************************************************************************
+{{ backend_cap }}
+********************************************************************************
+"""
+
+import compas_fea2
+
+from compas.plugins import plugin
+
+{{ fea2_imports }}
+
+# =========================================================================
+#                           {{ backend_cap }} CLASSES
+# =========================================================================
+
+try:
+
+{{ backend_imports }}
+
+    @plugin(category='fea_backends')
+    def register_backend():
+        backend = compas_fea2.BACKENDS[' {{ backend }}']
+
+        {{ registration }}
+
+        print(' {{ backend }} implementations registered...')
+except:
+    raise ErrorDuringImport()

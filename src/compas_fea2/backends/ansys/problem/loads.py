@@ -11,6 +11,7 @@ from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.loads import PrestressLoad
 from compas_fea2.problem.loads import TributaryLoad
 
+
 class AnsysAreaLoad(AreaLoad):
     """ Ansys implementation of :class:`.AreaLoad`.\n
     """
@@ -18,10 +19,11 @@ class AnsysAreaLoad(AreaLoad):
 
     def __init__(self, x=0, y=0, z=0, axes='local', name=None, **kwargs):
         super(AnsysAreaLoad, self).__init__(x=x, y=y, z=z, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysGravityLoad(GravityLoad):
     """ Ansys implementation of :class:`.GravityLoad`.\n
@@ -30,10 +32,11 @@ class AnsysGravityLoad(GravityLoad):
 
     def __init__(self, g, x, y, z, name=None, **kwargs):
         super(AnsysGravityLoad, self).__init__(g=g, x=x, y=y, z=z, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysHarmonicPointLoad(HarmonicPointLoad):
     """ Ansys implementation of :class:`.HarmonicPointLoad`.\n
@@ -42,10 +45,11 @@ class AnsysHarmonicPointLoad(HarmonicPointLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AnsysHarmonicPointLoad, self).__init__(components=components, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysHarmonicPressureLoad(HarmonicPressureLoad):
     """ Ansys implementation of :class:`.HarmonicPressureLoad`.\n
@@ -54,10 +58,11 @@ class AnsysHarmonicPressureLoad(HarmonicPressureLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AnsysHarmonicPressureLoad, self).__init__(components=components, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysLineLoad(LineLoad):
     """ Ansys implementation of :class:`.LineLoad`.\n
@@ -66,10 +71,11 @@ class AnsysLineLoad(LineLoad):
 
     def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', name=None, **kwargs):
         super(AnsysLineLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPointLoad(PointLoad):
     """ Ansys implementation of :class:`.PointLoad`.\n
@@ -78,10 +84,11 @@ class AnsysPointLoad(PointLoad):
 
     def __init__(self, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
         super(AnsysPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPrestressLoad(PrestressLoad):
     """ Ansys implementation of :class:`.PrestressLoad`.\n
@@ -90,10 +97,11 @@ class AnsysPrestressLoad(PrestressLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AnsysPrestressLoad, self).__init__(components=components, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysTributaryLoad(TributaryLoad):
     """ Ansys implementation of :class:`.TributaryLoad`.\n
@@ -102,8 +110,7 @@ class AnsysTributaryLoad(TributaryLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(AnsysTributaryLoad, self).__init__(components=components, axes=axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

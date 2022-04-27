@@ -8,10 +8,10 @@ from compas_fea2.optimisation.responses import VolumeResponse, EnergyStiffnessRe
 class OpenseesVolumeResponse(VolumeResponse):
     def __init__(self, group, group_operator, name=None, **kwargs):
         super(OpenseesVolumeResponse, self).__init__(group, group_operator, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesEnergyStiffnessResponse(EnergyStiffnessResponse):
     def __init__(self, group, group_operator, lc, name=None, **kwargs):
         super(OpenseesEnergyStiffnessResponse, self).__init__(group, group_operator, lc, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

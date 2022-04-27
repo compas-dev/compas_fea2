@@ -21,7 +21,7 @@ class DynamicStep(_Step):
 
     def __init__(self, name=None, **kwargs):
         super(DynamicStep, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def add_harmonic_point_load(self):
         raise NotImplementedError

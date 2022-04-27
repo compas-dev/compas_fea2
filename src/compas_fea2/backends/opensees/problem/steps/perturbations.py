@@ -16,7 +16,7 @@ class OpenseesModalAnalysis(ModalAnalysis):
 
     def __init__(self, modes=1, name=None, **kwargs):
         super(OpenseesModalAnalysis, self).__init__(modes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
     # def _generate_jobdata(self):
     #     'timeSeries Constant {0} -factor 1.0'.format(s_index)
     #     'pattern Plain {0} {0} -fact {1} {2}'.format(s_index, 1, '{')
@@ -28,7 +28,7 @@ class OpenseesComplexEigenValue(ComplexEigenValue):
 
     def __init__(self, name=None, **kwargs):
         super(OpenseesComplexEigenValue, self).__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesBucklingAnalysis(BucklingAnalysis):
@@ -37,7 +37,7 @@ class OpenseesBucklingAnalysis(BucklingAnalysis):
 
     def __init__(self, name=None, **kwargs):
         super(OpenseesBucklingAnalysis, self).__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesLinearStaticPerturbation(LinearStaticPerturbation):
@@ -46,7 +46,7 @@ class OpenseesLinearStaticPerturbation(LinearStaticPerturbation):
 
     def __init__(self, name=None, **kwargs):
         super(OpenseesLinearStaticPerturbation, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesStedyStateDynamic(StedyStateDynamic):
@@ -55,7 +55,7 @@ class OpenseesStedyStateDynamic(StedyStateDynamic):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesSubstructureGeneration(SubstructureGeneration):
@@ -64,4 +64,4 @@ class OpenseesSubstructureGeneration(SubstructureGeneration):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

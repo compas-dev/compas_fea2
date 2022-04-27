@@ -77,7 +77,7 @@ class OpenseesAngleSection(AngleSection):
 
     def __init__(self, w, h, t, material, name=None, **kwargs):
         super(OpenseesAngleSection, self).__init__(w, h, t, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesBoxSection(BoxSection):
@@ -86,7 +86,7 @@ class OpenseesBoxSection(BoxSection):
 
     def __init__(self, w, h, t, material, **kwargs):
         super(OpenseesBoxSection, self).__init__(self, w, h, t, material, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesCircularSection(CircularSection):
@@ -95,7 +95,7 @@ class OpenseesCircularSection(CircularSection):
 
     def __init__(self, r, material, name=None, **kwargs):
         super(OpenseesCircularSection, self).__init__(r, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesHexSection(HexSection):
@@ -104,7 +104,7 @@ class OpenseesHexSection(HexSection):
 
     def __init__(self, r, t, material, name=None, **kwargs):
         super(OpenseesHexSection, self).__init__(r, t, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesISection(ISection):
@@ -113,7 +113,7 @@ class OpenseesISection(ISection):
 
     def __init__(self,  w, h, t, material, l=0, name=None, **kwargs):
         super(OpenseesISection, self).__init__(w, h, t, t, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesPipeSection(PipeSection):
@@ -122,7 +122,7 @@ class OpenseesPipeSection(PipeSection):
 
     def __init__(self, r, t, material, name=None, **kwarg):
         super(OpenseesPipeSection, self).__init__(r, t, material, name=name, **kwarg)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesRectangularSection(RectangularSection):
@@ -208,7 +208,7 @@ class OpenseesShellSection(ShellSection):
 
     def __init__(self, t, material, int_points=5, name=None, **kwargs):
         super(OpenseesShellSection, self).__init__(t, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesMembraneSection(MembraneSection):
@@ -217,7 +217,7 @@ class OpenseesMembraneSection(MembraneSection):
 
     def __init__(self, t, material, name=None, **kwargs):
         super(OpenseesMembraneSection, self).__init__(t, material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 # ==============================================================================
 # 3D
@@ -230,4 +230,4 @@ class OpenseesSolidSection(SolidSection):
 
     def __init__(self, material, name=None, **kwargs):
         super(OpenseesSolidSection, self).__init__(material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

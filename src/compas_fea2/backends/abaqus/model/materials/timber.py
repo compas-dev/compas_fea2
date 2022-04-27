@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.model import Timber
+from compas_fea2.model.materials import Timber
 
 
 class AbaqusTimber(Timber):
@@ -24,4 +24,4 @@ class AbaqusTimber(Timber):
         -------
         input file data line (str).
         """
-        raise NotImplementedError()
+        raise NotImplementedError

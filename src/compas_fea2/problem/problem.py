@@ -177,7 +177,7 @@ class Problem(FEAData):
             name of a previously defined step which will be used as starting conditions
             for the application of the linear perturbation step.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ==============================================================================
     # Summary

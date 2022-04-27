@@ -7,6 +7,7 @@ from compas_fea2.model.groups import FacesGroup
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import PartsGroup
 
+
 class AnsysElementsGroup(ElementsGroup):
     """ Ansys implementation of :class:`.ElementsGroup`.\n
     """
@@ -14,10 +15,11 @@ class AnsysElementsGroup(ElementsGroup):
 
     def __init__(self, *, elements, name=None, **kwargs):
         super(AnsysElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysFacesGroup(FacesGroup):
     """ Ansys implementation of :class:`.FacesGroup`.\n
@@ -26,10 +28,11 @@ class AnsysFacesGroup(FacesGroup):
 
     def __init__(self, part, element_face, name=None, **kwargs):
         super(AnsysFacesGroup, self).__init__(part=part, element_face=element_face, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysNodesGroup(NodesGroup):
     """ Ansys implementation of :class:`.NodesGroup`.\n
@@ -38,10 +41,11 @@ class AnsysNodesGroup(NodesGroup):
 
     def __init__(self, *, nodes, name=None, **kwargs):
         super(AnsysNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPartsGroup(PartsGroup):
     """ Ansys implementation of :class:`.PartsGroup`.\n
@@ -50,8 +54,7 @@ class AnsysPartsGroup(PartsGroup):
 
     def __init__(self, *, parts, name=None, **kwargs):
         super(AnsysPartsGroup, self).__init__(parts=parts, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

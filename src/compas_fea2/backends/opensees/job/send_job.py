@@ -74,4 +74,4 @@ def launch_process(structure, exe, output):
 
 
 def launch_optimisation():
-    raise NotImplementedError()
+    raise NotImplementedError

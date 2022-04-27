@@ -18,7 +18,7 @@ class OpenseesConcrete(Concrete):
 
     def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
         super(OpenseesConcrete, self).__init__(fck=fck, v=v, density=density, fr=fr, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesConcreteSmearedCrack(ConcreteSmearedCrack):
@@ -28,7 +28,7 @@ class OpenseesConcreteSmearedCrack(ConcreteSmearedCrack):
     def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
         super(OpenseesConcreteSmearedCrack, self).__init__(E=E, v=v, density=density,
                                                            fc=fc, ec=ec, ft=ft, et=et, fr=fr, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
@@ -38,4 +38,4 @@ class OpenseesConcreteDamagedPlasticity(ConcreteDamagedPlasticity):
     def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
         super(OpenseesConcreteDamagedPlasticity, self).__init__(E=E, v=v,
                                                                 density=density, damage=damage, hardening=hardening, stiffening=stiffening, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

@@ -703,7 +703,7 @@ class Model(FEAData):
         -------
         None
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ==============================================================================
     # Summary
@@ -788,14 +788,14 @@ Boundary Conditions
         def _check_units(self):
             """Check if the units are consistent.
             """
-            raise NotImplementedError()
+            raise NotImplementedError
 
         def _check_bcs(self):
             """Check if the units are consistent.
             """
-            raise NotImplementedError()
+            raise NotImplementedError
 
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ==============================================================================
     # Viewer

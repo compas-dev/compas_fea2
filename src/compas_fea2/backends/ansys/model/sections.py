@@ -20,6 +20,7 @@ from compas_fea2.model.sections import TieSection
 from compas_fea2.model.sections import TrapezoidalSection
 from compas_fea2.model.sections import TrussSection
 
+
 class AnsysAngleSection(AngleSection):
     """ Ansys implementation of :class:`.AngleSection`.\n
     """
@@ -27,10 +28,11 @@ class AnsysAngleSection(AngleSection):
 
     def __init__(self, w, h, t, material, name=None, **kwargs):
         super(AnsysAngleSection, self).__init__(w=w, h=h, t=t, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysBeamSection(BeamSection):
     """ Ansys implementation of :class:`.BeamSection`.\n
@@ -38,11 +40,13 @@ class AnsysBeamSection(BeamSection):
     __doc__ += BeamSection.__doc__
 
     def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
-        super(AnsysBeamSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        super(AnsysBeamSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx,
+                                               Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysBoxSection(BoxSection):
     """ Ansys implementation of :class:`.BoxSection`.\n
@@ -51,10 +55,11 @@ class AnsysBoxSection(BoxSection):
 
     def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         super(AnsysBoxSection, self).__init__(w=w, h=h, tw=tw, tf=tf, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysCircularSection(CircularSection):
     """ Ansys implementation of :class:`.CircularSection`.\n
@@ -63,10 +68,11 @@ class AnsysCircularSection(CircularSection):
 
     def __init__(self, r, material, name=None, **kwargs):
         super(AnsysCircularSection, self).__init__(r=r, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysHexSection(HexSection):
     """ Ansys implementation of :class:`.HexSection`.\n
@@ -75,10 +81,11 @@ class AnsysHexSection(HexSection):
 
     def __init__(self, r, t, material, name=None, **kwargs):
         super(AnsysHexSection, self).__init__(r=r, t=t, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysISection(ISection):
     """ Ansys implementation of :class:`.ISection`.\n
@@ -87,10 +94,11 @@ class AnsysISection(ISection):
 
     def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         super(AnsysISection, self).__init__(w=w, h=h, tw=tw, tf=tf, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysMassSection(MassSection):
     """ Ansys implementation of :class:`.MassSection`.\n
@@ -99,10 +107,11 @@ class AnsysMassSection(MassSection):
 
     def __init__(self, mass, name=None, **kwargs):
         super(AnsysMassSection, self).__init__(mass=mass, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysMembraneSection(MembraneSection):
     """ Ansys implementation of :class:`.MembraneSection`.\n
@@ -111,10 +120,11 @@ class AnsysMembraneSection(MembraneSection):
 
     def __init__(self, t, material, name=None, **kwargs):
         super(AnsysMembraneSection, self).__init__(t=t, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPipeSection(PipeSection):
     """ Ansys implementation of :class:`.PipeSection`.\n
@@ -123,10 +133,11 @@ class AnsysPipeSection(PipeSection):
 
     def __init__(self, r, t, material, name=None, **kwargs):
         super(AnsysPipeSection, self).__init__(r=r, t=t, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRectangularSection(RectangularSection):
     """ Ansys implementation of :class:`.RectangularSection`.\n
@@ -135,10 +146,11 @@ class AnsysRectangularSection(RectangularSection):
 
     def __init__(self, w, h, material, name=None, **kwargs):
         super(AnsysRectangularSection, self).__init__(w=w, h=h, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysShellSection(ShellSection):
     """ Ansys implementation of :class:`.ShellSection`.\n
@@ -147,10 +159,11 @@ class AnsysShellSection(ShellSection):
 
     def __init__(self, t, material, name=None, **kwargs):
         super(AnsysShellSection, self).__init__(t=t, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysSolidSection(SolidSection):
     """ Ansys implementation of :class:`.SolidSection`.\n
@@ -159,10 +172,11 @@ class AnsysSolidSection(SolidSection):
 
     def __init__(self, material, name=None, **kwargs):
         super(AnsysSolidSection, self).__init__(material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysSpringSection(SpringSection):
     """ Ansys implementation of :class:`.SpringSection`.\n
@@ -170,11 +184,13 @@ class AnsysSpringSection(SpringSection):
     __doc__ += SpringSection.__doc__
 
     def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
-        super(AnsysSpringSection, self).__init__(forces=forces, displacements=displacements, stiffness=stiffness, name=name, **kwargs)
-        raise NotImplementedError()
+        super(AnsysSpringSection, self).__init__(forces=forces,
+                                                 displacements=displacements, stiffness=stiffness, name=name, **kwargs)
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysStrutSection(StrutSection):
     """ Ansys implementation of :class:`.StrutSection`.\n
@@ -183,10 +199,11 @@ class AnsysStrutSection(StrutSection):
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AnsysStrutSection, self).__init__(A=A, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysTieSection(TieSection):
     """ Ansys implementation of :class:`.TieSection`.\n
@@ -195,10 +212,11 @@ class AnsysTieSection(TieSection):
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AnsysTieSection, self).__init__(A=A, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysTrapezoidalSection(TrapezoidalSection):
     """ Ansys implementation of :class:`.TrapezoidalSection`.\n
@@ -207,10 +225,11 @@ class AnsysTrapezoidalSection(TrapezoidalSection):
 
     def __init__(self, w1, w2, h, material, name=None, **kwargs):
         super(AnsysTrapezoidalSection, self).__init__(w1=w1, w2=w2, h=h, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysTrussSection(TrussSection):
     """ Ansys implementation of :class:`.TrussSection`.\n
@@ -219,8 +238,7 @@ class AnsysTrussSection(TrussSection):
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AnsysTrussSection, self).__init__(A=A, material=material, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

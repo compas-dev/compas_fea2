@@ -7,6 +7,7 @@ from compas_fea2.model.constraints import Pin3DConstraint
 from compas_fea2.model.constraints import SliderConstraint
 from compas_fea2.model.constraints import TieConstraint
 
+
 class AnsysPin2DConstraint(Pin2DConstraint):
     """ Ansys implementation of :class:`.Pin2DConstraint`.\n
     """
@@ -14,10 +15,11 @@ class AnsysPin2DConstraint(Pin2DConstraint):
 
     def __init__(self, *, master, slave, tol, axis, name=None, **kwargs):
         super(AnsysPin2DConstraint, self).__init__(master=master, slave=slave, tol=tol, axis=axis, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPin3DConstraint(Pin3DConstraint):
     """ Ansys implementation of :class:`.Pin3DConstraint`.\n
@@ -26,10 +28,11 @@ class AnsysPin3DConstraint(Pin3DConstraint):
 
     def __init__(self, *, master, slave, tol, name=None, **kwargs):
         super(AnsysPin3DConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysSliderConstraint(SliderConstraint):
     """ Ansys implementation of :class:`.SliderConstraint`.\n
@@ -37,11 +40,13 @@ class AnsysSliderConstraint(SliderConstraint):
     __doc__ += SliderConstraint.__doc__
 
     def __init__(self, *, master, slave, tol, plane, name=None, **kwargs):
-        super(AnsysSliderConstraint, self).__init__(master=master, slave=slave, tol=tol, plane=plane, name=name, **kwargs)
-        raise NotImplementedError()
+        super(AnsysSliderConstraint, self).__init__(master=master,
+                                                    slave=slave, tol=tol, plane=plane, name=name, **kwargs)
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysTieConstraint(TieConstraint):
     """ Ansys implementation of :class:`.TieConstraint`.\n
@@ -50,8 +55,7 @@ class AnsysTieConstraint(TieConstraint):
 
     def __init__(self, *, master, slave, tol, name=None, **kwargs):
         super(AnsysTieConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

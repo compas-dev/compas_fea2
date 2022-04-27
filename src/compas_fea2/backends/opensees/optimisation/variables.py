@@ -8,4 +8,4 @@ from compas_fea2.optimisation.variables import DesignVariables
 class OpenseesDesignVariables(DesignVariables):
     def __init__(self, variables, name=None, **kwargs):
         super(OpenseesDesignVariables, self).__init__(variables, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

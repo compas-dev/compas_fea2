@@ -5,6 +5,7 @@ from __future__ import print_function
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.job.input_file import ParametersFile
 
+
 class AnsysInputFile(InputFile):
     """ Ansys implementation of :class:`.InputFile`.\n
     """
@@ -12,10 +13,11 @@ class AnsysInputFile(InputFile):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysInputFile, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysParametersFile(ParametersFile):
     """ Ansys implementation of :class:`.ParametersFile`.\n
@@ -24,8 +26,7 @@ class AnsysParametersFile(ParametersFile):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysParametersFile, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

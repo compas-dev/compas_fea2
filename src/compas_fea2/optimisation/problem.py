@@ -85,13 +85,13 @@ class OptimisationProblem(FEAData):
         return self._parameters
 
     def add_objective_function(self, objective_function):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def add_design_response(self, design_response):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def add_constraint(self, constraint):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def write_parameters_file(self, path):
         """Writes the parameters file for the optimisation.
@@ -142,7 +142,7 @@ class OptimisationProblem(FEAData):
         if not self._path.exists():
             self._path.mkdir()
         if save:
-            raise NotImplementedError()
+            raise NotImplementedError
         self._problem.write_input_file(output)
         self.write_parameters_file(self._path, output, smooth)
 

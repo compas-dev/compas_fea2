@@ -17,7 +17,7 @@ class OpenseesResults(Results):
 
     def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True, components=None, exe=None, license='research',):
         super(OpenseesResults, self).__init__(database_name, database_path, fields, steps, sets, components, output)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ==========================================================================
     # Extract results

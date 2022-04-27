@@ -27,7 +27,7 @@ class OpenseesElasticOrthotropic(ElasticOrthotropic):
     def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
         super(ElasticOrthotropic, self).__init__(Ex=Ex, Ey=Ey, Ez=Ez, vxy=vxy, vyz=vyz, vzx=vzx,
                                                  Gxy=Gxy, Gyz=Gyz, Gzx=Gzx, density=density, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesElasticIsotropic(ElasticIsotropic):
@@ -50,7 +50,7 @@ class OpenseesStiff(Stiff):
 
     def __init__(self, name=None, **kwargs):
         super(OpenseesStiff, self).__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 # ==============================================================================
 # non-linear general
@@ -70,7 +70,7 @@ class OpenseesElasticPlastic(ElasticPlastic):
     def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
         super(OpenseesElasticPlastic, self).__init__(E=E, v=v, density=density,
                                                      strain_stress=strain_stress, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 # ==============================================================================
@@ -90,4 +90,4 @@ class OpenseesUserMaterial(UserMaterial):
 
     def __init__(self, name=None, **kwargs):
         super(OpenseesUserMaterial, self).__init__(self, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

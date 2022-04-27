@@ -110,7 +110,7 @@ class AbaqusModel(Model):
         None
         """
 
-        raise NotImplementedError()
+        raise NotImplementedError
     # =========================================================================
     #                            Groups methods
     # =========================================================================

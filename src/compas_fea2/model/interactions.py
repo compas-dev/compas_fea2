@@ -84,7 +84,7 @@ class HardContactNoFriction(Contact):
     def __init__(self, mu, tollerance, name=None, **kwargs) -> None:
         super(HardContactFrictionPenalty, self).__init__(name=name, normal='HARD', tangent=mu, **kwargs)
         self.tollerance = tollerance
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class HardContactFrictionPenalty(Contact):

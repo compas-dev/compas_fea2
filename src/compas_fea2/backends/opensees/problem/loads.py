@@ -57,7 +57,7 @@ class OpenseesGravityLoad(GravityLoad):
 
     def __init__(self, g=9.81, x=0., y=0., z=-1., name=None, **kwargs):
         super(OpenseesGravityLoad, self).__init__(g, x, y, z, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesPrestressLoad(PrestressLoad):
@@ -67,7 +67,7 @@ class OpenseesPrestressLoad(PrestressLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(OpenseesPrestressLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesTributaryLoad(TributaryLoad):
@@ -77,7 +77,7 @@ class OpenseesTributaryLoad(TributaryLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(OpenseesTributaryLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesHarmonicPointLoad(HarmonicPointLoad):
@@ -87,7 +87,7 @@ class OpenseesHarmonicPointLoad(HarmonicPointLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(OpenseesHarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesHarmonicPressureLoad(HarmonicPressureLoad):
@@ -97,4 +97,4 @@ class OpenseesHarmonicPressureLoad(HarmonicPressureLoad):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(OpenseesHarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

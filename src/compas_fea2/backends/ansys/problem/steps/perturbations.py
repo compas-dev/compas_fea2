@@ -9,17 +9,20 @@ from compas_fea2.problem.steps.perturbations import ModalAnalysis
 from compas_fea2.problem.steps.perturbations import StedyStateDynamic
 from compas_fea2.problem.steps.perturbations import SubstructureGeneration
 
+
 class AnsysBucklingAnalysis(BucklingAnalysis):
     """ Ansys implementation of :class:`.BucklingAnalysis`.\n
     """
     __doc__ += BucklingAnalysis.__doc__
 
     def __init__(self, modes, vectors=None, iterations=30, algorithm=None, name=None, **kwargs):
-        super(AnsysBucklingAnalysis, self).__init__(modes=modes, vectors=vectors, iterations=iterations, algorithm=algorithm, name=name, **kwargs)
-        raise NotImplementedError()
+        super(AnsysBucklingAnalysis, self).__init__(modes=modes, vectors=vectors,
+                                                    iterations=iterations, algorithm=algorithm, name=name, **kwargs)
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysComplexEigenValue(ComplexEigenValue):
     """ Ansys implementation of :class:`.ComplexEigenValue`.\n
@@ -28,10 +31,11 @@ class AnsysComplexEigenValue(ComplexEigenValue):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysComplexEigenValue, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysLinearStaticPerturbation(LinearStaticPerturbation):
     """ Ansys implementation of :class:`.LinearStaticPerturbation`.\n
@@ -40,10 +44,11 @@ class AnsysLinearStaticPerturbation(LinearStaticPerturbation):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysLinearStaticPerturbation, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysModalAnalysis(ModalAnalysis):
     """ Ansys implementation of :class:`.ModalAnalysis`.\n
@@ -52,10 +57,11 @@ class AnsysModalAnalysis(ModalAnalysis):
 
     def __init__(self, modes=1, name=None, **kwargs):
         super(AnsysModalAnalysis, self).__init__(modes=modes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysStedyStateDynamic(StedyStateDynamic):
     """ Ansys implementation of :class:`.StedyStateDynamic`.\n
@@ -64,10 +70,11 @@ class AnsysStedyStateDynamic(StedyStateDynamic):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysStedyStateDynamic, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysSubstructureGeneration(SubstructureGeneration):
     """ Ansys implementation of :class:`.SubstructureGeneration`.\n
@@ -76,8 +83,7 @@ class AnsysSubstructureGeneration(SubstructureGeneration):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysSubstructureGeneration, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

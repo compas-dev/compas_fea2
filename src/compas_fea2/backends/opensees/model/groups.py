@@ -13,7 +13,7 @@ class OpenseesNodesGroup(NodesGroup):
 
     def __init__(self, nodes, name=None, **kwargs):
         super(OpenseesNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesElementsGroup(ElementsGroup):
@@ -22,7 +22,7 @@ class OpenseesElementsGroup(ElementsGroup):
 
     def __init__(self, *, elements, name=None, **kwargs):
         super(OpenseesElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesFacesGroup(FacesGroup):
@@ -32,7 +32,7 @@ class OpenseesFacesGroup(FacesGroup):
 
     def __init__(self, *, part, element_face, name=None, **kwargs):
         super(FacesGroup, self).__init__(part=part, element_face=element_face, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesPartsGroup(PartsGroup):
@@ -42,4 +42,4 @@ class OpenseesPartsGroup(PartsGroup):
 
     def __init__(self, *, parts, name=None, **kwargs):
         super(OpenseesPartsGroup, self).__init__(parts=parts, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

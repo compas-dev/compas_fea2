@@ -16,4 +16,4 @@ class OpenseesGeneralDisplacement(GeneralDisplacement):
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(OpenseesGeneralDisplacement, self).__init__(name, None, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

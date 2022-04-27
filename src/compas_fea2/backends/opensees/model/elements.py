@@ -105,7 +105,7 @@ class OpenseesTrussElement(TrussElement):
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
         super(OpenseesTrussElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 # ==============================================================================
@@ -213,7 +213,7 @@ class OpenseesMembraneElement(MembraneElement):
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
         super(OpenseesMembraneElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 # ==============================================================================
 # 3D elements
@@ -306,7 +306,7 @@ class OpenseesTetrahedonElement(TetrahedronElement):
     def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
         super(OpenseesTetrahedonElement, self).__init__(nodes=nodes,
                                                         section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesPentahedronElement(PentahedronElement):
@@ -316,7 +316,7 @@ class OpenseesPentahedronElement(PentahedronElement):
     def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
         super(OpenseesPentahedronElement, self).__init__(nodes=nodes,
                                                          section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesHexahedronElement(HexahedronElement):
@@ -326,4 +326,4 @@ class OpenseesHexahedronElement(HexahedronElement):
     def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
         super(OpenseesHexahedronElement, self).__init__(nodes=nodes,
                                                         section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

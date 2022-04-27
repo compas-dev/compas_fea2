@@ -15,7 +15,7 @@ class AbaqusSteel(Steel):
 
     def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
         super(AbaqusSteel, self).__init__(fy=fy, fu=fu, eu=eu, E=E, v=v, density=density, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.

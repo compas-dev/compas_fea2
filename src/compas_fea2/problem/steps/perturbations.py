@@ -43,7 +43,7 @@ class ComplexEigenValue(_Perturbation):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class BucklingAnalysis(_Perturbation):
@@ -75,7 +75,7 @@ class LinearStaticPerturbation(_Perturbation):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class StedyStateDynamic(_Perturbation):
@@ -83,7 +83,7 @@ class StedyStateDynamic(_Perturbation):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class SubstructureGeneration(_Perturbation):
@@ -91,4 +91,4 @@ class SubstructureGeneration(_Perturbation):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

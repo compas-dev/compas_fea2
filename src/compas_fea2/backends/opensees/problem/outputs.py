@@ -11,7 +11,7 @@ class OpenseesFieldOutput(FieldOutput):
 
     def __init__(self, node_outputs=None, element_outputs=None, frequency=1, name=None, **kwargs):
         super(OpenseesFieldOutput, self).__init__(node_outputs, element_outputs, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesHistoryOutput(HistoryOutput):
@@ -20,4 +20,4 @@ class OpenseesHistoryOutput(HistoryOutput):
 
     def __init__(self):
         super(OpenseesHistoryOutput, self).__init__()
-        raise NotImplementedError()
+        raise NotImplementedError

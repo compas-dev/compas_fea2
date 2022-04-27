@@ -21,7 +21,7 @@ class QuasiStaticStep(_Step):
 
     def __init__(self, name=None, **kwargs):
         super(QuasiStaticStep, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class DirectCyclicStep(_Step):
@@ -39,4 +39,4 @@ class DirectCyclicStep(_Step):
 
     def __init__(self, name=None, **kwargs):
         super(DirectCyclicStep, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

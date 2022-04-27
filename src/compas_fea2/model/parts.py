@@ -119,23 +119,23 @@ number of groups   : {}
 
     @classmethod
     def from_network(self, network):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     def from_obj(self, obj):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     def from_volmesh(cls, name, part_name, volmesh):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     def from_solid(cls, name, part_name, solid):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     def from_compas_part(cls, name, part_name, part):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @classmethod
     @timer(message='compas Mesh successfully imported in ')
@@ -278,11 +278,11 @@ number of groups   : {}
 
     # @classmethod
     # def from_compas_part(cls, name, part):
-    #     raise NotImplementedError()
+    #     raise NotImplementedError
 
     # @classmethod
     # def from_volmesh(self, name, volmesh):
-    #     raise NotImplementedError()
+    #     raise NotImplementedError
 
     # =========================================================================
     #                           Nodes methods

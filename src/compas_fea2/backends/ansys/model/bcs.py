@@ -15,6 +15,7 @@ from compas_fea2.model.bcs import RollerBCY
 from compas_fea2.model.bcs import RollerBCYZ
 from compas_fea2.model.bcs import RollerBCZ
 
+
 class AnsysBoundaryCondition(BoundaryCondition):
     """ Ansys implementation of :class:`.BoundaryCondition`.\n
     """
@@ -22,10 +23,11 @@ class AnsysBoundaryCondition(BoundaryCondition):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysBoundaryCondition, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysFixedBC(FixedBC):
     """ Ansys implementation of :class:`.FixedBC`.\n
@@ -34,10 +36,11 @@ class AnsysFixedBC(FixedBC):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysFixedBC, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysFixedBCXX(FixedBCXX):
     """ Ansys implementation of :class:`.FixedBCXX`.\n
@@ -46,10 +49,11 @@ class AnsysFixedBCXX(FixedBCXX):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysFixedBCXX, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysFixedBCYY(FixedBCYY):
     """ Ansys implementation of :class:`.FixedBCYY`.\n
@@ -58,10 +62,11 @@ class AnsysFixedBCYY(FixedBCYY):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysFixedBCYY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysFixedBCZZ(FixedBCZZ):
     """ Ansys implementation of :class:`.FixedBCZZ`.\n
@@ -70,10 +75,11 @@ class AnsysFixedBCZZ(FixedBCZZ):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysFixedBCZZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysPinnedBC(PinnedBC):
     """ Ansys implementation of :class:`.PinnedBC`.\n
@@ -82,10 +88,11 @@ class AnsysPinnedBC(PinnedBC):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysPinnedBC, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCX(RollerBCX):
     """ Ansys implementation of :class:`.RollerBCX`.\n
@@ -94,10 +101,11 @@ class AnsysRollerBCX(RollerBCX):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCX, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCXY(RollerBCXY):
     """ Ansys implementation of :class:`.RollerBCXY`.\n
@@ -106,10 +114,11 @@ class AnsysRollerBCXY(RollerBCXY):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCXY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCXZ(RollerBCXZ):
     """ Ansys implementation of :class:`.RollerBCXZ`.\n
@@ -118,10 +127,11 @@ class AnsysRollerBCXZ(RollerBCXZ):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCXZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCY(RollerBCY):
     """ Ansys implementation of :class:`.RollerBCY`.\n
@@ -130,10 +140,11 @@ class AnsysRollerBCY(RollerBCY):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCYZ(RollerBCYZ):
     """ Ansys implementation of :class:`.RollerBCYZ`.\n
@@ -142,10 +153,11 @@ class AnsysRollerBCYZ(RollerBCYZ):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCYZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
+        raise NotImplementedError
+
 
 class AnsysRollerBCZ(RollerBCZ):
     """ Ansys implementation of :class:`.RollerBCZ`.\n
@@ -154,8 +166,7 @@ class AnsysRollerBCZ(RollerBCZ):
 
     def __init__(self, name=None, **kwargs):
         super(AnsysRollerBCZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

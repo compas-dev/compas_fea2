@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.model.materials.steel import Steel
 
+
 class AnsysSteel(Steel):
     """ Ansys implementation of :class:`.Steel`.\n
     """
@@ -11,8 +12,7 @@ class AnsysSteel(Steel):
 
     def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
         super(AnsysSteel, self).__init__(fy=fy, fu=fu, eu=eu, E=E, v=v, density=density, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

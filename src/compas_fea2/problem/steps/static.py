@@ -209,4 +209,4 @@ class StaticRiksStep(StaticStep):
 
     def __init__(self, max_increments=100, initial_inc_size=1, min_inc_size=0.00001, time=1, nlgeom=False, modify=True, name=None, **kwargs):
         super().__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

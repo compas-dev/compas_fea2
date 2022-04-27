@@ -9,10 +9,10 @@ from compas_fea2.problem import DirectCyclicStep
 class OpenseesQuasiStaticStep(QuasiStaticStep):
     def __init__(self, name=None, **kwargs):
         super(OpenseesQuasiStaticStep, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class OpenseesDirectCyclicStep(DirectCyclicStep):
     def __init__(self, name=None, **kwargs):
         super(OpenseesDirectCyclicStep, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

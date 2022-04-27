@@ -11,4 +11,4 @@ class OpenseesHardContactFrictionPenalty(HardContactFrictionPenalty):
 
     def __init__(self, mu, tollerance=0.005, name=None, **kwargs) -> None:
         super(OpenseesHardContactFrictionPenalty, self).__init__(mu, tollerance, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

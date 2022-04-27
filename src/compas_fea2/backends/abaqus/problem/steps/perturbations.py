@@ -61,7 +61,7 @@ class AbaqusModalAnalysis(ModalAnalysis):
 class AbaqusComplexEigenValue(ComplexEigenValue):
     def __init__(self, name=None, **kwargs):
         super(AbaqusComplexEigenValue, self).__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class AbaqusBucklingAnalysis(BucklingAnalysis):
@@ -115,10 +115,10 @@ class AbaqusLinearStaticPerturbation(LinearStaticPerturbation):
 class AbaqusStedyStateDynamic(StedyStateDynamic):
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class AbaqusSubstructureGeneration(SubstructureGeneration):
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

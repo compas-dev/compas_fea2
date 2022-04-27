@@ -185,18 +185,18 @@ class AbaqusTetrahedonElement(TetrahedronElement):
     def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusTetrahedonElement, self).__init__(nodes=nodes,
                                                       section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class AbaqusPentahedronElement(PentahedronElement):
     def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusPentahedronElement, self).__init__(nodes=nodes,
                                                        section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class AbaqusHexahedronElement(HexahedronElement):
     def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusHexahedronElement, self).__init__(nodes=nodes,
                                                       section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

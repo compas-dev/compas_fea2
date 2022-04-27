@@ -230,7 +230,7 @@ class PrestressLoad(_Load):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class TributaryLoad(_Load):
@@ -238,7 +238,7 @@ class TributaryLoad(_Load):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class HarmonicPointLoad(_Load):
@@ -246,7 +246,7 @@ class HarmonicPointLoad(_Load):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(HarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class HarmonicPressureLoad(_Load):
@@ -254,4 +254,4 @@ class HarmonicPressureLoad(_Load):
 
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(HarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

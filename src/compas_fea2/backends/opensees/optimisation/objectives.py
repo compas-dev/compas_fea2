@@ -8,4 +8,4 @@ from compas_fea2.optimisation.objectives import ObjectiveFunction
 class OpenseesObjectiveFunction(ObjectiveFunction):
     def __init__(self, design_respone, target, name=None, **kwargs):
         super(OpenseesObjectiveFunction, self).__init__(design_respone, target, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

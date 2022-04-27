@@ -152,7 +152,8 @@ from .materials import (
     UserMaterial,
     ElasticOrthotropic,
     ElasticPlastic,
-    Steel
+    Steel,
+    Timber,
 )
 from .interfaces import Interface
 from .interactions import HardContactFrictionPenalty

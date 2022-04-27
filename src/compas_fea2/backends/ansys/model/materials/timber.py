@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.model.materials.timber import Timber
 
+
 class AnsysTimber(Timber):
     """ Ansys implementation of :class:`.Timber`.\n
     """
@@ -11,8 +12,7 @@ class AnsysTimber(Timber):
 
     def __init__(self, *, name=None, **kwargs):
         super(AnsysTimber, self).__init__(name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

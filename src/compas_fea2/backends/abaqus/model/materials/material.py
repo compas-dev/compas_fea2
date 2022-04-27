@@ -27,7 +27,7 @@ class AbaqusElasticOrthotropic(ElasticOrthotropic):
     def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
         super(ElasticOrthotropic, self).__init__(Ex=Ex, Ey=Ey, Ez=Ez, vxy=vxy, vyz=vyz, vzx=vzx,
                                                  Gxy=Gxy, Gyz=Gyz, Gzx=Gzx, density=density, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class AbaqusElasticIsotropic(ElasticIsotropic):
@@ -106,7 +106,7 @@ class AbaqusElasticPlastic(ElasticPlastic):
     def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
         super(AbaqusElasticPlastic, self).__init__(E=E, v=v, density=density,
                                                    strain_stress=strain_stress, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
         self._e
         self._f
 

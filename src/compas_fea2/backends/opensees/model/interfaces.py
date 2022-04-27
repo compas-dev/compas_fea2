@@ -13,4 +13,4 @@ class OpenseesInterface(Interface):
 
     def __init__(self, master, slave, interaction, name=None, **kwargs):
         super(OpenseesInterface, self).__init__(master, slave, interaction, name=name, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError

@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.model.model import Model
 
+
 class AnsysModel(Model):
     """ Ansys implementation of :class:`.Model`.\n
     """
@@ -11,8 +12,7 @@ class AnsysModel(Model):
 
     def __init__(self, *, name=None, description=None, author=None, **kwargs):
         super(AnsysModel, self).__init__(name=name, description=description, author=author, **kwargs)
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError()
-
+        raise NotImplementedError

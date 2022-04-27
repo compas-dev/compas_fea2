@@ -1,22 +1,26 @@
 """
 ********************************************************************************
-results
+Post-processor
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.results
+.. currentmodule:: compas_fea2.postprocessor
+
+Stresses
+========
 
 .. autosummary::
     :toctree: generated/
 
-    Results
+    principal_stresses
 
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .results import Results
+from .stresses import principal_stresses
+
 
 __all__ = [
-    'Results'
+    'principal_stresses',
 ]

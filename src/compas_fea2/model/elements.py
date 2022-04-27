@@ -29,7 +29,7 @@ class _Element(FEAData):
         name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         Ordered list of node identifiers to which the element connects.
-    section : :class:`compas_fea2.model.Section`
+    section : :class:`compas_fea2.model._Section`
         Section Object assigned to the element.
     frame : :class:`compas.geometry.Frame`, optional
         The local coordinate system for property assignement.
@@ -48,7 +48,7 @@ class _Element(FEAData):
         Nodes to which the element is connected.
     nodes_key : str, read-only
         Identifier based on the conntected nodes.
-    section : :class:`compas_fea2.model.Section`
+    section : :class:`compas_fea2.model._Section`
         Section object.
     frame : :class:`compas.geometry.Frame`
         The local coordinate system for property assignement.

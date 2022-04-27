@@ -41,15 +41,15 @@ class Part(FEAData):
         The parent model of the part.
     nodes : Set[:class:`compas_fea2.model.Node`]
         The nodes belonging to the part.
-    materials : Set[:class:`compas_fea2.model.Material`]
+    materials : Set[:class:`compas_fea2.model._Material`]
         The materials belonging to the part.
-    sections : Set[:class:`compas_fea2.model.Section`]
+    sections : Set[:class:`compas_fea2.model._Section`]
         The sections belonging to the part.
-    elements : Set[:class:`compas_fea2.model.Element`]
+    elements : Set[:class:`compas_fea2.model._Element`]
         The elements belonging to the part.
-    releases : Set[:class:`compas_fea2.model.Release`]
+    releases : Set[:class:`compas_fea2.model._Release`]
         The releases belonging to the part.
-    groups : Set[:class:`compas_fea2.model.Group`]
+    groups : Set[:class:`compas_fea2.model._Group`]
         The groups belonging to the part.
 
     """

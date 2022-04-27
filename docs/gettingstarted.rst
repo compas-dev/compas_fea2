@@ -22,7 +22,7 @@ is in in a dedicated ``conda`` environment.
 
 .. code-block:: bash
 
-    conda create -n fea2 python=3.8 cython --yes
+    conda create -n fea2 compas
     conda activate fea2
     pip install compas_fea2
 

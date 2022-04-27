@@ -51,23 +51,21 @@ class Model(FEAData):
         This will be added to the input file and can be useful for future reference.
     parts : Set[:class:`compas_fea2.model.Part`]
         The parts of the model.
-    materials : Set[:class:`compas_fea2.model.Material`]
+    materials : Set[:class:`compas_fea2.model._Material`]
         The materials of the model.
-    materials : Set[:class:`compas_fea2.model.Material`]
-        The materials used in the model.
-    sections : Set[:class:`compas_fea2.model.Section`]
+    sections : Set[:class:`compas_fea2.model._Section`]
         The sections used in the model.
     bcs : dict
         The boundary conditions of the model.
-    constraints : Set[:class:`compas_fea2.model.Constraint`]
+    constraints : Set[:class:`compas_fea2.model._Constraint`]
         The constraints of the model.
-    interactions : Set[:class:`compas_fea2.model.Interaction`]
+    interactions : Set[:class:`compas_fea2.model._Interaction`]
         The interactions between parts of the model.
-    contacts : Set[:class:`compas_fea2.model.Contact`]
+    contacts : Set[:class:`compas_fea2.model._Contact`]
         The contacts between parts of the model.
-    partgroups : Set[:class:`compas_fea2.model.PartGroup`]
+    partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
-    surfaces : Set[:class:`compas_fea2.model.surface`]
+    facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
         The surfaces of the model.
 
     """
@@ -369,16 +367,16 @@ class Model(FEAData):
 
     def add_interface(self, interface):
         # type: (Interface) -> Interface
-        """Add a :class:`compas_fea2.model.Interface` object to the model.
+        """Add a :class:`compas_fea2.model._Interface` object to the model.
 
         Parameters
         ----------
-        interface : :class:`compas_fea2.model.Interface`
+        interface : :class:`compas_fea2.model._Interface`
             Interface object to add to the model.
 
         Returns
         -------
-        :class:`compas_fea2.model.Interface`
+        :class:`compas_fea2.model._Interface`
         """
         if isinstance(interface, Interface):
             self._contacts.add(interface)
@@ -392,12 +390,12 @@ class Model(FEAData):
 
         Parameters
         ----------
-        interfaces : list[:class:`compas_fea2.model.Interface`]
+        interfaces : list[:class:`compas_fea2.model._Interface`]
             List with interfaces to add to the model.
 
         Returns
         -------
-        list[:class:`compas_fea2.model.Interface`]
+        list[:class:`compas_fea2.model._Interface`]
         """
         return [self.add_interface(interface) for interface in interfaces]
 
@@ -451,7 +449,7 @@ class Model(FEAData):
 
         Returns
         -------
-        list[:class:`compas_fea2.model.Interface`]
+        list[:class:`compas_fea2.model.BoundaryCondition`]
         """
         return [self.add_bc(bc, node) for node in nodes]
 

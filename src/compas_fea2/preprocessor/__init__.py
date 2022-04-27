@@ -1,22 +1,16 @@
 """
 ********************************************************************************
-results
+Pre-processor
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.results
+.. currentmodule:: compas_fea2.preprocessor
 
-.. autosummary::
-    :toctree: generated/
-
-    Results
 
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .results import Results
 
 __all__ = [
-    'Results'
 ]

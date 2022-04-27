@@ -1,25 +1,28 @@
 autopep8
 attrs >=17.4
-bump2version >=0.5.11
+bump2version >=1.0.1
 check-manifest >=0.36
 doc8
 flake8
+graphviz
 invoke >=0.14
 ipykernel
 ipython >=5.8
 isort
-m2r
+m2r2
 nbsphinx
 pydocstyle
 pytest >=3.2
-sphinx_compas_theme >=0.12.2
-sphinx >=1.6, <2.4.4
-sphinxcontrib.gist
+sphinx_compas_theme >=0.15.18
+sphinx >=3.4
 twine
+wheel
+matplotlib
+
 openseespy ; sys_platform != 'darwin'
 openseespymac ; sys_platform == 'darwin'
 
-fea2_extensions
+# fea2_extensions
 
 -e .
 

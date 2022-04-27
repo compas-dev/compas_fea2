@@ -19,17 +19,17 @@ Steps
 .. autosummary::
     :toctree: generated/
 
-    _Step,
-    _GeneralStep,
-    _Perturbation,
-    ModalAnalysis,
-    ComplexEigenValue,
-    StaticStep,
-    LinearStaticPerturbation,
-    BucklingAnalysis,
-    DynamicStep,
-    QuasiStaticStep,
-    DirectCyclicStep,
+    _Step
+    _GeneralStep
+    _Perturbation
+    ModalAnalysis
+    ComplexEigenValue
+    StaticStep
+    LinearStaticPerturbation
+    BucklingAnalysis
+    DynamicStep
+    QuasiStaticStep
+    DirectCyclicStep
 
 
 Loads
@@ -114,18 +114,18 @@ __all__ = [
     'HarmonicPointLoad',
     'HarmonicPressureLoad',
 
-    '_Step'
-    '_GeneralStep'
-    '_Perturbation'
-    'ModalAnalysis'
-    'ComplexEigenValue'
-    'StaticStep'
-    'LinearStaticPerturbation'
-    'BucklingAnalysis'
-    'DynamicStep'
-    'QuasiStaticStep'
-    'DirectCyclicStep'
+    '_Step',
+    '_GeneralStep',
+    '_Perturbation',
+    'ModalAnalysis',
+    'ComplexEigenValue',
+    'StaticStep',
+    'LinearStaticPerturbation',
+    'BucklingAnalysis',
+    'DynamicStep',
+    'QuasiStaticStep',
+    'DirectCyclicStep',
 
     'FieldOutput',
-    'HistoryOutput'
+    'HistoryOutput',
 ]

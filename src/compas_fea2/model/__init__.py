@@ -35,7 +35,7 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    Element
+    _Element
     BeamElement
     ShellElement
     SolidElement
@@ -46,7 +46,7 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
-    Constraint
+    _Constraint
     TieConstraint
 
 Materials
@@ -55,7 +55,7 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    Material
+    _Material
     UserMaterial
     Stiff
     ElasticIsotropic
@@ -72,7 +72,7 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    Section
+    _Section
     BeamSection
     SpringSection
     AngleSection
@@ -228,6 +228,7 @@ __all__ = [
     'HexahedronElement',
 
     '_Material',
+    'UserMaterial',
     'Concrete',
     'ConcreteSmearedCrack',
     'ConcreteDamagedPlasticity',
@@ -236,8 +237,9 @@ __all__ = [
     'ElasticOrthotropic',
     'ElasticPlastic',
     'Steel',
+    'Timber',
 
-    'HArdContactFrictionPenalty',
+    'HardContactFrictionPenalty',
 
     '_Section',
     'MassSection',
@@ -246,6 +248,7 @@ __all__ = [
     'AngleSection',
     'BoxSection',
     'CircularSection',
+    'HexSection',
     'ISection',
     'PipeSection',
     'RectangularSection',
@@ -266,6 +269,7 @@ __all__ = [
     'PartsGroup',
 
     '_BeamEndRelease',
+    'BeamEndPinRelease',
 
     'BoundaryCondition',
     'FixedBC',

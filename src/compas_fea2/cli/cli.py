@@ -31,7 +31,7 @@ def one_o_one():
 
 @main.command()
 @click.option('--clean', default='False', help='remove existing directories')
-@click.argument('backend', default='abaqus')
+@click.argument('backend')
 def init_backend(backend, clean):
     """Initialize a bare backend module.\n
     backend : txt\n

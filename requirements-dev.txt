@@ -18,5 +18,9 @@ sphinxcontrib.gist
 twine
 openseespy ; sys_platform != 'darwin'
 openseespymac ; sys_platform == 'darwin'
+
+fea2_extensions
+
 -e .
+
 

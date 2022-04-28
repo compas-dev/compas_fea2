@@ -117,8 +117,6 @@ class _Element(FEAData):
 # ==============================================================================
 # 0D elements
 # ==============================================================================
-
-
 class MassElement(_Element):
     """A 0D element for concentrated point mass.
     """
@@ -127,8 +125,6 @@ class MassElement(_Element):
 # ==============================================================================
 # 1D elements
 # ==============================================================================
-
-
 class BeamElement(_Element):
     """A 1D element that resists axial, shear, bending and torsion.
     """
@@ -157,18 +153,9 @@ class TieElement(TrussElement):
 # ==============================================================================
 # 2D elements
 # ==============================================================================
-
-
 class ShellElement(_Element):
     """A 2D element that resists axial, shear, bending and torsion.
     """
-    # @staticmethod
-    # def SSPQuad(*args, **kwargs):
-    #     raise NotImplementedError('This element is not available for the selected backend.')
-
-    # @staticmethod
-    # def FourNodeQuad(*args, **kwargs):
-    #     raise NotImplementedError('This element is not available for the selected backend.')
 
 
 class MembraneElement(ShellElement):
@@ -179,23 +166,6 @@ class MembraneElement(ShellElement):
 # ==============================================================================
 # 3D elements
 # ==============================================================================
-
-
 class SolidElement(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
-    """
-
-
-class TetrahedronElement(SolidElement):
-    """A Solid element with 4 faces.
-    """
-
-
-class PentahedronElement(SolidElement):
-    """A Solid element with 5 faces (extruded triangle).
-    """
-
-
-class HexahedronElement(SolidElement):
-    """A Solid cuboid element with 6 faces (extruded rectangle).
     """

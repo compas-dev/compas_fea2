@@ -21,9 +21,6 @@ from compas_fea2.model.elements import (
     MembraneElement,
     ShellElement,
     SolidElement,
-    TetrahedronElement,
-    PentahedronElement,
-    HexahedronElement,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -153,9 +150,6 @@ try:
         AbaqusMembraneElement,
         AbaqusShellElement,
         AbaqusSolidElement,
-        AbaqusTetrahedronElement,
-        AbaqusPentahedronElement,
-        AbaqusHexahedronElement,
     )
 
     # Abaqus Sections
@@ -290,11 +284,6 @@ try:
         backend[MembraneElement] = AbaqusMembraneElement
         backend[ShellElement] = AbaqusShellElement
         backend[SolidElement] = AbaqusSolidElement
-        backend[SolidElement] = AbaqusSolidElement
-        backend[SolidElement] = AbaqusSolidElement
-        backend[TetrahedronElement] = AbaqusTetrahedronElement
-        backend[PentahedronElement] = AbaqusPentahedronElement
-        backend[HexahedronElement] = AbaqusHexahedronElement
 
         backend[AngleSection] = AbaqusAngleSection
         backend[BeamSection] = AbaqusBeamSection

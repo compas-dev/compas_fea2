@@ -21,9 +21,6 @@ from compas_fea2.model.elements import (
     MembraneElement,
     ShellElement,
     SolidElement,
-    TetrahedronElement,
-    PentahedronElement,
-    HexahedronElement,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -153,9 +150,6 @@ try:
         AnsysMembraneElement,
         AnsysShellElement,
         AnsysSolidElement,
-        AnsysTetrahedronElement,
-        AnsysPentahedronElement,
-        AnsysHexahedronElement,
     )
 
     # Ansys Sections
@@ -292,9 +286,6 @@ try:
         backend[SolidElement] = AnsysSolidElement
         backend[SolidElement] = AnsysSolidElement
         backend[SolidElement] = AnsysSolidElement
-        backend[TetrahedronElement] = AnsysTetrahedronElement
-        backend[PentahedronElement] = AnsysPentahedronElement
-        backend[HexahedronElement] = AnsysHexahedronElement
 
         backend[AngleSection] = AnsysAngleSection
         backend[BeamSection] = AnsysBeamSection

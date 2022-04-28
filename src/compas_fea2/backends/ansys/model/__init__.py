@@ -21,15 +21,12 @@ from compas_fea2.backends.ansys.model.constraints import AnsysSliderConstraint
 from compas_fea2.backends.ansys.model.constraints import AnsysTieConstraint
 
 from compas_fea2.backends.ansys.model.elements import AnsysBeamElement
-from compas_fea2.backends.ansys.model.elements import AnsysHexahedronElement
 from compas_fea2.backends.ansys.model.elements import AnsysMassElement
 from compas_fea2.backends.ansys.model.elements import AnsysMembraneElement
-from compas_fea2.backends.ansys.model.elements import AnsysPentahedronElement
 from compas_fea2.backends.ansys.model.elements import AnsysShellElement
 from compas_fea2.backends.ansys.model.elements import AnsysSolidElement
 from compas_fea2.backends.ansys.model.elements import AnsysSpringElement
 from compas_fea2.backends.ansys.model.elements import AnsysStrutElement
-from compas_fea2.backends.ansys.model.elements import AnsysTetrahedronElement
 from compas_fea2.backends.ansys.model.elements import AnsysTieElement
 from compas_fea2.backends.ansys.model.elements import AnsysTrussElement
 
@@ -70,4 +67,3 @@ from compas_fea2.backends.ansys.model.sections import AnsysStrutSection
 from compas_fea2.backends.ansys.model.sections import AnsysTieSection
 from compas_fea2.backends.ansys.model.sections import AnsysTrapezoidalSection
 from compas_fea2.backends.ansys.model.sections import AnsysTrussSection
-

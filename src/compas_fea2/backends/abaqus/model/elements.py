@@ -8,9 +8,6 @@ from compas_fea2.model import TrussElement
 from compas_fea2.model import ShellElement
 from compas_fea2.model import MembraneElement
 from compas_fea2.model import SolidElement
-from compas_fea2.model import TetrahedronElement
-from compas_fea2.model import PentahedronElement
-from compas_fea2.model import HexahedronElement
 
 
 def _generate_jobdata(element):
@@ -162,41 +159,67 @@ class AbaqusSolidElement(SolidElement):
     __doc__ += """
     Additional Parameters
     ---------------------
+    eltype : str
+        Name of the element type implementation
     reduced : bool, optional
         Reduce the integration points, by default ``False``.
 
     """
 
-    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+    def __init__(self, nodes, section, eltype=None, part=None, reduced=False, name=None, **kwargs):
         super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
-        eltypes = {4: 'C3D4', 6: 'C3D6', 8: 'C3D8', 10: 'C3D10'}
+        self._eltype = eltype
         self._reduced = reduced
-        if not len(self.nodes) in eltypes:
-            raise NotImplementedError('Solid element with {} nodes is not currently supported'.fromat(len(self.nodes)))
-        self._eltype = eltypes[len(self.nodes)]
         if self._reduced:
             self._eltype += 'R'
+
+    @property
+    def eltype(self):
+        return self._eltype
+
+    def _check_eltype(self, n_nodes):
+        if len(self.nodes) != n_nodes:
+            raise ValueError('{} must have {} nodes'.fromat(self.eltype, len(self.nodes)))
+
+    def _generate_jobdata(self):
+        raise NotImplementedError('You must select a element type implementation')
+
+
+class _C3D4(AbaqusSolidElement):
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(_C3D4, self).__init__(nodes=nodes, section=section,
+                                    eltype='C3D4', part=part, reduced=reduced, name=name, **kwargs)
+        self._check_eltype(4)
 
     def _generate_jobdata(self):
         return _generate_jobdata(self)
 
 
-class AbaqusTetrahedronElement(TetrahedronElement):
-    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
-        super(AbaqusTetrahedronElement, self).__init__(nodes=nodes,
-                                                       section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError
+class _C3D6(AbaqusSolidElement):
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(_C3D6, self).__init__(nodes=nodes, section=section,
+                                    eltype='C3D6', part=part, reduced=reduced, name=name, **kwargs)
+        self._check_eltype(6)
+
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
-class AbaqusPentahedronElement(PentahedronElement):
-    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
-        super(AbaqusPentahedronElement, self).__init__(nodes=nodes,
-                                                       section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError
+class _C3D8(AbaqusSolidElement):
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(_C3D8, self).__init__(nodes=nodes, section=section,
+                                    eltype='C3D8', part=part, reduced=reduced, name=name, **kwargs)
+        self._check_eltype(8)
+
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)
 
 
-class AbaqusHexahedronElement(HexahedronElement):
-    def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
-        super(AbaqusHexahedronElement, self).__init__(nodes=nodes,
-                                                      section=section, frame=None, part=part, name=name, **kwargs)
-        raise NotImplementedError
+class _C3D10(AbaqusSolidElement):
+    def __init__(self, nodes, section, part=None, reduced=False, name=None, **kwargs):
+        super(_C3D10, self).__init__(nodes=nodes, section=section,
+                                     eltype='C3D10', part=part, reduced=reduced, name=name, **kwargs)
+        self._check_eltype(10)
+
+    def _generate_jobdata(self):
+        return _generate_jobdata(self)

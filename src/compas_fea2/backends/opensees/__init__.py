@@ -24,9 +24,6 @@ from compas_fea2.model.elements import (
     MembraneElement,
     ShellElement,
     SolidElement,
-    TetrahedronElement,
-    PentahedronElement,
-    HexahedronElement,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -156,9 +153,6 @@ try:
         OpenseesMembraneElement,
         OpenseesShellElement,
         OpenseesSolidElement,
-        OpenseesTetrahedronElement,
-        OpenseesPentahedronElement,
-        OpenseesHexahedronElement,
     )
 
     # Opensees Sections
@@ -293,11 +287,6 @@ try:
         backend[MembraneElement] = OpenseesMembraneElement
         backend[ShellElement] = OpenseesShellElement
         backend[SolidElement] = OpenseesSolidElement
-        backend[SolidElement] = OpenseesSolidElement
-        backend[SolidElement] = OpenseesSolidElement
-        backend[TetrahedronElement] = OpenseesTetrahedronElement
-        backend[PentahedronElement] = OpenseesPentahedronElement
-        backend[HexahedronElement] = OpenseesHexahedronElement
 
         backend[AngleSection] = OpenseesAngleSection
         backend[BeamSection] = OpenseesBeamSection

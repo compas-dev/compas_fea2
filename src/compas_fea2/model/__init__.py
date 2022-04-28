@@ -138,9 +138,6 @@ from .elements import (
     ShellElement,
     MembraneElement,
     SolidElement,
-    PentahedronElement,
-    TetrahedronElement,
-    HexahedronElement,
 )
 from .materials import (
     _Material,
@@ -223,9 +220,6 @@ __all__ = [
     'ShellElement',
     'MembraneElement',
     'SolidElement',
-    'PentahedronElement',
-    'TetrahedronElement',
-    'HexahedronElement',
 
     '_Material',
     'UserMaterial',

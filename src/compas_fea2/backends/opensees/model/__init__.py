@@ -11,13 +11,15 @@ from .nodes import OpenseesNode
 from .elements import (
     OpenseesMassElement,
     OpenseesBeamElement,
+    _elasticBeamColumn,
+    _inelasticBeamColum,
     OpenseesTrussElement,
     OpenseesMembraneElement,
     OpenseesShellElement,
+    _FourNodeQuad,
+    _ASDShellQ4,
+    _SSPQuad,
     OpenseesSolidElement,
-    OpenseesTetrahedronElement,
-    OpenseesPentahedronElement,
-    OpenseesHexahedronElement,
 )
 
 # Opensees Sections

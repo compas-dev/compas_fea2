@@ -46,9 +46,10 @@ from .elements import (
     AbaqusMembraneElement,
     AbaqusShellElement,
     AbaqusSolidElement,
-    AbaqusTetrahedronElement,
-    AbaqusPentahedronElement,
-    AbaqusHexahedronElement,
+    _C3D4,
+    _C3D6,
+    _C3D8,
+    _C3D10,
 )
 
 # Abaqus Groups

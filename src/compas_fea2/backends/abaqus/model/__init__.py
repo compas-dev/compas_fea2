@@ -46,7 +46,7 @@ from .elements import (
     AbaqusMembraneElement,
     AbaqusShellElement,
     AbaqusSolidElement,
-    AbaqusTetrahedonElement,
+    AbaqusTetrahedronElement,
     AbaqusPentahedronElement,
     AbaqusHexahedronElement,
 )

@@ -155,6 +155,10 @@ class Pin2DConstraint(_Constraint):
 
 
 class SliderConstraint(_Constraint):
+    """Slider constraint between two sets of nodes, elements or surfaces that allows
+    translations on a plane about an axis and fixes all translations.
+
+    """
 
     def __init__(self, *, master, slave, tol, plane, name=None, **kwargs):
         super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)

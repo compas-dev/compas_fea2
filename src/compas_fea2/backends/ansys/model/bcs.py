@@ -15,9 +15,8 @@ from compas_fea2.model.bcs import RollerBCY
 from compas_fea2.model.bcs import RollerBCYZ
 from compas_fea2.model.bcs import RollerBCZ
 
-
 class AnsysBoundaryCondition(BoundaryCondition):
-    """ Ansys implementation of :class:`.BoundaryCondition`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.BoundaryCondition`.\n
     """
     __doc__ += BoundaryCondition.__doc__
 
@@ -28,9 +27,8 @@ class AnsysBoundaryCondition(BoundaryCondition):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysFixedBC(FixedBC):
-    """ Ansys implementation of :class:`.FixedBC`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBC`.\n
     """
     __doc__ += FixedBC.__doc__
 
@@ -41,9 +39,8 @@ class AnsysFixedBC(FixedBC):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysFixedBCXX(FixedBCXX):
-    """ Ansys implementation of :class:`.FixedBCXX`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCXX`.\n
     """
     __doc__ += FixedBCXX.__doc__
 
@@ -54,9 +51,8 @@ class AnsysFixedBCXX(FixedBCXX):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysFixedBCYY(FixedBCYY):
-    """ Ansys implementation of :class:`.FixedBCYY`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCYY`.\n
     """
     __doc__ += FixedBCYY.__doc__
 
@@ -67,9 +63,8 @@ class AnsysFixedBCYY(FixedBCYY):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysFixedBCZZ(FixedBCZZ):
-    """ Ansys implementation of :class:`.FixedBCZZ`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCZZ`.\n
     """
     __doc__ += FixedBCZZ.__doc__
 
@@ -80,9 +75,8 @@ class AnsysFixedBCZZ(FixedBCZZ):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysPinnedBC(PinnedBC):
-    """ Ansys implementation of :class:`.PinnedBC`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.PinnedBC`.\n
     """
     __doc__ += PinnedBC.__doc__
 
@@ -93,9 +87,8 @@ class AnsysPinnedBC(PinnedBC):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCX(RollerBCX):
-    """ Ansys implementation of :class:`.RollerBCX`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCX`.\n
     """
     __doc__ += RollerBCX.__doc__
 
@@ -106,9 +99,8 @@ class AnsysRollerBCX(RollerBCX):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCXY(RollerBCXY):
-    """ Ansys implementation of :class:`.RollerBCXY`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCXY`.\n
     """
     __doc__ += RollerBCXY.__doc__
 
@@ -119,9 +111,8 @@ class AnsysRollerBCXY(RollerBCXY):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCXZ(RollerBCXZ):
-    """ Ansys implementation of :class:`.RollerBCXZ`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCXZ`.\n
     """
     __doc__ += RollerBCXZ.__doc__
 
@@ -132,9 +123,8 @@ class AnsysRollerBCXZ(RollerBCXZ):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCY(RollerBCY):
-    """ Ansys implementation of :class:`.RollerBCY`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCY`.\n
     """
     __doc__ += RollerBCY.__doc__
 
@@ -145,9 +135,8 @@ class AnsysRollerBCY(RollerBCY):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCYZ(RollerBCYZ):
-    """ Ansys implementation of :class:`.RollerBCYZ`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCYZ`.\n
     """
     __doc__ += RollerBCYZ.__doc__
 
@@ -158,9 +147,8 @@ class AnsysRollerBCYZ(RollerBCYZ):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysRollerBCZ(RollerBCZ):
-    """ Ansys implementation of :class:`.RollerBCZ`.\n
+    """Ansys implementation of :class:`compas_fea2.model.bcs.RollerBCZ`.\n
     """
     __doc__ += RollerBCZ.__doc__
 
@@ -170,3 +158,4 @@ class AnsysRollerBCZ(RollerBCZ):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

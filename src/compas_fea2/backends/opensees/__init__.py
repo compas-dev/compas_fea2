@@ -156,7 +156,7 @@ try:
         OpenseesMembraneElement,
         OpenseesShellElement,
         OpenseesSolidElement,
-        OpenseesTetrahedonElement,
+        OpenseesTetrahedronElement,
         OpenseesPentahedronElement,
         OpenseesHexahedronElement,
     )
@@ -295,7 +295,7 @@ try:
         backend[SolidElement] = OpenseesSolidElement
         backend[SolidElement] = OpenseesSolidElement
         backend[SolidElement] = OpenseesSolidElement
-        backend[TetrahedronElement] = OpenseesTetrahedonElement
+        backend[TetrahedronElement] = OpenseesTetrahedronElement
         backend[PentahedronElement] = OpenseesPentahedronElement
         backend[HexahedronElement] = OpenseesHexahedronElement
 

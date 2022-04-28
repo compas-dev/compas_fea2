@@ -7,9 +7,8 @@ from compas_fea2.model.groups import FacesGroup
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import PartsGroup
 
-
 class AnsysElementsGroup(ElementsGroup):
-    """ Ansys implementation of :class:`.ElementsGroup`.\n
+    """Ansys implementation of :class:`compas_fea2.model.groups.ElementsGroup`.\n
     """
     __doc__ += ElementsGroup.__doc__
 
@@ -20,9 +19,8 @@ class AnsysElementsGroup(ElementsGroup):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysFacesGroup(FacesGroup):
-    """ Ansys implementation of :class:`.FacesGroup`.\n
+    """Ansys implementation of :class:`compas_fea2.model.groups.FacesGroup`.\n
     """
     __doc__ += FacesGroup.__doc__
 
@@ -33,9 +31,8 @@ class AnsysFacesGroup(FacesGroup):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysNodesGroup(NodesGroup):
-    """ Ansys implementation of :class:`.NodesGroup`.\n
+    """Ansys implementation of :class:`compas_fea2.model.groups.NodesGroup`.\n
     """
     __doc__ += NodesGroup.__doc__
 
@@ -46,9 +43,8 @@ class AnsysNodesGroup(NodesGroup):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysPartsGroup(PartsGroup):
-    """ Ansys implementation of :class:`.PartsGroup`.\n
+    """Ansys implementation of :class:`compas_fea2.model.groups.PartsGroup`.\n
     """
     __doc__ += PartsGroup.__doc__
 
@@ -58,3 +54,4 @@ class AnsysPartsGroup(PartsGroup):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

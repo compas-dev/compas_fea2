@@ -5,9 +5,8 @@ from __future__ import print_function
 from compas_fea2.problem.steps.quasistatic import DirectCyclicStep
 from compas_fea2.problem.steps.quasistatic import QuasiStaticStep
 
-
 class AnsysDirectCyclicStep(DirectCyclicStep):
-    """ Ansys implementation of :class:`.DirectCyclicStep`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.steps.quasistatic.DirectCyclicStep`.\n
     """
     __doc__ += DirectCyclicStep.__doc__
 
@@ -18,9 +17,8 @@ class AnsysDirectCyclicStep(DirectCyclicStep):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysQuasiStaticStep(QuasiStaticStep):
-    """ Ansys implementation of :class:`.QuasiStaticStep`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.steps.quasistatic.QuasiStaticStep`.\n
     """
     __doc__ += QuasiStaticStep.__doc__
 
@@ -30,3 +28,4 @@ class AnsysQuasiStaticStep(QuasiStaticStep):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

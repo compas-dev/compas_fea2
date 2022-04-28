@@ -8,9 +8,8 @@ from compas_fea2.model.materials.material import ElasticPlastic
 from compas_fea2.model.materials.material import Stiff
 from compas_fea2.model.materials.material import UserMaterial
 
-
 class AnsysElasticIsotropic(ElasticIsotropic):
-    """ Ansys implementation of :class:`.ElasticIsotropic`.\n
+    """Ansys implementation of :class:`compas_fea2.model.materials.material.ElasticIsotropic`.\n
     """
     __doc__ += ElasticIsotropic.__doc__
 
@@ -21,37 +20,32 @@ class AnsysElasticIsotropic(ElasticIsotropic):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysElasticOrthotropic(ElasticOrthotropic):
-    """ Ansys implementation of :class:`.ElasticOrthotropic`.\n
+    """Ansys implementation of :class:`compas_fea2.model.materials.material.ElasticOrthotropic`.\n
     """
     __doc__ += ElasticOrthotropic.__doc__
 
     def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
-        super(AnsysElasticOrthotropic, self).__init__(Ex=Ex, Ey=Ey, Ez=Ez, vxy=vxy, vyz=vyz,
-                                                      vzx=vzx, Gxy=Gxy, Gyz=Gyz, Gzx=Gzx, density=density, name=name, **kwargs)
+        super(AnsysElasticOrthotropic, self).__init__(Ex=Ex, Ey=Ey, Ez=Ez, vxy=vxy, vyz=vyz, vzx=vzx, Gxy=Gxy, Gyz=Gyz, Gzx=Gzx, density=density, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysElasticPlastic(ElasticPlastic):
-    """ Ansys implementation of :class:`.ElasticPlastic`.\n
+    """Ansys implementation of :class:`compas_fea2.model.materials.material.ElasticPlastic`.\n
     """
     __doc__ += ElasticPlastic.__doc__
 
     def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
-        super(AnsysElasticPlastic, self).__init__(E=E, v=v, density=density,
-                                                  strain_stress=strain_stress, name=name, **kwargs)
+        super(AnsysElasticPlastic, self).__init__(E=E, v=v, density=density, strain_stress=strain_stress, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysStiff(Stiff):
-    """ Ansys implementation of :class:`.Stiff`.\n
+    """Ansys implementation of :class:`compas_fea2.model.materials.material.Stiff`.\n
     """
     __doc__ += Stiff.__doc__
 
@@ -62,9 +56,8 @@ class AnsysStiff(Stiff):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysUserMaterial(UserMaterial):
-    """ Ansys implementation of :class:`.UserMaterial`.\n
+    """Ansys implementation of :class:`compas_fea2.model.materials.material.UserMaterial`.\n
     """
     __doc__ += UserMaterial.__doc__
 
@@ -74,3 +67,4 @@ class AnsysUserMaterial(UserMaterial):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

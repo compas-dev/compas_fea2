@@ -15,7 +15,7 @@ from .elements import (
     OpenseesMembraneElement,
     OpenseesShellElement,
     OpenseesSolidElement,
-    OpenseesTetrahedonElement,
+    OpenseesTetrahedronElement,
     OpenseesPentahedronElement,
     OpenseesHexahedronElement,
 )

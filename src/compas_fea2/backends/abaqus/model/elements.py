@@ -181,10 +181,10 @@ class AbaqusSolidElement(SolidElement):
         return _generate_jobdata(self)
 
 
-class AbaqusTetrahedonElement(TetrahedronElement):
+class AbaqusTetrahedronElement(TetrahedronElement):
     def __init__(self, *, nodes, section, part=None, reduced=False, name=None, **kwargs):
-        super(AbaqusTetrahedonElement, self).__init__(nodes=nodes,
-                                                      section=section, frame=None, part=part, name=name, **kwargs)
+        super(AbaqusTetrahedronElement, self).__init__(nodes=nodes,
+                                                       section=section, frame=None, part=part, name=name, **kwargs)
         raise NotImplementedError
 
 

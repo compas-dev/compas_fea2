@@ -153,7 +153,7 @@ try:
         AnsysMembraneElement,
         AnsysShellElement,
         AnsysSolidElement,
-        AnsysTetrahedonElement,
+        AnsysTetrahedronElement,
         AnsysPentahedronElement,
         AnsysHexahedronElement,
     )
@@ -292,7 +292,7 @@ try:
         backend[SolidElement] = AnsysSolidElement
         backend[SolidElement] = AnsysSolidElement
         backend[SolidElement] = AnsysSolidElement
-        backend[TetrahedronElement] = AnsysTetrahedonElement
+        backend[TetrahedronElement] = AnsysTetrahedronElement
         backend[PentahedronElement] = AnsysPentahedronElement
         backend[HexahedronElement] = AnsysHexahedronElement
 

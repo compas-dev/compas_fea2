@@ -5,9 +5,8 @@ from __future__ import print_function
 from compas_fea2.model.releases import BeamEndPinRelease
 from compas_fea2.model.releases import BeamEndSliderRelease
 
-
 class AnsysBeamEndPinRelease(BeamEndPinRelease):
-    """ Ansys implementation of :class:`.BeamEndPinRelease`.\n
+    """Ansys implementation of :class:`compas_fea2.model.releases.BeamEndPinRelease`.\n
     """
     __doc__ += BeamEndPinRelease.__doc__
 
@@ -18,9 +17,8 @@ class AnsysBeamEndPinRelease(BeamEndPinRelease):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysBeamEndSliderRelease(BeamEndSliderRelease):
-    """ Ansys implementation of :class:`.BeamEndSliderRelease`.\n
+    """Ansys implementation of :class:`compas_fea2.model.releases.BeamEndSliderRelease`.\n
     """
     __doc__ += BeamEndSliderRelease.__doc__
 
@@ -30,3 +28,4 @@ class AnsysBeamEndSliderRelease(BeamEndSliderRelease):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

@@ -6,9 +6,8 @@ from compas_fea2.model.interactions import Contact
 from compas_fea2.model.interactions import HardContactFrictionPenalty
 from compas_fea2.model.interactions import HardContactNoFriction
 
-
 class AnsysContact(Contact):
-    """ Ansys implementation of :class:`.Contact`.\n
+    """Ansys implementation of :class:`compas_fea2.model.interactions.Contact`.\n
     """
     __doc__ += Contact.__doc__
 
@@ -19,9 +18,8 @@ class AnsysContact(Contact):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysHardContactFrictionPenalty(HardContactFrictionPenalty):
-    """ Ansys implementation of :class:`.HardContactFrictionPenalty`.\n
+    """Ansys implementation of :class:`compas_fea2.model.interactions.HardContactFrictionPenalty`.\n
     """
     __doc__ += HardContactFrictionPenalty.__doc__
 
@@ -32,9 +30,8 @@ class AnsysHardContactFrictionPenalty(HardContactFrictionPenalty):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysHardContactNoFriction(HardContactNoFriction):
-    """ Ansys implementation of :class:`.HardContactNoFriction`.\n
+    """Ansys implementation of :class:`compas_fea2.model.interactions.HardContactNoFriction`.\n
     """
     __doc__ += HardContactNoFriction.__doc__
 
@@ -44,3 +41,4 @@ class AnsysHardContactNoFriction(HardContactNoFriction):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

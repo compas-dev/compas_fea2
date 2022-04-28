@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.model.nodes import Node
 
-
 class AnsysNode(Node):
-    """ Ansys implementation of :class:`.Node`.\n
+    """Ansys implementation of :class:`compas_fea2.model.nodes.Node`.\n
     """
     __doc__ += Node.__doc__
 
@@ -16,3 +15,4 @@ class AnsysNode(Node):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

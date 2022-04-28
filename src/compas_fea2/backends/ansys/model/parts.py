@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.model.parts import Part
 
-
 class AnsysPart(Part):
-    """ Ansys implementation of :class:`.Part`.\n
+    """Ansys implementation of :class:`compas_fea2.model.parts.Part`.\n
     """
     __doc__ += Part.__doc__
 
@@ -16,3 +15,4 @@ class AnsysPart(Part):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

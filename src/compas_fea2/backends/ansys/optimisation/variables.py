@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.optimisation.variables import DesignVariables
 
-
 class AnsysDesignVariables(DesignVariables):
-    """ Ansys implementation of :class:`.DesignVariables`.\n
+    """Ansys implementation of :class:`compas_fea2.optimisation.variables.DesignVariables`.\n
     """
     __doc__ += DesignVariables.__doc__
 
@@ -16,3 +15,4 @@ class AnsysDesignVariables(DesignVariables):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

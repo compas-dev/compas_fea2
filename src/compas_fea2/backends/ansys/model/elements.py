@@ -15,9 +15,8 @@ from compas_fea2.model.elements import TetrahedronElement
 from compas_fea2.model.elements import TieElement
 from compas_fea2.model.elements import TrussElement
 
-
 class AnsysBeamElement(BeamElement):
-    """ Ansys implementation of :class:`.BeamElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.BeamElement`.\n
     """
     __doc__ += BeamElement.__doc__
 
@@ -28,23 +27,20 @@ class AnsysBeamElement(BeamElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysHexahedronElement(HexahedronElement):
-    """ Ansys implementation of :class:`.HexahedronElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.HexahedronElement`.\n
     """
     __doc__ += HexahedronElement.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysHexahedronElement, self).__init__(nodes=nodes,
-                                                     section=section, frame=frame, part=part, name=name, **kwargs)
+        super(AnsysHexahedronElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysMassElement(MassElement):
-    """ Ansys implementation of :class:`.MassElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.MassElement`.\n
     """
     __doc__ += MassElement.__doc__
 
@@ -55,37 +51,32 @@ class AnsysMassElement(MassElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysMembraneElement(MembraneElement):
-    """ Ansys implementation of :class:`.MembraneElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.MembraneElement`.\n
     """
     __doc__ += MembraneElement.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysMembraneElement, self).__init__(nodes=nodes,
-                                                   section=section, frame=frame, part=part, name=name, **kwargs)
+        super(AnsysMembraneElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysPentahedronElement(PentahedronElement):
-    """ Ansys implementation of :class:`.PentahedronElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.PentahedronElement`.\n
     """
     __doc__ += PentahedronElement.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysPentahedronElement, self).__init__(nodes=nodes,
-                                                      section=section, frame=frame, part=part, name=name, **kwargs)
+        super(AnsysPentahedronElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysShellElement(ShellElement):
-    """ Ansys implementation of :class:`.ShellElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.ShellElement`.\n
     """
     __doc__ += ShellElement.__doc__
 
@@ -96,9 +87,8 @@ class AnsysShellElement(ShellElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysSolidElement(SolidElement):
-    """ Ansys implementation of :class:`.SolidElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.SolidElement`.\n
     """
     __doc__ += SolidElement.__doc__
 
@@ -109,23 +99,20 @@ class AnsysSolidElement(SolidElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysSpringElement(SpringElement):
-    """ Ansys implementation of :class:`.SpringElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.SpringElement`.\n
     """
     __doc__ += SpringElement.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysSpringElement, self).__init__(nodes=nodes,
-                                                 section=section, frame=frame, part=part, name=name, **kwargs)
+        super(AnsysSpringElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysStrutElement(StrutElement):
-    """ Ansys implementation of :class:`.StrutElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.StrutElement`.\n
     """
     __doc__ += StrutElement.__doc__
 
@@ -136,23 +123,20 @@ class AnsysStrutElement(StrutElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysTetrahedronElement(TetrahedronElement):
-    """ Ansys implementation of :class:`.TetrahedronElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.TetrahedronElement`.\n
     """
     __doc__ += TetrahedronElement.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysTetrahedronElement, self).__init__(nodes=nodes,
-                                                      section=section, frame=frame, part=part, name=name, **kwargs)
+        super(AnsysTetrahedronElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysTieElement(TieElement):
-    """ Ansys implementation of :class:`.TieElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.TieElement`.\n
     """
     __doc__ += TieElement.__doc__
 
@@ -163,9 +147,8 @@ class AnsysTieElement(TieElement):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysTrussElement(TrussElement):
-    """ Ansys implementation of :class:`.TrussElement`.\n
+    """Ansys implementation of :class:`compas_fea2.model.elements.TrussElement`.\n
     """
     __doc__ += TrussElement.__doc__
 
@@ -175,3 +158,4 @@ class AnsysTrussElement(TrussElement):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

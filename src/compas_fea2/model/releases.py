@@ -86,11 +86,33 @@ class _BeamEndRelease(FEAData):
 
 
 class BeamEndPinRelease(_BeamEndRelease):
+    """Assign a pin end release to a `compas_fea2.model.BeamElement`.
+
+    Parameters
+    ----------
+    m1 : bool, optional
+        Release rotations about loacl 1 direction, by default False
+    m2 : bool, optional
+        Release rotations about local 2 direction, by default False
+    t : bool, optional
+        Release rotations about local axial direction (torsion), by default False
+    """
+
     def __init__(self, m1=False, m2=False, t=False, name=None, **kwargs):
         super(BeamEndPinRelease, self).__init__(n=False, v1=False, v2=False, m1=m1, m2=m2, t=t, name=name,  **kwargs)
 
 
 class BeamEndSliderRelease(_BeamEndRelease):
+    """Assign a slider end release to a `compas_fea2.model.BeamElement`.
+
+    Parameters
+    ----------
+    v1 : bool, optional
+        Release displacements along local 1 direction, by default False
+    v2 : bool, optional
+        Release displacements along local 2 direction, by default False
+    """
+
     def __init__(self,  v1=False, v2=False, name=None, **kwargs):
         super(BeamEndSliderRelease, self).__init__(v1=v1, v2=v2,
                                                    n=False, m1=False, m2=False, t=False, name=name, **kwargs)

@@ -153,7 +153,7 @@ try:
         AbaqusMembraneElement,
         AbaqusShellElement,
         AbaqusSolidElement,
-        AbaqusTetrahedonElement,
+        AbaqusTetrahedronElement,
         AbaqusPentahedronElement,
         AbaqusHexahedronElement,
     )
@@ -292,7 +292,7 @@ try:
         backend[SolidElement] = AbaqusSolidElement
         backend[SolidElement] = AbaqusSolidElement
         backend[SolidElement] = AbaqusSolidElement
-        backend[TetrahedronElement] = AbaqusTetrahedonElement
+        backend[TetrahedronElement] = AbaqusTetrahedronElement
         backend[PentahedronElement] = AbaqusPentahedronElement
         backend[HexahedronElement] = AbaqusHexahedronElement
 

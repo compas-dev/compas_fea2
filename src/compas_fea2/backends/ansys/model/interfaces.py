@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.model.interfaces import Interface
 
-
 class AnsysInterface(Interface):
-    """ Ansys implementation of :class:`.Interface`.\n
+    """Ansys implementation of :class:`compas_fea2.model.interfaces.Interface`.\n
     """
     __doc__ += Interface.__doc__
 
@@ -16,3 +15,4 @@ class AnsysInterface(Interface):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

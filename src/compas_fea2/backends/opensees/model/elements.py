@@ -299,13 +299,13 @@ class OpenseesSolidElement(SolidElement):
                                            self.section.material.key)
 
 
-class OpenseesTetrahedonElement(TetrahedronElement):
+class OpenseesTetrahedronElement(TetrahedronElement):
     """"""
     __doc__ += TetrahedronElement.__doc__
 
     def __init__(self, *, nodes, section, part=None, name=None, **kwargs):
-        super(OpenseesTetrahedonElement, self).__init__(nodes=nodes,
-                                                        section=section, frame=None, part=part, name=name, **kwargs)
+        super(OpenseesTetrahedronElement, self).__init__(nodes=nodes,
+                                                         section=section, frame=None, part=part, name=name, **kwargs)
         raise NotImplementedError
 
 

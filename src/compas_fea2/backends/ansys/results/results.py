@@ -7,9 +7,8 @@ from compas_fea2.results.results import NodeResults
 from compas_fea2.results.results import Results
 from compas_fea2.results.results import StepResults
 
-
 class AnsysElementResults(ElementResults):
-    """ Ansys implementation of :class:`.ElementResults`.\n
+    """Ansys implementation of :class:`compas_fea2.results.results.ElementResults`.\n
     """
     __doc__ += ElementResults.__doc__
 
@@ -20,9 +19,8 @@ class AnsysElementResults(ElementResults):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysNodeResults(NodeResults):
-    """ Ansys implementation of :class:`.NodeResults`.\n
+    """Ansys implementation of :class:`compas_fea2.results.results.NodeResults`.\n
     """
     __doc__ += NodeResults.__doc__
 
@@ -33,23 +31,20 @@ class AnsysNodeResults(NodeResults):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysResults(Results):
-    """ Ansys implementation of :class:`.Results`.\n
+    """Ansys implementation of :class:`compas_fea2.results.results.Results`.\n
     """
     __doc__ += Results.__doc__
 
     def __init__(self, database_name, database_path, fields, steps, sets, components, output):
-        super(AnsysResults, self).__init__(database_name=database_name, database_path=database_path,
-                                           fields=fields, steps=steps, sets=sets, components=components, output=output)
+        super(AnsysResults, self).__init__(database_name=database_name, database_path=database_path, fields=fields, steps=steps, sets=sets, components=components, output=output)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysStepResults(StepResults):
-    """ Ansys implementation of :class:`.StepResults`.\n
+    """Ansys implementation of :class:`compas_fea2.results.results.StepResults`.\n
     """
     __doc__ += StepResults.__doc__
 
@@ -59,3 +54,4 @@ class AnsysStepResults(StepResults):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.problem.problem import Problem
 
-
 class AnsysProblem(Problem):
-    """ Ansys implementation of :class:`.Problem`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.problem.Problem`.\n
     """
     __doc__ += Problem.__doc__
 
@@ -16,3 +15,4 @@ class AnsysProblem(Problem):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

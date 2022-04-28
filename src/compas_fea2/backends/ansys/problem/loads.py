@@ -11,9 +11,8 @@ from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.loads import PrestressLoad
 from compas_fea2.problem.loads import TributaryLoad
 
-
 class AnsysAreaLoad(AreaLoad):
-    """ Ansys implementation of :class:`.AreaLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.AreaLoad`.\n
     """
     __doc__ += AreaLoad.__doc__
 
@@ -24,9 +23,8 @@ class AnsysAreaLoad(AreaLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysGravityLoad(GravityLoad):
-    """ Ansys implementation of :class:`.GravityLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.GravityLoad`.\n
     """
     __doc__ += GravityLoad.__doc__
 
@@ -37,9 +35,8 @@ class AnsysGravityLoad(GravityLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysHarmonicPointLoad(HarmonicPointLoad):
-    """ Ansys implementation of :class:`.HarmonicPointLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.HarmonicPointLoad`.\n
     """
     __doc__ += HarmonicPointLoad.__doc__
 
@@ -50,9 +47,8 @@ class AnsysHarmonicPointLoad(HarmonicPointLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysHarmonicPressureLoad(HarmonicPressureLoad):
-    """ Ansys implementation of :class:`.HarmonicPressureLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.HarmonicPressureLoad`.\n
     """
     __doc__ += HarmonicPressureLoad.__doc__
 
@@ -63,9 +59,8 @@ class AnsysHarmonicPressureLoad(HarmonicPressureLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysLineLoad(LineLoad):
-    """ Ansys implementation of :class:`.LineLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.LineLoad`.\n
     """
     __doc__ += LineLoad.__doc__
 
@@ -76,9 +71,8 @@ class AnsysLineLoad(LineLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysPointLoad(PointLoad):
-    """ Ansys implementation of :class:`.PointLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.PointLoad`.\n
     """
     __doc__ += PointLoad.__doc__
 
@@ -89,9 +83,8 @@ class AnsysPointLoad(PointLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysPrestressLoad(PrestressLoad):
-    """ Ansys implementation of :class:`.PrestressLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.PrestressLoad`.\n
     """
     __doc__ += PrestressLoad.__doc__
 
@@ -102,9 +95,8 @@ class AnsysPrestressLoad(PrestressLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
-
 class AnsysTributaryLoad(TributaryLoad):
-    """ Ansys implementation of :class:`.TributaryLoad`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.loads.TributaryLoad`.\n
     """
     __doc__ += TributaryLoad.__doc__
 
@@ -114,3 +106,4 @@ class AnsysTributaryLoad(TributaryLoad):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

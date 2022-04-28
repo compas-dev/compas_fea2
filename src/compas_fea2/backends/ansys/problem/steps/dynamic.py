@@ -4,9 +4,8 @@ from __future__ import print_function
 
 from compas_fea2.problem.steps.dynamic import DynamicStep
 
-
 class AnsysDynamicStep(DynamicStep):
-    """ Ansys implementation of :class:`.DynamicStep`.\n
+    """Ansys implementation of :class:`compas_fea2.problem.steps.dynamic.DynamicStep`.\n
     """
     __doc__ += DynamicStep.__doc__
 
@@ -16,3 +15,4 @@ class AnsysDynamicStep(DynamicStep):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+

@@ -77,4 +77,11 @@ class InputFile(FEAData):
 
 
 class ParametersFile(InputFile):
+    """_summary_
+
+    Parameters
+    ----------
+    InputFile : _type_
+        _description_
+    """
     pass

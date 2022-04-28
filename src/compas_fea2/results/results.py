@@ -224,8 +224,22 @@ class StepResults(FEAData):
 
 
 class NodeResults(FEAData):
+    """_summary_
+
+    Parameters
+    ----------
+    FEAData : _type_
+        _description_
+    """
     pass
 
 
 class ElementResults(FEAData):
+    """_summary_
+
+    Parameters
+    ----------
+    FEAData : _type_
+        _description_
+    """
     pass

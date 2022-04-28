@@ -4,6 +4,7 @@ from __future__ import division
 
 from compas.data import Data
 import compas_fea2
+import importlib
 
 
 class FEAData(Data):
@@ -35,6 +36,29 @@ class FEAData(Data):
 
     def __repr__(self):
         return '{0}({1})'.format(self.__class__.__name__, id(self))
+
+    @classmethod
+    def from_name(cls, name, **kwargs):
+        """Create an instance of a class of the registered plugin from its name.
+
+        Note
+        ----
+        By convention, only hidden class can be called by this method.
+
+        Parameters
+        ----------
+        name : str
+            The name of the class (without the `_` prefix)
+
+        Returns
+        -------
+        cls
+            The wanted class
+        """
+        element = cls(**kwargs)
+        module_info = element.__module__.split('.')
+        element = getattr(importlib.import_module('.'.join([*module_info[:-1]])), '_'+name)
+        return element(**kwargs)
 
     # def __str__(self):
     #     """String representation of the object.

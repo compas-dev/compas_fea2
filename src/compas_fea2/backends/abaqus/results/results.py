@@ -25,7 +25,7 @@ class AbaqusResults(Results):
     # ==========================================================================
     # Extract results
     # ==========================================================================
-    @timer(message='Data extracted from Abaqus .odb file in')
+    # @timer(message='Data extracted from Abaqus .odb file in')s
     def extract_data(self):
         """Extract data from the Abaqus .odb file.
 
@@ -57,9 +57,9 @@ class AbaqusResults(Results):
                 print(stderr.decode())
         else:
             raise NotImplementedError("custom abaqus.exe location not implemented")
-            # os.chdir(self.database_path)
-            # os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
-            #                                              odb_args, self.database_name, self.database_path))
+            os.chdir(self.database_path)
+            os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
+                                                         odb_args, self.database_name, self.database_path))
 
         # Save results back into the Results object
         for result_type in ['results', 'info']:

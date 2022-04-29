@@ -8,9 +8,9 @@ from compas_fea2.model import CircularSection, RectangularSection, MembraneSecti
 from compas_fea2.model import ShellSection
 from compas_fea2.model import BeamElement, MembraneElement, ShellElement
 from compas_fea2.model import RollerBCXY
-from compas_fea2.model.bcs import FixedBC, PinnedBC
+from compas_fea2.model import FixedBC, PinnedBC
 from compas_fea2.model import NodesGroup
-from compas_fea2.model.releases import BeamEndPinRelease
+from compas_fea2.model import BeamEndPinRelease
 
 from compas_fea2.problem import Problem
 from compas_fea2.problem import PointLoad
@@ -70,7 +70,7 @@ problem = Problem(model=model, name='test')
 step_1 = problem.add_step(StaticStep())
 step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
 # # Define the field outputs required
-# fout = step_0.add_output(FieldOutput())
+fout = step_1.add_output(FieldOutput())
 
 
 # Review
@@ -82,5 +82,5 @@ problem.summary()
 problem.analyse(path=Path(TEMP).joinpath('refactor'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
-# # # results = Results.from_problem(problem, fields=['u'])
+results = Results.from_problem(problem)
 # # # pprint(results.nodal)

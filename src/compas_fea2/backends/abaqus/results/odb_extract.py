@@ -293,8 +293,11 @@ if __name__ == "__main__":
     database_path = sys.argv[-1]
     database_name = sys.argv[-2]
     fields = None if sys.argv[-3] == 'None' else sys.argv[-3].split(',')
+    print(fields)
     components = None if sys.argv[-4] == 'None' else sys.argv[-4].split(',')
+    print(components)
     steps = None if sys.argv[-5] == 'None' else sys.argv[-5].split(',')
+    print(steps)
 
     extract_odb_data(database_path=database_path, database_name=database_name,
                      steps=steps, fields=fields, components=components)

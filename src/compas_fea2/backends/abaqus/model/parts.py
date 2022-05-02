@@ -24,15 +24,16 @@ class AbaqusPart(Part):
         Returns
         -------
         dict
-            {eltype:{section:{orientation: [elements]},},}
+            {implementation:{section:{orientation: [elements]},},}
         """
 
         # group elements by type and section
-        eltypes = set(map(lambda x: x._eltype, self.elements))
+        implementations = set(map(lambda x: x._implementation, self.elements))
         # group by type
-        grouped_elements = {eltype: [el for el in self.elements if el._eltype == eltype] for eltype in eltypes}
+        grouped_elements = {implementation: [
+            el for el in self.elements if el._implementation == implementation] for implementation in implementations}
         # subgroup by section
-        for eltype, elements in grouped_elements.items():
+        for implementation, elements in grouped_elements.items():
             sections = set(map(lambda x: x.section, elements))
             elements = {section: [el for el in elements if el.section == section] for section in sections}
             # subgroup by orientation
@@ -49,7 +50,7 @@ class AbaqusPart(Part):
                         else:
                             elements_by_orientation[None].add(el)
                 elements[section] = elements_by_orientation
-            grouped_elements[eltype] = elements
+            grouped_elements[implementation] = elements
 
         return grouped_elements
 
@@ -77,10 +78,10 @@ class AbaqusPart(Part):
 
         # Write elements, elsets and sections
         grouped_elements = self._group_elements()
-        for eltype, sections in grouped_elements.items():
+        for implementation, sections in grouped_elements.items():
             for section, orientations in sections.items():
                 for orientation, elements in orientations.items():
-                    part_data.append("*Element, type={}\n".format(eltype))
+                    part_data.append("*Element, type={}\n".format(implementation))
                     # Write elements
                     for element in elements:
                         part_data.append(element._generate_jobdata())
@@ -90,14 +91,14 @@ class AbaqusPart(Part):
                     # selection.sort()
                     if orientation:
                         aux_elset = self.add_group(ElementsGroup(
-                            name=f'aux_{eltype}_{section.name}_{orientation.replace(".", "")}',
+                            name=f'aux_{implementation}_{section.name}_{orientation.replace(".", "")}',
                             elements=elements))
                         part_data.append(aux_elset._generate_jobdata())
                         # Write section
                         part_data.append(section._generate_jobdata(aux_elset.name, orientation.split('_')))
                     else:
                         aux_elset = self.add_group(ElementsGroup(
-                            name=f'aux_{eltype}_{section.name}',
+                            name=f'aux_{implementation}_{section.name}',
                             elements=elements))
                         part_data.append(aux_elset._generate_jobdata())
                         part_data.append(section._generate_jobdata(aux_elset.name))

@@ -43,16 +43,6 @@ class OpenseesBeamElement(BeamElement):
             raise ValueError('{} is not a valid implementation model'.format(implementation))
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        input file data line (str).
-        """
         return '\n'.join(['geomTransf Corotational {1}'.format(self.key, ' '.join([str(i) for i in self.frame])),
                           self._job_data
                           ])
@@ -76,50 +66,9 @@ class OpenseesBeamElement(BeamElement):
 
     def _inelasticBeamColum(self):
         raise NotImplementedError('Currently under development')
-
         return 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._implementation,
                                                                                                                                                                                        self._key,
                                                                                                                                                                                        ' '.join(node.key for node in self.nodes))
-
-
-# class _elasticBeamColumn(OpenseesBeamElement):
-#     """Construct an elasticBeamColumn element object.
-
-#     For more information about this element in OpenSees check
-#     `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
-#     """
-
-#     def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
-#         super(_elasticBeamColumn, self).__init__(nodes=nodes, section=section,
-#                                                  implementation='elasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
-#         self._job_data = 'element {} {} {} {} {} {} {} {} {}'.format(self._implementation,
-#                                                                      self.key,
-#                                                                      ' '.join(node.key for node in self.nodes),
-#                                                                      self.section.A,
-#                                                                      self.section.material.E,
-#                                                                      self.section.material.G,
-#                                                                      self.section.J,
-#                                                                      self.section.Ixx,
-#                                                                      self.section.Iyy,
-#                                                                      self.key)
-
-
-# class _inelasticBeamColum(OpenseesBeamElement):
-#     """Construct a gradientInelasticBeamColumn element object, which is based
-#     on a force/flexibility-based (FB) gradient inelastic (GI) element
-#     formulation with an iterative solution algorithm.
-
-#     For more information about this element in OpenSees check
-#     `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
-#     """
-
-#     def __init__(self, nodes, section, frame=[0, 0, -1], part=None, name=None, **kwargs):
-#         super(_inelasticBeamColum, self).__init__(nodes=nodes, section=section,
-#                                                   implementation='gradientInelasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
-#         self._job_data = 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._implementation,
-#                                                                                                                                                                                                  self._key,
-#                                                                                                                                                                                                  ' '.join(node.key for node in self.nodes))
-#         raise NotImplementedError('Currently under development')
 
 
 class OpenseesTrussElement(TrussElement):
@@ -150,8 +99,9 @@ class OpenseesShellElement(ShellElement):
     """
     # TODO maybe move mat_behavior to the material or section
 
-    def __init__(self, nodes, section, implementation, mat_behaviour=None, part=None, name=None, **kwargs):
-        super(OpenseesShellElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
+    def __init__(self, nodes, section, implementation, mat_behaviour='PlainStess', part=None, name=None, **kwargs):
+        super(OpenseesShellElement, self).__init__(nodes=nodes, section=section,
+                                                   part=part, implementation=implementation, name=name, **kwargs)
         if self._nodes != 4:
             raise NotImplementedError('Shell elements in Opensees can only have 4 nodes.')
         self._mat_behaviour = mat_behaviour
@@ -162,67 +112,55 @@ class OpenseesShellElement(ShellElement):
         return self._mat_behaviour
 
     def _generate_jobdata(self):
-        return self._job_data
+        try:
+            return getattr(self, '_'+self._implementation.lower())()
+        except:
+            raise ValueError('{} is not a valid implementation.'.format(self._implementation))
 
+    def _asdshellq4(self):
+        """Construct an ASDShellQ4 element object.
 
-class _ASDShellQ4():
-    """Construct an ASDShellQ4 element object.
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/ASDShellQ4.html>`_
+        """
+        return 'element ASDShellQ4  {}  {}'.format(self.key,
+                                                   ' '.join(node.key for node in self.nodes),
+                                                   self.section.key)
 
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/ASDShellQ4.html>`_
-    """
+    def _fournodequad(self):
+        """Construct a FourNodeQuad element object which uses a bilinear isoparametric formulation.
 
-    def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_ASDShellQ4, self).__init__(nodes=nodes, section=section,
-                                          implementation='ASDShellQ4', mat_behaviour=None, part=part, name=name, **kwargs)
-        self.job_data = 'element ASDShellQ4  {}  {}'.format(self.key,
-                                                            ' '.join(node.key for node in self.nodes),
-                                                            self.section.key)
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/Quad.html>`_
 
+        Note
+        ----
+        The optional arguments are not implemented.
 
-class _FourNodeQuad(OpenseesShellElement):
-    """Construct a FourNodeQuad element object which uses a bilinear isoparametric formulation.
+        """
+        return 'element quad {} {} {} {}'.format(self.key,
+                                                 ' '.join(node.key for node in self.nodes),
+                                                 self.section.thickness,
+                                                 self.mat_behaviour,
+                                                 self.section.material.key)
 
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/Quad.html>`_
+    def _sspquad(self):
+        """Construct a SSPquad (SSP –> Stabilized Single Point) element.
 
-    Note
-    ----
-    The optional arguments are not implemented.
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPquad.html>`_
 
-    """
+        Note
+        ----
+        The optional arguments are not implemented.
 
-    def __init__(self, nodes, section, part=None, name=None, mat_behavior='PlainStess', **kwargs):
-        super(_FourNodeQuad, self).__init__(nodes=nodes, section=section,
-                                            implementation='FourNodeQuad', mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
-        self._jobdata = 'element quad {} {} {} {}'.format(self.key,
-                                                          ' '.join(node.key for node in self.nodes),
-                                                          self.section.thickness,
-                                                          self.mat_behaviour,
-                                                          self.section.material.key)
-
-
-class _SSPQuad(OpenseesShellElement):
-    """Construct a SSPquad (SSP –> Stabilized Single Point) element.
-
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPquad.html>`_
-
-    Note
-    ----
-    The optional arguments are not implemented.
-
-    """
-
-    def __init__(self, nodes, section, part=None, name=None, mat_behavior='PlainStess', **kwargs):
-        super(_SSPQuad, self).__init__(nodes, section, 'SSPQuad',
-                                       mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
-        self._job_data = 'element SSPquad {} {} {} {}'.format(self.key,
-                                                              ' '.join(node.key for node in self.nodes),
-                                                              self.section.material.key,
-                                                              self.section.material.key,
-                                                              self.mat_behaviour,
-                                                              self.section.thickness)
+        """
+        return 'element SSPquad {} {} {} {}'.format(self.key,
+                                                    ' '.join(node.key for node in self.nodes),
+                                                    self.section.material.key,
+                                                    self.section.material.key,
+                                                    self.mat_behaviour,
+                                                    self.section.thickness)
 
 
 class OpenseesMembraneElement(MembraneElement):
@@ -249,8 +187,15 @@ class OpenseesSolidElement(SolidElement):
 
     """
 
-    def __init__(self, nodes, section, implementation=None, part=None, name=None, **kwargs):
-        super(OpenseesSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
+    def __init__(self, nodes, section, implementation='stdBrick', part=None, name=None, **kwargs):
+        super(OpenseesSolidElement, self).__init__(nodes=nodes, section=section,
+                                                   part=part, implementation=implementation, name=name, **kwargs)
+
+    def _get_implementation(self):
+        try:
+            return getattr(self, '_'+self._type.lower())
+        except:
+            raise ValueError('{} is not a valid implementation.'.format(self._implementation))
 
     def _generate_jobdata(self):
         return 'element {}  {}  {}'.format(self.key,
@@ -258,52 +203,45 @@ class OpenseesSolidElement(SolidElement):
                                            ' '.join(node.key for node in self.nodes),
                                            self.section.material.key)
 
+    # TODO complete implementations: for now it is all done in _generate_jobdata
+    def _stdbrick(self):
+        """Construct an eight-node brick element object, which uses the standard isoparametric formulation.
 
-class _stdBrick(OpenseesSolidElement):
-    """Construct an eight-node brick element object, which uses the standard isoparametric formulation.
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/stdBrick.html>`_
 
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/stdBrick.html>`_
+        Note
+        ----
+        The optional arguments are not implemented.
 
-    Note
-    ----
-    The optional arguments are not implemented.
+        """
+        return
 
-    """
+    def _bbarbrick(self):
+        """Construct an eight-node mixed volume/pressure brick element object, which uses a trilinear isoparametric formulation.
 
-    def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_stdBrick, self).__init__(nodes, section, implementation='stdBrick', part=part, name=name, **kwargs)
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/bbarBrick.html>`_
 
+        Note
+        ----
+        The optional arguments are not implemented.
 
-class _bbarBrick(OpenseesSolidElement):
-    """Construct an eight-node mixed volume/pressure brick element object, which uses a trilinear isoparametric formulation.
+        """
+        return
 
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/bbarBrick.html>`_
+    def _sspbrick(self):
+        """Construct an eight-node ssp brick element. The SSPbrick element is an
+        eight-node hexahedral element using physically stabilized single-point
+        integration (SSP –> Stabilized Single Point).
 
-    Note
-    ----
-    The optional arguments are not implemented.
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPbrick.html>`_
 
-    """
+        Note
+        ----
+        The optional arguments are not implemented.
 
-    def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_bbarBrick, self).__init__(nodes, section, implementation='stdBrick', part=part, name=name, **kwargs)
+        """
 
-
-class _SSPbrick(OpenseesShellElement):
-    """Construct an eight-node ssp brick element. The SSPbrick element is an
-    eight-node hexahedral element using physically stabilized single-point
-    integration (SSP –> Stabilized Single Point).
-
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPbrick.html>`_
-
-    Note
-    ----
-    The optional arguments are not implemented.
-
-    """
-
-    def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_SSPbrick, self).__init__(nodes, section, implementation='SSPbrick', part=part, name=name, **kwargs)
+        return

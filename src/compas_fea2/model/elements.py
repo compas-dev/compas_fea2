@@ -138,6 +138,12 @@ class MassElement(_Element):
 # ==============================================================================
 class BeamElement(_Element):
     """A 1D element that resists axial, shear, bending and torsion.
+
+    A beam element is a one-dimensional line element in three-dimensional space
+    whose stiffness is associated with deformation of the line (the beam's “axis”).
+    These deformations consist of axial stretch; curvature change (bending); and,
+    in space, torsion.
+
     """
 
 
@@ -166,11 +172,24 @@ class TieElement(TrussElement):
 # ==============================================================================
 class ShellElement(_Element):
     """A 2D element that resists axial, shear, bending and torsion.
+
+    Shell elements are used to model structures in which one dimension, the
+    thickness, is significantly smaller than the other dimensions.
+
     """
 
 
 class MembraneElement(ShellElement):
     """A shell element that resists only axial loads.
+
+    Note
+    ----
+    Membrane elements are used to represent thin surfaces in space that offer
+    strength in the plane of the element but have no bending stiffness; for
+    example, the thin rubber sheet that forms a balloon. In addition, they are
+    often used to represent thin stiffening components in solid structures, such
+    as a reinforcing layer in a continuum.
+
     """
 
 
@@ -179,4 +198,12 @@ class MembraneElement(ShellElement):
 # ==============================================================================
 class SolidElement(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
+
+    Solid (continuum) elements can be used for linear analysis
+    and for complex nonlinear analyses involving contact, plasticity, and large
+    deformations.
+
+    Solid elements are general purpose elements and can be used for multiphysics
+    problems.
+
     """

@@ -35,7 +35,7 @@ mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
 frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
 # frame_sec = CircularSection(material=mat, r=0.010)
 # membrane_sec = MembraneSection(0.02, mat)
-# shell_sec = ShellSection(0.02, mat)
+shell_sec = ShellSection(0.02, mat)
 frame = model.add_part(Part())
 
 coordinates = [[0., 0., 5.], [5., -5., 0.], [5., 5., 0.], [-5., 5., 0.], [-5., -5., 0.]]
@@ -44,11 +44,11 @@ beam_elements = []
 shell_elements = []
 for i in range(1, len(nodes)):
     beam_elements.append(frame.add_element(BeamElement(nodes=[nodes[0], nodes[i]], section=frame_sec)))
-    # if not i == len(nodes)-1:
-    #     # shell_elements.append(frame.add_element(ShellElement(
-    #     #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
-    #     shell_elements.append(frame.add_element(MembraneElement(
-    #         nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
+    if not i == len(nodes)-1:
+        shell_elements.append(frame.add_element(ShellElement(
+            nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
+        # shell_elements.append(frame.add_element(MembraneElement(
+        #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
@@ -79,7 +79,7 @@ problem.summary()
 
 # Solve the problem
 # problem.write_input_file(path=Path(TEMP).joinpath('refactor'))
-problem.analyse(path=Path(TEMP).joinpath('refactor'))
+problem.analyse(path=Path(TEMP).joinpath('refactor2'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem)

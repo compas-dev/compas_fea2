@@ -10,7 +10,7 @@ except:
 
 try:
     # from ..job import *
-    from job import *
+    from .job import *
 except:
     pass
 

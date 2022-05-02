@@ -34,6 +34,8 @@ class _Element(FEAData):
     frame : :class:`compas.geometry.Frame`, optional
         The local coordinate system for property assignement.
         Default to the global coordinate system.
+    implementation : str, optional
+        The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.Part`, optional
         The parent part of the element.
 
@@ -53,19 +55,22 @@ class _Element(FEAData):
     frame : :class:`compas.geometry.Frame`
         The local coordinate system for property assignement.
         Default to the global coordinate system.
+    implementation : str, optional
+        The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.Part` | None
         The parent part.
 
     """
 # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
-    def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
+    def __init__(self, *, nodes, section, frame=None, part=None, implementation=None, name=None, **kwargs):
         super(_Element, self).__init__(name, **kwargs)
         self._key = None
         self._nodes = nodes
         self._section = section
         self._frame = frame
         self._part = part
+        self._implementation = implementation
 
     @property
     def key(self):
@@ -113,6 +118,10 @@ class _Element(FEAData):
             node._part = value
         self._part = value
 
+    @property
+    def implementation(self):
+        return self._implementation
+
 
 # ==============================================================================
 # 0D elements
@@ -127,6 +136,12 @@ class MassElement(_Element):
 # ==============================================================================
 class BeamElement(_Element):
     """A 1D element that resists axial, shear, bending and torsion.
+
+    A beam element is a one-dimensional line element in three-dimensional space
+    whose stiffness is associated with deformation of the line (the beam's “axis”).
+    These deformations consist of axial stretch; curvature change (bending); and,
+    in space, torsion.
+
     """
 
 
@@ -155,11 +170,24 @@ class TieElement(TrussElement):
 # ==============================================================================
 class ShellElement(_Element):
     """A 2D element that resists axial, shear, bending and torsion.
+
+    Shell elements are used to model structures in which one dimension, the
+    thickness, is significantly smaller than the other dimensions.
+
     """
 
 
 class MembraneElement(ShellElement):
     """A shell element that resists only axial loads.
+
+    Note
+    ----
+    Membrane elements are used to represent thin surfaces in space that offer
+    strength in the plane of the element but have no bending stiffness; for
+    example, the thin rubber sheet that forms a balloon. In addition, they are
+    often used to represent thin stiffening components in solid structures, such
+    as a reinforcing layer in a continuum.
+
     """
 
 
@@ -168,4 +196,12 @@ class MembraneElement(ShellElement):
 # ==============================================================================
 class SolidElement(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
+
+    Solid (continuum) elements can be used for linear analysis
+    and for complex nonlinear analyses involving contact, plasticity, and large
+    deformations.
+
+    Solid elements are general purpose elements and can be used for multiphysics
+    problems.
+
     """

@@ -9,6 +9,7 @@ job
     :toctree: generated/
 
     InputFile
+    ParametersFile
 
 """
 from __future__ import absolute_import

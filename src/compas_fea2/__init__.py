@@ -15,6 +15,11 @@ API Packages
     compas_fea2.model
     compas_fea2.problem
     compas_fea2.results
+    compas_fea2.job
+    compas_fea2.postprocessor
+    compas_fea2.preprocessor
+    compas_fea2.optimisation
+    compas_fea2.utilities
 
 Dev Packages
 ============
@@ -24,10 +29,6 @@ Dev Packages
 
     compas_fea2.backends
     compas_fea2.UI
-    compas_fea2.job
-    compas_fea2.postprocessor
-    compas_fea2.preprocessor
-    compas_fea2.utilities
 
 """
 import os

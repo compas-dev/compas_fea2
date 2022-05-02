@@ -47,7 +47,7 @@ class Part(FEAData):
         The sections belonging to the part.
     elements : Set[:class:`compas_fea2.model._Element`]
         The elements belonging to the part.
-    releases : Set[:class:`compas_fea2.model._Release`]
+    releases : Set[:class:`compas_fea2.model._BeamEndRelease`]
         The releases belonging to the part.
     groups : Set[:class:`compas_fea2.model._Group`]
         The groups belonging to the part.
@@ -644,7 +644,7 @@ number of groups   : {}
     # =========================================================================
 
     def add_beam_release(self, element, location, release):
-        """Add a :class:`compas_fea2.model.BeamEndRelease` to an element in the
+        """Add a :class:`compas_fea2.model._BeamEndRelease` to an element in the
         part.
 
         Parameters
@@ -653,7 +653,7 @@ number of groups   : {}
             The element to release.
         location : str
             'start' or 'end'.
-        release : :class:`compas_fea2.model.BeamEndRelease`
+        release : :class:`compas_fea2.model._BeamEndRelease`
             Release type to apply.
         """
         if not isinstance(release, _BeamEndRelease):

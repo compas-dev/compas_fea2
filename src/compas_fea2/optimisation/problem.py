@@ -6,7 +6,7 @@ from compas_fea2.base import FEAData
 import importlib
 from pathlib import Path
 
-from ..job.input_file import ParametersFile
+from compas_fea2.job.input_file import ParametersFile
 
 
 class OptimisationProblem(FEAData):

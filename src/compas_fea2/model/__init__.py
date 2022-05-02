@@ -40,6 +40,16 @@ Elements
     ShellElement
     SolidElement
 
+Releases
+========
+
+.. autosummary::
+    :toctree: generated/
+
+    _BeamEndRelease
+    BeamEndPinRelease
+    BeamEndSliderRelease
+
 Constraints
 ===========
 
@@ -48,6 +58,25 @@ Constraints
 
     _Constraint
     TieConstraint
+
+Interactions
+============
+
+.. autosummary::
+    :toctree: generated/
+
+    _Interaction
+    Contact
+    HardContactNoFriction
+    HardContactFrictionPenalty
+
+Interfaces
+==========
+
+.. autosummary::
+    :toctree: generated/
+
+    Interface
 
 Materials
 =========
@@ -116,8 +145,11 @@ Groups
 .. autosummary::
     :toctree: generated/
 
+    _Group
     NodesGroup
     ElementsGroup
+    FacesGroup
+    PartsGroup
 
 """
 from __future__ import absolute_import
@@ -153,7 +185,12 @@ from .materials import (
     Timber,
 )
 from .interfaces import Interface
-from .interactions import HardContactFrictionPenalty
+from .interactions import (
+    _Interaction,
+    Contact,
+    HardContactFrictionPenalty,
+    HardContactNoFriction,
+)
 from .sections import (
     _Section,
     MassSection,
@@ -182,11 +219,13 @@ from .groups import (
     _Group,
     NodesGroup,
     ElementsGroup,
-    PartsGroup
+    FacesGroup,
+    PartsGroup,
 )
 from .releases import (
     _BeamEndRelease,
     BeamEndPinRelease,
+    BeamEndSliderRelease,
 )
 from .bcs import (
     BoundaryCondition,
@@ -257,13 +296,22 @@ __all__ = [
     '_Constraint',
     'TieConstraint',
 
+    '_BeamEndRelease',
+    'BeamEndPinRelease',
+
+    '_Interaction',
+    'Contact',
+    'HardContactNoFriction',
+    'HardContactFrictionPenalty',
+
+    'Interface',
+
     '_Group',
     'NodesGroup',
     'ElementsGroup',
+    'FacesGroup',
     'PartsGroup',
 
-    '_BeamEndRelease',
-    'BeamEndPinRelease',
 
     'BoundaryCondition',
     'FixedBC',

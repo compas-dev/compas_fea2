@@ -1,0 +1,21 @@
+
+x coockiecutter template repository
+x move utils out of src
+
+x notimplementederror ()
+x fix merge problems
+
+x class.form_name
+
+
+
+- sqlite database for results
+- json schemas (simple medium advanced)
+
+
+
+- miro diagrams
+
+- compas_fe2_abaqus repo
+- code completion
+- Probem class overarching

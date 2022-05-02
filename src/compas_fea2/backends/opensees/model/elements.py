@@ -31,15 +31,16 @@ class OpenseesBeamElement(BeamElement):
     """
     __doc__ += BeamElement.__doc__
 
-    def __init__(self, nodes, section, eltype=None, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
-        super(OpenseesBeamElement, self).__init__(nodes=nodes, section=section, frame=frame,
+    def __init__(self, nodes, section, implementation='elasticBeamColumn', frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
+        super(OpenseesBeamElement, self).__init__(nodes=nodes, section=section, frame=frame, implementation=implementation,
                                                   part=part, name=name, **kwargs)
-        self._eltype = eltype
-        self._job_data = None
 
-    @property
-    def eltype(self):
-        return self._eltype
+        self._implementation = BeamElement.from_name(implementation)
+
+        try:
+            self._job_data = getattr(self, implementation)
+        except:
+            raise ValueError('{} is not a valid implementation model'.format(implementation))
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -52,50 +53,73 @@ class OpenseesBeamElement(BeamElement):
         -------
         input file data line (str).
         """
-        line = []
-        line.append('geomTransf Corotational {1}'.format(self.key, ' '.join([str(i) for i in self.frame])))
-        line.append(self._job_data)
-        return '\n'.join(line)
+        return '\n'.join(['geomTransf Corotational {1}'.format(self.key, ' '.join([str(i) for i in self.frame])),
+                          self._job_data
+                          ])
 
+    def _elasticBeamColumn(self):
+        """Construct an elasticBeamColumn element object.
 
-class _elasticBeamColumn(OpenseesBeamElement):
-    """Construct an elasticBeamColumn element object.
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
+        """
+        return 'element {} {} {} {} {} {} {} {} {}'.format(self._implementation,
+                                                           self.key,
+                                                           ' '.join(node.key for node in self.nodes),
+                                                           self.section.A,
+                                                           self.section.material.E,
+                                                           self.section.material.G,
+                                                           self.section.J,
+                                                           self.section.Ixx,
+                                                           self.section.Iyy,
+                                                           self.key)
 
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
-    """
-
-    def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
-        super(_elasticBeamColumn, self).__init__(nodes=nodes, section=section,
-                                                 eltype='elasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
-        self._job_data = 'element {} {} {} {} {} {} {} {} {}'.format(self._eltype,
-                                                                     self.key,
-                                                                     ' '.join(node.key for node in self.nodes),
-                                                                     self.section.A,
-                                                                     self.section.material.E,
-                                                                     self.section.material.G,
-                                                                     self.section.J,
-                                                                     self.section.Ixx,
-                                                                     self.section.Iyy,
-                                                                     self.key)
-
-
-class _inelasticBeamColum(OpenseesBeamElement):
-    """Construct a gradientInelasticBeamColumn element object, which is based
-    on a force/flexibility-based (FB) gradient inelastic (GI) element
-    formulation with an iterative solution algorithm.
-
-    For more information about this element in OpenSees check
-    `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
-    """
-
-    def __init__(self, nodes, section, frame=[0, 0, -1], part=None, name=None, **kwargs):
-        super(_inelasticBeamColum, self).__init__(nodes=nodes, section=section,
-                                                  eltype='gradientInelasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
-        self._job_data = 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._eltype,
-                                                                                                                                                                                                 self._key,
-                                                                                                                                                                                                 ' '.join(node.key for node in self.nodes))
+    def _inelasticBeamColum(self):
         raise NotImplementedError('Currently under development')
+
+        return 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._implementation,
+                                                                                                                                                                                       self._key,
+                                                                                                                                                                                       ' '.join(node.key for node in self.nodes))
+
+
+# class _elasticBeamColumn(OpenseesBeamElement):
+#     """Construct an elasticBeamColumn element object.
+
+#     For more information about this element in OpenSees check
+#     `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
+#     """
+
+#     def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
+#         super(_elasticBeamColumn, self).__init__(nodes=nodes, section=section,
+#                                                  implementation='elasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
+#         self._job_data = 'element {} {} {} {} {} {} {} {} {}'.format(self._implementation,
+#                                                                      self.key,
+#                                                                      ' '.join(node.key for node in self.nodes),
+#                                                                      self.section.A,
+#                                                                      self.section.material.E,
+#                                                                      self.section.material.G,
+#                                                                      self.section.J,
+#                                                                      self.section.Ixx,
+#                                                                      self.section.Iyy,
+#                                                                      self.key)
+
+
+# class _inelasticBeamColum(OpenseesBeamElement):
+#     """Construct a gradientInelasticBeamColumn element object, which is based
+#     on a force/flexibility-based (FB) gradient inelastic (GI) element
+#     formulation with an iterative solution algorithm.
+
+#     For more information about this element in OpenSees check
+#     `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
+#     """
+
+#     def __init__(self, nodes, section, frame=[0, 0, -1], part=None, name=None, **kwargs):
+#         super(_inelasticBeamColum, self).__init__(nodes=nodes, section=section,
+#                                                   implementation='gradientInelasticBeamColumn', frame=frame, part=part, name=name, **kwargs)
+#         self._job_data = 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._implementation,
+#                                                                                                                                                                                                  self._key,
+#                                                                                                                                                                                                  ' '.join(node.key for node in self.nodes))
+#         raise NotImplementedError('Currently under development')
 
 
 class OpenseesTrussElement(TrussElement):
@@ -120,25 +144,18 @@ class OpenseesShellElement(ShellElement):
     __doc__ += """
     Additional Parameters
     ---------------------
-    eltype : str
-        Element type formulation.
     mat_behaviour : str
         String representing material behavior. It can be either “PlaneStrain” or “PlaneStress.”
 
     """
     # TODO maybe move mat_behavior to the material or section
 
-    def __init__(self, nodes, section, eltype, mat_behaviour=None, part=None, name=None, **kwargs):
+    def __init__(self, nodes, section, implementation, mat_behaviour=None, part=None, name=None, **kwargs):
         super(OpenseesShellElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
         if self._nodes != 4:
             raise NotImplementedError('Shell elements in Opensees can only have 4 nodes.')
-        self._eltype = eltype
         self._mat_behaviour = mat_behaviour
         self._job_data = None
-
-    @property
-    def eltype(self):
-        return self._eltype
 
     @property
     def mat_behaviour(self):
@@ -148,7 +165,7 @@ class OpenseesShellElement(ShellElement):
         return self._job_data
 
 
-class _ASDShellQ4(OpenseesShellElement):
+class _ASDShellQ4():
     """Construct an ASDShellQ4 element object.
 
     For more information about this element in OpenSees check
@@ -157,7 +174,7 @@ class _ASDShellQ4(OpenseesShellElement):
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
         super(_ASDShellQ4, self).__init__(nodes=nodes, section=section,
-                                          eltype='ASDShellQ4', mat_behaviour=None, part=part, name=name, **kwargs)
+                                          implementation='ASDShellQ4', mat_behaviour=None, part=part, name=name, **kwargs)
         self.job_data = 'element ASDShellQ4  {}  {}'.format(self.key,
                                                             ' '.join(node.key for node in self.nodes),
                                                             self.section.key)
@@ -177,7 +194,7 @@ class _FourNodeQuad(OpenseesShellElement):
 
     def __init__(self, nodes, section, part=None, name=None, mat_behavior='PlainStess', **kwargs):
         super(_FourNodeQuad, self).__init__(nodes=nodes, section=section,
-                                            eltype='FourNodeQuad', mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
+                                            implementation='FourNodeQuad', mat_behaviour=mat_behavior, part=part, name=name, **kwargs)
         self._jobdata = 'element quad {} {} {} {}'.format(self.key,
                                                           ' '.join(node.key for node in self.nodes),
                                                           self.section.thickness,
@@ -227,24 +244,17 @@ class OpenseesSolidElement(SolidElement):
     __doc__ += """
     Additional Parameters
     ---------------------
-    eltype : str
-        Element type formulation.
     mat_behaviour : str
         String representing material behavior. It can be either “PlaneStrain” or “PlaneStress.”
 
     """
 
-    def __init__(self, nodes, section, eltype=None, part=None, name=None, **kwargs):
+    def __init__(self, nodes, section, implementation=None, part=None, name=None, **kwargs):
         super(OpenseesSolidElement, self).__init__(nodes=nodes, section=section,  part=part, name=name, **kwargs)
-        self._eltype = eltype
-
-    @property
-    def eltype(self):
-        return self._eltype
 
     def _generate_jobdata(self):
         return 'element {}  {}  {}'.format(self.key,
-                                           self._eltype,
+                                           self._implementation,
                                            ' '.join(node.key for node in self.nodes),
                                            self.section.material.key)
 
@@ -262,7 +272,7 @@ class _stdBrick(OpenseesSolidElement):
     """
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_stdBrick, self).__init__(nodes, section, eltype='stdBrick', part=part, name=name, **kwargs)
+        super(_stdBrick, self).__init__(nodes, section, implementation='stdBrick', part=part, name=name, **kwargs)
 
 
 class _bbarBrick(OpenseesSolidElement):
@@ -278,7 +288,7 @@ class _bbarBrick(OpenseesSolidElement):
     """
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_bbarBrick, self).__init__(nodes, section, eltype='stdBrick', part=part, name=name, **kwargs)
+        super(_bbarBrick, self).__init__(nodes, section, implementation='stdBrick', part=part, name=name, **kwargs)
 
 
 class _SSPbrick(OpenseesShellElement):
@@ -296,4 +306,4 @@ class _SSPbrick(OpenseesShellElement):
     """
 
     def __init__(self, nodes, section, part=None, name=None, **kwargs):
-        super(_SSPbrick, self).__init__(nodes, section, eltype='SSPbrick', part=part, name=name, **kwargs)
+        super(_SSPbrick, self).__init__(nodes, section, implementation='SSPbrick', part=part, name=name, **kwargs)

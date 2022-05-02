@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import imp
+from multiprocessing.sharedctypes import Value
 
 from compas.geometry import Frame
 from compas_fea2.base import FEAData
@@ -34,6 +36,8 @@ class _Element(FEAData):
     frame : :class:`compas.geometry.Frame`, optional
         The local coordinate system for property assignement.
         Default to the global coordinate system.
+    implementation : str, optional
+        The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.Part`, optional
         The parent part of the element.
 
@@ -53,19 +57,22 @@ class _Element(FEAData):
     frame : :class:`compas.geometry.Frame`
         The local coordinate system for property assignement.
         Default to the global coordinate system.
+    implementation : str, optional
+        The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.Part` | None
         The parent part.
 
     """
 # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
-    def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
+    def __init__(self, *, nodes, section, frame=None, part=None, implementation=None, name=None, **kwargs):
         super(_Element, self).__init__(name, **kwargs)
         self._key = None
         self._nodes = nodes
         self._section = section
         self._frame = frame
         self._part = part
+        self._implementation = implementation
 
     @property
     def key(self):
@@ -112,6 +119,10 @@ class _Element(FEAData):
         for node in self._nodes:
             node._part = value
         self._part = value
+
+    @property
+    def implementation(self):
+        return self._implementation
 
 
 # ==============================================================================

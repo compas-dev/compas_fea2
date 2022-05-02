@@ -1,8 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from sys import implementation
-from xml.dom import ValidationErr
 
 from compas_fea2.model import MassElement
 from compas_fea2.model import BeamElement

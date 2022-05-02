@@ -1,8 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import imp
-from multiprocessing.sharedctypes import Value
 
 from compas.geometry import Frame
 from compas_fea2.base import FEAData

@@ -1,16 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 try:
     # from ..job import *
     from odbAccess import *
-except:
-    pass
-
-try:
-    # from ..job import *
-    from .job import *
 except:
     pass
 
@@ -89,6 +79,9 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
     if not steps:
         steps = odb.steps.keys()
 
+    # if not fields:
+    #     fields = odb.st
+
     for step in steps:
 
         results[step] = {'nodal': {}, 'element': {}}
@@ -139,7 +132,7 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
 
             # Node data
             try:
-                for field in list(set(fields) & set(node_fields)):
+                for field in node_fields:  # list(set(fields) & set(node_fields)):
                     clabels = list(fieldoutputs[field.upper()].componentLabels)
                     # create a dictionary entry for each component
                     for c in clabels:
@@ -160,11 +153,11 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
                         if field + 'm' in components:
                             refn[field + 'm'][node] = float(fieldvalue.magnitude)
             except:
-                sys.__stderr__.write('Node output failed\n')
+                continue
 
             # Element data
             try:
-                for field in list(set(fields) & set(element_fields)):
+                for field in element_fields:  # list(set(fields) & set(element_fields)):
 
                     if field == 'nforcso':
                         for i in range(6):
@@ -276,7 +269,7 @@ def extract_odb_data(database_path, database_name, fields=None, components=None,
                                         if 'eminp' in components:
                                             refe['eminp'][element][id] = None
             except:
-                sys.__stderr__.write('Element output failed\n')  # TODO change
+                continue
 
     with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
         pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)

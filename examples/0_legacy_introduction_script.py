@@ -78,9 +78,9 @@ problem.summary()
 # problem.show()
 
 # Solve the problem
-# problem.write_input_file(path=Path(TEMP).joinpath('refactor'))
-problem.analyse(path=Path(TEMP).joinpath('refactor2'))
+problem.write_input_file(path=Path(TEMP).joinpath('refactor2'))
+# problem.analyse(path=Path(TEMP).joinpath('refactor2'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem)
-# # # pprint(results.nodal)
+pprint(results.nodal)

@@ -253,8 +253,8 @@ class AbaqusModel(Model):
 
     def _generate_interactions_section(self):
         data_section = []
-        for contact in self.contacts:
-            data_section.append(contact._generate_jobdata())
+        for interaction in self.interactions:
+            data_section.append(interaction._generate_jobdata())
         return ''.join(data_section)
 
     def _generate_bcs_section(self):

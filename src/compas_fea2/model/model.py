@@ -51,10 +51,6 @@ class Model(FEAData):
         This will be added to the input file and can be useful for future reference.
     parts : Set[:class:`compas_fea2.model.Part`]
         The parts of the model.
-    materials : Set[:class:`compas_fea2.model._Material`]
-        The materials of the model.
-    sections : Set[:class:`compas_fea2.model._Section`]
-        The sections used in the model.
     bcs : dict
         The boundary conditions of the model.
     constraints : Set[:class:`compas_fea2.model._Constraint`]
@@ -78,7 +74,6 @@ class Model(FEAData):
         self._bcs = {}
         self._constraints = set()
         self._interactions = set()
-        self._contacts = set()
         self._partsgroups = set()
         self._facesgroups = set()
 
@@ -87,24 +82,12 @@ class Model(FEAData):
         return self._parts
 
     @property
-    def materials(self):
-        return self._materials
-
-    @property
-    def sections(self):
-        return self._sections
-
-    @property
     def partgroups(self):
         return self._partsgroups
 
     @property
     def bcs(self):
         return self._bcs
-
-    @property
-    def contacts(self):
-        return self._contacts
 
     @property
     def constraints(self):

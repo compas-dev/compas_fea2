@@ -57,8 +57,8 @@ class Model(FEAData):
         The constraints of the model.
     interactions : Set[:class:`compas_fea2.model._Interaction`]
         The interactions between parts of the model.
-    contacts : Set[:class:`compas_fea2.model._Contact`]
-        The contacts between parts of the model.
+    interfaces : Set[:class:`compas_fea2.model._Interface`]
+        The interface between two parts of the model.
     partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
     facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
@@ -74,6 +74,7 @@ class Model(FEAData):
         self._bcs = {}
         self._constraints = set()
         self._interactions = set()
+        self._interfaces = set()
         self._partsgroups = set()
         self._facesgroups = set()
 
@@ -96,6 +97,10 @@ class Model(FEAData):
     @property
     def interactions(self):
         return self._interactions
+
+    @property
+    def interfaces(self):
+        return self._interfaces
 
     @property
     def facesgroups(self):
@@ -362,7 +367,7 @@ class Model(FEAData):
         :class:`compas_fea2.model._Interface`
         """
         if isinstance(interface, Interface):
-            self._contacts.add(interface)
+            self._interfaces.add(interface)
         else:
             raise TypeError('{!r} is not an interface.'.format(interface))
         return interface

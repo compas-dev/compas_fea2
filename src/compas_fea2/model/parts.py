@@ -245,17 +245,11 @@ number of groups   : {}
         """
         import numpy as np
         part = cls(name=name, **kwargs)
-        # part.add_section(section)
         # add nodes
         gmsh_nodes = gmshModel.mesh.get_nodes()
         node_coords = gmsh_nodes[1].reshape((-1, 3), order='C')
         gmsh_elements = gmshModel.mesh.get_elements()
         fea2_nodes = [part.add_node(Node(coords.tolist())) for coords in node_coords]
-
-        # for coords in node_coords:
-        #     k = part.add_node(Node(coords.tolist()))
-        #     if verbose:
-        #         print(f'node {k} added')
         # add elements
         if isinstance(section, SolidSection):
             ntags_per_element = np.split(gmsh_elements[2][2]-1, len(gmsh_elements[1][2]))  # gmsh keys start from 1
@@ -275,14 +269,6 @@ number of groups   : {}
                 if verbose:
                     print(f'element {k} added')
         return part
-
-    # @classmethod
-    # def from_compas_part(cls, name, part):
-    #     raise NotImplementedError
-
-    # @classmethod
-    # def from_volmesh(self, name, volmesh):
-    #     raise NotImplementedError
 
     # =========================================================================
     #                           Nodes methods

@@ -4,6 +4,21 @@ Introduction
 
 .. rst-class:: lead
 
+Plug-in architecture
+====================
+
+``compas_fea2`` implements a plug-in architecture. The ``compas_fea2`` main
+package only defines the general API for a Finite Element Analysis, while the
+actual implementation in the a specific backend is done in the corresponding
+plug-in, whcih is registered and the beginning of the analysis. Once the analysis
+is complente, the results are recorded in a SQL database and can be accessed by
+the user through the SQL wrapper provided by ``compas_fea2``, by his/her own
+SQL statements or through an external interface.
+
+.. figure:: /_images/registration.png
+     :figclass: figure
+     :class: figure-img img-fluid
+
 
 Workflow
 ========
@@ -11,6 +26,28 @@ Workflow
 The image below describes a general FEA workflow:
 
 .. figure:: /_images/workflow_1.png
+     :figclass: figure
+     :class: figure-img img-fluid
+
+Collaboration Workflow
+======================
+
+The aim of ``compas_fea2`` is to create a common platform for FEA that can be shared
+across disciplines and software. This is achieved by standardizing the API for
+the creation and analysis of an FE model, and by serializing `models`, `problems`
+and `results` in a common database that can be easly shared.
+
+The two images below show the general collaboration workflow and a specific example
+of a structural engineer using rhino and abaqus collaborating with an acoustic
+engineer using blender and ansys:
+
+
+.. figure:: /_images/CollaborationWorkflow.jpg
+     :figclass: figure
+     :class: figure-img img-fluid
+
+
+.. figure:: /_images/CollaborationWorkflow_example.jpg
      :figclass: figure
      :class: figure-img img-fluid
 

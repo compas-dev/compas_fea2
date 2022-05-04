@@ -1,0 +1,31 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/product.schema.json",
+    "title": "results",
+    "description": "A result output",
+    "type": "object",
+    "properties": {
+        "step": {
+            "description": "The analysis step",
+            "type": "object",
+            "properties": {
+                "nodal": {
+                    "description": "nodal results for the step",
+                    "type": "object",
+                    "properties": {}
+                },
+                "element": {
+                    "description": "element results for the step",
+                    "type": "object",
+                    "properties": {}
+                }
+            }
+        },
+        "required": [
+            "nodal, element"
+        ]
+    },
+    "required": [
+        "step"
+    ]
+}

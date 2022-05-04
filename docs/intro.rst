@@ -15,7 +15,7 @@ is complente, the results are recorded in a SQL database and can be accessed by
 the user through the SQL wrapper provided by ``compas_fea2``, by his/her own
 SQL statements or through an external interface.
 
-.. figure:: /_images/registration.png
+.. figure:: /_images/registration.jpg
      :figclass: figure
      :class: figure-img img-fluid
 

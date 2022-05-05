@@ -171,22 +171,47 @@ def extract_odb_data(database_path, database_name, to_json=True, to_pickle=False
     odb = openOdb(os.path.join(database_path, '{}.odb'.format(database_name)))
 
     results = {'steps': {}}
+    # tables
+    steps_table = {'id': [], 'name': []}
+    parts_table = {'id': [], 'name': []}
+    nodes_table = {'id': [], 'part_id': []}
+    results_table = {'field': [], 'step_id': [], 'part_id': [], 'node_id': [], 'field_value': []}
+    elements_table = {'id': [], 'part_id': [], 'step_id': [], 'field_id': [], 'field_value': []}
     steps = odb.steps
     for step_name, step in steps.items():
 
         frame = step.frames[-1]  # TODO maybe loop through the frames
-        i = 1
+        step_id = 1
+        steps_table['id'] = step_id
+        steps_table['name'] = step_name
+
         for field, output in frame.fieldOutputs.items():
+            node_id = 1
             for value in output.values:
                 nodelabel = getattr(value, 'nodeLabel')
                 elementlabel = getattr(value, 'elementLabel')
+                part_id = 1
+                if value.instance.name[:-2] not in parts_table['name']:
+                    parts_table['id'] = part_id
+                    parts_table['name'] = value.instance.name[:-2]
+                    part_id += 1
                 if nodelabel:
-                    results['steps'].setdefault(i, {}).setdefault(step_name, {}).setdefault(value.instance.name[:-2], {}).setdefault('nodes', {}).setdefault(nodelabel-1, {})[
+                    results['steps'].setdefault(step_id, {}).setdefault(step_name, {}).setdefault(value.instance.name[:-2], {}).setdefault('nodes', {}).setdefault(nodelabel-1, {})[
                         field] = [float(n) for n in value.data]
+                    if node_id not in nodes_table['id']:
+                        nodes_table['id'].append(node_id)
+                        nodes_table['part_id'].append(part_id)
+
+                    results_table.setdefault('field', []).append(field)
+                    results_table.setdefault('step_id', []).append(step_id)
+                    results_table.setdefault('part_id', []).append(part_id)
+                    results_table.setdefault('node_id', []).append(node_id)
+                    results_table.setdefault('field_value', []).append([float(n) for n in value.data])
+                    node_id += 1
                 if elementlabel:
-                    results['steps'].setdefault(i, {}).setdefault(step_name, {}).setdefault(value.instance.name[:-2], {}).setdefault('elements', {}).setdefault(elementlabel-1, {})[
+                    results['steps'].setdefault(step_id, {}).setdefault(step_name, {}).setdefault(value.instance.name[:-2], {}).setdefault('elements', {}).setdefault(elementlabel-1, {})[
                         field] = [float(n) for n in value.data]
-        i += 1
+        step_id += 1
 
     if to_pickle:
         with open(os.path.join(database_path, '{}-results.pkl'.format(database_name)), 'wb') as f:
@@ -195,6 +220,8 @@ def extract_odb_data(database_path, database_name, to_json=True, to_pickle=False
     if to_json:
         with open(os.path.join(database_path, '{}-results.json'.format(database_name)), 'wb') as f:
             json.dump(results, f)
+        with open(os.path.join(database_path, '{}-node_results.json'.format(database_name)), 'wb') as f:
+            json.dump(results_table, f)
 
     # with conn:
     #     for step, results_types in results.items():

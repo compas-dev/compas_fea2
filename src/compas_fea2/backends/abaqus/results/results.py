@@ -43,7 +43,7 @@ class AbaqusResults(Results):
             p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=self.database_path, shell=True)
             stdout, stderr = p.communicate()
             # print(stdout.decode())
-            # print(stderr.decode())
+            print(stderr.decode())
         else:
             raise NotImplementedError("custom abaqus.exe location not implemented")
             os.chdir(self.database_path)

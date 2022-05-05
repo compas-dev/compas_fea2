@@ -1,3 +1,6 @@
+import re
+import sqlite3
+from sqlite3 import Error
 import compas_fea2
 
 from compas_fea2.model import Model, elements
@@ -24,6 +27,39 @@ from pathlib import Path
 from pprint import pprint
 
 from compas_fea2 import TEMP
+
+
+def create_connection(db_file=None):
+    """ Create a database connection to the SQLite database specified by db_file.
+
+    Parameters
+    ----------
+    db_file : str, optional
+        Path to the .db file, by default 'None'. If not provided, the database
+        is run in memory.
+
+    Return
+    ------
+    :class:`sqlite3.Connection` | None
+        Connection object or None
+    """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file or ':memory:')
+    except Error as e:
+        print(e)
+
+    return conn
+
+
+def show_node_results(conn, field, value):
+    sql = """ SELECT * FROM nodal """.format(field)
+    # sql = """ SELECT * FROM nodal_results WHERE {0}=:{0} """.format(field)
+    cur = conn.cursor()
+    # cur.execute(sql, {field: value})
+    cur.execute(sql)
+    return cur.fetchall()
+
 
 compas_fea2.set_backend('abaqus')
 compas_fea2.config.VERBOSE = not True
@@ -83,4 +119,18 @@ problem.write_input_file(path=Path(TEMP).joinpath('refactor2'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem)
-pprint(results.nodal)
+
+# pprint(results.nodal)
+
+# conn = create_connection()
+
+# # with conn:
+# #     for step, results_types in results.nodal.items():
+# #         create_steps_table(conn)
+# #         insert_step_results(conn, step)
+# #         for result_type, values in results_types.itmes():
+# #             if result_type == 'nodal_results':
+# #                 create_nodal_results_table(conn)
+# #                 insert_nodal_results(conn, values)
+
+# print(show_node_results(conn, 'um', 0))

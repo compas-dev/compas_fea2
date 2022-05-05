@@ -32,70 +32,27 @@ class Results(FEAData):
         Print terminal output.
     """
 
-    def __init__(self, database_name, database_path, fields, steps, sets, components, output):
+    def __init__(self, database_name, database_path):
         super(Results, self).__init__()
         self.database_name = database_name
         self.database_path = database_path
-        self.temp_dump = Path(self.database_path).joinpath(self.database_name + '.cfr')
-        self._fields = fields
-        self._steps = steps
-        self._sets = sets
-        self._components = components
-        self.output = output
-
-    @property
-    def fields(self):
-        return self._fields
-
-    # @fields.setter
-    # def fields(self, fields):
-    #     if not isinstance(fields, list):
-    #         fields = [fields]
-    #     for x in fields:
-    #         if x not in self.problem.field_outputs:
-    #             print("WARNING: field {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
-    #                 x, self.database_name))
-    #         else:
-    #             self._fields.append(x)
-
-    @property
-    def steps(self):
-        return self._steps
-
-    # @steps.setter
-    # def steps(self, steps):
-    #     if not isinstance(steps, list):
-    #         steps = [steps]
-    #     for x in steps:
-    #         if x not in self.problem.steps:
-    #             print("WARNING: step {0} not in {1} and it will be ignored!\nRun the anlysis requesting {0}".format(
-    #                 x, self.problem_name))
-    #         else:
-    #             self._steps.append(x)
-
-    @property
-    def sets(self):
-        return self._sets
-
-    @property
-    def components(self):
-        return self._components
+        # self.temp_dump = Path(self.database_path).joinpath(self.database_name + '.cfr')
 
     # ==========================================================================
     # Constructors
     # ==========================================================================
 
     @classmethod
-    def from_problem(cls, problem, fields='all', steps=None, sets=None, components=None, output=True):
-        results = cls(problem.name, problem.path, fields, steps, sets, output, components)
-        results.extract_data()
+    def from_problem(cls, problem):
+        results = cls(problem.name, problem.path)
+        results._extract_data()
         return results
 
     # ==========================================================================
     # Extract results
     # ==========================================================================
 
-    def extract_data(self):
+    def _extract_data(self):
         raise NotImplementedError("this function is not available for the selceted backend")
 
     # ==============================================================================

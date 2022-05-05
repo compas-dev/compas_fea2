@@ -9,20 +9,43 @@
             "description": "The analysis step",
             "type": "object",
             "properties": {
-                "nodal": {
-                    "description": "nodal results for the step",
+                "parts": {
+                    "description": "The interested part",
                     "type": "object",
-                    "properties": {}
-                },
-                "element": {
-                    "description": "element results for the step",
-                    "type": "object",
-                    "properties": {}
+                    "properties": {
+                        "nodes": {
+                            "description": "results at the nodes for the step",
+                            "type": "object",
+                            "properties": {
+                                "description": "the output field",
+                                "type": "object",
+                                "properties": {
+                                    "description": "the values of the output",
+                                    "type": "float, list of floats"
+                                }
+                            }
+                        },
+                        "elements": {
+                            "description": "results at the elements for the step",
+                            "type": "object",
+                            "properties": {
+                                "description": "the output field",
+                                "type": "object",
+                                "properties": {
+                                    "description": "the values of the output",
+                                    "type": "float, list of floats"
+                                }
+                            }
+                        }
+                    }
                 }
-            }
+            },
+            "required": [
+                "nodes, elements"
+            ]
         },
         "required": [
-            "nodal, element"
+            "part"
         ]
     },
     "required": [

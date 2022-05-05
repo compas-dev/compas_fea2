@@ -17,16 +17,16 @@ class AbaqusResults(Results):
     """Abaqus implementation of :class:`Results`.\n"""
     __doc__ += Results.__doc__
 
-    def __init__(self, database_name, database_path, fields='all', steps='all', sets=None, output=True, components=None, exe=None, license='research',):
-        super(AbaqusResults, self).__init__(database_name, database_path, fields, steps, sets, components, output)
+    def __init__(self, database_name, database_path, exe=None, license='research',):
+        super(AbaqusResults, self).__init__(database_name, database_path)
         self.exe = exe
         self.license = license
 
     # ==========================================================================
     # Extract results
     # ==========================================================================
-    # @timer(message='Data extracted from Abaqus .odb file in')s
-    def extract_data(self):
+    @timer(message='Data extracted from Abaqus .odb file in')
+    def _extract_data(self, output=False):
         """Extract data from the Abaqus .odb file.
 
         Returns
@@ -34,50 +34,39 @@ class AbaqusResults(Results):
         None
 
         """
-
-        odb_args = []
-        for arg in [self.steps, self.components, self.fields]:
-            odb_args.append(','.join(arg if isinstance(arg, list) else [arg]) if arg else 'None')
+        print('Extracting data from Abaqus .odb file...')
 
         subprocess = 'noGUI={0}'.format(Path(odb_extract.__file__))
 
         if not self.exe:
-            args = ['abaqus', 'cae', subprocess, '--', *odb_args, self.database_name, self.database_path]
+            args = ['abaqus', 'cae', subprocess, '--', self.database_name, self.database_path]
             p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=self.database_path, shell=True)
-            while True:
-                line = p.stdout.readline()
-                if not line:
-                    break
-                line = line.strip().decode()
-                if self.output:
-                    print(line)
             stdout, stderr = p.communicate()
-            if self.output:
-                print(stdout.decode())
-                print(stderr.decode())
+            # print(stdout.decode())
+            # print(stderr.decode())
         else:
             raise NotImplementedError("custom abaqus.exe location not implemented")
             os.chdir(self.database_path)
             os.system('{0}{1} -- {2} {3} {4} {5}'.format(self.exe, subprocess,
                                                          odb_args, self.database_name, self.database_path))
 
-        # Save results back into the Results object
-        for result_type in ['results', 'info']:
-            file = Path(self.database_path).joinpath('{}-{}.pkl'.format(self.database_name, result_type))
-            with open(file, 'rb') as f:
-                results = pickle.load(f)
-            if result_type == 'results':
-                for step in results:
-                    for dtype in results[step]:
-                        if not hasattr(self, dtype):
-                            self.__setattr__(dtype, {})
-                        self.__getattribute__(dtype)[step] = {field: {int(
-                            k): v for k, v in results[step][dtype][field].items()} for field in results[step][dtype]}
-            else:
-                if not hasattr(self, result_type):
-                    self.__setattr__(result_type, {})
-                for step in results:
-                    self.__getattribute__(result_type)[step] = results[step]
-            os.remove(file)
+        # # Save results back into the Results object
+        # for result_type in ['results', 'info']:
+        #     file = Path(self.database_path).joinpath('{}-{}.pkl'.format(self.database_name, result_type))
+        #     with open(file, 'rb') as f:
+        #         results = pickle.load(f)
+        #     if result_type == 'results':
+        #         for step in results:
+        #             for dtype in results[step]:
+        #                 if not hasattr(self, dtype):
+        #                     self.__setattr__(dtype, {})
+        #                 self.__getattribute__(dtype)[step] = {field: {int(
+        #                     k): v for k, v in results[step][dtype][field].items()} for field in results[step][dtype]}
+        #     else:
+        #         if not hasattr(self, result_type):
+        #             self.__setattr__(result_type, {})
+        #         for step in results:
+        #             self.__getattribute__(result_type)[step] = results[step]
+        #     os.remove(file)
 
-            print('Data stored successfully in {}'.format(file))
+        #     print('Data stored successfully in {}'.format(file))

@@ -1,9 +1,6 @@
 import sqlite3
 from sqlite3 import Error
 
-import sqlite3
-from sqlite3 import Error
-
 
 def create_connection(db_file=None):
     """ Create a database connection to the SQLite database specified by db_file.
@@ -98,12 +95,40 @@ def show_node_results(conn, field, value):
 
 
 if __name__ == '__main__':
-    # create a database connection
-    # database=r"C:\temp\results.db"
+    # # create a database connection
+    # # database=r"C:\temp\results.db"
     conn = create_connection()
     with conn:
         create_nodal_results_table(conn)
         nodal_results = {'key': 0, 'rf': 0, 'rm': 1, 'u': 2, 'ur': 3, 'cf': 4, 'cm': 5, 'tf': 6}
         insert_nodal_results(conn, nodal_results)
 
-    print(show_node_results(conn, 'rf', 0))
+    # # print(show_node_results(conn, 'rf', 0))
+
+    # # def dict_factory(cursor, row):
+    # #     d = {}
+    # #     for idx, col in enumerate(cursor.description):
+    # #         d[col[0]] = row[idx]
+    # #     return d
+
+    # # conn.row_factory = dict_factory
+    # # db = conn.cursor()
+    # # print(db.execute("SELECT * FROM table"))
+
+    # DICT = {'field_1': 'TEXT',
+    #         'field_2': 'TEXT',
+    #         'field_3': 'INT',
+    #         'field_4': 'TEXT',
+    #         'field_x': '???'}
+
+    # columns = "(" + ",\n".join(["{} {}".format(k, v) for k, v in DICT.items()]) + ")"
+    # # looks like:
+    # # # """(field 1 TEXT,
+    # # # field 2 TEXT,
+    # # # field 3 INT,
+    # # # field 4 TEXT,
+    # # # field x ???)"""
+
+    # with conn:
+    #     cursor = conn.cursor()
+    #     cursor.execute("CREATE TABLE table_name\n" + columns)

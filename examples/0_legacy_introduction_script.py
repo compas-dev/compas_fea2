@@ -1,26 +1,17 @@
-import re
-import sqlite3
-from sqlite3 import Error
 import compas_fea2
 
-from compas_fea2.model import Model, elements
+from compas_fea2.model import Model
 from compas_fea2.model import Part
 from compas_fea2.model import Node
-from compas_fea2.model import ElasticIsotropic, Steel
-from compas_fea2.model import CircularSection, RectangularSection, MembraneSection
+from compas_fea2.model import ElasticIsotropic
+from compas_fea2.model import RectangularSection, MembraneSection
 from compas_fea2.model import ShellSection
-from compas_fea2.model import BeamElement, MembraneElement, ShellElement
-from compas_fea2.model import RollerBCXY
-from compas_fea2.model import FixedBC, PinnedBC
-from compas_fea2.model import NodesGroup
-from compas_fea2.model import BeamEndPinRelease
+from compas_fea2.model import BeamElement, ShellElement
+from compas_fea2.model import FixedBC
 
 from compas_fea2.problem import Problem
-from compas_fea2.problem import PointLoad
-from compas_fea2.problem import GravityLoad
 from compas_fea2.problem import FieldOutput
-from compas_fea2.problem import StaticStep, ModalAnalysis
-from compas_fea2.problem import GeneralDisplacement
+from compas_fea2.problem import StaticStep
 
 from compas_fea2.results import Results
 from pathlib import Path
@@ -28,49 +19,12 @@ from pprint import pprint
 
 from compas_fea2 import TEMP
 
-
-def create_connection(db_file=None):
-    """ Create a database connection to the SQLite database specified by db_file.
-
-    Parameters
-    ----------
-    db_file : str, optional
-        Path to the .db file, by default 'None'. If not provided, the database
-        is run in memory.
-
-    Return
-    ------
-    :class:`sqlite3.Connection` | None
-        Connection object or None
-    """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file or ':memory:')
-    except Error as e:
-        print(e)
-
-    return conn
-
-
-def show_node_results(conn, field, value):
-    sql = """ SELECT * FROM nodal """.format(field)
-    # sql = """ SELECT * FROM nodal_results WHERE {0}=:{0} """.format(field)
-    cur = conn.cursor()
-    # cur.execute(sql, {field: value})
-    cur.execute(sql)
-    return cur.fetchall()
-
-
 compas_fea2.set_backend('abaqus')
 compas_fea2.config.VERBOSE = not True
 
-
 model = Model()
 mat = ElasticIsotropic(E=10*10**9, v=0.3, density=1000)
-# mat_steel = Steel.S355()
 frame_sec = RectangularSection(w=0.05, h=0.1, material=mat)
-# frame_sec = CircularSection(material=mat, r=0.010)
-# membrane_sec = MembraneSection(0.02, mat)
 shell_sec = ShellSection(0.02, mat)
 frame = model.add_part(Part())
 
@@ -83,54 +37,31 @@ for i in range(1, len(nodes)):
     if not i == len(nodes)-1:
         shell_elements.append(frame.add_element(ShellElement(
             nodes=[nodes[0], nodes[i], nodes[i+1]], section=shell_sec)))
-        # shell_elements.append(frame.add_element(MembraneElement(
-        #     nodes=[nodes[0], nodes[i], nodes[i+1]], section=membrane_sec,  reduced=True)))
 model.add_pin_bc(node=nodes[1])
 model.add_bcs(bc=FixedBC(), nodes=nodes[2:])
 
-
 # Review
-model.summary()
+# model.summary()
 # model.show()
 
-
 ##### ----------------------------- PROBLEM ----------------------------- #####
-# Create the Problem object
 problem = Problem(model=model, name='test')
 
-# step_modal = ModalAnalysis(modes=3)
-# problem.add_step(step_modal)
-# step_0 = problem.add_step(StaticStep())
-# step_0.add_gravity_load()
+step_0 = problem.add_step(StaticStep())
+step_0.add_gravity_load()
 
 step_1 = problem.add_step(StaticStep())
 step_1.add_point_load(x=1000, z=-1000, node=nodes[0])
-# # Define the field outputs required
 fout = step_1.add_output(FieldOutput())
 
-
-# Review
-problem.summary()
+# problem.summary()
 # problem.show()
 
 # Solve the problem
-problem.write_input_file(path=Path(TEMP).joinpath('refactor2'))
-# problem.analyse(path=Path(TEMP).joinpath('refactor2'))
+# problem.write_input_file(path=Path(TEMP).joinpath('refactor2'))
+problem.analyse(path=Path(TEMP).joinpath('test_results'))
 
 # # # ##### --------------------- POSTPROCESS RESULTS -------------------------- #####
 results = Results.from_problem(problem)
 
 # pprint(results.nodal)
-
-# conn = create_connection()
-
-# # with conn:
-# #     for step, results_types in results.nodal.items():
-# #         create_steps_table(conn)
-# #         insert_step_results(conn, step)
-# #         for result_type, values in results_types.itmes():
-# #             if result_type == 'nodal_results':
-# #                 create_nodal_results_table(conn)
-# #                 insert_nodal_results(conn, values)
-
-# print(show_node_results(conn, 'um', 0))

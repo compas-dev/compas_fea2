@@ -35,4 +35,4 @@ class AbaqusNode(Node):
         input file data line (str).
         """
         x, y, z = self.xyz
-        return f'{self.key+1:>10}, {x:>10.3f}, {y:>10.3f}, {z:>10.3f}\n'
+        return '{:>10}, {:>10.3f}, {:>10.3f}, {:>10.3f}'.format(self.key+1, x, y, z)

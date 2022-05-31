@@ -36,9 +36,17 @@ Elements
     :toctree: generated/
 
     _Element
+    MassElement
     BeamElement
+    SpringElement
+    TrussElement
+    StrutElement
+    TieElement
     ShellElement
+    MembraneElement
     SolidElement
+    TetrahedronElement
+    HexahedronElement
 
 Releases
 ========
@@ -69,6 +77,8 @@ Interactions
     Contact
     HardContactNoFriction
     HardContactFrictionPenalty
+    LinearContactFrictionPenalty
+    HardContactRough
 
 Interfaces
 ==========
@@ -126,7 +136,8 @@ Boundary Conditions
 .. autosummary::
     :toctree: generated/
 
-    BoundaryCondition
+    _BoundaryCondition
+    GeneralBC
     FixedBC
     PinnedBC
     FixedBCXX
@@ -170,6 +181,8 @@ from .elements import (
     ShellElement,
     MembraneElement,
     SolidElement,
+    TetrahedronElement,
+    HexahedronElement,
 )
 from .materials import (
     _Material,
@@ -189,7 +202,9 @@ from .interactions import (
     _Interaction,
     Contact,
     HardContactFrictionPenalty,
+    LinearContactFrictionPenalty,
     HardContactNoFriction,
+    HardContactRough,
 )
 from .sections import (
     _Section,
@@ -228,12 +243,12 @@ from .releases import (
     BeamEndSliderRelease,
 )
 from .bcs import (
-    BoundaryCondition,
+    GeneralBC,
     FixedBC,
     PinnedBC,
-    FixedBCXX,
-    FixedBCYY,
-    FixedBCZZ,
+    ClampBCXX,
+    ClampBCYY,
+    ClampBCZZ,
     RollerBCX,
     RollerBCY,
     RollerBCZ,
@@ -259,6 +274,8 @@ __all__ = [
     'ShellElement',
     'MembraneElement',
     'SolidElement',
+    'TetrahedronElement',
+    'HexahedronElement',
 
     '_Material',
     'UserMaterial',
@@ -273,6 +290,8 @@ __all__ = [
     'Timber',
 
     'HardContactFrictionPenalty',
+    'HardContactNoFriction',
+    'HardContactRough',
 
     '_Section',
     'MassSection',
@@ -303,6 +322,7 @@ __all__ = [
     'Contact',
     'HardContactNoFriction',
     'HardContactFrictionPenalty',
+    'LinearContactFrictionPenalty',
 
     'Interface',
 
@@ -313,12 +333,13 @@ __all__ = [
     'PartsGroup',
 
 
-    'BoundaryCondition',
+    '_BoundaryCondition',
+    'GeneralBC',
     'FixedBC',
     'PinnedBC',
-    'FixedBCXX',
-    'FixedBCYY',
-    'FixedBCZZ',
+    'ClampBCXX',
+    'ClampBCYY',
+    'ClampBCZZ',
     'RollerBCX',
     'RollerBCY',
     'RollerBCZ',

@@ -22,18 +22,17 @@ def _generate_jobdata(self, instance):
     input file data line (str).
     """
     data_section = []
-    name = self.name if not instance else f'{self.name}_{instance}'
-    line = f'*{self._set_type}, {self._set_type}={name}'
+    name = self.name if not instance else '{}_i'.format(self.name)
+    line = '*{0}, {0}={1}'.format(self._set_type, name)
     if instance:
-        # BUG instance is a bool, but it should be a str with the name of the instance
-        line = ', instance='.join([line, instance])
+        line = ', instance='.join([line, self.part.name+'-1'])
 
     data_section.append(line)
-    data = [str(el.key+1) for el in self.elements]
+    data = [str(member.key+1) for member in self._members]
     chunks = [data[x:x+15] for x in range(0, len(data), 15)]  # split data for readibility
     for chunk in chunks:
         data_section.append(', '.join(chunk))
-    return '\n'.join(data_section) + '\n'
+    return '\n'.join(data_section)
 
 
 class AbaqusNodesGroup(NodesGroup):
@@ -46,8 +45,8 @@ class AbaqusNodesGroup(NodesGroup):
     """
     __doc__ += NodesGroup.__doc__
 
-    def __init__(self, nodes, name=None, **kwargs):
-        super(AbaqusNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
+    def __init__(self, *, nodes, part=None, name=None, **kwargs):
+        super(AbaqusNodesGroup, self).__init__(nodes=nodes, part=part, name=name, **kwargs)
         self._set_type = 'nset'
 
     def _generate_jobdata(self, instance=None):
@@ -64,8 +63,8 @@ class AbaqusElementsGroup(ElementsGroup):
     """
     __doc__ += ElementsGroup.__doc__
 
-    def __init__(self, *, elements, name=None, **kwargs):
-        super(AbaqusElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
+    def __init__(self,  *, elements, part=None, name=None, **kwargs):
+        super(AbaqusElementsGroup, self).__init__(elements=elements, part=part, name=name, **kwargs)
         self._set_type = 'elset'
 
     def _generate_jobdata(self, instance=None):
@@ -82,8 +81,8 @@ class AbaqusFacesGroup(FacesGroup):
     """
     __doc__ += NodesGroup.__doc__
 
-    def __init__(self, *, part, element_face, name=None, **kwargs):
-        super(FacesGroup, self).__init__(part=part, element_face=element_face, name=name, **kwargs)
+    def __init__(self, *, faces, part=None, name=None, **kwargs):
+        super(AbaqusFacesGroup, self).__init__(faces=faces, part=part, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -97,10 +96,10 @@ class AbaqusFacesGroup(FacesGroup):
         str
             input file data line.
         """
-        lines = [f'*Surface, type=ELEMENT, name={self._name}']
-        for key, face in self._element_face.items():
-            lines.append(f'{self._part}-1.{key+1}, {face}')
-        lines.append('**\n')
+        lines = ['*Surface, type=ELEMENT, name={}'.format(self._name)]
+        for face in self.faces:
+            lines.append('{}-1.{}, {}'.format(self.part.name, face.element.key+1, face.tag))
+        lines.append('**')
         return '\n'.join(lines)
 
 
@@ -108,6 +107,6 @@ class AbaqusPartsGroup(PartsGroup):
     """Abaqus implementation of the :class:`PartsGroup`.\n"""
     __doc__ += PartsGroup.__doc__
 
-    def __init__(self, *, parts, name=None, **kwargs):
-        super(AbaqusPartsGroup, self).__init__(parts=parts, name=name, **kwargs)
+    def __init__(self, *, parts, model=None, name=None, **kwargs):
+        super(AbaqusPartsGroup, self).__init__(parts=parts, model=model, name=name, **kwargs)
         raise NotImplementedError

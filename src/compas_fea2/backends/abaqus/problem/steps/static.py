@@ -34,18 +34,30 @@ class AbaqusStaticStep(StaticStep):
         input file data line (str).
         """
 
-        return f"""**
-{self._generate_header_section()}**
+        return """**
+{}
 ** - Displacements
 **   -------------
-{self._generate_displacements_section()}**
+{}
+**
 ** - Loads
 **   -----
-{self._generate_loads_section()}**
+{}
+**
 ** - Output Requests
 **   ---------------
-{self._generate_output_section()}**
-*End Step"""
+{}
+**
+** - Contact Controls
+**   ----------------
+{}
+**
+*End Step""".format(self._generate_header_section(),
+                    self._generate_displacements_section(),
+                    self._generate_loads_section(),
+                    self._generate_output_section(),
+                    self._generate_controls_section()
+                    )
 
     def _generate_header_section(self):
         data_section = []
@@ -53,16 +65,19 @@ class AbaqusStaticStep(StaticStep):
                 "**\n"
                 "*Step, name={0}, nlgeom={1}, inc={2}\n"
                 "*{3}\n"
-                "{4}, {5}, {6}, {5}\n").format(self._name, self._nlgeom, self._max_increments, self._stype, self._initial_inc_size, self._time, self._min_inc_size)
+                "{4}, {5}, {6}, {5}").format(self._name, self._nlgeom, self._max_increments, self._stype, self._initial_inc_size, self._time, self._min_inc_size)
         data_section.append(line)
         return ''.join(data_section)
 
     def _generate_displacements_section(self):
-        data_section = []
-        for part in self.displacements:
-            data_section += [displacement._generate_jobdata('{}-1'.format(part.name), node)
-                             for node, displacement in self.displacements[part].items()]
-        return '\n'.join(data_section)
+        if self.displacements:
+            data_section = []
+            for part in self.displacements:
+                data_section += [displacement._generate_jobdata('{}-1'.format(part.name), node)
+                                 for node, displacement in self.displacements[part].items()]
+            return '\n'.join(data_section)
+        else:
+            return '**'
 
     def _generate_loads_section(self):
         data_section = []
@@ -71,14 +86,13 @@ class AbaqusStaticStep(StaticStep):
         for part in self.loads:
             data_section += [load._generate_jobdata('{}-1'.format(part.name), nodes)
                              for load, nodes in self.loads[part].items()]
-        return '\n'.join(data_section)
+        return '\n'.join(data_section) if data_section else '**'
 
     def _generate_output_section(self):
         # TODO check restart option
         data_section = ["**",
                         "*Restart, write, frequency=0",
                         "**"]
-
         if self._field_outputs:
             for foutput in self._field_outputs:
                 data_section.append(foutput._generate_jobdata())
@@ -86,6 +100,11 @@ class AbaqusStaticStep(StaticStep):
             for houtput in self._history_outputs:
                 data_section.append(houtput._generate_jobdata())
         return '\n'.join(data_section)
+
+    def _generate_controls_section(self):
+        return '**'
+        # return '*CONTACT CONTROLS, AUTOMATIC TOLERANCES\n**'
+        # return '\n'.join(interface._generate_controls_jobdata() for interface in self.problem.model.interfaces) if self.problem.model.interfaces else '**'
 
 
 class AbaqusStaticRiksStep(StaticRiksStep):

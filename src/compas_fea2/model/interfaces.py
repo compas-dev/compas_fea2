@@ -30,7 +30,7 @@ class Interface(FEAData):
         Group of element faces determining the Master surface.
     slave : :class:`compas_fea2.model.FacesGroup`
         Group of element faces determining the Slave surface.
-    interaction : :class:`compas_fea2.model._Interaction`
+    interaction : :class:`compas_fea2.model._Interaction` | :class:`compas_fea2.model._Constraint`
         Interaction type between master and slave.
 
     """

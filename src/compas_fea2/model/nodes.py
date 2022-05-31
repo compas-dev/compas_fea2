@@ -5,7 +5,7 @@ from __future__ import print_function
 from compas.utilities.maps import geometric_key
 from compas_fea2.base import FEAData
 
-from .bcs import BoundaryCondition
+from .bcs import _BoundaryCondition
 
 
 class Node(FEAData):
@@ -73,6 +73,8 @@ class Node(FEAData):
         self._displacements = set()
         self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
         self.xyz = xyz
+        self._on_interface = None
+        self._on_boundary = None
 
     @property
     def key(self):
@@ -138,7 +140,7 @@ class Node(FEAData):
 
     @dof.setter
     def dof(self, bc):
-        if not isinstance(bc, BoundaryCondition):
+        if not isinstance(bc, _BoundaryCondition):
             raise TypeError('{!r} is not a Boundary Condition'.format(bc))
         self._dof = {attr: not bool(getattr(bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
 
@@ -149,3 +151,27 @@ class Node(FEAData):
     @property
     def displacements(self):
         return self._displacements
+
+    @property
+    def registration(self):
+        return self._part
+
+    @registration.setter
+    def registration(self, value):
+        self.part = value
+
+    @property
+    def on_interface(self):
+        return self._on_interface
+
+    @on_interface.setter
+    def on_interface(self, value):
+        self._on_interface = value
+
+    @property
+    def on_boundary(self):
+        return self._on_boundary
+
+    @on_boundary.setter
+    def on_boundary(self, value):
+        self._on_boundary = value

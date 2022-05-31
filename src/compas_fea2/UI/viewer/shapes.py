@@ -31,3 +31,7 @@ class FixBCShape(BCShape):
         self.height = 0.8*self.scale
         self.shape = Box(([self.x, self.y, self.z-self.height/4], [1, 0, 0],
                           [0, 1, 0]), self.height, self.height, self.height/2)
+
+
+class MomentShape(BCShape):
+    pass

@@ -12,11 +12,11 @@ from compas_fea2 import config
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import _Element, BeamElement, ShellElement, SolidElement
+from .elements import _Element, BeamElement, HexahedronElement, ShellElement, SolidElement, TetrahedronElement
 from .materials import _Material
 from .sections import _Section, ShellSection, SolidSection
 from .releases import _BeamEndRelease, BeamEndPinRelease
-from .groups import NodesGroup, ElementsGroup
+from .groups import NodesGroup, ElementsGroup, FacesGroup
 
 from compas_fea2.utilities._utils import timer
 
@@ -49,9 +49,14 @@ class Part(FEAData):
         The elements belonging to the part.
     releases : Set[:class:`compas_fea2.model._BeamEndRelease`]
         The releases belonging to the part.
-    groups : Set[:class:`compas_fea2.model._Group`]
-        The groups belonging to the part.
-
+    nodesgroups : Set[:class:`compas_fea2.model.NodesGroup`]
+        The groups of nodes belonging to the part.
+    elementsgroups : Set[:class:`compas_fea2.model.ElementsGroup`]
+        The groups of elements belonging to the part.
+    facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
+        The groups of element faces belonging to the part.
+    envelope : :class:`compas.datastructures.Mesh`
+        The outer boundary mesh enveloping the Part.
     """
 
     def __init__(self, model=None, name=None, **kwargs):
@@ -62,8 +67,11 @@ class Part(FEAData):
         self._sections = set()
         self._elements = set()
         self._releases = set()
-        self._groups = set()
+        self._nodesgroups = set()
+        self._elementsgroups = set()
+        self._facesgroups = set()
         self._gkey_node = {}
+        self._envelope = None
 
     @property
     def model(self):
@@ -90,12 +98,28 @@ class Part(FEAData):
         return self._releases
 
     @property
-    def groups(self):
-        return self._groups
+    def nodesgroups(self):
+        return self._nodesgroups
+
+    @property
+    def elementsgroups(self):
+        return self._elementsgroups
+
+    @property
+    def facesgroups(self):
+        return self._facesgroups
 
     @property
     def gkey_node(self):
         return self._gkey_node
+
+    @property
+    def envelope(self):
+        return self._envelope
+
+    @envelope.setter
+    def envelope(self, value):
+        self._envelope = value
 
     def __str__(self):
         return """
@@ -105,13 +129,11 @@ name : {}
 
 number of elements : {}
 number of nodes    : {}
-number of groups   : {}
 """.format(self.__class__.__name__,
            len(self.__class__.__name__) * '-',
            self.name,
            len(self.elements),
-           len(self.nodes),
-           len(self.groups))
+           len(self.nodes))
 
     # =========================================================================
     #                       Constructor methods
@@ -195,7 +217,7 @@ number of groups   : {}
         return part
 
     @classmethod
-    @timer(message='gmsh model successfully imported in ')
+    # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, section, split=False, verbose=False, check=False, name=None, **kwargs):
         """Create a Part object from a gmshModel object. According to the `section`
         type provided, SolidElement or ShellElement elements are cretated.
@@ -205,6 +227,10 @@ number of groups   : {}
         ----
         The gmshModel must have the right dimension corresponding to the section
         provided.
+
+        Warning
+        -------
+        the `split` option is currently not implemented
 
         Parameters
         ----------
@@ -254,20 +280,21 @@ number of groups   : {}
         if isinstance(section, SolidSection):
             ntags_per_element = np.split(gmsh_elements[2][2]-1, len(gmsh_elements[1][2]))  # gmsh keys start from 1
             for ntags in ntags_per_element:
-                # if split:
-                # iteritools combinations
-                # for comb in combs:
-                # midpoint a b
-                # k = add node
-                k = part.add_element(SolidElement(nodes=[fea2_nodes[ntag] for ntag in ntags], section=section), check)
+                if ntags.size == 4:
+                    k = part.add_element(TetrahedronElement(
+                        nodes=[fea2_nodes[ntag] for ntag in ntags], section=section))
+                else:
+                    raise NotImplementedError('Only Tetrahedra are supported for now.')
+
                 if verbose:
-                    print(f'element {k} added')
+                    print('element {} added'.format(k))
+
         if isinstance(section, ShellSection):
             ntags_per_element = np.split(gmsh_elements[2][1]-1, len(gmsh_elements[1][1]))  # gmsh keys start from 1
             for ntags in ntags_per_element:
                 k = part.add_element(ShellElement(nodes=[fea2_nodes[ntag] for ntag in ntags], section=section))
                 if verbose:
-                    print(f'element {k} added')
+                    print('element {} added'.format(k))
         return part
 
     # =========================================================================
@@ -309,6 +336,24 @@ number of groups   : {}
             if distance_point_point_sqrd(node.xyz, point) < d2:
                 matched.append(node)
         return matched
+
+    def find_nodes_by_attribute(self, attr, value, tolerance=0.001):
+        """Find all nodes with a given value for a the given attribute.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute name.
+        value : any
+            Appropriate value for the given attribute.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Node`]
+
+        """
+
+        return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
 
     def contains_node(self, node):
         """Verify that the part contains a given node.
@@ -679,7 +724,14 @@ number of groups   : {}
         bool
 
         """
-        return group in self.groups
+        if isinstance(group, NodesGroup):
+            return group in self._nodesgroups
+        elif isinstance(group, ElementsGroup):
+            return group in self._elementsgroups
+        elif isinstance(group, FacesGroup):
+            return group in self._facesgroups
+        else:
+            raise TypeError('{!r} is not a valid Group'.format(group))
 
     def add_group(self, group):
         """Add a node or element group to the part.
@@ -698,8 +750,6 @@ number of groups   : {}
             If the group is not a node or element group.
 
         """
-        if not isinstance(group, (NodesGroup, ElementsGroup)):
-            raise TypeError("{!r} is not a node or element group.".format(group))
 
         if isinstance(group, NodesGroup):
             self.add_nodes(group.nodes)
@@ -710,8 +760,15 @@ number of groups   : {}
             if config.VERBOSE:
                 print("SKIPPED: Group {!r} already in part.".format(group))
             return
-
-        self._groups.add(group)
+        if isinstance(group, NodesGroup):
+            self._nodesgroups.add(group)
+        elif isinstance(group, ElementsGroup):
+            self._elementsgroups.add(group)
+        elif isinstance(group, FacesGroup):
+            self._facesgroups.add(group)
+        else:
+            raise TypeError("{!r} is not a valid group.".format(group))
+        group._registration = self
         return group
 
     def add_groups(self, groups):

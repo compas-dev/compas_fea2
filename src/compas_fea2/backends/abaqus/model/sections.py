@@ -47,7 +47,8 @@ def _generate_beams_jobdata(obj, set_name, orientation, stype):
     orientation_line = ', '.join([str(v) for v in orientation])
     return """** Section: {}
 *Beam Section, elset={}, material={}, section={}
-{}\n{}\n""".format(obj.name, set_name, obj.material.name, stype, ', '.join([str(v) for v in obj._properties]), orientation_line)
+{}
+{}""".format(obj.name, set_name, obj.material.name, stype, ', '.join([str(v) for v in obj._properties]), orientation_line)
 
 
 # ==============================================================================
@@ -343,7 +344,7 @@ class AbaqusShellSection(ShellSection):
         """
         return """** Section: {}
 *Shell Section, elset={}, material={}
-{}, {}\n""".format(self.name, set_name, self.material.name, self.t, self.int_points)
+{}, {}""".format(self.name, set_name, self.material.name, self.t, self.int_points)
 
 
 class AbaqusMembraneSection(MembraneSection):
@@ -366,7 +367,7 @@ class AbaqusMembraneSection(MembraneSection):
         """
         return """** Section: {}
 *Membrane Section, elset={}, material={}
-{},\n""".format(self.name, set_name, self.material.name, self.t)
+{},""".format(self.name, set_name, self.material.name, self.t)
 
 
 # ==============================================================================
@@ -393,4 +394,4 @@ class AbaqusSolidSection(SolidSection):
         """
         return """** Section: {}
 *Solid Section, elset={}, material={}
-,\n""".format(self.name, set_name, self.material.name)
+,""".format(self.name, set_name, self.material.name)

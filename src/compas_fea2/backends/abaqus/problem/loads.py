@@ -39,7 +39,7 @@ class AbaqusPointLoad(PointLoad):
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False, name=None, **kwargs):
         super(AbaqusPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
-        self._modify = 'NEW' if modify else 'MOD'
+        self._modify = ', OP=NEW' if modify else ', OP=MOD'
         self._follow = ', follower' if follow else ''
 
     @property
@@ -50,7 +50,7 @@ class AbaqusPointLoad(PointLoad):
     def follow(self):
         return self._follow
 
-    def _generate_jobdata(self, instance_name, nodes):
+    def _generate_jobdata(self, instance, nodes):
         """Generates the string information for the input file.
 
         Parameters
@@ -62,16 +62,14 @@ class AbaqusPointLoad(PointLoad):
         input file data line (str).
 
         """
-        nodes = list(nodes)
-        chunks = [nodes[x:x+15] for x in range(0, len(nodes), 15)]  # split data for readibility
-        data_section = ['** Name: {} Type: Concentrated Force'.format(self.name),
-                        '*Nset, nset=_aux_{0}_{1}, internal, instance={1}'.format(self.name, instance_name),
-                        '\n'.join([', '.join([str(node.key+1) for node in chunk]) for chunk in chunks]),
-                        '*Cload, OP={}{}'.format(self._modify, self._follow)]
-        data_section += ['_aux_{}_{}, {}, {}'.format(self.name, instance_name, comp, self.components[dof]) for comp,
-                         dof in enumerate(dofs, 1) if self.components[dof]]  # FIXME: this should be similar to what happens for the BC or viceversa
 
-        return '\n'.join(data_section) + '\n'
+        data_section = ['** Name: {} Type: oncentrated Force'.format(self.name),
+                        '*Cload{}{}'.format(self._modify, self._follow)]
+        for node in nodes:
+            for comp, dof in enumerate(dofs, 1):
+                if getattr(self, dof):
+                    data_section += ['{}.{}, {}, {}'.format(instance, node.key+1, comp, self.components[dof])]
+        return '\n'.join(data_section)
 
 
 class AbaqusLineLoad(LineLoad):
@@ -112,8 +110,8 @@ class AbaqusGravityLoad(GravityLoad):
         """
         return ("** Name: {} Type: Gravity\n"
                 "*Dload\n"
-                ", GRAV, {}, {}, {}, {}\n").format(self.name, self.g, self.components['x'],
-                                                   self.components['y'], self.components['z'])
+                ", GRAV, {}, {}, {}, {}").format(self.name, self.g, self.components['x'],
+                                                 self.components['y'], self.components['z'])
 
 
 class AbaqusPrestressLoad(PrestressLoad):

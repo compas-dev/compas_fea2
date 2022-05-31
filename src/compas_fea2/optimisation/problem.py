@@ -35,7 +35,7 @@ class OptimisationProblem(FEAData):
     def __init__(self, problem, design_variables, design_responses, objective_function,
                  dv_constraints, constraints, strategy, parameters, name=None, **kwargs):
         super(OptimisationProblem, self).__init__(name=name, **kwargs)
-        self._problem = problem
+        self._problem = problem  # BUG this makes no sense...
         self._design_variables = design_variables
         self._design_responses = design_responses
         self._objective_function = objective_function
@@ -145,6 +145,9 @@ class OptimisationProblem(FEAData):
             raise NotImplementedError
         self._problem.write_input_file(output)
         self.write_parameters_file(self._path, output, smooth)
+
+    def smooth_optimisation(self, output):
+        raise NotImplementedError
 
 
 class TopOptSensitivity(OptimisationProblem):

@@ -35,8 +35,8 @@ class AbaqusGeneralDisplacement(GeneralDisplacement):
         -------
         input file data line (str).
         """
-        data_section = [f'** Name: {self.name} Type:  Displacement/Rotation\n',
-                        f'*Boundary, OP={self._op}']
+        data_section = ['** Name: {} Type:  Displacement/Rotation\n'.format(self.name),
+                        '*Boundary, OP={}'.format(self._op)]
         for comp, dof in enumerate(dofs, 1):
-            data_section += [f'{instance}.{node+1}, {comp}, {self.components[dof]}' for node in nodes if self.components[dof]]
-        return '\n'.join(data_section) + '\n'
+            data_section += ['{}.{}, {}, {}'.format(instance, node.key+1, comp, self.components[dof]) for node in nodes if self.components[dof]]
+        return '\n'.join(data_section)

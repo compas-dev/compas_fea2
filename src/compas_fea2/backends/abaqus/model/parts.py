@@ -70,49 +70,101 @@ class AbaqusPart(Part):
         str
             input file data lines.
         """
-        from compas_fea2.model import ElementsGroup
-        # Write nodes
-        part_data = ['*Node\n']
-        for node in self.nodes:
-            part_data.append(node._generate_jobdata())
+        return """**
+*Part, name={}
+**
+** - Nodes
+**   -----
+{}
+**
+** - Elements
+**   --------
+{}
+**
+** - Sets
+**   ----
+{}
+{}
+**
+** - Releases
+**   --------
+{}
+**
+*End Part""".format(self.name,
+                    self._generate_nodes_section(),
+                    self._generate_elements_section(),
+                    self._generate_nodesets_section(),
+                    self._generate_elementsets_section(),
+                    self._generate_releases_section())
 
+    def _generate_nodes_section(self):
+        return '\n'.join(['*Node']+[node._generate_jobdata() for node in self.nodes])
+
+    def _generate_elements_section(self):
+        from compas_fea2.model import ElementsGroup
+        part_data = []
         # Write elements, elsets and sections
         grouped_elements = self._group_elements()
         for implementation, sections in grouped_elements.items():
             for section, orientations in sections.items():
                 for orientation, elements in orientations.items():
-                    part_data.append("*Element, type={}\n".format(implementation))
+                    part_data.append("*Element, type={}".format(implementation))
                     # Write elements
                     for element in elements:
                         part_data.append(element._generate_jobdata())
 
                     # create and write aux set to assign the section
-                    # selection = [element.key for element in elements]
-                    # selection.sort()
                     if orientation:
                         aux_elset = self.add_group(ElementsGroup(
-                            name=f'aux_{implementation}_{section.name}_{orientation.replace(".", "")}',
+                            name='aux_{}_{}_{}'.format(implementation, section.name, orientation.replace(".", "")),
                             elements=elements))
-                        part_data.append(aux_elset._generate_jobdata())
-                        # Write section
                         part_data.append(section._generate_jobdata(aux_elset.name, orientation.split('_')))
                     else:
                         aux_elset = self.add_group(ElementsGroup(
-                            name=f'aux_{implementation}_{section.name}',
+                            name='aux_{}_{}'.format(implementation, section.name),
                             elements=elements))
-                        part_data.append(aux_elset._generate_jobdata())
                         part_data.append(section._generate_jobdata(aux_elset.name))
+        return '\n'.join(part_data)
 
-        # Write user-defined groups
-        for group in self.groups:
-            part_data.append(group._generate_jobdata())
+    def _generate_nodesets_section(self):
+        if self.nodesgroups:
+            return '\n'.join([group._generate_jobdata() for group in self.nodesgroups])
+        else:
+            return '**'
 
-        # Write releases
+    def _generate_elementsets_section(self):
+        if self.elementsgroups:
+            return '\n'.join([group._generate_jobdata() for group in self.elementsgroups])
+        else:
+            return '**'
+
+    def _generate_releases_section(self):
         if self.releases:
-            part_data.append('\n*Release\n')
-            for release in self.releases:
-                part_data.append(release._generate_jobdata())
+            return '\n'.join(['*Release']+[release._generate_jobdata() for release in self.releases])
+        else:
+            return '**'
 
-        temp = ''.join(part_data)
-        return ''.join(["*Part, name={}\n".format(self.name), temp,
-                        "*End Part\n**\n"])
+    def _generate_instance_jobdata(self):
+        """Generates the string information for the input file.
+
+        Note
+        ----
+        The creation of instances from the same part (which is a specific abaqus
+        feature) is less useful in a scripting context (where it is easy to generate
+        the parts already in their correct locations).
+
+        Note
+        ----
+        The name of the instance is automatically generated using abaqus convention
+        of adding a "-1" to the name of the part from which it is generated.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+        """
+        return '\n'.join(['*Instance, name={}-1, part={}'.format(self.name, self.name),
+                          '*End Instance\n**'])

@@ -39,8 +39,8 @@ class OpenseesElasticIsotropic(ElasticIsotropic):
         super(OpenseesElasticIsotropic, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
 
     def _generate_jobdata(self, m_index):
-        line = [f'uniaxialMaterial Elastic {m_index} {self.E}\n',
-                f'nDMaterial ElasticIsotropic {m_index + 1000} {self.E} {self.v} {self.density}']
+        line = ['uniaxialMaterial Elastic {} {}\n'.format(m_index, self.E),
+                'nDMaterial ElasticIsotropic {} {} {} {}'.format(m_index + 1000, self.E, self.v, self.density)]
         return ''.join(line)
 
 

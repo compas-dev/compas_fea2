@@ -134,7 +134,7 @@ class OpenseesRectangularSection(RectangularSection):
         super(OpenseesRectangularSection, self).__init__(w, h, material, name=None, **kwargs)
 
     def _generate_jobdata(self):
-        return f'section Elastic {self.name} {self.material.E} {self.A} {self.Iyy} {self.Ixx} {self.material.G} {self.J}'
+        return 'section Elastic {} {} {} {} {} {} {}'.format(self.name, self.material.E, self.A, self.Iyy, self.Ixx, self.material.G, self.J)
 
 
 class OpenseesTrapezoidalSection(TrapezoidalSection):

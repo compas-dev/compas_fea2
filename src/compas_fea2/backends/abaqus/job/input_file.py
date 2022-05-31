@@ -33,11 +33,11 @@ class AbaqusInputFile(InputFile):
             content of the input file
         """
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        return f"""*Heading
-** Job name: {self._job_name}
-** Generated using compas_fea2 version {compas_fea2.__version__}
-** Author: {problem.author}
-** Date: {now}
+        return """*Heading
+** Job name: {}
+** Generated using compas_fea2 version {}
+** Author: {}
+** Date: {}
 **
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMANN=5.67e-8
 **
@@ -47,13 +47,16 @@ class AbaqusInputFile(InputFile):
 **------------------------------------------------------------------
 **------------------------------------------------------------------
 **
-{problem.model._generate_jobdata()}**
+{}**
 **------------------------------------------------------------------
 **------------------------------------------------------------------
 ** PROBLEM
 **------------------------------------------------------------------
 **------------------------------------------------------------------
-{problem._generate_jobdata()}"""
+{}""".format(self._job_name, compas_fea2.__version__,
+                                        problem.author, now,
+                                        problem.model._generate_jobdata(),
+                                        problem._generate_jobdata())
 
 
 class AbaqusParametersFile(ParametersFile):
@@ -83,7 +86,7 @@ class AbaqusParametersFile(ParametersFile):
         """
         input_file = cls()
         input_file._job_name = problem._name
-        input_file._file_name = f'{problem._name}.{input_file._extension}'
+        input_file._file_name = '{}.{}'.format(problem._name, input_file._extension)
         input_file._job_data = input_file._generate_jobdata(problem, smooth)
         return input_file
 

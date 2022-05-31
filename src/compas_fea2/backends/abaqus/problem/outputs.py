@@ -39,15 +39,16 @@ class AbaqusFieldOutput(FieldOutput):
         -------
         input file data line (str).
         """
-        data = [f'** FIELD OUTPUT: {self.name}\n**']
+        data = ['** FIELD OUTPUT: {}\n**'.format(self.name)]
         if not self.node_outputs and not self.element_outputs:
-            data.append('*Output, field, variable=PRESELECT\n**')
+            data.append('*Output, field, variable=ALL\n**')
         else:
-            data.append(f'*Output, field, frequency={self.frequency}')
-            if self.node_outputs:
-                data.append('\n'.join(['*Node Output', f'{", ".join(self.node_outputs)}']))
+            data.append('*Output, field')
             if self.element_outputs:
-                data.append('\n'.join(['*Element output, direction=YES', f'{", ".join(self.element_outputs)}']))
+                data.append('\n'.join(['*Element Output, direction=YES', '{}'.format(", ".join(self.element_outputs))]))
+            if self.node_outputs:
+                data.append('\n'.join(['*Node Output', '{}'.format(", ".join(self.node_outputs))]))
+
         return '\n'.join(data)
 
 
@@ -71,5 +72,5 @@ class AbaqusHistoryOutput(HistoryOutput):
         """
         return """** HISTORY OUTPUT: {}
 **
-*Output, history, variable=PRESELECT
+*Output, history, variable=ALL
 **""".format(self._name)

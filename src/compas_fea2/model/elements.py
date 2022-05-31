@@ -2,7 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from operator import itemgetter
+
 from compas.geometry import Frame
+from compas.geometry import Plane
 from compas_fea2.base import FEAData
 
 import compas_fea2
@@ -14,7 +17,7 @@ class _Element(FEAData):
     Note
     ----
     Elements can belong to only one Part. When an element is added to a part,
-    it is registered to that part.
+    it is registered to it.
 
     Warning
     -------
@@ -119,13 +122,21 @@ class _Element(FEAData):
         self._part = value
 
     @property
+    def registration(self):
+        return self._part
+
+    @registration.setter
+    def registration(self, value):
+        self.part = value
+
+    @property
     def implementation(self):
         return self._implementation
-
-
 # ==============================================================================
 # 0D elements
 # ==============================================================================
+
+
 class MassElement(_Element):
     """A 0D element for concentrated point mass.
     """
@@ -194,9 +205,50 @@ class MembraneElement(ShellElement):
 # ==============================================================================
 # 3D elements
 # ==============================================================================
+
+class Face(FEAData):
+    def __init__(self, nodes, tag, element=None, name=None):
+        super(Face, self).__init__(name)
+        self._nodes = nodes
+        self._tag = tag
+        self._plane = Plane.from_three_points(*[node.xyz for node in nodes])  # TODO check when more than 3 nodes
+        self._element = element
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @property
+    def plane(self):
+        return self._plane
+
+    @property
+    def element(self):
+        return self._element
+
+    @element.setter
+    def element(self, value):
+        for node in self.nodes:
+            if node.registration != value.registration:
+                raise ValueError('The element is not compatible with the nodes')
+        self._element = value
+
+    @property
+    def registration(self):
+        return self._element
+
+    @registration.setter
+    def registration(self, value):
+        self.element = value
+
+
+# TODO add picture with node lables convention
 class SolidElement(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
-
     Solid (continuum) elements can be used for linear analysis
     and for complex nonlinear analyses involving contact, plasticity, and large
     deformations.
@@ -205,3 +257,89 @@ class SolidElement(_Element):
     problems.
 
     """
+
+    def __init__(self, *, nodes, section, part=None, implementation=None, name=None, **kwargs):
+        super(SolidElement, self).__init__(nodes=nodes, section=section, frame=None,
+                                           part=part, implementation=implementation, name=name, **kwargs)
+        self._face_indices = None
+        self._faces = None
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, value):
+        self._nodes = value
+        self._faces = self._construct_faces(self._face_indices)
+
+    @property
+    def face_indices(self):
+        return self._face_indices
+
+    @property
+    def faces(self):
+        return self._faces
+
+    def _construct_faces(self, face_indices):
+        """Construct the face-nodes dictionary.
+
+        Parameters
+        ----------
+        face_indices : dict
+            Dictionary providing for each face the node indices. For example:
+            {'s1': (0,1,2), ...}
+
+        Returns
+        -------
+        dict
+            Dictionary with face names and the corresponding nodes.
+        """
+        return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
+
+
+class TetrahedronElement(SolidElement):
+    """A Solid element with 4 faces.
+
+    Note
+    ----
+    The face labels are as follows:
+        - S1: (0, 1, 2)
+        - S2: (0, 1, 3)
+        - S3: (1, 2, 3)
+        - S4: (0, 2, 3)
+    where the number is the index of the the node in the nodes list
+    """
+
+    def __init__(self, *, nodes, section, part=None, implementation=None, name=None, **kwargs):
+        super(TetrahedronElement, self).__init__(nodes=nodes, section=section,
+                                                 part=part, implementation=implementation, name=name, **kwargs)
+        self._face_indices = {
+            's1': (0, 1, 2),
+            's2': (0, 1, 3),
+            's3': (1, 2, 3),
+            's4': (0, 2, 3)
+        }
+        self._faces = self._construct_faces(self._face_indices)
+
+
+class PentahedronElement(SolidElement):
+    """A Solid element with 5 faces (extruded triangle).
+    """
+
+
+class HexahedronElement(SolidElement):
+    """A Solid cuboid element with 6 faces (extruded rectangle).
+    """
+
+    def __init__(self, *, nodes, section, part=None, implementation=None, name=None, **kwargs):
+        super(HexahedronElement, self).__init__(nodes=nodes, section=section,
+                                                part=part, implementation=implementation, name=name, **kwargs)
+        self._faces_indices = {'s1': (0, 1, 2, 3),
+                               's2': (4, 5, 6, 7),
+                               's3': (0, 1, 4, 5),
+                               's4': (1, 2, 5, 6),
+                               's5': (2, 3, 6, 7),
+                               's6': (0, 3, 4, 7)
+                               }
+        self._faces = self._construct_faces(self._face_indices)

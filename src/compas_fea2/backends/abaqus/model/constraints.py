@@ -9,8 +9,8 @@ class AbaqusTieConstraint(TieConstraint):
     """Abaqus implementation of :class:`TieConstraint`\n"""
     __doc__ += TieConstraint.__doc__
 
-    def __init__(self, master, slave, name=None, **kwargs):
-        super(AbaqusTieConstraint, self).__init__(master, slave, tol=None, name=name, **kwargs)
+    def __init__(self, *, master, slave, name=None, **kwargs):
+        super(AbaqusTieConstraint, self).__init__(master=master, slave=slave, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -24,8 +24,11 @@ class AbaqusTieConstraint(TieConstraint):
         input file data line (str).
 
         """
-        return ''.join([
-            f'** Constraint: {self.name}\n',
-            '*MPC\n',
-            f'TIE, {self.slave}, {self.master}\n'
-        ])
+        return (
+            "** Constraint: {}\n"
+            "*MPC\n"
+            "TIE, {}_i, {}_i\n").format(self.name, self._slave.name, self._master.name)
+
+        # return '\n'.join(['** Constraint: {}'.format(self.name),
+        #                   '*Tie, name={}, adjust=yes'.format(self.name),
+        #                   '{}, {}'.format(self._slave.name, self._master.name)])

@@ -34,10 +34,16 @@ class _Load(FEAData):
     def __init__(self, components, axes='global', name=None, **kwargs):
         super(_Load, self).__init__(name=name, **kwargs)
         self._axes = axes
+        self.x = False
+        self.y = False
+        self.z = False
+        self.xx = False
+        self.yy = False
+        self.zz = False
         self._components = components
         for component, attr in self._components.items():
             if attr:
-                setattr(self, '_'+component, attr)
+                setattr(self, component, attr)
 
     @property
     def axes(self):

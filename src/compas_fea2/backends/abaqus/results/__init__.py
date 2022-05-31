@@ -10,7 +10,8 @@ Results
 .. autosummary::
     :toctree: generated/
 
-    Results
+    AbaqusResults
+    AbaqusStepResults
 
 """
 
@@ -19,4 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 # additional software-based classes
-from .results import AbaqusResults
+from .results import (
+    AbaqusResults,
+    AbaqusStepResults,
+)

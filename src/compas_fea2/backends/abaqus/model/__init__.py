@@ -38,6 +38,8 @@ Elements
     AbaqusBeamElement
     AbaqusShellElement
     AbaqusSolidElement
+    AbaqusTetrahedronElement
+    AbaqusHexahedronElement
 
 Constraints
 ===========
@@ -165,6 +167,8 @@ from .elements import (
     AbaqusMembraneElement,
     AbaqusShellElement,
     AbaqusSolidElement,
+    AbaqusTetrahedronElement,
+    AbaqusHexahedronElement,
 )
 
 # Abaqus Groups
@@ -178,8 +182,10 @@ from .groups import (
 # Abaqus Interactions
 from .interactions import (
     AbaqusHardContactFrictionPenalty,
+    AbaqusHardContactRough,
 )
 
+# Abaqus Interfaces
 from .interfaces import (
     AbaqusInterface
 )
@@ -269,12 +275,15 @@ __all__ = [
     'AbaqusMembraneElement',
     'AbaqusShellElement',
     'AbaqusSolidElement',
+    'AbaqusTetrahedronElement',
+    'AbaqusHexahedronElement',
 
     'AbaqusNodesGroup',
     'AbaqusElementsGroup',
     'AbaqusFacesGroup',
 
     'AbaqusHardContactFrictionPenalty',
+    'AbaqusHardContactRough',
 
     'AbaqusInterface',
 

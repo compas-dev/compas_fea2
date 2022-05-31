@@ -2,11 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.model import GeneralBC
 from compas_fea2.model import FixedBC
 from compas_fea2.model import PinnedBC
-from compas_fea2.model import FixedBCXX
-from compas_fea2.model import FixedBCYY
-from compas_fea2.model import FixedBCZZ
+from compas_fea2.model import ClampBCXX
+from compas_fea2.model import ClampBCYY
+from compas_fea2.model import ClampBCZZ
 from compas_fea2.model import RollerBCX
 from compas_fea2.model import RollerBCY
 from compas_fea2.model import RollerBCZ
@@ -47,7 +48,7 @@ def _generate_jobdata(bc, instance, nodes):
 
     Parameters
     ----------
-    bc : :class:`compas_fea2.model.BoundaryCondition`
+    bc : :class:`compas_fea2.model._BoundaryCondition`
         The boundary condition.
     instance : :class:`compas_fea2.backends.abaqus.model._instances._Instance`
         Instance of a part where the nodes are located.  TODO: remove -> the part is already in the nodes!
@@ -59,12 +60,24 @@ def _generate_jobdata(bc, instance, nodes):
     input file data line (str).
 
     """
-    data_section = ['** Name: {} Type: BC/Rotation', '*Boundary, op=NEW'.format(bc.name)]
+    data_section = ['** Name: {} Type: BC/Rotation'.format(bc.name),
+                    '*Boundary, op=NEW']
     for node in nodes:
         for comp, dof in enumerate(dofs, 1):
             if getattr(bc, dof):
-                data_section += [f'{instance}.{node.key+1}, {comp}, 0']
+                data_section += ['{}.{}, {}, 0'.format(instance, node.key+1, comp)]
     return '\n'.join(data_section)
+
+
+class AbaqusGeneralBC(GeneralBC):
+    """Abaqus implementation of :class:`GeneralBC`\n"""
+    __doc__ += GeneralBC.__doc__
+
+    def __init__(self,  name=None, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
+        super(AbaqusGeneralBC, self).__init__(name=name, x=x, y=z, z=z, xx=xx, yy=yy, zz=zz, **kwargs)
+
+    def _generate_jobdata(self, instance, nodes):
+        return _generate_jobdata(self, instance, nodes)
 
 
 class AbaqusFixedBC(FixedBC):
@@ -89,9 +102,9 @@ class AbaqusPinnedBC(PinnedBC):
         return _generate_jobdata(self, instance, nodes)
 
 
-class AbaqusFixedBCXX(FixedBCXX):
+class AbaqusFixedBCXX(ClampBCXX):
     """Abaqus implementation of :class:`FixedBCXX`\n"""
-    __doc__ += FixedBCXX.__doc__
+    __doc__ += ClampBCXX.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCXX, self).__init__(name=name, **kwargs)
@@ -100,9 +113,9 @@ class AbaqusFixedBCXX(FixedBCXX):
         return _generate_jobdata(self, instance, nodes)
 
 
-class AbaqusFixedBCYY(FixedBCYY):
+class AbaqusFixedBCYY(ClampBCYY):
     """Abaqus implementation of :class:`FixedBCYY`\n"""
-    __doc__ += FixedBCYY.__doc__
+    __doc__ += ClampBCYY.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCYY, self).__init__(name=name, **kwargs)
@@ -111,9 +124,9 @@ class AbaqusFixedBCYY(FixedBCYY):
         return _generate_jobdata(self, instance, nodes)
 
 
-class AbaqusFixedBCZZ(FixedBCZZ):
+class AbaqusFixedBCZZ(ClampBCZZ):
     """Abaqus implementation of :class:`FixedBCZZ`\n"""
-    __doc__ += FixedBCZZ.__doc__
+    __doc__ += ClampBCZZ.__doc__
 
     def __init__(self,  name=None, **kwargs):
         super(AbaqusFixedBCZZ, self).__init__(name=name, **kwargs)

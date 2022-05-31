@@ -5,22 +5,24 @@ from __future__ import print_function
 # import pickle
 # import os
 import importlib
+import itertools
+from typing import Iterable
 
 # import compas_fea2
 from compas_fea2 import config
-
+from compas_fea2.utilities._utils import timer
 from compas_fea2.base import FEAData
+from compas_fea2.model.interactions import _Interaction
 from compas_fea2.model.parts import Part
 from compas_fea2.model.nodes import Node
-from compas_fea2.model.materials import _Material, material
+from compas_fea2.model.materials import _Material
 from compas_fea2.model.sections import _Section
-from compas_fea2.model.bcs import BoundaryCondition
-from compas_fea2.model.groups import NodesGroup
-from compas_fea2.model.groups import ElementsGroup
-from compas_fea2.model.groups import FacesGroup
+from compas_fea2.model.bcs import _BoundaryCondition
+from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
 from compas_fea2.model.interfaces import Interface
-from compas_fea2.model.constraints import _Constraint
-from compas_fea2.model.bcs import BoundaryCondition
+from compas_fea2.model.constraints import _Constraint, TieConstraint
+from compas_fea2.utilities.interfaces import faces_in_interface
+from compas_fea2.utilities.interfaces import nodes_in_interface
 
 
 class Model(FEAData):
@@ -76,7 +78,6 @@ class Model(FEAData):
         self._interactions = set()
         self._interfaces = set()
         self._partsgroups = set()
-        self._facesgroups = set()
 
     @property
     def parts(self):
@@ -107,71 +108,12 @@ class Model(FEAData):
         return self._facesgroups
 
     # =========================================================================
-    #                       Constructor methods
-    # =========================================================================
-
-    # @classmethod
-    # def from_compas_assembly(cls, name, assembly, mesh_size, section, contact):
-    #     from compas_fea2.preprocessor.meshing import compas_to_gmsh_3d
-    #     from compas_fea2.utilities.interfaces import nodes_on_plane, elements_on_plane
-    #     from compas.geometry import Plane
-    #     from compas.datastructures import mesh_weld
-    #     # import compas_gmsh
-    #     from compas_gmsh.models import MeshModel
-
-    #     gmshModel = MeshModel()
-
-    #     # m = importlib.import_module('.'.join(cls.__module__.split('.')[:-1]))
-
-    #     model = cls(name=name)
-
-    #     blocks = [assembly.node_attribute(node, 'block') for node in assembly.nodes()]
-
-    #     for i, block in enumerate(blocks):
-    #         # block = mesh_weld(block)
-    #         # gmshModel.from_mesh(block)
-    #         # mesh = gmshModel.mesh_to_compas()
-    #         # gmshModel.synchronize()
-    #         # gmshModel.generate_mesh(3)
-    #         # part = m.Part.from_gmsh(name=f'block-{i}', gmshModel=gmshModel, section=section)
-    #         if mesh_size:
-    #             meshModel = compas_to_gmsh_3d(block, mesh_size)
-    #             part = Part.from_gmsh(name=f'block-{i}', gmshModel=meshModel, section=section)
-    #         else:
-    #             part = Part.from_compas_mesh(name=f'block-{i}', mesh=block, section=section)
-    #         model.add_part(part)
-
-    #     first_block = list(model.parts.values())[0]
-    #     last_block = list(model.parts.values())[-1]
-
-    #     supp_a = nodes_on_plane(first_block, Plane([0, 0, 0], [0, 0, 1]))
-    #     supp_b = nodes_on_plane(last_block, Plane([0, 0, 0], [0, 0, 1]))
-    #     model.add_fix_bc(name='left_support', part=first_block, where=supp_a)
-    #     model.add_fix_bc(name='right_support', part=last_block, where=supp_b)
-
-    #     blocks_interface = [assembly.edge_attribute(edge, 'interface') for edge in assembly.edges()]
-    #     for i, interface in enumerate(blocks_interface):
-    #         if i == len(blocks):
-    #             break
-    #         master = elements_on_plane(model.parts[f'block-{i}'], Plane.from_frame(interface.frame))
-    #         slave = elements_on_plane(model.parts[f'block-{i+1}'], Plane.from_frame(interface.frame))
-    #         model.add_contact(ContactPair(master=FacesGroup(name=f'master_{i}_{i+1}',
-    #                                                         part=f'block-{i}',
-    #                                                         element_face=master),
-    #                                       slave=FacesGroup(name=f'slave_{i}_{i+1}',
-    #                                                        part=f'block-{i+1}',
-    #                                                        element_face=slave),
-    #                                       interaction=contact))
-
-    #     return model
-
-    # =========================================================================
     #                             Parts methods
     # =========================================================================
 
-    def find_parts_by_name(self, name):
+    def find_part_by_name(self, name):
         # type: (str) -> Part
-        """Find all the parts with a given name.
+        """Find if there is a part with a given name in the model.
 
         Parameters
         ----------
@@ -179,10 +121,12 @@ class Model(FEAData):
 
         Returns
         -------
-        list[:class:`compas_fea2.model.Part`]
+        :class:`compas_fea2.model.Part`
 
         """
-        return [part for part in self.parts if part.name == name]
+        for part in self.parts:
+            if part.name == name:
+                return part
 
     def contains_part(self, part):
         # type: (Part) -> Part
@@ -224,6 +168,9 @@ class Model(FEAData):
             if config.VERBOSE:
                 print("SKIPPED: Part {!r} is already in the model.".format(part))
             return
+
+        if self.find_part_by_name(part.name):
+            raise ValueError("Duplicate name! The name '{}' is already in use.".format(part.name))
 
         part._model = self
         if config.VERBOSE:
@@ -269,47 +216,48 @@ class Model(FEAData):
         return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
 
     # =========================================================================
+    #                           Nodes methods
+    # =========================================================================
+
+    # =========================================================================
     #                           Groups methods
     # =========================================================================
 
-    # # NOTE: Nodes and Elements groups should not be added but defined (similarly to what happens for Parts)
-    # def add_group(self, group, part):
-    #     """Add a Group object to a part in the Model. it can be either a
-    #     :class:`NodesGroup` or an :class:`ElementsGroup`.
+    def group_nodes_by_attribute(self, attr, value, tolerance, name=None):
+        """Find all nodes with a given value for a the given attribute.
 
-    #     Parameters
-    #     ----------
-    #     group : obj
-    #         :class:`NodesGroup` or :class:`ElementsGroup` object to add.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
+        Parameters
+        ----------
+        attr : str
+            Attribute name.
+        value : any
+            Appropriate value for the given attribute.
+        name : str, optional
+            Name of the group. If not provided, one is automatically generated.
 
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     part = self._check_part_in_model(part)
-    #     part.add_group(group)
+        Returns
+        -------
+        [:class:`compas_fea2.model.NodesGroup`]
 
-    # def add_partgroups(self, groups, part):
-    #     """Add multiple Group objects to a part in the Model. Can be
-    #     a list of NodesGroup or ElementsGroup objects, also mixed.
+        """
+        return [NodesGroup(nodes=list(part.find_nodes_by_attribute(attr, value, tolerance)),
+                           name=name) for part in self.parts if part.find_nodes_by_attribute(attr, value, tolerance)]
 
-    #     Parameters
-    #     ----------
-    #     group : obj
-    #         group object.
-    #     part : str, obj
-    #         Name of the part or :class:`Part` object where the node will be
-    #         added.
+    def group_parts(self, group):
+        """Add a Group object to a part in the Model. it can be either a
+        :class:`FacesGroup` or an :class:`ElementsGroup`.
 
-    #     Returns
-    #     -------
-    #     None
-    #     """
-    #     for group in groups:
-    #         self.add_group(group, part)
+        Parameters
+        ----------
+        group : obj
+            :class:`NodesGroup` or :class:`ElementsGroup` object to add.
+
+        Returns
+        -------
+        None
+        """
+        self._partsgroups.add(group)
+        return group
 
     # =========================================================================
     #                       Constraints methods
@@ -368,8 +316,13 @@ class Model(FEAData):
         """
         if isinstance(interface, Interface):
             self._interfaces.add(interface)
+            if not interface.master.part:
+                raise ValueError('The master surface is not registered to any part')
+            if not interface.slave.part:
+                raise ValueError('The slave surface is not registered to any part')
         else:
             raise TypeError('{!r} is not an interface.'.format(interface))
+        self._interactions.add(interface.interaction)
         return interface
 
     def add_interfaces(self, interfaces):
@@ -391,10 +344,9 @@ class Model(FEAData):
     #                           BCs methods
     # =========================================================================
 
-    # TODO implement NodesGroup assignment
-    def add_bc(self, bc, node):
-        # type: (BoundaryCondition, Node) -> BoundaryCondition
-        """Add a :class:`compas_fea2.model.BoundaryCondition` to the model.
+    def add_bcs(self, bc, nodes, axes='global'):
+        # type: (_BoundaryCondition, Node, str) -> _BoundaryCondition
+        """Add a :class:`compas_fea2.model._BoundaryCondition` to the model.
 
         Note
         ----
@@ -402,48 +354,41 @@ class Model(FEAData):
 
         Parameters
         ----------
-        bc : :class:`compas_fea2.model.BoundaryCondition`
+        bc : :class:`compas_fea2.model._BoundaryCondition`
             Boundary condition object to add to the model.
-        node : :class:`compas_fea2.model.Node
-            Node where the boundary condition is applied.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
 
         Returns
         -------
-        None
+        list[:class:`compas_fea2.model._BoundaryCondition`]
 
         """
-        if not isinstance(node, Node):
-            raise TypeError('{!r} is not a Node.'.format(node))
+        if isinstance(nodes, _Group):
+            nodes = nodes._members
 
-        if not isinstance(bc, BoundaryCondition):
-            raise TypeError('{!r} is not a BoundaryCondition.'.format(bc))
+        if not isinstance(nodes, (list, tuple)):
+            nodes = [nodes]
 
-        # self.contains_node(node) #TODO implement method
-        node.dof = bc
-        self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
-        return bc
+        if not isinstance(bc, _BoundaryCondition):
+            raise TypeError('{!r} is not a _BoundaryCondition.'.format(bc))
 
-    def add_bcs(self, bc, nodes):
-        # type: (BoundaryCondition, list) -> list
-        """Add a :class:`compas_fea2.model.BoundaryCondition` objects to
-        multiple nodes.
+        bcs = []
+        for node in nodes:
+            if not isinstance(node, Node):
+                raise TypeError('{!r} is not a Node.'.format(node))
+            if not node.part:
+                raise ValueError('{!r} is not registered to any part.'.format(node))
+            elif not node.part in self.parts:
+                raise ValueError('{!r} belongs to a part not registered to this model.'.format(node))
+            node.dof = bc
+            self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
+            bcs.append(bc)
+        return bcs
 
-        Parameters
-        ----------
-        bc : :class:`compas_fea2.model.BoundaryCondition`
-            Boundary condition object to add to the model.
-        nodes : list[:class:`compas_fea2.model.Node`]
-            List with the nodes where the boundary condition is assigned.
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model.BoundaryCondition`]
-        """
-        return [self.add_bc(bc, node) for node in nodes]
-
-    def _add_bc_type(self, bc_type, node, axes='global'):
-        # type: (str, Node, str) -> BoundaryCondition
-        """Add a :class:`compas_fea2.model.BoundaryCondition` by type.
+    def _add_bc_type(self, bc_type, nodes, axes='global'):
+        # type: (str, Node, str) -> _BoundaryCondition
+        """Add a :class:`compas_fea2.model._BoundaryCondition` by type.
 
         Note
         ----
@@ -453,9 +398,9 @@ class Model(FEAData):
             :header: bc_type , BC
 
             fix, :class:`compas_fea2.model.bcs.FixedBC`
-            fixXX, :class:`compas_fea2.model.bcs.FixedBCXX`
-            fixYY, :class:`compas_fea2.model.bcs.FixedBCYY`
-            fixZZ, :class:`compas_fea2.model.bcs.FixedBCZZ`
+            clampXX, :class:`compas_fea2.model.bcs.ClampBCXX`
+            clampYY, :class:`compas_fea2.model.bcs.ClampBCYY`
+            clampZZ, :class:`compas_fea2.model.bcs.ClampBCZZ`
             pin, :class:`compas_fea2.model.bcs.PinnedBC`
             rollerX, :class:`compas_fea2.model.bcs.RollerBCX`
             rollerY, :class:`compas_fea2.model.bcs.RollerBCY`
@@ -471,8 +416,8 @@ class Model(FEAData):
             name of the boundary condition
         bc_type : str
             one of the boundary condition types specified above
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
@@ -483,186 +428,172 @@ class Model(FEAData):
                  }
         m = importlib.import_module('compas_fea2.model.bcs')
         bc = getattr(m, types[bc_type])()
-        return self.add_bc(bc, node)
+        return self.add_bcs(bc, nodes, axes)
 
-    def add_fix_bc(self, node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_fix_bc(self, nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a :class:`compas_fea2.model.FixedBC` to the nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('fix', node, axes)
+        return self._add_bc_type('fix', nodes, axes)
 
-    def add_fixXX_bc(self, node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
-        """Add a fixed boundary condition type free about XX to some nodes in a part.
-
-        Parameters
-        ----------
-        name : str
-            name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
-        axes : str, optional
-            [axes of the boundary condition, by default 'global'
-        """
-        return self._add_bc_type('fixXX', node, axes)
-
-    def add_fixYY_bc(self, node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
-        """Add a fixed boundary condition free about YY type to some nodes in a part.
-
-        Parameters
-        ----------
-        name : str
-            name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
-        axes : str, optional
-            [axes of the boundary condition, by default 'global'
-        """
-        return self._add_bc_type('fixYY', node, axes)
-
-    def add_fixZZ_bc(self, node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
-        """Add a fixed boundary condition free about ZZ type to some nodes in a part.
-
-        Parameters
-        ----------
-        name : str
-            name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
-        axes : str, optional
-            [axes of the boundary condition, by default 'global'
-        """
-        return self._add_bc_type('fixZZ', node, axes)
-
-    def add_pin_bc(self, node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_pin_bc(self, nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a pinned boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('pin', node, axes)
+        return self._add_bc_type('pin', nodes, axes)
 
-    def add_rollerX_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_clampXX_bc(self, nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
+        """Add a fixed boundary condition type free about XX to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
+        return self._add_bc_type('clampXX', nodes, axes)
+
+    def add_clampYY_bc(self, nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
+        """Add a fixed boundary condition free about YY type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
+        return self._add_bc_type('clampYY', nodes, axes)
+
+    def add_clampZZ_bc(self, nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
+        """Add a fixed boundary condition free about ZZ type to some nodes in a part.
+
+        Parameters
+        ----------
+        name : str
+            name of the boundary condition
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
+        axes : str, optional
+            [axes of the boundary condition, by default 'global'
+        """
+        return self._add_bc_type('clampZZ', nodes, axes)
+
+    def add_rollerX_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on X boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerX',  node, axes)
+        return self._add_bc_type('rollerX',  nodes, axes)
 
-    def add_rollerY_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_rollerY_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on Y boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerY',  node, axes)
+        return self._add_bc_type('rollerY',  nodes, axes)
 
-    def add_rollerZ_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_rollerZ_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on Z boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerZ', node, axes)
+        return self._add_bc_type('rollerZ', nodes, axes)
 
-    def add_rollerXY_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_rollerXY_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on XY boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerXY',  node, axes)
+        return self._add_bc_type('rollerXY',  nodes, axes)
 
-    def add_rollerXZ_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_rollerXZ_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on XZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerXZ',  node, axes)
+        return self._add_bc_type('rollerXZ',  nodes, axes)
 
-    def add_rollerYZ_bc(self,  node, axes='global'):
-        # type: (Node, str) -> BoundaryCondition
+    def add_rollerYZ_bc(self,  nodes, axes='global'):
+        # type: (Node, str) -> _BoundaryCondition
         """Add a roller free on YZ boundary condition type to some nodes in a part.
 
         Parameters
         ----------
         name : str
             name of the boundary condition
-        node : :class:`copmpas_fea2.model.nodes.Node`
-            Node to apply the boundary condition to.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the boundary condition is assigned.
         axes : str, optional
             [axes of the boundary condition, by default 'global'
         """
-        return self._add_bc_type('rollerYZ',  node, axes)
-
-    def remove_bc(self, bc):
-        """Removes a boundary condition from the Model.
-
-        Parameters
-        ----------
-        bc_name : str
-            Name of thedisplacement to remove.
-
-        Returns
-        -------
-        None
-        """
-        raise NotImplementedError
+        return self._add_bc_type('rollerYZ',  nodes, axes)
 
     def remove_bcs(self, bcs):
         """Removes multiple boundary conditions from the Model.
@@ -713,7 +644,7 @@ class Model(FEAData):
                                  '    # of elements: {}'.format(len(part.elements))]) for part in self.parts]
         interactions_info = '\n'.join([e.name for e in self.interactions])
         constraints_info = '\n'.join([e.__repr__() for e in self.constraints])
-        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - {!r}'.format(bc, [node for node in nodes])
+        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(bc, len(nodes))
                                                                      for bc, nodes in bc_nodes.items()])) for part, bc_nodes in self.bcs.items()])
         data = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -741,7 +672,7 @@ Boundary Conditions
 """.format(self.name,
            self.description or 'N/A',
            self.author or 'N/A',
-           ''.join(parts_info),
+           '\n'.join(parts_info),
            interactions_info or 'N/A',
            constraints_info or 'N/A',
            bc_info or 'N/A'
@@ -786,61 +717,27 @@ Boundary Conditions
     # ==============================================================================
     # Viewer
     # ==============================================================================
-    def show(self, width=800, height=500, scale_factor=1, node_labels=None):
-        from compas_fea2.UI.viewer import ModelViewer
-        v = ModelViewer(self, width, height, scale_factor, node_labels)
+    def show(self, width=1600, height=900, scale_factor=1., parts=None,
+             draw_elements=True, draw_nodes=False, node_labels=False,
+             draw_bcs=1., **kwargs):
+
+        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas.geometry import Point, Vector
+        import numpy as np
+
+        from compas.colors import ColorMap, Color
+        cmap = ColorMap.from_mpl('viridis')
+
+        parts = parts or self.parts
+
+        v = FEA2Viewer(width, height, scale_factor)
+
+        v.draw_parts(parts,
+                     draw_elements,
+                     draw_nodes,
+                     node_labels)
+
+        if draw_bcs:
+            v.draw_bcs(self, parts, draw_bcs)
+
         v.show()
-
-    # def save_to_cfm(self, path, output=True):
-    #     """Exports the Model object to an .cfm file through Pickle.
-
-    #     Parameters
-    #     ----------
-    #     path : path
-    #         Path to the folder where save the file to.
-    #     output : bool
-    #         Print terminal output.
-
-    #     Returns
-    #     -------
-    #     None
-    #     """
-
-    #     if not os.path.exists(path):
-    #         os.makedirs(path)
-
-    #     filename = '{0}/{1}.cfm'.format(path, self.name)
-
-    #     with open(filename, 'wb') as f:
-    #         pickle.dump(self, f)
-
-    #     if output:
-    #         print('***** Model saved to: {0} *****\n'.format(filename))
-
-    # # ==============================================================================
-    # # Load model file
-    # # ==============================================================================
-
-    # @ staticmethod
-    # def load_from_cfm(filename, output=True):
-    #     """Imports a Model object from an .cfm file through Pickle.
-
-    #     Parameters
-    #     ----------
-    #     filename : str
-    #         Path to load the Model .cfm from.
-    #     output : bool
-    #         Print terminal output.
-
-    #     Returns
-    #     -------
-    #     obj
-    #         Imported Model object.
-    #     """
-    #     with open(filename, 'rb') as f:
-    #         mdl = pickle.load(f)
-
-    #     if output:
-    #         print('***** Model loaded from: {0} *****'.format(filename))
-
-    #     return mdl

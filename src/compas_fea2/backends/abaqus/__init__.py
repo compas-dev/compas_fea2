@@ -9,10 +9,42 @@ import compas_fea2
 
 from compas.plugins import plugin
 
-# Models
-from compas_fea2.model import Model
-from compas_fea2.model import Part
-from compas_fea2.model import Node
+# Materials
+from compas_fea2.model.materials import (
+    ElasticIsotropic,
+    ElasticOrthotropic,
+    ElasticPlastic,
+    Stiff,
+    UserMaterial,
+    Concrete,
+    ConcreteDamagedPlasticity,
+    ConcreteSmearedCrack,
+    Steel,
+    Timber,
+)
+
+# Boundary Conditions
+from compas_fea2.model.bcs import (
+    GeneralBC,
+    FixedBC,
+    ClampBCXX,
+    ClampBCYY,
+    ClampBCZZ,
+    PinnedBC,
+    RollerBCX,
+    RollerBCXY,
+    RollerBCXZ,
+    RollerBCY,
+    RollerBCYZ,
+    RollerBCZ,
+)
+
+# Constraints
+from compas_fea2.model.constraints import (
+    TieConstraint,
+)
+
+
 # Elements
 from compas_fea2.model.elements import (
     MassElement,
@@ -21,7 +53,43 @@ from compas_fea2.model.elements import (
     MembraneElement,
     ShellElement,
     SolidElement,
+    TetrahedronElement,
+    HexahedronElement,
 )
+
+# Groups
+from compas_fea2.model.groups import (
+    NodesGroup,
+    ElementsGroup,
+    FacesGroup,
+)
+
+# Interactions
+from compas_fea2.model.interactions import (
+    HardContactFrictionPenalty,
+    LinearContactFrictionPenalty,
+    HardContactRough,
+)
+
+# interfaces
+from compas_fea2.model.interfaces import (
+    Interface
+)
+
+# Models
+from compas_fea2.model import Model
+
+# Nodes
+from compas_fea2.model import Node
+
+# Parts
+from compas_fea2.model import Part
+
+# Releases
+from compas_fea2.model.releases import (
+    BeamEndPinRelease,
+)
+
 # Sections
 from compas_fea2.model.sections import (
     AngleSection,
@@ -42,54 +110,8 @@ from compas_fea2.model.sections import (
     ShellSection,
     SolidSection,
 )
-# Materials
-from compas_fea2.model.materials import (
-    ElasticIsotropic,
-    ElasticOrthotropic,
-    ElasticPlastic,
-    Stiff,
-    UserMaterial,
-    Concrete,
-    ConcreteDamagedPlasticity,
-    ConcreteSmearedCrack,
-    Steel,
-)
-# Groups
-from compas_fea2.model.groups import (
-    NodesGroup,
-    ElementsGroup,
-    FacesGroup,
-)
-# Interactions
-from compas_fea2.model.interactions import (
-    HardContactFrictionPenalty,
-)
-# Constraints
-from compas_fea2.model.constraints import (
-    TieConstraint,
-)
-# Releases
-from compas_fea2.model.releases import (
-    BeamEndPinRelease,
-)
 
-# Boundary Conditions
-from compas_fea2.model.bcs import (
-    FixedBC,
-    FixedBCXX,
-    FixedBCYY,
-    FixedBCZZ,
-    PinnedBC,
-    RollerBCX,
-    RollerBCXY,
-    RollerBCXZ,
-    RollerBCY,
-    RollerBCYZ,
-    RollerBCZ,
-)
 
-# Problem
-from compas_fea2.problem import Problem
 # Steps
 from compas_fea2.problem.steps import (
     ModalAnalysis,
@@ -100,6 +122,10 @@ from compas_fea2.problem.steps import (
     DynamicStep,
     QuasiStaticStep,
     DirectCyclicStep,
+)
+# Displacements
+from compas_fea2.problem.displacements import (
+    GeneralDisplacement,
 )
 # Loads
 from compas_fea2.problem.loads import (
@@ -112,19 +138,20 @@ from compas_fea2.problem.loads import (
     HarmonicPointLoad,
     HarmonicPressureLoad,
 )
-# Displacements
-from compas_fea2.problem.displacements import (
-    GeneralDisplacement,
-)
+
 # Outputs
 from compas_fea2.problem.outputs import (
     FieldOutput,
     HistoryOutput,
 )
 
+# Problem
+from compas_fea2.problem import Problem
+
 # Results
 from compas_fea2.results import (
-    Results
+    Results,
+    StepResults,
 )
 
 # Input File
@@ -150,6 +177,8 @@ try:
         AbaqusMembraneElement,
         AbaqusShellElement,
         AbaqusSolidElement,
+        AbaqusTetrahedronElement,
+        AbaqusHexahedronElement,
     )
 
     # Abaqus Sections
@@ -184,6 +213,7 @@ try:
         AbaqusConcreteDamagedPlasticity,
         AbaqusConcreteSmearedCrack,
         AbaqusSteel,
+        AbaqusTimber,
     )
 
     # Abaqus Groups
@@ -196,7 +226,15 @@ try:
     # Abaqus Interactions
     from .model.interactions import (
         AbaqusHardContactFrictionPenalty,
+        AbaqusLinearContactFrictionPenalty,
+        AbaqusHardContactRough,
     )
+
+    # Abaqus Interfaces
+    from .model.interfaces import (
+        AbaqusInterface
+    )
+
     # Abaqus Constraints
     from .model.constraints import (
         AbaqusTieConstraint,
@@ -209,6 +247,7 @@ try:
 
     # Abaqus Boundary Conditions
     from .model.bcs import (
+        AbaqusGeneralBC,
         AbaqusFixedBC,
         AbaqusFixedBCXX,
         AbaqusFixedBCYY,
@@ -261,7 +300,8 @@ try:
 
     # Abaqus Results
     from .results import (
-        AbaqusResults
+        AbaqusResults,
+        AbaqusStepResults,
     )
 
     # Abaqus Input File
@@ -284,6 +324,8 @@ try:
         backend[MembraneElement] = AbaqusMembraneElement
         backend[ShellElement] = AbaqusShellElement
         backend[SolidElement] = AbaqusSolidElement
+        backend[TetrahedronElement] = AbaqusTetrahedronElement
+        backend[HexahedronElement] = AbaqusHexahedronElement
 
         backend[AngleSection] = AbaqusAngleSection
         backend[BeamSection] = AbaqusBeamSection
@@ -312,21 +354,27 @@ try:
         backend[ConcreteDamagedPlasticity] = AbaqusConcreteDamagedPlasticity
         backend[ConcreteSmearedCrack] = AbaqusConcreteSmearedCrack
         backend[Steel] = AbaqusSteel
+        backend[Timber] = AbaqusTimber
 
         backend[NodesGroup] = AbaqusNodesGroup
         backend[ElementsGroup] = AbaqusElementsGroup
         backend[FacesGroup] = AbaqusFacesGroup
 
         backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
+        backend[LinearContactFrictionPenalty] = AbaqusLinearContactFrictionPenalty
+        backend[HardContactRough] = AbaqusHardContactRough
+
+        backend[Interface] = AbaqusInterface
 
         backend[TieConstraint] = AbaqusTieConstraint
 
         backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
 
+        backend[GeneralBC] = AbaqusGeneralBC
         backend[FixedBC] = AbaqusFixedBC
-        backend[FixedBCXX] = AbaqusFixedBCXX
-        backend[FixedBCYY] = AbaqusFixedBCYY
-        backend[FixedBCZZ] = AbaqusFixedBCZZ
+        backend[ClampBCXX] = AbaqusFixedBCXX
+        backend[ClampBCYY] = AbaqusFixedBCYY
+        backend[ClampBCZZ] = AbaqusFixedBCZZ
         backend[PinnedBC] = AbaqusPinnedBC
         backend[RollerBCX] = AbaqusRollerBCX
         backend[RollerBCXY] = AbaqusRollerBCXY
@@ -361,6 +409,7 @@ try:
         backend[HistoryOutput] = AbaqusHistoryOutput
 
         backend[Results] = AbaqusResults
+        backend[StepResults] = AbaqusStepResults
 
         backend[InputFile] = AbaqusInputFile
         backend[ParametersFile] = AbaqusParametersFile

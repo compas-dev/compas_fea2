@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 # additional software-based classes
-from .results import OpenseesResults
+from .results import OpenseesResults, OpenseesStepResults
 
 
 # __all__ = [name for name in dir() if not name.startswith('_')]

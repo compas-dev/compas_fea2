@@ -1,6 +1,12 @@
-from itertools import combinations
+
+from compas_fea2.model.elements import SolidElement
+
+from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane, angle_planes
 from compas.geometry import Plane
+from compas.geometry import Frame
+from compas.geometry import Transformation
+from compas.geometry import Point
 
 
 def nodes_on_plane(part, plane):
@@ -8,86 +14,100 @@ def nodes_on_plane(part, plane):
 
     Parameters
     ----------
-    part : obj
-        compas_fea2 :class:`compas_fea2.model.Part` subclass
-    plane : obl
-        compas :class:`Plane`
+    part : :class:`compas_fea2.model.Part`
+        Part to check
+    plane : :class:`compas_fea2.model.Interface`
+        Plane where to find the nodes
 
     Return
     ------
     list
-        list with the keys of the nodes belonging to the plane
+        list with the nodes of the part belonging to the plane
     """
-    return [node.key for node in part.nodes if is_point_on_plane(node.xyz, plane)]
+    return [node for node in part.nodes if is_point_on_plane(node.xyz, plane)]
 
 
-# TODO implement all the Solid elements better than as it is done now...
-def elements_on_plane(part, plane):
-    """Find all the faces of the elements of a part that belong to a given plane.
-
-    Warning
-    -------
-    It only works for tethrahedal elements
-
-    Note
-    ----
-    The face labels are as follows:
-        - S1: (0, 1, 2)
-        - S2: (0, 1, 3)
-        - S3: (1, 2, 3)
-        - S4: (0, 2, 3)
-    where the number is the index of the the node in the connectivity list
+def nodes_in_interface(part, interface, mark=False):
+    """Find all the nodes of a part beloging to an interface.
 
     Parameters
     ----------
-    part : obj
-        compas_fea2 :class:`compas_fea2.model.Part` subclass
-    plane : obl
-        compas :class:`Plane`
+    part : :class:`compas_fea2.model.Part`
+        The part.
+    interface : :class:`compas_fea2.model.interface`
+        The interface.
+    mark : bool, optional
+        If `True` mark set ``node.on_interface = True``, by default `False`.
+
+    Returns
+    -------
+    list
+        List with the nodes.
+    """
+    T = Transformation.from_frame_to_frame(interface.frame, Frame.worldXY())
+
+    nodes = []
+    for node in nodes_on_plane(part, Plane.from_frame(interface.frame)):
+        interface_xy = [Point(*point) for point in interface.points]
+        for point in interface_xy:
+            point.transform(T)
+        nodes_xy = Point(*node.xyz)
+        nodes_xy.transform(T)
+        if is_point_in_polygon_xy(nodes_xy, interface_xy):
+            nodes.append(node)
+            if mark:
+                node.on_interface = True
+    return nodes
+
+
+def faces_on_plane(part, plane):
+    """Find the face of the elements of a part that belongs to a given plane, if any.
+
+    Note
+    ----
+    The search is limited to solid elements.
+
+    Parameters
+    ----------
+    part : :class:`compas_fea2.model.Part`
+        The part to search.
+    plane : :class:`compas.geometry.Plane`
+        The plane where the faces should belong.
 
     Returns
     -------
     dict
-        element key, face
+        element, face name
     """
 
-    # find the nodes on the surfaces
-    nodes_on_face = nodes_on_plane(part, plane)
+    faces = []
+    for element in filter(lambda x: isinstance(x, SolidElement), part.elements):
+        for face in element.faces:
+            if angle_planes(plane, face.plane, True) in [0, 180] and is_point_on_plane(face.plane.point, plane):
+                faces.append(face)
+    return faces
 
-    # find the elements on the surface
-    surfaces_on_face = {}
-    for element in part.elements.values():
-        for c in element.connectivity:
-            if c in nodes_on_face:
-                if len(element.connectivity) == 4:
-                    for combo in combinations(element.connectivity, 3):
-                        points = [part.nodes[key].xyz for key in combo]
-                        face = Plane.from_three_points(*points)
-                        if angle_planes(plane, face, True) in [0, 180]:
-                            face_names = {'s1': sorted([element.connectivity[i] for i in (0, 1, 2)]),
-                                          's2': sorted([element.connectivity[i] for i in (0, 1, 3)]),
-                                          's3': sorted([element.connectivity[i] for i in (1, 2, 3)]),
-                                          's4': sorted([element.connectivity[i] for i in (0, 2, 3)])}
-                            for k, v in face_names.items():
-                                if sorted(list(combo)) == v:
-                                    surfaces_on_face[element.key] = k
-                            break
-                elif len(element.connectivity) == 8:
-                    for combo in combinations(element.connectivity, 4):
-                        points = [part.nodes[key].xyz for key in combo]
-                        face = Plane.from_three_points(*points[:-1])
-                        if angle_planes(plane, face, True) in [0, 180]:
-                            face_names = {'s1': sorted([element.connectivity[i] for i in (0, 1, 2, 3)]),
-                                          's2': sorted([element.connectivity[i] for i in (4, 5, 6, 7)]),
-                                          's3': sorted([element.connectivity[i] for i in (0, 1, 4, 5)]),
-                                          's4': sorted([element.connectivity[i] for i in (1, 2, 5, 6)]),
-                                          's5': sorted([element.connectivity[i] for i in (2, 3, 6, 7)]),
-                                          's6': sorted([element.connectivity[i] for i in (0, 3, 4, 7)])}
-                            for k, v in face_names.items():
-                                if sorted(list(combo)) == v:
-                                    surfaces_on_face[element.key] = k
-                            break
-                else:
-                    raise TypeError(
-                        f'Element {element.__repr__()} with {len(element.connectivity)} nodes is not supported')
-    return surfaces_on_face
+
+def faces_in_interface(part, interface, extend=False, mark=False):
+    """Return the face of the elements of a given part laying of a given interface.
+
+    Parameters
+    ----------
+    part : :class:`compsa_fea2.model.Part`
+        The part of the model to check.
+    interface : :class:`compas_fea2.model.interface`
+        The interface where the faces must lay.
+    extend : bool, optional
+        If ``True``, include also those faces that are only partially contained
+        within the interface (at least one node inside the interface). By default
+        ``False``.
+    mark : bool, optional
+        If `True` mark set ``node.on_interface = True``, by default `False`.
+
+    Returns
+    -------
+    :class:list[`compas_fea2.model.elements.Face`]
+        list of the faces on the interface.
+    """
+    func = any if extend else all
+    return [face for face in faces_on_plane(part, Plane.from_frame(interface.frame)) if func(node in nodes_in_interface(part, interface, mark=mark) for node in face.nodes)]

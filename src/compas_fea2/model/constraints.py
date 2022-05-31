@@ -34,7 +34,7 @@ class _Constraint(FEAData):
 
     """
 
-    def __init__(self, *, master, slave, tol, name=None, **kwargs):
+    def __init__(self, *, master, slave, tol=None, name=None, **kwargs):
         super(_Constraint, self).__init__(name, **kwargs)
         self._master = master
         self._slave = slave
@@ -82,8 +82,8 @@ class TieConstraint(_Constraint):
 
     """
 
-    def __init__(self, *, master, slave, tol, name=None, **kwargs):
-        super(TieConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
+    def __init__(self, *, master, slave, name=None, **kwargs):
+        super(TieConstraint, self).__init__(master=master, slave=slave, name=name, **kwargs)
 
 
 class Pin3DConstraint(_Constraint):

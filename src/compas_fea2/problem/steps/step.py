@@ -27,7 +27,7 @@ class _Step(FEAData):
     Note
     ----
     A ``compas_fea2`` analysis is based on the concept of ``steps``,
-    which represent the sequence of modification of the state of the model. Steps
+    which are the sequence of modification of the state of the model. Steps
     can be introduced for example to change the output requests or to change loads,
     boundary conditions, analysis procedure, etc. There is no limit on the number
     of steps in an analysis.
@@ -50,10 +50,19 @@ class _Step(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, problem=None, **kwargs):
         super(_Step, self).__init__(name=name, **kwargs)
+        self._problem = problem
         self._field_outputs = set()
         self._history_outputs = set()
+
+    @property
+    def problem(self):
+        return self._problem
+
+    @problem.setter
+    def problem(self, value):
+        self._problem = value
 
     @property
     def field_outputs(self):
@@ -62,6 +71,14 @@ class _Step(FEAData):
     @property
     def history_outputs(self):
         return self._history_outputs
+
+    @property
+    def registration(self):
+        return self._problem
+
+    @registration.setter
+    def registration(self, value):
+        self.problem = value
 
     def add_output(self, output):
         if isinstance(output, FieldOutput):
@@ -207,7 +224,7 @@ class _GeneralStep(_Step):
         if not isinstance(node, Node):
             raise TypeError('{!r} is not a Node.'.format(node))
         # self.model.contains_node(node) #TODO implement method
-        node._loads.add(load)
+        node._loads.add(load)  # FIXME this should include the step...
         self._loads.setdefault(node.part, {}).setdefault(load, set()).add(node)
         return load
 

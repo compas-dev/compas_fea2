@@ -79,9 +79,9 @@ from compas_fea2.model.releases import (
 # Boundary Conditions
 from compas_fea2.model.bcs import (
     FixedBC,
-    FixedBCXX,
-    FixedBCYY,
-    FixedBCZZ,
+    ClampBCXX,
+    ClampBCYY,
+    ClampBCZZ,
     PinnedBC,
     RollerBCX,
     RollerBCXY,
@@ -127,7 +127,8 @@ from compas_fea2.problem.outputs import (
 
 # Results
 from compas_fea2.results import (
-    Results
+    Results,
+    StepResults,
 )
 
 # Input File
@@ -264,7 +265,8 @@ try:
 
     # Opensees Results
     from .results import (
-        OpenseesResults
+        OpenseesResults,
+        OpenseesStepResults,
     )
 
     # Opensees Input File
@@ -327,9 +329,9 @@ try:
         backend[BeamEndPinRelease] = OpenseesBeamEndPinRelease
 
         backend[FixedBC] = OpenseesFixedBC
-        backend[FixedBCXX] = OpenseesFixedBCXX
-        backend[FixedBCYY] = OpenseesFixedBCYY
-        backend[FixedBCZZ] = OpenseesFixedBCZZ
+        backend[ClampBCXX] = OpenseesFixedBCXX
+        backend[ClampBCYY] = OpenseesFixedBCYY
+        backend[ClampBCZZ] = OpenseesFixedBCZZ
         backend[PinnedBC] = OpenseesPinnedBC
         backend[RollerBCX] = OpenseesRollerBCX
         backend[RollerBCXY] = OpenseesRollerBCXY
@@ -364,6 +366,7 @@ try:
         backend[HistoryOutput] = OpenseesHistoryOutput
 
         backend[Results] = OpenseesResults
+        backend[StepResults] = OpenseesStepResults
 
         backend[InputFile] = OpenseesInputFile
         backend[ParametersFile] = OpenseesParametersFile

@@ -8,14 +8,12 @@ User Interfaces
 .. autosummary::
     :toctree: generated/
 
-    ModelViewer
-    ProblemViewer
+    FEA2Viewer
 
 """
 
-from .viewer import ModelViewer, ProblemViewer
+from .viewer import FEA2Viewer
 
 __all__ = [
-    'ModelViewer',
-    'ProblemViewer',
+    'FEA2Viewer',
 ]

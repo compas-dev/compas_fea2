@@ -15,7 +15,7 @@ class _Output(FEAData):
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Output, self).__init__(name, **kwargs)
+        super(_Output, self).__init__(name=name, **kwargs)
 
 
 class FieldOutput(_Output):
@@ -73,4 +73,4 @@ class HistoryOutput(_Output):
     """
 
     def __init__(self,  name=None, **kwargs):
-        super(HistoryOutput, self).__init__(**kwargs)
+        super(HistoryOutput, self).__init__(name=name, **kwargs)

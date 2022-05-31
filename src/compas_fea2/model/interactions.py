@@ -81,10 +81,9 @@ class HardContactNoFriction(Contact):
         Slippage tollerance during contact.
     """
 
-    def __init__(self, mu, tollerance, name=None, **kwargs) -> None:
+    def __init__(self, mu, tolerance, name=None, **kwargs) -> None:
         super(HardContactFrictionPenalty, self).__init__(name=name, normal='HARD', tangent=mu, **kwargs)
-        self.tollerance = tollerance
-        raise NotImplementedError
+        self.tolerance = tolerance
 
 
 class HardContactFrictionPenalty(Contact):
@@ -109,6 +108,83 @@ class HardContactFrictionPenalty(Contact):
         Slippage tollerance during contact.
     """
 
-    def __init__(self, mu, tollerance, name=None, **kwargs) -> None:
+    def __init__(self, *, mu, tolerance, name=None, **kwargs) -> None:
         super(HardContactFrictionPenalty, self).__init__(name=name, normal='HARD', tangent=mu, **kwargs)
-        self.tollerance = tollerance
+        self._tolerance = tolerance
+
+        @property
+        def tolerance(self):
+            return self._tolerance
+
+        @tolerance.setter
+        def tolerance(self, value):
+            self._tolerance = value
+
+
+class LinearContactFrictionPenalty(Contact):
+    """Contact interaction property with linear softnening and friction using a
+    penalty formulation.
+
+    Parameters
+    ----------
+    stiffness : float
+        Stiffness of the the contact in the normal direction.
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
+
+    Attributes
+    ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
+    """
+
+    def __init__(self, *, stiffness, mu, tolerance, name=None, **kwargs) -> None:
+        super(LinearContactFrictionPenalty, self).__init__(name=name, normal='Linear', tangent=mu, **kwargs)
+        self._tolerance = tolerance
+        self._stiffness = stiffness
+
+        @property
+        def stiffness(self):
+            return self._stiffness
+
+        @stiffness.setter
+        def stiffness(self, value):
+            self._stiffness = value
+
+        @property
+        def tolerance(self):
+            return self._tolerance
+
+        @tolerance.setter
+        def tolerance(self, value):
+            self._tolerance = value
+
+
+class HardContactRough(Contact):
+    """Hard contact interaction property with indefinite friction (rough surfaces).
+
+    Parameters
+    ----------
+    name : str, optional
+        You can change the name if you want a more human readable input file.
+
+    Attributes
+    ----------
+    name : str
+        Automatically generated id. You can change the name if you want a more
+        human readable input file.
+    mu : float
+        Friction coefficient for tangential behaviour.
+    tollerance : float
+        Slippage tollerance during contact.
+    """
+
+    def __init__(self, *, name=None, **kwargs) -> None:
+        super(HardContactRough, self).__init__(name=name, normal='HARD', tangent='ROUGH', **kwargs)

@@ -9,7 +9,7 @@ from time import time
 from subprocess import Popen
 from subprocess import PIPE
 
-from compas_fea2.results import Results
+from compas_fea2.results import Results, StepResults
 from compas_fea2.backends.opensees.results.read_results import get_data
 
 
@@ -32,3 +32,8 @@ class OpenseesResults(Results):
 
         """
         raise NotADirectoryError()
+
+
+class OpenseesStepResults(StepResults):
+    def __init__(self, step, model, name=None):
+        super(OpenseesStepResults, self).__init__(step, model, name)

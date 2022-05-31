@@ -64,7 +64,8 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
                 "*Density\n"
                 "{},\n"
                 "*Elastic\n"
-                "{}, {}{}\n").format(self.name, self.density, self.E, self.v, n)
+                "{}, {}{}\n"
+                "**").format(self.name, self.density, self.E, self.v, n)
 
 
 class AbaqusStiff(Stiff):
@@ -86,7 +87,8 @@ class AbaqusStiff(Stiff):
                 "*Density\n"
                 "{},\n"
                 "*Elastic\n"
-                "{}, {}\n").format(self.name, self.density, self.E['E'], self.v['v'])
+                "{}, {}\n"
+                "**").format(self.name, self.density, self.E, self.v)
 
 
 # ==============================================================================

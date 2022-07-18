@@ -26,7 +26,7 @@ optional_requirements = {}
 setup(
     name='compas_fea2',
     version='0.1.0',
-    description='2nd generation of compas_fea for direct realtime analysis',
+    description='2nd generation of compas_fea',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/BlockResearchGroup/compas_fea2',
@@ -59,10 +59,11 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requirements,
-    python_requires='>=2.7',
+    python_requires='>=3.6',
     extras_require=optional_requirements,
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            "fea2=compas_fea2.cli:main"],
     },
     ext_modules=[],
 )

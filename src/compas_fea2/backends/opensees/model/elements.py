@@ -2,313 +2,246 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-from compas_fea2.backends._base.model import NodeBase
-from compas_fea2.backends._base.model import ElementBase
-from compas_fea2.backends._base.model import MassElementBase
-from compas_fea2.backends._base.model import BeamElementBase
-from compas_fea2.backends._base.model import SpringElementBase
-from compas_fea2.backends._base.model import TrussElementBase
-from compas_fea2.backends._base.model import StrutElementBase
-from compas_fea2.backends._base.model import TieElementBase
-from compas_fea2.backends._base.model import ShellElementBase
-from compas_fea2.backends._base.model import MembraneElementBase
-from compas_fea2.backends._base.model import FaceElementBase
-from compas_fea2.backends._base.model import SolidElementBase
-from compas_fea2.backends._base.model import PentahedronElementBase
-from compas_fea2.backends._base.model import TetrahedronElementBase
-from compas_fea2.backends._base.model import HexahedronElementBase
-
-
-# Francesco Ranaudo (github.com/franaudo)
-
-# TODO add the property class here
-
-__all__ = [
-    'Node',
-    'Element',
-    'MassElement',
-    'BeamElement',
-    'SpringElement',
-    'TrussElement',
-    'StrutElement',
-    'TieElement',
-    'ShellElement',
-    'MembraneElement',
-    'FaceElement',
-    'SolidElement',
-    'PentahedronElement',
-    'TetrahedronElement',
-    'HexahedronElement',
-]
-
-
-# ==============================================================================
-# General
-# ==============================================================================
-
-class Node(NodeBase):
-    """Initialises base Node object.
-
-    Parameters
-    ----------
-    key : int
-        Node key number.
-    xyz : list
-        [x, y, z] co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    Attributes
-    ----------
-    key : int
-        Node key number.
-    x : float
-        x co-ordinates of the node.
-    y : float
-        y co-ordinates of the node.
-    z : float
-        z co-ordinates of the node.
-    ex : list
-        Node's local x axis.
-    ey : list
-        Node's local y axis.
-    ez : list
-        Node's local z axis.
-    mass : float
-        Mass in kg associated with the node.
-
-    """
-    def __init__(self, key, xyz, ex, ey, ez, mass):
-        super(Node, self).__init__(key, xyz, ex, ey, ez, mass)
-
-
-class Element(ElementBase):
-    """Initialises base Element object.
-
-    Parameters
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-
-    Attributes
-    ----------
-    nodes : list
-        Node keys the element connects to.
-    number : int
-        Number of the element.
-    thermal : bool
-        Thermal properties on or off.
-    axes : dict
-        The local element axes.
-    element_property : str
-        Element property name
-
-    """
-    pass
-    # def __init__(self, nodes, number, thermal, axes):
-    #     super(Element, self).__init__(nodes, number, thermal, axes)
+from compas_fea2.model import MassElement
+from compas_fea2.model import BeamElement
+from compas_fea2.model import TrussElement
+from compas_fea2.model import ShellElement
+from compas_fea2.model import MembraneElement
+from compas_fea2.model import SolidElement
 
 
 # ==============================================================================
 # 0D elements
 # ==============================================================================
+class OpenseesMassElement(MassElement):
+    """"""
+    __doc__ += MassElement.__doc__
 
-class MassElement(MassElementBase):
-    """A 0D element for concentrated point mass.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(MassElement, self).__init__()
+    def __init__(self, *, node, section, frame=None, part=None, name=None, **kwargs):
+        super(OpenseesMassElement, self).__init__(nodes=[node],
+                                                  section=section, frame=frame, part=part, name=name, **kwargs)
+        raise NotImplementedError
 
 
 # ==============================================================================
 # 1D elements
 # ==============================================================================
-
-class BeamElement(BeamElementBase):
-    """A 1D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
+class OpenseesBeamElement(BeamElement):
+    """OpenSees implementation of :class:`compas_fea2.model.BeamElement`.\n
     """
-    pass
-    # def __init__(self):
-    #     super(BeamElement, self).__init__()
+    __doc__ += BeamElement.__doc__
+
+    def __init__(self, nodes, section, implementation='elasticBeamColumn', frame=[0.0, 0.0, -1.0], part=None, name=None, **kwargs):
+        super(OpenseesBeamElement, self).__init__(nodes=nodes, section=section, frame=frame, implementation=implementation,
+                                                  part=part, name=name, **kwargs)
+
+        self._implementation = BeamElement.from_name(implementation)
+
+        try:
+            self._job_data = getattr(self, implementation)
+        except:
+            raise ValueError('{} is not a valid implementation model'.format(implementation))
+
+    def _generate_jobdata(self):
+        return '\n'.join(['geomTransf Corotational {1}'.format(self.key, ' '.join([str(i) for i in self.frame])),
+                          self._job_data
+                          ])
+
+    def _elasticBeamColumn(self):
+        """Construct an elasticBeamColumn element object.
+
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/gradientInelasticBeamColumn.html>`_
+        """
+        return 'element {} {} {} {} {} {} {} {} {}'.format(self._implementation,
+                                                           self.key,
+                                                           ' '.join(node.key for node in self.nodes),
+                                                           self.section.A,
+                                                           self.section.material.E,
+                                                           self.section.material.G,
+                                                           self.section.J,
+                                                           self.section.Ixx,
+                                                           self.section.Iyy,
+                                                           self.key)
+
+    def _inelasticBeamColum(self):
+        raise NotImplementedError('Currently under development')
+        return 'element  {} {} {} $numIntgrPts $endSecTag1 $intSecTag $endSecTag2 $lambda1 $lambda2 $lc $transfTag <-integration integrType> <-iter $maxIter $minTol $maxTol>'. format(self._implementation,
+                                                                                                                                                                                       self._key,
+                                                                                                                                                                                       ' '.join(node.key for node in self.nodes))
 
 
-class SpringElement(SpringElementBase):
-    """A 1D spring element.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(SpringElement, self).__init__()
-
-
-class TrussElement(TrussElementBase):
+class OpenseesTrussElement(TrussElement):
     """A 1D element that resists axial loads.
-
-    Parameters
-    ----------
-    None
-
     """
-    pass
-    # def __init__(self):
-    #     super(TrussElement, self).__init__()
+    __doc__ += TrussElement.__doc__
 
-
-class StrutElement(StrutElementBase):
-    """A truss element that resists axial compressive loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(StrutElement, self).__init__()
-
-
-class TieElement(TieElementBase):
-    """A truss element that resists axial tensile loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(TieElement, self).__init__()
+    def __init__(self, nodes, section, part=None, name=None, **kwargs):
+        super(OpenseesTrussElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
+        raise NotImplementedError
 
 
 # ==============================================================================
 # 2D elements
 # ==============================================================================
 
-class ShellElement(ShellElementBase):
-
-    """ A 2D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
+class OpenseesShellElement(ShellElement):
+    """OpenSees implementation of a :class:`ShellElemnt`.
 
     """
-    pass
-    # def __init__(self):
-    #     super(ShellElement, self).__init__()
-
-
-class FaceElement(FaceElementBase):
-
-    """ A 2D Face element used for special loading cases.
-
-    Parameters
-    ----------
-    None
+    __doc__ += ShellElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    mat_behaviour : str
+        String representing material behavior. It can be either “PlaneStrain” or “PlaneStress.”
 
     """
-    pass
-    # def __init__(self):
-    #     super(FaceElement, self).__init__()
+    # TODO maybe move mat_behavior to the material or section
+
+    def __init__(self, nodes, section, implementation, mat_behaviour='PlainStess', part=None, name=None, **kwargs):
+        super(OpenseesShellElement, self).__init__(nodes=nodes, section=section,
+                                                   part=part, implementation=implementation, name=name, **kwargs)
+        if self._nodes != 4:
+            raise NotImplementedError('Shell elements in Opensees can only have 4 nodes.')
+        self._mat_behaviour = mat_behaviour
+        self._job_data = None
+
+    @property
+    def mat_behaviour(self):
+        return self._mat_behaviour
+
+    def _generate_jobdata(self):
+        try:
+            return getattr(self, '_'+self._implementation.lower())()
+        except:
+            raise ValueError('{} is not a valid implementation.'.format(self._implementation))
+
+    def _asdshellq4(self):
+        """Construct an ASDShellQ4 element object.
+
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/ASDShellQ4.html>`_
+        """
+        return 'element ASDShellQ4  {}  {}'.format(self.key,
+                                                   ' '.join(node.key for node in self.nodes),
+                                                   self.section.key)
+
+    def _fournodequad(self):
+        """Construct a FourNodeQuad element object which uses a bilinear isoparametric formulation.
+
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/Quad.html>`_
+
+        Note
+        ----
+        The optional arguments are not implemented.
+
+        """
+        return 'element quad {} {} {} {}'.format(self.key,
+                                                 ' '.join(node.key for node in self.nodes),
+                                                 self.section.thickness,
+                                                 self.mat_behaviour,
+                                                 self.section.material.key)
+
+    def _sspquad(self):
+        """Construct a SSPquad (SSP –> Stabilized Single Point) element.
+
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPquad.html>`_
+
+        Note
+        ----
+        The optional arguments are not implemented.
+
+        """
+        return 'element SSPquad {} {} {} {}'.format(self.key,
+                                                    ' '.join(node.key for node in self.nodes),
+                                                    self.section.material.key,
+                                                    self.section.material.key,
+                                                    self.mat_behaviour,
+                                                    self.section.thickness)
 
 
-class MembraneElement(MembraneElementBase):
+class OpenseesMembraneElement(MembraneElement):
+    """"""
+    __doc__ += MembraneElement.__doc__
 
-    """ A shell element that resists only axial loads.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(MembraneElement, self).__init__()
-
+    def __init__(self, nodes, section, part=None, name=None, **kwargs):
+        super(OpenseesMembraneElement, self).__init__(nodes=nodes, section=section, part=part, name=name, **kwargs)
+        raise NotImplementedError
 
 # ==============================================================================
 # 3D elements
 # ==============================================================================
 
-class SolidElement(SolidElementBase):
 
-    """ A 3D element that resists axial, shear, bending and torsion.
-
-    Parameters
-    ----------
-    None
-
-    """
-    pass
-    # def __init__(self):
-    #     super(SolidElement, self).__init__()
-
-
-class PentahedronElement(PentahedronElementBase):
-
-    """ A Solid element with 5 faces (extruded triangle).
-
-    Parameters
-    ----------
-    None
+class OpenseesSolidElement(SolidElement):
+    """"""
+    __doc__ += SolidElement.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
+    mat_behaviour : str
+        String representing material behavior. It can be either “PlaneStrain” or “PlaneStress.”
 
     """
-    pass
-    # def __init__(self):
-    #     super(PentahedronElement, self).__init__()
 
+    def __init__(self, nodes, section, implementation='stdBrick', part=None, name=None, **kwargs):
+        super(OpenseesSolidElement, self).__init__(nodes=nodes, section=section,
+                                                   part=part, implementation=implementation, name=name, **kwargs)
 
-class TetrahedronElement(TetrahedronElementBase):
+    def _get_implementation(self):
+        try:
+            return getattr(self, '_'+self._type.lower())
+        except:
+            raise ValueError('{} is not a valid implementation.'.format(self._implementation))
 
-    """ A Solid element with 4 faces.
+    def _generate_jobdata(self):
+        return 'element {}  {}  {}'.format(self.key,
+                                           self._implementation,
+                                           ' '.join(node.key for node in self.nodes),
+                                           self.section.material.key)
 
-    Parameters
-    ----------
-    None
+    # TODO complete implementations: for now it is all done in _generate_jobdata
+    def _stdbrick(self):
+        """Construct an eight-node brick element object, which uses the standard isoparametric formulation.
 
-    """
-    pass
-    # def __init__(self):
-    #     super(TetrahedronElement, self).__init__()
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/stdBrick.html>`_
 
+        Note
+        ----
+        The optional arguments are not implemented.
 
-class HexahedronElement(HexahedronElementBase):
+        """
+        return
 
-    """ A Solid cuboid element with 6 faces (extruded rectangle).
+    def _bbarbrick(self):
+        """Construct an eight-node mixed volume/pressure brick element object, which uses a trilinear isoparametric formulation.
 
-    Parameters
-    ----------
-    None
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/bbarBrick.html>`_
 
-    """
-    pass
-    # def __init__(self):
-    #     super(HexahedronElement, self).__init__()
+        Note
+        ----
+        The optional arguments are not implemented.
+
+        """
+        return
+
+    def _sspbrick(self):
+        """Construct an eight-node ssp brick element. The SSPbrick element is an
+        eight-node hexahedral element using physically stabilized single-point
+        integration (SSP –> Stabilized Single Point).
+
+        For more information about this element in OpenSees check
+        `here <https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/SSPbrick.html>`_
+
+        Note
+        ----
+        The optional arguments are not implemented.
+
+        """
+
+        return

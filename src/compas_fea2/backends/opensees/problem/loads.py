@@ -1,339 +1,100 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._base.problem import LoadBase
-from compas_fea2.backends._base.problem import PrestressLoadBase
-from compas_fea2.backends._base.problem import PointLoadBase
-from compas_fea2.backends._base.problem import PointLoadsBase
-from compas_fea2.backends._base.problem import LineLoadBase
-from compas_fea2.backends._base.problem import AreaLoadBase
-from compas_fea2.backends._base.problem import GravityLoadBase
-from compas_fea2.backends._base.problem import ThermalLoadBase
-from compas_fea2.backends._base.problem import TributaryLoadBase
-from compas_fea2.backends._base.problem import HarmonicPointLoadBase
-from compas_fea2.backends._base.problem import HarmonicPressureLoadBase
-from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
+from compas_fea2.problem import PointLoad
+from compas_fea2.problem import LineLoad
+from compas_fea2.problem import AreaLoad
+from compas_fea2.problem import GravityLoad
+from compas_fea2.problem import TributaryLoad
+from compas_fea2.problem import PrestressLoad
+from compas_fea2.problem import HarmonicPointLoad
+from compas_fea2.problem import HarmonicPressureLoad
 
 
-# Author(s): Francesco Ranaudo (github.com/franaudo)
+dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
 
-
-__all__ = [
-    'Load',
-    'PrestressLoad',
-    'PointLoad',
-    'PointLoads',
-    'LineLoad',
-    'AreaLoad',
-    'GravityLoad',
-    'ThermalLoad',
-    'TributaryLoad',
-    'HarmoniPointLoadBase',
-    'HarmonicPressureLoad',
-    'AcousticDiffuseFieldLoad'
-]
-
-
-class Load(LoadBase):
-
-    """ Initialises base Load object.
-
-    Parameters
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    elements : str, list
-        Element set or element keys the load is applied to.
-
-    Attributes
-    ----------
-    name : str
-        Name of the Load object.
-    axes : str
-        Load applied via 'local' or 'global' axes.
-    components : dict
-        Load components.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    elements : str, list
-        Element set or element keys the load is applied to.
-
+class OpenseesPointLoad(PointLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.PointLoad`.\n
     """
-    pass
-    # def __init__(self, name, axes, components, nodes, elements):
-    #     super(Load, self).__init__(name, axes, components, nodes, elements)
+    __doc__ += PointLoad.__doc__
+
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
+        super(OpenseesPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+
+    def _generate_jobdata(self):
+        jobdata = []
+        for node in self.nodes:
+            jobdata.append('load {} {}'.format(node, ' '.join([str(self.components[dof]) for dof in dofs])))
+        return '\n'.join(jobdata)
 
 
-class PrestressLoad(PrestressLoadBase):
-
-    """ Pre-stress [units: N/m2] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the PrestressLoad object.
-    elements : str, list
-        Element set or element keys the prestress is applied to.
-    sxx : float
-        Value of prestress for axial stress component sxx.
-
+class OpenseesLineLoad(LineLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.LineLoad`.\n
     """
-    pass
-    # def __init__(self, name, elements, sxx):
-    #     super(PrestressLoad, self).__init__(name, elements, sxx)
+    __doc__ += LineLoad.__doc__
+
+    def __init__(self, elements, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
+        super(OpenseesLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class PointLoad(PointLoadBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to node(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the PointLoad object.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    x : float
-        x component of force.
-    y : float
-        y component of force.
-    z : float
-        z component of force.
-    xx : float
-        xx component of moment.
-    yy : float
-        yy component of moment.
-    zz : float
-        zz component of moment.
-
+class OpenseesAreaLoad(AreaLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.AreaLoad`.\n
     """
-    pass
-    # def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-    #     super(PointLoad, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+    __doc__ += AreaLoad.__doc__
+
+    def __init__(self, elements, x, y, z, axes, name=None, **kwargs):
+        super(OpenseesAreaLoad, self).__init__(elements, x, y, z, axes, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class PointLoads(PointLoadsBase):
-
-    """ Concentrated forces and moments [units:N, Nm] applied to different nodes.
-
-    Parameters
-    ----------
-    name : str
-        Name of the PointLoads object.
-    components : dict
-        Node key : components dictionary data.
-
+class OpenseesGravityLoad(GravityLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.GravityLoad`.\n
     """
-    pass
-    # def __init__(self, name, components):
-    #     super(PointLoads, self).__init__(name, components)
+    __doc__ += GravityLoad.__doc__
+
+    def __init__(self, g=9.81, x=0., y=0., z=-1., name=None, **kwargs):
+        super(OpenseesGravityLoad, self).__init__(g, x, y, z, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class LineLoad(LineLoadBase):
-
-    """ Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the LineLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
-    x : float
-        x component of force / length.
-    y : float
-        y component of force / length.
-    z : float
-        z component of force / length.
-    xx : float
-        xx component of moment / length.
-    yy : float
-        yy component of moment / length.
-    zz : float
-        zz component of moment / length.
-
+class OpenseesPrestressLoad(PrestressLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.PrestressLoad`.\n
     """
-    pass
-    # def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
-    #     super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
+    __doc__ += PrestressLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(OpenseesPrestressLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class AreaLoad(AreaLoadBase):
-
-    """ Distributed area force [units:N/m2] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the AreaLoad object.
-    elements : str, list
-        Elements set or elements the load is applied to.
-    x : float
-        x component of area load.
-    y : float
-        y component of area load.
-    z : float
-        z component of area load.
-
+class OpenseesTributaryLoad(TributaryLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.TributaryLoad`.\n
     """
-    pass
-    # def __init__(self, name, elements, x, y, z, axes):
-    #     super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
+    __doc__ += TributaryLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(OpenseesTributaryLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class GravityLoad(GravityLoadBase):
-
-    """ Gravity load [units:N/m3] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the GravityLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
-    g : float
-        Value of gravitational acceleration.
-    x : float
-        Factor to apply to x direction.
-    y : float
-        Factor to apply to y direction.
-    z : float
-        Factor to apply to z direction.
-
+class OpenseesHarmonicPointLoad(HarmonicPointLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.HarmonicPointLoad`.\n
     """
-    pass
-    # def __init__(self, name, elements, g, x, y, z):
-    #     super(GravityLoad, self).__init__(name, elements, g, x, y, z)
+    __doc__ += HarmonicPointLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(OpenseesHarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class ThermalLoad(ThermalLoadBase):
-
-    """ Thermal load.
-
-    Parameters
-    ----------
-    name : str
-        Name of the ThermalLoad object.
-    elements : str, list
-        Element set or element keys the load is applied to.
-    temperature : float
-        Temperature to apply to elements.
-
+class OpenseesHarmonicPressureLoad(HarmonicPressureLoad):
+    """OpenSees implementation of :class:`compas_fea2.problem.HarmonicPressureLoad`.\n
     """
-    pass
-    # def __init__(self, name, elements, temperature):
-    #     super(ThermalLoad, self).__init__(name, elements, temperature)
+    __doc__ += HarmonicPressureLoad.__doc__
 
-
-class TributaryLoad(TributaryLoadBase):
-
-    """ Tributary area loads applied to nodes.
-
-    Parameters
-    ----------
-    structure : obj
-        Structure class.
-    name : str
-        Name of the TributaryLoad object.
-    mesh : str
-        Tributary Mesh datastructure.
-    x : float
-        x component of area load.
-    y : float
-        y component of area load.
-    z : float
-        z component of area load.
-    axes : str
-        TributaryLoad applied via 'local' or 'global' axes.
-
-    Notes
-    -----
-    - The load components are loads per unit area [N/m2].
-    - Currently only supports 'global' axis.
-
-    """
-    pass
-    # def __init__(self, structure, name, mesh, x, y, z, axes):
-    #     super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
-
-
-class HarmoniPointLoadBase(HarmonicPointLoadBase):
-
-    """ Harmonic concentrated forces and moments [units:N, Nm] applied to node(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the HarmoniPointLoadBase object.
-    nodes : str, list
-        Node set or node keys the load is applied to.
-    x : float
-        x component of force.
-    y : float
-        y component of force.
-    z : float
-        z component of force.
-    xx : float
-        xx component of moment.
-    yy : float
-        yy component of moment.
-    zz : float
-        zz component of moment.
-
-    """
-    pass
-    # def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-    #     super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
-
-
-class HarmonicPressureLoad(HarmonicPressureLoadBase):
-
-    """ Harmonic pressure loads [units:N/m2] applied to element(s).
-
-    Parameters
-    ----------
-    name : str
-        Name of the HarmonicPressureLoad object.
-    elements : str, list
-        Elements set or element keys the load is applied to.
-    pressure : float
-        Normal acting pressure to be applied to the elements.
-    phase : float
-        Phase angle in radians.
-
-    """
-    pass
-    # def __init__(self, name, elements, pressure, phase):
-    #     super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
-
-
-class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
-
-    """ Acoustic Diffuse field loads applied to elements.
-
-    Parameters
-    ----------
-    name : str
-        Name of the HarmonicPressureLoad object.
-    elements : str, list
-        Elements set or element keys the load is applied to.
-    air_density : float
-        Density of the acoustic fluid (defaults to air at 20 degrees).
-    sound_speed : float
-        Speed of sound (defaults to air at 20 degrees)
-    max_inc_angle: float
-        Maximum angle with the positive z axis for the randon incident plane waves
-
-    """
-    pass
-    # def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
-    #     super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(OpenseesHarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError

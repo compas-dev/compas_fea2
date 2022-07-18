@@ -2,126 +2,149 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.backends._base.problem import LoadBase
-from compas_fea2.backends._base.problem import PrestressLoadBase
-from compas_fea2.backends._base.problem import PointLoadBase
-from compas_fea2.backends._base.problem import LineLoadBase
-from compas_fea2.backends._base.problem import AreaLoadBase
-from compas_fea2.backends._base.problem import GravityLoadBase
-from compas_fea2.backends._base.problem import ThermalLoadBase
-from compas_fea2.backends._base.problem import TributaryLoadBase
-from compas_fea2.backends._base.problem import HarmonicPointLoadBase
-from compas_fea2.backends._base.problem import HarmonicPressureLoadBase
-from compas_fea2.backends._base.problem import AcousticDiffuseFieldLoadBase
+from compas_fea2.problem import PointLoad
+from compas_fea2.problem import LineLoad
+from compas_fea2.problem import AreaLoad
+from compas_fea2.problem import GravityLoad
+from compas_fea2.problem import TributaryLoad
+from compas_fea2.problem import PrestressLoad
+from compas_fea2.problem import HarmonicPointLoad
+from compas_fea2.problem import HarmonicPressureLoad
 
-
-# Author(s): Francesco Ranaudo (github.com/franaudo)
-
-
-__all__ = [
-    # 'PrestressLoad',
-    'PointLoad',
-    'LineLoad',
-    'AreaLoad',
-    'GravityLoad',
-    'ThermalLoad',
-    'TributaryLoad',
-    'HarmoniPointLoadBase',
-    'HarmonicPressureLoad',
-    'AcousticDiffuseFieldLoad'
-]
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
-# class PrestressLoad(PrestressLoadBase):
-#     NotImplemented
-#     # def __init__(self, name, elements, sxx):
-#     #     super(PrestressLoad, self).__init__(name, elements, sxx)
+
+class AbaqusPointLoad(PointLoad):
+    """Abaqus implementation of :class:`PointLoad`.\n"""
+    __doc__ += PointLoad.__doc__
+    """
+    Additional Parameters
+    ---------------------
+    modify : bool, optional
+        If ``True``, change previous displacements applied at the same location, otherwise
+        add the displacement to the previous. By defult is ``True``.
+    follow : bool, optional
+        if `True` the load follows the deformation of the element.
+
+    Additional Attributes
+    ---------------------
+    op : bool
+        If ``True``, change previous displacements applied at the same location, otherwise
+        add the displacement to the previous.
+    follow : bool
+        if `True` the load follows the deformation of the element.
+    """
+
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', modify=False, follow=False, name=None, **kwargs):
+        super(AbaqusPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+
+        self._modify = ', OP=NEW' if modify else ', OP=MOD'
+        self._follow = ', follower' if follow else ''
+
+    @property
+    def op(self):
+        return self._op
+
+    @property
+    def follow(self):
+        return self._follow
+
+    def _generate_jobdata(self, instance, nodes):
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str).
+
+        """
+
+        data_section = ['** Name: {} Type: oncentrated Force'.format(self.name),
+                        '*Cload{}{}'.format(self._modify, self._follow)]
+        for node in nodes:
+            for comp, dof in enumerate(dofs, 1):
+                if getattr(self, dof):
+                    data_section += ['{}.{}, {}, {}'.format(instance, node.key+1, comp, self.components[dof])]
+        return '\n'.join(data_section)
 
 
-class PointLoad(PointLoadBase):
-    # TODO: add the possibility to apply the load to a node and not just to a node set
-    def __init__(self, name, lset, x=None, y=None, z=None, xx=None, yy=None, zz=None, modify=False, follow=False):
-        super(PointLoad, self).__init__(
-            name=name, nodes=None, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz)
+class AbaqusLineLoad(LineLoad):
+    """Abaqus implementation of :class:`LineLoad`.\n"""
+    __doc__ += LineLoad.__doc__
 
-        self.lset = lset
-        if modify:
-            self.op = 'NEW'
-        else:
-            self.op = 'MOD'
-        if follow:
-            self.follow = ', follower'
-        else:
-            self.follow = ''
-
-        self.data = self._generate_data()
-
-    def _generate_data(self):
-        data_section = []
-        line = ("** Name: {} Type: Concentrated Force\n"
-                "*Cload, OP={}{}").format(self.name, self.op, self.follow)
-        data_section.append(line)
-        c = 1
-        for dof in dofs:
-            if self.components[dof]:
-                line = """{}, {}, {}""".format(
-                    self.lset, c, self.components[dof])
-                data_section.append(line)
-            c += 1
-        return '\n'.join(data_section) + '\n'
+    def __init__(self, elements, x, y, z, xx, yy, zz, axes, name=None, **kwargs):
+        super(AbaqusLineLoad, self).__init__(elements, x, y, z, xx, yy, zz, axes, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class LineLoad(LineLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, x, y, z, xx, yy, zz, axes):
-    #     super(LineLoad, self).__init__(name, elements, x, y, z, xx, yy, zz, axes)
+class AbaqusAreaLoad(AreaLoad):
+    """Abaqus implementation of :class:`AreaLoad`.\n"""
+    __doc__ += AreaLoad.__doc__
+
+    def __init__(self, elements, x, y, z, axes, name=None, **kwargs):
+        super(AbaqusAreaLoad, self).__init__(elements, x, y, z, axes, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class AreaLoad(AreaLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, x, y, z, axes):
-    #     super(AreaLoad, self).__init__(name, elements, x, y, z, axes)
+class AbaqusGravityLoad(GravityLoad):
+    """Abaqus implementation of :class:`GravityLoad`.\n"""
+    __doc__ += GravityLoad.__doc__
 
+    def __init__(self, g=9.81, x=0., y=0., z=-1., name=None, **kwargs):
+        super(AbaqusGravityLoad, self).__init__(g, x, y, z, name=name, **kwargs)
 
-class GravityLoad(GravityLoadBase):
+    def _generate_jobdata(self):
+        """Generates the string information for the input file.
 
-    def __init__(self, name, g, x, y, z):
-        super(GravityLoad, self).__init__(name, g, x, y, z)
-        self.lset = None
+        Parameters
+        ----------
+        None
 
-    def _generate_data(self):
+        Returns
+        -------
+        input file data line (str).
+        """
         return ("** Name: {} Type: Gravity\n"
                 "*Dload\n"
-                ", GRAV, {}, {}, {}, {}\n").format(self.name, self.g, self.components['x'],
-                                                   self.components['y'], self.components['z'])
+                ", GRAV, {}, {}, {}, {}").format(self.name, self.g, self.components['x'],
+                                                 self.components['y'], self.components['z'])
 
 
-class ThermalLoad(ThermalLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, temperature):
-    #     super(ThermalLoad, self).__init__(name, elements, temperature)
+class AbaqusPrestressLoad(PrestressLoad):
+    """Abaqus implementation of :class:`PrestressLoad`.\n"""
+    __doc__ += PrestressLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusPrestressLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class TributaryLoad(TributaryLoadBase):
-    NotImplemented
-    # def __init__(self, structure, name, mesh, x, y, z, axes):
-    #     super(TributaryLoad, self).__init__(structure, name, mesh, x, y, z, axes)
+class AbaqusTributaryLoad(TributaryLoad):
+    """Abaqus implementation of :class:`TributaryLoad`.\n"""
+    __doc__ += TributaryLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusTributaryLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class HarmoniPointLoadBase(HarmonicPointLoadBase):
-    NotImplemented
-    # def __init__(self, name, nodes, x, y, z, xx, yy, zz):
-    #     super(HarmoniPointLoadBase, self).__init__(name, nodes, x, y, z, xx, yy, zz)
+class AbaqusHarmonicPointLoad(HarmonicPointLoad):
+    """Abaqus implementation of :class:`HarmonicPointLoad`.\n"""
+    __doc__ += HarmonicPointLoad.__doc__
+
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusHarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError
 
 
-class HarmonicPressureLoad(HarmonicPressureLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, pressure, phase):
-    #     super(HarmonicPressureLoad, self).__init__(name, elements, pressure, phase)
+class AbaqusHarmonicPressureLoad(HarmonicPressureLoad):
+    """Abaqus implementation of :class:`HarmonicPressureLoad`.\n"""
+    __doc__ += HarmonicPressureLoad.__doc__
 
-
-class AcousticDiffuseFieldLoad(AcousticDiffuseFieldLoadBase):
-    NotImplemented
-    # def __init__(self, name, elements, air_density, sound_speed, max_inc_angle):
-    #     super(AcousticDiffuseFieldLoad, self).__init__(name, elements, air_density, sound_speed, max_inc_angle)
+    def __init__(self, components, axes='global', name=None, **kwargs):
+        super(AbaqusHarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
+        raise NotImplementedError

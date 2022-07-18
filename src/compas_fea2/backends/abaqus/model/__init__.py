@@ -1,10 +1,9 @@
 """
 ********************************************************************************
-abaqus.model
+model
 ********************************************************************************
 
 .. currentmodule:: compas_fea2.backends.abaqus.model
-
 
 Model
 =====
@@ -12,15 +11,7 @@ Model
 .. autosummary::
     :toctree: generated/
 
-    Model
-
-Instances
-=========
-
-.. autosummary::
-    :toctree: generated/
-
-    Instance
+    AbaqusModel
 
 Parts
 =====
@@ -28,7 +19,7 @@ Parts
 .. autosummary::
     :toctree: generated/
 
-    Part
+    AbaqusPart
 
 Nodes
 =====
@@ -36,7 +27,7 @@ Nodes
 .. autosummary::
     :toctree: generated/
 
-    Node
+    AbaqusNode
 
 Elements
 ========
@@ -44,12 +35,11 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    MassElement
-    BeamElement
-    TrussElement
-    ShellElement
-    MembraneElement
-    SolidElement
+    AbaqusBeamElement
+    AbaqusShellElement
+    AbaqusSolidElement
+    AbaqusTetrahedronElement
+    AbaqusHexahedronElement
 
 Constraints
 ===========
@@ -57,16 +47,7 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
-    Constraint
-    TieConstraint
-
-Interactions
-============
-
-.. autosummary::
-    :toctree: generated/
-
-    Interaction
+    AbaqusTieConstraint
 
 Materials
 =========
@@ -74,16 +55,15 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    ElasticIsotropic
-    Stiff
-    ElasticOrthotropic
-    ElasticPlastic
-    Steel
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    UserMaterial
-
+    AbaqusUserMaterial
+    AbaqusStiff
+    AbaqusElasticIsotropic
+    AbaqusElasticOrthotropic
+    AbaqusElasticPlastic
+    AbaqusConcrete
+    AbaqusConcreteSmearedCrack
+    AbaqusConcreteDamagedPlasticity
+    AbaqusSteel
 
 Sections
 ========
@@ -91,31 +71,51 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    MassSection
-    AngleSection
-    BoxSection
-    CircularSection
-    GeneralSection
-    ISection
-    PipeSection
-    RectangularSection
-    ShellSection
-    MembraneSection
-    SolidSection
-    TrapezoidalSection
-    TrussSection
-    StrutSection
-    TieSection
-    SpringSection
+    AbaqusBeamSection
+    AbaqusSpringSection
+    AbaqusAngleSection
+    AbaqusBoxSection
+    AbaqusCircularSection
+    AbaqusHexSection
+    AbaqusISection
+    AbaqusPipeSection
+    AbaqusRectangularSection
+    AbaqusShellSection
+    AbaqusMembraneSection
+    AbaqusSolidSection
+    AbaqusTrapezoidalSection
+    AbaqusTrussSection
+    AbaqusStrutSection
+    AbaqusTieSection
+    AbaqusMassSection
 
-Sets
-====
+Boundary Conditions
+===================
 
 .. autosummary::
     :toctree: generated/
 
-    Set
-    Surface
+    AbaqusBoundaryCondition
+    AbaqusFixedBC
+    AbaqusPinnedBC
+    AbaqusFixedBCXX
+    AbaqusFixedBCYY
+    AbaqusFixedBCZZ
+    AbaqusRollerBCX
+    AbaqusRollerBCY
+    AbaqusRollerBCZ
+    AbaqusRollerBCXY
+    AbaqusRollerBCYZ
+    AbaqusRollerBCXZ
+
+Groups
+======
+
+.. autosummary::
+    :toctree: generated/
+
+    AbaqusNodesGroup
+    AbaqusElementsGroup
 
 """
 
@@ -123,20 +123,175 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 
-# additional software-based classes
-from .model import *
-from .instances import *
-from .parts import *
-from .nodes import *
-from .interactions import *
-from .sets import *
-from .constraints import *
-from .elements import *
-from .materials import *
-from .sections import *
+# Abaqus Materials
+from .materials import (
+    AbaqusElasticIsotropic,
+    AbaqusElasticOrthotropic,
+    AbaqusElasticPlastic,
+    AbaqusStiff,
+    AbaqusUserMaterial,
+    AbaqusConcrete,
+    AbaqusConcreteDamagedPlasticity,
+    AbaqusConcreteSmearedCrack,
+    AbaqusSteel,
+    AbaqusTimber,
+)
 
 
-__all__ = [name for name in dir() if not name.startswith('_')]
+# Abaqus Boundary Conditions
+from .bcs import (
+    AbaqusFixedBC,
+    AbaqusFixedBCXX,
+    AbaqusFixedBCYY,
+    AbaqusFixedBCZZ,
+    AbaqusPinnedBC,
+    AbaqusRollerBCX,
+    AbaqusRollerBCXY,
+    AbaqusRollerBCXZ,
+    AbaqusRollerBCY,
+    AbaqusRollerBCYZ,
+    AbaqusRollerBCZ,
+)
 
+# Abaqus Constraints
+from .constraints import (
+    AbaqusTieConstraint,
+)
+
+# Abaqus Elements
+from .elements import (
+    AbaqusMassElement,
+    AbaqusBeamElement,
+    AbaqusTrussElement,
+    AbaqusMembraneElement,
+    AbaqusShellElement,
+    AbaqusSolidElement,
+    AbaqusTetrahedronElement,
+    AbaqusHexahedronElement,
+)
+
+# Abaqus Groups
+from .groups import (
+    AbaqusNodesGroup,
+    AbaqusElementsGroup,
+    AbaqusFacesGroup,
+)
+
+
+# Abaqus Interactions
+from .interactions import (
+    AbaqusHardContactFrictionPenalty,
+    AbaqusHardContactRough,
+)
+
+# Abaqus Interfaces
+from .interfaces import (
+    AbaqusInterface
+)
+
+# Abaqus Models
+from .model import AbaqusModel
+
+# Abaqus Nodes
+from .nodes import AbaqusNode
+
+# Abaqus Parts
+from .parts import AbaqusPart
+
+# Abaqus Relseases
+from .releases import (
+    AbaqusBeamEndPinRelease
+)
+
+# Abaqus Sections
+from .sections import (
+    AbaqusBeamSection,
+    AbaqusAngleSection,
+    AbaqusBoxSection,
+    AbaqusCircularSection,
+    AbaqusHexSection,
+    AbaqusISection,
+    AbaqusMassSection,
+    AbaqusPipeSection,
+    AbaqusRectangularSection,
+    AbaqusSpringSection,
+    AbaqusStrutSection,
+    AbaqusTieSection,
+    AbaqusTrapezoidalSection,
+    AbaqusTrussSection,
+    AbaqusMembraneSection,
+    AbaqusShellSection,
+    AbaqusSolidSection,
+)
+
+__all__ = [
+    'AbaqusElasticIsotropic',
+    'AbaqusElasticOrthotropic',
+    'AbaqusElasticPlastic',
+    'AbaqusStiff',
+    'AbaqusUserMaterial',
+    'AbaqusConcrete',
+    'AbaqusConcreteDamagedPlasticity',
+    'AbaqusConcreteSmearedCrack',
+    'AbaqusSteel',
+    'AbaqusTimber',
+
+    'AbaqusFixedBC',
+    'AbaqusFixedBCXX',
+    'AbaqusFixedBCYY',
+    'AbaqusFixedBCZZ',
+    'AbaqusPinnedBC',
+    'AbaqusRollerBCX',
+    'AbaqusRollerBCXY',
+    'AbaqusRollerBCXZ',
+    'AbaqusRollerBCY',
+    'AbaqusRollerBCYZ',
+    'AbaqusRollerBCZ',
+
+    'AbaqusTieConstraint',
+
+    'AbaqusBeamSection',
+    'AbaqusAngleSection',
+    'AbaqusBoxSection',
+    'AbaqusCircularSection',
+    'AbaqusHexSection',
+    'AbaqusISection',
+    'AbaqusMassSection',
+    'AbaqusPipeSection',
+    'AbaqusRectangularSection',
+    'AbaqusSpringSection',
+    'AbaqusStrutSection',
+    'AbaqusTieSection',
+    'AbaqusTrapezoidalSection',
+    'AbaqusTrussSection',
+    'AbaqusMembraneSection',
+    'AbaqusShellSection',
+    'AbaqusSolidSection',
+
+    'AbaqusMassElement',
+    'AbaqusBeamElement',
+    'AbaqusTrussElement',
+    'AbaqusMembraneElement',
+    'AbaqusShellElement',
+    'AbaqusSolidElement',
+    'AbaqusTetrahedronElement',
+    'AbaqusHexahedronElement',
+
+    'AbaqusNodesGroup',
+    'AbaqusElementsGroup',
+    'AbaqusFacesGroup',
+
+    'AbaqusHardContactFrictionPenalty',
+    'AbaqusHardContactRough',
+
+    'AbaqusInterface',
+
+    'AbaqusBeamEndPinRelease',
+
+    'AbaqusPart',
+
+    'AbaqusNode',
+
+    'AbaqusModel',
+]

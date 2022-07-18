@@ -6,23 +6,38 @@ compas_fea2
 .. currentmodule:: compas_fea2
 
 
+API Packages
+============
+
+.. toctree::
+    :maxdepth: 1
+
+    compas_fea2.model
+    compas_fea2.problem
+    compas_fea2.results
+    compas_fea2.job
+    compas_fea2.postprocessor
+    compas_fea2.preprocessor
+    compas_fea2.optimisation
+    compas_fea2.utilities
+
+Dev Packages
+============
+
 .. toctree::
     :maxdepth: 1
 
     compas_fea2.backends
-    compas_fea2.interfaces
-    compas_fea2.postprocessor
-    compas_fea2.preprocessor
-    compas_fea2.utilities
-
+    compas_fea2.UI
 
 """
-
-from __future__ import print_function
-
 import os
-import sys
-import compas
+from collections import defaultdict
+from compas.plugins import pluggable
+
+from pint import UnitRegistry
+units = UnitRegistry()
+units.define('@alias pascal = Pa')
 
 
 __author__ = ["Francesco Ranaudo"]
@@ -40,25 +55,31 @@ UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
-# Check if package is installed from git
-# If that's the case, try to append the current head's hash to __version__
-try:
-    git_head_file = compas._os.absjoin(HOME, '.git', 'HEAD')
+BACKEND = None
+BACKENDS = defaultdict(dict)
 
-    if os.path.exists(git_head_file):
-        # git head file contains one line that looks like this:
-        # ref: refs/heads/master
-        with open(git_head_file, 'r') as git_head:
-            _, ref_path = git_head.read().strip().split(' ')
-            ref_path = ref_path.split('/')
 
-            git_head_refs_file = compas._os.absjoin(HOME, '.git', *ref_path)
+@pluggable(category='fea_backends', selector='collect_all')
+def register_backend():
+    raise NotImplementedError
 
-        if os.path.exists(git_head_refs_file):
-            with open(git_head_refs_file, 'r') as git_head_ref:
-                git_commit = git_head_ref.read().strip()
-                __version__ += '-' + git_commit[:8]
-except Exception:
-    pass
+
+def set_backend(name):
+    if name not in ('abaqus', 'opensees', 'ansys'):
+        raise ValueError('{} is not a backend!'.format(name))
+    global BACKEND
+    BACKEND = name
+    register_backend()
+
+
+def get_backend_implementation(cls):
+    return BACKENDS[BACKEND].get(cls)
+
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
+
+__all_plugins__ = [
+    'compas_fea2.backends.abaqus',
+    'compas_fea2.backends.opensees',
+    'compas_fea2.backends.ansys',
+]

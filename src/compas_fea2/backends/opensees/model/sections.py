@@ -3,409 +3,231 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import pi
 
-from compas_fea2.backends._base.model import SectionBase
-from compas_fea2.backends._base.model import AngleSectionBase
-from compas_fea2.backends._base.model import BoxSectionBase
-from compas_fea2.backends._base.model import CircularSectionBase
-from compas_fea2.backends._base.model import GeneralSectionBase
-from compas_fea2.backends._base.model import ISectionBase
-from compas_fea2.backends._base.model import PipeSectionBase
-from compas_fea2.backends._base.model import RectangularSectionBase
-from compas_fea2.backends._base.model import ShellSectionBase
-from compas_fea2.backends._base.model import MembraneSectionBase
-from compas_fea2.backends._base.model import SolidSectionBase
-from compas_fea2.backends._base.model import TrapezoidalSectionBase
-from compas_fea2.backends._base.model import TrussSectionBase
-from compas_fea2.backends._base.model import StrutSectionBase
-from compas_fea2.backends._base.model import TieSectionBase
-from compas_fea2.backends._base.model import SpringSectionBase
-from compas_fea2.backends._base.model import MassSectionBase
-
-
-# Author(s): Andrew Liew (github.com/andrewliew)
+from compas_fea2.model import BeamSection
+from compas_fea2.model import AngleSection
+from compas_fea2.model import BoxSection
+from compas_fea2.model import HexSection
+from compas_fea2.model import ISection
+from compas_fea2.model import CircularSection
+from compas_fea2.model import RectangularSection
+from compas_fea2.model import MassSection
+from compas_fea2.model import ShellSection
+from compas_fea2.model import MembraneSection
+from compas_fea2.model import SolidSection
+from compas_fea2.model import TrussSection
+from compas_fea2.model import TrapezoidalSection
+from compas_fea2.model import StrutSection
+from compas_fea2.model import TieSection
+from compas_fea2.model import SpringSection
+from compas_fea2.model import PipeSection
 
 
-__all__ = [
-    'Section',
-    'AngleSection',
-    'BoxSection',
-    'CircularSection',
-    'GeneralSection',
-    'ISection',
-    'PipeSection',
-    'RectangularSection',
-    'ShellSection',
-    'MembraneSection',
-    'SolidSection',
-    'TrapezoidalSection',
-    'TrussSection',
-    'StrutSection',
-    'TieSection',
-    'SpringSection',
-    'MassSection'
-]
-
-
-class Section(SectionBase):
-
-    """ Initialises base Section object.
-
-    Parameters
-    ----------
-    name : str
-        Section object name.
-
-    Attributes
-    ----------
-    name : str
-        Section object name.
-    geometry : dict
-        Geometry of the Section.
-
-    """
-
-    def __init__(self, name):
-        super(Section, self).__init__(name)
-
+# NOTE in opensees the sectional properties are assigned directly to the element UNLESS it is a nonliner thing...
+# in that case there is a tag for the section....aaaaarrrrhhhh
 
 # ==============================================================================
 # 0D
 # ==============================================================================
+class OpenseesMassSection(MassSection):
+    """"""
+    __doc__ += MassSection.__doc__
 
-class MassSection(MassSectionBase):
+    def __init__(self, mass, name=None, **kwargs):
+        super(OpenseesMassSection, self).__init__(mass, name=name, **kwargs)
 
-    """ Section for mass elements.
 
-    Parameters
-    ----------
-    name : str
-        Section name.
+class OpenseesSpringSection(SpringSection):
+    """"""
+    __doc__ += SpringSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name):
-        super(MassSection, self).__init__(name)
-
+    def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
+        super().__init__(forces, displacements, stiffness, name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 # ==============================================================================
 # 1D
 # ==============================================================================
 
-class AngleSection(AngleSectionBase):
 
-    """ Uniform thickness angle cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    t : float
-        Thickness.
-
-    Notes
-    -----
-    - Ixy not yet calculated.
+class OpenseesBeamSection(BeamSection):
+    """"""
+    __doc__ += BeamSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name, b, h, t):
-        super(AngleSection, self).__init__(name, b, h, t)
+    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
+        super().__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 
-class BoxSection(BoxSectionBase):
+class OpenseesAngleSection(AngleSection):
+    """"""
+    __doc__ += AngleSection.__doc__
 
-    """ Hollow rectangular box cross-section for beam elements.
+    def __init__(self, w, h, t, material, name=None, **kwargs):
+        super(OpenseesAngleSection, self).__init__(w, h, t, material, name=name, **kwargs)
+        raise NotImplementedError
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
+
+class OpenseesBoxSection(BoxSection):
+    """"""
+    __doc__ += BoxSection.__doc__
+
+    def __init__(self, w, h, t, material, **kwargs):
+        super(OpenseesBoxSection, self).__init__(self, w, h, t, material, **kwargs)
+        raise NotImplementedError
+
+
+class OpenseesCircularSection(CircularSection):
+    """"""
+    __doc__ += CircularSection.__doc__
+
+    def __init__(self, r, material, name=None, **kwargs):
+        super(OpenseesCircularSection, self).__init__(r, material, name=name, **kwargs)
+        raise NotImplementedError
+
+
+class OpenseesHexSection(HexSection):
+    """"""
+    __doc__ += HexSection.__doc__
+
+    def __init__(self, r, t, material, name=None, **kwargs):
+        super(OpenseesHexSection, self).__init__(r, t, material, name=name, **kwargs)
+        raise NotImplementedError
+
+
+class OpenseesISection(ISection):
+    """"""
+    __doc__ += ISection.__doc__
+
+    def __init__(self,  w, h, t, material, l=0, name=None, **kwargs):
+        super(OpenseesISection, self).__init__(w, h, t, t, material, name=name, **kwargs)
+        raise NotImplementedError
+
+
+class OpenseesPipeSection(PipeSection):
+    """"""
+    __doc__ += PipeSection.__doc__
+
+    def __init__(self, r, t, material, name=None, **kwarg):
+        super(OpenseesPipeSection, self).__init__(r, t, material, name=name, **kwarg)
+        raise NotImplementedError
+
+
+class OpenseesRectangularSection(RectangularSection):
+    """OpenSees implementation of :class:`RectangularSection`. \n
+    """
+    __doc__ += RectangularSection.__doc__
+
+    def __init__(self, w, h, material, name=None, **kwargs):
+        super(OpenseesRectangularSection, self).__init__(w, h, material, name=None, **kwargs)
+
+    def _generate_jobdata(self):
+        return 'section Elastic {} {} {} {} {} {} {}'.format(self.name, self.material.E, self.A, self.Iyy, self.Ixx, self.material.G, self.J)
+
+
+class OpenseesTrapezoidalSection(TrapezoidalSection):
+    """"""
+    __doc__ += TrapezoidalSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name, b, h, tw, tf):
-        super(BoxSection, self).__init__(name, b, h, tw, tf)
+    def __init__(self, w1, w2, h, material, name=None, **kwargs):
+        super(OpenseesTrapezoidalSection, self).__init__(w1, w2, h, material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 
-class CircularSection(CircularSectionBase):
-
-    """ Solid circular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Radius.
-
-    """
-
-    def __init__(self, name, r):
-        super(CircularSection, self).__init__(name, r)
-
-
-class GeneralSection(GeneralSectionBase):
-
-    """ General cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-    Ixx : float
-        Second moment of area about axis x-x.
-    Ixy : float
-        Cross moment of area.
-    Iyy : float
-        Second moment of area about axis y-y.
-    J : float
-        Torsional rigidity.
-    g0 : float
-        Sectorial moment.
-    gw : float
-        Warping constant.
+# TODO -> check how these sections are implemented in ABAQUS
+class OpenseesTrussSection(TrussSection):
+    """"""
+    __doc__ += TrussSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name, A, Ixx, Ixy, Iyy, J, g0, gw):
-        super(GeneralSection, self).__init__(name, A, Ixx, Ixy, Iyy, J, g0, gw)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(OpenseesTrussSection, self).__init__(A, material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 
-class ISection(ISectionBase):
-
-    """ Equal flanged I-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-    tw : float
-        Web thickness.
-    tf : float
-        Flange thickness.
+class OpenseesStrutSection(StrutSection):
+    """"""
+    __doc__ += StrutSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name, b, h, tw, tf):
-        super(ISection, self).__init__(name, b, h, tw, tf)
+    def __init__(self, A, material, name=None, **kwargs):
+        super(OpenseesStrutSection, self).__init__(A, material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 
-class PipeSection(PipeSectionBase):
-
-    """ Hollow circular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    r : float
-        Outer radius.
-    t : float
-        Wall thickness.
+class OpenseesTieSection(TieSection):
+    """"""
+    __doc__ += TieSection.__doc__
+    __doc__ += """
+    Warning
+    -------
+    Currently not available in Opensees.
 
     """
 
-    def __init__(self, name, r, t):
-        super(PipeSection, self).__init__(name, r, t)
-
-
-class RectangularSection(RectangularSectionBase):
-
-    """ Solid rectangular cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b : float
-        Width.
-    h : float
-        Height.
-
-    """
-
-    def __init__(self, name, b, h):
-        super(RectangularSection, self).__init__(name, b, h)
-
-
-class TrapezoidalSection(TrapezoidalSectionBase):
-
-    """ Solid trapezoidal cross-section for beam elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    b1 : float
-        Width at bottom.
-    b2 : float
-        Width at top.
-    h : float
-        Height.
-
-    Notes
-    -----
-    - J not yet calculated.
-
-    """
-
-    def __init__(self, name, b1, b2, h):
-        super(TrapezoidalSection, self).__init__( name, b1, b2, h)
-
-
-class TrussSection(TrussSectionBase):
-
-    """ For use with truss elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(TrussSection, self).__init__(name, A)
-
-
-class StrutSection(StrutSectionBase):
-
-    """ For use with strut elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(StrutSection, self).__init__(name, A)
-
-
-class TieSection(TieSectionBase):
-
-    """ For use with tie elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    A : float
-        Area.
-
-    """
-
-    def __init__(self, name, A):
-        super(TieSection, self).__init__(name, A)
-
-
-class SpringSection(SpringSectionBase):
-
-    """ For use with spring elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    forces : dict
-        Forces data for non-linear springs.
-    displacements : dict
-        Displacements data for non-linear springs.
-    stiffness : dict
-        Elastic stiffness for linear springs.
-
-    Notes
-    -----
-    - Force and displacement data should range from negative to positive values.
-    - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
-    - Directions are 'axial', 'lateral', 'rotation'.
-
-    """
-
-    def __init__(self, name, forces={}, displacements={}, stiffness={}):
-        super(SpringSection, self).__init__(name, forces={}, displacements={}, stiffness={})
+    def __init__(self, A, material, name=None, **kwargs):
+        super(OpenseesTieSection, self).__init__(A, material, name=name, **kwargs)
+        raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 
 # ==============================================================================
 # 2D
 # ==============================================================================
 
-class ShellSection(ShellSectionBase):
+class OpenseesShellSection(ShellSection):
+    """"""
+    __doc__ += ShellSection.__doc__
 
-    """ Section for shell elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
-
-    """
-    pass
-    # def __init__(self, name, t):
-    #     super(ShellSection, self).__init__(name, t)
+    def __init__(self, t, material, int_points=5, name=None, **kwargs):
+        super(OpenseesShellSection, self).__init__(t, material, name=name, **kwargs)
+        raise NotImplementedError
 
 
-class MembraneSection(MembraneSectionBase):
+class OpenseesMembraneSection(MembraneSection):
+    """"""
+    __doc__ += MembraneSection.__doc__
 
-    """ Section for membrane elements.
-
-    Parameters
-    ----------
-    name : str
-        Section name.
-    t : float
-        Thickness.
-
-    """
-    pass
-    # def __init__(self, name, t):
-    #     super(MembraneSection, self).__init__(name, t)
-
+    def __init__(self, t, material, name=None, **kwargs):
+        super(OpenseesMembraneSection, self).__init__(t, material, name=name, **kwargs)
+        raise NotImplementedError
 
 # ==============================================================================
 # 3D
 # ==============================================================================
 
-class SolidSection(SolidSectionBase):
 
-    """ Section for solid elements.
+class OpenseesSolidSection(SolidSection):
+    """"""
+    __doc__ += SolidSection.__doc__
 
-    Parameters
-    ----------
-    name : str
-        Section name.
-
-    """
-    pass
-    # def __init__(self, name):
-    #     super(SolidSection, self).__init__(name)
-
-
-
+    def __init__(self, material, name=None, **kwargs):
+        super(OpenseesSolidSection, self).__init__(material, name=name, **kwargs)
+        raise NotImplementedError

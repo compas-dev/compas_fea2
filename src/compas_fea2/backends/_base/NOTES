@@ -1,7 +1,0 @@
-- nodes
-- elements
-- components
-- structure
-- analysis
-- job and writer are only relevant for file-based, subprocess communication
-- update use of super

@@ -5,35 +5,13 @@ abaqus.job
 
 .. currentmodule:: compas_fea2.backends.abaqus.job
 
-Input
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    InputFile
-
-Read
-====
-
-.. autosummary::
-    :toctree: generated/
-
-    extract_data
-
-ODB
-===
-
-.. autosummary::
-    :toctree: generated/
-
-    extract_odb_data
-
-Run
-===
-
-.. autosummary::
-    :toctree: generated/
-
-    launch_process
 """
+
+from .input_file import AbaqusInputFile
+from .input_file import AbaqusParametersFile
+
+__all__ = [
+    'AbaqusInputFile',
+    'AbaqusParametersFile',
+    'launch_optimisation',
+]

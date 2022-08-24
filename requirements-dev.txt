@@ -21,6 +21,7 @@ matplotlib
 
 openseespy ; sys_platform != 'darwin'
 openseespymac ; sys_platform == 'darwin'
+sphinxcontrib.gist
 
 # fea2_extensions
 

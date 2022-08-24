@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <title>compas_fea2 - compas_fea2.model.sections</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="Francesco Ranaudo" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/mono-blue.min.css">
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas-reference.css" />
+
+  
+
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://compas-dev.github.io/compas_fea2/">
+        <img src="../../../_static/images/compas_icon_white.png" alt="compas_fea2" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://compas-dev.github.io/compas_fea2/">compas_fea2</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <meta id="doc_versions" data-url="https://compas-dev.github.io/compas_fea2/doc_versions.txt" data-docs="https://compas-dev.github.io/compas_fea2/">
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            0.1.0
+          </a>
+          <div id="doc_version_list" class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions"></div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/compas-dev/compas_fea2" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-4 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../../../index.html">compas_fea2</a></li>
+            
+            <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+            
+            <!-- <li class="breadcrumb-item active" aria-current="page">compas_fea2.model.sections</li> -->
+          </ol>
+        </nav>
+        
+
+        
+        
+        <h1>Source code for compas_fea2.model.sections</h1><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="kn">from</span> <span class="nn">compas_fea2</span> <span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span> <span class="nn">compas_fea2.base</span> <span class="kn">import</span> <span class="n">FEAData</span>
+<span class="kn">from</span> <span class="nn">.materials</span> <span class="kn">import</span> <span class="n">_Material</span>
+
+
+<div class="viewcode-block" id="_Section"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model._Section.html#compas_fea2.model._Section">[docs]</a><span class="k">class</span> <span class="nc">_Section</span><span class="p">(</span><span class="n">FEAData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for sections.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Uniqe identifier. If not provided it is automatically generated. Set a</span>
+<span class="sd">        name if you want a more human-readable input file.</span>
+<span class="sd">    material : :class:`~compas_fea2.model._Material`</span>
+<span class="sd">        A material definition.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Uniqe identifier. If not provided it is automatically generated. Set a</span>
+<span class="sd">        name if you want a more human-readable input file.</span>
+<span class="sd">    material : :class:`~compas_fea2.model._Material`</span>
+<span class="sd">        The material associated with the section.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_Section</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">material</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material</span>
+
+    <span class="nd">@material</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">_Material</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Material must be of type `compas_fea2.model._Material`.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Section</span>
+<span class="s2">-------</span>
+<span class="s2">name     : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">material : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="_Section.jobdata"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model._Section.jobdata.html#compas_fea2.model._Section.jobdata">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">jobdata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># 0D</span>
+<span class="c1"># ==============================================================================</span>
+
+<div class="viewcode-block" id="MassSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.MassSection.html#compas_fea2.model.MassSection">[docs]</a><span class="k">class</span> <span class="nc">MassSection</span><span class="p">(</span><span class="n">FEAData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Section for point mass elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name.</span>
+<span class="sd">    mass : float</span>
+<span class="sd">        Point mass value.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MassSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Mass Section</span>
+<span class="s2">------------</span>
+<span class="s2">name     : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">material : None</span>
+<span class="s2">mass     : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpringSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.SpringSection.html#compas_fea2.model.SpringSection">[docs]</a><span class="k">class</span> <span class="nc">SpringSection</span><span class="p">(</span><span class="n">FEAData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Section for use with spring elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name.</span>
+<span class="sd">    forces : dict</span>
+<span class="sd">        Forces data for non-linear springs.</span>
+<span class="sd">    displacements : dict</span>
+<span class="sd">        Displacements data for non-linear springs.</span>
+<span class="sd">    stiffness : dict</span>
+<span class="sd">        Elastic stiffness for linear springs.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section object name.</span>
+<span class="sd">    forces : dict</span>
+<span class="sd">        Forces data for non-linear springs.</span>
+<span class="sd">    displacements : dict</span>
+<span class="sd">        Displacements data for non-linear springs.</span>
+<span class="sd">    stiffness : dict</span>
+<span class="sd">        Elastic stiffness for linear springs.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    - Force and displacement data should range from negative to positive values.</span>
+<span class="sd">    - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.</span>
+<span class="sd">    - Directions are &#39;axial&#39;, &#39;lateral&#39;, &#39;rotation&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">displacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stiffness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SpringSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># would be good to know the structure of these dicts and validate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forces</span> <span class="o">=</span> <span class="n">forces</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span> <span class="o">=</span> <span class="n">displacements</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span> <span class="o">=</span> <span class="n">stiffness</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Spring Section</span>
+<span class="s2">--------------</span>
+<span class="s2">name      : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">material  : None</span>
+<span class="s2">forces    : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">displ     : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">stiffness : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">forces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">displacements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stiffness</span><span class="p">)</span></div>
+
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># 1D</span>
+<span class="c1"># ==============================================================================</span>
+
+<div class="viewcode-block" id="BeamSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.BeamSection.html#compas_fea2.model.BeamSection">[docs]</a><span class="k">class</span> <span class="nc">BeamSection</span><span class="p">(</span><span class="n">_Section</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Custom section for beam elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="p">,</span> <span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">A</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ixx</span> <span class="o">=</span> <span class="n">Ixx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Iyy</span> <span class="o">=</span> <span class="n">Iyy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ixy</span> <span class="o">=</span> <span class="n">Ixy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Avx</span> <span class="o">=</span> <span class="n">Avx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Avy</span> <span class="o">=</span> <span class="n">Avy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">J</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g0</span> <span class="o">=</span> <span class="n">g0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gw</span> <span class="o">=</span> <span class="n">gw</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="si">{}</span><span class="s2"></span>
+<span class="si">{}</span><span class="s2"></span>
+<span class="s2">name     : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">material : </span><span class="si">{!r}</span><span class="s2"></span>
+
+<span class="s2">A   : {:~.4g}</span>
+<span class="s2">Ixx : {:~.4g}</span>
+<span class="s2">Iyy : {:~.4g}</span>
+<span class="s2">Ixy : {:~.4g}</span>
+<span class="s2">Avx : {:~.2g}</span>
+<span class="s2">Avy : {:~.2g}</span>
+<span class="s2">J   : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">g0  : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">gw  : </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+           <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="p">,</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**2&#39;</span><span class="p">]),</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ixx</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**4&#39;</span><span class="p">]),</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Iyy</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**4&#39;</span><span class="p">]),</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Ixy</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**4&#39;</span><span class="p">]),</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Avx</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**2&#39;</span><span class="p">]),</span>
+           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Avy</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s1">&#39;m**2&#39;</span><span class="p">]),</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">g0</span><span class="p">,</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">gw</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AngleSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.AngleSection.html#compas_fea2.model.AngleSection">[docs]</a><span class="k">class</span> <span class="nc">AngleSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Uniform thickness angle cross-section for beam elements.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    - Ixy not yet calculated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">h</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">t</span> <span class="o">-</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">t</span> <span class="o">-</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">h</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">w</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="n">w</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AngleSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                           <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO implement different thickness along the 4 sides</span>
+<div class="viewcode-block" id="BoxSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.BoxSection.html#compas_fea2.model.BoxSection">[docs]</a><span class="k">class</span> <span class="nc">BoxSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hollow rectangular box cross-section for beam elements.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Currently you can only specify the thickness of the flanges and the webs.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    - Ixy not yet calculated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    tw : float</span>
+<span class="sd">        Web thickness.</span>
+<span class="sd">    tf : float</span>
+<span class="sd">        Flange thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    tw : float</span>
+<span class="sd">        Web thickness.</span>
+<span class="sd">    tf : float</span>
+<span class="sd">        Flange thickness.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tw</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tw</span> <span class="o">=</span> <span class="n">tw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf</span> <span class="o">=</span> <span class="n">tf</span>
+
+        <span class="n">Ap</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">tf</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">tw</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">((</span><span class="n">h</span> <span class="o">-</span> <span class="n">tf</span><span class="p">)</span> <span class="o">/</span> <span class="n">tw</span> <span class="o">+</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">tw</span><span class="p">)</span> <span class="o">/</span> <span class="n">tf</span><span class="p">)</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">h</span> <span class="o">-</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tw</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span> <span class="o">-</span> <span class="p">((</span><span class="n">w</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tw</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">w</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span> <span class="o">-</span> <span class="p">((</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tw</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">Ap</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoxSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                         <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CircularSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.CircularSection.html#compas_fea2.model.CircularSection">[docs]</a><span class="k">class</span> <span class="nc">CircularSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Solid circular cross-section for beam elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Radius.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Radius.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="n">D</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="n">Iyy</span> <span class="o">=</span> <span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="mf">64.</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">32</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CircularSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                              <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HexSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.HexSection.html#compas_fea2.model.HexSection">[docs]</a><span class="k">class</span> <span class="nc">HexSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hexagonal hollow section.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        outside radius</span>
+<span class="sd">    t : float</span>
+<span class="sd">        wall thickness</span>
+<span class="sd">    material : str</span>
+<span class="sd">        material name to be assigned to the section.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        outside radius</span>
+<span class="sd">    t : float</span>
+<span class="sd">        wall thickness</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This section is not available for the selected backend&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ISection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.ISection.html#compas_fea2.model.ISection">[docs]</a><span class="k">class</span> <span class="nc">ISection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Equal flanged I-section for beam elements.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Currently you the thickness of the two flanges is the same.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    tw : float</span>
+<span class="sd">        Web thickness.</span>
+<span class="sd">    tf : float</span>
+<span class="sd">        Flange thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    tw : float</span>
+<span class="sd">        Web thickness.</span>
+<span class="sd">    tf : float</span>
+<span class="sd">        Flange thickness.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tw</span><span class="p">,</span> <span class="n">tf</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tw</span> <span class="o">=</span> <span class="n">tw</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf</span> <span class="o">=</span> <span class="n">tf</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">tf</span> <span class="o">+</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span> <span class="o">*</span> <span class="n">tw</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="p">(</span><span class="n">tw</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">((</span><span class="n">tf</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">/</span> <span class="mf">12.</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">tf</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">-</span> <span class="n">tf</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="p">((</span><span class="n">h</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tf</span><span class="p">)</span> <span class="o">*</span> <span class="n">tw</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">12.</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">((</span><span class="n">w</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">tf</span> <span class="o">/</span> <span class="mf">12.</span><span class="p">)</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">tf</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">tf</span><span class="p">)</span> <span class="o">*</span> <span class="n">tw</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ISection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                       <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PipeSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.PipeSection.html#compas_fea2.model.PipeSection">[docs]</a><span class="k">class</span> <span class="nc">PipeSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hollow circular cross-section for beam elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Outer radius.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Wall thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Outer radius.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Wall thickness.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="n">D</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">D</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">D</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="n">Iyy</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">4</span> <span class="o">-</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PipeSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                          <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RectangularSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.RectangularSection.html#compas_fea2.model.RectangularSection">[docs]</a><span class="k">class</span> <span class="nc">RectangularSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Solid rectangular cross-section for beam elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w : float</span>
+<span class="sd">        Width.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+
+        <span class="n">l1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+        <span class="n">l2</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">h</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">12.</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">12.</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span> <span class="o">*</span> <span class="n">w</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mf">0.833</span> <span class="o">*</span> <span class="n">A</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mf">0.833</span> <span class="o">*</span> <span class="n">A</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="p">(</span><span class="n">l1</span> <span class="o">*</span> <span class="n">l2</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.33333</span> <span class="o">-</span> <span class="mf">0.21</span> <span class="o">*</span> <span class="p">(</span><span class="n">l2</span> <span class="o">/</span> <span class="n">l1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">l2</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">l2</span> <span class="o">*</span> <span class="n">l1</span><span class="o">**</span><span class="mi">4</span><span class="p">)))</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">RectangularSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                                 <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrapezoidalSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.TrapezoidalSection.html#compas_fea2.model.TrapezoidalSection">[docs]</a><span class="k">class</span> <span class="nc">TrapezoidalSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Solid trapezoidal cross-section for beam elements.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    - J not yet calculated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w1 : float</span>
+<span class="sd">        Width at bottom.</span>
+<span class="sd">    w2 : float</span>
+<span class="sd">        Width at top.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    w1 : float</span>
+<span class="sd">        Width at bottom.</span>
+<span class="sd">    w2 : float</span>
+<span class="sd">        Width at top.</span>
+<span class="sd">    h : float</span>
+<span class="sd">        Height.</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w1</span> <span class="o">=</span> <span class="n">w1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w2</span> <span class="o">=</span> <span class="n">w2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+
+        <span class="c1"># c = (h * (2 * w2 + w1)) / (3. * (w1 + w2))  # NOTE: not used</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">w1</span> <span class="o">+</span> <span class="n">w2</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">12.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">w2</span> <span class="o">+</span> <span class="n">w1</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">48.</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">w1</span> <span class="o">+</span> <span class="n">w2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">w2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">w1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrapezoidalSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                                 <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrussSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.TrussSection.html#compas_fea2.model.TrussSection">[docs]</a><span class="k">class</span> <span class="nc">TrussSection</span><span class="p">(</span><span class="n">BeamSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For use with truss elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Area.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">Ixx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Iyy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Ixy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">Avy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">g0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gw</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrussSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">Ixx</span><span class="o">=</span><span class="n">Ixx</span><span class="p">,</span> <span class="n">Iyy</span><span class="o">=</span><span class="n">Iyy</span><span class="p">,</span> <span class="n">Ixy</span><span class="o">=</span><span class="n">Ixy</span><span class="p">,</span>
+                                           <span class="n">Avx</span><span class="o">=</span><span class="n">Avx</span><span class="p">,</span> <span class="n">Avy</span><span class="o">=</span><span class="n">Avy</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">g0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">gw</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StrutSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.StrutSection.html#compas_fea2.model.StrutSection">[docs]</a><span class="k">class</span> <span class="nc">StrutSection</span><span class="p">(</span><span class="n">TrussSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For use with strut elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Area.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StrutSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TieSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.TieSection.html#compas_fea2.model.TieSection">[docs]</a><span class="k">class</span> <span class="nc">TieSection</span><span class="p">(</span><span class="n">TrussSection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For use with tie elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Area.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A : float</span>
+<span class="sd">        Cross section.</span>
+<span class="sd">    Ixx : float</span>
+<span class="sd">        Inertia wrt XX.</span>
+<span class="sd">    Iyy : float</span>
+<span class="sd">        Inertia wrt YY.</span>
+<span class="sd">    Ixy : float</span>
+<span class="sd">        Inertia wrt XY.</span>
+<span class="sd">    Avx : float</span>
+<span class="sd">        Shear area along x.</span>
+<span class="sd">    Avy : float</span>
+<span class="sd">        Shear area along y</span>
+<span class="sd">    J : float</span>
+<span class="sd">        Torsion modulus.</span>
+<span class="sd">    g0 : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    gw : float</span>
+<span class="sd">        ???</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TieSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># 2D</span>
+<span class="c1"># ==============================================================================</span>
+
+<div class="viewcode-block" id="ShellSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.ShellSection.html#compas_fea2.model.ShellSection">[docs]</a><span class="k">class</span> <span class="nc">ShellSection</span><span class="p">(</span><span class="n">_Section</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Section for shell elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ShellSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span></div>
+
+
+<div class="viewcode-block" id="MembraneSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.MembraneSection.html#compas_fea2.model.MembraneSection">[docs]</a><span class="k">class</span> <span class="nc">MembraneSection</span><span class="p">(</span><span class="n">_Section</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Section for membrane elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Thickness.</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MembraneSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span></div>
+
+
+<span class="c1"># ==============================================================================</span>
+<span class="c1"># 3D</span>
+<span class="c1"># ==============================================================================</span>
+
+<div class="viewcode-block" id="SolidSection"><a class="viewcode-back" href="../../../api/generated/compas_fea2.model.SolidSection.html#compas_fea2.model.SolidSection">[docs]</a><span class="k">class</span> <span class="nc">SolidSection</span><span class="p">(</span><span class="n">_Section</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Section for solid elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    material : :class:`compas_fea2.model._Material`</span>
+<span class="sd">        The section material.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Section name. If not provided, a unique identifier is automatically</span>
+<span class="sd">        assigned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SolidSection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="n">material</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</code></pre></div>
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+        <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column collapse">
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../backends.html">Backends</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../backends/backends.html">backends</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../tutorial.html">Tutorial</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../tutorial/umat.html">User Material subroutines</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_save_and_load_model.html">Save and load a model</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_simple_frame.html">Simple frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_simple_shell.html">Simple shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_frame.html">Hypar frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_gmsh.html">Hypar shell using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_cantilever_gmsh.html">Cantilever beam using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_shell.html">Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_shell_modal.html">Modal analysis of an hypar shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/2_scripting_compas_hypar_sections.html">Hypar Frame with different sections</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/3_scripting_compas_hypar_umat.html">User Materials</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/4_top_opt_compas_hypar_gmsh.html">Topology optimisation of an Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/4_top_opt_solid_simple.html">Topology optimisation of a cube</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.html">compas_fea2</a><ul class="nav flex-column collapse">
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.model.html">model</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.problem.html">problem</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.postprocessor.html">post-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.preprocessor.html">pre-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.optimisation.html">optimisation</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../devguide/overview.html">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+
+      
+    </nav>
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+        <div class="col-12 col-md-6 mx-md-auto text-center">
+          <h4 class="pb-3 below-text">COMPAS</h4>
+          <p class="below-text">
+            A computational framework for collaboration and research
+            in Architecture, Engineering, Fabrication, and Construction.
+          </p>
+          <nav class="nav justify-content-center pb-3">
+            <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+              <span class="fab fa-github fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+              <span class="fab fa-discourse fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+              <span class="fab fa-python fa-1x"></span>
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col text-center">
+          <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script id="documentation_options" data-url_root="" src="../../../_static/documentation_options.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <script src="../../../_static/underscore.js"></script>
+  <script src="../../../_static/doctools.js"></script>
+  <script src="../../../_static/searchtools.js"></script>
+  <script src="../../../_static/language_data.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $(".language-default code").addClass("python");
+      $(".language-python code").addClass("python");
+      $(".language-bash code").addClass("bash");
+      $(".language-cpp code").addClass("cpp");
+      $(".language-json code").addClass("json");
+      $(".language-none code").addClass("plaintext");
+
+      hljs.initHighlighting();
+      anchors.add();
+
+      new ClipboardJS(".btn.copy", {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+
+      $("#compas-navigation li.active > ul").each(function() {
+        var ul = $(this);
+        if (! ul.hasClass("show")) {
+          ul.addClass("show");
+        }
+      });
+
+      $("#compas-navigation li.toctree-l1").has("ul").each(function() {
+        var li = $(this);
+        li.addClass("has-children");
+        if (li.hasClass("active")) {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-up"></i></span>');
+        }
+        else {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-down"></i></span>');
+        }
+      });
+
+      $(".menu-toggle").click(function() {
+        var toggle = $(this);
+        toggle.siblings("ul").toggleClass("show");
+      });
+
+    });
+
+
+    var url = $("#doc_versions").data("url");
+    var docs_site = $("#doc_versions").data("docs");
+
+    if (url) {
+      $.get(url, res => {
+        var lines = res.match(/[^\r\n]+/g);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        lines.reverse();
+        lines.forEach(version => {
+          $("#doc_version_list").append("<a class=\"dropdown-item\" href=\"" + docs_site + version + "\">" + version + "</a>");
+        });
+
+        var selected_version = $('.nav-versions .dropdown-item').filter(function (i, ver) {
+          return window.location.href.startsWith(ver.href);
+        });
+        selected_version.addClass('active');
+        $("#bd-versions").text(selected_version.text());
+
+      })
+    }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+
+</html>

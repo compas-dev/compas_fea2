@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <title>compas_fea2 - compas_fea2.optimisation.problem</title>
+  
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="author" content="Francesco Ranaudo" />
+  <meta name="description" content="" />
+
+  <link rel="shortcut icon" href="../../../_static/images/compas.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/mono-blue.min.css">
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas.css" />
+  <link rel="stylesheet" type="text/css" href="../../../_static/css/compas-reference.css" />
+
+  
+
+  
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body data-spy="scroll" data-target="#compas-toc">
+  <!-- header -->
+  <header id="header" class="compas-header d-flex align-items-center">
+    <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
+      <!-- brand -->
+      <a class="navbar-brand" href="https://compas-dev.github.io/compas_fea2/">
+        <img src="../../../_static/images/compas_icon_white.png" alt="compas_fea2" width="48px" height="48px" />
+      </a>
+      <!-- brand -->
+      <!-- primary -->
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="https://compas-dev.github.io/compas_fea2/">compas_fea2</a></li>
+      </ul>
+      <!-- primary -->
+      <ul class="navbar-nav d-none d-md-flex ml-md-auto">
+        <!-- version -->
+        
+        <meta id="doc_versions" data-url="https://compas-dev.github.io/compas_fea2/doc_versions.txt" data-docs="https://compas-dev.github.io/compas_fea2/">
+        <li class="nav-item nav-versions dropdown">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            0.1.0
+          </a>
+          <div id="doc_version_list" class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions"></div>
+        </li>
+        
+        <!-- version -->
+        <!-- social -->
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/compas-dev/compas_fea2" target="_blank">
+            <span class="fab fa-github fa-1x"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://forum.compas-framework.org" target="_blank">
+            <span class="fab fa-discourse fa-1x"></span>
+          </a>
+        </li>
+        <!-- social -->
+      </ul>
+    </nav>
+  </header>
+  <!-- header -->
+  <!-- main -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- main -->
+      <main class="col-12 col-md-9 col-xl-7 px-4 px-md-5 pt-2 pb-5 compas-content" role="main">
+        
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-3 bg-white px-0">
+            <li class="breadcrumb-item"><a href="../../../index.html">compas_fea2</a></li>
+            
+            <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+            
+            <!-- <li class="breadcrumb-item active" aria-current="page">compas_fea2.optimisation.problem</li> -->
+          </ol>
+        </nav>
+        
+
+        
+        
+        <h1>Source code for compas_fea2.optimisation.problem</h1><div class="highlight"><pre><button class="btn copy"><i class="far fa-copy"></i></button><code>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">compas_fea2.base</span> <span class="kn">import</span> <span class="n">FEAData</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">compas_fea2.job.input_file</span> <span class="kn">import</span> <span class="n">ParametersFile</span>
+
+
+<div class="viewcode-block" id="OptimisationProblem"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.html#compas_fea2.optimisation.OptimisationProblem">[docs]</a><span class="k">class</span> <span class="nc">OptimisationProblem</span><span class="p">(</span><span class="n">FEAData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;General Optimisation Problem.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    problem : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.Problem` subclass object.</span>
+<span class="sd">    design_variables : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.DesignVariables` subclass object</span>
+<span class="sd">    design_responses : dict</span>
+<span class="sd">        dictionary with :class:`compas_fea2.optimisation.DesignResponse` subclass objects</span>
+<span class="sd">    objective_function : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.ObectiveFunction` subclass object</span>
+<span class="sd">    dv_constraints : dict of obj</span>
+<span class="sd">        dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects</span>
+<span class="sd">    constraints : dict of obj</span>
+<span class="sd">        dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects</span>
+<span class="sd">    strategy : str</span>
+<span class="sd">        type of optimisation</span>
+<span class="sd">    parameters : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.OptimisationParameters` subclass object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">design_variables</span><span class="p">,</span> <span class="n">design_responses</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">,</span>
+                 <span class="n">dv_constraints</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OptimisationProblem</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span> <span class="o">=</span> <span class="n">problem</span>  <span class="c1"># BUG this makes no sense...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_design_variables</span> <span class="o">=</span> <span class="n">design_variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_design_responses</span> <span class="o">=</span> <span class="n">design_responses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_objective_function</span> <span class="o">=</span> <span class="n">objective_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dv_constraints</span> <span class="o">=</span> <span class="n">dv_constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span> <span class="o">=</span> <span class="n">constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">strategy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">problem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;obj : :class:`compas_fea2.optimisation.Problem` subclass object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">desing_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;obj: :class:`compas_fea2.optimisation.DesignVariables` subclass object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_desing_variables</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">desing_responses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;dict : dictionary with :class:`compas_fea2.optimisation.DesignResponse` subclass objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_desing_responses</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;obj : :class:`compas_fea2.optimisation.ObectiveFunction` subclass object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objective_function</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dv_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;dict : dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dv_constraints</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;dict : dict of :class:`compas_fea2.optimisation.OptimisationConstraint` subclass objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;str : type of optimisation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;obj : :class:`compas_fea2.optimisation.OptimisationParameters` subclass object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span>
+
+<div class="viewcode-block" id="OptimisationProblem.add_objective_function"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.add_objective_function.html#compas_fea2.optimisation.OptimisationProblem.add_objective_function">[docs]</a>    <span class="k">def</span> <span class="nf">add_objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="OptimisationProblem.add_design_response"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.add_design_response.html#compas_fea2.optimisation.OptimisationProblem.add_design_response">[docs]</a>    <span class="k">def</span> <span class="nf">add_design_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design_response</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="OptimisationProblem.add_constraint"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.add_constraint.html#compas_fea2.optimisation.OptimisationProblem.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="OptimisationProblem.write_parameters_file"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.write_parameters_file.html#compas_fea2.optimisation.OptimisationProblem.write_parameters_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_parameters_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes the parameters file for the optimisation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str, :class:`pathlib.Path`</span>
+<span class="sd">            Path to the folder where the input file is saved. In case the folder</span>
+<span class="sd">            does not exist, one is created.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="n">par_file</span> <span class="o">=</span> <span class="n">ParametersFile</span><span class="o">.</span><span class="n">from_problem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">par_file</span><span class="o">.</span><span class="n">write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimisationProblem.solve"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.solve.html#compas_fea2.optimisation.OptimisationProblem.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cpus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run Topology Optimisation procedure</span>
+
+<span class="sd">        Warning</span>
+<span class="sd">        -------</span>
+<span class="sd">        ToscaStructure cannot read a model made of parts and assemblies. The model</span>
+<span class="sd">        is automatically flatten and in case of incompatibilities, the names of</span>
+<span class="sd">        nodes, elements and groups are automatically changed by the software. Check</span>
+<span class="sd">        the input file automatically generated in the optimisation folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str, optional</span>
+<span class="sd">            folder location where the optimisation results will be saved, by default &#39;C:/temp&#39;</span>
+<span class="sd">        cpus : int</span>
+<span class="sd">            number of cpus used by the solver.</span>
+<span class="sd">        output : bool, optional</span>
+<span class="sd">            if ``True`` provides detailed output in the terminal, by default True</span>
+<span class="sd">        save : bool, optional</span>
+<span class="sd">            save results, by default False. CURRENTLY NOT IMPLEMENTED!</span>
+<span class="sd">        smooth : obj, optional</span>
+<span class="sd">            if a :class:`compas_fea2.optimisation.SmoothingParameters` subclass object is passed, the</span>
+<span class="sd">            optimisation results will be postprocessed and smoothed, by defaut</span>
+<span class="sd">            ``None`` (no smoothing)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem</span><span class="o">.</span><span class="n">write_input_file</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_parameters_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimisationProblem.smooth_optimisation"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.OptimisationProblem.smooth_optimisation.html#compas_fea2.optimisation.OptimisationProblem.smooth_optimisation">[docs]</a>    <span class="k">def</span> <span class="nf">smooth_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="TopOptSensitivity"><a class="viewcode-back" href="../../../api/generated/compas_fea2.optimisation.TopOptSensitivity.html#compas_fea2.optimisation.TopOptSensitivity">[docs]</a><span class="k">class</span> <span class="nc">TopOptSensitivity</span><span class="p">(</span><span class="n">OptimisationProblem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimisation Problem for sensitivity-based topology optimisation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    problem : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.Problem` subclass object.</span>
+<span class="sd">    design_variables : obj</span>
+<span class="sd">        :class:`compas_fea2.optimisation.DesignVariables` subclass object</span>
+<span class="sd">    vf : float</span>
+<span class="sd">        volume fraction as final_volume/initial_volume</span>
+<span class="sd">    lc : str</span>
+<span class="sd">        load case from the FEA problem to consider in the optimisation problem [WIP]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">design_variables</span><span class="p">,</span> <span class="n">vf</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;topology_optimisation_sesitivity&#39;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">dv_elements</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">DesignVariables</span><span class="p">(</span><span class="s1">&#39;variables&#39;</span><span class="p">,</span> <span class="n">design_variables</span><span class="p">)</span>
+        <span class="n">dr_volume</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">VolumeResponse</span><span class="p">(</span><span class="n">design_variables</span><span class="p">,</span> <span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="n">dr_energy</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">EnergyStiffnessResponse</span><span class="p">(</span><span class="n">design_variables</span><span class="p">,</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">lc</span><span class="p">)</span>
+        <span class="n">obj_function</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">ObjectiveFunction</span><span class="p">(</span><span class="s1">&#39;min_compliance&#39;</span><span class="p">,</span> <span class="n">dr_energy</span><span class="p">,</span> <span class="s1">&#39;MinMax&#39;</span><span class="p">)</span>
+        <span class="n">constraint</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">OptimisationConstraint</span><span class="p">(</span><span class="s1">&#39;vol_frac&#39;</span><span class="p">,</span> <span class="n">dr_volume</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">constraint</span> <span class="o">&lt;=</span> <span class="n">vf</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">OptimisationParameters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TopOptSensitivity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">dv_elements</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="n">dr_volume</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">:</span> <span class="n">dr_energy</span><span class="p">},</span>
+                                                <span class="n">obj_function</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;vf&#39;</span><span class="p">:</span> <span class="n">constraint</span><span class="p">},</span> <span class="s1">&#39;TOPO_SENSITIVITY&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">TopOptController</span><span class="p">(</span><span class="n">OptimisationProblem</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        
+      </main>
+      <!-- content -->
+      <!-- sidebar -->
+      <div class="col-12 col-md-3 compas-sidebar" role="navigation">
+        <form id="search" class="d-flex align-items-center compas-searchbox" action="../../../search.html" method="get">
+          <input class="form-control" type="text" name="q" placeholder="Search docs" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+          <button class="navbar-toggler d-md-none" type="button" data-toggle="collapse" data-target="#compas-navigation" aria-controls="compas-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </form>
+        
+        
+        <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column collapse">
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../intro.html">Introduction</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../backends.html">Backends</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../backends/backends.html">backends</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../tutorial.html">Tutorial</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../tutorial/umat.html">User Material subroutines</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../examples.html">Examples</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_save_and_load_model.html">Save and load a model</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_simple_frame.html">Simple frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/0_scripting_simple_shell.html">Simple shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_frame.html">Hypar frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_gmsh.html">Hypar shell using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_cantilever_gmsh.html">Cantilever beam using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_shell.html">Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/1_scripting_compas_hypar_shell_modal.html">Modal analysis of an hypar shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/2_scripting_compas_hypar_sections.html">Hypar Frame with different sections</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/3_scripting_compas_hypar_umat.html">User Materials</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/4_top_opt_compas_hypar_gmsh.html">Topology optimisation of an Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../examples/4_top_opt_solid_simple.html">Topology optimisation of a cube</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../api.html">API Reference</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.html">compas_fea2</a><ul class="nav flex-column collapse">
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.model.html">model</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.problem.html">problem</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.postprocessor.html">post-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.preprocessor.html">pre-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.optimisation.html">optimisation</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="../../../api/compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../devguide.html">Developer Guide</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="../../../devguide/overview.html">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+        
+      </div>
+      <!-- sidebar -->
+      <!-- toc -->
+      <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
+        
+        
+      </div>
+      <!-- toc -->
+    </div>
+  </div>
+  <!-- main -->
+  <!-- footer -->
+  <footer class="compas-footer">
+    <nav class="nav p-2">
+      
+
+      
+    </nav>
+  </footer>
+  <!-- footer -->
+  <!-- below -->
+  <div class="below py-5" style="background-color: #222;">
+    <div class="container">
+      <div class="row flex-column">
+        <div class="col-12 col-md-6 mx-md-auto text-center">
+          <h4 class="pb-3 below-text">COMPAS</h4>
+          <p class="below-text">
+            A computational framework for collaboration and research
+            in Architecture, Engineering, Fabrication, and Construction.
+          </p>
+          <nav class="nav justify-content-center pb-3">
+            <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+              <span class="fab fa-github fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+              <span class="fab fa-discourse fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+              <span class="fab fa-python fa-1x"></span>
+            </a>
+          </nav>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col text-center">
+          <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- below -->
+  <!-- scripts -->
+  <script id="documentation_options" data-url_root="" src="../../../_static/documentation_options.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <script src="../../../_static/underscore.js"></script>
+  <script src="../../../_static/doctools.js"></script>
+  <script src="../../../_static/searchtools.js"></script>
+  <script src="../../../_static/language_data.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $(".language-default code").addClass("python");
+      $(".language-python code").addClass("python");
+      $(".language-bash code").addClass("bash");
+      $(".language-cpp code").addClass("cpp");
+      $(".language-json code").addClass("json");
+      $(".language-none code").addClass("plaintext");
+
+      hljs.initHighlighting();
+      anchors.add();
+
+      new ClipboardJS(".btn.copy", {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+
+      $("#compas-navigation li.active > ul").each(function() {
+        var ul = $(this);
+        if (! ul.hasClass("show")) {
+          ul.addClass("show");
+        }
+      });
+
+      $("#compas-navigation li.toctree-l1").has("ul").each(function() {
+        var li = $(this);
+        li.addClass("has-children");
+        if (li.hasClass("active")) {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-up"></i></span>');
+        }
+        else {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-down"></i></span>');
+        }
+      });
+
+      $(".menu-toggle").click(function() {
+        var toggle = $(this);
+        toggle.siblings("ul").toggleClass("show");
+      });
+
+    });
+
+
+    var url = $("#doc_versions").data("url");
+    var docs_site = $("#doc_versions").data("docs");
+
+    if (url) {
+      $.get(url, res => {
+        var lines = res.match(/[^\r\n]+/g);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        lines.reverse();
+        lines.forEach(version => {
+          $("#doc_version_list").append("<a class=\"dropdown-item\" href=\"" + docs_site + version + "\">" + version + "</a>");
+        });
+
+        var selected_version = $('.nav-versions .dropdown-item').filter(function (i, ver) {
+          return window.location.href.startsWith(ver.href);
+        });
+        selected_version.addClass('active');
+        $("#bd-versions").text(selected_version.text());
+
+      })
+    }
+  </script>
+  <!-- scripts -->
+  
+  
+</body>
+
+</html>

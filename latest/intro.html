@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   
   <title>compas_fea2 - Introduction</title>
@@ -8,22 +9,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-  <meta name="author" content="" />
+  <meta name="author" content="Francesco Ranaudo" />
   <meta name="description" content="" />
 
   <link rel="shortcut icon" href="_static/images/compas.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.9/styles/default.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/mono-blue.min.css">
   <link rel="stylesheet" type="text/css" href="_static/css/compas.css" />
   <link rel="stylesheet" type="text/css" href="_static/css/compas-reference.css" />
 
   
-    <link rel="next" title="Getting Started" href="gettingstarted.html" />
+  <link rel="next" title="Getting Started" href="gettingstarted.html" />
   
 
   
-    <link rel="prev" title="compas_fea2" href="index.html" />
+  <link rel="prev" title="compas_fea2" href="index.html" />
   
 
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
@@ -34,22 +35,21 @@
   <header id="header" class="compas-header d-flex align-items-center">
     <nav class="navbar navbar-expand navbar-dark col flex-column flex-md-row text-center">
       <!-- brand -->
-      <a class="navbar-brand" href="https://blockresearchgroup.github.io/compas_fea2/">
+      <a class="navbar-brand" href="https://compas-dev.github.io/compas_fea2/">
         <img src="_static/images/compas_icon_white.png" alt="compas_fea2" width="48px" height="48px" />
       </a>
       <!-- brand -->
       <!-- primary -->
       <ul class="navbar-nav">
-        <li class="nav-item active"><a class="nav-link" href="https://blockresearchgroup.github.io/compas_fea2/">compas_fea2</a></li>
+        <li class="nav-item active"><a class="nav-link" href="https://compas-dev.github.io/compas_fea2/">compas_fea2</a></li>
       </ul>
       <!-- primary -->
       <ul class="navbar-nav d-none d-md-flex ml-md-auto">
         <!-- version -->
         
-        <meta id="doc_versions" data-url="https://blockresearchgroup.github.io/compas_fea2/doc_versions.txt" data-docs="https://blockresearchgroup.github.io/compas_fea2/">
+        <meta id="doc_versions" data-url="https://compas-dev.github.io/compas_fea2/doc_versions.txt" data-docs="https://compas-dev.github.io/compas_fea2/">
         <li class="nav-item nav-versions dropdown">
-          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
+          <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             0.1.0
           </a>
           <div id="doc_version_list" class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions"></div>
@@ -58,7 +58,7 @@
         <!-- version -->
         <!-- social -->
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/BlockResearchGroup/compas_fea2" target="_blank">
+          <a class="nav-link" href="https://github.com/compas-dev/compas_fea2" target="_blank">
             <span class="fab fa-github fa-1x"></span>
           </a>
         </li>
@@ -76,13 +76,13 @@
   <div class="container-fluid">
     <div class="row">
       <!-- main -->
-      <main class="col-12 col-md-9 col-xl-7 px-2 px-md-5 pt-2 pb-5 compas-content" role="main">
+      <main class="col-12 col-md-9 col-xl-7 px-4 px-md-5 pt-2 pb-5 compas-content" role="main">
         
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-3 bg-white px-0">
-            <li class="breadcrumb-item"><a href="index.html">docs</a></li>
+            <li class="breadcrumb-item"><a href="index.html">compas_fea2</a></li>
             
-            <li class="breadcrumb-item active" aria-current="page">Introduction</li>
+            <!-- <li class="breadcrumb-item active" aria-current="page">Introduction</li> -->
           </ol>
         </nav>
         
@@ -91,10 +91,253 @@
         
         <section id="introduction">
 <h1>Introduction</h1>
-<p class="lead">The image below describes a general FEA workflow:</p>
+<section class="lead" id="plug-in-architecture">
+<h2>Plug-in architecture</h2>
+<p><code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> implements a plug-in architecture. The <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> main
+package only defines the general API for a Finite Element Analysis, while the
+actual implementation in the a specific backend is done in the corresponding
+plug-in, whcih is registered and the beginning of the analysis. Once the analysis
+is complente, the results are recorded in a SQL database and can be accessed by
+the user through the SQL wrapper provided by <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code>, by his/her own
+SQL statements or through an external interface.</p>
+<figure class="figure align-default">
+<img alt="_images/registration.jpg" class="figure-img img-fluid" src="_images/registration.jpg" />
+</figure>
+</section>
+<section id="workflow">
+<h2>Workflow</h2>
+<p>The image below describes a general FEA workflow:</p>
 <figure class="figure align-default">
 <img alt="_images/workflow_1.png" class="figure-img img-fluid" src="_images/workflow_1.png" />
 </figure>
+</section>
+<section id="collaboration-workflow">
+<h2>Collaboration Workflow</h2>
+<p>The aim of <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> is to create a common platform for FEA that can be shared
+across disciplines and software. This is achieved by standardizing the API for
+the creation and analysis of an FE model, and by serializing <cite>models</cite>, <cite>problems</cite>
+and <cite>results</cite> in a common database that can be easly shared.</p>
+<p>The two images below show the general collaboration workflow and a specific example
+of a structural engineer using rhino and abaqus collaborating with an acoustic
+engineer using blender and ansys:</p>
+<figure class="figure align-default">
+<img alt="_images/CollaborationWorkflow.jpg" class="figure-img img-fluid" src="_images/CollaborationWorkflow.jpg" />
+</figure>
+<figure class="figure align-default">
+<img alt="_images/CollaborationWorkflow_example.jpg" class="figure-img img-fluid" src="_images/CollaborationWorkflow_example.jpg" />
+</figure>
+</section>
+<section id="units">
+<h2>Units</h2>
+<p>Before starting any model, you need to decide which system of
+units you will use. <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code> has no built-in system of units.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Units consistency</p>
+<p>All input data must be specified in consistent units.
+Do not include unit names or labels when entering data in <code class="docutils literal notranslate"><span class="pre">compas_fea2</span></code>.</p>
+</div>
+<p>Some common systems of consistent units are shown in the table below:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Consistent Units</span></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>	SI</p></th>
+<th class="head"><p>	SI (mm)</p></th>
+<th class="head"><p>	US Unit (ft)</p></th>
+<th class="head"><p>	US Unit (inch)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Length</p></td>
+<td><p>	m</p></td>
+<td><p>	mm</p></td>
+<td><p>	ft</p></td>
+<td><p>	in</p></td>
+</tr>
+<tr class="row-odd"><td><p>Force</p></td>
+<td><p>	N</p></td>
+<td><p>	N</p></td>
+<td><p>	lbf</p></td>
+<td><p>	lbf</p></td>
+</tr>
+<tr class="row-even"><td><p>Mass</p></td>
+<td><p>	kg</p></td>
+<td><p>	tonne (103 kg)</p></td>
+<td><p>	slug</p></td>
+<td><p>	lbf s2/in</p></td>
+</tr>
+<tr class="row-odd"><td><p>Time</p></td>
+<td><p>	s</p></td>
+<td><p>	s</p></td>
+<td><p>	s</p></td>
+<td><p>	s</p></td>
+</tr>
+<tr class="row-even"><td><p>Stress</p></td>
+<td><p>	Pa (N/m2)</p></td>
+<td><p>	MPa (N/mm2)</p></td>
+<td><p>	lbf/ft2</p></td>
+<td><p>	psi (lbf/in2)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Energy</p></td>
+<td><p>	J</p></td>
+<td><p>	mJ (10−3 J)</p></td>
+<td><p>	ft lbf</p></td>
+<td><p>	in lbf</p></td>
+</tr>
+<tr class="row-even"><td><p>Density</p></td>
+<td><p>	kg/m3</p></td>
+<td><p>	tonne/mm3</p></td>
+<td><p>	slug/ft3</p></td>
+<td><p>	lbf s2/in4</p></td>
+</tr>
+</tbody>
+</table>
+<p>In case you do not want to follow a predefined system, you need to be consistent with
+your units assignemnts. Below there are some exmple of correct choices of units:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Consistent Units</span></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>MASS</p></th>
+<th class="head"><p>	LENGTH</p></th>
+<th class="head"><p>	TIME</p></th>
+<th class="head"><p>	FORCE</p></th>
+<th class="head"><p>	STRESS</p></th>
+<th class="head"><p>	ENERGY</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>kg</p></td>
+<td><p>m</p></td>
+<td><p>	s</p></td>
+<td><p>	N</p></td>
+<td><p>	Pa</p></td>
+<td><p>	J</p></td>
+</tr>
+<tr class="row-odd"><td><p>kg</p></td>
+<td><p>	mm</p></td>
+<td><p>	ms</p></td>
+<td><p>	kN</p></td>
+<td><p>	GPa</p></td>
+<td><p>	kN-mm</p></td>
+</tr>
+<tr class="row-even"><td><p>ton</p></td>
+<td><p>	mm</p></td>
+<td><p>	s</p></td>
+<td><p>	N</p></td>
+<td><p>	MPa</p></td>
+<td><p>	N-mm</p></td>
+</tr>
+<tr class="row-odd"><td><p>lbf-s²/in</p></td>
+<td><p>	in</p></td>
+<td><p>	s</p></td>
+<td><p>	lbf</p></td>
+<td><p>	psi</p></td>
+<td><p>	lbf-in</p></td>
+</tr>
+<tr class="row-even"><td><p>slug</p></td>
+<td><p>	ft</p></td>
+<td><p>	s</p></td>
+<td><p>	lbf</p></td>
+<td><p>	psf</p></td>
+<td><p>lbf-ft</p></td>
+</tr>
+</tbody>
+</table>
+<p>The order of magnitude expected for different properties is shown below:</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Magnitude</span></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Commonly used unit</p></th>
+<th class="head"><p>SI value</p></th>
+<th class="head"><p>SI-mm value</p></th>
+<th class="head"><p>Multiplication factor from commonly used to SI-mm</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Stiffness of Steel</p></td>
+<td><p>210 GPa</p></td>
+<td><p>210∙10^9  Pa</p></td>
+<td><p>210000 MPa</p></td>
+<td><p>1000</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stiffness of Concrete</p></td>
+<td><p>30 GPa</p></td>
+<td><p>30∙10^9  Pa</p></td>
+<td><p>30000 MPa</p></td>
+<td><p>1000</p></td>
+</tr>
+<tr class="row-even"><td><p>Density of steel</p></td>
+<td><p>7850 kg/m3</p></td>
+<td><p>7850 kg/m3</p></td>
+<td><p>7.85∙10^-9 tonne/mm3</p></td>
+<td><p>10^-12</p></td>
+</tr>
+<tr class="row-odd"><td><p>Density of concrete</p></td>
+<td><p>2400 kg/m3</p></td>
+<td><p>2400 kg/m3</p></td>
+<td><p>2.4∙10^-9 tonne/mm3</p></td>
+<td><p>10^-12</p></td>
+</tr>
+<tr class="row-even"><td><p>Gravitational constant</p></td>
+<td><p>9.81 m/s2</p></td>
+<td><p>9.81 m/s2</p></td>
+<td><p>9810 mm/s2</p></td>
+<td><p>1000</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pressure</p></td>
+<td><p>1 bar</p></td>
+<td><p>10^5 Pa</p></td>
+<td><p>0.1 MPa</p></td>
+<td><p>10^-1</p></td>
+</tr>
+<tr class="row-even"><td><p>Absolute zero temperature</p></td>
+<td><p>-273.15  ̊C</p></td>
+<td><p>0 K</p></td>
+<td><p>C and K both acceptable</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Stefan-Boltzmann constant</p></td>
+<td><p>5.67∙10-8 W∙m-2∙K-4</p></td>
+<td></td>
+<td><p>5.67∙10-11 mW∙mm-2∙K-4</p></td>
+<td><p>0.001</p></td>
+</tr>
+<tr class="row-even"><td><p>Universal gas constant</p></td>
+<td><p>8.31 J∙K-1∙mol-1</p></td>
+<td></td>
+<td><p>8.31∙103 mJ∙K-1∙mol-1</p></td>
+<td><p>1000</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 
         
@@ -112,19 +355,55 @@
         </form>
         
         
-          <div id="compas-navigation" class="collapse compas-navigation">
-          <ul class="nav flex-column active">
-<li class="nav-item active"><a class="nav-link active current reference internal" href="#">Introduction</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="gettingstarted.html">Getting Started</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="backends.html">Backends</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="examples.html">Examples</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="api.html">API Reference</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="devguide.html">Developer Guide</a></li>
-<li class="nav-item"><a class="nav-link reference internal" href="license.html">License</a></li>
+        <div id="compas-navigation" class="collapse compas-navigation">
+          <ul class="nav flex-column collapse show active">
+<li class="toctree-l1 nav-item active"><a class="nav-link active reference internal" href="#">Introduction</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="backends.html">Backends</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="backends/backends.html">backends</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="tutorial.html">Tutorial</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="tutorial/umat.html">User Material subroutines</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="examples.html">Examples</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/0_scripting_save_and_load_model.html">Save and load a model</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/0_scripting_simple_frame.html">Simple frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/0_scripting_simple_shell.html">Simple shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/1_scripting_compas_hypar_frame.html">Hypar frame</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/1_scripting_compas_hypar_gmsh.html">Hypar shell using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/1_scripting_cantilever_gmsh.html">Cantilever beam using <cite>gmesh</cite></a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/1_scripting_compas_hypar_shell.html">Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/1_scripting_compas_hypar_shell_modal.html">Modal analysis of an hypar shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/2_scripting_compas_hypar_sections.html">Hypar Frame with different sections</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/3_scripting_compas_hypar_umat.html">User Materials</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/4_top_opt_compas_hypar_gmsh.html">Topology optimisation of an Hypar Shell</a></li>
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="examples/4_top_opt_solid_simple.html">Topology optimisation of a cube</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="api.html">API Reference</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.html">compas_fea2</a><ul class="nav flex-column collapse">
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.model.html">model</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.problem.html">problem</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.postprocessor.html">post-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.preprocessor.html">pre-processor</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.optimisation.html">optimisation</a></li>
+<li class="toctree-l3 nav-item"><a class="nav-link reference internal" href="api/compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="devguide.html">Developer Guide</a><ul class="nav flex-column collapse">
+<li class="toctree-l2 nav-item"><a class="nav-link reference internal" href="devguide/overview.html">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 nav-item"><a class="nav-link reference internal" href="license.html">License</a></li>
 </ul>
 
-          </div>
+        </div>
         
       </div>
       <!-- sidebar -->
@@ -132,7 +411,13 @@
       <div class="d-none d-xl-block col-xl-2 compas-toc" role="toc">
         
         <ul class="nav flex-column" id="compas-toc">
-<li class="nav-item"><a class="nav-link reference internal" href="#">Introduction</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#">Introduction</a><ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link reference internal" href="#plug-in-architecture">Plug-in architecture</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#workflow">Workflow</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#collaboration-workflow">Collaboration Workflow</a></li>
+<li class="nav-item"><a class="nav-link reference internal" href="#units">Units</a></li>
+</ul>
+</li>
 </ul>
 
       </div>
@@ -144,114 +429,141 @@
   <footer class="compas-footer">
     <nav class="nav p-2">
       
-        <a href="index.html" title="compas_fea2" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
-          <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
-          <div class="nav-title flex-grow-1 align-self-center">
-            <div class="nav-direction small font-weight-light">Previous</div>
-            compas_fea2
-          </div>
-        </a>
+      <a href="index.html" title="compas_fea2" class="nav-link footer-link float-start text-left d-flex w-50" rel="prev">
+        <div class="nav-button p-2 m-2"><i class="fas fa-arrow-left"></i></div>
+        <div class="nav-title flex-grow-1 align-self-center">
+          <div class="nav-direction small font-weight-light">Previous</div>
+          compas_fea2
+        </div>
+      </a>
       
 
       
-        <a href="gettingstarted.html" title="Getting Started" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
-          <div class="nav-title footer-link flex-grow-1 align-self-center">
-            <div class="nav-direction small font-weight-light">Next</div>
-            Getting Started
-          </div>
-          <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
-        </a>
+      <a href="gettingstarted.html" title="Getting Started" class="nav-link footer-link float-end text-right d-flex w-50" rel="next">
+        <div class="nav-title footer-link flex-grow-1 align-self-center">
+          <div class="nav-direction small font-weight-light">Next</div>
+          Getting Started
+        </div>
+        <div class="nav-button p-2 m-2"><i class="fas fa-arrow-right"></i></div>
+      </a>
       
-    </nav>  
+    </nav>
   </footer>
   <!-- footer -->
   <!-- below -->
   <div class="below py-5" style="background-color: #222;">
     <div class="container">
       <div class="row flex-column">
-      <div class="col-12 col-md-6 mx-md-auto text-center">
-        <h4 class="pb-3 below-text">COMPAS</h4>
-        <p class="below-text">
-          A computational framework for collaboration and research
-          in Architecture, Engineering, Fabrication, and Construction.
-        </p>
-        <nav class="nav justify-content-center pb-3">
-          <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
-            <span class="fab fa-github fa-1x"></span>
-          </a>
-          <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
-            <span class="fab fa-discourse fa-1x"></span>
-          </a>
-          <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
-            <span class="fab fa-python fa-1x"></span>
-          </a>
-        </nav>
-      </div>
+        <div class="col-12 col-md-6 mx-md-auto text-center">
+          <h4 class="pb-3 below-text">COMPAS</h4>
+          <p class="below-text">
+            A computational framework for collaboration and research
+            in Architecture, Engineering, Fabrication, and Construction.
+          </p>
+          <nav class="nav justify-content-center pb-3">
+            <a class="nav-link mx-2 px-0 below-link" href="http://github.com/compas-dev" target="_blank">
+              <span class="fab fa-github fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="http://forum.compas-framework.org" target="_blank">
+              <span class="fab fa-discourse fa-1x"></span>
+            </a>
+            <a class="nav-link mx-2 px-0 below-link" href="https://pypi.org/project/COMPAS/" target="_blank">
+              <span class="fab fa-python fa-1x"></span>
+            </a>
+          </nav>
+        </div>
       </div>
       <div class="row">
-      <div class="col text-center">
-        <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
-      </div>
+        <div class="col text-center">
+          <p class="p-0 m-0 below-text">Copyright &copy; 2017-2021 compas-dev</p>
+        </div>
       </div>
     </div>
   </div>
   <!-- below -->
   <!-- scripts -->
-  <script type="text/javascript">
-  var DOCUMENTATION_OPTIONS = {
-  URL_ROOT          : '',
-  VERSION           : '0.1.0',
-  COLLAPSE_INDEX    : false,
-  FILE_SUFFIX       : '.html',
-  HAS_SOURCE        : 'false',
-  SOURCELINK_SUFFIX : '.txt'
-  };
-  </script>
+  <script id="documentation_options" data-url_root="" src="_static/documentation_options.js"></script>
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.0.0/anchor.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 
   <script src="_static/underscore.js"></script>
   <script src="_static/doctools.js"></script>
-  <script src="_static/js/searchtools_.js"></script>
+  <script src="_static/searchtools.js"></script>
+  <script src="_static/language_data.js"></script>
 
   <script>
-  $(document).ready(function() {
-    $(".language-default code").addClass("python");
-    $(".language-python code").addClass("python");
-    $(".language-bash code").addClass("bash");
-    $(".language-cpp code").addClass("cpp");
-    $(".language-json code").addClass("json");
-    $(".language-none code").addClass("plaintext");
+    $(document).ready(function () {
+      $(".language-default code").addClass("python");
+      $(".language-python code").addClass("python");
+      $(".language-bash code").addClass("bash");
+      $(".language-cpp code").addClass("cpp");
+      $(".language-json code").addClass("json");
+      $(".language-none code").addClass("plaintext");
 
-    hljs.initHighlighting();
-    anchors.add();
+      hljs.initHighlighting();
+      anchors.add();
 
-    $('.nav-versions .dropdown-item').filter(function(i, ver) {
-      return window.location.href.startsWith(ver.href);
-    }).addClass("active");
-
-  });
-
-
-  var url = $("#doc_versions").data("url");
-  var docs_site = $("#doc_versions").data("docs");
-
-  if (url) {
-    $.get(url, res=>{
-      var lines = res.match(/[^\r\n]+/g);
-      lines.forEach(version => {
-        $("#doc_version_list").append("<a class=\"dropdown-item\" href=\""+ docs_site + version + "\">" + version + "</a>");
+      new ClipboardJS(".btn.copy", {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
       });
-    })
-  }
+
+      $("#compas-navigation li.active > ul").each(function() {
+        var ul = $(this);
+        if (! ul.hasClass("show")) {
+          ul.addClass("show");
+        }
+      });
+
+      $("#compas-navigation li.toctree-l1").has("ul").each(function() {
+        var li = $(this);
+        li.addClass("has-children");
+        if (li.hasClass("active")) {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-up"></i></span>');
+        }
+        else {
+          li.prepend('<span class="menu-toggle"><i class="fas fa-chevron-down"></i></span>');
+        }
+      });
+
+      $(".menu-toggle").click(function() {
+        var toggle = $(this);
+        toggle.siblings("ul").toggleClass("show");
+      });
+
+    });
+
+
+    var url = $("#doc_versions").data("url");
+    var docs_site = $("#doc_versions").data("docs");
+
+    if (url) {
+      $.get(url, res => {
+        var lines = res.match(/[^\r\n]+/g);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        lines.reverse();
+        lines.forEach(version => {
+          $("#doc_version_list").append("<a class=\"dropdown-item\" href=\"" + docs_site + version + "\">" + version + "</a>");
+        });
+
+        var selected_version = $('.nav-versions .dropdown-item').filter(function (i, ver) {
+          return window.location.href.startsWith(ver.href);
+        });
+        selected_version.addClass('active');
+        $("#bd-versions").text(selected_version.text());
+
+      })
+    }
   </script>
   <!-- scripts -->
   
   
 </body>
+
 </html>

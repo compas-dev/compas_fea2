@@ -49,4 +49,4 @@ Known issues
 Currently none :)
 
 If you do find problems, help us solving them by filing a bug report
-on the `Issue Tracker <https://github.com/BlockResearchGroup/compas_fea2/issues>`_ of the repo.
+on the `Issue Tracker <https://github.com/compas-dev/compas_fea2/issues>`_ of the repo.

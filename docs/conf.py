@@ -164,7 +164,7 @@ def linkcode_resolve(domain, info):
     else:
         return None
 
-    return f"https://github.com/BlockResearchGroup/compas_fea2/blob/master/src/{filename}.py#L{lineno}"
+    return f"https://github.com/compas-dev/compas_fea2/blob/master/src/{filename}.py#L{lineno}"
 
 # extlinks
 
@@ -189,9 +189,9 @@ html_theme_options = {
     'package_title': project,
     'package_version': release,
     "package_author": "Francesco Ranaudo",
-    "package_docs": "https://blockresearchgroup.github.io/compas_fea2/",
-    "package_repo": "https://github.com/BlockResearchGroup/compas_fea2",
-    "package_old_versions_txt": "https://blockresearchgroup.github.io/compas_fea2/doc_versions.txt"
+    "package_docs": "https://compas-dev.github.io/compas_fea2/",
+    "package_repo": "https://github.com/compas-dev/compas_fea2",
+    "package_old_versions_txt": "https://compas-dev.github.io/compas_fea2/doc_versions.txt"
 }
 
 html_context = {}

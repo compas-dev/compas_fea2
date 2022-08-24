@@ -29,7 +29,7 @@ setup(
     description='2nd generation of compas_fea',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/BlockResearchGroup/compas_fea2',
+    url='https://github.com/compas-dev/compas_fea2',
     author='Francesco Ranaudo',
     author_email='ranaudo@arch.ethz.ch',
     license='MIT license',

@@ -66,9 +66,8 @@ def help(ctx):
 @task(help={
     'docs': 'True to clean up generated documentation, otherwise False',
     'bytecode': 'True to clean up compiled python files, otherwise False.',
-    'temp': 'True to clean up temp folder, otherwise False.',
     'builds': 'True to clean up build/packaging artifacts, otherwise False.'})
-def clean(ctx, docs=True, bytecode=True, temp=False, builds=True):
+def clean(ctx, docs=True, bytecode=True, builds=True):
     """Cleans the local copy from compiled artifacts."""
 
     with chdir(BASE_FOLDER):
@@ -98,19 +97,14 @@ def clean(ctx, docs=True, bytecode=True, temp=False, builds=True):
             folders.append('build/')
             folders.append('src/compas_fea2.egg-info/')
 
-        if temp:
-            rmtree(os.path.join(BASE_FOLDER, 'temp'), ignore_errors=True)
-            os.mkdir(os.path.join(BASE_FOLDER, 'temp'))
-            open(os.path.join(BASE_FOLDER, 'temp/PLACEHOLDER'), 'w').close()
-
         for folder in folders:
             rmtree(os.path.join(BASE_FOLDER, folder), ignore_errors=True)
 
 
-@ task(help={
-    'rebuild': 'True to clean all previously built docs before starting, otherwise False.',
-    'doctest': 'True to run doctests, otherwise False.',
-    'check_links': 'True to check all web links in docs for validity, otherwise False.'})
+@task(help={
+      'rebuild': 'True to clean all previously built docs before starting, otherwise False.',
+      'doctest': 'True to run doctests, otherwise False.',
+      'check_links': 'True to check all web links in docs for validity, otherwise False.'})
 def docs(ctx, doctest=False, rebuild=False, check_links=False):
     """Builds package's HTML documentation."""
 
@@ -130,14 +124,14 @@ def docs(ctx, doctest=False, rebuild=False, check_links=False):
             linkcheck(ctx, rebuild=rebuild)
 
 
-@ task()
+@task()
 def lint(ctx):
     """Check the consistency of coding style."""
     log.write('Running flake8 python linter...')
     ctx.run('flake8 src')
 
 
-@ task()
+@task()
 def testdocs(ctx, rebuild=False):
     """Test the examples in the docstrings."""
     log.write('Running doctest...')
@@ -145,7 +139,7 @@ def testdocs(ctx, rebuild=False):
     ctx.run('sphinx-build {} -b doctest docs dist/docs'.format(opts))
 
 
-@ task()
+@task()
 def linkcheck(ctx, rebuild=False):
     """Check links in documentation."""
     log.write('Running link check...')
@@ -153,7 +147,7 @@ def linkcheck(ctx, rebuild=False):
     ctx.run('sphinx-build {} -b linkcheck docs dist/docs'.format(opts))
 
 
-@ task()
+@task()
 def check(ctx):
     """Check the consistency of documentation, coding style and a few other things."""
 
@@ -167,8 +161,8 @@ def check(ctx):
         ctx.run('python setup.py check --strict --metadata')
 
 
-@ task(help={
-    'checks': 'True to run all checks before testing, otherwise False.'})
+@task(help={
+      'checks': 'True to run all checks before testing, otherwise False.'})
 def test(ctx, checks=False, doctest=False):
     """Run all tests."""
     if checks:
@@ -182,7 +176,7 @@ def test(ctx, checks=False, doctest=False):
         ctx.run(' '.join(cmd))
 
 
-@ task
+@task
 def prepare_changelog(ctx):
     """Prepare changelog for next release."""
     UNRELEASED_CHANGELOG_TEMPLATE = '## Unreleased\n\n### Added\n\n### Changed\n\n### Removed\n\n\n## '
@@ -198,31 +192,24 @@ def prepare_changelog(ctx):
         ctx.run('git add CHANGELOG.md && git commit -m "Prepare changelog for next release"')
 
 
-@ task(help={
-    'release_type': 'Type of release follows semver rules. Must be one of: major, minor, patch, major-rc, minor-rc, patch-rc, rc, release.'})
+@task(help={
+      'release_type': 'Type of release follows semver rules. Must be one of: major, minor, patch.'})
 def release(ctx, release_type):
     """Releases the project in one swift command!"""
-    if release_type not in ('patch', 'minor', 'major', 'major-rc', 'minor-rc', 'patch-rc', 'rc', 'release'):
-        raise Exit(
-            'The release type parameter is invalid.\nMust be one of: major, minor, patch, major-rc, minor-rc, patch-rc, rc, release')
-
-    is_rc = release_type.find('rc') >= 0
-    release_type = release_type.split('-')[0]
+    if release_type not in ('patch', 'minor', 'major'):
+        raise Exit('The release type parameter is invalid.\nMust be one of: major, minor, patch.')
 
     # Run checks
-    ctx.run('invoke check')
+    ctx.run('invoke check test')
 
     # Bump version and git tag it
-    if is_rc:
-        ctx.run('bump2version %s --verbose' % release_type)
-    elif release_type == 'release':
-        ctx.run('bump2version release --verbose')
-    else:
-        ctx.run('bump2version %s --verbose --no-tag' % release_type)
-        ctx.run('bump2version release --verbose')
+    ctx.run('bump2version %s --verbose' % release_type)
+
+    # Prepare the change log for the next release
+    prepare_changelog(ctx)
 
 
-@ contextlib.contextmanager
+@contextlib.contextmanager
 def chdir(dirname=None):
     current_dir = os.getcwd()
     try:

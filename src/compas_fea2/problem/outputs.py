@@ -78,13 +78,6 @@ class FieldOutput(_Output):
     def outputs(self):
         return chain(self.node_outputs, self.element_outputs, self.contact_outputs)
 
-class ContactAnalysisOutput(FieldOutput):
-    def __init__(self, name=None, **kwargs):
-        super(ContactAnalysisOutput, self).__init__(node_outputs=[
-            'CNORMF', 'S', 'U'], element_outputs=[], name=name, **kwargs)
-        raise NotImplementedError()
-
-
 class HistoryOutput(_Output):
     """HistoryOutput object for recording the fields (stresses, displacements,
     etc..) from the analysis.

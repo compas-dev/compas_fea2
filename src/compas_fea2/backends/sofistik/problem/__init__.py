@@ -16,7 +16,6 @@ from compas_fea2.backends.sofistik.problem.loads import SofistikPrestressLoad
 from compas_fea2.backends.sofistik.problem.loads import SofistikThermalLoad
 from compas_fea2.backends.sofistik.problem.loads import SofistikTributaryLoad
 
-from compas_fea2.backends.sofistik.problem.outputs import SofistikContactAnalysisOutput
 from compas_fea2.backends.sofistik.problem.outputs import SofistikFieldOutput
 from compas_fea2.backends.sofistik.problem.outputs import SofistikHistoryOutput
 

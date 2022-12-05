@@ -15,9 +15,6 @@ from compas_fea2.backends.ansys.model.bcs import AnsysRollerBCY
 from compas_fea2.backends.ansys.model.bcs import AnsysRollerBCYZ
 from compas_fea2.backends.ansys.model.bcs import AnsysRollerBCZ
 
-from compas_fea2.backends.ansys.model.constraints import AnsysPin2DConstraint
-from compas_fea2.backends.ansys.model.constraints import AnsysPin3DConstraint
-from compas_fea2.backends.ansys.model.constraints import AnsysSliderConstraint
 from compas_fea2.backends.ansys.model.constraints import AnsysTieConstraint
 
 from compas_fea2.backends.ansys.model.elements import AnsysBeamElement

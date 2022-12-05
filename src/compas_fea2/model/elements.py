@@ -301,6 +301,13 @@ class MembraneElement(_Element2D):
 # ==============================================================================
 
 class Face(FEAData):
+    """_summary_
+
+    Parameters
+    ----------
+    FEAData : _type_
+        _description_
+    """
     def __init__(self, *, nodes, tag, element=None, name=None):
         super(Face, self).__init__(name)
         self._nodes = nodes

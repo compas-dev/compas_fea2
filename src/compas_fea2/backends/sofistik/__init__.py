@@ -176,7 +176,6 @@ try:
         SofistikTrussElement,
         SofistikMembraneElement,
         SofistikShellElement,
-        _SofistikElement3D,
         SofistikTetrahedronElement,
         SofistikHexahedronElement,
     )

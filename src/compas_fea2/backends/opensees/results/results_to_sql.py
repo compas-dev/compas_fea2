@@ -194,65 +194,66 @@ def read_results_file(database_path, database_name, field_output):
               "field_table": ['S11', 'S22', 'S12', 'M11', 'M22', 'M12']},
     }
 
+    if field_output.node_outputs:
+        for field in field_output.node_outputs:
+            field = field.lower()
+            number_of_components = field_info[field]["num_of_comp"]
+            results.setdefault(field, {})
 
-    for field in field_output.node_outputs:
-        field = field.lower()
-        number_of_components = field_info[field]["num_of_comp"]
-        results.setdefault(field, {})
+            nodes = field_output.nodes_set or range(0, list(field_output.model.parts)[0].nodes_count+1)
+            filepath = os.path.join(database_path, '{}.out'.format(field.lower()))
 
-        nodes = field_output.nodes_set or range(0, list(field_output.model.parts)[0].nodes_count+1)
-        filepath = os.path.join(database_path, '{}.out'.format(field.lower()))
+            if not os.path.exists(filepath):
+                print(f"file {filepath} not found. Results not extracted.")
+                continue
 
-        if not os.path.exists(filepath):
-            print(f"file {filepath} not found. Results not extracted.")
-            continue
+            with open(filepath, 'r') as f:
+                lines = f.readlines()
+                # take the last analysis step and ignore the time stamp
+                data = [float(i) for i in lines[-1].split(' ')[1:]]
 
-        with open(filepath, 'r') as f:
-            lines = f.readlines()
-            # take the last analysis step and ignore the time stamp
-            data = [float(i) for i in lines[-1].split(' ')[1:]]
+            results[field]=[]
+            for c, node in enumerate(nodes):
+                part = list(field_output.model.parts)[0]
+                step = field_output.step
+                fea2_node = part.find_node_by_key(node)
+                node_properties = [step.name, part.name, 'node', 'nodal', node]
+                components_results = data[c*number_of_components:c*number_of_components+number_of_components]
+                #TODO change to vectors
+                u, v, w = components_results
+                magnitude = [sqrt(u**2 + v**2 + w**2)]
+                results[field].append(node_properties+components_results+magnitude)
 
-        results[field]=[]
-        for c, node in enumerate(nodes):
-            part = list(field_output.model.parts)[0]
-            step = field_output.step
-            fea2_node = part.find_node_by_key(node)
-            node_properties = [step.name, part.name, 'node', 'nodal', node]
-            components_results = data[c*number_of_components:c*number_of_components+number_of_components]
-            #TODO change to vectors
-            u, v, w = components_results
-            magnitude = [sqrt(u**2 + v**2 + w**2)]
-            results[field].append(node_properties+components_results+magnitude)
+            print('***** {0}.out data loaded *****'.format(filepath))
 
-        print('***** {0}.out data loaded *****'.format(filepath))
+    if field_output.element_outputs:
+        for field in field_output.element_outputs:
+            field = field.lower()
+            number_of_components = field_info[field]["num_of_comp"]
+            results.setdefault(field, {})
 
-    for field in field_output.element_outputs:
-        field = field.lower()
-        number_of_components = field_info[field]["num_of_comp"]
-        results.setdefault(field, {})
+            elements = field_output.elements_set or range(0, list(field_output.model.parts)[0].elements_count+1)
+            filepath = os.path.join(database_path, '{}.out'.format(field.lower()))
 
-        elements = field_output.elements_set or range(0, list(field_output.model.parts)[0].elements_count+1)
-        filepath = os.path.join(database_path, '{}.out'.format(field.lower()))
+            if not os.path.exists(filepath):
+                print(f"file {filepath} not found. Results not extracted.")
+                continue
 
-        if not os.path.exists(filepath):
-            print(f"file {filepath} not found. Results not extracted.")
-            continue
+            with open(filepath, 'r') as f:
+                lines = f.readlines()
+                # take the last analysis step and ignore the time stamp
+                data = [float(i) for i in lines[-1].split(' ')[1:]]
 
-        with open(filepath, 'r') as f:
-            lines = f.readlines()
-            # take the last analysis step and ignore the time stamp
-            data = [float(i) for i in lines[-1].split(' ')[1:]]
+            results[field]=[]
+            for c, element_key in enumerate(elements):
+                part = list(field_output.model.parts)[0]
+                step = field_output.step
+                fea2_element = part.find_element_by_key(node)
+                element_properties = [step.name, part.name, 'element', 'nodal', element_key]
+                components_results = data[c*number_of_components:c*number_of_components+number_of_components]
+                results[field].append(element_properties+components_results)
 
-        results[field]=[]
-        for c, element_key in enumerate(elements):
-            part = list(field_output.model.parts)[0]
-            step = field_output.step
-            fea2_element = part.find_element_by_key(node)
-            element_properties = [step.name, part.name, 'element', 'nodal', element_key]
-            components_results = data[c*number_of_components:c*number_of_components+number_of_components]
-            results[field].append(element_properties+components_results)
-
-        print('***** {0}.out data loaded *****'.format(filepath))
+            print('***** {0}.out data loaded *****'.format(filepath))
 
 
     database = os.path.join(database_path, f'{database_name}-results.db')

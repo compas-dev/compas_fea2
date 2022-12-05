@@ -14,6 +14,11 @@ from .steps import (
     AbaqusDirectCyclicStep,
 )
 
+# Abaqus Prescribed Fields
+from .fields import (
+    AbaqusPrescribedTemperatureField,
+)
+
 # Abaqus Displacements
 from .displacements import (
     AbaqusGeneralDisplacement,
@@ -29,6 +34,7 @@ from .loads import (
     AbaqusHarmonicPointLoad,
     AbaqusHarmonicPressureLoad,
     AbaqusTributaryLoad,
+    AbaqusThermalLoad,
 )
 
 # Abaqus outputs

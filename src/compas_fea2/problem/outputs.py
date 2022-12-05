@@ -3,10 +3,15 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
+from itertools import chain
 
 
 class _Output(FEAData):
     """Base class for output requests.
+
+    Note
+    ----
+    Outputs are registered to a :class:`compas_fea2.problem.Step`.
 
     Parameters
     ----------
@@ -17,6 +22,17 @@ class _Output(FEAData):
     def __init__(self, name=None, **kwargs):
         super(_Output, self).__init__(name=name, **kwargs)
 
+    @property
+    def step(self):
+        return self._registration
+
+    @property
+    def problem(self):
+        return self.step._registration
+
+    @property
+    def model(self):
+        return self.problem._registration
 
 class FieldOutput(_Output):
     """FieldOutput object for specification of the fields (stresses, displacements,
@@ -38,13 +54,13 @@ class FieldOutput(_Output):
         list of node fields to output
     elements_outputs : list
         list of elements fields to output
-
     """
 
-    def __init__(self, node_outputs, element_outputs, name=None, **kwargs):
+    def __init__(self, node_outputs, element_outputs, contact_outputs, name=None, **kwargs):
         super(FieldOutput, self).__init__(name=name, **kwargs)
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
+        self._contact_outputs = contact_outputs
 
     @property
     def node_outputs(self):
@@ -53,6 +69,20 @@ class FieldOutput(_Output):
     @property
     def element_outputs(self):
         return self._element_outputs
+
+    @property
+    def contact_outputs(self):
+        return self._contact_outputs
+
+    @property
+    def outputs(self):
+        return chain(self.node_outputs, self.element_outputs, self.contact_outputs)
+
+class ContactAnalysisOutput(FieldOutput):
+    def __init__(self, name=None, **kwargs):
+        super(ContactAnalysisOutput, self).__init__(node_outputs=[
+            'CNORMF', 'S', 'U'], element_outputs=[], name=name, **kwargs)
+        raise NotImplementedError()
 
 
 class HistoryOutput(_Output):

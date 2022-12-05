@@ -4,9 +4,9 @@ from __future__ import print_function
 
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.bcs import FixedBC
-from compas_fea2.model.bcs import FixedBCXX
-from compas_fea2.model.bcs import FixedBCYY
-from compas_fea2.model.bcs import FixedBCZZ
+from compas_fea2.model.bcs import ClampBCXX
+from compas_fea2.model.bcs import ClampBCYY
+from compas_fea2.model.bcs import ClampBCZZ
 from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import RollerBCX
 from compas_fea2.model.bcs import RollerBCXY
@@ -42,39 +42,39 @@ class AnsysFixedBC(FixedBC):
         raise NotImplementedError
 
 
-class AnsysFixedBCXX(FixedBCXX):
+class AnsysClampBCXX(ClampBCXX):
     """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCXX`.\n
     """
-    __doc__ += FixedBCXX.__doc__
+    __doc__ += ClampBCXX.__doc__
 
     def __init__(self, name=None, **kwargs):
-        super(AnsysFixedBCXX, self).__init__(name=name, **kwargs)
+        super(AnsysClampBCXX, self).__init__(name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
 
-class AnsysFixedBCYY(FixedBCYY):
+class AnsysClampBCYY(ClampBCYY):
     """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCYY`.\n
     """
-    __doc__ += FixedBCYY.__doc__
+    __doc__ += ClampBCYY.__doc__
 
     def __init__(self, name=None, **kwargs):
-        super(AnsysFixedBCYY, self).__init__(name=name, **kwargs)
+        super(AnsysClampBCYY, self).__init__(name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):
         raise NotImplementedError
 
 
-class AnsysFixedBCZZ(FixedBCZZ):
+class AnsysClampBCZZ(ClampBCZZ):
     """Ansys implementation of :class:`compas_fea2.model.bcs.FixedBCZZ`.\n
     """
-    __doc__ += FixedBCZZ.__doc__
+    __doc__ += ClampBCZZ.__doc__
 
     def __init__(self, name=None, **kwargs):
-        super(AnsysFixedBCZZ, self).__init__(name=name, **kwargs)
+        super(AnsysClampBCZZ, self).__init__(name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):

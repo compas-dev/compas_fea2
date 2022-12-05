@@ -25,8 +25,9 @@ class FEAData(Data):
 
     def __init__(self, name=None):
         super().__init__()
-        # NOTE the names lenght in abaqus is limited to 80 characters
+        # NOTE the names length in abaqus is limited to 80 characters
         self._name = name or ''.join([c for c in type(self).__name__ if c.isupper()])+"_"+str(id(self))
+        self._registration = None
 
     def __new__(cls, *args, **kwargs):
         imp = compas_fea2.get_backend_implementation(cls)
@@ -37,6 +38,7 @@ class FEAData(Data):
     def __repr__(self):
         return '{0}({1})'.format(self.__class__.__name__, id(self))
 
+    # TODO maybe not useful anymore..? change 'element'
     @classmethod
     def from_name(cls, name, **kwargs):
         """Create an instance of a class of the registered plugin from its name.
@@ -60,6 +62,8 @@ class FEAData(Data):
         element = getattr(importlib.import_module('.'.join([*module_info[:-1]])), '_'+name)
         return element(**kwargs)
 
+    def data(self):
+        pass
     # def __str__(self):
     #     """String representation of the object.
 

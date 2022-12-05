@@ -41,9 +41,16 @@ from compas_fea2.model.bcs import (
 
 # Constraints
 from compas_fea2.model.constraints import (
+    TieMPC,
+    BeamMPC,
     TieConstraint,
 )
 
+# Intial Conditions
+from compas_fea2.model.ics import (
+    InitialTemperatureField,
+    InitialStressField,
+)
 
 # Elements
 from compas_fea2.model.elements import (
@@ -52,7 +59,7 @@ from compas_fea2.model.elements import (
     TrussElement,
     MembraneElement,
     ShellElement,
-    SolidElement,
+    _Element3D,
     TetrahedronElement,
     HexahedronElement,
 )
@@ -64,18 +71,6 @@ from compas_fea2.model.groups import (
     FacesGroup,
 )
 
-# Interactions
-from compas_fea2.model.interactions import (
-    HardContactFrictionPenalty,
-    LinearContactFrictionPenalty,
-    HardContactRough,
-)
-
-# interfaces
-from compas_fea2.model.interfaces import (
-    Interface
-)
-
 # Models
 from compas_fea2.model import Model
 
@@ -83,7 +78,7 @@ from compas_fea2.model import Model
 from compas_fea2.model import Node
 
 # Parts
-from compas_fea2.model import Part
+from compas_fea2.model import DeformablePart, RigidPart
 
 # Releases
 from compas_fea2.model.releases import (
@@ -127,6 +122,10 @@ from compas_fea2.problem.steps import (
 from compas_fea2.problem.displacements import (
     GeneralDisplacement,
 )
+# Fields
+from compas_fea2.problem.fields import (
+    PrescribedTemperatureField,
+)
 # Loads
 from compas_fea2.problem.loads import (
     PointLoad,
@@ -137,6 +136,7 @@ from compas_fea2.problem.loads import (
     GravityLoad,
     HarmonicPointLoad,
     HarmonicPressureLoad,
+    ThermalLoad
 )
 
 # Outputs
@@ -166,7 +166,7 @@ from compas_fea2.job import (
 try:
     # Abaqus Models
     from .model import AbaqusModel
-    from .model import AbaqusPart
+    from .model import AbaqusDeformablePart, AbaqusRigidPart
     from .model import AbaqusNode
 
     # Abaqus Elements
@@ -176,7 +176,7 @@ try:
         AbaqusTrussElement,
         AbaqusMembraneElement,
         AbaqusShellElement,
-        AbaqusSolidElement,
+        _AbaqusElement3D,
         AbaqusTetrahedronElement,
         AbaqusHexahedronElement,
     )
@@ -223,21 +223,17 @@ try:
         AbaqusFacesGroup,
     )
 
-    # Abaqus Interactions
-    from .model.interactions import (
-        AbaqusHardContactFrictionPenalty,
-        AbaqusLinearContactFrictionPenalty,
-        AbaqusHardContactRough,
-    )
-
-    # Abaqus Interfaces
-    from .model.interfaces import (
-        AbaqusInterface
-    )
-
     # Abaqus Constraints
     from .model.constraints import (
+        AbaqusTieMPC,
+        AbaqusBeamMPC,
         AbaqusTieConstraint,
+    )
+
+    # Abaqus Initial Conditions
+    from .model.ics import (
+        AbaqusInitialTemperatureField,
+        AbaqusInitialStressField,
     )
 
     # Abaqus release
@@ -285,6 +281,12 @@ try:
         AbaqusGravityLoad,
         AbaqusHarmonicPointLoad,
         AbaqusHarmonicPressureLoad,
+        AbaqusThermalLoad,
+    )
+
+    # Abaqus Fields
+    from .problem.fields import (
+        AbaqusPrescribedTemperatureField,
     )
 
     # Abaqus Displacements
@@ -315,7 +317,10 @@ try:
         backend = compas_fea2.BACKENDS['abaqus']
 
         backend[Model] = AbaqusModel
-        backend[Part] = AbaqusPart
+
+        backend[DeformablePart] = AbaqusDeformablePart
+        backend[RigidPart] = AbaqusRigidPart
+
         backend[Node] = AbaqusNode
 
         backend[MassElement] = AbaqusMassElement
@@ -323,7 +328,7 @@ try:
         backend[TrussElement] = AbaqusTrussElement
         backend[MembraneElement] = AbaqusMembraneElement
         backend[ShellElement] = AbaqusShellElement
-        backend[SolidElement] = AbaqusSolidElement
+        backend[_Element3D] = _AbaqusElement3D
         backend[TetrahedronElement] = AbaqusTetrahedronElement
         backend[HexahedronElement] = AbaqusHexahedronElement
 
@@ -360,15 +365,14 @@ try:
         backend[ElementsGroup] = AbaqusElementsGroup
         backend[FacesGroup] = AbaqusFacesGroup
 
-        backend[HardContactFrictionPenalty] = AbaqusHardContactFrictionPenalty
-        backend[LinearContactFrictionPenalty] = AbaqusLinearContactFrictionPenalty
-        backend[HardContactRough] = AbaqusHardContactRough
-
-        backend[Interface] = AbaqusInterface
-
+        backend[TieMPC] = AbaqusTieMPC
+        backend[BeamMPC] = AbaqusBeamMPC
         backend[TieConstraint] = AbaqusTieConstraint
 
         backend[BeamEndPinRelease] = AbaqusBeamEndPinRelease
+
+        backend[InitialTemperatureField] = AbaqusInitialTemperatureField
+        backend[InitialStressField] = AbaqusInitialStressField
 
         backend[GeneralBC] = AbaqusGeneralBC
         backend[FixedBC] = AbaqusFixedBC
@@ -402,8 +406,11 @@ try:
         backend[PrestressLoad] = AbaqusPrestressLoad
         backend[HarmonicPointLoad] = AbaqusHarmonicPointLoad
         backend[HarmonicPressureLoad] = AbaqusHarmonicPressureLoad
+        backend[ThermalLoad] = AbaqusThermalLoad
 
         backend[GeneralDisplacement] = AbaqusGeneralDisplacement
+
+        backend[PrescribedTemperatureField] = AbaqusPrescribedTemperatureField
 
         backend[FieldOutput] = AbaqusFieldOutput
         backend[HistoryOutput] = AbaqusHistoryOutput

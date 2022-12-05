@@ -12,6 +12,10 @@ class Results(FEAData):
     """Results object. This ensures that the results from all
     the backends are consistent.
 
+    Note
+    ----
+    Results are registered to a :class:`compas_fea2.problem.Problem`.
+
     Parameters
     ----------
     database_name : str
@@ -32,6 +36,10 @@ class Results(FEAData):
         self._steps = set()
 
     @property
+    def problem(self):
+        return self._registration
+
+    @property
     def steps(self):
         return self._steps
 
@@ -41,7 +49,7 @@ class Results(FEAData):
 
         Parameters
         ----------
-        step_resutls : :class:`compas_fea2.results.StepResults`
+        step_results : :class:`compas_fea2.results.StepResults`
 
         Returns
         -------
@@ -65,12 +73,16 @@ class Results(FEAData):
     # Extract results
     # ==========================================================================
 
-    def extract_data(self, *args, **kwargs):
+    def to_file(self, *args, **kwargs):
         raise NotImplementedError("this function is not available for the selected backend")
 
 
 class StepResults(FEAData):
     """Results object for a single step.
+
+    Note
+    ----
+    StepResults are registered to a :class:`compas_fea2.problem.Step`.
 
     Parameters
     ----------
@@ -82,30 +94,59 @@ class StepResults(FEAData):
 
     """
 
-    def __init__(self, step, model, name=None):
-        super(StepResults, self).__init__(name=name)
-        self._step = step
-        self._model = model
+    def __init__(self, name=None, **kwargs):
+        super(StepResults, self).__init__(name=name, **kwargs)
 
     @property
     def step(self):
-        return self._step
+        return self._registration
+
+    @property
+    def problem(self):
+        return self.step_registration
 
     @property
     def model(self):
-        return self._model
+        return self.problem._registration
 
-    @model.setter
-    def model(self, value):
-        self._model = value
+    def _copy_results_in_model(self, results, fields=None):
+        """Copy the results for the step in the model object at the nodal and
+        element level.
+
+        Parameters
+        ----------
+        database_path : _type_
+            _description_
+        database_name : _type_
+            _description_
+        file_format : str, optional
+            _description_, by default 'pkl'
+        fields : _type_, optional
+            Fields results to save, by default `None` (all available fields are saved)
+        """
+        step_results = results[self.step.name]
+
+        # Get part results
+        for part_name, part_results in step_results:
+            # Get node/element results
+            for result_type, node_elements_results in part_results.items():
+                if result_type not in ['nodes', 'elements']:
+                    continue
+                node_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
+                # Get field results
+                for key, res_field in node_elements_results.items():
+                    if not fields or res_field in fields:
+                        node_element = list(filter(lambda n_e: n_e.key == int(key), node_elements))[0]
+                        node_element._results.setdefault(self.problem, {})[self.step] = res_field
 
     # TODO add moments
-    def get_total_reactions(self):
+    def get_total_reaction(self):
         reactions_forces = []
-        for part in self.model.parts:
+        for part in self.step.problem.model.parts:
             for node in part.nodes:
-                if 'RF' in node.results[self.step.name]:
-                    x, y, z = node.results[self.step.name]['RF']
+                rf = node.results[[self.problem]][self.step].get('RF', None)
+                if rf:
+                    x, y, z = rf
                     vector = Vector(x=x,
                                     y=y,
                                     z=z)
@@ -114,43 +155,18 @@ class StepResults(FEAData):
                     reactions_forces.append(vector)
         return sum_vectors(reactions_forces)
 
-    def get_forces_at_interface(self, interface, side='master'):
-        faces_group = getattr(interface, side)
-        node_force_dict = {}
-        for node in faces_group.nodes:
-            if 'NFORC1' in node.results[self.step.name]:
-                vector = Vector(x=node.results[self.step.name]['NFORC1'][0],
-                                y=node.results[self.step.name]['NFORC2'][0],
-                                z=node.results[self.step.name]['NFORC3'][0])
-                node_force_dict[node] = vector
-        return node_force_dict
+    def get_total_moment(self):
+        raise NotImplementedError()
 
-    def get_resultant_force_at_interface(self, interface, side='master'):
-        # NOTE this is valid only for planar interfaces
-        # FIXME this is an approximation because it accounts only for the vertical components of the forces
-        from compas.geometry import centroid_points_weighted, centroid_points
-        from compas.geometry import sum_vectors
-        from compas.geometry import Point
-        node_force_dict = self.get_forces_at_interface(interface, side=side)
-        vector = sum_vectors([v for v in node_force_dict.values()])
-        vector = Vector(*vector)
-        pt = centroid_points([node.xyz for node in node_force_dict.keys()])
-        pt_x = centroid_points_weighted(points=[[node.x, 0., 0.] for node in node_force_dict.keys()],
-                                        weights=[v.z for v in node_force_dict.values()])
-        pt_y = centroid_points_weighted(points=[[0., node.y, 0.] for node in node_force_dict.keys()],
-                                        weights=[v.z for v in node_force_dict.values()])
-        pt_z = centroid_points_weighted(points=[[0., 0., node.z] for node in node_force_dict.keys()],
-                                        weights=[v.z for v in node_force_dict.values()])
-        # pt = [n.x * v.x / vector.length for n, v in node_force_dict.items()]
-        # return [pt_x[0], pt_y[1], pt_z[2]], vector
-        return (pt_x[0], pt_y[1], pt_z[2]), vector
-
-    def get_deformed_model(self, scale):
+    def get_deformed_model(self, scale, **kwargs):
+        from compas.geometry import distance_point_point_sqrd
         # TODO copy model first
-        for part in self.model.parts:
+        for part in self.step.problem.model.parts:
             for node in part.nodes:
+                original_node = node.xyz
                 x, y, z = node.results[self.step.name]['U']
                 node.x += x*scale
                 node.y += y*scale
                 node.z += z*scale
+
         return self.model

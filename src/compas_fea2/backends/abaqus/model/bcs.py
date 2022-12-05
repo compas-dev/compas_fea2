@@ -31,7 +31,7 @@ def _generate_jobdata(bc, instance, nodes):
     Note
     ----
     Ideally, this would have not been necessary
-    because it is possible to retreive nodes within the Assembly-Part definition
+    because it is possible to retreive nodes within the Assembly-DeformablePart definition
     by just using the format `instance_name.node_key`. However Tosca Structure
     throws an exception during the flattening of the input file (it can not run
     if the model is organised in Assembly and Parts). Below the orginal implementation

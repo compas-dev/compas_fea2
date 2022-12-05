@@ -19,7 +19,8 @@ Parts
 .. autosummary::
     :toctree: generated/
 
-    AbaqusPart
+    AbaqusDeformablePart
+    AbaqusRigidPart
 
 Nodes
 =====
@@ -37,7 +38,7 @@ Elements
 
     AbaqusBeamElement
     AbaqusShellElement
-    AbaqusSolidElement
+    _AbaqusElement3D
     AbaqusTetrahedronElement
     AbaqusHexahedronElement
 
@@ -47,6 +48,8 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
+    AbaqusTieMPC
+    AbaqusBeamMPC
     AbaqusTieConstraint
 
 Materials
@@ -108,6 +111,16 @@ Boundary Conditions
     AbaqusRollerBCYZ
     AbaqusRollerBCXZ
 
+Initial Conditions
+==================
+
+.. autosummary::
+    :toctree: generated/
+
+    AbaqusInitialTemperatureField
+    AbaqusInitialStressField
+
+
 Groups
 ======
 
@@ -154,8 +167,16 @@ from .bcs import (
     AbaqusRollerBCZ,
 )
 
+# Abaqus Initial Conditions
+from .ics import (
+    AbaqusInitialTemperatureField,
+    AbaqusInitialStressField,
+)
+
 # Abaqus Constraints
 from .constraints import (
+    AbaqusTieMPC,
+    AbaqusBeamMPC,
     AbaqusTieConstraint,
 )
 
@@ -166,7 +187,7 @@ from .elements import (
     AbaqusTrussElement,
     AbaqusMembraneElement,
     AbaqusShellElement,
-    AbaqusSolidElement,
+    _AbaqusElement3D,
     AbaqusTetrahedronElement,
     AbaqusHexahedronElement,
 )
@@ -179,17 +200,6 @@ from .groups import (
 )
 
 
-# Abaqus Interactions
-from .interactions import (
-    AbaqusHardContactFrictionPenalty,
-    AbaqusHardContactRough,
-)
-
-# Abaqus Interfaces
-from .interfaces import (
-    AbaqusInterface
-)
-
 # Abaqus Models
 from .model import AbaqusModel
 
@@ -197,7 +207,7 @@ from .model import AbaqusModel
 from .nodes import AbaqusNode
 
 # Abaqus Parts
-from .parts import AbaqusPart
+from .parts import AbaqusDeformablePart, AbaqusRigidPart
 
 # Abaqus Relseases
 from .releases import (
@@ -249,6 +259,11 @@ __all__ = [
     'AbaqusRollerBCYZ',
     'AbaqusRollerBCZ',
 
+    'AbaqusInitialTemperatureField',
+    'AbaqusInitialStressField',
+
+    'AbaqusTieMPC',
+    'AbaqusBeamMPC',
     'AbaqusTieConstraint',
 
     'AbaqusBeamSection',
@@ -274,7 +289,7 @@ __all__ = [
     'AbaqusTrussElement',
     'AbaqusMembraneElement',
     'AbaqusShellElement',
-    'AbaqusSolidElement',
+    '_AbaqusElement3D',
     'AbaqusTetrahedronElement',
     'AbaqusHexahedronElement',
 
@@ -282,14 +297,10 @@ __all__ = [
     'AbaqusElementsGroup',
     'AbaqusFacesGroup',
 
-    'AbaqusHardContactFrictionPenalty',
-    'AbaqusHardContactRough',
-
-    'AbaqusInterface',
-
     'AbaqusBeamEndPinRelease',
 
-    'AbaqusPart',
+    'AbaqusDeformablePart',
+    'AbaqusRigidPart',
 
     'AbaqusNode',
 

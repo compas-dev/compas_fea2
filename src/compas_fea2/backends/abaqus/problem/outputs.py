@@ -20,8 +20,8 @@ class AbaqusFieldOutput(FieldOutput):
         ???
     """
 
-    def __init__(self, node_outputs=None, element_outputs=None, frequency=1, name=None, **kwargs):
-        super(AbaqusFieldOutput, self).__init__(node_outputs, element_outputs, name=name, **kwargs)
+    def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, frequency=1, name=None, **kwargs):
+        super(AbaqusFieldOutput, self).__init__(node_outputs, element_outputs, contact_outputs, name=name, **kwargs)
         self._frequency = frequency
 
     @property
@@ -48,6 +48,8 @@ class AbaqusFieldOutput(FieldOutput):
                 data.append('\n'.join(['*Element Output, direction=YES', '{}'.format(", ".join(self.element_outputs))]))
             if self.node_outputs:
                 data.append('\n'.join(['*Node Output', '{}'.format(", ".join(self.node_outputs))]))
+            if self.contact_outputs:
+                data.append('\n'.join(['*Contact Output', '{}'.format(", ".join(self.contact_outputs))]))
 
         return '\n'.join(data)
 

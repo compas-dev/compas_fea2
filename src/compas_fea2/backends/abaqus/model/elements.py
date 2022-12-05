@@ -7,7 +7,7 @@ from compas_fea2.model import BeamElement
 from compas_fea2.model import TrussElement
 from compas_fea2.model import ShellElement
 from compas_fea2.model import MembraneElement
-from compas_fea2.model import SolidElement
+from compas_fea2.model import _Element3D
 from compas_fea2.model import TetrahedronElement
 from compas_fea2.model import HexahedronElement
 
@@ -40,9 +40,9 @@ class AbaqusMassElement(MassElement):
     """Abaqus implementation of :class:`MassElement`\n"""
     __doc__ += MassElement.__doc__
 
-    def __init__(self, *, node, section, part=None, name=None, **kwargs):
+    def __init__(self, *, node, section, name=None, **kwargs):
         super(AbaqusMassElement, self).__init__(nodes=[node],
-                                                section=section, part=part, name=name, **kwargs)
+                                                section=section, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -109,11 +109,11 @@ class AbaqusBeamElement(BeamElement):
 
     """
 
-    def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], part=None, type='B3', interpolation=1, hybrid=None, implementation=None, name=None, **kwargs):
+    def __init__(self, nodes, section, frame=[0.0, 0.0, -1.0], type='B3', interpolation=1, hybrid=None, implementation=None, name=None, **kwargs):
         super(AbaqusBeamElement, self).__init__(nodes=nodes, section=section,
-                                                frame=frame, part=part, implementation=implementation or ''.join([type,
-                                                                                                                  str(interpolation),
-                                                                                                                  'H' if hybrid else '']), name=name, **kwargs)
+                                                frame=frame, implementation=implementation or ''.join([type,
+                                                                                                       str(interpolation),
+                                                                                                       'H' if hybrid else '']), name=name, **kwargs)
         self._type = type
         self._interpolation = interpolation
         self._hybrid = hybrid
@@ -131,11 +131,11 @@ class AbaqusTrussElement(TrussElement):
     """Abaqus implementation of :class:`TrussElement`\n"""
     __doc__ += TrussElement.__doc__
 
-    def __init__(self, nodes, section, part=None, type='T3D', name=None, **kwargs):
+    def __init__(self, nodes, section, type='T3D', name=None, **kwargs):
         super(AbaqusTrussElement, self).__init__(nodes=nodes, section=section,
-                                                 part=part, implementation=''.join([type,
-                                                                                    str(len(nodes)),
-                                                                                    ]), name=name, **kwargs)
+                                                 implementation=''.join([type,
+                                                                         str(len(nodes)),
+                                                                         ]), name=name, **kwargs)
         self._elset = None
         self._orientation = None
         self._type = type
@@ -194,13 +194,15 @@ class AbaqusShellElement(ShellElement):
     The `Open Section(OS)` formulation is currently under development.
     """
 
-    def __init__(self, nodes, section, part=None, type='S', reduced=False, optional=None, warping=False, implementation=None, name=None, **kwargs):
-        super(AbaqusShellElement, self).__init__(nodes=nodes, section=section,
-                                                 part=part, implementation=implementation or ''.join([type,
-                                                                                                      str(len(nodes)),
-                                                                                                      'R' if reduced else '',
-                                                                                                      optional or '',
-                                                                                                      'W' if warping else '']), name=name, **kwargs)
+    def __init__(self, nodes, section, frame=None, type='S', reduced=False, optional=None, warping=False, implementation=None, rigid=False, name=None, **kwargs):
+        super(AbaqusShellElement, self).__init__(nodes=nodes, section=section, frame=frame,
+                                                 implementation=implementation or ''.join([type if not rigid else 'R3D',
+                                                                                           str(len(nodes)),
+                                                                                           'R' if reduced else '',
+                                                                                           optional or '',
+                                                                                           'W' if warping else '']),
+                                                 rigid=rigid,
+                                                 name=name, **kwargs)
         self._elset = None
         self._type = type
         self._reduced = reduced
@@ -214,7 +216,10 @@ class AbaqusShellElement(ShellElement):
         return _generate_jobdata(self)
 
     def _sc(self):
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    def _r3d4(self):
+        return _generate_jobdata(self)
 
 
 class AbaqusMembraneElement(MembraneElement):
@@ -244,13 +249,13 @@ class AbaqusMembraneElement(MembraneElement):
         `implementation` overwrites the others.
     """
 
-    def __init__(self, nodes, section, part=None, type='M3D', reduced=False, implementation=None, name=None, **kwargs):
-        super(AbaqusMembraneElement, self).__init__(nodes=nodes, section=section,
-                                                    part=part, implementation=implementation or ''.join([type,
-                                                                                                         str(len(nodes)),
-                                                                                                         'R' if reduced and len(
-                                                                                                             nodes) > 3 else '',
-                                                                                                         ]), name=name, **kwargs)
+    def __init__(self, nodes, section, frame=None, type='M3D', reduced=False, implementation=None, name=None, **kwargs):
+        super(AbaqusMembraneElement, self).__init__(nodes=nodes, section=section, frame=frame,
+                                                    implementation=implementation or ''.join([type,
+                                                                                              str(len(nodes)),
+                                                                                              'R' if reduced and len(
+                                                                                                  nodes) > 3 else '',
+                                                                                              ]), name=name, **kwargs)
         self._type = type.upper()
         self._reduced = reduced
         self._elset = None
@@ -268,8 +273,8 @@ class AbaqusMembraneElement(MembraneElement):
 # ==============================================================================
 
 
-class AbaqusSolidElement(SolidElement):
-    """Abaqus implementation of :class:`SolidElement`
+class _AbaqusElement3D(_Element3D):
+    """Abaqus implementation of :class:`_Element3D`
 
     Note
     ----
@@ -280,7 +285,7 @@ class AbaqusSolidElement(SolidElement):
         - https://help.3ds.com/2022x/English/DSDoc/SIMA3DXELMRefMap/simaelm-r-3delem.htm?contextscope=cloud&id=ef2239f0cc404c199127f51c39a2834f
 
     """
-    __doc__ += SolidElement.__doc__
+    __doc__ += _Element3D.__doc__
     __doc__ += """
     Additional Parameters
     ---------------------
@@ -298,14 +303,14 @@ class AbaqusSolidElement(SolidElement):
 
     """
 
-    def __init__(self, nodes, section, part=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
-        super(AbaqusSolidElement, self).__init__(nodes=nodes, section=section,
-                                                 part=part, implementation=implementation or ''.join([type,
-                                                                                                      str(len(nodes)),
-                                                                                                      'R' if reduced else '',
-                                                                                                      'H' if hybrid else '',
-                                                                                                      optional or '',
-                                                                                                      ]), name=name, **kwargs)
+    def __init__(self, nodes, section=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
+        super(_AbaqusElement3D, self).__init__(nodes=nodes, section=section,
+                                               implementation=implementation or ''.join([type,
+                                                                                         str(len(nodes)),
+                                                                                         'R' if reduced else '',
+                                                                                         'H' if hybrid else '',
+                                                                                         optional or '',
+                                                                                         ]), name=name, **kwargs)
         self._type = type.upper()
         self._reduced = reduced
         self._hybrid = hybrid
@@ -363,7 +368,7 @@ class AbaqusSolidElement(SolidElement):
     #     raise NotImplementedError
 
 
-# TODO double inheritance from AbaqusSolidElement
+# TODO double inheritance from _AbaqusElement3D
 class AbaqusTetrahedronElement(TetrahedronElement):
     """Abaqus implementation of :class:`TetrahedronElement`
 
@@ -393,15 +398,16 @@ class AbaqusTetrahedronElement(TetrahedronElement):
 
     """
 
-    def __init__(self, nodes, section, part=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
+    def __init__(self, nodes, section=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
         super(AbaqusTetrahedronElement, self).__init__(nodes=nodes, section=section,
-                                                       part=part, implementation=implementation or ''.join([type,
-                                                                                                            str(len(
-                                                                                                                nodes)),
-                                                                                                            'R' if reduced else '',
-                                                                                                            'H' if hybrid else '',
-                                                                                                            optional or '',
-                                                                                                            ]), name=name, **kwargs)
+                                                       implementation=implementation or ''.join([type,
+                                                                                                 str(len(
+                                                                                                     nodes)),
+                                                                                                 'R' if reduced else '',
+                                                                                                 'H' if hybrid else '',
+                                                                                                 optional or '',
+                                                                                                 ]),
+                                                       name=name, **kwargs)
         self._type = type.upper()
         self._reduced = reduced
         self._hybrid = hybrid
@@ -451,15 +457,15 @@ class AbaqusHexahedronElement(HexahedronElement):
 
     """
 
-    def __init__(self, nodes, section, part=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
+    def __init__(self, nodes, section=None, type='C3D', reduced=False, hybrid=False, optional=None, implementation=None, name=None, **kwargs):
         super(AbaqusHexahedronElement, self).__init__(nodes=nodes, section=section,
-                                                      part=part, implementation=implementation or ''.join([type,
-                                                                                                           str(len(
-                                                                                                               nodes)),
-                                                                                                           'R' if reduced else '',
-                                                                                                           'H' if hybrid else '',
-                                                                                                           optional or '',
-                                                                                                           ]), name=name, **kwargs)
+                                                      implementation=implementation or ''.join([type,
+                                                                                                str(len(
+                                                                                                    nodes)),
+                                                                                                'R' if reduced else '',
+                                                                                                'H' if hybrid else '',
+                                                                                                optional or '',
+                                                                                                ]), name=name, **kwargs)
         self._type = type.upper()
         self._reduced = reduced
         self._hybrid = hybrid

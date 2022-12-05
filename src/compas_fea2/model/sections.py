@@ -13,6 +13,11 @@ from .materials import _Material
 class _Section(FEAData):
     """Base class for sections.
 
+    Note
+    ----
+    Sections are registered to a :class:`compas_fea2.model.Model` and can be assigned
+    to elements in different Parts.
+
     Parameters
     ----------
     name : str, optional
@@ -50,6 +55,10 @@ class _Section(FEAData):
             if not isinstance(value, _Material):
                 raise ValueError('Material must be of type `compas_fea2.model._Material`.')
             self._material = value
+
+    @property
+    def model(self):
+        return self._registration
 
     def __str__(self):
         return """

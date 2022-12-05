@@ -16,9 +16,7 @@ API Packages
     compas_fea2.problem
     compas_fea2.results
     compas_fea2.job
-    compas_fea2.postprocessor
-    compas_fea2.preprocessor
-    compas_fea2.optimisation
+    compas_fea2.postprocess
     compas_fea2.utilities
 
 Dev Packages
@@ -34,10 +32,6 @@ Dev Packages
 import os
 from collections import defaultdict
 from compas.plugins import pluggable
-
-from pint import UnitRegistry
-units = UnitRegistry()
-units.define('@alias pascal = Pa')
 
 
 __author__ = ["Francesco Ranaudo"]
@@ -55,6 +49,12 @@ UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
+PRECISION = '3f'
+
+def set_precision(precision):
+    global PRECISION
+    PRECISION = precision
+
 BACKEND = None
 BACKENDS = defaultdict(dict)
 
@@ -65,7 +65,7 @@ def register_backend():
 
 
 def set_backend(name):
-    if name not in ('abaqus', 'opensees', 'ansys'):
+    if name not in ('abaqus', 'opensees', 'ansys', 'sofistik'):
         raise ValueError('{} is not a backend!'.format(name))
     global BACKEND
     BACKEND = name
@@ -82,4 +82,5 @@ __all_plugins__ = [
     'compas_fea2.backends.abaqus',
     'compas_fea2.backends.opensees',
     'compas_fea2.backends.ansys',
+    'compas_fea2.backends.sofistik',
 ]

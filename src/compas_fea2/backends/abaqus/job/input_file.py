@@ -19,8 +19,8 @@ class AbaqusInputFile(InputFile):
     # Constructor methods
     # ==============================================================================
 
-    def _generate_jobdata(self, problem):
-        """Generate the content of the input fileself from the Problem object.
+    def _generate_jobdata(self):
+        """Generate the content of the input file from the Problem object.
 
         Parameters
         ----------
@@ -38,6 +38,8 @@ class AbaqusInputFile(InputFile):
 ** Generated using compas_fea2 version {}
 ** Author: {}
 ** Date: {}
+** Model Description : {}
+** Problem Description : {}
 **
 *PHYSICAL CONSTANTS, ABSOLUTE ZERO=-273.15, STEFAN BOLTZMANN=5.67e-8
 **
@@ -54,9 +56,93 @@ class AbaqusInputFile(InputFile):
 **------------------------------------------------------------------
 **------------------------------------------------------------------
 {}""".format(self._job_name, compas_fea2.__version__,
-                                        problem.author, now,
-                                        problem.model._generate_jobdata(),
-                                        problem._generate_jobdata())
+             self.model.author,
+             now,
+             self.model.description,
+             self.problem.description,
+             self.model._generate_jobdata(),
+             self.problem._generate_jobdata())
+
+
+class AbaqusRestartInputFile(InputFile):
+    """"""
+
+    def __init__(self, start, steps, name=None, **kwargs):
+        super(AbaqusRestartInputFile, self).__init__(name=name, **kwargs)
+        self._extension = 'inp'
+        self._start = start
+        self._steps = steps
+
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def steps(self):
+        return self._steps
+
+    # ==============================================================================
+    # Constructor methods
+    # ==============================================================================
+
+    @classmethod
+    def from_problem(cls, problem, start, steps):
+        """Create an AbaqusRestartInputFile object from a :class:`compas_fea2.problem.Problem`,
+        a starting increment and and additional steps
+
+        Parameters
+        ----------
+        problem : :class:`compas_fea2.problem.Problem`
+            Problem to be converted to InputFile.
+
+        Returns
+        -------
+        obj
+            InputFile for the analysis.
+        """
+        restart_file = cls(start=start, steps=steps)
+        restart_file._registration = problem
+        restart_file._job_name = problem.name+'_restart'
+        restart_file._file_name = '{}.{}'.format(restart_file._job_name, restart_file._extension)
+
+        return restart_file
+
+    def _generate_jobdata(self):
+        """Generate the content of the input file from the Problem object.
+
+        Parameters
+        ----------
+        problem : obj
+            Problem object.
+
+        Resturn
+        -------
+        str
+            content of the input file
+        """
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        return """*Heading
+** Job name: {}
+** Generated using compas_fea2 version {}
+** Author: {}
+** Date: {}
+** Model Description : {}
+** Problem Description : {}
+**
+*Restart, read, step={}
+**
+**------------------------------------------------------------------
+**------------------------------------------------------------------
+** ADDITIONAL STEPS
+**------------------------------------------------------------------
+**------------------------------------------------------------------
+{}""".format(self._job_name, compas_fea2.__version__,
+             self.model.author,
+             now,
+             self.model.description,
+             self.problem.description,
+             self.start,
+             '\n'.join([step._generate_jobdata() for step in self.steps]))
 
 
 class AbaqusParametersFile(ParametersFile):
@@ -88,6 +174,7 @@ class AbaqusParametersFile(ParametersFile):
         input_file._job_name = problem._name
         input_file._file_name = '{}.{}'.format(problem._name, input_file._extension)
         input_file._job_data = input_file._generate_jobdata(problem, smooth)
+        input_file._registration = problem
         return input_file
 
     def _generate_jobdata(self, opti_problem, smooth):

@@ -6,7 +6,7 @@ from compas_fea2.model.elements import BeamElement
 from compas_fea2.model.elements import MassElement
 from compas_fea2.model.elements import MembraneElement
 from compas_fea2.model.elements import ShellElement
-from compas_fea2.model.elements import SolidElement
+from compas_fea2.model.elements import _Element3D
 from compas_fea2.model.elements import SpringElement
 from compas_fea2.model.elements import StrutElement
 from compas_fea2.model.elements import TieElement
@@ -119,13 +119,13 @@ class AnsysShellElement(ShellElement):
         raise NotImplementedError
 
 
-class AnsysSolidElement(SolidElement):
-    """Ansys implementation of :class:`compas_fea2.model.elements.SolidElement`.\n
+class _AnsysElement3D(_Element3D):
+    """Ansys implementation of :class:`compas_fea2.model.elements._Element3D`.\n
     """
-    __doc__ += SolidElement.__doc__
+    __doc__ += _Element3D.__doc__
 
     def __init__(self, *, nodes, section, frame=None, part=None, name=None, **kwargs):
-        super(AnsysSolidElement, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
+        super(_AnsysElement3D, self).__init__(nodes=nodes, section=section, frame=frame, part=part, name=name, **kwargs)
         raise NotImplementedError
 
     def _generate_jobdata(self):

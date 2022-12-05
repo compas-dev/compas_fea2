@@ -10,6 +10,11 @@ from compas_fea2.base import FEAData
 class _Material(FEAData):
     """Initialises base Material object.
 
+    Note
+    ----
+    Materials are registered to a :class:`compas_fea2.model.Model` and can be assigned
+    to sections in different elements and parts.
+
     Parameters
     ----------
     denisty : float
@@ -25,22 +30,34 @@ class _Material(FEAData):
 
     """
 
-    def __init__(self, *, density, name=None, **kwargs):
+    def __init__(self, *, density, expansion=None, name=None, **kwargs):
         super(_Material, self).__init__(name=name, **kwargs)
         self.density = density
+        self.expansion = expansion
         self._key = None
 
     @property
     def key(self):
         return self._key
 
+    @property
+    def model(self):
+        return self._registration
+
     def __str__(self):
         return """
 {}
 {}
-name    : {}
-density : {}
-""".format(self.__class__.__name__, len(self.__class__.__name__) * '-', self.name, self.density)
+name        : {}
+density     : {}
+expansion   : {}
+""".format(self.__class__.__name__, len(self.__class__.__name__) * '-', self.name, self.density, self.expansion)
+
+    def __html__(self):
+        return """<html>
+<head></head>
+<body><p>Hello World!</p></body>
+</html>"""
 
     @abstractmethod
     def jobdata(self, *args, **kwargs):
@@ -85,8 +102,8 @@ class ElasticOrthotropic(_Material):
 
     """
 
-    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, name=None, **kwargs):
-        super(ElasticOrthotropic, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, name=None, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -101,8 +118,9 @@ class ElasticOrthotropic(_Material):
         return """
 {}
 {}
-name    : {}
-density : {}
+name        : {}
+density     : {}
+expansion   : {}
 
 Ex  : {}
 Ey  : {}
@@ -114,7 +132,7 @@ Gxy : {}
 Gyz : {}
 Gzx : {}
 """.format(self.__class__.__name__, len(self.__class__.__name__) * '-',
-           self.name, self.density,
+           self.name, self.density, self.expansion,
            self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
 
@@ -138,8 +156,8 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, *, E, v, density, name=None, **kwargs):
-        super(ElasticIsotropic, self).__init__(density=density,  name=name, **kwargs)
+    def __init__(self, *, E, v, density, expansion=None, name=None, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
         self.E = E
         self.v = v
 
@@ -147,13 +165,14 @@ class ElasticIsotropic(_Material):
         return """
 ElasticIsotropic Material
 -------------------------
-name    : {}
-density : {}
+name        : {}
+density     : {}
+expansion   : {}
 
 E : {}
 v : {}
 G : {}
-""".format(self.name, self.density, self.E, self.v, self.G)
+""".format(self.name, self.density, self.expansion, self.E, self.v, self.G)
 
     @property
     def G(self):
@@ -202,23 +221,24 @@ class ElasticPlastic(ElasticIsotropic):
 
     """
 
-    def __init__(self, *, E, v, density, strain_stress, name=None, **kwargs):
-        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
+    def __init__(self, *, E, v, density, strain_stress, expansion=None, name=None, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):
         return """
 ElasticPlastic Material
 -----------------------
-name    : {}
-density : {}
+name        : {}
+density     : {}
+expansion   : {}
 
 E  : {}
 v  : {}
 G  : {}
 
 strain_stress : {}
-""".format(self.name, self.density, self.E, self.v, self.G, self.strain_stress)
+""".format(self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress)
 
 
 # ==============================================================================

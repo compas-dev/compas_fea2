@@ -11,6 +11,8 @@ from compas_fea2.problem import PrestressLoad
 from compas_fea2.problem import HarmonicPointLoad
 from compas_fea2.problem import HarmonicPressureLoad
 
+from typing import Iterable
+
 
 dofs = ['x',  'y',  'z',  'xx', 'yy', 'zz']
 
@@ -23,10 +25,12 @@ class OpenseesPointLoad(PointLoad):
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(OpenseesPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
-    def _generate_jobdata(self):
+    def _generate_jobdata(self, distribution):
         jobdata = []
-        for node in self.nodes:
-            jobdata.append('load {} {}'.format(node, ' '.join([str(self.components[dof]) for dof in dofs])))
+        if not isinstance(distribution, Iterable):
+            distribution = [distribution]
+        for node in distribution:
+            jobdata.append('\tload {} {}'.format(node.key, ' '.join([str(self.components[dof] or 0.0) for dof in dofs[:node.part.ndf]])))
         return '\n'.join(jobdata)
 
 

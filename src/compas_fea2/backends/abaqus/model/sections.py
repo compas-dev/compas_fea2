@@ -310,7 +310,7 @@ class AbaqusTieSection(TieSection):
 
     def __init__(self, A, material, name=None, **kwargs):
         super(AbaqusTieSection, self).__init__(A, material, name=name, **kwargs)
-        raise NotImplementedError('{self.__class__.__name__} is not available in Abaqus')
+        raise NotImplementedError('{} is not available in Abaqus'.format(TieSection.__name__))
 
 
 # ==============================================================================
@@ -331,7 +331,7 @@ class AbaqusShellSection(ShellSection):
         super(AbaqusShellSection, self).__init__(t, material, name=name, **kwargs)
         self.int_points = int_points
 
-    def _generate_jobdata(self, set_name):
+    def _generate_jobdata(self, set_name, **kwargs):
         """Generates the string information for the input file.
 
         Parameters
@@ -354,7 +354,7 @@ class AbaqusMembraneSection(MembraneSection):
     def __init__(self, t, material, name=None, **kwargs):
         super(AbaqusMembraneSection, self).__init__(t, material, name=name, **kwargs)
 
-    def _generate_jobdata(self, set_name):
+    def _generate_jobdata(self, set_name, **kwargs):
         """Generates the string information for the input file.
 
         Parameters
@@ -381,7 +381,7 @@ class AbaqusSolidSection(SolidSection):
     def __init__(self, material, name=None, **kwargs):
         super(AbaqusSolidSection, self).__init__(material, name=name, **kwargs)
 
-    def _generate_jobdata(self, set_name):
+    def _generate_jobdata(self, set_name, **kwargs):
         """Generates the string information for the input file.
 
         Parameters

@@ -11,7 +11,7 @@ from compas.plugins import plugin
 
 # Models
 from compas_fea2.model import Model
-from compas_fea2.model import Part
+from compas_fea2.model import DeformablePart
 from compas_fea2.model import Node
 # Elements
 from compas_fea2.model.elements import (
@@ -20,7 +20,7 @@ from compas_fea2.model.elements import (
     TrussElement,
     MembraneElement,
     ShellElement,
-    SolidElement,
+    _Element3D,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -60,10 +60,7 @@ from compas_fea2.model.groups import (
     ElementsGroup,
     FacesGroup,
 )
-# Interactions
-from compas_fea2.model.interactions import (
-    HardContactFrictionPenalty,
-)
+
 # Constraints
 from compas_fea2.model.constraints import (
     TieConstraint,
@@ -76,9 +73,9 @@ from compas_fea2.model.releases import (
 # Boundary Conditions
 from compas_fea2.model.bcs import (
     FixedBC,
-    FixedBCXX,
-    FixedBCYY,
-    FixedBCZZ,
+    ClampBCXX,
+    ClampBCYY,
+    ClampBCZZ,
     PinnedBC,
     RollerBCX,
     RollerBCXY,
@@ -149,7 +146,7 @@ try:
         AnsysTrussElement,
         AnsysMembraneElement,
         AnsysShellElement,
-        AnsysSolidElement,
+        _AnsysElement3D,
     )
 
     # Ansys Sections
@@ -193,10 +190,6 @@ try:
         AnsysFacesGroup,
     )
 
-    # Ansys Interactions
-    from .model.interactions import (
-        AnsysHardContactFrictionPenalty,
-    )
     # Ansys Constraints
     from .model.constraints import (
         AnsysTieConstraint,
@@ -210,9 +203,9 @@ try:
     # Ansys Boundary Conditions
     from .model.bcs import (
         AnsysFixedBC,
-        AnsysFixedBCXX,
-        AnsysFixedBCYY,
-        AnsysFixedBCZZ,
+        AnsysClampBCXX,
+        AnsysClampBCYY,
+        AnsysClampBCZZ,
         AnsysPinnedBC,
         AnsysRollerBCX,
         AnsysRollerBCXY,
@@ -275,7 +268,7 @@ try:
         backend = compas_fea2.BACKENDS['ansys']
 
         backend[Model] = AnsysModel
-        backend[Part] = AnsysPart
+        backend[DeformablePart] = AnsysPart
         backend[Node] = AnsysNode
 
         backend[MassElement] = AnsysMassElement
@@ -283,9 +276,9 @@ try:
         backend[TrussElement] = AnsysTrussElement
         backend[MembraneElement] = AnsysMembraneElement
         backend[ShellElement] = AnsysShellElement
-        backend[SolidElement] = AnsysSolidElement
-        backend[SolidElement] = AnsysSolidElement
-        backend[SolidElement] = AnsysSolidElement
+        backend[_Element3D] = _AnsysElement3D
+        backend[_Element3D] = _AnsysElement3D
+        backend[_Element3D] = _AnsysElement3D
 
         backend[AngleSection] = AnsysAngleSection
         backend[BeamSection] = AnsysBeamSection
@@ -319,16 +312,15 @@ try:
         backend[ElementsGroup] = AnsysElementsGroup
         backend[FacesGroup] = AnsysFacesGroup
 
-        backend[HardContactFrictionPenalty] = AnsysHardContactFrictionPenalty
 
         backend[TieConstraint] = AnsysTieConstraint
 
         backend[BeamEndPinRelease] = AnsysBeamEndPinRelease
 
         backend[FixedBC] = AnsysFixedBC
-        backend[FixedBCXX] = AnsysFixedBCXX
-        backend[FixedBCYY] = AnsysFixedBCYY
-        backend[FixedBCZZ] = AnsysFixedBCZZ
+        backend[ClampBCXX] = AnsysClampBCXX
+        backend[ClampBCYY] = AnsysClampBCYY
+        backend[ClampBCZZ] = AnsysClampBCZZ
         backend[PinnedBC] = AnsysPinnedBC
         backend[RollerBCX] = AnsysRollerBCX
         backend[RollerBCXY] = AnsysRollerBCXY

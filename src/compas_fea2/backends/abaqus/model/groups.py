@@ -45,8 +45,8 @@ class AbaqusNodesGroup(NodesGroup):
     """
     __doc__ += NodesGroup.__doc__
 
-    def __init__(self, *, nodes, part=None, name=None, **kwargs):
-        super(AbaqusNodesGroup, self).__init__(nodes=nodes, part=part, name=name, **kwargs)
+    def __init__(self, *, nodes, name=None, **kwargs):
+        super(AbaqusNodesGroup, self).__init__(nodes=nodes, name=name, **kwargs)
         self._set_type = 'nset'
 
     def _generate_jobdata(self, instance=None):
@@ -63,8 +63,8 @@ class AbaqusElementsGroup(ElementsGroup):
     """
     __doc__ += ElementsGroup.__doc__
 
-    def __init__(self,  *, elements, part=None, name=None, **kwargs):
-        super(AbaqusElementsGroup, self).__init__(elements=elements, part=part, name=name, **kwargs)
+    def __init__(self,  *, elements, name=None, **kwargs):
+        super(AbaqusElementsGroup, self).__init__(elements=elements, name=name, **kwargs)
         self._set_type = 'elset'
 
     def _generate_jobdata(self, instance=None):
@@ -81,8 +81,8 @@ class AbaqusFacesGroup(FacesGroup):
     """
     __doc__ += NodesGroup.__doc__
 
-    def __init__(self, *, faces, part=None, name=None, **kwargs):
-        super(AbaqusFacesGroup, self).__init__(faces=faces, part=part, name=name, **kwargs)
+    def __init__(self, *, faces, name=None, **kwargs):
+        super(AbaqusFacesGroup, self).__init__(faces=faces, name=name, **kwargs)
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -96,7 +96,7 @@ class AbaqusFacesGroup(FacesGroup):
         str
             input file data line.
         """
-        lines = ['*Surface, type=ELEMENT, name={}'.format(self._name)]
+        lines = ['*Surface, type=ELEMENT, name={}_i'.format(self._name)]
         for face in self.faces:
             lines.append('{}-1.{}, {}'.format(self.part.name, face.element.key+1, face.tag))
         lines.append('**')

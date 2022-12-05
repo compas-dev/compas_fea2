@@ -14,7 +14,7 @@ from .elements import (
     OpenseesTrussElement,
     OpenseesMembraneElement,
     OpenseesShellElement,
-    OpenseesSolidElement,
+    _OpenseesElement3D,
 )
 
 # Opensees Sections
@@ -59,10 +59,6 @@ from .groups import (
     OpenseesFacesGroup,
 )
 
-# Opensees Interactions
-from .interactions import (
-    OpenseesHardContactFrictionPenalty,
-)
 # Opensees Constraints
 from .constraints import (
     OpenseesTieConstraint,
@@ -85,8 +81,4 @@ from .bcs import (
 
 from .releases import (
     OpenseesBeamEndPinRelease
-)
-
-from .interfaces import (
-    OpenseesInterface
 )

@@ -14,7 +14,7 @@ from compas.plugins import plugin
 
 # Models
 from compas_fea2.model import Model
-from compas_fea2.model import Part
+from compas_fea2.model import DeformablePart
 from compas_fea2.model import Node
 # Elements
 from compas_fea2.model.elements import (
@@ -23,7 +23,8 @@ from compas_fea2.model.elements import (
     TrussElement,
     MembraneElement,
     ShellElement,
-    SolidElement,
+    _Element3D,
+    TetrahedronElement,
 )
 # Sections
 from compas_fea2.model.sections import (
@@ -63,10 +64,7 @@ from compas_fea2.model.groups import (
     ElementsGroup,
     FacesGroup,
 )
-# Interactions
-from compas_fea2.model.interactions import (
-    HardContactFrictionPenalty,
-)
+
 # Constraints
 from compas_fea2.model.constraints import (
     TieConstraint,
@@ -153,7 +151,8 @@ try:
         OpenseesTrussElement,
         OpenseesMembraneElement,
         OpenseesShellElement,
-        OpenseesSolidElement,
+        _OpenseesElement3D,
+        OpenseesTetrahedronElement,
     )
 
     # Opensees Sections
@@ -197,10 +196,6 @@ try:
         OpenseesFacesGroup,
     )
 
-    # Opensees Interactions
-    from .model.interactions import (
-        OpenseesHardContactFrictionPenalty,
-    )
     # Opensees Constraints
     from .model.constraints import (
         OpenseesTieConstraint,
@@ -280,7 +275,7 @@ try:
         backend = compas_fea2.BACKENDS['opensees']
 
         backend[Model] = OpenseesModel
-        backend[Part] = OpenseesPart
+        backend[DeformablePart] = OpenseesPart
         backend[Node] = OpenseesNode
 
         backend[MassElement] = OpenseesMassElement
@@ -288,7 +283,8 @@ try:
         backend[TrussElement] = OpenseesTrussElement
         backend[MembraneElement] = OpenseesMembraneElement
         backend[ShellElement] = OpenseesShellElement
-        backend[SolidElement] = OpenseesSolidElement
+        backend[_Element3D] = _OpenseesElement3D
+        backend[TetrahedronElement] = OpenseesTetrahedronElement
 
         backend[AngleSection] = OpenseesAngleSection
         backend[BeamSection] = OpenseesBeamSection
@@ -321,8 +317,6 @@ try:
         backend[NodesGroup] = OpenseesNodesGroup
         backend[ElementsGroup] = OpenseesElementsGroup
         backend[FacesGroup] = OpenseesFacesGroup
-
-        backend[HardContactFrictionPenalty] = OpenseesHardContactFrictionPenalty
 
         backend[TieConstraint] = OpenseesTieConstraint
 

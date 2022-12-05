@@ -50,6 +50,11 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
         input file data line (str).
 
         """
+        jobdata = ["*Material, name={}".format(self.name)]
+
+        if self.density:
+            jobdata.append("*Density\n{},".format(self.density))
+
         n = ''
         if self.unilateral:
             if self.unilateral == 'nc':
@@ -59,13 +64,12 @@ class AbaqusElasticIsotropic(ElasticIsotropic):
             else:
                 raise Exception(
                     'keyword {} for unilateral parameter not recognised. Please review the documentation'.format(self.unilateral))
+        jobdata.append("*Elastic\n{}, {}{}".format(self.E, self.v, n))
 
-        return ("*Material, name={}\n"
-                "*Density\n"
-                "{},\n"
-                "*Elastic\n"
-                "{}, {}{}\n"
-                "**").format(self.name, self.density, self.E, self.v, n)
+        if self.expansion:
+            jobdata.append("*Expansion\n{},".format(self.expansion))
+        jobdata.append("**")
+        return '\n'.join(jobdata)
 
 
 class AbaqusStiff(Stiff):

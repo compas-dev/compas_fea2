@@ -34,11 +34,16 @@ zz : bool
 
 class _BoundaryCondition(FEAData):
     """Base class for all zero-valued boundary conditions.
+
+    Note
+    ----
+    BoundaryConditions are registered to a :class:`compas_fea2.model.Model`.
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, axes='global', name=None, **kwargs):
         super(_BoundaryCondition, self).__init__(name=name, **kwargs)
+        self._axes = axes
         self.x = False
         self.y = False
         self.z = False
@@ -46,8 +51,21 @@ class _BoundaryCondition(FEAData):
         self.yy = False
         self.zz = False
 
+    @property
+    def axes(self):
+        return self._axes
+
+    @axes.setter
+    def axes(self, value):
+        self._axes = value
+
+    @property
+    def components(self):
+        return {c: getattr(self, c) for c in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+
+
 class GeneralBC(_BoundaryCondition):
-    """Base class for all zero-valued boundary conditions.
+    """Costumized boundary condition.
     """
     __doc__ += docs
 
@@ -59,6 +77,7 @@ class GeneralBC(_BoundaryCondition):
         self.xx = xx
         self.yy = yy
         self.zz = zz
+
 
 class FixedBC(_BoundaryCondition):
     """A fixed nodal displacement boundary condition.

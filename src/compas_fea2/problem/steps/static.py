@@ -1,14 +1,20 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from typing import Iterable
+from xml.dom.minidom import Element
 
 from compas_fea2.model.nodes import Node
+from compas_fea2.model.groups import ElementsGroup, PartsGroup
+
 
 from compas_fea2.problem.loads import _Load
 from compas_fea2.problem.loads import GravityLoad
 from compas_fea2.problem.loads import PointLoad
 
+from compas_fea2.problem.patterns import Pattern
 from compas_fea2.problem.displacements import GeneralDisplacement
+from compas_fea2.problem.fields import PrescribedTemperatureField
 
 from .step import _GeneralStep
 
@@ -78,18 +84,8 @@ class StaticStep(_GeneralStep):
         super(StaticStep, self).__init__(max_increments=max_increments,
                                          initial_inc_size=initial_inc_size, min_inc_size=min_inc_size,
                                          time=time, nlgeom=nlgeom, modify=modify, name=name, **kwargs)
-        self._displacements = {}
-        self._gravity = None
 
-    @property
-    def gravity(self):
-        return self._gravity
-
-    @property
-    def displacements(self):
-        return self._displacements
-
-    def add_point_load(self, node, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global'):
+    def add_point_load(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the ``Step``.
 
         Warning
@@ -101,7 +97,7 @@ class StaticStep(_GeneralStep):
         name : str
             name of the point load
         part : str
-            name of the :class:`compas_fea2.problem.Part` where the load is applied
+            name of the :class:`compas_fea2.problem.DeformablePart` where the load is applied
         where : int or list(int), obj
             It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
             applied.
@@ -126,9 +122,9 @@ class StaticStep(_GeneralStep):
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')
-        return self.add_load(PointLoad(x, y, z, xx, yy, zz, axes), node)
+        return self.add_pattern(Pattern(load=PointLoad(x, y, z, xx, yy, zz, axes, name, **kwargs), distribution=nodes))
 
-    def add_gravity_load(self, g=9.81, x=0., y=0., z=-1.):
+    def add_gravity_load(self, g=9.81, x=0., y=0., z=-1., distribution=None):
         """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
 
         Warning
@@ -146,8 +142,19 @@ class StaticStep(_GeneralStep):
             y component of the gravity direction vector (in global coordinates), by default 0.
         z : [type], optional
             z component of the gravity direction vector (in global coordinates), by default -1.
+        distribution : [:class:`compas_fea2.model.PartsGroup`] | [:class:`compas_fea2.model.ElementsGroup`]
+            Group of parts or elements affected by gravity.
         """
-        self._gravity = GravityLoad(g, x, y, z)
+        # TODO implement distribution
+        if distribution:
+            raise NotImplementedError()
+        # if isinstance(distribution, PartsGroup):
+        #     group = []
+        #     for part in distribution.parts:
+        #         for element in part.elements:
+        #             group.append(element)
+        #     self.model.add_group(ElementsGroup(elements=group))
+        return self.add_pattern(Pattern(load=GravityLoad(g, x, y, z), distribution=distribution))
 
     def add_prestress_load(self):
         raise NotImplementedError
@@ -162,36 +169,44 @@ class StaticStep(_GeneralStep):
         raise NotImplementedError
 
     # =========================================================================
-    #                       Displacement methods
+    #                           Fields methods
     # =========================================================================
+    # FIXME change to pattern
+    def add_temperature_field(self, field, node):
+        if not isinstance(field, PrescribedTemperatureField):
+            raise TypeError('{!r} is not a PrescribedTemperatureField.'.format(field))
 
-    def add_displacement(self, displacement, node):
-        """Add a displacement to Step object.
+        if not isinstance(node, Node):
+            raise TypeError('{!r} is not a Node.'.format(node))
+
+        node._t = field
+        self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
+        return field
+
+    def add_temperature_fields(self, field, nodes):
+        return [self.add_temperature_field(field, node) for node in nodes]
+
+    # =========================================================================
+    #                           Displacements methods
+    # =========================================================================
+    def add_displacement(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
+        """Add a displacement at give nodes to the Step object.
 
         Parameters
         ----------
         displacement : obj
-            ``compas_fea2`` :class:`compas_fea2.problem.GeneralDisplacement` object.
-        where : int
-            node or element key where the load is applied
-        part : str
-            name of the part where the load is applied
+            :class:`compas_fea2.problem.GeneralDisplacement` object.
+
         Returns
         -------
         None
         """
-        if not isinstance(displacement, GeneralDisplacement):
-            raise TypeError('{!r} is not a General Displacement.'.format(displacement))
-
-        if not isinstance(node, Node):
-            raise TypeError('{!r} is not a Node.'.format(node))
-        # self.model.contains_node(node) #TODO implement method
-        node._displacements.add(displacement)
-        self._displacements.setdefault(node.part, {}).setdefault(displacement, set()).add(node)
-        return displacement
-
-    def add_displacements(self, displacement, nodes):
-        return [self.add_displacement(displacement, node) for node in nodes]
+        if axes != 'global':
+            raise NotImplementedError('local axes are not supported yet')
+        d = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+        if not isinstance(nodes, Iterable):
+            nodes = [nodes]
+        return self.add_pattern(Pattern(load=d, distribution=nodes))
 
 
 class StaticRiksStep(StaticStep):

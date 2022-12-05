@@ -11,8 +11,9 @@ class OpenseesNode(Node):
     """
     __doc__ += Node.__doc__
 
-    def __init__(self, xyz, mass=None, part=None, name=None, **kwargs):
-        super(OpenseesNode, self).__init__(xyz=xyz, mass=mass, part=part, name=name, **kwargs)
+    def __init__(self, xyz, mass=None, name=None, **kwargs):
+        super(OpenseesNode, self).__init__(xyz=xyz, mass=mass, name=name, **kwargs)
+        # self.ndf=3
 
     def _generate_jobdata(self):
         """Generates the string information for the input file.
@@ -28,5 +29,6 @@ class OpenseesNode(Node):
         # FIXME: the approximation on the floating point is not correct because it depends on the units
         x, y, z = self.xyz
         coordinates = '{0}{1}{2}{3:>10.3f}{2}{4:>10.3f}{2}{5:>10.3f}'.format('node ', self.key, ' ', x, y, z)
-        mass = ' -mass {:>10.3f} {:>10.3f} {:>10.3f}'.format(*self.mass) if self.mass else ''
+        mass = ' -mass {:>10.3f} {:>10.3f} {:>10.3f}'.format(*self.mass) if not any(v is None for v in self.mass) else ''
+        # return coordinates
         return coordinates+mass

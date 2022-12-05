@@ -18,12 +18,17 @@ sphinx == 4.5
 twine
 wheel
 matplotlib
+jinja2
 
 openseespy ; sys_platform != 'darwin'
 openseespymac ; sys_platform == 'darwin'
 sphinxcontrib.gist
 
 # fea2_extensions
+compas>=1.0
+click
+gmsh
+pint
 
 -e .
 

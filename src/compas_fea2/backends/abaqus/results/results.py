@@ -18,33 +18,6 @@ class AbaqusResults(Results):
     def __init__(self, database_name, database_path):
         super(AbaqusResults, self).__init__(database_name=database_name, database_path=database_path)
 
-    # ==========================================================================
-    # Extract results
-    # ==========================================================================
-    @timer(message='Data extracted from Abaqus .odb file in')
-    def extract_data(self, fields=None):
-        """Extract data from the Abaqus .odb file.
-
-        Parameters
-        ----------
-        fields : list
-            Output fields to extract, by default 'None'. If `None` all available
-            fields will be extracted, which might require considerable time.
-
-        Returns
-        -------
-        None
-
-        """
-        import json
-        print('\nExtracting data from Abaqus .odb file...')
-
-        args = ['abaqus', 'python', Path(odb_extract.__file__), ','.join(fields) if fields else 'None',
-                self.database_path, self.database_name]
-        for line in launch_process(cmd_args=args, cwd=self.database_path, output=True):
-            print(line)
-        return Path(self.database_path).joinpath('{}-results.json'.format(self.database_name))
-        print('Data stored successfully in {}'.format(file))
 
 
 class AbaqusStepResults(StepResults):

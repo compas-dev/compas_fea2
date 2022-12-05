@@ -48,7 +48,7 @@ class OpenseesSpringSection(SpringSection):
     """
 
     def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
-        super().__init__(forces, displacements, stiffness, name, **kwargs)
+        super(OpenseesSpringSection, self).__init__(forces, displacements, stiffness, name, **kwargs)
         raise NotImplementedError('{self.__class__.__name__} is not available in Opensees')
 
 # ==============================================================================
@@ -131,10 +131,10 @@ class OpenseesRectangularSection(RectangularSection):
     __doc__ += RectangularSection.__doc__
 
     def __init__(self, w, h, material, name=None, **kwargs):
-        super(OpenseesRectangularSection, self).__init__(w, h, material, name=None, **kwargs)
+        super(OpenseesRectangularSection, self).__init__(w=w, h=h, material=material, name=name, **kwargs)
 
     def _generate_jobdata(self):
-        return 'section Elastic {} {} {} {} {} {} {}'.format(self.name, self.material.E, self.A, self.Iyy, self.Ixx, self.material.G, self.J)
+        return 'section Elastic {} {} {} {} {} {} {}'.format(self.key, self.material.E, self.A, self.Iyy, self.Ixx, self.material.G, self.J)
 
 
 class OpenseesTrapezoidalSection(TrapezoidalSection):
@@ -206,9 +206,11 @@ class OpenseesShellSection(ShellSection):
     """"""
     __doc__ += ShellSection.__doc__
 
-    def __init__(self, t, material, int_points=5, name=None, **kwargs):
+    def __init__(self, t, material, name=None, **kwargs):
         super(OpenseesShellSection, self).__init__(t, material, name=name, **kwargs)
-        raise NotImplementedError
+
+    def _generate_jobdata(self):
+        return 'section ElasticMembranePlateSection {} {} {} {} {}'.format(self.key, self.material.E, self.material.v, self.t, self.material.density)
 
 
 class OpenseesMembraneSection(MembraneSection):
@@ -225,9 +227,10 @@ class OpenseesMembraneSection(MembraneSection):
 
 
 class OpenseesSolidSection(SolidSection):
-    """"""
-    __doc__ += SolidSection.__doc__
+    """
+    Note
+    ----
+    OpenSees does not have the concept of a solid section.
 
-    def __init__(self, material, name=None, **kwargs):
-        super(OpenseesSolidSection, self).__init__(material, name=name, **kwargs)
-        raise NotImplementedError
+    """
+    __doc__ += SolidSection.__doc__

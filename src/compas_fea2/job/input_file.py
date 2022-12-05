@@ -25,6 +25,19 @@ class InputFile(FEAData):
         self._file_name = None
         self._extension = None
 
+    @property
+    def problem(self):
+        return self._registration
+
+    @property
+    def model(self):
+        return self.problem._registration
+
+    @property
+    def job_data(self):
+        """The job_data property."""
+        return self._generate_jobdata()
+
     @classmethod
     def from_problem(cls, problem):
         """Create an InputFile object from a :class:`compas_fea2.problem.Problem`
@@ -40,15 +53,15 @@ class InputFile(FEAData):
             InputFile for the analysis.
         """
         input_file = cls()
+        input_file._registration = problem
         input_file._job_name = problem._name
         input_file._file_name = '{}.{}'.format(problem._name, input_file._extension)
-        input_file._job_data = input_file._generate_jobdata(problem)
         return input_file
 
     # ==============================================================================
     # General methods
     # ==============================================================================
-    def write_to_file(self, path):
+    def write_to_file(self, path=None):
         """Writes the InputFile to a file in a specified location.
 
         Parameters
@@ -61,16 +74,15 @@ class InputFile(FEAData):
         r : str
             Information about the results of the writing process.
         """
-
-        try:
-            file_path = os.path.join(path, self._file_name)
-            with open(file_path, 'w') as f:
-                f.writelines(self._job_data)
-            out = 'Input file generated in: {}'.format(file_path)
-        except:
-            out = 'ERROR: input file not generated!'
-
-        print(out)
+        path = path or self.problem.path
+        # try:
+        file_path = os.path.join(path, self._file_name)
+        with open(file_path, 'w') as f:
+            f.writelines(self.job_data)
+        print('Input file generated in: {}'.format(file_path))
+        # except:
+        #     out = 'ERROR: input file not generated!'
+        # print(out)
 
     def _generate_jobdata(self, *args, **kwargs):
         raise NotImplementedError('This method is not available for the selected backend!')

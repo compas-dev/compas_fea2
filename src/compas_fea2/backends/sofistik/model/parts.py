@@ -12,10 +12,38 @@ class SofistikDeformablePart(DeformablePart):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikDeformablePart, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return """$
++prog aqua urs:1
+head Design Code and Materials
+
+
+$ MATERIALS
+{}
+$ mat no 10  e 200000  mue 0.3
+
+$ SECTIONS
+{}
+srec no 10  h 1000[mm]  b 100[mm]  mno 10
+end
+
++prog SOFIMSHA urs:5
+head Geometry
+syst spac  gdir negz  gdiv 10000
+$ NODES
+{}
+
+$ ELEMENTS
+{}
+
+end
+""".format("\n".join([material._generate_jobdata() for material in self.materials]),
+            "\n".join([section._generate_jobdata() for section in self.sections]), 
+            "\n".join([node._generate_jobdata() for node in self.nodes]), 
+            "\n".join([element._generate_jobdata() for element in self.elements])
+            )
+
 
 class SofistikRigidPart(RigidPart):
     """Sofistik implementation of :class:`compas_fea2.model.parts.RigidPart`.\n

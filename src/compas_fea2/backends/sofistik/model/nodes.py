@@ -11,8 +11,7 @@ class SofistikNode(Node):
 
     def __init__(self, xyz, mass=None, name=None, **kwargs):
         super(SofistikNode, self).__init__(xyz=xyz, mass=mass, name=name, **kwargs)
-        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return """node no {} x {} y {} z {}""".format(self.key+1, self.x, self.y, self.z)
 

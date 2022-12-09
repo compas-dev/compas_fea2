@@ -11,8 +11,33 @@ class SofistikProblem(Problem):
 
     def __init__(self, name=None, description=None, **kwargs):
         super(SofistikProblem, self).__init__(name=name, description=description, **kwargs)
-        raise NotImplementedError
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return """$
++prog sofiload urs:3
+head loads
+
+lc no 10 titl 'test load'
+node no 2  type pz  p1 -0.1
+
+end
+
+
++prog ase urs:4
+head analysis
+syst prob line
+
+lc no 1000  titl 'linear analysis test load'
+lcc no 10  fact 1.0
+
+end
+
+
++prog aqb urs:44
+head stresses
+ stre
+ lc 1000
+ beam type beam
+end
+        """
 

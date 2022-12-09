@@ -12,10 +12,32 @@ class SofistikInputFile(InputFile):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikInputFile, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
+        self._extension = 'dat'
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        """Generate the content of the input file from the Model and Problem object.
+
+        Parameters
+        ----------
+        problem : obj
+            Problem object.
+
+        Resturn
+        -------
+        str
+            content of the input file
+        """
+
+        
+        return """$$$
+$ MODEL
+{}
+$ PROBLEM
+{}
+""".format(self.model._generate_jobdata(),
+self.problem._generate_jobdata())
+
+
 
 class SofistikParametersFile(ParametersFile):
     """Sofistik implementation of :class:`compas_fea2.job.input_file.ParametersFile`.\n

@@ -70,10 +70,16 @@ class SofistikGeneralBC(GeneralBC):
 
     def __init__(self, name=None, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
         super(SofistikGeneralBC, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, **kwargs)
-        raise NotImplementedError
+        
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        px = 'px' if self.x == True else ''
+        py = 'py' if self.y == True else ''
+        pz = 'pz' if self.z == True else ''
+        mx = 'mx' if self.xx == True else ''
+        my = 'my' if self.yy == True else ''
+        mz = 'mz' if self.zz == True else ''
+        return "NODE no {}  fix {}".format(self.nodes[0].key+1, ''.join([px,py,pz,mx,my,mz]))
 
 class SofistikPinnedBC(PinnedBC):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.PinnedBC`.\n

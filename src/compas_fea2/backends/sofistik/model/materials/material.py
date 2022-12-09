@@ -15,10 +15,10 @@ class SofistikElasticIsotropic(ElasticIsotropic):
 
     def __init__(self, *, E, v, density, expansion=None, name=None, **kwargs):
         super(SofistikElasticIsotropic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
-        raise NotImplementedError
+
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return "mat no {}  e {} mue {} g {} gam {} alfa {}".format(self.key+1, self.E, self.v, self.G, self.density, self.expansion)
 
 class SofistikElasticOrthotropic(ElasticOrthotropic):
     """Sofistik implementation of :class:`compas_fea2.model.materials.material.ElasticOrthotropic`.\n

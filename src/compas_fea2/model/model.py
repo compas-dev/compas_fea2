@@ -919,8 +919,8 @@ Initial Conditions
         if draw_bcs:
             v.draw_bcs(self, parts, draw_bcs)
 
-        if draw_constraints:
-            v.draw_constraint(self.constraints)
+        # if draw_constraints:
+        #     v.draw_constraint(self.constraints)
 
         v.show()
 

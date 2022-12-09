@@ -21,7 +21,7 @@ from compas_fea2.model.sections import TrapezoidalSection
 from compas_fea2.model.sections import TrussSection
 
 class SofistikAngleSection(AngleSection):
-    """Sofistik implementation of :class:`compas_fea2.model.sections.AngleSection`.\n
+    """Sofistik implementation of :class:`compas_fea2.model.sections.AngleSection`.\n 
     """
     __doc__ += AngleSection.__doc__
 
@@ -39,10 +39,20 @@ class SofistikBeamSection(BeamSection):
 
     def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
         super(SofistikBeamSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
-        raise NotImplementedError
+        
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return "SVAL no {} mno {} a {} iz {} iy {} iyz {} az {} ay {} it {} g0? {} gw? {}".format(self.key+1,
+                                                                                self.material.key+1,
+                                                                                self.A,
+                                                                                self.Ixx,
+                                                                                self.Iyy,
+                                                                                self.Ixy,
+                                                                                self.Avx,
+                                                                                self.Avy,
+                                                                                self.J,
+                                                                                self.g0,
+                                                                                self.gw)
 
 class SofistikBoxSection(BoxSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.BoxSection`.\n
@@ -51,10 +61,10 @@ class SofistikBoxSection(BoxSection):
 
     def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         super(SofistikBoxSection, self).__init__(w=w, h=h, tw=tw, tf=tf, material=material, name=name, **kwargs)
-        raise NotImplementedError
+        #NEED TO FIND IN THE SREC COMMAND IN SOFISTIK THE EQUIVALENT OF tw AND tf
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return "SREC no {}  h {}  b {} mno {} ToFindEquivalentOftw {} ToFindEquivalentOftf {}".format(self.key+1, self.h, self.w, self.material.key+1, self.tw, self.tf)
 
 class SofistikCircularSection(CircularSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.CircularSection`.\n
@@ -63,10 +73,10 @@ class SofistikCircularSection(CircularSection):
 
     def __init__(self, r, material, name=None, **kwargs):
         super(SofistikCircularSection, self).__init__(r=r, material=material, name=name, **kwargs)
-        raise NotImplementedError
+        
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return "CIRC no {}  r {}  mno {}".format(self.key+1, self.r, self.material.key+1)
 
 class SofistikHexSection(HexSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.HexSection`.\n

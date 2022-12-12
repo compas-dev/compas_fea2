@@ -14,27 +14,25 @@ class SofistikModel(Model):
 
     def _generate_jobdata(self):
         return """$
-+prog aqua urs:1
-head Design Code and Materials
-
-
-mat no 10  e 200000  mue 0.3
-srec no 10  h 1000[mm]  b 100[mm]  mno 10
-
-end
-
 $ PARTS
 {}
 
+$ ICs
+{}
+
+$ BCs
 +prog sofimsha urs:2
 head constraints
 syst rest
-ctrl rest 2
-
+ctrl rest 2 
+{}
 node no 1 fix pxpypzmxmymz
 
 end
-""".format("\n".join([part._generate_jobdata() for part in self.parts]),
+""".format(
+        "\n".join([part._generate_jobdata() for part in self.parts]),
+        "\n".join([ic._generate_jobdata() for ic in self.ics]),
+        "\n".join([bc._generate_jobdata() for bc in self.bcs]),
            )
 
 

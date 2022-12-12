@@ -34,6 +34,10 @@ class SofistikAngleSection(AngleSection):
 
 class SofistikBeamSection(BeamSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.BeamSection`.\n
+
+    ----warnings
+        Is it correct to use SVAL or SECT from SOFiSTiK? 
+
     """
     __doc__ += BeamSection.__doc__
 
@@ -43,25 +47,29 @@ class SofistikBeamSection(BeamSection):
 
     def _generate_jobdata(self):
         return "SVAL no {} mno {} a {} iz {} iy {} iyz {} az {} ay {} it {} g0? {} gw? {}".format(self.key+1,
-                                                                                self.material.key+1,
-                                                                                self.A,
-                                                                                self.Ixx,
-                                                                                self.Iyy,
-                                                                                self.Ixy,
-                                                                                self.Avx,
-                                                                                self.Avy,
-                                                                                self.J,
-                                                                                self.g0,
-                                                                                self.gw)
+                                                                                                    self.material.key+1,
+                                                                                                    self.A,
+                                                                                                    self.Ixx,
+                                                                                                    self.Iyy,
+                                                                                                    self.Ixy,
+                                                                                                    self.Avx,
+                                                                                                    self.Avy,
+                                                                                                    self.J,
+                                                                                                    self.g0,
+                                                                                                    self.gw)
 
 class SofistikBoxSection(BoxSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.BoxSection`.\n
+
+    ----warnings
+        NEED TO FIND IN THE SREC COMMAND IN SOFISTIK THE EQUIVALENT OF tw AND tf
+
     """
     __doc__ += BoxSection.__doc__
 
     def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
         super(SofistikBoxSection, self).__init__(w=w, h=h, tw=tw, tf=tf, material=material, name=name, **kwargs)
-        #NEED TO FIND IN THE SREC COMMAND IN SOFISTIK THE EQUIVALENT OF tw AND tf
+        
 
     def _generate_jobdata(self):
         return "SREC no {}  h {}  b {} mno {} ToFindEquivalentOftw {} ToFindEquivalentOftf {}".format(self.key+1, self.h, self.w, self.material.key+1, self.tw, self.tf)
@@ -145,10 +153,10 @@ class SofistikRectangularSection(RectangularSection):
 
     def __init__(self, w, h, material, name=None, **kwargs):
         super(SofistikRectangularSection, self).__init__(w=w, h=h, material=material, name=name, **kwargs)
-        raise NotImplementedError
+        
 
     def _generate_jobdata(self):
-        raise NotImplementedError
+        return "SREC no {}  h {}  b {} mno {}".format(self.key+1, self.h, self.w, self.material.key+1)
 
 class SofistikShellSection(ShellSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.ShellSection`.\n

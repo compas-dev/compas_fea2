@@ -58,7 +58,7 @@ class SofistikFixedBC(FixedBC):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikFixedBC, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
+        
 
     def _generate_jobdata(self):
         raise NotImplementedError
@@ -79,7 +79,8 @@ class SofistikGeneralBC(GeneralBC):
         mx = 'mx' if self.xx == True else ''
         my = 'my' if self.yy == True else ''
         mz = 'mz' if self.zz == True else ''
-        return "NODE no {}  fix {}".format(self.nodes[0].key+1, ''.join([px,py,pz,mx,my,mz]))
+        return "NODE no fix {}".format(''.join([px,py,pz,mx,my,mz]))
+        #return "NODE no {}  fix {}".format(self.nodes[0].key+1, ''.join([px,py,pz,mx,my,mz]))
 
 class SofistikPinnedBC(PinnedBC):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.PinnedBC`.\n

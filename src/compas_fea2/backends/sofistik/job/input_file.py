@@ -29,7 +29,7 @@ class SofistikInputFile(InputFile):
         """
 
         
-        return """$$$
+        return """$
 $ MODEL
 {}
 $ PROBLEM

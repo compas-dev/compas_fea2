@@ -16,16 +16,14 @@ class SofistikDeformablePart(DeformablePart):
     def _generate_jobdata(self):
         return """$
 +prog aqua urs:1
-head Design Code and Materials
+head Materials and Sections
 
 
 $ MATERIALS
 {}
-$ mat no 10  e 200000  mue 0.3
 
 $ SECTIONS
 {}
-srec no 10  h 1000[mm]  b 100[mm]  mno 10
 end
 
 +prog SOFIMSHA urs:5

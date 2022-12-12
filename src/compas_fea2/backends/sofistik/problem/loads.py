@@ -82,11 +82,11 @@ class SofistikPointLoad(PointLoad):
         
 
     def _generate_jobdata(self):
-        return   """+prog sofiload urs:3
-                    head loads
-                    LOAD no 99 titl 'point load'
-                    NODE no 2 type pz p1 -10.0
-                    end"""
+        return """+prog sofiload urs:3
+                  head loads
+                  LOAD no 99 titl 'point load'
+                  NODE no 2 type pz p1 -10.0
+                  end"""
 
 class SofistikPrestressLoad(PrestressLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.PrestressLoad`.\n

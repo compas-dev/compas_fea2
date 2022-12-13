@@ -17,11 +17,8 @@ class SofistikDeformablePart(DeformablePart):
         return """$
 +prog aqua urs:1
 head Materials and Sections
-
-
 $ MATERIALS
 {}
-
 $ SECTIONS
 {}
 end
@@ -31,10 +28,8 @@ head Geometry
 syst spac  gdir negz  gdiv 10000
 $ NODES
 {}
-
 $ ELEMENTS
 {}
-
 end
 """.format("\n".join([material._generate_jobdata() for material in self.materials]),
             "\n".join([section._generate_jobdata() for section in self.sections]), 

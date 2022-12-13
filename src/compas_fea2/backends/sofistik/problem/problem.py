@@ -35,9 +35,9 @@ end
 
 +prog aqb urs:44
 head stresses
- stre
- lc 1000
- beam type beam
+stre
+lc 1000
+beam type beam
 end
         """
 

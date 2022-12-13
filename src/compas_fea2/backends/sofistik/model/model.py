@@ -27,6 +27,9 @@ syst rest
 ctrl rest 2 
 {}
 node no 1 fix pxpypzmxmymz
+node no 11 fix pxpypzmxmymz
+node no 111 fix pxpypzmxmymz
+node no 121 fix pxpypzmxmymz
 
 end
 """.format(

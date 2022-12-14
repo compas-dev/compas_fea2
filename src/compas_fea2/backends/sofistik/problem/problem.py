@@ -38,6 +38,6 @@ head stresses
  lc 1000
  beam type beam
 end
-        """.format('\n'.join([step._generate_jobdata() for step in self._steps_order]))
+        """.format('\n'.join([step._generate_jobdata() for step in self.steps]))
                     
     

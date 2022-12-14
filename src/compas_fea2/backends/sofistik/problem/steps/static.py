@@ -33,10 +33,10 @@ class SofistikStaticStep(StaticStep):
         {}
 
         $Displacements
-
         {}
-        """.format([load._generate_jobdata() for load in self.loads],
-                    [displacement._generate_jobdata() for displacement in self.displacements])
+        
+        """.format("\n".join([pattern.load._generate_jobdata() for pattern in self.loads]) or "$BellaFra",
+                   "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$BellaFra")
     
     # def _generate_jobdata(self):
     #     return"""

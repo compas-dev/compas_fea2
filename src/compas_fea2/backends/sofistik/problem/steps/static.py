@@ -35,9 +35,12 @@ $Loads
 $Displacements
 {}
 
-        """.format("\n".join([pattern.load._generate_jobdata() for pattern in self.loads]) or "$BellaFra",
+        """.format("\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$BellaFra",
                    "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$BellaFra")
-    
+    # def test(self):
+    #     for pattern in self._patterns:
+    #         for disp in pattern:
+                
     # def _generate_jobdata(self):
     #     return"""
     #     $Loads

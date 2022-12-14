@@ -99,10 +99,17 @@ class SofistikPointLoad(PointLoad):
 #         return '\n'.join(data)
 
 # #-----------OK_MULTIPLE_NODES-----------#
+    # def _generate_jobdata(self, nodes):
+    #     return """
+    #     {}        
+    #     """.format([node.key+1 for node in nodes])
+
+# #-----------WIP-----------#
     def _generate_jobdata(self, nodes):
         return """
+        {}
         {}        
-        """.format([node.key+1 for node in nodes])
+        """.format(self.z, [node.key+1 for node in nodes])
 
 # #-----------OK_HARDCODED-----------#
 #     def _generate_jobdata(self, nodes):

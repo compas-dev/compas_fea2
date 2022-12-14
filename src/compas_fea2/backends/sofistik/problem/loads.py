@@ -83,28 +83,36 @@ class SofistikPointLoad(PointLoad):
         super(SofistikPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
         
 
+
+
     # def _generate_jobdata(self, nodes):
-    #     if not isinstance(nodes, Iterable):
-    #          nodes = [nodes]
-    #     for node in nodes:
-    #         data = ['{}'.format(node.key+1)]
-    #     return '\n'.join(data)
+    #     return """
+    #     no {}        
+    #     """.format("\n".join([node.key+1 for node in nodes]))
 
+# # # #-----------OBSOLETE_GIVES_ONLY_THE_LSAT?----------#
+#     def _generate_jobdata(self, nodes):
+#         if not isinstance(nodes, Iterable):
+#              nodes = [nodes]
+#         for node in nodes:
+#             data = ['{}'.format(node.key+1)]
+#         return '\n'.join(data)
 
+# #-----------OK_MULTIPLE_NODES-----------#
     def _generate_jobdata(self, nodes):
         return """
         {}        
         """.format([node.key+1 for node in nodes])
 
-
-#         return """
+# #-----------OK_HARDCODED-----------#
+#     def _generate_jobdata(self, nodes):
+#         return"""
 # +prog sofiload urs:3
 # head loads
 # LC no 99 titl 'point load'
 # NODE no 2 type pz p1 -10.0
 # end"""
 
-#        return """node no {} x {} y {} z {}""".format(self.key+1, self.x, self.y, self.z)
 
 class SofistikPrestressLoad(PrestressLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.PrestressLoad`.\n

@@ -12,6 +12,8 @@ from compas_fea2.problem.loads import PrestressLoad
 from compas_fea2.problem.loads import ThermalLoad
 from compas_fea2.problem.loads import TributaryLoad
 
+from typing import Iterable
+
 class SofistikAreaLoad(AreaLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.AreaLoad`.\n
     """
@@ -80,6 +82,14 @@ class SofistikPointLoad(PointLoad):
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(SofistikPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
         
+
+    # def _generate_jobdata(self, nodes):
+    #     if not isinstance(nodes, Iterable):
+    #          nodes = [nodes]
+    #     for node in nodes:
+    #         data = ['{}'.format(node.key+1)]
+    #     return '\n'.join(data)
+
 
     def _generate_jobdata(self, nodes):
         return """

@@ -15,6 +15,16 @@ from compas_fea2.model.bcs import RollerBCY
 from compas_fea2.model.bcs import RollerBCYZ
 from compas_fea2.model.bcs import RollerBCZ
 
+def _generate_jobdata(obj, nodes):
+    px = 'px' if obj.x == True else ''
+    py = 'py' if obj.y == True else ''
+    pz = 'pz' if obj.z == True else ''
+    mx = 'mx' if obj.xx == True else ''
+    my = 'my' if obj.yy == True else ''
+    mz = 'mz' if obj.zz == True else ''
+    return "\n".join(["NODE no {} fix {}".format(node.key+1,''.join([px,py,pz,mx,my,mz])) for node in nodes])
+
+
 class SofistikClampBCXX(ClampBCXX):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.ClampBCXX`.\n
     """
@@ -22,10 +32,9 @@ class SofistikClampBCXX(ClampBCXX):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikClampBCXX, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikClampBCYY(ClampBCYY):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.ClampBCYY`.\n
@@ -34,10 +43,9 @@ class SofistikClampBCYY(ClampBCYY):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikClampBCYY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikClampBCZZ(ClampBCZZ):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.ClampBCZZ`.\n
@@ -46,10 +54,9 @@ class SofistikClampBCZZ(ClampBCZZ):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikClampBCZZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikFixedBC(FixedBC):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.FixedBC`.\n
@@ -58,10 +65,9 @@ class SofistikFixedBC(FixedBC):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikFixedBC, self).__init__(name=name, **kwargs)
-        
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikGeneralBC(GeneralBC):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.GeneralBC`.\n
@@ -71,16 +77,9 @@ class SofistikGeneralBC(GeneralBC):
     def __init__(self, name=None, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
         super(SofistikGeneralBC, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, **kwargs)
         
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
-    def _generate_jobdata(self):
-        px = 'px' if self.x == True else ''
-        py = 'py' if self.y == True else ''
-        pz = 'pz' if self.z == True else ''
-        mx = 'mx' if self.xx == True else ''
-        my = 'my' if self.yy == True else ''
-        mz = 'mz' if self.zz == True else ''
-        return "NODE no fix {}".format(''.join([px,py,pz,mx,my,mz]))
-        #return "NODE no {}  fix {}".format(self.nodes[0].key+1, ''.join([px,py,pz,mx,my,mz]))
 
 class SofistikPinnedBC(PinnedBC):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.PinnedBC`.\n
@@ -89,10 +88,9 @@ class SofistikPinnedBC(PinnedBC):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikPinnedBC, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCX(RollerBCX):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCX`.\n
@@ -101,10 +99,9 @@ class SofistikRollerBCX(RollerBCX):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCX, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
-
-    def _generate_jobdata(self):
-        raise NotImplementedError
+        
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCXY(RollerBCXY):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCXY`.\n
@@ -113,10 +110,9 @@ class SofistikRollerBCXY(RollerBCXY):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCXY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCXZ(RollerBCXZ):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCXZ`.\n
@@ -125,10 +121,9 @@ class SofistikRollerBCXZ(RollerBCXZ):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCXZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCY(RollerBCY):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCY`.\n
@@ -137,10 +132,9 @@ class SofistikRollerBCY(RollerBCY):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCY, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCYZ(RollerBCYZ):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCYZ`.\n
@@ -149,10 +143,9 @@ class SofistikRollerBCYZ(RollerBCYZ):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCYZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 
 class SofistikRollerBCZ(RollerBCZ):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.RollerBCZ`.\n
@@ -161,8 +154,7 @@ class SofistikRollerBCZ(RollerBCZ):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCZ, self).__init__(name=name, **kwargs)
-        raise NotImplementedError
 
-    def _generate_jobdata(self):
-        raise NotImplementedError
+    def _generate_jobdata(self, nodes):
+        return _generate_jobdata(self, nodes)
 

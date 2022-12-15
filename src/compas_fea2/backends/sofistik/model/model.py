@@ -13,6 +13,10 @@ class SofistikModel(Model):
         super(SofistikModel, self).__init__(name=name, description=description, author=author, **kwargs)
 
     def _generate_jobdata(self):
+        bcs_dict = {}
+        for part,bc in self.bcs.items():
+            for bc_obj, nodes in bc.items():
+                bcs_dict[bc_obj] = nodes
         return """$
 $ PARTS
 {}
@@ -26,16 +30,13 @@ head constraints
 syst rest
 ctrl rest 2 
 {}
-node no 1 fix pxpypzmxmymz
-node no 11 fix pxpypzmxmymz
-node no 111 fix pxpypzmxmymz
-node no 121 fix pxpypzmxmymz
+
 
 end
 """.format(
         "\n".join([part._generate_jobdata() for part in self.parts]),
         "\n".join([ic._generate_jobdata() for ic in self.ics]),
-        "\n".join([bc._generate_jobdata() for bc in self.bcs]),
+        "\n".join([bc._generate_jobdata(nodes) for bc,nodes in bcs_dict.items()]),
            )
 
 

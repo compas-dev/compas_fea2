@@ -106,10 +106,8 @@ class SofistikPointLoad(PointLoad):
 
 # #-----------WIP-----------#
     def _generate_jobdata(self, nodes):
-        return """
-        no {} x {} y {} z {}    
-        """.format(self.x, self.y, self.z, [node.key+1 for node in nodes])
-
+        data_lines = ["no {} x {} y {} z {}".format(node.key+1, self.x, self.y, self.z) for node in nodes]
+        return '\n'.join(data_lines)
 # #-----------OK_HARDCODED-----------#
 #     def _generate_jobdata(self, nodes):
 #         return"""

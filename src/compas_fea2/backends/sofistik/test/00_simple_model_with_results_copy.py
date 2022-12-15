@@ -24,7 +24,7 @@ TEMP = os.sep.join(HERE.split(os.sep)[:-1]+['temp'])
 
 mdl = Model(name='my_model')
 
-lx = (7*units.m).to_base_units().magnitude
+lx = (10*units.m).to_base_units().magnitude
 ly = (10*units.m).to_base_units().magnitude
 nx = 10
 ny = 10
@@ -43,33 +43,32 @@ mdl.add_part(prt)
 #fixed_nodes = [prt.find_node_by_key(vertex) for vertex in list(filter(lambda v: mesh.vertex_degree(v)==2, mesh.vertices()))]
 #mdl.add_fix_bc(nodes=fixed_nodes)
 
-
 # to get indices of fixed_nodes
 # indxs = [indx for indx in mesh.vertices() if mesh.vertex_degree(indx) == 2]
 # print(indxs)
 
 #io
-#bc_general = GeneralBC()
-#mdl.add_bcs(bc=bc_general, nodes=fixed_nodes)
+# bc_general = GeneralBC()
+# mdl.add_bcs(bc=bc_general, nodes=fixed_nodes)
 
 
 # DEFINE THE PROBLEM
 # define a step
-step_1 = StaticStep()
+step_1 = StaticStep() #---
 pt = prt.find_node_by_key(random.choice(list(filter(lambda v: mesh.vertex_degree(v)!=2, mesh.vertices()))))
-step_1.add_point_load(nodes=[pt],
-                        z=-(10*units.kN).to_base_units().magnitude)
+step_1.add_point_load(nodes=[pt], #---
+                          z=-(10*units.kN).to_base_units().magnitude)
 #fout = FieldOutput(node_outputs=['U', 'RF']) #??
 #step_1.add_output(fout) #??
 #hout = HistoryOutput('hout_test')
 
 # set-up the problem
-prb = Problem('00_simple_problem', mdl)
-prb.add_step(step_1)
-# prb.summary()
+prb = Problem('00_simple_problem', mdl)     #---
+prb.add_step(step_1)    #---
+#prb.summary()
 # mdl.show(draw_bcs=1000)
 
-mdl.add_problem(problem=prb)
+mdl.add_problem(problem=prb) #---
 prb.path = r"C:\Code\FROM_COMPAS\compas_fea2\temp"
 prb.write_input_file() 
 #mdl.show()

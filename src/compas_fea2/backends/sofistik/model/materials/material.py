@@ -8,6 +8,7 @@ from compas_fea2.model.materials.material import ElasticPlastic
 from compas_fea2.model.materials.material import Stiff
 from compas_fea2.model.materials.material import UserMaterial
 
+
 class SofistikElasticIsotropic(ElasticIsotropic):
     """Sofistik implementation of :class:`compas_fea2.model.materials.material.ElasticIsotropic`.\n
     """
@@ -16,9 +17,13 @@ class SofistikElasticIsotropic(ElasticIsotropic):
     def __init__(self, *, E, v, density, expansion=None, name=None, **kwargs):
         super(SofistikElasticIsotropic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
 
-
     def _generate_jobdata(self):
-        return "mat no {}  e {} mue {} g {} gam {} alfa {}".format(self.key+1, self.E, self.v, self.G, self.density, self.expansion)
+        return "mat no {}  e {} mue {} g {} gam {} {}".format(self.key+1,
+                                                              self.E,
+                                                              self.v,
+                                                              self.G,
+                                                              self.density,
+                                                              "alfa {}".format(self.expansion) if self.expansion else "")
 
 class SofistikElasticOrthotropic(ElasticOrthotropic):
     """Sofistik implementation of :class:`compas_fea2.model.materials.material.ElasticOrthotropic`.\n

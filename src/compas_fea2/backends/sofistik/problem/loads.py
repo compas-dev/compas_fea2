@@ -14,6 +14,7 @@ from compas_fea2.problem.loads import TributaryLoad
 
 from typing import Iterable
 
+
 class SofistikAreaLoad(AreaLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.AreaLoad`.\n
     """
@@ -25,6 +26,7 @@ class SofistikAreaLoad(AreaLoad):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+
 
 class SofistikGravityLoad(GravityLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.GravityLoad`.\n
@@ -38,6 +40,7 @@ class SofistikGravityLoad(GravityLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
+
 class SofistikHarmonicPointLoad(HarmonicPointLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.HarmonicPointLoad`.\n
     """
@@ -49,6 +52,7 @@ class SofistikHarmonicPointLoad(HarmonicPointLoad):
 
     def _generate_jobdata(self):
         raise NotImplementedError
+
 
 class SofistikHarmonicPressureLoad(HarmonicPressureLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.HarmonicPressureLoad`.\n
@@ -62,6 +66,7 @@ class SofistikHarmonicPressureLoad(HarmonicPressureLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
+
 class SofistikLineLoad(LineLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.LineLoad`.\n
     """
@@ -74,6 +79,7 @@ class SofistikLineLoad(LineLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
+
 class SofistikPointLoad(PointLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.PointLoad`.\n
     """
@@ -81,13 +87,10 @@ class SofistikPointLoad(PointLoad):
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(SofistikPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
-        
-
-
 
     # def _generate_jobdata(self, nodes):
     #     return """
-    #     no {}        
+    #     no {}
     #     """.format("\n".join([node.key+1 for node in nodes]))
 
 # # # #-----------OBSOLETE_GIVES_ONLY_THE_LSAT?----------#
@@ -101,13 +104,31 @@ class SofistikPointLoad(PointLoad):
 # #-----------OK_MULTIPLE_NODES-----------#
     # def _generate_jobdata(self, nodes):
     #     return """
-    #     {}        
+    #     {}
     #     """.format([node.key+1 for node in nodes])
 
 # #----------OK_FRA-----------#
+    # def _generate_jobdata(self, nodes):
+    #     data_section = ["AAA"]
+    #     data_lines = ["no {} x {} y {} z {}".format(node.key+1, self.x, self.y, self.z) for node in nodes]
+    #     return '\n'.join(data_lines)
+
+# #----------TEST_AFTER_FRA-----------#
+
     def _generate_jobdata(self, nodes):
-        data_lines = ["no {} x {} y {} z {}".format(node.key+1, self.x, self.y, self.z) for node in nodes]
-        return '\n'.join(data_lines)
+        #data_section = ["AAA"]
+        node_def_data_section = ["NODE no {} type pxx {} pyy {} pzz {} mxx {} myy {} mzz {}".format(node.key+1,
+                                                                                                    self.x,
+                                                                                                    self.y,
+                                                                                                    self.z,
+                                                                                                    self.xx,
+                                                                                                    self.yy,
+                                                                                                    self.zz) for node in nodes]
+        return """
+        ww 
+        {}
+        """.format('\n'.join(node_def_data_section))
+
 
 # #-----------OK_HARDCODED-----------#
 #     def _generate_jobdata(self, nodes):
@@ -131,6 +152,7 @@ class SofistikPrestressLoad(PrestressLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
+
 class SofistikThermalLoad(ThermalLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.ThermalLoad`.\n
     """
@@ -143,6 +165,7 @@ class SofistikThermalLoad(ThermalLoad):
     def _generate_jobdata(self):
         raise NotImplementedError
 
+
 class SofistikTributaryLoad(TributaryLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.TributaryLoad`.\n
     """
@@ -154,4 +177,3 @@ class SofistikTributaryLoad(TributaryLoad):
 
     def _generate_jobdata(self):
         raise NotImplementedError
-

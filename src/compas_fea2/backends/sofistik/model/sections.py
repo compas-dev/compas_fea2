@@ -20,6 +20,8 @@ from compas_fea2.model.sections import TieSection
 from compas_fea2.model.sections import TrapezoidalSection
 from compas_fea2.model.sections import TrussSection
 
+TODO
+#Improve description of parameter description 
 
 class SofistikAngleSection(AngleSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.AngleSection`.\n 

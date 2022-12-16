@@ -20,7 +20,20 @@ class SofistikNode(Node):
 
     def _generate_jobdata(self):
         """Generates the common string information for the input file of the command
-        'NODE - Nodes, Coordinates and Constraints' defined in the SOFiSTiK programme module SOFiMSHA."""
+        'NODE - Nodes, Coordinates and Constraints' defined in the SOFiSTiK programme module SOFiMSHA.
+
+        Parameters
+        ----------
+        X : ---
+            X-coordinate
+        Y : ---
+            Y-coordinate
+        Z : ---
+            Z-coordinate
+        Returns
+        -------
+        input file data line (str).
+        """
 
         return """NODE NO {} X {} Y {} Z {}""".format(self.key+1,
                                                       self.x,

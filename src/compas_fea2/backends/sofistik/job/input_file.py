@@ -30,9 +30,9 @@ class SofistikInputFile(InputFile):
 
         
         return """
-$ MODEL
+$ ------------------------ MODEL ------------------------ $
 {}
-$ PROBLEM
+$ ----------------------- PROBLEM ----------------------- $
 {}
 """.format(self.model._generate_jobdata(),
            self.problem._generate_jobdata())

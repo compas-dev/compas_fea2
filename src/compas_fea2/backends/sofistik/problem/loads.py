@@ -117,13 +117,13 @@ class SofistikPointLoad(PointLoad):
 
     def _generate_jobdata(self, nodes):
         #data_section = ["AAA"]
-        node_def_data_section = ["NODE no {} type pxx {} pyy {} pzz {} mxx {} myy {} mzz {}".format(node.key+1,
-                                                                                                    self.x,
-                                                                                                    self.y,
-                                                                                                    self.z,
-                                                                                                    self.xx,
-                                                                                                    self.yy,
-                                                                                                    self.zz) for node in nodes]
+        node_def_data_section = ["NODE no {} type {} {} {} {} {} {}".format(node.key+1,
+                                                                            "pxx {}".format(self.x) if self.x else "",
+                                                                            "pyy {}".format(self.y) if self.y else "",
+                                                                            "pzz {}".format(self.z) if self.z else "",
+                                                                            "mxx {}".format(self.yy) if self.xx else "",
+                                                                            "myy {}".format(self.yy) if self.yy else "",
+                                                                            "mzz {}".format(self.zz) if self.zz else "") for node in nodes]
         return """
         ww 
         {}

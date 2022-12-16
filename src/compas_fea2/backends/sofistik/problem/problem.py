@@ -39,5 +39,3 @@ head stresses
  beam type beam
 end
         """.format('\n'.join([step._generate_jobdata() for step in self.steps]))
-                    
-    

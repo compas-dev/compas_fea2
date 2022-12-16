@@ -29,8 +29,10 @@ class SofistikStaticStep(StaticStep):
     def _generate_jobdata(self):
         return"""
 $Loads
-
++prog sofiload urs:3
+head loads
 {}
+end
 
 $Displacements
 {}

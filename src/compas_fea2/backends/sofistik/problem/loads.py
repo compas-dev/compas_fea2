@@ -113,10 +113,25 @@ class SofistikPointLoad(PointLoad):
     #     data_lines = ["no {} x {} y {} z {}".format(node.key+1, self.x, self.y, self.z) for node in nodes]
     #     return '\n'.join(data_lines)
 
-# #----------TEST_AFTER_FRA-----------#
+# # #----------TEST_AFTER_FRA_VERS1-----------#
+
+#     def _generate_jobdata(self, nodes):
+#         node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
+#                                                                             "P1 {}".format(self.x) if self.x else "",
+#                                                                             "P2 {}".format(self.y) if self.y else "",
+#                                                                             "P3 {}".format(self.z) if self.z else "",
+#                                                                             "P4 {}".format(self.yy) if self.xx else "",
+#                                                                             "P5 {}".format(self.yy) if self.yy else "",
+#                                                                             "P6 {}".format(self.zz) if self.zz else "") for node in nodes]
+#         return """
+#         ww 
+#         {}
+#         """.format('\n'.join(node_def_data_section))
+
+# #----------TEST_AFTER_FRA_VERS2-----------#
 
     def _generate_jobdata(self, nodes):
-        #data_section = ["AAA"]
+        loadcase_data_section = ["LC {} TITL 'point load'".format(i) for i in range(len(nodes))]
         node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
                                                                             "P1 {}".format(self.x) if self.x else "",
                                                                             "P2 {}".format(self.y) if self.y else "",
@@ -124,10 +139,11 @@ class SofistikPointLoad(PointLoad):
                                                                             "P4 {}".format(self.yy) if self.xx else "",
                                                                             "P5 {}".format(self.yy) if self.yy else "",
                                                                             "P6 {}".format(self.zz) if self.zz else "") for node in nodes]
-        return """
-        ww 
-        {}
-        """.format('\n'.join(node_def_data_section))
+        job_data = []
+        for i in range(len(nodes)):
+            job_data.append(loadcase_data_section[i])
+            job_data.append(node_def_data_section[i])
+        return '\n'.join(job_data)
 
 
 # #-----------OK_HARDCODED-----------#

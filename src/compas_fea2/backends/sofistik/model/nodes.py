@@ -9,7 +9,7 @@ class SofistikNode(Node):
     
     Note
     ----
-    The nodes key numbering in compas_fea2 starts from 0, while in Abaqus it starts
+    The nodes key numbering in compas_fea2 starts from 0, while in Sofistik it starts
     from 1. The conversion in automatically resolved by compas_fea2.
     
     """

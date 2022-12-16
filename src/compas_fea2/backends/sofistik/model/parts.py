@@ -25,7 +25,7 @@ end
 
 +prog SOFIMSHA
 head Geometry
-syst spac  gdir negz  gdiv 10000
+syst spac gdir negz gdiv 10000
 $ NODES
 {}
 $ ELEMENTS

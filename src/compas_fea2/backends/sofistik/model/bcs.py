@@ -22,7 +22,7 @@ def _generate_jobdata(obj, nodes):
     mx = 'mx' if obj.xx == True else ''
     my = 'my' if obj.yy == True else ''
     mz = 'mz' if obj.zz == True else ''
-    return "\n".join(["NODE no {} fix {}".format(node.key+1,''.join([px,py,pz,mx,my,mz])) for node in nodes])
+    return "\n".join(["NODE NO {} FIX {}".format(node.key+1,''.join([px,py,pz,mx,my,mz])) for node in nodes])
 
 
 class SofistikClampBCXX(ClampBCXX):

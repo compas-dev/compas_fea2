@@ -131,7 +131,7 @@ class SofistikPointLoad(PointLoad):
 # #----------TEST_AFTER_FRA_VERS2-----------#
 
     def _generate_jobdata(self, nodes):
-        loadcase_data_section = ["LC {} TITL 'point load'".format(i) for i in range(len(nodes))]
+        loadcase_data_section = ["LC {} TITL 'point load'".format(i+1) for i in range(len(nodes))]
         node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
                                                                             "P1 {}".format(self.x) if self.x else "",
                                                                             "P2 {}".format(self.y) if self.y else "",

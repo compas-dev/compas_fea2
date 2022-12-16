@@ -37,8 +37,8 @@ end
 $Displacements
 {}
 
-        """.format("\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$BellaFra",
-                   "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$BellaFra")
+        """.format("\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$None",
+                   "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$None")
     # def test(self):
     #     for pattern in self._patterns:
     #         for disp in pattern:

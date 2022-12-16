@@ -46,7 +46,7 @@ class SofistikBeamSection(BeamSection):
         
 
     def _generate_jobdata(self):
-        return "SVAL no {} mno {} a {} iz {} iy {} iyz {} az {} ay {} it {} g0? {} gw? {}".format(self.key+1,
+        return "SVAL NO {} MNO {} A {} IZ {} IY {} IYZ {} AZ {} AY {} IT {} G0? {} GW? {}".format(self.key+1,
                                                                                                     self.material.key+1,
                                                                                                     self.A,
                                                                                                     self.Ixx,
@@ -156,7 +156,7 @@ class SofistikRectangularSection(RectangularSection):
         
 
     def _generate_jobdata(self):
-        return "SREC no {}  h {}  b {} mno {}".format(self.key+1, self.h, self.w, self.material.key+1)
+        return "SREC NO {} H {} B {} MNO {}".format(self.key+1, self.h, self.w, self.material.key+1)
 
 class SofistikShellSection(ShellSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.ShellSection`.\n

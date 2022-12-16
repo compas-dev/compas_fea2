@@ -18,7 +18,7 @@ class SofistikElasticIsotropic(ElasticIsotropic):
         super(SofistikElasticIsotropic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
 
     def _generate_jobdata(self):
-        return "mat no {}  e {} mue {} g {} gam {} {}".format(self.key+1,
+        return "MAT NO {}  E {} MUE {} G {} GAM {} {}".format(self.key+1,
                                                               self.E,
                                                               self.v,
                                                               self.G,

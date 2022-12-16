@@ -13,5 +13,5 @@ class SofistikNode(Node):
         super(SofistikNode, self).__init__(xyz=xyz, mass=mass, name=name, **kwargs)
 
     def _generate_jobdata(self):
-        return """node no {} x {} y {} z {}""".format(self.key+1, self.x, self.y, self.z)
+        return """NODE NO {} X {} Y {} Z {}""".format(self.key+1, self.x, self.y, self.z)
 

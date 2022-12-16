@@ -25,7 +25,7 @@ class SofistikBeamElement(BeamElement):
 
 
     def _generate_jobdata(self):
-        return "beam no {}  na {}  ne {}  ncs {} div 1".format(self.key+1, self.nodes[0].key+1, self.nodes[1].key+1, self.section.key+1)
+        return "BEAM NO {} NA {} NE {} NCS {} DIV 1".format(self.key+1, self.nodes[0].key+1, self.nodes[1].key+1, self.section.key+1)
 
 class SofistikFace(Face):
     """Sofistik implementation of :class:`compas_fea2.model.elements.Face`.\n

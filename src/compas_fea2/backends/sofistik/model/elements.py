@@ -25,15 +25,24 @@ class SofistikBeamElement(BeamElement):
 
 
     def _generate_jobdata(self):
-        """Generates the string information for the input file.
+        """Generates the common string information for the input file of the command 
+        'BEAM - Beam Elements' defined in the SOFiSTiK programme module SOFiMSHA.
 
         Parameters
         ----------
-        None
-
+        NO : ---
+            Element number or option
+        NA : ---
+            Number of start beam node
+        NE : ---
+            Number of end beam node
+        NCS : ---
+            Cross section number
+        DIV : ---
+            Equally partitionig of beam
         Returns
         -------
-        input file data line (str)
+        input file data line (str).
 
         Warning
         -------
@@ -45,6 +54,7 @@ class SofistikBeamElement(BeamElement):
                                                             self.nodes[0].key+1,
                                                             self.nodes[1].key+1,
                                                             self.section.key+1)
+
 
 class SofistikFace(Face):
     """Sofistik implementation of :class:`compas_fea2.model.elements.Face`.\n

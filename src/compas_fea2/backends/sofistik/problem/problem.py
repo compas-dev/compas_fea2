@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.problem.problem import Problem
+from compas_fea2.problem import _Step
 
 class SofistikProblem(Problem):
     """Sofistik implementation of :class:`compas_fea2.problem.problem.Problem`.\n
@@ -14,13 +15,11 @@ class SofistikProblem(Problem):
 
     def _generate_jobdata(self):
         return """$
-+prog sofiload urs:3
-head loads
 
-lc no 10 titl 'test load'
-node no 2  type pz  p1 -0.1
+$ STEPS
+{}
 
-end
+
 
 
 +prog ase urs:4
@@ -39,5 +38,4 @@ stre
 lc 1000
 beam type beam
 end
-        """
-
+        """.format('\n'.join([step._generate_jobdata() for step in self.steps]))

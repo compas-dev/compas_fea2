@@ -16,13 +16,15 @@ from compas_fea2.model.bcs import RollerBCYZ
 from compas_fea2.model.bcs import RollerBCZ
 
 def _generate_jobdata(obj, nodes):
-    px = 'px' if obj.x == True else ''
-    py = 'py' if obj.y == True else ''
-    pz = 'pz' if obj.z == True else ''
-    mx = 'mx' if obj.xx == True else ''
-    my = 'my' if obj.yy == True else ''
-    mz = 'mz' if obj.zz == True else ''
-    return "\n".join(["NODE NO {} FIX {}".format(node.key+1,''.join([px,py,pz,mx,my,mz])) for node in nodes])
+    job_data = ["NODE NO {} FIX {}{}{}{}{}{}".format(node.key+1, 
+                                                     "{}".format('px') if obj.x == True else '',
+                                                     "{}".format('py') if obj.y == True else '',
+                                                     "{}".format('pz') if obj.z == True else '',
+                                                     "{}".format('mx') if obj.xx == True else '',
+                                                     "{}".format('my') if obj.yy == True else '',
+                                                     "{}".format('mz') if obj.zz == True else '',
+                                                     {}) for node in nodes]
+    return "\n".join(job_data)
 
 
 class SofistikClampBCXX(ClampBCXX):

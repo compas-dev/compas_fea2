@@ -41,7 +41,7 @@ class SofistikBeamSection(BeamSection):
 
     #FIXME
     ----warnings
-        Is it correct to use SVAL or SECT from SOFiSTiK? 
+        Check between SVAL or SECT from SOFiSTiK? 
 
     """
     __doc__ += BeamSection.__doc__

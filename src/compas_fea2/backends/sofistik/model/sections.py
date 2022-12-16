@@ -20,7 +20,7 @@ from compas_fea2.model.sections import TieSection
 from compas_fea2.model.sections import TrapezoidalSection
 from compas_fea2.model.sections import TrussSection
 
-TODO
+#TODO
 #Improve description of parameter description 
 
 class SofistikAngleSection(AngleSection):
@@ -39,7 +39,7 @@ class SofistikAngleSection(AngleSection):
 class SofistikBeamSection(BeamSection):
     """Sofistik implementation of :class:`compas_fea2.model.sections.BeamSection`.\n
 
-    FIXME
+    #FIXME
     ----warnings
         Is it correct to use SVAL or SECT from SOFiSTiK? 
 
@@ -68,7 +68,7 @@ class SofistikBoxSection(BoxSection):
 
     ----warnings
         NEED TO FIND IN THE SREC COMMAND IN SOFISTIK THE EQUIVALENT OF tw AND tf
-    FIXME
+    #FIXME
 
     """
     __doc__ += BoxSection.__doc__

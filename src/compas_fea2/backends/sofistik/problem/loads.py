@@ -88,48 +88,6 @@ class SofistikPointLoad(PointLoad):
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(SofistikPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
-    # def _generate_jobdata(self, nodes):
-    #     return """
-    #     no {}
-    #     """.format("\n".join([node.key+1 for node in nodes]))
-
-# # # #-----------OBSOLETE_GIVES_ONLY_THE_LSAT?----------#
-#     def _generate_jobdata(self, nodes):
-#         if not isinstance(nodes, Iterable):
-#              nodes = [nodes]
-#         for node in nodes:
-#             data = ['{}'.format(node.key+1)]
-#         return '\n'.join(data)
-
-# #-----------OK_MULTIPLE_NODES-----------#
-    # def _generate_jobdata(self, nodes):
-    #     return """
-    #     {}
-    #     """.format([node.key+1 for node in nodes])
-
-# #----------OK_FRA-----------#
-    # def _generate_jobdata(self, nodes):
-    #     data_section = ["AAA"]
-    #     data_lines = ["no {} x {} y {} z {}".format(node.key+1, self.x, self.y, self.z) for node in nodes]
-    #     return '\n'.join(data_lines)
-
-# # #----------TEST_AFTER_FRA_VERS1-----------#
-
-#     def _generate_jobdata(self, nodes):
-#         node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
-#                                                                             "P1 {}".format(self.x) if self.x else "",
-#                                                                             "P2 {}".format(self.y) if self.y else "",
-#                                                                             "P3 {}".format(self.z) if self.z else "",
-#                                                                             "P4 {}".format(self.yy) if self.xx else "",
-#                                                                             "P5 {}".format(self.yy) if self.yy else "",
-#                                                                             "P6 {}".format(self.zz) if self.zz else "") for node in nodes]
-#         return """
-#         ww 
-#         {}
-#         """.format('\n'.join(node_def_data_section))
-
-# #----------TEST_AFTER_FRA_VERS2-----------#
-
     def _generate_jobdata(self, nodes):
         loadcase_data_section = ["LC {} TITL 'point load'".format(i+1) for i in range(len(nodes))]
         node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
@@ -144,17 +102,6 @@ class SofistikPointLoad(PointLoad):
             job_data.append(loadcase_data_section[i])
             job_data.append(node_def_data_section[i])
         return '\n'.join(job_data)
-
-
-# #-----------OK_HARDCODED-----------#
-#     def _generate_jobdata(self, nodes):
-#         return"""
-# +prog sofiload urs:3
-# head loads
-# LC no 99 titl 'point load'
-# NODE no 2 type pz p1 -10.0
-# end"""
-
 
 class SofistikPrestressLoad(PrestressLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.PrestressLoad`.\n

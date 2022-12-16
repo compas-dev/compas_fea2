@@ -19,15 +19,12 @@ class SofistikProblem(Problem):
 $ STEPS
 {}
 
-
-
-
 +prog ase urs:4
 head analysis
 syst prob line
 
 lc no 1000  titl 'linear analysis test load'
-lcc no 10  fact 1.0
+lcc no 1  fact 1.0
 
 end
 

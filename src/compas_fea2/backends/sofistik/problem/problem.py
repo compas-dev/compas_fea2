@@ -14,22 +14,19 @@ class SofistikProblem(Problem):
         super(SofistikProblem, self).__init__(name=name, description=description, **kwargs)
 
     def _generate_jobdata(self):
-        return """$
-
+        return """
 $ STEPS
 {}
 
-+prog ase urs:4
+$ ANALYSIS
++prog ase 
 head analysis
 syst prob line
-
 lc no 1000  titl 'linear analysis test load'
 lcc no 1  fact 1.0
-
 end
 
-
-+prog aqb urs:44
++prog aqb 
 head stresses
 stre
 lc 1000

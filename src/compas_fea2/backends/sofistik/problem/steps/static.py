@@ -5,6 +5,8 @@ from __future__ import print_function
 from compas_fea2.problem.steps.static import StaticRiksStep
 from compas_fea2.problem.steps.static import StaticStep
 
+#TODO Implement Displacements
+
 class SofistikStaticRiksStep(StaticRiksStep):
     """Sofistik implementation of :class:`compas_fea2.problem.steps.static.StaticRiksStep`.\n
     """
@@ -28,28 +30,14 @@ class SofistikStaticStep(StaticStep):
 
     def _generate_jobdata(self):
         return"""
-$Loads
-+prog sofiload urs:3
+$ LOADS
++prog sofiload 
 head loads
 {}
 end
 
-$Displacements
+$DISPLACEMENTS
 {}
 
         """.format("\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$None",
                    "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$None")
-    # def test(self):
-    #     for pattern in self._patterns:
-    #         for disp in pattern:
-                
-    # def _generate_jobdata(self):
-    #     return"""
-    #     $Loads
-        
-    #     {}
-    #     """.format(self._generate_loads_section())
-    
-    # def _generate_loads_section(self):
-        
-    #     return '\n'.join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or '$'

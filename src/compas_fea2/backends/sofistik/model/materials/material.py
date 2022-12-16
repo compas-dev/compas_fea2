@@ -18,12 +18,33 @@ class SofistikElasticIsotropic(ElasticIsotropic):
         super(SofistikElasticIsotropic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
 
     def _generate_jobdata(self):
+        """Generates the common string information for the input file of the command
+        'MAT - General Material Properties' defined in the SOFiSTiK programme module AQUA.
+
+        Parameters
+        ----------
+        NO : ---
+            Material number
+        E : ---
+            Elastic Modulus
+        MUE : ---
+            Poisson's ratio 
+        G : ---
+            Shear modulus
+        GAM : --
+            Specif weigth
+        ALFA : ---
+            Thermal expansion coefficient
+        Returns
+        -------
+        input file data line (str)
+        """
         return "MAT NO {} {} {} {} {} {}".format(self.key+1,
-                                                              "E {}".format(self.E) if self.E else "",
-                                                              "MUE {}".format(self.v) if self.v else"",
-                                                              "G {}".format(self.G) if self.G else "",
-                                                              "GAM {}".format(self.density) if self.density else "",
-                                                              "ALFA {}".format(self.expansion) if self.expansion else "")
+                                                 "E {}".format(self.E) if self.E else "",
+                                                 "MUE {}".format(self.v) if self.v else"",
+                                                 "G {}".format(self.G) if self.G else "",
+                                                 "GAM {}".format(self.density) if self.density else "",
+                                                 "ALFA {}".format(self.expansion) if self.expansion else "")
 
 
 class SofistikElasticOrthotropic(ElasticOrthotropic):

@@ -14,8 +14,8 @@ class SofistikDeformablePart(DeformablePart):
         super(SofistikDeformablePart, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self):
-        return """$
-+prog aqua urs:1
+        return """
++prog aqua
 head Materials and Sections
 $ MATERIALS
 {}
@@ -23,7 +23,7 @@ $ SECTIONS
 {}
 end
 
-+prog SOFIMSHA urs:5
++prog SOFIMSHA
 head Geometry
 syst spac  gdir negz  gdiv 10000
 $ NODES

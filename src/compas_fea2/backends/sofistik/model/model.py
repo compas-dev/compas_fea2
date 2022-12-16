@@ -17,7 +17,7 @@ class SofistikModel(Model):
         for part,bc in self.bcs.items():
             for bc_obj, nodes in bc.items():
                 bcs_dict[bc_obj] = nodes
-        return """$
+        return """
 $ PARTS
 {}
 
@@ -25,7 +25,7 @@ $ ICs
 {}
 
 $ BCs
-+prog sofimsha urs:2
++prog sofimsha
 head constraints
 syst rest
 ctrl rest 2 

@@ -107,7 +107,7 @@ class SofistikCircularSection(CircularSection):
             Material number of cross section
         Returns
         -------
-        input file data line (str)
+        input file data line (str).
         """
         return "SCIT NO {}  D {}  MNO {}".format(self.key+1,
                                                  2*self.r,
@@ -203,7 +203,7 @@ class SofistikRectangularSection(RectangularSection):
             Material number
         Returns
         -------
-        input file data line (str)
+        input file data line (str).
         """
 
         return "SREC NO {} H {} B {} MNO {}".format(self.key+1,

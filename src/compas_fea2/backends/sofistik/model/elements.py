@@ -25,7 +25,26 @@ class SofistikBeamElement(BeamElement):
 
 
     def _generate_jobdata(self):
-        return "BEAM NO {} NA {} NE {} NCS {} DIV 1".format(self.key+1, self.nodes[0].key+1, self.nodes[1].key+1, self.section.key+1)
+        """Generates the string information for the input file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        input file data line (str)
+
+        Warning
+        -------
+        By default DIV(=Equal partitioning of beam) is set to 1
+
+        """
+
+        return "BEAM NO {} NA {} NE {} NCS {} DIV 1".format(self.key+1,
+                                                            self.nodes[0].key+1,
+                                                            self.nodes[1].key+1,
+                                                            self.section.key+1)
 
 class SofistikFace(Face):
     """Sofistik implementation of :class:`compas_fea2.model.elements.Face`.\n

@@ -26,12 +26,10 @@ $ ICs
 
 $ BCs
 +prog sofimsha
-head constraints
+head Constraints
 syst rest
 ctrl rest 2 
 {}
-
-
 end
 """.format(
         "\n".join([part._generate_jobdata() for part in self.parts]),

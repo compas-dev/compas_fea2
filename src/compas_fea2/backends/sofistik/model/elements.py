@@ -25,29 +25,17 @@ class SofistikBeamElement(BeamElement):
 
 
     def _generate_jobdata(self):
-        """Generates the common string information for the input file of the command 
-        'BEAM - Beam Elements' defined in the SOFiSTiK programme module SOFiMSHA.
-
-        Parameters
-        ----------
-        NO : ---
-            Element number or option
-        NA : ---
-            Number of start beam node
-        NE : ---
-            Number of end beam node
-        NCS : ---
-            Cross section number
-        DIV : ---
-            Equally partitionig of beam
-        Returns
-        -------
-        input file data line (str).
+        """Generate the jobdata for Beam Elements in the SOFiSTiK. This is part
+        of the programme module SOFiMSHA.
 
         Warning
         -------
         By default DIV(=Equal partitioning of beam) is set to 1
 
+        Returns
+        -------
+        str
+            input file data line.
         """
 
         return "BEAM NO {} NA {} NE {} NCS {} DIV 1".format(self.key+1,

@@ -30,14 +30,17 @@ class SofistikStaticStep(StaticStep):
 
     def _generate_jobdata(self):
         return"""
-$ LOADS
-+prog sofiload 
+$ LOADS and DISPLACEMENTS
++prog sofiload
+LC {} TITL '{}'
+
 head loads
 {}
 end
 
 $DISPLACEMENTS
 {}
-
-        """.format("\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$None",
-                   "\n".join([pattern.load._generate_jobdata() for pattern in self.displacements]) or "$None")
+""".format(self.key+1,
+           self.name,
+           "\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.loads]) or "$None",
+           "\n".join([pattern.load._generate_jobdata(pattern.distribution) for pattern in self.displacements]) or "$None")

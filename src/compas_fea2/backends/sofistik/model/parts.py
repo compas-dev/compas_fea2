@@ -14,11 +14,15 @@ class SofistikDeformablePart(DeformablePart):
         super(SofistikDeformablePart, self).__init__(name=name, **kwargs)
 
     def _generate_jobdata(self):
+        """Generate the jobdata string
+        """
         return """
 +prog aqua
 head Materials and Sections
+
 $ MATERIALS
 {}
+
 $ SECTIONS
 {}
 end
@@ -26,14 +30,17 @@ end
 +prog SOFIMSHA
 head Geometry
 syst spac gdir negz gdiv 10000
+
 $ NODES
 {}
+
 $ ELEMENTS
 {}
+
 end
 """.format("\n".join([material._generate_jobdata() for material in self.materials]),
-            "\n".join([section._generate_jobdata() for section in self.sections]), 
-            "\n".join([node._generate_jobdata() for node in self.nodes]), 
+            "\n".join([section._generate_jobdata() for section in self.sections]),
+            "\n".join([node._generate_jobdata() for node in self.nodes]),
             "\n".join([element._generate_jobdata() for element in self.elements])
             )
 

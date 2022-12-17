@@ -21,10 +21,10 @@ from compas_fea2.model.sections import TrapezoidalSection
 from compas_fea2.model.sections import TrussSection
 
 #TODO
-#Improve description of parameter description 
+#Improve description of parameter description
 
 class SofistikAngleSection(AngleSection):
-    """Sofistik implementation of :class:`compas_fea2.model.sections.AngleSection`.\n 
+    """Sofistik implementation of :class:`compas_fea2.model.sections.AngleSection`.\n
     """
     __doc__ += AngleSection.__doc__
 
@@ -41,7 +41,7 @@ class SofistikBeamSection(BeamSection):
 
     #FIXME
     ----warnings
-        Check between SVAL or SECT from SOFiSTiK? 
+        Check between SVAL or SECT from SOFiSTiK?
 
     """
     __doc__ += BeamSection.__doc__
@@ -97,19 +97,20 @@ class SofistikCircularSection(CircularSection):
         """Generates the common string information for the input file of the command
         'SCIT - Circular and Tube Section' defined in the SOFiSTiK programme module AQUA.
 
+        Note
+        ----
+        The section key in sofistik starts from 1.
+
         Parameters
         ----------
-        NO : ---
-            Cross section number
-        D : ---
-            Outer diameter
-        MNO : ---
-            Material number of cross section
+        None
+
         Returns
         -------
-        input file data line (str).
+        str
+            Input file data line.
         """
-        return "SCIT NO {}  D {}  MNO {}".format(self.key+1,
+        return "SCIT NO {} D {} MNO {}".format(self.key+1,
                                                  2*self.r,
                                                  self.material.key+1)
 
@@ -193,17 +194,12 @@ class SofistikRectangularSection(RectangularSection):
 
         Parameters
         ----------
-        NO : ---
-            Cross section number
-        H : ---
-            Total height
-        B : ---
-            Width for rectanbular, T-beam
-        MNO : ---
-            Material number
+        None
+
         Returns
         -------
-        input file data line (str).
+        str
+            Input file data line.
         """
 
         return "SREC NO {} H {} B {} MNO {}".format(self.key+1,

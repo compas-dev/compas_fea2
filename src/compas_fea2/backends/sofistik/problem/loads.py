@@ -85,25 +85,24 @@ class SofistikPointLoad(PointLoad):
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
         super(SofistikPointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
-    
-    #FIXME
+        """Generate the data for the input file for any bc.
 
-    #Put Outside of the SofistikPointLoad the generation of the string "LC {} TITL 'point load'"
+        Parameters
+        ----------
+        nodes : [:class:`compas_fea2.model.nodes.Node]
+            The nodes where the boundary condition is applied.
+
+        Returns
+        -------
+        str
+            input file data string
+        """
 
     def _generate_jobdata(self, nodes):
-        loadcase_data_section = ["LC {} TITL 'point load'".format(i+1) for i in range(len(nodes))] #self.name
-        node_def_data_section = ["NODE NO {} TYPE VV {} {} {} {} {} {}".format(node.key+1,
-                                                                            "P1 {}".format(self.x) if self.x else "",
-                                                                            "P2 {}".format(self.y) if self.y else "",
-                                                                            "P3 {}".format(self.z) if self.z else "",
-                                                                            "P4 {}".format(self.yy) if self.xx else "",
-                                                                            "P5 {}".format(self.yy) if self.yy else "",
-                                                                            "P6 {}".format(self.zz) if self.zz else "") for node in nodes]
-        job_data = []
-        for i in range(len(nodes)):
-            job_data.append(loadcase_data_section[i])
-            job_data.append(node_def_data_section[i])
-        return '\n'.join(job_data)
+        comp = {'x':'p1','y':'p2','z':'p3','xx':'p4','yy':'p5','zz':'p6'}
+        return "\n".join(["NODE NO {} TYPE VV {}".format(node.key+1,
+                                            ' '.join([comp[c] for c in comp if getattr(self, c)]))
+                    for node in nodes])
 
 class SofistikPrestressLoad(PrestressLoad):
     """Sofistik implementation of :class:`compas_fea2.problem.loads.PrestressLoad`.\n

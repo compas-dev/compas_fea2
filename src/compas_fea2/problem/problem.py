@@ -186,6 +186,8 @@ class Problem(FEAData):
 
         if self.find_step_by_name(step):
             raise ValueError('There is already a step with the same name in the model.')
+
+        step._key = len(self._steps)
         self._steps.add(step)
         step._registration = self
         self._steps_order.append(step)

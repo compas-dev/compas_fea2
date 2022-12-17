@@ -16,16 +16,24 @@ from compas_fea2.model.bcs import RollerBCYZ
 from compas_fea2.model.bcs import RollerBCZ
 
 def _generate_jobdata(obj, nodes):
-    job_data = ["NODE NO {} FIX {}{}{}{}{}{}".format(node.key+1, 
-                                                     "{}".format('px') if obj.x == True else '',
-                                                     "{}".format('py') if obj.y == True else '',
-                                                     "{}".format('pz') if obj.z == True else '',
-                                                     "{}".format('mx') if obj.xx == True else '',
-                                                     "{}".format('my') if obj.yy == True else '',
-                                                     "{}".format('mz') if obj.zz == True else '',
-                                                     {}) for node in nodes]
-    return "\n".join(job_data)
+    """Generate the data for the input file for any bc.
 
+    Parameters
+    ----------
+    obj : :class:`compas_fea2.model.bcs._BoundaryCondition`
+        The boundary condition
+    nodes : [:class:`compas_fea2.model.nodes.Node]
+        The nodes where the boundary condition is applied.
+
+    Returns
+    -------
+    str
+        input file data string
+    """
+    comp = {'x':'px','y':'py','z':'pz','xx':'mx','yy':'my','zz':'mz'}
+    return "\n".join(["NODE NO {} FIX {}".format(node.key+1,
+                                           ' '.join([comp[c] for c in comp if getattr(obj, c)]))
+                for node in nodes])
 
 class SofistikClampBCXX(ClampBCXX):
     """Sofistik implementation of :class:`compas_fea2.model.bcs.ClampBCXX`.\n
@@ -78,7 +86,7 @@ class SofistikGeneralBC(GeneralBC):
 
     def __init__(self, name=None, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
         super(SofistikGeneralBC, self).__init__(name=name, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, **kwargs)
-        
+
     def _generate_jobdata(self, nodes):
         return _generate_jobdata(self, nodes)
 
@@ -101,7 +109,7 @@ class SofistikRollerBCX(RollerBCX):
 
     def __init__(self, name=None, **kwargs):
         super(SofistikRollerBCX, self).__init__(name=name, **kwargs)
-        
+
     def _generate_jobdata(self, nodes):
         return _generate_jobdata(self, nodes)
 

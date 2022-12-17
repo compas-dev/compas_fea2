@@ -19,7 +19,5 @@ from compas_fea2.backends.sofistik.problem.loads import SofistikTributaryLoad
 from compas_fea2.backends.sofistik.problem.outputs import SofistikFieldOutput
 from compas_fea2.backends.sofistik.problem.outputs import SofistikHistoryOutput
 
-from compas_fea2.backends.sofistik.problem.patterns import SofistikPattern
-
 from compas_fea2.backends.sofistik.problem.problem import SofistikProblem
 

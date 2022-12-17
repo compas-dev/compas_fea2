@@ -79,6 +79,7 @@ class _Step(FEAData):
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
+        self._key = None
 
     @property
     def problem(self):
@@ -99,6 +100,10 @@ class _Step(FEAData):
     @property
     def results(self):
         return self._results
+
+    @property
+    def key(self):
+        return self._key
 
     def add_output(self, output):
         """Request a field or history output.

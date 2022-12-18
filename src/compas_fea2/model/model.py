@@ -7,6 +7,8 @@ import gc
 import pathlib
 from typing import Callable, Iterable, Type
 import pint
+from itertools import groupby
+
 
 import os
 import pickle
@@ -18,6 +20,7 @@ from compas_fea2.utilities._utils import part_method, get_docstring, problem_met
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import _Part, DeformablePart, RigidPart
 from compas_fea2.model.nodes import Node
+from compas_fea2.model.elements import _Element
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.ics import _InitialCondition, InitialStressField
 from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
@@ -61,7 +64,8 @@ class Model(FEAData):
     parts : Set[:class:`compas_fea2.model.DeformablePart`]
         The parts of the model.
     bcs : dict
-        The boundary conditions of the model.
+        Dictionary with the boundary conditions of the model and the nodes where
+        these are applied.
     ics : dict
         The initial conditions of the model.
     constraints : Set[:class:`compas_fea2.model._Constraint`]
@@ -447,11 +451,11 @@ class Model(FEAData):
         if isinstance(nodes, _Group):
             nodes = nodes._members
 
-        if not isinstance(nodes, (list, tuple, set)):
+        if isinstance(nodes, Node):
             nodes = [nodes]
 
         if not isinstance(bc, _BoundaryCondition):
-            raise TypeError('{!r} is not a _BoundaryCondition.'.format(bc))
+            raise TypeError('{!r} is not a Boundary Condition.'.format(bc))
 
         for node in nodes:
             if not isinstance(node, Node):
@@ -460,14 +464,14 @@ class Model(FEAData):
                 raise ValueError('{!r} is not registered to any part.'.format(node))
             elif not node.part in self.parts:
                 raise ValueError('{!r} belongs to a part not registered to this model.'.format(node))
-
             if isinstance(node.part, RigidPart):
                 if len(nodes) != 1 or not node.is_reference:
                     raise ValueError('For rigid parts bundary conditions can be assigned only to the reference point')
+            node._bc = bc
 
-            node.dof = bc
-            self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
+        self._bcs[bc]=set(nodes)
         bc._registration = self
+
         return bc
 
     def _add_bc_type(self, bc_type, nodes, axes='global'):
@@ -679,19 +683,29 @@ class Model(FEAData):
         """
         return self._add_bc_type('rollerYZ',  nodes, axes)
 
-    def remove_bcs(self, bcs):
-        """Removes multiple boundary conditions from the Model.
+    def remove_bcs(self, nodes):
+        """Release a node previously restrained.
 
         Parameters
         ----------
-        bc_names : list
-            List of names of the boundary conditions to remove.
+        nodes : [:class:`compas_fe2.model.Node]
+            List of nodes to release.
 
         Returns
         -------
         None
         """
-        raise NotImplementedError
+
+        if isinstance(nodes, Node):
+            nodes = [nodes]
+
+        for node in nodes:
+            if node.dof:
+                self.bcs[node.dof].remove(node)
+                node.dof = None
+            else:
+                print("WARNING: {!r} was not restrained. skipped!".format(node))
+
 
     def remove_all_bcs(self):
         """Removes all the boundary conditions from the Model.
@@ -704,7 +718,9 @@ class Model(FEAData):
         -------
         None
         """
-        raise NotImplementedError
+        for _, nodes in self.bcs.items():
+            self.remove_bcs(nodes)
+        self.bcs = {}
 
     # ==============================================================================
     # Initial Conditions methods
@@ -730,13 +746,20 @@ class Model(FEAData):
 
         if not isinstance(ic, _InitialCondition):
             raise TypeError('{!r} is not a _InitialCondition.'.format(ic))
+        for member in group.members:
+            if not isinstance(member, (Node, _Element)):
+                raise TypeError('{!r} is not a Node or an Element.'.format(member))
+            if not member.part:
+                raise ValueError('{!r} is not registered to any part.'.format(member))
+            elif not member.part in self.parts:
+                raise ValueError('{!r} belongs to a part not registered to this model.'.format(member))
+            member._ic = ic
 
-        # for member in group._members:
-        #     member.ics = ic
-
-        self._ics.setdefault(group.part, {}).setdefault(ic, set()).add(group)
+        self._ics[ic] = group.members
         ic._registration = self
+
         return ic
+
 
     def add_nodes_ics(self, ic, nodes):
         # type: (_InitialCondition, Node, str) -> list
@@ -801,11 +824,21 @@ class Model(FEAData):
                                  '    # of nodes: {}'.format(len(part.nodes)),
                                  '    # of elements: {}'.format(len(part.elements)),
                                  '    is_rigid : {}'.format('True' if isinstance(part, RigidPart) else 'False')]) for part in self.parts]
+
         constraints_info = '\n'.join([e.__repr__() for e in self.constraints])
-        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(bc, len(nodes))
-                                                                     for bc, nodes in bc_nodes.items()])) for part, bc_nodes in self.bcs.items()])
-        ic_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of nodes assigned {}'.format(ic, len(nodes))
-                                                                     for ic, nodes in ic_nodes.items()])) for part, ic_nodes in self.ics.items()])
+
+        bc_info = []
+        for bc, nodes in self.bcs.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
+                bc_info.append('{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(bc, len(list(part_nodes)))])))
+        bc_info = '\n'.join(bc_info)
+
+        ic_info = []
+        for ic, nodes in self.ics.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
+                ic_info.append('{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(ic, len(list(part_nodes)))])))
+        ic_info = '\n'.join(ic_info)
+
         data = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 compas_fea2 Model: {}

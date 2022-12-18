@@ -48,10 +48,10 @@ class _Step(FEAData):
     Note
     ----
     A ``compas_fea2`` analysis is based on the concept of ``steps``,
-    which are the sequence of modification of the state of the model. Steps
-    can be introduced for example to change the output requests or to change loads,
-    boundary conditions, analysis procedure, etc. There is no limit on the number
-    of steps in an analysis.
+    which represent the sequence in which the state of the model is modified.
+    Steps can be introduced for example to change the output requests or to change
+    loads, boundary conditions, analysis procedure, etc. There is no limit on the
+    number of steps in an analysis.
 
     Parameters
     ----------
@@ -197,8 +197,8 @@ class _Step(FEAData):
 
 
 class _GeneralStep(_Step):
-    """General Step object for use in a general static, dynamic or
-    multiphysics analysis.
+    """General Step object for use as a base class in a general static, dynamic
+    or multiphysics analysis.
 
     Parameters
     ----------

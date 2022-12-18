@@ -67,16 +67,11 @@ class AbaqusStaticStep(StaticStep):
 **   ---------------
 {}
 **
-** - Contact Controls
-**   ----------------
-{}
-**
 *End Step""".format(self._generate_header_section(),
                     self._generate_displacements_section(),
                     self._generate_loads_section(),
                     self._generate_fields_section(),
                     self._generate_output_section(),
-                    self._generate_controls_section()
                     )
 
     def _generate_header_section(self):

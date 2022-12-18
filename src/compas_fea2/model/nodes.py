@@ -70,6 +70,7 @@ class Node(FEAData):
         self._x = None
         self._y = None
         self._z = None
+        self._bc = None
         self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
         self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
         self.xyz = xyz
@@ -148,13 +149,14 @@ class Node(FEAData):
 
     @property
     def dof(self):
-        return self._dof
+        if self.bc:
+            return {attr: not bool(getattr(self.bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+        else:
+            return self._dof
 
-    @dof.setter
-    def dof(self, bc):
-        if not isinstance(bc, _BoundaryCondition):
-            raise TypeError('{!r} is not a BoundaryCondition'.format(bc))
-        self._dof = {attr: not bool(getattr(bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+    @property
+    def bc(self):
+        return self._bc
 
     @property
     def loads(self):

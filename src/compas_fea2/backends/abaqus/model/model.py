@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from itertools import groupby
+
 from compas_fea2.model import Model, RigidPart
 from compas_fea2.model import ElementsGroup, NodesGroup
 from compas_fea2.model import _Constraint
@@ -156,9 +158,9 @@ class AbaqusModel(Model):
             text section for the input file.
         """
         data_section = []
-        for part in self.bcs:
-            data_section += [bc._generate_jobdata('{}-1'.format(part.name), nodes)
-                             for bc, nodes in self.bcs[part].items()]
+        for bc, nodes in self.bcs.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
+                data_section.append(bc._generate_jobdata('{}-1'.format(part.name), part_nodes))
         return '\n'.join(data_section) or '**'
 
     def _generate_ics_section(self):
@@ -174,11 +176,12 @@ class AbaqusModel(Model):
         str
             text section for the input file.
         """
+
         data_section = []
-        for part in self.ics:
-            for ic in self.ics[part]:
+        for ic, nodes in self.bcs.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
                 if isinstance(ic, InitialTemperatureField):
-                    data_section.append(ic._generate_jobdata('{}-1'.format(part.name), self.ics[part][ic]))
+                    data_section.append(ic._generate_jobdata('{}-1'.format(part.name), part_nodes))
                 elif isinstance(ic, InitialStressField):
-                    data_section.append(ic._generate_jobdata(self.ics[part][ic]))
+                    data_section.append(ic._generate_jobdata(part_nodes))
         return '\n'.join(data_section) or '**'

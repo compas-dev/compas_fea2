@@ -13,10 +13,6 @@ class SofistikModel(Model):
         super(SofistikModel, self).__init__(name=name, description=description, author=author, **kwargs)
 
     def _generate_jobdata(self):
-        bcs_dict = {}
-        for part,bc in self.bcs.items():
-            for bc_obj, nodes in bc.items():
-                bcs_dict[bc_obj] = nodes
         return """
 $ PARTS
 {}
@@ -35,7 +31,7 @@ end
 """.format(
         "\n".join([part._generate_jobdata() for part in self.parts]),
         "\n".join([ic._generate_jobdata() for ic in self.ics]),
-        "\n".join([bc._generate_jobdata(nodes) for bc,nodes in bcs_dict.items()]),
+        "\n".join([bc._generate_jobdata(nodes) for bc, nodes in self.bcs.items()]),
            )
 
 

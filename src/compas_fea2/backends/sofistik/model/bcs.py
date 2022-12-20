@@ -30,9 +30,9 @@ def _generate_jobdata(obj, nodes):
     str
         input file data string
     """
-    comp = {'x':'px','y':'py','z':'pz','xx':'mx','yy':'my','zz':'mz'}
+    comp = {'x':'PX','y':'PY','z':'PZ','xx':'MX','yy':'MY','zz':'MZ'}
     return "\n".join(["NODE NO {} FIX {}".format(node.key+1,
-                                           ' '.join([comp[c] for c in comp if getattr(obj, c)]))
+                                           ','.join([comp[c] for c in comp if getattr(obj, c)]))
                 for node in nodes])
 
 class SofistikClampBCXX(ClampBCXX):

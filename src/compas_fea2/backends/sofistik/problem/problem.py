@@ -4,13 +4,14 @@ from __future__ import print_function
 
 import os
 import subprocess
+import json
 
 from compas_fea2.problem.problem import Problem
 from compas_fea2.problem import _Step
 
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import launch_process
-from compas_fea2.backends.sofistik import SOFISTIK_PATH
+from compas_fea2.backends.sofistik import BACKEND_HERE
 
 class SofistikProblem(Problem):
     """Sofistik implementation of :class:`compas_fea2.problem.problem.Problem`.\n
@@ -75,7 +76,10 @@ end
         path = self._check_analysis_path(path)
         input_file = self.write_input_file(path)
 
-        sofistik_path = exe or SOFISTIK_PATH
+        with open(os.path.join(BACKEND_HERE, "settings.json"), 'r') as f:
+            settings=json.load(f)
+
+        sofistik_path = exe or settings["solver_path"]
         solver = "sps.exe" if shell else "wps.exe"
         solver_path = os.path.join(sofistik_path, solver)
 

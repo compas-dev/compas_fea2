@@ -7,9 +7,10 @@ Sofistik
 from pydoc import ErrorDuringImport
 import compas_fea2
 
-SOFISTIK_PATH = 'C:/Program Files/SOFiSTiK/2023/SOFiSTiK 2023'
-
 from compas.plugins import plugin
+import os
+
+BACKEND_HERE = os.path.dirname(__file__)
 
 # Materials
 from compas_fea2.model.materials import (

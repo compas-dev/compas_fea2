@@ -12,7 +12,6 @@ from itertools import groupby
 
 import os
 import pickle
-from compas_fea2 import config
 import compas_fea2
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import part_method, get_docstring, problem_method
@@ -30,7 +29,7 @@ from compas_fea2.model.constraints import _Constraint, TieMPC, BeamMPC
 try:
     import compas_assembly
 except:
-    if config.VERBOSE:
+    if compas_fea2.VERBOSE:
         print('Warning: compas_assembly was not found in your evironment. Some functionalities will not be available.')
 
 from compas_fea2.units import units
@@ -259,7 +258,7 @@ class Model(FEAData):
             raise TypeError("{!r} is not a part.".format(part))
 
         if self.contains_part(part):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print("SKIPPED: DeformablePart {!r} is already in the model.".format(part))
             return
 
@@ -267,7 +266,7 @@ class Model(FEAData):
             raise ValueError("Duplicate name! The name '{}' is already in use.".format(part.name))
 
         part._registration = self
-        if config.VERBOSE:
+        if compas_fea2.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
         self._parts.add(part)

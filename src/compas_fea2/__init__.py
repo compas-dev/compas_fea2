@@ -79,8 +79,8 @@ def get_backend_implementation(cls):
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
 
 __all_plugins__ = [
-    'compas_fea2.backends.abaqus',
-    'compas_fea2.backends.opensees',
-    'compas_fea2.backends.ansys',
-    'compas_fea2.backends.sofistik',
+    'compas_fea2_abaqus',
+    'compas_fea2_ansys',
+    'compas_fea2_opensees',
+    'compas_fea2_sofistik',
 ]

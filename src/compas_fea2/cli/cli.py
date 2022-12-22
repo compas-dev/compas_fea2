@@ -7,6 +7,7 @@ import click
 from compas_fea2 import HOME
 
 import os
+import json
 
 import sys
 from fea2_extension.main import init_plugin
@@ -40,6 +41,28 @@ def init_backend(backend, clean):
     init_plugin(HOME, backend, clean)
     backend = backend.lower()
 
+@main.command()
+# @click.option('--clean', default='False', help='remove existing directories')
+@click.argument('backend')
+@click.argument('setting')
+@click.argument('value')
+def change_settings(backend, setting, value):
+    """Change a setting for the specified backend.\n
+    backend : txt\n
+        The name of the backend.
+    setting : txt\n
+        The setting to be changed.
+    value : txt\n
+        The new value for the setting.
+    """
+    backend_settings = os.path.join(HOME, 'src', 'compas_fea2', 'backends', backend.lower(), 'settings.json')
+
+    with open(backend_settings, 'r') as f:
+        settings = json.load(f)
+
+    with open(backend_settings, 'w') as f:
+        settings[setting]=value
+        json.dump(settings, f)
 
 # -------------------------------- DEBUG ----------------------------------#
 if __name__ == "__main__":

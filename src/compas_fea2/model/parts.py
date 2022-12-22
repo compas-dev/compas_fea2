@@ -13,7 +13,7 @@ from compas.utilities import geometric_key
 from compas.geometry import Vector
 from compas.geometry import sum_vectors
 
-from compas_fea2 import config
+import compas_fea2
 from compas_fea2.base import FEAData
 
 from .nodes import Node
@@ -685,13 +685,13 @@ number of nodes    : {}
             raise TypeError('{!r} is not a node.'.format(node))
 
         if self.contains_node(node):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print('NODE SKIPPED: Node {!r} already in part.'.format(node))
             return
 
-        if not config.POINT_OVERLAP:
-            if self.find_nodes_by_location(node.xyz, distance=config.GLOBAL_TOLERANCE):
-                if config.VERBOSE:
+        if not compas_fea2.POINT_OVERLAP:
+            if self.find_nodes_by_location(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE):
+                if compas_fea2.VERBOSE:
                     print('NODE SKIPPED: Part {!r} has already a node at {}.'.format(self, node.xyz))
                 return
 
@@ -699,7 +699,7 @@ number of nodes    : {}
         self._nodes.add(node)
         self._gkey_node[node.gkey] = node
         node._registration = self
-        if config.VERBOSE:
+        if compas_fea2.VERBOSE:
             print('Node {!r} registered to {!r}.'.format(node, self))
         return node
 
@@ -830,7 +830,7 @@ number of nodes    : {}
             raise TypeError('{!r} is not an element.'.format(element))
 
         if self.contains_element(element):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print("SKIPPED: Element {!r} already in part.".format(element))
             return
 
@@ -846,7 +846,7 @@ number of nodes    : {}
         element._key = len(self.elements)
         self.elements.add(element)
         element._registration = self
-        if config.VERBOSE:
+        if compas_fea2.VERBOSE:
             print('Element {!r} registered to {!r}.'.format(element, self))
         return element
 
@@ -979,7 +979,7 @@ number of nodes    : {}
             self.add_elements(group.elements)
 
         if self.contains_group(group):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print("SKIPPED: Group {!r} already in part.".format(group))
             return
         if isinstance(group, NodesGroup):
@@ -1240,7 +1240,7 @@ class DeformablePart(_Part):
             raise TypeError('{!r} is not a material.'.format(material))
 
         if self.contains_material(material):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print('SKIPPED: Material {!r} already in part.'.format(material))
             return
 
@@ -1320,7 +1320,7 @@ class DeformablePart(_Part):
             raise TypeError('{!r} is not a section.'.format(section))
 
         if self.contains_section(section):
-            if config.VERBOSE:
+            if compas_fea2.VERBOSE:
                 print("SKIPPED: Section {!r} already in part.".format(section))
             return
 

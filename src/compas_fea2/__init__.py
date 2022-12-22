@@ -30,6 +30,7 @@ Dev Packages
 
 """
 import os
+import json
 from collections import defaultdict
 from compas.plugins import pluggable
 
@@ -49,11 +50,18 @@ UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
-PRECISION = '3f'
+with open(os.path.join(HERE, 'settings.json'), 'r') as f:
+    SETTINGS = json.load(f)
+
+PRECISION = SETTINGS["PRECISION"]
 
 def set_precision(precision):
     global PRECISION
     PRECISION = precision
+
+VERBOSE = SETTINGS["VERBOSE"]
+POINT_OVERLAP = SETTINGS["POINT_OVERLAP"]
+GLOBAL_TOLERANCE = SETTINGS["GLOBAL_TOLERANCE"]
 
 BACKEND = None
 BACKENDS = defaultdict(dict)

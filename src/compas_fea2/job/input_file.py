@@ -24,6 +24,7 @@ class InputFile(FEAData):
         self._job_data = None
         self._file_name = None
         self._extension = None
+        self._path = None
 
     @property
     def problem(self):
@@ -35,8 +36,12 @@ class InputFile(FEAData):
 
     @property
     def job_data(self):
-        """The job_data property."""
         return self._generate_jobdata()
+
+    @property
+    def path(self):
+        return self._path
+
 
     @classmethod
     def from_problem(cls, problem):
@@ -56,6 +61,7 @@ class InputFile(FEAData):
         input_file._registration = problem
         input_file._job_name = problem._name
         input_file._file_name = '{}.{}'.format(problem._name, input_file._extension)
+        input_file._path = problem.path.joinpath(input_file._file_name)
         return input_file
 
     # ==============================================================================

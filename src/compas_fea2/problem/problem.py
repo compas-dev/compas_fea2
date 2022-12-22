@@ -186,6 +186,8 @@ class Problem(FEAData):
 
         if self.find_step_by_name(step):
             raise ValueError('There is already a step with the same name in the model.')
+
+        step._key = len(self._steps)
         self._steps.add(step)
         step._registration = self
         self._steps_order.append(step)
@@ -310,11 +312,25 @@ Analysis folder path : {}
         input_file.write_to_file(path)
         return input_file
 
-    def _check_analysis_path(self, path=None):
+    def _check_analysis_path(self, path):
+        """check if the analysis path is correct
+
+        Parameters
+        ----------
+        path : :class:`pathlib.Path`
+            Path where the input file will be saved.
+
+        Return
+        :class:`pathlib.Path`
+            Path where the input file will be saved.
+        """
         if path:
-            self.path = os.path.join(path, self.name)
+            if not isinstance(path, Path):
+                path = Path(path)
+            self.path = path.joinpath(self.name)
         if not self.path:
             raise AttributeError('You must provide a path')
+        return self.path
 
     def analyse(self, path=None, *args, **kwargs):
         """Analyse the problem in the selected backend.

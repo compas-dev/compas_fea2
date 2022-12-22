@@ -32,11 +32,11 @@ jobs:
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
     outputs:
       commit_type: ${{ steps.docs.outputs.commit_type }}
       current_version: ${{ steps.docs.outputs.current_version }}
-  
+
   docVersions:
     needs: build
     if: needs.build.outputs.commit_type == 'tag'

@@ -47,12 +47,14 @@ Loads
     :toctree: generated/
 
     _Load
-    PointLoad
     PrestressLoad
+    PointLoad
     LineLoad
     AreaLoad
     GravityLoad
     TributaryLoad
+    HarmonicPointLoad
+    HarmonicPressureLoad
     ThermalLoad
 
 Displacements
@@ -68,10 +70,7 @@ Load Patterns
 .. autosummary::
     :toctree: generated/
 
-    _LoadPattern
-    DeadLoad
-    SuperImposedDeadLoad
-    LiveLoad
+    Pattern
 
 Outputs
 =======
@@ -101,6 +100,7 @@ from .loads import (
     ThermalLoad,
 )
 from .fields import (
+    _PrescribedField,
     PrescribedTemperatureField,
 )
 

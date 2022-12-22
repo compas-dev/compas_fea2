@@ -2,7 +2,7 @@
 
 ## Project Lead
 
-* Francesco Ranaudo <<ranaudo@arch.ethz.ch>>
+* Francesco Ranaudo <<ranaudo@arch.ethz.ch>> [@franaudo](https://github.com/franaudo)
 
 ## Contributors
 

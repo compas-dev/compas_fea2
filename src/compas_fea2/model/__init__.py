@@ -69,7 +69,7 @@ Constraints
     MultiPointConstraint
     TieMPC
     BeamMPC
-    TieCOnstraint
+    TieConstraint
 
 Materials
 =========
@@ -123,9 +123,9 @@ Boundary Conditions
     GeneralBC
     FixedBC
     PinnedBC
-    FixedBCXX
-    FixedBCYY
-    FixedBCZZ
+    ClampBCXX
+    ClampBCYY
+    ClampBCZZ
     RollerBCX
     RollerBCY
     RollerBCZ
@@ -233,6 +233,7 @@ from .releases import (
     BeamEndSliderRelease,
 )
 from .bcs import (
+    _BoundaryCondition,
     GeneralBC,
     FixedBC,
     PinnedBC,
@@ -248,6 +249,7 @@ from .bcs import (
 )
 
 from .ics import (
+    _InitialCondition,
     InitialTemperatureField,
     InitialStressField,
 )

@@ -1,6 +1,0 @@
-{
-    "VERBOSE": false,
-    "POINT_OVERLAP": true,
-    "GLOBAL_TOLERANCE": 1,
-    "PRECISION": "3f"
-}

@@ -2,3 +2,4 @@ compas>=1.0
 click
 gmsh
 pint
+python-dotenv

@@ -30,7 +30,7 @@ class FEAData(Data):
         self._registration = None
 
     def __new__(cls, *args, **kwargs):
-        imp = compas_fea2.get_backend_implementation(cls)
+        imp = compas_fea2._get_backend_implementation(cls)
         if not imp:
             return super(FEAData, cls).__new__(cls)
         return super(FEAData, imp).__new__(imp)

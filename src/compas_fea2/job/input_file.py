@@ -21,7 +21,6 @@ class InputFile(FEAData):
     def __init__(self, name=None, **kwargs):
         super(InputFile, self).__init__(name=name, **kwargs)
         self._job_name = None
-        self._job_data = None
         self._file_name = None
         self._extension = None
         self._path = None
@@ -33,10 +32,6 @@ class InputFile(FEAData):
     @property
     def model(self):
         return self.problem._registration
-
-    @property
-    def job_data(self):
-        return self._generate_jobdata()
 
     @property
     def path(self):
@@ -84,14 +79,12 @@ class InputFile(FEAData):
         # try:
         file_path = os.path.join(path, self._file_name)
         with open(file_path, 'w') as f:
-            f.writelines(self.job_data)
+            f.writelines(self.jobdata())
         print('Input file generated in: {}'.format(file_path))
         # except:
         #     out = 'ERROR: input file not generated!'
         # print(out)
 
-    def _generate_jobdata(self, *args, **kwargs):
-        raise NotImplementedError('This method is not available for the selected backend!')
 
 
 class ParametersFile(InputFile):

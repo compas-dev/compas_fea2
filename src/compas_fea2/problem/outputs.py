@@ -56,7 +56,7 @@ class FieldOutput(_Output):
         list of elements fields to output
     """
 
-    def __init__(self, node_outputs, element_outputs, contact_outputs, name=None, **kwargs):
+    def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, name=None, **kwargs):
         super(FieldOutput, self).__init__(name=name, **kwargs)
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs

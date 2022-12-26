@@ -24,12 +24,30 @@ class FEAData(Data):
     """
 
     def __init__(self, name=None):
+        """Base class for all FEA2 objects.
+
+        Parameters
+        ----------
+        name : str, optional
+            The name of the object, by default None. If not provided, one is automatically
+            generated.
+
+        Attributes
+        ----------
+        name : str
+            The name of the object.
+        registration : compas_fea2 object
+            The mother object where this object is registered to.
+        """
         super().__init__()
         # NOTE the names length in abaqus is limited to 80 characters
         self._name = name or ''.join([c for c in type(self).__name__ if c.isupper()])+"_"+str(id(self))
         self._registration = None
 
     def __new__(cls, *args, **kwargs):
+        """Try to get the backend plug-in implementation, otherwise use the base
+        one.
+        """
         imp = compas_fea2._get_backend_implementation(cls)
         if not imp:
             return super(FEAData, cls).__new__(cls)
@@ -37,6 +55,9 @@ class FEAData(Data):
 
     def __repr__(self):
         return '{0}({1})'.format(self.__class__.__name__, id(self))
+
+    def jobdata(self):
+        raise NotImplementedError('This function is not available in the selected plugin.')
 
     # TODO maybe not useful anymore..? change 'element'
     @classmethod
@@ -64,6 +85,7 @@ class FEAData(Data):
 
     def data(self):
         pass
+
     # def __str__(self):
     #     """String representation of the object.
 

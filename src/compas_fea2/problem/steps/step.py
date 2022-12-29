@@ -73,9 +73,8 @@ class _Step(FEAData):
 
     """
 
-    def __init__(self, name=None, problem=None, **kwargs):
+    def __init__(self, name=None, **kwargs):
         super(_Step, self).__init__(name=name, **kwargs)
-        self._problem = problem
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
@@ -283,7 +282,7 @@ class _GeneralStep(_Step):
             pattern_copy = copy.copy(pattern)
             load_copy = copy.copy(pattern.load)
             pattern_copy._load = other*load_copy
-            step_copy.add_pattern(pattern_copy)
+            step_copy._add_pattern(pattern_copy)
         return step_copy
 
     @property
@@ -334,7 +333,7 @@ class _GeneralStep(_Step):
     #                           Loads methods
     # =========================================================================
 
-    def add_pattern(self, load_pattern):
+    def _add_pattern(self, load_pattern):
         # type: (_Load, Node | _Element) -> _Load
         """Add a general load pattern to the Step object.
 
@@ -370,7 +369,7 @@ class _GeneralStep(_Step):
 
         return load_pattern
 
-    def add_patterns(self, load_patterns):
+    def _add_patterns(self, load_patterns):
         # type: (_Load, Node | _Element) -> list(_Load)
         """Add a load to multiple locations.
 

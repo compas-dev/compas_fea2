@@ -122,10 +122,16 @@ class StaticStep(_GeneralStep):
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')
-        return self.add_pattern(Pattern(load=PointLoad(x, y, z, xx, yy, zz, axes, name, **kwargs), distribution=nodes))
+        return self._add_pattern(Pattern(value=PointLoad(x, y, z, xx, yy, zz, axes, name, **kwargs), distribution=nodes))
 
-    def add_gravity_load(self, g=9.81, x=0., y=0., z=-1., distribution=None):
+    def add_gravity_load(self, g=9.81, x=0., y=0., z=-1.):
         """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
+
+        Note
+        ----
+        The gravity field is applied to the whole model. To remove parts of the
+        model from the calculation of the gravity force, you can assign to them
+        a 0 mass material.
 
         Warning
         -------
@@ -146,15 +152,13 @@ class StaticStep(_GeneralStep):
             Group of parts or elements affected by gravity.
         """
         # TODO implement distribution
-        if distribution:
-            raise NotImplementedError()
         # if isinstance(distribution, PartsGroup):
         #     group = []
         #     for part in distribution.parts:
         #         for element in part.elements:
         #             group.append(element)
         #     self.model.add_group(ElementsGroup(elements=group))
-        return self.add_pattern(Pattern(load=GravityLoad(g, x, y, z), distribution=distribution))
+        return self._add_pattern(Pattern(value=GravityLoad(g, x, y, z), distribution=None))
 
     def add_prestress_load(self):
         raise NotImplementedError
@@ -203,10 +207,10 @@ class StaticStep(_GeneralStep):
         """
         if axes != 'global':
             raise NotImplementedError('local axes are not supported yet')
-        d = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+        displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
         if not isinstance(nodes, Iterable):
             nodes = [nodes]
-        return self.add_pattern(Pattern(load=d, distribution=nodes))
+        return self._add_pattern(Pattern(value=displacement, distribution=nodes))
 
 
 class StaticRiksStep(StaticStep):

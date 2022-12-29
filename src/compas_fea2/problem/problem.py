@@ -113,6 +113,15 @@ class Problem(FEAData):
     def path_db(self):
         return self._path_db
 
+    @property
+    def steps_order(self):
+        return self._steps_order
+    @steps_order.setter
+    def steps_order(self, value):
+        for step in value:
+            if not self.is_step_in_problem(step, add=False):
+                raise ValueError('{!r} must be previously added to {!r}'.format(step, self))
+        self._steps_order = value
 
 
     # =========================================================================
@@ -207,27 +216,27 @@ class Problem(FEAData):
         """
         return [self.add_step(step) for step in steps]
 
-    def define_steps_order(self, order):
-        """Defines the order in which the steps are applied during the analysis.
+    # def define_steps_order(self, order):
+    #     """Defines the order in which the steps are applied during the analysis.
 
-        Parameters
-        ----------
-        order : list
-            List contaning the names of the analysis steps in the order in which
-            they are meant to be applied during the analysis.
+    #     Parameters
+    #     ----------
+    #     order : list
+    #         List contaning the names of the analysis steps in the order in which
+    #         they are meant to be applied during the analysis.
 
-        Returns
-        -------
-        None
+    #     Returns
+    #     -------
+    #     None
 
-        Warning
-        -------
-        Not implemented yet!
-        """
-        for step in order:
-            if not isinstance(step, _Step):
-                raise TypeError('{} is not a step'.format(step))
-        self._steps_order = order
+    #     Warning
+    #     -------
+    #     Not implemented yet!
+    #     """
+    #     for step in order:
+    #         if not isinstance(step, _Step):
+    #             raise TypeError('{} is not a step'.format(step))
+    #     self._steps_order = order
 
     def add_linear_perturbation_step(self, lp_step, base_step):
         """Add a linear perturbation step to a previously defined step.

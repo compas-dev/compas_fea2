@@ -3,49 +3,43 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2 import units
-from .material import ElasticIsotropic
+from .material import _Material, ElasticIsotropic
 
 
 class Steel(ElasticIsotropic):
     """Bi-linear steel with given yield stress.
-
-    Parameters
-    ----------
-    name : str
-        Material name.
-    fy : float
-        Yield stress [MPa].
-    fu : float
-        Ultimate stress [MPa].
-    eu : float
-        Ultimate strain [%].
+    """
+    __doc__ += _Material.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
     E : float
-        Young's modulus E [GPa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
+    fy : float
+        Yield stress.
+    fu : float
+        Ultimate stress.
+    eu : float
+        Ultimate strain.
 
     Attributes
     ----------
-    name : str
-        Material name.
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     G : float
-        Shear modulus G [Pa].
+        Shear modulus G.
     fy : float
-        Yield stress [MPa].
+        Yield stress.
     fu : float
-        Ultimate stress [MPa].
+        Ultimate stress.
     eu : float
-        Ultimate strain [%].
+        Ultimate strain.
     ep : float
-        Plastic strain [%].
+        Plastic strain.
 
     """
 
@@ -98,6 +92,14 @@ ep : {:.2f}
            (self.eu * units.dimensionless),
            (self.ep * units.dimensionless))
 
-    @staticmethod
-    def S355(name='S355'):
-        return Steel(name=name, fy=355, fu=None, eu=20, E=210, v=0.3, density=7850)
+    #TODO check values and make unit independent
+    @classmethod
+    def S355(cls):
+        """Steel S355.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.material.Steel`
+            The precompiled steel material.
+        """
+        return cls(fy=355, fu=None, eu=20, E=210, v=0.3, density=7850, name=None)

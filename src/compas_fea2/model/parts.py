@@ -26,11 +26,6 @@ from .ics import InitialStressField
 
 from compas_fea2.utilities._utils import timer
 
-try:
-    import compas_assembly
-except:
-    pass
-
 
 class _Part(FEAData):
     """
@@ -53,14 +48,20 @@ class _Part(FEAData):
         The parent model of the part.
     nodes : Set[:class:`compas_fea2.model.Node`]
         The nodes belonging to the part.
+    nodes_count : int
+        Number of nodes in the part.
+    gkey_node : {gkey : :class:`compas_fea2.model.Node`}
+        Dictionary that associates each node and its geometric key}
     materials : Set[:class:`compas_fea2.model._Material`]
         The materials belonging to the part.
     sections : Set[:class:`compas_fea2.model._Section`]
         The sections belonging to the part.
     elements : Set[:class:`compas_fea2.model._Element`]
         The elements belonging to the part.
-    releases : Set[:class:`compas_fea2.model._BeamEndRelease`]
-        The releases belonging to the part.
+    element_types : {:class:`compas_fea2.model._Element` : [:class:`compas_fea2.model._Element`]]
+        Dictionary with the elements of the part for each element type.
+    element_count : int
+        Number of elements in the part
     nodesgroups : Set[:class:`compas_fea2.model.NodesGroup`]
         The groups of nodes belonging to the part.
     elementsgroups : Set[:class:`compas_fea2.model.ElementsGroup`]
@@ -68,21 +69,26 @@ class _Part(FEAData):
     facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
         The groups of element faces belonging to the part.
     boundary_mesh : :class:`compas.datastructures.Mesh`
-        The outer boundary mesh enveloping the DeformablePart.
+        The outer boundary mesh enveloping the Part.
+    discretized_boundary_mesh : :class:`compas.datastructures.Mesh`
+        The discretized outer boundary mesh enveloping the Part.
     """
 
     def __init__(self, name=None, **kwargs):
         super(_Part, self).__init__(name=name, **kwargs)
         self._nodes = set()
+        self._gkey_node = {}
         self._sections = set()
         self._materials = set()
         self._elements = set()
+
         self._nodesgroups = set()
         self._elementsgroups = set()
         self._facesgroups = set()
-        self._gkey_node = {}
+
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
+
         self._results = {}
 
     @property
@@ -657,7 +663,7 @@ number of nodes    : {}
 
         Note
         ----
-        By adding a Node to the part, this gets registered to this part.
+        By adding a Node to the part, it gets registered to the part.
 
         Parameters
         ----------
@@ -677,7 +683,7 @@ number of nodes    : {}
         Examples
         --------
         >>> part = DeformablePart()
-        >>> node = Node(1.0, 2.0, 3.0)
+        >>> node = Node(xyz=(1.0, 2.0, 3.0))
         >>> part.add_node(node)
 
         """
@@ -727,6 +733,41 @@ number of nodes    : {}
 
         """
         return [self.add_node(node) for node in nodes]
+
+    def remove_node(self, node):
+        """Remove a :class:`compas_fea2.model.Node` from the part.
+
+        Warning
+        -------
+        Removing nodes can cause inconsistencies.
+
+        Parameters
+        ----------
+        node : :class:`compas_fea2.model.Node`
+            The node to remove
+        """
+        # type: (Node) -> None
+        if self.contains_node(node):
+            self.nodes.pop(node)
+            self._gkey_node.pop(node.gkey)
+            node._registration = None
+            if compas_fea2.VERBOSE:
+                print('Node {!r} removed from {!r}.'.format(node, self))
+
+    def remove_nodes(self, nodes):
+        """Remove multiple :class:`compas_fea2.model.Node` from the part.
+
+        Warning
+        -------
+        Removing nodes can cause inconsistencies.
+
+        Parameters
+        ----------
+        nodes : []:class:`compas_fea2.model.Node`]
+            List with the nodes to remove
+        """
+        for node in nodes:
+            self.remove_node(node)
 
     def is_node_on_boundary(self, node, precision=None):
         # type: (Node, str) -> bool
@@ -865,10 +906,55 @@ number of nodes    : {}
         """
         return [self.add_element(element) for element in elements]
 
+    def remove_element(self, element):
+        """Remove a :class:`compas_fea2.model._Element` from the part.
+
+        Warning
+        -------
+        Removing elements can cause inconsistencies.
+
+        Parameters
+        ----------
+        element : :class:`compas_fea2.model._Element`
+            The element to remove
+        """
+        # type: (_Element) -> None
+        if self.contains_node(element):
+            self.elements.pop(element)
+            element._registration = None
+            if compas_fea2.VERBOSE:
+                print('Element {!r} removed from {!r}.'.format(element, self))
+
+    def remove_elements(self, elements):
+        """Remove multiple :class:`compas_fea2.model._Element` from the part.
+
+        Warning
+        -------
+        Removing elements can cause inconsistencies.
+
+        Parameters
+        ----------
+        elements : []:class:`compas_fea2.model._Element`]
+            List with the elements to remove
+        """
+        for element in elements:
+            self.remove_element(element)
+
     def is_element_on_boundary(self, element):
+        """Check if the element belongs to the boundary mesh of the part.
+
+        Parameters
+        ----------
+        element : :class:`compas_fea2.model._Element`
+            The element to check.
+
+        Returns
+        -------
+        bool
+            ``True`` if the element is on the boundary.
+        """
         # type: (_Element) -> bool
         from compas.geometry import centroid_points
-        from compas.utilities import geometric_key
 
         if element.on_boundary is None:
             if not self._discretized_boundary_mesh.centroid_face:

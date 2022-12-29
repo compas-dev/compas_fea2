@@ -16,6 +16,17 @@ class InputFile(FEAData):
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
 
+    Attributes
+    ----------
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    problem : :class:`compas_fea2.problem.Problem`
+        The problem to generate the input file from.
+    model : :class:`compas_fea2.model.Model`
+        The model associated to the Problem.
+    path : str
+        Complete path to the input file.
     """
 
     def __init__(self, name=None, **kwargs):
@@ -67,32 +78,27 @@ class InputFile(FEAData):
 
         Parameters
         ----------
-        path : str
-            Path to the folder where the input file will be saved.
+        path : str, optional
+            Path to the folder where the input file will be saved, by default
+            ``None``. If not provided, the Problem path attributed is used.
 
         Returns
         -------
-        r : str
+        str
             Information about the results of the writing process.
         """
         path = path or self.problem.path
-        # try:
+        if not path:
+            raise ValueError('A path to the folder for the input file must be provided')
         file_path = os.path.join(path, self._file_name)
         with open(file_path, 'w') as f:
             f.writelines(self.jobdata())
         print('Input file generated in: {}'.format(file_path))
-        # except:
-        #     out = 'ERROR: input file not generated!'
-        # print(out)
-
 
 
 class ParametersFile(InputFile):
-    """_summary_
-
-    Parameters
-    ----------
-    InputFile : _type_
-        _description_
     """
-    pass
+    """
+    def __init__(self, name=None, **kwargs):
+        super(ParametersFile, self).__init__(name, **kwargs)
+        raise NotImplementedError()

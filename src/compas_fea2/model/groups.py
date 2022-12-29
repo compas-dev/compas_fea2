@@ -13,15 +13,19 @@ class _Group(FEAData):
 
     Parameters
     ----------
-    members : set
+    members : set, optional
         Set with the members belonging to the group. These can be either node,
-        elements, faces or parts.
+        elements, faces or parts. By default ``None``.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
 
     Attributes
     ----------
     registration : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`
         The parent object where the members of the Group belong.
-
+    name : str
+        Uniqe identifier.
     """
 
     def __init__(self, members=None, name=None, **kwargs):
@@ -72,10 +76,34 @@ name            : {}
         return members
 
     def _add_member(self, member):
+        """Add a member to the group.
+
+        Parameters
+        ----------
+        member : var
+            The member to add. This depends on the specific group type.
+
+        Returns
+        -------
+        var
+            The memeber.
+        """
         self._members.add(self._check_member(member))
         return member
 
     def _add_members(self, members):
+        """Add multiple members to the group.
+
+        Parameters
+        ----------
+        members : [var]
+            The members to add. These depend on the specific group type.
+
+        Returns
+        -------
+        [var]
+            The memebers.
+        """
         self._check_members(members)
         for member in members:
             self.members.add(member)
@@ -87,8 +115,8 @@ class NodesGroup(_Group):
 
     Note
     ----
-    NodesGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as its nodes
-    and can belong to only one DeformablePart.
+    NodesGroups are registered to the same :class:`compas_fea2.model._Part` as its nodes
+    and can belong to only one Part.
 
     Parameters
     ----------
@@ -97,19 +125,17 @@ class NodesGroup(_Group):
         name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
-    part : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`, optional
-        The part where the members are located, by default `None`.
 
     Attributes
     ----------
     name : str
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
+        Uniqe identifier.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
-    part : :class:`compas_fea2.model.DeformablePart`
-        The part where the members are located, by default `None`.
-
+    part : :class:`compas_fea2.model._Part`
+        The part where the group is registered, by default `None`.
+    model : :class:`compas_fea2.model.Model`
+        The model where the group is registered, by default `None`.
     """
 
     def __init__(self, *, nodes, name=None, **kwargs):
@@ -128,9 +154,33 @@ class NodesGroup(_Group):
         return self._members
 
     def add_node(self, node):
+        """Add a node to the group.
+
+        Parameters
+        ----------
+        node : :class:`compas_fea2.model.Node`
+            The node to add.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Node`
+            The node added.
+        """
         return self._add_member(node)
 
     def add_nodes(self, nodes):
+        """Add multiple nodes to the group.
+
+        Parameters
+        ----------
+        nodes : [:class:`compas_fea2.model.Node`]
+            The nodes to add.
+
+        Returns
+        -------
+        [:class:`compas_fea2.model.Node`]
+            The nodes added.
+        """
         return self._add_members(nodes)
 
 
@@ -149,8 +199,6 @@ class ElementsGroup(_Group):
         name if you want a more human-readable input file.
     elements : list[:class:`compas_fea2.model.Element`]
         The elements belonging to the group.
-    part : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`, optional
-        The part where the members are located, by default `None`.
 
     Attributes
     ----------
@@ -159,9 +207,10 @@ class ElementsGroup(_Group):
         name if you want a more human-readable input file.
     elements : list[:class:`compas_fea2.model.Element`]
         The elements belonging to the group.
-    part : :class:`compas_fea2.model.DeformablePart`
-        The part where the members are located, by default `None`.
-
+    part : :class:`compas_fea2.model._Part`
+        The part where the group is registered, by default `None`.
+    model : :class:`compas_fea2.model.Model`
+        The model where the group is registered, by default `None`.
     """
 
     def __init__(self, *, elements, name=None, **kwargs):
@@ -180,9 +229,33 @@ class ElementsGroup(_Group):
         return self._members
 
     def add_element(self, element):
+        """Add an element to the group.
+
+        Parameters
+        ----------
+        element : :class:`compas_fea2.model._Element`
+            The element to add.
+
+        Returns
+        -------
+        :class:`compas_fea2.model._Element`
+            The element added.
+        """
         return self._add_member(element)
 
     def add_elements(self, elements):
+        """Add multiple elements to the group.
+
+        Parameters
+        ----------
+        elements : [:class:`compas_fea2.model._Element`]
+            The elements to add.
+
+        Returns
+        -------
+        [:class:`compas_fea2.model._Element`]
+            The elements added.
+        """
         return self._add_members(elements)
 
 
@@ -199,8 +272,22 @@ class FacesGroup(_Group):
     name : str, optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    faces : set
-        The faces of the Group.
+    faces : Set[:class:`compas_fea2.model.Face`]
+        The Faces belonging to the group.
+
+    Attributes
+    ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    faces : Set[:class:`compas_fea2.model.Face`]
+        The Faces belonging to the group.
+    nodes : Set[:class:`compas_fea2.model.Node`]
+        The Nodes of the faces belonging to the group.
+    part : :class:`compas_fea2.model._Part`
+        The part where the group is registered, by default `None`.
+    model : :class:`compas_fea2.model.Model`
+        The model where the group is registered, by default `None`.
     """
 
     def __init__(self, *, faces, name=None, **kwargs):
@@ -220,8 +307,41 @@ class FacesGroup(_Group):
 
     @property
     def nodes(self):
-        return [node for face in self.faces for node in face.nodes]
+        nodes_set = set()
+        for face in self.faces:
+            for node in face.nodes:
+                nodes_set.add(node)
+        return nodes_set
 
+    def add_face(self, face):
+        """Add a face to the group.
+
+        Parameters
+        ----------
+        face : :class:`compas_fea2.model.Face`
+            The face to add.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Face`
+            The element added.
+        """
+        return self._add_member(face)
+
+    def add_faces(self, faces):
+        """Add multiple faces to the group.
+
+        Parameters
+        ----------
+        faces : [:class:`compas_fea2.model.Face`]
+            The faces to add.
+
+        Returns
+        -------
+        [:class:`compas_fea2.model.Face`]
+            The faces added.
+        """
+        return self._add_members(faces)
 
 class PartsGroup(_Group):
     """Base class for parts groups.
@@ -243,7 +363,8 @@ class PartsGroup(_Group):
     ----------
     parts : list[:class:`compas_fea2.model.DeformablePart`]
         The parts belonging to the group.
-
+    model : :class:`compas_fea2.model.Model`
+        The model where the group is registered, by default `None`.
     """
 
     def __init__(self, *, parts, name=None, **kwargs):

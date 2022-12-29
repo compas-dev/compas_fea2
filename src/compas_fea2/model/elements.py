@@ -17,12 +17,12 @@ class _Element(FEAData):
 
     Note
     ----
-    Elements are registered to the same :class:`compas_fea2.model.DeformablePart` as its nodes
-    and can belong to only one DeformablePart.
+    Elements are registered to the same :class:`compas_fea2.model._Part` as well
+    as its nodes and can belong to only one Part.
 
     Warning
     -------
-    When an Element is added to a DeformablePart, the nodes of the elements are also added
+    When an Element is added to a Part, the nodes of the elements are also added
     and registered to the same part. This might change the original registration
     of the nodes!
 
@@ -44,8 +44,7 @@ class _Element(FEAData):
     Attributes
     ----------
     name : str
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
+        Uniqe identifier.
     key : int, read-only
         Identifier of the element in the parent part.
     nodes : list[:class:`compas_fea2.model.Node`]
@@ -57,14 +56,24 @@ class _Element(FEAData):
     frame : :class:`compas.geometry.Frame`
         The local coordinate system for property assignement.
         Default to the global coordinate system.
-    implementation : str, optional
+    implementation : str
         The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.DeformablePart` | None
         The parent part.
     on_boundary : bool | None
         `True` it the element has a face on the boundary mesh of the part, `False`
         otherwise, by default `None`.
-
+    part : :class:`compas_fea2.model._Part`, read-only
+        The Part where the element is assigned.
+    model : :class:`compas_fea2.model.Model`, read-only
+        The Model where the element is assigned.
+    area : float, read-only
+        The area of the element.
+    volume : float, read-only
+        The volume of the element.
+    rigid : bool, read-only
+        Define the element as rigid (no deformations allowed) or not. For Rigid
+        elements sections are not needed.
     """
 # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
@@ -82,6 +91,7 @@ class _Element(FEAData):
         self._volume = None
 
         self._results = {}
+        self._rigid = False
 
     @property
     def part(self):
@@ -154,6 +164,10 @@ class _Element(FEAData):
     def results(self):
         return self._results
 
+    @property
+    def rigid(self):
+        return self._rigid
+
 # ==============================================================================
 # 0D elements
 # ==============================================================================
@@ -168,7 +182,7 @@ class MassElement(_Element):
 # 1D elements
 # ==============================================================================
 class _Element1D(_Element):
-    """
+    """Element with 1 dimension.
     """
 
 
@@ -207,22 +221,26 @@ class TieElement(TrussElement):
 # 2D elements
 # ==============================================================================
 class _Element2D(_Element):
+    """Element with 2 dimensions.
     """
+    __doc__ += _Element.__doc__
+    __doc__ +="""
+    Additional Parameters
+    ---------------------
+    faces : [:class:`compas_fea2.model.elements.Face]
+        The faces of the element.
+    faces : dict
+        Dictionary providing for each face the node indices. For example:
+        {'s1': (0,1,2), ...}
     """
 
     def __init__(self, *, nodes, frame, section=None, implementation=None, rigid=False, name=None, **kwargs):
         super(_Element2D, self).__init__(nodes=nodes, section=section,
                                          frame=frame, implementation=implementation, name=name, **kwargs)
 
-        self._face_indices = None
         self._faces = None
-
-
+        self._face_indices = None
         self._rigid = rigid
-        if not section and not rigid:
-            raise TypeError('A not-rigid element must have a section')
-        if section and rigid:
-            raise TypeError('A rigid element cannot have a section')
 
     @property
     def nodes(self):
@@ -256,11 +274,6 @@ class _Element2D(_Element):
             Dictionary with face names and the corresponding nodes.
         """
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
-
-    @property
-    def rigid(self):
-        return self._rigid
-
 
 
 class ShellElement(_Element2D):

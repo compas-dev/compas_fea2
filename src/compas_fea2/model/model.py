@@ -25,13 +25,6 @@ from compas_fea2.model.ics import _InitialCondition, InitialStressField
 from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
 from compas_fea2.model.constraints import _Constraint, TieMPC, BeamMPC
 
-# from compas_fea2.problem.problem import Problem
-try:
-    import compas_assembly
-except:
-    if compas_fea2.VERBOSE:
-        print('Warning: compas_assembly was not found in your evironment. Some functionalities will not be available.')
-
 from compas_fea2.units import units
 
 class Model(FEAData):
@@ -66,14 +59,18 @@ class Model(FEAData):
         Dictionary with the boundary conditions of the model and the nodes where
         these are applied.
     ics : dict
-        The initial conditions of the model.
+        Dictionary with the initial conditions of the model and the nodes/elements
+        where these are applied.
     constraints : Set[:class:`compas_fea2.model._Constraint`]
         The constraints of the model.
     partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
-    facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
-        The surfaces of the model.
-
+    materials : Set[:class:`compas_fea2.model.materials._Material]
+        The materials assigned in the model.
+    sections : Set[:class:`compas_fea2.model._Section]
+        The sections assigned in the model.
+    problems : Set[:class:`compas_fea2.problem._Problem]
+        The problems added to the model.
     """
 
     def __init__(self, *, name=None, description=None, author=None, **kwargs):

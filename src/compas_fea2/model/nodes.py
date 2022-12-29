@@ -15,23 +15,23 @@ class Node(FEAData):
     Note
     ----
     Nodes are registered to a :class:`compas_fea2.model.DeformablePart` object and can
-    belong to only one DeformablePart.vEvery time a node is added to a part, it gets
-    registered to that part.
+    belong to only one Part. Every time a node is added to a Part, it gets
+    registered to that Part.
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
+    xyz : list[float, float, float] | :class:`compas.geometry.Point`
+        The location of the node in the global coordinate system.
     mass : float or tuple, optional
         Lumped nodal mass, by default ``None``. If ``float``, the same value is
         used in all 3 directions. if you want to specify a different mass for each
         direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
         coordinates.
-    xyz : list[float, float, float] | :class:`compas.geometry.Point`
-        The location of the node in the global coordinate system.
-    part : `compas_fea2.model.DeformablePart`, optional
-        DeformablePart object where the node will be registered, by default ``None``
+    temperature : float, optional
+        The temperature at the Node.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
 
     Attributes
     ----------
@@ -51,34 +51,50 @@ class Node(FEAData):
     z : float
         The Z coordinate.
     gkey : str, read-only
-        The geometric key.
+        The geometric key of the Node.
     dof : dict
-        Dictionary with the active degrees of freedom
-    on_boundary : bool | None
-        `True` it the node is on the boundary mesh of the part, `False`
+        Dictionary with the active degrees of freedom.
+    on_boundary : bool | None, read-only
+        `True` if the node is on the boundary mesh of the part, `False`
         otherwise, by default `None`.
+    is_reference : bool, read-only
+        `True` if the node is a reference point of :class:`compas_fea2.model.RigidPart`,
+        `False` otherwise.
+    part : :class:`compas_fea2.model._Part`, read-only
+        The Part where the element is assigned.
+    model : :class:`compas_fea2.model.Model`, read-only
+        The Model where the element is assigned.
+    point : :class:`compas.geometry.Point`
+        The Point equivalent of the Node.
+    temperature : float
+        The temperature at the Node.
 
     Examples
     --------
-    >>> node = Node(1.0, 2.0, 3.0)
+    >>> node = Node(xyz=(1.0, 2.0, 3.0))
 
     """
 
-    def __init__(self, xyz, mass=None, name=None, **kwargs):
+    def __init__(self, xyz, mass=None, temperature=None, name=None, **kwargs):
         super(Node, self).__init__(name=name, **kwargs)
         self._key = None
-        self._x = None
-        self._y = None
-        self._z = None
+
+        self.xyz = xyz
+        self._x = xyz[0]
+        self._y = xyz[1]
+        self._z = xyz[2]
+
         self._bc = None
         self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
+
         self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
-        self.xyz = xyz
+        self._temperature = temperature
+
         self._on_boundary = None
         self._is_reference = False
+
         self._loads = {}
         self._displacements = {}
-        self._t = None
         self._results = {}
 
     @property
@@ -99,6 +115,8 @@ class Node(FEAData):
 
     @xyz.setter
     def xyz(self, value):
+        if len(value)!=3:
+            raise ValueError('Provide a 3 element touple or list')
         self._x = value[0]
         self._y = value[1]
         self._z = value[2]
@@ -137,11 +155,11 @@ class Node(FEAData):
 
     @property
     def temperature(self):
-        return self._t
+        return self._temperature
 
     @temperature.setter
     def temperature(self, value):
-        self._t = value
+        self._temperature = value
 
     @property
     def gkey(self):

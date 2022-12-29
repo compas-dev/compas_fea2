@@ -6,8 +6,8 @@ from compas_fea2.base import FEAData
 
 
 class _Connector(FEAData):
-    """Initialises base Connector object. A Connector links a node to other
-    nodes in the model.
+    """Initialises base Connector object. A Connector links a node to one or more
+    other nodes in the model.
 
     Note
     ----
@@ -32,5 +32,8 @@ class _Connector(FEAData):
 
 
 class Spring(_Connector):
+    """Elastic spring connector.
+    """
+    __doc__ += _Connector.__doc__
     def __init__(self,  name=None, **kwargs):
         super(Spring, self).__init__(name=name, **kwargs)

@@ -6,6 +6,7 @@ from compas.data import Data
 import compas_fea2
 import importlib
 
+from abc import abstractmethod
 
 class FEAData(Data):
     """Base class for all FEA model objects.
@@ -56,7 +57,9 @@ class FEAData(Data):
     def __repr__(self):
         return '{0}({1})'.format(self.__class__.__name__, id(self))
 
-    def jobdata(self):
+    @abstractmethod
+    def jobdata(self, *args, **kwargs):
+        """Generate the job data for the backend-specific input file."""
         raise NotImplementedError('This function is not available in the selected plugin.')
 
     # TODO maybe not useful anymore..? change 'element'

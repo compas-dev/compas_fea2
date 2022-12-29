@@ -183,7 +183,7 @@ class StaticStep(_GeneralStep):
         if not isinstance(node, Node):
             raise TypeError('{!r} is not a Node.'.format(node))
 
-        node._t = field
+        node._temperature = field
         self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
         return field
 

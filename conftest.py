@@ -1,6 +1,6 @@
 import pytest
 import compas
-import compas_fea2_sofistik
+import compas_fea2
 import math
 import numpy
 
@@ -23,7 +23,7 @@ def add_compas(doctest_namespace):
 
 @pytest.fixture(autouse=True)
 def add_compas_fea2_sofistik(doctest_namespace):
-    doctest_namespace["compas_fea2"] = compas_fea2_sofistik
+    doctest_namespace["compas_fea2"] = compas_fea2
 
 
 @pytest.fixture(autouse=True)

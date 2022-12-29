@@ -26,8 +26,8 @@ ns.configure(
     {
         "base_folder": os.path.dirname(__file__),
         "ghuser": {
-            "source_dir": "src/compas_fea2_sofistik/ghpython/components",
-            "target_dir": "src/compas_fea2_sofistik/ghpython/components/ghuser",
+            "source_dir": "src/compas_fea2/ghpython/components",
+            "target_dir": "src/compas_fea2/ghpython/components/ghuser",
         },
     }
 )

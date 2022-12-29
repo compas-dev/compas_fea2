@@ -6,8 +6,7 @@ from compas_fea2.base import FEAData
 
 
 class _Constraint(FEAData):
-    """Initialises base Constraint object. A constraint removes degree of freedom
-    of nodes in the model.
+    """A constraint removes degree of freedom of nodes in the model.
 
     Note
     ----
@@ -35,20 +34,25 @@ class _Constraint(FEAData):
 # ------------------------------------------------------------------------------
 
 
-class MultiPointConstraint(_Constraint):
-    """A MPC constraint links a node (master) to other nodes (slaves) in the model.
+class _MultiPointConstraint(_Constraint):
+    """A MultiPointContrstaint (MPC) links a node (master) to other nodes
+    (slaves) in the model.
+
+    Note
+    ----
+    Constraints are registered to a :class:`compas_fea2.model.Model`.
 
     Parameters
     ----------
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
     name : str,optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.Node`
-        Node that act as master.
-    slaves : :class:`compas_fea2.model.NodesGroup`
-        Group of nodes that act as slaves.
-    tol : float
-        Constraint tolerance, distance limit between master and slaves.
 
     Attributes
     ----------
@@ -57,27 +61,62 @@ class MultiPointConstraint(_Constraint):
         name if you want a more human-readable input file.
     master : :class:`compas_fea2.model.Node`
         Node that act as master.
-    slaves : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slaves.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
     tol : float
         Constraint tolerance, distance limit between master and slaves.
-
     """
 
     def __init__(self, constraint_type, name=None, **kwargs):
-        super(MultiPointConstraint, self).__init__(name=name, **kwargs)
+        super(_MultiPointConstraint, self).__init__(name=name, **kwargs)
         self.constraint_type = constraint_type
 
 
-class TieMPC(MultiPointConstraint):
-    """A MPC constraint links a node (master) to other nodes (slaves) in the model.
+class TieMPC(_MultiPointConstraint):
+    """Tie MPC that constraints axial translations.
+    """
+    __doc__ += _MultiPointConstraint.__doc__
+
+
+class BeamMPC(_MultiPointConstraint):
+    """Beam MPC that constraints axial translations and rotations.
+    """
+    __doc__ += _MultiPointConstraint.__doc__
+
+#TODO check!
+class _SurfaceConstraint(_Constraint):
+    """A SurfaceContrstaint links a surface (master) to another surface (slave)
+    in the model.
+
+    Note
+    ----
+    Constraints are registered to a :class:`compas_fea2.model.Model`.
+
+    Parameters
+    ----------
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
+    name : str,optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+
+    Attributes
+    ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
     """
 
-
-class BeamMPC(MultiPointConstraint):
-    """A MPC constraint links a node (master) to other nodes (slaves) in the model.
-    """
-
-class TieConstraint(_Constraint):
+class TieConstraint(_SurfaceConstraint):
     """Tie constraint between two surfaces.
     """

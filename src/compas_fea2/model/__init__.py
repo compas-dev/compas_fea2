@@ -66,7 +66,7 @@ Constraints
     :toctree: generated/
 
     _Constraint
-    MultiPointConstraint
+    _MultiPointConstraint
     TieMPC
     BeamMPC
     TieConstraint
@@ -87,6 +87,7 @@ Materials
     ConcreteSmearedCrack
     ConcreteDamagedPlasticity
     Steel
+    Timber
 
 Sections
 ========
@@ -215,7 +216,7 @@ from .sections import (
 )
 from .constraints import (
     _Constraint,
-    MultiPointConstraint,
+    _MultiPointConstraint,
     TieMPC,
     BeamMPC,
     TieConstraint,
@@ -309,7 +310,7 @@ __all__ = [
     'TieSection',
 
     '_Constraint',
-    'MultiPointConstraint',
+    '_MultiPointConstraint',
     'TieMPC',
     'BeamMPC',
     'TieConstraint',

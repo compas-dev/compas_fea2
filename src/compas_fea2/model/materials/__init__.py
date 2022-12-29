@@ -1,3 +1,51 @@
+"""
+********************************************************************************
+Materials
+********************************************************************************
+
+.. currentmodule:: compas_fea2.model.materials
+
+General Materials
+=================
+
+.. autosummry::
+    :toctree: generated/
+
+    _Material
+    ElasticIsotropic
+    ElasticOrthotropic
+    ElasticPlastic
+    Stiff
+    UserMaterial
+
+Concrete
+========
+
+.. autosummary::
+    :toctree: generated/
+
+    Concrete
+    ConcreteDamagedPlasticity
+    ConcreteSmearedCrack
+
+Steel
+=====
+
+.. autosummary::
+    :toctree: generated/
+
+    Steel
+
+Timber
+======
+
+.. autosummary::
+    :toctree: generated/
+
+    Timber
+
+"""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function

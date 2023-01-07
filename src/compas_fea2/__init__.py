@@ -29,7 +29,6 @@ Dev Packages
 
 """
 import os
-import json
 from collections import defaultdict
 
 import os
@@ -50,12 +49,28 @@ UMAT = os.path.abspath(os.path.join(DATA, "umat"))
 DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
-def init_fea2():
-    """Create a default environment file.
+def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision='3f'):
+    """Create a default environment file if it doesn't exist and loads its
+    variables.
+
+    Parameters
+    ----------
+    verbose : bool, optional
+        Be verbose when printing output, by default False
+    point_overlap : bool, optional
+        Allow two nodes to be at the same location, by default True
+    global_tolerance : int, optional
+        Tolerance for the model, by default 1
+    precision : str, optional
+        Values approximation, by default '3f'
     """
-    import shutil
-    shutil.copyfile(os.path.abspath(os.path.join(DATA, "__templates", ".env")),
-                    os.path.abspath(os.path.join(HERE, ".env")))
+    with open(os.path.abspath(os.path.join(HERE, ".env")), "x") as f:
+        f.write('\n'.join([
+            "VERBOSE={}".format(verbose),
+            "POINT_OVERLAP={}".format(point_overlap),
+            "GLOBAL_TOLERANCE={}".format(point_overlap),
+            "PRECISION={}".format(precision)
+            ]))
     load_dotenv()
 
 if not load_dotenv():
@@ -102,8 +117,8 @@ def set_backend(plugin):
     BACKEND = plugin
     try:
         importlib.import_module(plugin)._register_backend()
-    except:
-        raise ImportError('backend plugin not found. Make sure that you have installed it before.')
+    except ImportError:
+        print('backend plugin not found. Make sure that you have installed it before.')
 
 def _get_backend_implementation(cls):
     return BACKENDS[BACKEND].get(cls)

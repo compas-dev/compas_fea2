@@ -240,8 +240,8 @@ number of nodes    : {}
             element = ShellElement(nodes=nodes, section=section)
             part.add_element(element)
 
-        part.boundary_mesh = mesh
-        part.discretized_boundary_mesh = mesh
+        part._boundary_mesh = mesh
+        part._discretized_boundary_mesh = mesh
 
         return part
 

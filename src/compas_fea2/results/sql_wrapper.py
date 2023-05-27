@@ -1,4 +1,3 @@
-from msilib.schema import Component
 from operator import index
 import sqlite3
 import sqlalchemy as db

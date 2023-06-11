@@ -8,7 +8,7 @@ import pathlib
 from typing import Callable, Iterable, Type
 import pint
 from itertools import groupby
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import os
 import pickle
@@ -174,6 +174,14 @@ class Model(FEAData):
             except:
                 gc.enable()
                 raise RuntimeError('Model not created!')
+        model.path = os.sep.join(os.path.split(path)[0].split(os.sep)[:-1])
+        #check if the problems' results are stored in the same location
+        for problem in model.problems:
+            if not os.path.exists(os.path.join(model.path, problem.name)):
+                print(f"WARNING! - Problem {problem.name} results not found! move the results folder in {model.path}")
+                continue
+            problem.path = os.path.join(model.path, problem.name)
+            problem._db_connection = None
         return model
 
     # =========================================================================

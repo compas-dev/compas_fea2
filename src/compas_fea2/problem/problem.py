@@ -415,7 +415,7 @@ Analysis folder path : {}
         raise NotImplementedError("this function is not available for the selected backend")
 
     # =========================================================================
-    #                         Results methods
+    #                         Results methods - general
     # =========================================================================
     def connect_db(self, path_db=None):
         # typing: (str) -> str
@@ -495,74 +495,6 @@ Analysis folder path : {}
         test = [TABLE.columns.step == step.name, TABLE.columns.magnitude != 0.]
         return get_field_results(engine, connection, metadata, TABLE, test)
 
-    def _get_vector_results(self, ResultSet):
-        """_summary_
-
-        Parameters
-        ----------
-        ResultSet : _type_
-            _description_
-
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-        """
-        col_names = ResultSet[0]
-        values = ResultSet[1]
-        results=[]
-        for row in values:
-            result={}
-            part = self.model.find_part_by_name(row[0])
-            if not part:
-                # try case insensitive match
-                part = self.model.find_part_by_name(row[0], casefold=True)
-            if not part:
-                print('Part {} not found in model'.format(row[0]))
-                continue
-            result['part']= part
-            result['node'] = part.find_node_by_key(row[2])
-            result['vector'] = Vector(*[row[i] for i in range(3,6)])
-            results.append(result)
-        return results, Vector(*sum_vectors([r['vector'] for r in results]))
-
-    def get_reaction_forces_sql(self, step=None):
-        """Retrieve the reaction forces for a given step.
-
-        Parameters
-        ----------
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results('RF', step)
-        return self._get_vector_results(col_val)
-
-    def get_reaction_moments_sql(self, step=None):
-        """_summary_
-
-        Parameters
-        ----------
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results('RM', step)
-        return self._get_vector_results(col_val)
-
-
     def _get_func_field_sql(self, func, field, steps=None, group_by=None, component='magnitude'):
         """
         """
@@ -584,8 +516,46 @@ GROUP BY {};""".format(', '.join(labels), field,
         disp, _ = self._get_vector_results((labels, ResultSet))
         return disp
 
-    def get_displacements_sql(self, step=None):
-        """Retrieve all nodal dispacements from the SQLite database.
+    def _get_vector_results(self, ResultSet):
+        """_summary_
+
+        Parameters
+        ----------
+        ResultSet : _type_
+            _description_
+
+        Returns
+        -------
+        dict, class:`compas.geoemtry.Vector`
+            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        """
+        col_names = ResultSet[0]
+        values = ResultSet[1]
+        if not values:
+            raise ValueError('No results found')
+        results=[]
+        for row in values:
+            result={}
+            part = self.model.find_part_by_name(row[0])
+            if not part:
+                # try case insensitive match
+                part = self.model.find_part_by_name(row[0], casefold=True)
+            if not part:
+                print('Part {} not found in model'.format(row[0]))
+                continue
+            result['part']= part
+            result['node'] = part.find_node_by_key(row[2])
+            result['vector'] = Vector(*[row[i] for i in range(3,6)])
+            results.append(result)
+        return results, Vector(*sum_vectors([r['vector'] for r in results]))
+
+    # =========================================================================
+    #                         Results methods - reactions
+    # =========================================================================
+
+    def get_reaction_forces_sql(self, step=None):
+        """Retrieve the reaction forces for a given step.
+
         Parameters
         ----------
         step : _type_
@@ -593,8 +563,48 @@ GROUP BY {};""".format(', '.join(labels), field,
 
         Returns
         -------
-        _type_
+        dict, class:`compas.geoemtry.Vector`
+            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        """
+        if not step:
+            step = self._steps_order[-1]
+        _, col_val = self._get_field_results('RF', step)
+        return self._get_vector_results(col_val)
+
+    def get_reaction_moments_sql(self, step=None):
+        """_summary_
+
+        Parameters
+        ----------
+        step : _type_
             _description_
+
+        Returns
+        -------
+        dict, class:`compas.geoemtry.Vector`
+            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        """
+        if not step:
+            step = self._steps_order[-1]
+        _, col_val = self._get_field_results('RM', step)
+        return self._get_vector_results(col_val)
+
+    # =========================================================================
+    #                         Results methods - displacements
+    # =========================================================================
+
+    def get_displacements_sql(self, step=None):
+        """Retrieve all nodal dispacements from the SQLite database.
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem._Step`, optional
+            The step of the analysis to get the results from, by default ``None``.
+            If not provided, the last step of the problem is used.
+
+        Returns
+        -------
+        dict, class:`compas.geoemtry.Vector`
+            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
         """
         if not step:
             step = self._steps_order[-1]
@@ -640,14 +650,19 @@ GROUP BY {};""".format(', '.join(labels), field,
         return self._get_func_field_sql(func='MIN', field='U', steps=steps, group_by=group_by, component=component)[0]
 
     def get_displacement_at_nodes_sql(self, nodes, steps=None, group_by=['step', 'part']):
-        """_summary_
+        """Get the displacement of a list of :class:`compas_fea2.model.Node`.
 
         Parameters
         ----------
-        node : _type_
-            _description_
+        node : :class:`compas_fea2.model.Node` | [:class:`compas_fea2.model.Node`]
+            The node or the nodes where to retrieve the displacmeent
         steps : _type_, optional
             _description_, by default None
+
+        Return
+        ------
+        dict
+            Dictionary with {'part':..; 'node':..; 'vector':...}
         """
         if not isinstance(nodes, Iterable):
             nodes = [nodes]
@@ -674,30 +689,61 @@ GROUP BY {};""".format(', '.join(labels),
         return disp
 
     def get_displacement_at_point(self, point, distance, plane=None, steps=None, group_by=['step', 'part']):
+        """Get the displacement of the model around a location (point).
+
+        Parameters
+        ----------
+        point : [float]
+            The coordinates of the point.
+        steps : _type_, optional
+            _description_, by default None
+
+        Return
+        ------
+        dict
+            Dictionary with {'part':..; 'node':..; 'vector':...}
+        """
         if not steps:
             steps = [self._steps_order[-1]]
         node = self.model.find_node_by_location(point, distance, plane=None)
-        return self.get_displacement_at_nodes(nodes=[node], steps=steps,group_by=group_by)
+        return self.get_displacement_at_nodes(nodes=[node], steps=steps, group_by=group_by)
 
-    def show_displacements(self, component=3, step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
+
+    # =========================================================================
+    #                         Viewer methods
+    # =========================================================================
+
+    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
         """_summary_
 
         Parameters
         ----------
         component : int, optional
-            _description_, by default 3
-        step : _type_, optional
-            _description_, by default None
+            The component to display, by default 'magnitude'.
+            Choose among [1, 2, 3, 'magnitude']
+        step : :class:`compas_fea2.problem.Step`, optional
+            The step to show the results of, by default None.
+            if not provided, the last step of the analysis is used.
         style : str, optional
-            _description_, by default 'contour'
+            The style of the results, by default 'contour'.
+            You can choose between ['contour', 'vector']
         deformed : bool, optional
-            _description_, by default False
+            Choose if to display on the deformed configuration or not, by default False
         width : int, optional
-            _description_, by default 1600
+            Width of the viewer window, by default 1600
         height : int, optional
-            _description_, by default 900
-        scale_factor : _type_, optional
-            _description_, by default 1.
+            Height of the viewer window, by default 900
+        scale_factor : float, optional
+            Scale the model, by default 1.
+
+        Options
+        -------
+        draw_loads : float
+            Displays the loads at the step scaled by the given value
+        draw_bcs : float
+            Displays the bcs of the model scaled by the given value
+        bound : float
+            limit the results to the given value
 
         Raises
         ------
@@ -713,8 +759,12 @@ GROUP BY {};""".format(', '.join(labels),
 
         if component not in [1,2,3, 'magnitude']:
             raise ValueError('The component can be either 1, 2, 3 or magnitude')
-        c_symb = 'U'+str(component)
-        c_index = component-1
+        if isinstance(component, int):
+            c_symb = 'U'+str(component)
+            c_index = component-1
+        else:
+            c_symb = component
+            c_index = None
 
         displacements, _ = self.get_displacements_sql(step)
         max_disp = self.get_max_displacement_sql(component=c_symb)
@@ -737,13 +787,21 @@ GROUP BY {};""".format(', '.join(labels),
             part = displacement['part']
             node = displacement['node']
             vector = displacement['vector']
+            if not c_index:
+                vector_magnitude = vector.length
+                max_disp_magnitude = max_disp['vector'].length
+                min_disp_magnitude = min_disp['vector'].length
+            else:
+                vector_magnitude = vector[c_index]
+                max_disp_magnitude = max_disp['vector'][c_index]
+                min_disp_magnitude = min_disp['vector'][c_index]
             if kwargs.get('bound', None):
-                if vector[c_index]>= max_disp['vector'][c_index]*kwargs['bound'] or vector[c_index] <= min_disp['vector'][c_index]*kwargs['bound']:
+                if vector_magnitude>= max_disp_magnitude*kwargs['bound'] or vector_magnitude <= min_disp_magnitude*kwargs['bound']:
                     color = Color.red()
                 else:
-                    color = cmap(vector[c_index], minval=min_disp['vector'][c_index], maxval=max_disp['vector'][c_index])
+                    color = cmap(vector_magnitude, minval=min_disp_magnitude, maxval=max_disp_magnitude)
             else:
-                color = cmap(vector[c_index], minval=min_disp['vector'][c_index], maxval=max_disp['vector'][c_index])
+                color = cmap(vector_magnitude, minval=min_disp_magnitude, maxval=max_disp_magnitude)
 
             pts.append(node.point)
             vectors.append(vector)
@@ -765,7 +823,7 @@ GROUP BY {};""".format(', '.join(labels),
             v.draw_nodes_vector(pts, vectors, colors)
 
         if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model, parts, draw_bcs)
+            v.draw_bcs(self.model)
 
         if kwargs.get('draw_loads', None):
             v.draw_loads(step, kwargs['draw_loads'])

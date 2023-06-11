@@ -58,13 +58,10 @@ class FEA2Viewer():
 
         self.app.view.camera.target = [3000, 3000, 100]
         self.app.view.camera.position = [7000, 7000, 5000]
-        self.app.view.camera.near = 10
+        self.app.view.camera.near = 1
         self.app.view.camera.far = 100000
         self.app.view.camera.scale = 1000
         self.app.view.grid.cell_size = 1000
-
-        # self.app.view.camera.position = (7000, 7000, 5000)
-        # self.app.view.camera.target = (3000, 3000, 0)
 
     def _scale_mesh(self, mesh):
         S = Scale.from_factors([self.scale_factor]*3)

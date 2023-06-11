@@ -924,56 +924,6 @@ Initial Conditions
 
         raise NotImplementedError
 
-    # ==============================================================================
-    # Viewer
-    # ==============================================================================
-    def show(self, width=1600, height=900, scale_factor=1., parts=None,
-             solid=True, draw_nodes=False, node_labels=False,
-             draw_bcs=1., draw_constraints=True, **kwargs):
-        """WIP
-
-        Parameters
-        ----------
-        width : int, optional
-            _description_, by default 1600
-        height : int, optional
-            _description_, by default 900
-        scale_factor : _type_, optional
-            _description_, by default 1.
-        parts : _type_, optional
-            _description_, by default None
-        solid : bool, optional
-            _description_, by default True
-        draw_nodes : bool, optional
-            _description_, by default False
-        node_labels : bool, optional
-            _description_, by default False
-        draw_bcs : _type_, optional
-            _description_, by default 1.
-        draw_constraints : bool, optional
-            _description_, by default True
-        """
-
-        from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.geometry import Point, Vector
-
-        parts = parts or self.parts
-
-        v = FEA2Viewer(width, height)
-
-        v.draw_parts(parts,
-                     draw_nodes,
-                     node_labels,
-                     solid)
-
-        if draw_bcs:
-            v.draw_bcs(self, parts, draw_bcs)
-
-        # if draw_constraints:
-        #     v.draw_constraint(self.constraints)
-
-        v.show()
-
     # =========================================================================
     #                       Problems methods
     # =========================================================================
@@ -1103,10 +1053,68 @@ Initial Conditions
 
     #@get_docstring(Problem)
     @problem_method
-    def get_min_displacement_sql(self, problem, step=None, component='length'):
+    def get_min_displacement_sql(self, problem, step=None, component='magnitude'):
         pass
 
     #@get_docstring(Problem)
     @problem_method
-    def get_displacement_at_nodes_sql(self, nodes, steps=None):
+    def get_displacement_at_nodes_sql(self, problem, nodes, steps=None):
+        pass
+
+    @problem_method
+    def get_displacement_at_point_sql(self, problem, point, steps=None):
+        pass
+
+    # ==============================================================================
+    # Viewer
+    # ==============================================================================
+    def show(self, width=1600, height=900, scale_factor=1., parts=None,
+             solid=True, draw_nodes=False, node_labels=False,
+             draw_bcs=1., draw_constraints=True, **kwargs):
+        """WIP
+
+        Parameters
+        ----------
+        width : int, optional
+            _description_, by default 1600
+        height : int, optional
+            _description_, by default 900
+        scale_factor : _type_, optional
+            _description_, by default 1.
+        parts : _type_, optional
+            _description_, by default None
+        solid : bool, optional
+            _description_, by default True
+        draw_nodes : bool, optional
+            _description_, by default False
+        node_labels : bool, optional
+            _description_, by default False
+        draw_bcs : _type_, optional
+            _description_, by default 1.
+        draw_constraints : bool, optional
+            _description_, by default True
+        """
+
+        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas.geometry import Point, Vector
+
+        parts = parts or self.parts
+
+        v = FEA2Viewer(width, height)
+
+        v.draw_parts(parts,
+                     draw_nodes,
+                     node_labels,
+                     solid)
+
+        if draw_bcs:
+            v.draw_bcs(self, parts, draw_bcs)
+
+        # if draw_constraints:
+        #     v.draw_constraint(self.constraints)
+
+        v.show()
+
+    @problem_method
+    def show_displacements(self, problem, *args, **kwargs):
         pass

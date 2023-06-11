@@ -322,7 +322,7 @@ Analysis folder path : {}
         return input_file
 
     def _check_analysis_path(self, path):
-        """check if the analysis path is correct
+        """Check the analysis path and adds the correct folder structure.
 
         Parameters
         ----------
@@ -334,11 +334,10 @@ Analysis folder path : {}
             Path where the input file will be saved.
         """
         if path:
-            if not isinstance(path, Path):
-                path = Path(path)
-            self.path = path.joinpath(self.name)
-        if not self.path:
-            raise AttributeError('You must provide a path')
+            self.model.path = path
+            self.path = self.model.path.joinpath(self.name)
+        if not self.path and not self.model.path:
+            raise AttributeError('You must provide a path for storing the model and the analysis results.')
         return self.path
 
     def analyse(self, path=None, *args, **kwargs):
@@ -367,6 +366,7 @@ Analysis folder path : {}
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
+    #FIXME check the funciton and 'memory only parameter
     def analyse_and_store(self, memory_only=False, *args, **kwargs):
         """Analyse the problem in the selected backend and stores the results in
         the model.
@@ -384,15 +384,6 @@ Analysis folder path : {}
         memory_only : bool, optional
             store the SQLITE database only in memory (no .db file will be saved),
             by default False
-
-        Raises
-        ------
-        ValueError
-            _description_
-        TypeError
-            _description_
-        ValueError
-            _description_
         """
         self.analyse(*args, **kwargs)
         self.convert_results_to_sqlite(*args, **kwargs)

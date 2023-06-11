@@ -8,7 +8,7 @@ import pathlib
 from typing import Callable, Iterable, Type
 import pint
 from itertools import groupby
-
+from pathlib import Path
 
 import os
 import pickle
@@ -71,6 +71,8 @@ class Model(FEAData):
         The sections assigned in the model.
     problems : Set[:class:`compas_fea2.problem._Problem]
         The problems added to the model.
+    path : ::class::`pathlib.Path`
+        Path to the main folder where the problems' results are stored.
     """
 
     def __init__(self, *, name=None, description=None, author=None, **kwargs):
@@ -85,6 +87,7 @@ class Model(FEAData):
         self._problems = set()
         self._results = {}
         self._loads = {}
+        self._path = None
 
     @property
     def parts(self):
@@ -130,6 +133,17 @@ class Model(FEAData):
     def loads(self):
         return self._loads
 
+    @property
+    def path(self):
+        return self._path
+    @path.setter
+    def path(self, value):
+        if not isinstance(value, Path):
+            try:
+                value = Path(value)
+            except:
+                raise ValueError('the path provided is not valid.')
+        self._path = value.joinpath(self.name)
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
@@ -182,7 +196,6 @@ class Model(FEAData):
         -------
         None
         """
-        from pathlib import Path
         if not isinstance(path, Path):
             path = Path(path)
         if not path.suffix == '.cfm':

@@ -11,7 +11,7 @@ class _Output(FEAData):
 
     Note
     ----
-    Outputs are registered to a :class:`compas_fea2.problem.Step`.
+    Outputs are registered to a :class:`compas_fea2.problem._Step`.
 
     Parameters
     ----------

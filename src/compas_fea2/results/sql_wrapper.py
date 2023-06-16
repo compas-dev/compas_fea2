@@ -1,6 +1,171 @@
 from operator import index
-import sqlite3
 import sqlalchemy as db
+
+from math import sqrt
+import os
+import sqlite3
+from sqlite3 import Error
+
+# TODO convert to sqlalchemy
+
+def create_connection_sqlite3(db_file=None):
+    """Create a database connection to the SQLite database specified by db_file.
+
+    Parameters
+    ----------
+    db_file : str, optional
+        Path to the .db file, by default 'None'. If not provided, the database
+        is run in memory.
+
+    Return
+    ------
+    :class:`sqlite3.Connection` | None
+        Connection object or None
+    """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file or ':memory:')
+    except Error as e:
+        print(e)
+    return conn
+
+
+def _create_table_sqlite3(conn, sql):
+    """Create a table from the create_table_sql statement.
+
+    Parameters
+    ----------
+    conn : :class:`sqlite3.Connection`
+        Connection to the database.
+    create_table_sql : str
+        A CREATE TABLE statement
+
+    Return
+    ------
+    None
+    """
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+    except Error as e:
+        print(e)
+
+def _insert_entry__sqlite3(conn, sql):
+    """General code to insert an entry in a table
+
+    Parameters
+    ----------
+    conn : _type_
+        _description_
+    sql : _type_
+        _description_
+
+    Return
+    ------
+    lastrowid
+    """
+    try:
+        c = conn.cursor()
+        c.execute(sql)
+    except Error as e:
+        print(e)
+        print(sql)
+        exit()
+    return c.lastrowid
+
+def create_field_description_table_sqlite3(conn):
+    """ Create the table containing general results information and field
+    descriptions.
+
+    Parameters
+    ----------
+    conn :
+
+    Return
+    ------
+    None
+    """
+    with conn:
+        sql = """CREATE TABLE IF NOT EXISTS fields (field text, description text, components text, invariants text, UNIQUE(field) );"""
+        _create_table_sqlite3(conn, sql)
+
+def insert_field_description_sqlite3(conn, field, description, components_names, invariants_names):
+    """ Create the table containing general results information and field
+    descriptions.
+
+    Parameters
+    ----------
+    conn : obj
+        Connection to the databse.
+    field : str
+        Name of the output field.
+    components_names : Iterable
+        Output field components names.
+    invariants_names : Iterable
+        Output field invariants names.
+
+    Return
+    ------
+    None
+    """
+    sql = """ INSERT OR IGNORE INTO fields VALUES ('{}', '{}', '{}', '{}')""".format(field,
+                                                                               description,
+                                                                               components_names,
+                                                                               invariants_names,
+                                                                               )
+
+    return _insert_entry__sqlite3(conn, sql)
+
+def create_field_table_sqlite3(conn, field, components_names):
+    """Create the results table for the given field.
+
+    Parameters
+    ----------
+    conn : obj
+        Connection to the databse.
+    field : str
+        Name of the output field.
+    components_names : Iterable
+        Output field components names.
+    invariants_names : Iterable
+        Output field invariants names.
+
+    Return
+    ------
+    None
+    """
+    # FOREIGN KEY (step) REFERENCES analysis_results (step_name),
+    with conn:
+        sql = """CREATE TABLE IF NOT EXISTS {} (step text, part text, type text, position text, key integer, {});""".format(
+            field, ', '.join(['{} float'.format(c) for c in components_names]))
+        _create_table_sqlite3(conn, sql)
+
+
+def insert_field_results_sqlite3(conn, field, node_results_data):
+    """Insert the results of the analysis at a node.
+
+    Parameters
+    ----------
+    conn : obj
+        Connection to the databse.
+    field : str
+        Name of the output field.
+    node_results_data : Iterable
+        Output field components values.
+
+    Return
+    ------
+    int
+        Index of the inserted item.
+    """
+
+    sql = """ INSERT INTO {} VALUES ({})""".format(field,
+                                                ', '.join(
+                                                    ["'"+str(c)+"'" for c in node_results_data])
+                                                )
+    return _insert_entry__sqlite3(conn, sql)
+
+
 
 
 def create_connection(db_file=None):
@@ -116,7 +281,7 @@ def get_field_results(engine, connection, metadata, table, test):
 if __name__ == '__main__':
     import os
     from pprint import pprint
-    engine, connection, metadata = create_connection(
+    engine, connection, metadata = create_connection_sqlite3(
         r'C:\Code\myRepos\swissdemo\data\q_5\output\1_0\ULS\ULS-results.db')
     # U = db.Table('U', metadata, autoload=True, autoload_with=engine)
     U = get_database_table(engine, metadata, 'U')

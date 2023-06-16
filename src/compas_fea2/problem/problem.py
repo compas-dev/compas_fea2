@@ -17,7 +17,7 @@ from compas_fea2.results.results import StepResults
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import step_method
 
-from compas_fea2.results.sql_wrapper import (create_connection,
+from compas_fea2.results.sql_wrapper import (create_connection_sqlite3,
                                              get_database_table,
                                              get_query_results,
                                              get_field_results,
@@ -492,7 +492,9 @@ Analysis folder path : {}
         """
         engine, connection, metadata = self.db_connection or self.connect_db(db_path)
         TABLE = get_database_table(engine, metadata, field)
-        test = [TABLE.columns.step == step.name, TABLE.columns.magnitude != 0.]
+        test = [TABLE.columns.step == step.name]
+        if hasattr(TABLE.columns, 'magnitude'):
+            test.append(TABLE.columns.magnitude != 0.)
         return get_field_results(engine, connection, metadata, TABLE, test)
 
     def _get_func_field_sql(self, func, field, steps=None, group_by=None, component='magnitude'):
@@ -513,8 +515,43 @@ GROUP BY {};""".format(', '.join(labels), field,
                        group_by)
         ResultProxy = connection.execute(sql)
         ResultSet = ResultProxy.fetchall()
-        disp, _ = self._get_vector_results((labels, ResultSet))
-        return disp
+        results = self._link_field_results_to_model((labels, ResultSet))
+        return results
+
+    def _link_field_results_to_model(self, ResultSet):
+        """Converts the values of the results string to actual parts, nodes and
+        elements of the model.
+
+        Parameters
+        ----------
+        ResultSet : _type_
+            _description_
+
+        Returns
+        -------
+        dict, class:`compas.geoemtry.Vector`
+            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        """
+        col_names = ResultSet[0]
+        values = ResultSet[1]
+        if not values:
+            raise ValueError('No results found')
+        results=[]
+        for row in values:
+            result={}
+            part = self.model.find_part_by_name(row[0])
+            if not part:
+                # try case insensitive match
+                part = self.model.find_part_by_name(row[0], casefold=True)
+            if not part:
+                print('Part {} not found in model'.format(row[0]))
+                continue
+            result['part']= part
+            result['node'] = part.find_node_by_key(row[2])
+            result['values'] = {col_names[i]: row[i] for i in range(3, len(row))}
+            results.append(result)
+        return results
+
 
     def _get_vector_results(self, ResultSet):
         """_summary_
@@ -713,6 +750,101 @@ GROUP BY {};""".format(', '.join(labels),
     #                         Viewer methods
     # =========================================================================
 
+    def show_field(self, field, component, step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
+        """_summary_
+
+        Parameters
+        ----------
+        component : int, optional
+            The component to display, by default 'magnitude'.
+            Choose among [1, 2, 3, 'magnitude']
+        step : :class:`compas_fea2.problem.Step`, optional
+            The step to show the results of, by default None.
+            if not provided, the last step of the analysis is used.
+        deformed : bool, optional
+            Choose if to display on the deformed configuration or not, by default False
+        width : int, optional
+            Width of the viewer window, by default 1600
+        height : int, optional
+            Height of the viewer window, by default 900
+        scale_factor : float, optional
+            Scale the model, by default 1.
+
+        Options
+        -------
+        draw_loads : float
+            Displays the loads at the step scaled by the given value
+        draw_bcs : float
+            Displays the bcs of the model scaled by the given value
+        bound : float
+            limit the results to the given value
+
+        Raises
+        ------
+        ValueError
+            _description_
+        """
+        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas.geometry import Point, Vector
+
+        from compas.colors import ColorMap, Color
+        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii')) #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+
+        if isinstance(component, int):
+            c_index = component-1
+        else:
+            c_index = None
+
+        if not step:
+            step = self._steps_order[-1]
+
+        _, col_val = self._get_field_results(field=field, step=step)
+
+        max_value = self._get_func_field_sql(func='MAX', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MAX({component})']
+        min_value = self._get_func_field_sql(func='MIN', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MIN({component})']
+
+        parts_gkey_vertex={}
+        parts_mesh={}
+        for part in self.model.parts:
+            if (mesh:= part.discretized_boundary_mesh):
+                colored_mesh = mesh.copy()
+                parts_gkey_vertex[part.name] = colored_mesh.gkey_key(compas_fea2.PRECISION)
+                parts_mesh[part.name] = colored_mesh
+            else:
+                raise AttributeError('Discretized boundary mesh not found')
+
+        colors = []
+
+        results = self._link_field_results_to_model(col_val)
+        for r in results:
+            part = r['part']
+            node = r['node']
+            value = r['values'][component]
+
+            if kwargs.get('bound', None):
+                if value>=kwargs['bound'] or value<=kwargs['bound']:
+                    color = Color.red()
+                else:
+                    color = cmap(value, minval=min_value, maxval=max_value)
+            else:
+                color = cmap(value, minval=min_value, maxval=max_value)
+            if node.gkey in parts_gkey_vertex[part.name]:
+                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][node.gkey], 'color', color)
+            colors.append(color)
+
+
+        v = FEA2Viewer(width, height)
+        for part in self.model.parts:
+            v.draw_mesh(parts_mesh[part.name])
+
+        if kwargs.get('draw_bcs', None):
+            v.draw_bcs(self.model)
+
+        if kwargs.get('draw_loads', None):
+            v.draw_loads(step, kwargs['draw_loads'])
+
+        v.show()
+
     def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
         """_summary_
 
@@ -836,9 +968,7 @@ GROUP BY {};""".format(', '.join(labels),
         from compas.geometry import Point, Vector
 
         from compas.colors import ColorMap, Color
-        cmap = ColorMap.from_mpl('viridis')
         v = FEA2Viewer(width, height)
-
 
         # TODO create a copy of the model first
         displacements, _ = self.get_displacements_sql(step)

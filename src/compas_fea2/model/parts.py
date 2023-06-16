@@ -231,13 +231,14 @@ number of nodes    : {}
             automatically.
 
         """
+        implementation = kwargs.get('implementation', None)
         part = cls(name, **kwargs)
 
         vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
 
         for face in mesh.faces():
             nodes = [vertex_node[vertex] for vertex in mesh.face_vertices(face)]
-            element = ShellElement(nodes=nodes, section=section)
+            element = ShellElement(nodes=nodes, section=section, implementation=implementation)
             part.add_element(element)
 
         part._boundary_mesh = mesh

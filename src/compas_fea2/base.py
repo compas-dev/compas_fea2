@@ -24,7 +24,7 @@ class FEAData(Data):
 
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, *args, **kwargs):
         """Base class for all FEA2 objects.
 
         Parameters

@@ -149,10 +149,10 @@ class _Step(FEAData):
         None
 
         """
-        from compas_fea2.results.sql_wrapper import create_connection, get_database_table, get_all_field_results
+        from compas_fea2.results.sql_wrapper import create_connection_sqlite3, get_database_table, get_all_field_results
         import sqlalchemy as db
 
-        engine, connection, metadata = create_connection(self.problem.path_results)
+        engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
         FIELDS = get_database_table(engine, metadata, 'fiedls')
         if not fields:
             field_column = FIELDS.query.all()

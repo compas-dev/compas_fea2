@@ -12,7 +12,7 @@ class _Load(FEAData):
 
     Note
     ----
-    Loads are registered to a :class:`compas_fea2.problem.Step`.
+    Loads are registered to a :class:`compas_fea2.problem.Pattern`.
 
     Parameters
     ----------
@@ -72,6 +72,21 @@ class _Load(FEAData):
         for k, v in value:
             setattr(self, k, v)
 
+    @property
+    def pattern(self):
+        return self._registration
+
+    @property
+    def step(self):
+        return self.pattern._registration
+
+    @property
+    def problem(self):
+        return self.step._registration
+
+    @property
+    def model(self):
+        return self.problem._registration
 
 class PointLoad(_Load):
     """Concentrated forces and moments [units:N, Nm] applied to node(s).

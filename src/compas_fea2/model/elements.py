@@ -6,10 +6,14 @@ from operator import itemgetter
 
 from compas.geometry import Frame
 from compas.geometry import Plane
-from compas_fea2.base import FEAData
+from compas.utilities import pairwise
+from compas.datastructures import Mesh
+from compas.geometry import Polygon
+from compas.datastructures import mesh_thicken
 
 import compas_fea2
-from compas.utilities import pairwise
+from compas_fea2.base import FEAData
+
 
 
 class _Element(FEAData):
@@ -220,6 +224,52 @@ class TieElement(TrussElement):
 # ==============================================================================
 # 2D elements
 # ==============================================================================
+
+class Face(FEAData):
+    """_summary_
+
+    Parameters
+    ----------
+    FEAData : _type_
+        _description_
+    """
+    def __init__(self, *, nodes, tag, element=None, name=None):
+        super(Face, self).__init__(name)
+        self._nodes = nodes
+        self._tag = tag
+        self._plane = Plane.from_three_points(*[node.xyz for node in nodes])  # TODO check when more than 3 nodes
+        self._registration = element
+        self._results = {}
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @property
+    def plane(self):
+        return self._plane
+
+    @property
+    def element(self):
+        return self._registration
+
+    @property
+    def results(self):
+        return self._results
+
+    @property
+    def polygon(self):
+        return Polygon([n.xyz for n in self.nodes])
+
+    @property
+    def area(self):
+        """The area property."""
+        return self.polygon.area
+
 class _Element2D(_Element):
     """Element with 2 dimensions.
     """
@@ -258,6 +308,11 @@ class _Element2D(_Element):
     @property
     def faces(self):
         return self._faces
+
+    @property
+    def volume(self):
+        return self._faces[0].area*self.section.t
+
 
     def _construct_faces(self, face_indices):
         """Construct the face-nodes dictionary.
@@ -313,41 +368,6 @@ class MembraneElement(_Element2D):
 # 3D elements
 # ==============================================================================
 
-class Face(FEAData):
-    """_summary_
-
-    Parameters
-    ----------
-    FEAData : _type_
-        _description_
-    """
-    def __init__(self, *, nodes, tag, element=None, name=None):
-        super(Face, self).__init__(name)
-        self._nodes = nodes
-        self._tag = tag
-        self._plane = Plane.from_three_points(*[node.xyz for node in nodes])  # TODO check when more than 3 nodes
-        self._registration = element
-        self._results = {}
-
-    @property
-    def nodes(self):
-        return self._nodes
-
-    @property
-    def tag(self):
-        return self._tag
-
-    @property
-    def plane(self):
-        return self._plane
-
-    @property
-    def element(self):
-        return self._registration
-
-    @property
-    def results(self):
-        return self._results
 
 # TODO add picture with node lables convention
 

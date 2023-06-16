@@ -36,6 +36,7 @@ class Pattern(FEAData):
         """
         super(Pattern, self).__init__(name, **kwargs)
         self._load = value
+        value._registration = self
         self._distribution = distribution
 
     # def __add__(self, other):
@@ -54,3 +55,15 @@ class Pattern(FEAData):
     @property
     def distribution(self):
         return self._distribution
+
+    @property
+    def step(self):
+        return self._registration
+
+    @property
+    def problem(self):
+        return self.step._registration
+
+    @property
+    def model(self):
+        return self.problem._registration

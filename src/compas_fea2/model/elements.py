@@ -241,6 +241,7 @@ class _Element2D(_Element):
         self._faces = None
         self._face_indices = None
         self._rigid = rigid
+        self._implementation = implementation
 
     @property
     def nodes(self):
@@ -325,7 +326,7 @@ class Face(FEAData):
         super(Face, self).__init__(name)
         self._nodes = nodes
         self._tag = tag
-        self._plane = Plane.from_three_points(*[node.xyz for node in nodes])  # TODO check when more than 3 nodes
+        self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
         self._registration = element
         self._results = {}
 

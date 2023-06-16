@@ -1,6 +1,6 @@
 compas>=1.0
+compas_gmsh
 Click
-gmsh
 pint
 python-dotenv
 sqlalchemy

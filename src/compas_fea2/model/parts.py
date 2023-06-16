@@ -313,6 +313,7 @@ number of nodes    : {}
         split = kwargs.get('split', False)
         verbose = kwargs.get('verbose', False)
         rigid = kwargs.get('rigid', False)
+        implementation = kwargs.get('implementation', None)
 
         dimension = 2 if isinstance(section, SolidSection) else 1
 
@@ -326,12 +327,14 @@ number of nodes    : {}
             if ntags.size == 3:
                 k = part.add_element(ShellElement(nodes=element_nodes,
                                                   section=section,
-                                                  rigid=rigid))
+                                                  rigid=rigid,
+                                                  implementation=implementation))
             elif ntags.size == 4:
                 if isinstance(section, ShellSection):
                     k = part.add_element(ShellElement(nodes=element_nodes,
                                                       section=section,
-                                                      rigid=rigid))
+                                                      rigid=rigid,
+                                                      implementation=implementation))
                 else:
                     k = part.add_element(TetrahedronElement(nodes=element_nodes,
                                                             section=section))

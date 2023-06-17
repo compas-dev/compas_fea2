@@ -17,11 +17,8 @@ from compas_fea2.results.results import StepResults
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import step_method
 
-from compas_fea2.results.sql_wrapper import (create_connection_sqlite3,
-                                             get_database_table,
-                                             get_query_results,
-                                             get_field_results,
-                                             get_field_labels)
+from compas_fea2.results import NodeFieldResults
+
 
 from compas.geometry import Point, Plane
 from compas.geometry import Vector
@@ -417,34 +414,7 @@ Analysis folder path : {}
     # =========================================================================
     #                         Results methods - general
     # =========================================================================
-    def connect_db(self, path_db=None):
-        # typing: (str) -> str
-        """Create a connection to the SWLite database.
 
-        Parameters
-        ----------
-        path_db : path, optional
-            path to the SQLite database, by default None
-
-        Returns
-        -------
-        :class:`sqlite3.Engine` | :class:`sqlite3.Connection` | :class:`sqlite3.Metadata`
-            engine, connection, metadata
-        """
-        from compas_fea2.results.sql_wrapper import create_connection
-
-        self._db_connection = create_connection(path_db or self.path_db)
-        return self._db_connection
-
-    def convert_results_to_sqlite(self, *args, **kwargs):
-        """Convert the backend native results database into a sqlite database.
-
-        Raises
-        ------
-        NotImplementedError
-            This method is implemented only at the backend level.
-        """
-        raise NotImplementedError("this function is not available for the selected backend")
 
     @timer(message='Problem results copied in the model in ')
     def store_results_in_model(self, database_path=None, database_name=None, steps=None, fields=None, *args, **kwargs):
@@ -474,117 +444,6 @@ Analysis folder path : {}
             self.convert_results_to_sqlite(*args, **kwargs)
         for step in steps or self.steps:
             step._store_results_in_model(databse_full_path, fields)
-
-    def _get_field_results(self, field, step, db_path=None):
-        """_summary_
-
-        Parameters
-        ----------
-        field : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        engine, connection, metadata = self.db_connection or self.connect_db(db_path)
-        TABLE = get_database_table(engine, metadata, field)
-        test = [TABLE.columns.step == step.name]
-        # if hasattr(TABLE.columns, 'magnitude'):
-        #     test.append(TABLE.columns.magnitude != 0.)
-        return get_field_results(engine, connection, metadata, TABLE, test)
-
-    def _get_func_field_sql(self, func, field, steps=None, group_by=None, component='magnitude'):
-        """
-        """
-        if not steps:
-            steps = [self._steps_order[-1]]
-        engine, connection, metadata = self.db_connection or self.connect_db()
-        components = get_field_labels(engine, connection, metadata, field, 'components')
-        invariants = get_field_labels(engine, connection, metadata, field, 'invariants')
-        labels = ['part', 'position', 'key']+components+invariants
-        labels[labels.index(component)] = '{}({})'.format(func, component)
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({})
-GROUP BY {};""".format(', '.join(labels), field,
-                       ', '.join(["'{}'".format(step.name) for step in steps]),
-                       group_by)
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        results = self._link_field_results_to_model((labels, ResultSet))
-        return results
-
-    def _link_field_results_to_model(self, ResultSet):
-        """Converts the values of the results string to actual parts, nodes and
-        elements of the model.
-
-        Parameters
-        ----------
-        ResultSet : _type_
-            _description_
-
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-        """
-        col_names = ResultSet[0]
-        values = ResultSet[1]
-        if not values:
-            raise ValueError('No results found')
-        results=[]
-        for row in values:
-            result={}
-            part = self.model.find_part_by_name(row[0])
-            if not part:
-                # try case insensitive match
-                part = self.model.find_part_by_name(row[0], casefold=True)
-            if not part:
-                print('Part {} not found in model'.format(row[0]))
-                continue
-            result['part']= part
-            result['node'] = part.find_node_by_key(row[2])
-            result['values'] = {col_names[i]: row[i] for i in range(3, len(row))}
-            results.append(result)
-        return results
-
-
-    def _get_vector_results(self, ResultSet):
-        """_summary_
-
-        Parameters
-        ----------
-        ResultSet : _type_
-            _description_
-
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-        """
-        col_names = ResultSet[0]
-        values = ResultSet[1]
-        if not values:
-            raise ValueError('No results found')
-        results=[]
-        for row in values:
-            result={}
-            part = self.model.find_part_by_name(row[0])
-            if not part:
-                # try case insensitive match
-                part = self.model.find_part_by_name(row[0], casefold=True)
-            if not part:
-                print('Part {} not found in model'.format(row[0]))
-                continue
-            result['part']= part
-            result['node'] = part.find_node_by_key(row[2])
-            result['vector'] = Vector(*[row[i] for i in range(3,6)])
-            results.append(result)
-        return results, Vector(*sum_vectors([r['vector'] for r in results]))
 
     # =========================================================================
     #                         Results methods - reactions
@@ -630,127 +489,133 @@ GROUP BY {};""".format(', '.join(labels), field,
     #                         Results methods - displacements
     # =========================================================================
 
-    def get_displacements_sql(self, step=None):
-        """Retrieve all nodal dispacements from the SQLite database.
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem._Step`, optional
-            The step of the analysis to get the results from, by default ``None``.
-            If not provided, the last step of the problem is used.
+    # def get_displacements_sql(self, step=None):
+    #     """Retrieve all nodal dispacements from the SQLite database.
+    #     Parameters
+    #     ----------
+    #     step : :class:`compas_fea2.problem._Step`, optional
+    #         The step of the analysis to get the results from, by default ``None``.
+    #         If not provided, the last step of the problem is used.
 
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-        """
-        if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results('U', step)
-        return self._get_vector_results(col_val)
+    #     Returns
+    #     -------
+    #     dict, class:`compas.geoemtry.Vector`
+    #         Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+    #     """
+    #     if not step:
+    #         step = self._steps_order[-1]
+    #     _, col_val = self._get_field_results('U', step)
+    #     return self._get_vector_results(col_val)
 
-    def get_max_displacement_sql(self, component='U3', steps=None, group_by='step'):
-        """_summary_
 
-        Parameters
-        ----------
-        component : str, optional
-            _description_, by default 'U3'
-        steps : _type_, optional
-            _description_, by default None
-        group_by : str, optional
-            _description_, by default 'step'
 
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        return self._get_func_field_sql(func='MAX', field='U', steps=steps, group_by=group_by, component=component)[0]
 
-    def get_min_displacement_sql(self, component='U3', steps=None, group_by='step'):
-        """_summary_
-
-        Parameters
-        ----------
-        component : str, optional
-            _description_, by default 'U3'
-        steps : _type_, optional
-            _description_, by default None
-        group_by : str, optional
-            _description_, by default 'step'
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        return self._get_func_field_sql(func='MIN', field='U', steps=steps, group_by=group_by, component=component)[0]
-
-    def get_displacement_at_nodes_sql(self, nodes, steps=None, group_by=['step', 'part']):
-        """Get the displacement of a list of :class:`compas_fea2.model.Node`.
-
-        Parameters
-        ----------
-        node : :class:`compas_fea2.model.Node` | [:class:`compas_fea2.model.Node`]
-            The node or the nodes where to retrieve the displacmeent
-        steps : _type_, optional
-            _description_, by default None
-
-        Return
-        ------
-        dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-        """
-        if not isinstance(nodes, Iterable):
-            nodes = [nodes]
-        if not steps:
-            steps = [self._steps_order[-1]]
-        field = 'U'
-        group_by = 'step'
-        engine, connection, metadata = self.db_connection or self.connect_db()
-        components = get_field_labels(engine, connection, metadata, field, 'components')
-        invariants = get_field_labels(engine, connection, metadata, field, 'invariants')
-        labels = ['part', 'position', 'key']+components+invariants
-
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({}) AND key  in ({})
-GROUP BY {};""".format(', '.join(labels),
-                       field,
-                       ', '.join(["'{}'".format(step.name) for step in steps]),
-                       ', '.join(["'{}'".format(node.key) for node in nodes]),
-                       group_by)
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        disp, _ = self._get_vector_results((labels,ResultSet))
-        return disp
-
-    def get_displacement_at_point(self, point, distance, plane=None, steps=None, group_by=['step', 'part']):
-        """Get the displacement of the model around a location (point).
-
-        Parameters
-        ----------
-        point : [float]
-            The coordinates of the point.
-        steps : _type_, optional
-            _description_, by default None
-
-        Return
-        ------
-        dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-        """
-        if not steps:
-            steps = [self._steps_order[-1]]
-        node = self.model.find_node_by_location(point, distance, plane=None)
-        return self.get_displacement_at_nodes(nodes=[node], steps=steps, group_by=group_by)
 
 
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
 
-    def show_nodes_field(self, field, component, step=None, width=1600, height=900, **kwargs):
+    # def show_nodes_vector(self, field, scale_factor=0.001, step=None, width=1600, height=900, **kwargs):
+    #     """Display a vecotr field plot of a given field. The field must
+    #     de defined at the nodes of the model (e.g displacement field).
+
+    #     Parameters
+    #     ----------
+    #     field : str
+    #         The field to display, e.g. 'U' for displacements.
+    #         Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+    #         valid components.
+    #     component : str
+    #         The compoenet of the field to display, e.g. 'U3' for displacements
+    #         along the 3 axis.
+    #         Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+    #         valid components.
+    #     step : :class:`compas_fea2.problem.Step`, optional
+    #         The step to show the results of, by default None.
+    #         if not provided, the last step of the analysis is used.
+    #     deformed : bool, optional
+    #         Choose if to display on the deformed configuration or not, by default False
+    #     width : int, optional
+    #         Width of the viewer window, by default 1600
+    #     height : int, optional
+    #         Height of the viewer window, by default 900
+
+    #     Options
+    #     -------
+    #     draw_loads : float
+    #         Displays the loads at the step scaled by the given value
+    #     draw_bcs : float
+    #         Displays the bcs of the model scaled by the given value
+    #     bound : float
+    #         limit the results to the given value
+
+    #     Raises
+    #     ------
+    #     ValueError
+    #         _description_
+    #     """
+    #     from compas_fea2.UI.viewer import FEA2Viewer
+    #     from compas.colors import ColorMap, Color
+    #     cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
+    #     #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+
+    #     # Get values
+    #     if not step:
+    #         step = self._steps_order[-1]
+    #     _, col_val = self._get_field_results(field=field, step=step)
+    #     max_value = self._get_func_field_sql(func='MAX', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MAX({component})']
+    #     min_value = self._get_func_field_sql(func='MIN', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MIN({component})']
+
+    #     # Set the bounding limits
+    #     if kwargs.get('bound', None):
+    #         if not isinstance(kwargs['bound'], Iterable) or len(kwargs['bound'])!=2:
+    #             raise ValueError('You need to provide an upper and lower bound -> (lb, up)')
+    #         if kwargs['bound'][0]>kwargs['bound'][1]:
+    #             kwargs['bound'][0], kwargs['bound'][1] = kwargs['bound'][1], kwargs['bound'][0]
+
+    #     # Color the mesh
+    #     results = self._link_field_results_to_model(col_val)
+    #     if len(results)!=len(self.model.nodes):
+    #         raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
+    #     pts = []
+    #     vectors = []
+    #     for r in results:
+    #         part = r['part']
+    #         node = r['node']
+    #         value = r['values'][component]
+    #         vector = Vector(x=pattern.load.components['x'] or 0.,
+    #                         y=pattern.load.components['y'] or 0.,
+    #                         z=pattern.load.components['z'] or 0.)
+    #         if min_value - max_value == 0.:
+    #             color = Color.red()
+    #         elif kwargs.get('bound', None):
+    #             if value>=kwargs['bound'] or value<=kwargs['bound']:
+    #                 color = Color.red()
+    #             else:
+    #                 color = cmap(value, minval=min_value, maxval=max_value)
+    #         else:
+    #             color = cmap(value, minval=min_value, maxval=max_value)
+
+    #         if vector.length == 0:
+    #             continue
+    #         pts.append(node.point)
+    #         vectors.append(vector.scaled(scale_factor))
+
+    #     # Display results
+    #     v = FEA2Viewer(width, height)
+    #     for part in self.model.parts:
+    #         v.draw_mesh(parts_mesh[part.name])
+
+    #     if kwargs.get('draw_bcs', None):
+    #         v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
+
+    #     if kwargs.get('draw_loads', None):
+    #         v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+
+    #     v.show()
+
+    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -794,13 +659,6 @@ GROUP BY {};""".format(', '.join(labels),
         cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
         #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
 
-        # Get values
-        if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results(field=field, step=step)
-        max_value = self._get_func_field_sql(func='MAX', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MAX({component})']
-        min_value = self._get_func_field_sql(func='MIN', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MIN({component})']
-
         # Get mesh
         parts_gkey_vertex={}
         parts_mesh={}
@@ -819,26 +677,26 @@ GROUP BY {};""".format(', '.join(labels),
             if kwargs['bound'][0]>kwargs['bound'][1]:
                 kwargs['bound'][0], kwargs['bound'][1] = kwargs['bound'][1], kwargs['bound'][0]
 
+        # Get values
+        if not step:
+            step = self._steps_order[-1]
+        field = NodeFieldResults(field_name, step)
+        min_value = field._min_components[component].components[f'MIN({component})']
+        max_value = field._max_components[component].components[f'MAX({component})']
+
         # Color the mesh
-        results = self._link_field_results_to_model(col_val)
-        if len(results)!=len(self.model.nodes):
-            print(len(results), len(self.model.nodes))
-            raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
-        for r in results:
-            part = r['part']
-            node = r['node']
-            value = r['values'][component]
+        for r in field.results:
             if min_value - max_value == 0.:
                 color = Color.red()
             elif kwargs.get('bound', None):
-                if value>=kwargs['bound'] or value<=kwargs['bound']:
+                if r.components[component]>=kwargs['bound'] or r.components[component]<=kwargs['bound']:
                     color = Color.red()
                 else:
-                    color = cmap(value, minval=min_value, maxval=max_value)
+                    color = cmap(r.components[component], minval=min_value, maxval=max_value)
             else:
-                color = cmap(value, minval=min_value, maxval=max_value)
-            if node.gkey in parts_gkey_vertex[part.name]:
-                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][node.gkey], 'color', color)
+                color = cmap(r.components[component], minval=min_value, maxval=max_value)
+            if r.location.gkey in parts_gkey_vertex[part.name]:
+                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], 'color', color)
 
         # Display results
         v = FEA2Viewer(width, height)
@@ -889,13 +747,13 @@ GROUP BY {};""".format(', '.join(labels),
             "The style can be either 'vector' or 'contour'"
         """
         if style == 'contour':
-            self.show_nodes_field(field='U', component=component, step=step, width=width, height=height, **kwargs)
+            self.show_nodes_field(field_name='U', component=component, step=step, width=width, height=height, **kwargs)
         elif style == 'vector':
             raise NotImplementedError('WIP')
         else:
             raise ValueError("The style can be either 'vector' or 'contour'")
 
-    def show_deformed(self, step=None, width=1600, height=900, scale_factor=1.):
+    def show_deformed(self, step=None, width=1600, height=900, scale_factor=1., **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -917,12 +775,18 @@ GROUP BY {};""".format(', '.join(labels),
 
         from compas.colors import ColorMap, Color
         v = FEA2Viewer(width, height)
-
+        if not step:
+            step=self.steps_order[-1]
         # TODO create a copy of the model first
-        displacements, _ = self.get_displacements_sql(step)
-        for displacement in displacements:
-            vector = displacement['vector']
-            vector.scale(scale_factor)
-            displacement['node'].xyz = sum_vectors([Vector(*displacement['node'].xyz), vector])
+        displacements = NodeFieldResults('U', step)
+        for displacement in displacements.results:
+            vector = displacement.vector.scaled(scale_factor)
+            displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
         v.draw_parts(self.model.parts, solid=True)
+
+        if kwargs.get('draw_bcs', None):
+            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
+
+        if kwargs.get('draw_loads', None):
+            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
         v.show()

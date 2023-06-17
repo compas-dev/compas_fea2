@@ -16,12 +16,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .results import Results, StepResults
-from.sql_wrapper import (create_connection_sqlite3,
+from .results import Results, StepResults, NodeFieldResults
+from .sql_wrapper import (create_connection_sqlite3,
                          get_database_table,
                          )
 
 __all__ = [
     'Results',
-    'StepResults'
+    'StepResults',
+    'DisplacementFieldResults'
 ]

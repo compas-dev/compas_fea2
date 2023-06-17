@@ -12,7 +12,6 @@ from unittest import result
 from compas_fea2.base import FEAData
 from compas_fea2.problem.steps.step import _Step
 from compas_fea2.job.input_file import InputFile
-from compas_fea2.results.results import StepResults
 
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import step_method
@@ -489,131 +488,51 @@ Analysis folder path : {}
     #                         Results methods - displacements
     # =========================================================================
 
-    # def get_displacements_sql(self, step=None):
-    #     """Retrieve all nodal dispacements from the SQLite database.
-    #     Parameters
-    #     ----------
-    #     step : :class:`compas_fea2.problem._Step`, optional
-    #         The step of the analysis to get the results from, by default ``None``.
-    #         If not provided, the last step of the problem is used.
+   # TODO add moments
+    def get_total_reaction(self):
+        reactions_forces = []
+        for part in self.step.problem.model.parts:
+            for node in part.nodes:
+                rf = node.results[[self.problem]][self.step].get("RF", None)
+                if rf:
+                    x, y, z = rf
+                    vector = Vector(x=x, y=y, z=z)
+                    if vector.length == 0:
+                        continue
+                    reactions_forces.append(vector)
+        return sum_vectors(reactions_forces)
 
-    #     Returns
-    #     -------
-    #     dict, class:`compas.geoemtry.Vector`
-    #         Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-    #     """
-    #     if not step:
-    #         step = self._steps_order[-1]
-    #     _, col_val = self._get_field_results('U', step)
-    #     return self._get_vector_results(col_val)
+    def get_total_moment(self):
+        raise NotImplementedError()
 
+    def get_deformed_model(self, step=None, **kwargs):
+        from copy import deepcopy
+        if not step:
+            step=self.steps_order[-1]
 
+        deformed_model = deepcopy(self.model)
+        # # # TODO create a copy of the model first
+        # displacements = NodeFieldResults('U', step)
+        # for displacement in displacements.results:
+        #     vector = displacement.vector.scaled(scale_factor)
+        #     node = deformed_model.find_node_by_key
+        #     displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
+        # # TODO copy model first
+        # for part in self.step.problem.model.parts:
+        #     for node in part.nodes:
+        #         original_node = node.xyz
+        #         x, y, z = node.results[self.step.name]["U"]
+        #         node.x += x * scale
+        #         node.y += y * scale
+        #         node.z += z * scale
 
+        return deformed_model
 
 
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-
-    # def show_nodes_vector(self, field, scale_factor=0.001, step=None, width=1600, height=900, **kwargs):
-    #     """Display a vecotr field plot of a given field. The field must
-    #     de defined at the nodes of the model (e.g displacement field).
-
-    #     Parameters
-    #     ----------
-    #     field : str
-    #         The field to display, e.g. 'U' for displacements.
-    #         Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-    #         valid components.
-    #     component : str
-    #         The compoenet of the field to display, e.g. 'U3' for displacements
-    #         along the 3 axis.
-    #         Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-    #         valid components.
-    #     step : :class:`compas_fea2.problem.Step`, optional
-    #         The step to show the results of, by default None.
-    #         if not provided, the last step of the analysis is used.
-    #     deformed : bool, optional
-    #         Choose if to display on the deformed configuration or not, by default False
-    #     width : int, optional
-    #         Width of the viewer window, by default 1600
-    #     height : int, optional
-    #         Height of the viewer window, by default 900
-
-    #     Options
-    #     -------
-    #     draw_loads : float
-    #         Displays the loads at the step scaled by the given value
-    #     draw_bcs : float
-    #         Displays the bcs of the model scaled by the given value
-    #     bound : float
-    #         limit the results to the given value
-
-    #     Raises
-    #     ------
-    #     ValueError
-    #         _description_
-    #     """
-    #     from compas_fea2.UI.viewer import FEA2Viewer
-    #     from compas.colors import ColorMap, Color
-    #     cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
-    #     #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
-
-    #     # Get values
-    #     if not step:
-    #         step = self._steps_order[-1]
-    #     _, col_val = self._get_field_results(field=field, step=step)
-    #     max_value = self._get_func_field_sql(func='MAX', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MAX({component})']
-    #     min_value = self._get_func_field_sql(func='MIN', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MIN({component})']
-
-    #     # Set the bounding limits
-    #     if kwargs.get('bound', None):
-    #         if not isinstance(kwargs['bound'], Iterable) or len(kwargs['bound'])!=2:
-    #             raise ValueError('You need to provide an upper and lower bound -> (lb, up)')
-    #         if kwargs['bound'][0]>kwargs['bound'][1]:
-    #             kwargs['bound'][0], kwargs['bound'][1] = kwargs['bound'][1], kwargs['bound'][0]
-
-    #     # Color the mesh
-    #     results = self._link_field_results_to_model(col_val)
-    #     if len(results)!=len(self.model.nodes):
-    #         raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
-    #     pts = []
-    #     vectors = []
-    #     for r in results:
-    #         part = r['part']
-    #         node = r['node']
-    #         value = r['values'][component]
-    #         vector = Vector(x=pattern.load.components['x'] or 0.,
-    #                         y=pattern.load.components['y'] or 0.,
-    #                         z=pattern.load.components['z'] or 0.)
-    #         if min_value - max_value == 0.:
-    #             color = Color.red()
-    #         elif kwargs.get('bound', None):
-    #             if value>=kwargs['bound'] or value<=kwargs['bound']:
-    #                 color = Color.red()
-    #             else:
-    #                 color = cmap(value, minval=min_value, maxval=max_value)
-    #         else:
-    #             color = cmap(value, minval=min_value, maxval=max_value)
-
-    #         if vector.length == 0:
-    #             continue
-    #         pts.append(node.point)
-    #         vectors.append(vector.scaled(scale_factor))
-
-    #     # Display results
-    #     v = FEA2Viewer(width, height)
-    #     for part in self.model.parts:
-    #         v.draw_mesh(parts_mesh[part.name])
-
-    #     if kwargs.get('draw_bcs', None):
-    #         v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
-
-    #     if kwargs.get('draw_loads', None):
-    #         v.draw_loads(step, scale_factor=kwargs['draw_loads'])
-
-    #     v.show()
 
     def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, **kwargs):
         """Display a contour plot of a given field and component. The field must

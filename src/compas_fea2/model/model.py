@@ -151,6 +151,13 @@ class Model(FEAData):
         for part in self.parts:
             node_set.update(part.nodes)
         return node_set
+
+    @property
+    def elements(self):
+        element_set=set()
+        for part in self.parts:
+            element_set.update(part.elements)
+        return element_set
     # =========================================================================
     #                       Constructor methods
     # =========================================================================

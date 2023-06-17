@@ -55,112 +55,8 @@ class Results(FEAData):
         return self.vector.length
 
 
-
-    # ==========================================================================
-    # Constructors
-    # ==========================================================================
-
-    # ==========================================================================
-    # Extract results
-    # ==========================================================================
-
     def to_file(self, *args, **kwargs):
         raise NotImplementedError("this function is not available for the selected backend")
-
-
-class StepResults(FEAData):
-    """Results object for a single step.
-
-    Note
-    ----
-    StepResults are registered to a :class:`compas_fea2.problem.Step`.
-
-    Parameters
-    ----------
-    step : :class:`compas_fea2.problem._Step`
-        The analysis step.
-    model : :class:`compas_fea2.model.Model`
-        Copy of the original model. This is used to store the results and to
-        generate the deformed shape.
-
-    """
-
-    def __init__(self, name=None, **kwargs):
-        super(StepResults, self).__init__(name=name, **kwargs)
-
-    @property
-    def step(self):
-        return self._registration
-
-    @property
-    def problem(self):
-        return self.step_registration
-
-    @property
-    def model(self):
-        return self.problem._registration
-
-    def _copy_results_in_model(self, results, fields=None):
-        """Copy the results for the step in the model object at the nodal and
-        element level.
-
-        Parameters
-        ----------
-        database_path : _type_
-            _description_
-        database_name : _type_
-            _description_
-        file_format : str, optional
-            _description_, by default 'pkl'
-        fields : _type_, optional
-            Fields results to save, by default `None` (all available fields are saved)
-        """
-        step_results = results[self.step.name]
-
-        # Get part results
-        for part_name, part_results in step_results:
-            # Get node/element results
-            for result_type, node_elements_results in part_results.items():
-                if result_type not in ["nodes", "elements"]:
-                    continue
-                node_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
-                # Get field results
-                for key, res_field in node_elements_results.items():
-                    if not fields or res_field in fields:
-                        node_element = list(filter(lambda n_e: n_e.key == int(key), node_elements))[0]
-                        node_element._results.setdefault(self.problem, {})[self.step] = res_field
-
-    # TODO add moments
-    def get_total_reaction(self):
-        reactions_forces = []
-        for part in self.step.problem.model.parts:
-            for node in part.nodes:
-                rf = node.results[[self.problem]][self.step].get("RF", None)
-                if rf:
-                    x, y, z = rf
-                    vector = Vector(x=x, y=y, z=z)
-                    if vector.length == 0:
-                        continue
-                    reactions_forces.append(vector)
-        return sum_vectors(reactions_forces)
-
-    def get_total_moment(self):
-        raise NotImplementedError()
-
-    def get_deformed_model(self, scale, **kwargs):
-        from compas.geometry import distance_point_point_sqrd
-
-        # TODO copy model first
-        for part in self.step.problem.model.parts:
-            for node in part.nodes:
-                original_node = node.xyz
-                x, y, z = node.results[self.step.name]["U"]
-                node.x += x * scale
-                node.y += y * scale
-                node.z += z * scale
-
-        return self.model
-
 
 class FieldResults(FEAData):
     def __init__(self, field_name, step, name=None, *args, **kwargs):
@@ -194,6 +90,7 @@ class FieldResults(FEAData):
     @db_connection.setter
     def db_connection(self, path_db):
         self._db_connection = create_connection(path_db)
+
 
     def _get_field_results(self, field):
         """_summary_

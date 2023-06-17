@@ -167,19 +167,19 @@ class _Part(FEAData):
         return element_types
 
 
-    def __str__(self):
-        return """
-{}
-{}
-name : {}
+#     def __str__(self):
+#         return """
+# {}
+# {}
+# name : {}
 
-number of elements : {}
-number of nodes    : {}
-""".format(self.__class__.__name__,
-           len(self.__class__.__name__) * '-',
-           self.name,
-           self.elements_count,
-           self.nodes_count)
+# number of elements : {}
+# number of nodes    : {}
+# """.format(self.__class__.__name__,
+#            len(self.__class__.__name__) * '-',
+#            self.name,
+#            self.elements_count,
+#            self.nodes_count)
 
     # =========================================================================
     #                       Constructor methods

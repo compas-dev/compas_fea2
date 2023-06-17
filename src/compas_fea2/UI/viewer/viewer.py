@@ -196,20 +196,17 @@ class FEA2Viewer():
             bcs_collection = []
             if not parts:
                 parts = model.parts
-            for part, bc_node in model.bcs.items():
-                if part in parts:
-                    for bc, nodes in bc_node.items():
-                        pts = [node.point for node in nodes]
-                        for pt in pts:
-                            xyz = [pt.x, pt.y, pt.z]
-                            if isinstance(bc, PinnedBC):
-                                bcs_collection.append(PinBCShape(xyz, scale=scale_factor).shape)
-                            if isinstance(bc, FixedBC):
-                                bcs_collection.append(FixBCShape(xyz, scale=scale_factor).shape)
+            for bc, nodes in model.bcs.items():
+                for node in nodes:
+                    if node.part in parts:
+                        if isinstance(bc, PinnedBC):
+                            bcs_collection.append(PinBCShape(node.xyz, scale=scale_factor).shape)
+                        if isinstance(bc, FixedBC):
+                            bcs_collection.append(FixBCShape(node.xyz, scale=scale_factor).shape)
             if bcs_collection:
                 self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
 
-    def draw_loads(self, step, scale_factor=1.):
+    def draw_loads(self, step, scale_factor=1., app_point='end'):
         """Draw the applied loads for given steps.
 
         Parameters
@@ -220,7 +217,6 @@ class FEA2Viewer():
             Scale the loads reppresentation to have a nicer drawing,
             by default 1.
         """
-
         if isinstance(step, _GeneralStep):
             for pattern in step._patterns:
                 if isinstance(pattern.load, PointLoad):
@@ -229,21 +225,35 @@ class FEA2Viewer():
                                     z=pattern.load.components['z'] or 0.)
                     if vector.length == 0:
                         continue
-                    pts = [node.point for node in pattern.distribution]
-                    # TODO add moment components xx, yy, zz
                     vector.scale(scale_factor)
+                    if app_point=='end':
+                        pts = [[node.x-vector.x, node.y-vector.y, node.z-vector.z] for node in pattern.distribution]
+                    else:
+                        pts = [node.point for node in pattern.distribution]
+                    # TODO add moment components xx, yy, zz
                     vectors = [vector] * len(pts)
-                    self.draw_nodes_vector(pts, vectors)
+                    self.draw_nodes_vector(pts, vectors, scale_factor=scale_factor)
                 else:
                     print("WARNING! Only point loads are currently supported!")
 
-    def draw_nodes_vector(self, pts, vectors, colors=(0, 1, 0)):
+    def draw_nodes_vector(self, pts, vectors, colors=(0, 1, 0), scale_factor=1.):
+        """Draw vector arrows at nodes.
+
+        Parameters
+        ----------
+        pts : _type_
+            _description_
+        vectors : _type_
+            _description_
+        colors : tuple, optional
+            _description_, by default (0, 1, 0)
+        """
         arrows = []
         arrows_properties = []
         for pt, vector, color in zip(pts, vectors, colors):
             arrows.append(Arrow(pt, vector,
-                                head_portion=200, head_width=70, body_width=20))
-            arrows_properties.append({"u": 3,
+                                head_portion=3*scale_factor, head_width=0.5*scale_factor, body_width=0.25*scale_factor))
+            arrows_properties.append({"u": 30,
                                       "show_lines": False,
                                       "facecolor": color})
         if arrows:

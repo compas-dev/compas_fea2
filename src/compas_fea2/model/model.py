@@ -144,6 +144,13 @@ class Model(FEAData):
             except:
                 raise ValueError('the path provided is not valid.')
         self._path = value.joinpath(self.name)
+
+    @property
+    def nodes(self):
+        node_set=set()
+        for part in self.parts:
+            node_set.update(part.nodes)
+        return node_set
     # =========================================================================
     #                       Constructor methods
     # =========================================================================

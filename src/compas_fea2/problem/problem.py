@@ -493,8 +493,8 @@ Analysis folder path : {}
         engine, connection, metadata = self.db_connection or self.connect_db(db_path)
         TABLE = get_database_table(engine, metadata, field)
         test = [TABLE.columns.step == step.name]
-        if hasattr(TABLE.columns, 'magnitude'):
-            test.append(TABLE.columns.magnitude != 0.)
+        # if hasattr(TABLE.columns, 'magnitude'):
+        #     test.append(TABLE.columns.magnitude != 0.)
         return get_field_results(engine, connection, metadata, TABLE, test)
 
     def _get_func_field_sql(self, func, field, steps=None, group_by=None, component='magnitude'):
@@ -750,14 +750,21 @@ GROUP BY {};""".format(', '.join(labels),
     #                         Viewer methods
     # =========================================================================
 
-    def show_field(self, field, component, step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
-        """_summary_
+    def show_nodes_field(self, field, component, step=None, width=1600, height=900, **kwargs):
+        """Display a contour plot of a given field and component. The field must
+        de defined at the nodes of the model (e.g displacement field).
 
         Parameters
         ----------
-        component : int, optional
-            The component to display, by default 'magnitude'.
-            Choose among [1, 2, 3, 'magnitude']
+        field : str
+            The field to display, e.g. 'U' for displacements.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
+        component : str
+            The compoenet of the field to display, e.g. 'U3' for displacements
+            along the 3 axis.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
         step : :class:`compas_fea2.problem.Step`, optional
             The step to show the results of, by default None.
             if not provided, the last step of the analysis is used.
@@ -767,8 +774,6 @@ GROUP BY {};""".format(', '.join(labels),
             Width of the viewer window, by default 1600
         height : int, optional
             Height of the viewer window, by default 900
-        scale_factor : float, optional
-            Scale the model, by default 1.
 
         Options
         -------
@@ -785,24 +790,18 @@ GROUP BY {};""".format(', '.join(labels),
             _description_
         """
         from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.geometry import Point, Vector
-
         from compas.colors import ColorMap, Color
-        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii')) #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
+        #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
 
-        if isinstance(component, int):
-            c_index = component-1
-        else:
-            c_index = None
-
+        # Get values
         if not step:
             step = self._steps_order[-1]
-
         _, col_val = self._get_field_results(field=field, step=step)
-
         max_value = self._get_func_field_sql(func='MAX', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MAX({component})']
         min_value = self._get_func_field_sql(func='MIN', field=field, steps=[step], group_by='step', component=component)[0]['values'][f'MIN({component})']
 
+        # Get mesh
         parts_gkey_vertex={}
         parts_mesh={}
         for part in self.model.parts:
@@ -813,15 +812,25 @@ GROUP BY {};""".format(', '.join(labels),
             else:
                 raise AttributeError('Discretized boundary mesh not found')
 
-        colors = []
+        # Set the bounding limits
+        if kwargs.get('bound', None):
+            if not isinstance(kwargs['bound'], Iterable) or len(kwargs['bound'])!=2:
+                raise ValueError('You need to provide an upper and lower bound -> (lb, up)')
+            if kwargs['bound'][0]>kwargs['bound'][1]:
+                kwargs['bound'][0], kwargs['bound'][1] = kwargs['bound'][1], kwargs['bound'][0]
 
+        # Color the mesh
         results = self._link_field_results_to_model(col_val)
+        if len(results)!=len(self.model.nodes):
+            print(len(results), len(self.model.nodes))
+            raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
         for r in results:
             part = r['part']
             node = r['node']
             value = r['values'][component]
-
-            if kwargs.get('bound', None):
+            if min_value - max_value == 0.:
+                color = Color.red()
+            elif kwargs.get('bound', None):
                 if value>=kwargs['bound'] or value<=kwargs['bound']:
                     color = Color.red()
                 else:
@@ -830,23 +839,22 @@ GROUP BY {};""".format(', '.join(labels),
                 color = cmap(value, minval=min_value, maxval=max_value)
             if node.gkey in parts_gkey_vertex[part.name]:
                 parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][node.gkey], 'color', color)
-            colors.append(color)
 
-
+        # Display results
         v = FEA2Viewer(width, height)
         for part in self.model.parts:
             v.draw_mesh(parts_mesh[part.name])
 
         if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model)
+            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
 
         if kwargs.get('draw_loads', None):
-            v.draw_loads(step, kwargs['draw_loads'])
+            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
 
         v.show()
 
-    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, scale_factor=1., **kwargs):
-        """_summary_
+    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, **kwargs):
+        """Display the displacement of the nodes.
 
         Parameters
         ----------
@@ -858,15 +866,13 @@ GROUP BY {};""".format(', '.join(labels),
             if not provided, the last step of the analysis is used.
         style : str, optional
             The style of the results, by default 'contour'.
-            You can choose between ['contour', 'vector']
+            You can choose between ['contour', 'vector'].
         deformed : bool, optional
             Choose if to display on the deformed configuration or not, by default False
         width : int, optional
             Width of the viewer window, by default 1600
         height : int, optional
             Height of the viewer window, by default 900
-        scale_factor : float, optional
-            Scale the model, by default 1.
 
         Options
         -------
@@ -880,90 +886,32 @@ GROUP BY {};""".format(', '.join(labels),
         Raises
         ------
         ValueError
-            _description_
+            "The style can be either 'vector' or 'contour'"
         """
-        from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.geometry import Point, Vector
-
-        from compas.colors import ColorMap, Color
-        cmap = ColorMap.from_palette('hawaii') #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
-        v = FEA2Viewer(width, height)
-
-        if component not in [1,2,3, 'magnitude']:
-            raise ValueError('The component can be either 1, 2, 3 or magnitude')
-        if isinstance(component, int):
-            c_symb = 'U'+str(component)
-            c_index = component-1
-        else:
-            c_symb = component
-            c_index = None
-
-        displacements, _ = self.get_displacements_sql(step)
-        max_disp = self.get_max_displacement_sql(component=c_symb)
-        min_disp = self.get_min_displacement_sql(component=c_symb)
-
-        parts_gkey_vertex={}
-        parts_mesh={}
         if style == 'contour':
-            for part in self.model.parts:
-                if (mesh:= part.discretized_boundary_mesh):
-                    colored_mesh = mesh.copy()
-                    parts_gkey_vertex[part.name] = colored_mesh.gkey_key(compas_fea2.PRECISION)
-                    parts_mesh[part.name] = colored_mesh
-
-        pts = []
-        vectors = []
-        colors = []
-
-        for displacement in displacements:
-            part = displacement['part']
-            node = displacement['node']
-            vector = displacement['vector']
-            if not c_index:
-                vector_magnitude = vector.length
-                max_disp_magnitude = max_disp['vector'].length
-                min_disp_magnitude = min_disp['vector'].length
-            else:
-                vector_magnitude = vector[c_index]
-                max_disp_magnitude = max_disp['vector'][c_index]
-                min_disp_magnitude = min_disp['vector'][c_index]
-            if kwargs.get('bound', None):
-                if vector_magnitude>= max_disp_magnitude*kwargs['bound'] or vector_magnitude <= min_disp_magnitude*kwargs['bound']:
-                    color = Color.red()
-                else:
-                    color = cmap(vector_magnitude, minval=min_disp_magnitude, maxval=max_disp_magnitude)
-            else:
-                color = cmap(vector_magnitude, minval=min_disp_magnitude, maxval=max_disp_magnitude)
-
-            pts.append(node.point)
-            vectors.append(vector)
-            colors.append(color)
-
-            if part.discretized_boundary_mesh:
-                if style=='contour':
-                    if node.gkey in parts_gkey_vertex[part.name]:
-                        parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][node.gkey], 'color', color)
-
-        for part in self.model.parts:
-            if part.discretized_boundary_mesh:
-                if style=='contour':
-                    v.draw_mesh(parts_mesh[part.name])
-                else:
-                    v.draw_mesh(part.discretized_boundary_mesh)
-
-        if style=='vector':
-            v.draw_nodes_vector(pts, vectors, colors)
-
-        if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model)
-
-        if kwargs.get('draw_loads', None):
-            v.draw_loads(step, kwargs['draw_loads'])
-
-        v.show()
-
+            self.show_nodes_field(field='U', component=component, step=step, width=width, height=height, **kwargs)
+        elif style == 'vector':
+            raise NotImplementedError('WIP')
+        else:
+            raise ValueError("The style can be either 'vector' or 'contour'")
 
     def show_deformed(self, step=None, width=1600, height=900, scale_factor=1.):
+        """Display the structure in its deformed configuration.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem._Step`, optional
+            The Step of the analysis, by default None. If not provided, the last
+            step is used.
+        width : int, optional
+            Width of the viewer window, by default 1600
+        height : int, optional
+            Height of the viewer window, by default 900
+
+        Return
+        ------
+        None
+        """
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.geometry import Point, Vector
 

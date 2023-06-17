@@ -232,11 +232,11 @@ class FEA2Viewer():
                         pts = [node.point for node in pattern.distribution]
                     # TODO add moment components xx, yy, zz
                     vectors = [vector] * len(pts)
-                    self.draw_nodes_vector(pts, vectors, scale_factor=scale_factor)
+                    self.draw_nodes_vector(pts, vectors)
                 else:
                     print("WARNING! Only point loads are currently supported!")
 
-    def draw_nodes_vector(self, pts, vectors, colors=(0, 1, 0), scale_factor=1.):
+    def draw_nodes_vector(self, pts, vectors, colors=None):
         """Draw vector arrows at nodes.
 
         Parameters
@@ -250,10 +250,12 @@ class FEA2Viewer():
         """
         arrows = []
         arrows_properties = []
+        if not colors:
+           colors = [(0, 1, 0)]*len(pts)
         for pt, vector, color in zip(pts, vectors, colors):
             arrows.append(Arrow(pt, vector,
-                                head_portion=3*scale_factor, head_width=0.5*scale_factor, body_width=0.25*scale_factor))
-            arrows_properties.append({"u": 30,
+                                head_portion=0.3, head_width=0.15, body_width=0.05))
+            arrows_properties.append({"u": 3,
                                       "show_lines": False,
                                       "facecolor": color})
         if arrows:

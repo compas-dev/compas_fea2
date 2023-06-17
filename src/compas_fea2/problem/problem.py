@@ -517,22 +517,44 @@ Analysis folder path : {}
         #     vector = displacement.vector.scaled(scale_factor)
         #     node = deformed_model.find_node_by_key
         #     displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-
-        # # TODO copy model first
-        # for part in self.step.problem.model.parts:
-        #     for node in part.nodes:
-        #         original_node = node.xyz
-        #         x, y, z = node.results[self.step.name]["U"]
-        #         node.x += x * scale
-        #         node.y += y * scale
-        #         node.z += z * scale
-
+        raise NotImplementedError()
         return deformed_model
 
 
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
+    def show_nodes_field_vector(self, field_name, scale_factor=1., step=None, width=1600, height=900, **kwargs):
+        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas.colors import ColorMap, Color
+        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
+        #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+
+        # Get values
+        if not step:
+            step = self._steps_order[-1]
+        field = NodeFieldResults(field_name, step)
+        min_value = field._min_invariants['magnitude'].invariants["MIN(magnitude)"]
+        max_value = field._max_invariants['magnitude'].invariants["MAX(magnitude)"]
+
+        # Color the mesh
+        pts, vectors, colors = [], [], []
+        for r in field.results:
+            if r.vector.length == 0:
+                continue
+            vectors.append(r.vector.scaled(scale_factor))
+            pts.append(r.location.xyz)
+            colors.append(cmap(r.invariants['magnitude'], minval=min_value, maxval=max_value))
+
+        # Display results
+        v = FEA2Viewer(width, height)
+        v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
+        v.draw_parts(self.model.parts)
+        if kwargs.get('draw_bcs', None):
+            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
+        if kwargs.get('draw_loads', None):
+            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+        v.show()
 
     def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, **kwargs):
         """Display a contour plot of a given field and component. The field must

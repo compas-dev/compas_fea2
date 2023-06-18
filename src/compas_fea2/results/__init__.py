@@ -9,7 +9,7 @@ results
     :toctree: generated/
 
     Results
-    StepResults
+    NodeFieldResults
 
 """
 from __future__ import absolute_import

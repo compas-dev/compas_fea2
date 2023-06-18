@@ -6,8 +6,8 @@ compas_fea2
 .. currentmodule:: compas_fea2
 
 
-API Packages
-============
+Core Packages
+=============
 
 .. toctree::
     :maxdepth: 1
@@ -18,14 +18,17 @@ API Packages
     compas_fea2.job
     compas_fea2.postprocess
     compas_fea2.utilities
+    compas_fea2.units
 
-Dev Packages
-============
+User Interfaces
+===============
 
 .. toctree::
     :maxdepth: 1
 
+    compas_fea2.cli
     compas_fea2.UI
+
 
 """
 import os
@@ -64,14 +67,16 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision='
     precision : str, optional
         Values approximation, by default '3f'
     """
-    with open(os.path.abspath(os.path.join(HERE, ".env")), "x") as f:
-        f.write('\n'.join([
-            "VERBOSE={}".format(verbose),
-            "POINT_OVERLAP={}".format(point_overlap),
-            "GLOBAL_TOLERANCE={}".format(point_overlap),
-            "PRECISION={}".format(precision)
-            ]))
-    load_dotenv()
+    env_path = os.path.abspath(os.path.join(HERE, ".env"))
+    if not os.path.exists(env_path):
+        with open(env_path, "x") as f:
+            f.write('\n'.join([
+                "VERBOSE={}".format(verbose),
+                "POINT_OVERLAP={}".format(point_overlap),
+                "GLOBAL_TOLERANCE={}".format(point_overlap),
+                "PRECISION={}".format(precision)
+                ]))
+    load_dotenv(env_path)
 
 if not load_dotenv():
     init_fea2()

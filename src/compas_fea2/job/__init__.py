@@ -5,7 +5,7 @@ job
 
 .. currentmodule:: compas_fea2.job
 
-.. autosummry::
+.. autosummary::
     :toctree: generated/
 
     InputFile

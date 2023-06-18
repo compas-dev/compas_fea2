@@ -1,5 +1,4 @@
 from importlib.metadata import distribution
-import os
 from typing import Iterable
 from compas_view2.app import App
 from compas_view2.objects import Collection
@@ -9,26 +8,19 @@ from compas_view2.shapes import Text
 
 from compas.datastructures import Mesh
 from compas.geometry import Scale
-from compas.geometry import Point
-from compas.geometry import Cone
-from compas.geometry import Circle
 from compas.geometry import Line
-from compas.geometry import Plane
-from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
 from compas.utilities import hex_to_rgb
-from compas.colors import Color
 
 from compas_fea2.UI.viewer.shapes import PinBCShape
 from compas_fea2.UI.viewer.shapes import FixBCShape
 from compas_fea2.model.elements import ShellElement
 from compas_fea2.model.elements import _Element3D
 from compas_fea2.model.elements import BeamElement
-from compas_fea2.model.constraints import _Constraint
 from compas_fea2.model.bcs import FixedBC, PinnedBC
 
-from compas_fea2.problem.loads import GravityLoad, PointLoad
+from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.steps import _GeneralStep
 
 from compas_fea2.utilities._utils import _compute_model_dimensions
@@ -49,6 +41,10 @@ class FEA2Viewer():
         Height of the viewport, by default 500.
     scale_factor : float, optional
         Scale the content of the viewport, by default 1.
+
+    Attributes
+    ----------
+    None
     """
 
     def __init__(self, width=800, height=500, **kwargs):

@@ -21,13 +21,15 @@ sphinx_compas_theme >=0.15.18
 twine
 wheel
 
-sphinxcontrib.gist
+# sphinxcontrib.gist
 
 # fea2_extensions
 compas>=1.0
-click
-gmsh
+compas_gmsh
+Click
 pint
+python-dotenv
+sqlalchemy
 
 -e .
 

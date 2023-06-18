@@ -4,19 +4,24 @@ from __future__ import print_function
 
 from math import log
 from .material import _Material
+from ...utilities._utils import extend_docstring
 
-
+@extend_docstring(_Material)
 class Concrete(_Material):
-    """Elastic and plastic-cracking Eurocode based concrete material.
-
-    Notes
-    -----
-    The concrete model is based on Eurocode 2 up to fck=90 MPa.
     """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    Concrete
+    ========
+    Elastic and plastic-cracking Eurocode based concrete material
+
+    Note
+    ----
+    The concrete model is based on Eurocode 2 up to fck=90 MPa.
+
+
+    Additional Parameters and attributes
+
+    Parameters
+    ----------
     fck : float
         Characteristic (5%) 28 day cylinder strength [MPa].
     v : float
@@ -24,8 +29,8 @@ class Concrete(_Material):
     fr : list
         Failure ratios.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -92,14 +97,16 @@ fck : {}
 fr  : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
 
-
+@extend_docstring(_Material)
 class ConcreteSmearedCrack(_Material):
-    """Elastic and plastic, cracking concrete material.
     """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    ConcreteSmearedCrack
+    ====================
+    Elastic and plastic, cracking concrete material.
+
+
+    Additional Parameters and Attributes
+    ------------------------------------
     E : float
         Young's modulus E.
     v : float

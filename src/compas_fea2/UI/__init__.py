@@ -1,9 +1,12 @@
 """
 ********************************************************************************
-Viewer
+User Interfaces
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.UI.viewer
+.. currentmodule:: compas_fea2.UI
+
+compas_view2
+============
 
 .. autosummary::
     :toctree: generated/
@@ -12,16 +15,12 @@ Viewer
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from .viewer import FEA2Viewer
-from .shapes import (
-    BCShape,
-    FixBCShape,
-    PinBCShape,
-)
 
 __all__ = [
     'FEA2Viewer',
-    'BCShape',
-    'FixBCShape',
-    'PinBCShape',
 ]

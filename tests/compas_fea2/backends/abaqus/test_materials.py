@@ -3,7 +3,7 @@ import compas_fea2
 
 from compas_fea2.model import Concrete
 
-from compas_fea2.backends.abaqus.model.materials.material import Concrete, ElasticIsotropic, Stiff, Steel
+from compas_fea2.model.materials import Concrete, ElasticIsotropic, Stiff, UserMaterial
 
 young_mod = 1000
 poisson_ratio = 0.3

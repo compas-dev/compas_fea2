@@ -14,7 +14,7 @@ import os
 import pickle
 import compas_fea2
 from compas_fea2.utilities._utils import timer
-from compas_fea2.utilities._utils import part_method, get_docstring, problem_method
+from compas_fea2.utilities._utils import part_method, get_docstring, problem_method, extend_docstring
 
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import _Part, DeformablePart, RigidPart
@@ -24,6 +24,7 @@ from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.ics import _InitialCondition, InitialStressField
 from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
 from compas_fea2.model.constraints import _Constraint, TieMPC, BeamMPC
+
 
 from compas_fea2.units import units
 
@@ -331,57 +332,57 @@ class Model(FEAData):
     #                           Nodes methods
     # =========================================================================
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_node_by_key(self, key):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_by_name(self, name):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_by_location(self, point, distance, plane=None):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_around_node(self, node, distance):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_closest_nodes_to_node(self, node, distance, number_of_nodes=1, plane=None):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_by_attribute(self, attr, value, tolerance):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_on_plane(self, plane):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_in_polygon(self, polygon, tolerance=1.1):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_nodes_where(self, conditions):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def contains_node(self, node):
         pass
@@ -390,12 +391,12 @@ class Model(FEAData):
     #                           Nodes methods
     # =========================================================================
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_element_by_key(self, key):
         pass
 
-    #@get_docstring(_Part)
+    @get_docstring(_Part)
     @part_method
     def find_elements_by_name(self, name):
         pass
@@ -1007,7 +1008,7 @@ Initial Conditions
     #                       Run methods
     # =========================================================================
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def write_input_file(self, problems=None, path=None, *args, **kwargs):
         pass

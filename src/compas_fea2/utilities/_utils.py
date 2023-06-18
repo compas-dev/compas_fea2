@@ -74,6 +74,17 @@ def _compute_model_dimensions(model):
     box = Box.from_bounding_box(bbox)
     return box.width, box.height, box.depth
 
+class extend_docstring:
+    def __init__(self, method, note=False):
+        self.doc = method.__doc__
+
+    def __call__(self, function):
+        if self.doc is not None:
+            doc = function.__doc__
+            function.__doc__ = self.doc
+            if doc is not None:
+                function.__doc__ += doc
+        return function
 
 def get_docstring(cls):
     """
@@ -81,10 +92,16 @@ def get_docstring(cls):
     """
     def _decorator(func):
         func_name = func.__qualname__.split('.')[-1]
-        func.__doc__ = getattr(cls, func_name).__doc__.split('Returns')[0]
+        doc_parts = getattr(cls, func_name).__doc__.split('Returns')
+        note = """
+        Returns
+        -------
+        list of {}
+
+        """.format(doc_parts[1].split('-------\n')[1])
+        func.__doc__ = doc_parts[0] + note
         return func
     return _decorator
-
 
 def part_method(f):
     """Run a part level method. In this way it is possible to bring to the

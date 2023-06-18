@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-
+from compas_fea2.utilities._utils import extend_docstring
 
 class _Material(FEAData):
     """
@@ -12,6 +12,10 @@ class _Material(FEAData):
     Materials are registered to a :class:`compas_fea2.model.Model`. The same
     material can be assigned to multiple sections and in different elements and
     parts.
+
+
+    Basic Material parameters and attributes
+    ========================================
 
     Parameters
     ----------
@@ -42,6 +46,7 @@ class _Material(FEAData):
         once it is added to the model.
     model : :class:`compas_fea2.model.Model`
         The Model where the material is assigned.
+
     """
 
     def __init__(self, *, density, expansion=None, name=None, **kwargs):
@@ -73,18 +78,20 @@ expansion   : {}
 <body><p>Hello World!</p></body>
 </html>"""
 
-
-
 # ==============================================================================
 # linear elastic
 # ==============================================================================
+@extend_docstring(_Material)
 class ElasticOrthotropic(_Material):
-    """Elastic, orthotropic and homogeneous material.
     """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    ElasticOrthotropic material
+    ===========================
+    Elastic, orthotropic and homogeneous material
+
+    Additional paramenters and attributes:
+
+    Parameters
+    ----------
     Ex : float
         Young's modulus Ex in x direction.
     Ey : float
@@ -104,8 +111,8 @@ class ElasticOrthotropic(_Material):
     Gzx : float
         Shear modulus Gzx in z-x directions.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     Ex : float
         Young's modulus Ex in x direction.
     Ey : float
@@ -159,21 +166,21 @@ Gzx : {}
            self.name, self.density, self.expansion,
            self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
 
-
+@extend_docstring(_Material)
 class ElasticIsotropic(_Material):
-    """Elastic, isotropic and homogeneous material.
     """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    Elastic, isotropic and homogeneous material
+    ===========================================
+
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
         Poisson's ratio v.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -214,13 +221,18 @@ class Stiff(_Material):
 # ==============================================================================
 # non-linear general
 # ==============================================================================
+@extend_docstring(_Material)
 class ElasticPlastic(ElasticIsotropic):
-    """Elastic and plastic, isotropic and homogeneous material.
     """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    ElasticPlastic
+    ==============
+
+    Elastic and plastic, isotropic and homogeneous material.
+
+    Additional parameters and attributes.
+
+    Parameters
+    ----------
     E : float
         Young's modulus.
     v : float
@@ -229,8 +241,8 @@ class ElasticPlastic(ElasticIsotropic):
         Strain-stress data, including elastic and plastic behaviour,
         in the form of strain/stress value pairs.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus.
     v : float

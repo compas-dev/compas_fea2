@@ -524,7 +524,45 @@ Analysis folder path : {}
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-    def show_nodes_field_vector(self, field_name, scale_factor=1., step=None, width=1600, height=900, **kwargs):
+    # def show(self, scale_factor=1., step=None, width=1600, height=900, parts=None,
+    #          solid=True, draw_nodes=False, node_labels=False,
+    #          draw_bcs=1., draw_constraints=True, draw_loads=True, **kwargs):
+
+    #     from compas_fea2.UI.viewer import FEA2Viewer
+    #     from compas.colors import ColorMap, Color
+    #     cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
+    #     #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+
+    #     # Get values
+    #     if not step:
+    #         step = self._steps_order[-1]
+
+    #     # # Color the mesh
+    #     # pts, vectors, colors = [], [], []
+    #     # for r in field.results:
+    #     #     if r.vector.length == 0:
+    #     #         continue
+    #     #     vectors.append(r.vector.scaled(scale_factor))
+    #     #     pts.append(r.location.xyz)
+    #     #     colors.append(cmap(r.invariants['magnitude'], minval=min_value, maxval=max_value))
+
+    #     # Display results
+    #     v = FEA2Viewer(width, height, scale_factor=scale_factor)
+    #     # v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
+    #     parts = parts or self.model.parts
+    #     if draw_bcs:
+    #         v.draw_bcs(self.model, parts, draw_bcs)
+
+    #     v.draw_parts(parts,
+    #                  draw_nodes,
+    #                  node_labels,
+    #                  solid)
+
+    #     if kwargs.get('draw_loads', None):
+    #         v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+    #     v.show()
+
+    def show_nodes_field_vector(self, field_name, vector_sf=1., model_sf=1., step=None, width=1600, height=900, **kwargs):
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.colors import ColorMap, Color
         cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
@@ -542,12 +580,12 @@ Analysis folder path : {}
         for r in field.results:
             if r.vector.length == 0:
                 continue
-            vectors.append(r.vector.scaled(scale_factor))
+            vectors.append(r.vector.scaled(vector_sf))
             pts.append(r.location.xyz)
             colors.append(cmap(r.invariants['magnitude'], minval=min_value, maxval=max_value))
 
         # Display results
-        v = FEA2Viewer(width, height)
+        v = FEA2Viewer(width, height, scale_factor=model_sf)
         v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
         v.draw_parts(self.model.parts)
         if kwargs.get('draw_bcs', None):
@@ -556,7 +594,7 @@ Analysis folder path : {}
             v.draw_loads(step, scale_factor=kwargs['draw_loads'])
         v.show()
 
-    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, **kwargs):
+    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, model_sf=1., **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -640,7 +678,7 @@ Analysis folder path : {}
                 parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], 'color', color)
 
         # Display results
-        v = FEA2Viewer(width, height)
+        v = FEA2Viewer(width, height, scale_factor=model_sf)
         for part in self.model.parts:
             v.draw_mesh(parts_mesh[part.name])
 
@@ -652,7 +690,7 @@ Analysis folder path : {}
 
         v.show()
 
-    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, **kwargs):
+    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, model_sf=1., **kwargs):
         """Display the displacement of the nodes.
 
         Parameters
@@ -688,7 +726,7 @@ Analysis folder path : {}
             "The style can be either 'vector' or 'contour'"
         """
         if style == 'contour':
-            self.show_nodes_field(field_name='U', component=component, step=step, width=width, height=height, **kwargs)
+            self.show_nodes_field(field_name='U', component=component, step=step, width=width, height=height, model_sf=model_sf, **kwargs)
         elif style == 'vector':
             raise NotImplementedError('WIP')
         else:

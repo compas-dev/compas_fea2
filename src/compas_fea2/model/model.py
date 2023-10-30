@@ -1115,7 +1115,7 @@ Initial Conditions
 
         parts = parts or self.parts
 
-        v = FEA2Viewer(width, height)
+        v = FEA2Viewer(width, height, scale_factor=scale_factor)
 
         v.draw_parts(parts,
                      draw_nodes,

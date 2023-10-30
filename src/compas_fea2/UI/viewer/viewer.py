@@ -52,17 +52,14 @@ class FEA2Viewer():
         self.height = height
         self.app = App(width=width, height=height)
 
-        self.app.view.camera.target = [3000, 3000, 100]
-        self.app.view.camera.position = [7000, 7000, 5000]
-        self.app.view.camera.near = 1
-        self.app.view.camera.far = 100000
-        self.app.view.camera.scale = 1000
-        self.app.view.grid.cell_size = 1000
+        sf = kwargs.get('scale_factor',1)
 
-    def _scale_mesh(self, mesh):
-        S = Scale.from_factors([self.scale_factor]*3)
-        mesh.transform(S)
-        return mesh
+        self.app.view.camera.target = [3000*sf, 3000*sf, 1000*sf]
+        self.app.view.camera.position = [7000*sf, 7000*sf, 5000*sf]
+        self.app.view.camera.near = 1*sf
+        self.app.view.camera.far = 100000*sf
+        self.app.view.camera.scale = 1000*sf
+        self.app.view.grid.cell_size = 1000*sf
 
     def draw_mesh(self, mesh):
         self.app.add(mesh, use_vertex_color=True)

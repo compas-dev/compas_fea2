@@ -690,13 +690,13 @@ Analysis folder path : {}
 
         v.show()
 
-    def show_displacements(self, component='magnitude', step=None, style='contour', deformed=False, width=1600, height=900, model_sf=1., **kwargs):
+    def show_displacements(self, component=3, step=None, style='contour', deformed=False, width=1600, height=900, model_sf=1., **kwargs):
         """Display the displacement of the nodes.
 
         Parameters
         ----------
         component : int, optional
-            The component to display, by default 'magnitude'.
+            The component to display, by default 3.
             Choose among [1, 2, 3, 'magnitude']
         step : :class:`compas_fea2.problem.Step`, optional
             The step to show the results of, by default None.
@@ -726,7 +726,7 @@ Analysis folder path : {}
             "The style can be either 'vector' or 'contour'"
         """
         if style == 'contour':
-            self.show_nodes_field(field_name='U', component=component, step=step, width=width, height=height, model_sf=model_sf, **kwargs)
+            self.show_nodes_field(field_name='U', component='U'+str(component), step=step, width=width, height=height, model_sf=model_sf, **kwargs)
         elif style == 'vector':
             raise NotImplementedError('WIP')
         else:

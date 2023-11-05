@@ -3,4 +3,4 @@ compas_gmsh
 Click
 pint
 python-dotenv
-sqlalchemy
+sqlalchemy==1.4

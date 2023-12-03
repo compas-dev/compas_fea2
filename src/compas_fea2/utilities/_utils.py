@@ -74,6 +74,7 @@ def _compute_model_dimensions(model):
     box = Box.from_bounding_box(bbox)
     return box.width, box.height, box.depth
 
+
 class extend_docstring:
     def __init__(self, method, note=False):
         self.doc = method.__doc__
@@ -85,6 +86,7 @@ class extend_docstring:
             if doc is not None:
                 function.__doc__ += doc
         return function
+
 
 def get_docstring(cls):
     """
@@ -102,6 +104,7 @@ def get_docstring(cls):
         func.__doc__ = doc_parts[0] + note
         return func
     return _decorator
+
 
 def part_method(f):
     """Run a part level method. In this way it is possible to bring to the
@@ -143,6 +146,7 @@ def part_method(f):
 
     return wrapper
 
+
 # TODO combine with part_method
 def step_method(f):
     """Run a step level method. In this way it is possible to bring to the
@@ -165,6 +169,7 @@ def step_method(f):
         self_obj = args[0]
         return {step: vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))}
     return wrapper
+
 
 # TODO combine with part_method
 # TODO add parameter to differentiate from action and return dict or add @problem_step_method

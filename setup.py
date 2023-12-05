@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# flake8: noqa
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -29,7 +32,7 @@ setup(
     description='2nd generation of compas_fea',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/compas-dev/compas_fea2',
+    url='https://github.com/fea2/compas_fea2',
     author='Francesco Ranaudo',
     author_email='ranaudo@arch.ethz.ch',
     license='MIT license',

@@ -2,28 +2,31 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# import pickle
-# import os
 import importlib
-import itertools
-from typing import Iterable
+import gc
+import pathlib
+from typing import Callable, Iterable, Type
+import pint
+from itertools import groupby
+from pathlib import Path, PurePath
 
-# import compas_fea2
-from compas_fea2 import config
+import os
+import pickle
+import compas_fea2
 from compas_fea2.utilities._utils import timer
-from compas_fea2.base import FEAData
-from compas_fea2.model.interactions import _Interaction
-from compas_fea2.model.parts import Part
-from compas_fea2.model.nodes import Node
-from compas_fea2.model.materials import _Material
-from compas_fea2.model.sections import _Section
-from compas_fea2.model.bcs import _BoundaryCondition
-from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
-from compas_fea2.model.interfaces import Interface
-from compas_fea2.model.constraints import _Constraint, TieConstraint
-from compas_fea2.utilities.interfaces import faces_in_interface
-from compas_fea2.utilities.interfaces import nodes_in_interface
+from compas_fea2.utilities._utils import part_method, get_docstring, problem_method, extend_docstring
 
+from compas_fea2.base import FEAData
+from compas_fea2.model.parts import _Part, DeformablePart, RigidPart
+from compas_fea2.model.nodes import Node
+from compas_fea2.model.elements import _Element
+from compas_fea2.model.bcs import _BoundaryCondition
+from compas_fea2.model.ics import _InitialCondition, InitialStressField
+from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
+from compas_fea2.model.constraints import _Constraint, TieMPC, BeamMPC
+
+
+from compas_fea2.units import units
 
 class Model(FEAData):
     """Class representing an FEA model.
@@ -51,21 +54,26 @@ class Model(FEAData):
     author : str
         The name of the author of the model.
         This will be added to the input file and can be useful for future reference.
-    parts : Set[:class:`compas_fea2.model.Part`]
+    parts : Set[:class:`compas_fea2.model.DeformablePart`]
         The parts of the model.
     bcs : dict
-        The boundary conditions of the model.
+        Dictionary with the boundary conditions of the model and the nodes where
+        these are applied.
+    ics : dict
+        Dictionary with the initial conditions of the model and the nodes/elements
+        where these are applied.
     constraints : Set[:class:`compas_fea2.model._Constraint`]
         The constraints of the model.
-    interactions : Set[:class:`compas_fea2.model._Interaction`]
-        The interactions between parts of the model.
-    interfaces : Set[:class:`compas_fea2.model._Interface`]
-        The interface between two parts of the model.
     partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
-    facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
-        The surfaces of the model.
-
+    materials : Set[:class:`compas_fea2.model.materials._Material]
+        The materials assigned in the model.
+    sections : Set[:class:`compas_fea2.model._Section]
+        The sections assigned in the model.
+    problems : Set[:class:`compas_fea2.problem._Problem]
+        The problems added to the model.
+    path : ::class::`pathlib.Path`
+        Path to the main folder where the problems' results are stored.
     """
 
     def __init__(self, *, name=None, description=None, author=None, **kwargs):
@@ -74,10 +82,13 @@ class Model(FEAData):
         self.author = author
         self._parts = set()
         self._bcs = {}
+        self._ics = {}
         self._constraints = set()
-        self._interactions = set()
-        self._interfaces = set()
         self._partsgroups = set()
+        self._problems = set()
+        self._results = {}
+        self._loads = {}
+        self._path = None
 
     @property
     def parts(self):
@@ -92,49 +103,164 @@ class Model(FEAData):
         return self._bcs
 
     @property
+    def ics(self):
+        return self._ics
+
+    @property
     def constraints(self):
         return self._constraints
 
     @property
-    def interactions(self):
-        return self._interactions
+    def materials(self):
+        materials = set()
+        for part in filter(lambda p: not isinstance(p, RigidPart), self.parts):
+            for material in part.materials:
+                materials.add(material)
+        return materials
 
     @property
-    def interfaces(self):
-        return self._interfaces
+    def sections(self):
+        sections = set()
+        for part in filter(lambda p: not isinstance(p, RigidPart), self.parts):
+            for section in part.sections:
+                sections.add(section)
+        return sections
 
     @property
-    def facesgroups(self):
-        return self._facesgroups
+    def problems(self):
+        return self._problems
+
+    @property
+    def loads(self):
+        return self._loads
+
+    @property
+    def path(self):
+        return self._path
+    @path.setter
+    def path(self, value):
+        if not isinstance(value, Path):
+            try:
+                value = Path(value)
+            except:
+                raise ValueError('the path provided is not valid.')
+        self._path = value.joinpath(self.name)
+
+    @property
+    def nodes(self):
+        node_set=set()
+        for part in self.parts:
+            node_set.update(part.nodes)
+        return node_set
+
+    @property
+    def elements(self):
+        element_set=set()
+        for part in self.parts:
+            element_set.update(part.elements)
+        return element_set
+    # =========================================================================
+    #                       Constructor methods
+    # =========================================================================
+
+    @staticmethod
+    @timer(message='Model loaded from cfm file in ')
+    def from_cfm(path):
+        # type: (str) -> Model
+        """Imports a Problem object from an .cfm file through Pickle.
+
+        Parameters
+        ----------
+        path : str
+            Complete path of the file. (for example 'C:/temp/model.cfm')
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Model`
+            The imported model.
+        """
+        with open(path, 'rb') as f:
+            try:
+                # disable garbage collector
+                gc.disable()
+                model = pickle.load(f)
+                # enable garbage collector again
+                gc.enable()
+            except:
+                gc.enable()
+                raise RuntimeError('Model not created!')
+        model.path = os.sep.join(os.path.split(path)[0].split(os.sep)[:-1])
+        #check if the problems' results are stored in the same location
+        for problem in model.problems:
+            if not os.path.exists(os.path.join(model.path, problem.name)):
+                print(f"WARNING! - Problem {problem.name} results not found! move the results folder in {model.path}")
+                continue
+            problem.path = os.path.join(model.path, problem.name)
+            problem._db_connection = None
+        return model
+
+    # =========================================================================
+    #                       De-constructor methods
+    # =========================================================================
+
+    def to_json(self):
+        raise NotImplementedError()
+
+    def to_cfm(self, path):
+        # type: (Path) -> None
+        """Exports the Model object to an .cfm file through Pickle.
+
+        Parameters
+        ----------
+        path : path
+            Complete path to the new file. (for example 'C:/temp/model.cfm')
+
+        Returns
+        -------
+        None
+        """
+        if not isinstance(path, Path):
+            path = Path(path)
+        if not path.suffix == '.cfm':
+            raise ValueError("Please provide a valid path including the name of the file.")
+        pathlib.Path(path.parent.absolute()).mkdir(parents=True, exist_ok=True)
+        with open(path, 'wb') as f:
+            pickle.dump(self, f)
+        print('Model saved to: {}'.format(path))
 
     # =========================================================================
     #                             Parts methods
     # =========================================================================
 
-    def find_part_by_name(self, name):
-        # type: (str) -> Part
+    def find_part_by_name(self, name, casefold=False):
+        # type: (str, bool) -> DeformablePart
         """Find if there is a part with a given name in the model.
 
         Parameters
         ----------
         name : str
+            The name to match
+        casefolde : bool
+            If `True` perform a case insensitive search, by default `False`.
 
         Returns
         -------
-        :class:`compas_fea2.model.Part`
+        :class:`compas_fea2.model.DeformablePart`
 
         """
         for part in self.parts:
-            if part.name == name:
+            name_1 = part.name if not casefold else part.name.casefold()
+            name_2 = name if not casefold else name.casefold()
+            if name_1 == name_2:
                 return part
 
     def contains_part(self, part):
-        # type: (Part) -> Part
+        # type: (DeformablePart) -> DeformablePart
         """Verify that the model contains a specific part.
 
         Parameters
         ----------
-        part : :class:`compas_fea2.model.Part`
+        part : :class:`compas_fea2.model.DeformablePart`
 
         Returns
         -------
@@ -144,16 +270,16 @@ class Model(FEAData):
         return part in self.parts
 
     def add_part(self, part):
-        # type: (Part) -> Part
-        """Adds a Part to the Model.
+        # type: (DeformablePart) -> DeformablePart
+        """Adds a DeformablePart to the Model.
 
         Parameters
         ----------
-        part : :class:`compas_fea2.model.Part`
+        part : :class:`compas_fea2.model._Part`
 
         Returns
         -------
-        :class:`compas_fea2.model.Part`
+        :class:`compas_fea2.model._Part`
 
         Raises
         ------
@@ -161,22 +287,30 @@ class Model(FEAData):
             If the part is not a part.
 
         """
-        if not isinstance(part, Part):
+        if not isinstance(part, _Part):
             raise TypeError("{!r} is not a part.".format(part))
 
         if self.contains_part(part):
-            if config.VERBOSE:
-                print("SKIPPED: Part {!r} is already in the model.".format(part))
+            if compas_fea2.VERBOSE:
+                print("SKIPPED: DeformablePart {!r} is already in the model.".format(part))
             return
 
         if self.find_part_by_name(part.name):
             raise ValueError("Duplicate name! The name '{}' is already in use.".format(part.name))
 
-        part._model = self
-        if config.VERBOSE:
+        part._registration = self
+        if compas_fea2.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
         self._parts.add(part)
+
+        if not isinstance(part, RigidPart):
+            for material in part.materials:
+                material._registration = self
+
+            for section in part.sections:
+                section._registration = self
+
         return part
 
     def add_parts(self, parts):
@@ -185,160 +319,142 @@ class Model(FEAData):
 
         Parameters
         ----------
-        parts : list[:class:`compas_fea2.model.Part`]
+        parts : list[:class:`compas_fea2.model.DeformablePart`]
 
         Returns
         -------
-        list[:class:`compas_fea2.model.Part`]
+        list[:class:`compas_fea2.model.DeformablePart`]
 
         """
         return [self.add_part(part) for part in parts]
-
-    def get_node_from_coordinates(self, xyz, tol):
-        # type: (list, float) -> dict
-        """Finds (if any) the Node object in the model with the specified coordinates.
-        A tollerance factor can be specified.
-
-        Parameters
-        ----------
-        xyz : list
-            List with the [x, y, z] coordinates of the Node.
-        tol : int
-            multiple to which round the coordinates.
-
-        Returns
-        -------
-        dict
-            Dictionary with the keys of the maching nodes for each Part.
-            key =  Part name
-            value = list of keys of the maching the specified coordinates.
-        """
-        return {part.name: part.get_node_from_coordinates(xyz, tol) for part in self.parts.values()}
 
     # =========================================================================
     #                           Nodes methods
     # =========================================================================
 
+    @get_docstring(_Part)
+    @part_method
+    def find_node_by_key(self, key):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_by_name(self, name):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_by_location(self, point, distance, plane=None):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_around_node(self, node, distance):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_closest_nodes_to_node(self, node, distance, number_of_nodes=1, plane=None):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_by_attribute(self, attr, value, tolerance):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_on_plane(self, plane):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_in_polygon(self, polygon, tolerance=1.1):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_nodes_where(self, conditions):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def contains_node(self, node):
+        pass
+
+    # =========================================================================
+    #                           Nodes methods
+    # =========================================================================
+
+    @get_docstring(_Part)
+    @part_method
+    def find_element_by_key(self, key):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_elements_by_name(self, name):
+        pass
+
     # =========================================================================
     #                           Groups methods
     # =========================================================================
+    def add_parts_group(self, group):
+        """Add a PartsGroup object to the Model.
 
-    def group_nodes_by_attribute(self, attr, value, tolerance, name=None):
-        """Find all nodes with a given value for a the given attribute.
+        Parameters
+        ----------
+        group : :class:`compas_fea2.model.PartsGroup`
+            The group object to add.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.PartsGroup`
+            The added group.
+        """
+        if not isinstance(group, PartsGroup):
+            raise TypeError('Only PartsGroups can be added to a model')
+        self.partgroups.add(group)
+        group._registration = self  # FIXME wrong because the members of the group might have a different registation
+        return group
+
+    def add_parts_groups(self, groups):
+        """Add a multiple PartsGroup object to the Model.
+
+        Parameters
+        ----------
+        group : [:class:`compas_fea2.model.PartsGroup`]
+            The list with the group object to add.
+
+        Returns
+        -------
+        [:class:`compas_fea2.model.PartsGroup`]
+            The list with the added groups.
+        """
+        return [self.add_parts_group(group) for group in groups]
+
+    def group_parts_where(self, attr, value):
+        """Group a set of parts with a give value of a given attribute.
 
         Parameters
         ----------
         attr : str
-            Attribute name.
-        value : any
-            Appropriate value for the given attribute.
-        name : str, optional
-            Name of the group. If not provided, one is automatically generated.
+            The name of the attribute.
+        value : var
+            The value of the attribute
 
         Returns
         -------
-        [:class:`compas_fea2.model.NodesGroup`]
-
+        :class:`compas_fea2.model.PartsGroup`
+            The group with the matching parts.
         """
-        return [NodesGroup(nodes=list(part.find_nodes_by_attribute(attr, value, tolerance)),
-                           name=name) for part in self.parts if part.find_nodes_by_attribute(attr, value, tolerance)]
+        return self.add_parts_group(PartsGroup(parts=set(filter(lambda p: getattr(p, attr) == value), self.parts)))
 
-    def group_parts(self, group):
-        """Add a Group object to a part in the Model. it can be either a
-        :class:`FacesGroup` or an :class:`ElementsGroup`.
-
-        Parameters
-        ----------
-        group : obj
-            :class:`NodesGroup` or :class:`ElementsGroup` object to add.
-
-        Returns
-        -------
-        None
-        """
-        self._partsgroups.add(group)
-        return group
-
-    # =========================================================================
-    #                       Constraints methods
-    # =========================================================================
-
-    def add_constraint(self, constraint):
-        # type: (_Constraint) -> _Constraint
-        """Add a :class:`compas_fea2.model._Constraint` object to the Model.
-
-        Parameters
-        ----------
-        constraint : :class:`compas_fea2.model._Constraint`
-            Constraint object to add to the model.
-
-        Returns
-        -------
-        :class:`compas_fea2.model.Constraint`
-        """
-        if isinstance(constraint, _Constraint):
-            self._constraints.add(constraint)
-        else:
-            raise TypeError('{!r} is not a constraint.'.format(constraint))
-        return constraint
-
-    def add_constraints(self, constraints):
-        # type: (list) -> list
-        """Add multiple :class:`compas_fea2.model._Constraint` objects to the Model.
-
-        Parameters
-        ----------
-        constraints : list[:class:`compas_fea2.model._Constraint`]
-            list of constraints objects to add to the model.
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model._Constraint`]
-        """
-        return [self.add_constraint(constraint) for constraint in constraints]
-
-    # =========================================================================
-    #                        ContactPair methods
-    # =========================================================================
-
-    def add_interface(self, interface):
-        # type: (Interface) -> Interface
-        """Add a :class:`compas_fea2.model._Interface` object to the model.
-
-        Parameters
-        ----------
-        interface : :class:`compas_fea2.model._Interface`
-            Interface object to add to the model.
-
-        Returns
-        -------
-        :class:`compas_fea2.model._Interface`
-        """
-        if isinstance(interface, Interface):
-            self._interfaces.add(interface)
-            if not interface.master.part:
-                raise ValueError('The master surface is not registered to any part')
-            if not interface.slave.part:
-                raise ValueError('The slave surface is not registered to any part')
-        else:
-            raise TypeError('{!r} is not an interface.'.format(interface))
-        self._interactions.add(interface.interaction)
-        return interface
-
-    def add_interfaces(self, interfaces):
-        # type: (list) -> list
-        """Add multiple :class:`compas_fea2.model.Interface` objects to the Model.
-
-        Parameters
-        ----------
-        interfaces : list[:class:`compas_fea2.model._Interface`]
-            List with interfaces to add to the model.
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model._Interface`]
-        """
-        return [self.add_interface(interface) for interface in interfaces]
 
     # =========================================================================
     #                           BCs methods
@@ -361,19 +477,18 @@ class Model(FEAData):
 
         Returns
         -------
-        list[:class:`compas_fea2.model._BoundaryCondition`]
+        :class:`compas_fea2.model._BoundaryCondition`
 
         """
         if isinstance(nodes, _Group):
             nodes = nodes._members
 
-        if not isinstance(nodes, (list, tuple)):
+        if isinstance(nodes, Node):
             nodes = [nodes]
 
         if not isinstance(bc, _BoundaryCondition):
-            raise TypeError('{!r} is not a _BoundaryCondition.'.format(bc))
+            raise TypeError('{!r} is not a Boundary Condition.'.format(bc))
 
-        bcs = []
         for node in nodes:
             if not isinstance(node, Node):
                 raise TypeError('{!r} is not a Node.'.format(node))
@@ -381,10 +496,15 @@ class Model(FEAData):
                 raise ValueError('{!r} is not registered to any part.'.format(node))
             elif not node.part in self.parts:
                 raise ValueError('{!r} belongs to a part not registered to this model.'.format(node))
-            node.dof = bc
-            self._bcs.setdefault(node.part, {}).setdefault(bc, set()).add(node)
-            bcs.append(bc)
-        return bcs
+            if isinstance(node.part, RigidPart):
+                if len(nodes) != 1 or not node.is_reference:
+                    raise ValueError('For rigid parts bundary conditions can be assigned only to the reference point')
+            node._bc = bc
+
+        self._bcs[bc]=set(nodes)
+        bc._registration = self
+
+        return bc
 
     def _add_bc_type(self, bc_type, nodes, axes='global'):
         # type: (str, Node, str) -> _BoundaryCondition
@@ -595,19 +715,29 @@ class Model(FEAData):
         """
         return self._add_bc_type('rollerYZ',  nodes, axes)
 
-    def remove_bcs(self, bcs):
-        """Removes multiple boundary conditions from the Model.
+    def remove_bcs(self, nodes):
+        """Release a node previously restrained.
 
         Parameters
         ----------
-        bc_names : list
-            List of names of the boundary conditions to remove.
+        nodes : [:class:`compas_fe2.model.Node]
+            List of nodes to release.
 
         Returns
         -------
         None
         """
-        raise NotImplementedError
+
+        if isinstance(nodes, Node):
+            nodes = [nodes]
+
+        for node in nodes:
+            if node.dof:
+                self.bcs[node.dof].remove(node)
+                node.dof = None
+            else:
+                print("WARNING: {!r} was not restrained. skipped!".format(node))
+
 
     def remove_all_bcs(self):
         """Removes all the boundary conditions from the Model.
@@ -620,12 +750,95 @@ class Model(FEAData):
         -------
         None
         """
-        raise NotImplementedError
+        for _, nodes in self.bcs.items():
+            self.remove_bcs(nodes)
+        self.bcs = {}
+
+    # ==============================================================================
+    # Initial Conditions methods
+    # ==============================================================================
+
+    def _add_ics(self, ic, group):
+        # type: (_InitialCondition, _Group, str) -> list
+        """Add a :class:`compas_fea2.model._InitialCondition` to the model.
+
+        Parameters
+        ----------
+        ic : :class:`compas_fea2.model._InitialCondition`
+            Initial condition object to add to the model.
+        group : :class:`compas_fea2.model._Group`
+            Group of Nodes/Elements where the initial condition is assigned.
+
+        Returns
+        -------
+        :class:`compas_fea2.model._InitialCondition`
+
+        """
+        group.part.add_group(group)
+
+        if not isinstance(ic, _InitialCondition):
+            raise TypeError('{!r} is not a _InitialCondition.'.format(ic))
+        for member in group.members:
+            if not isinstance(member, (Node, _Element)):
+                raise TypeError('{!r} is not a Node or an Element.'.format(member))
+            if not member.part:
+                raise ValueError('{!r} is not registered to any part.'.format(member))
+            elif not member.part in self.parts:
+                raise ValueError('{!r} belongs to a part not registered to this model.'.format(member))
+            member._ic = ic
+
+        self._ics[ic] = group.members
+        ic._registration = self
+
+        return ic
+
+
+    def add_nodes_ics(self, ic, nodes):
+        # type: (_InitialCondition, Node, str) -> list
+        """Add a :class:`compas_fea2.model._InitialCondition` to the model.
+
+        Parameters
+        ----------
+        ic : :class:`compas_fea2.model._InitialCondition`
+            Initial condition object to add to the model.
+        nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
+            List or Group with the nodes where the initial condition is assigned.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model._InitialCondition`]
+
+        """
+        if not isinstance(nodes, NodesGroup):
+            raise TypeError('{} is not a group of nodes'.format(nodes))
+        self._add_ics(ic, nodes)
+        return ic
+
+    def add_elements_ics(self, ic, elements):
+        # type: (_InitialCondition, Node, str) -> list
+        """Add a :class:`compas_fea2.model._InitialCondition` to the model.
+
+        Parameters
+        ----------
+        ic : :class:`compas_fea2.model._InitialCondition`
+            Initial condition object to add to the model.
+        elements : :class:`compas_fea2.model.ElementsGroup`
+            List or Group with the elements where the initial condition is assigned.
+
+        Returns
+        -------
+        :class:`compas_fea2.model._InitialCondition`
+
+        """
+        if not isinstance(elements, ElementsGroup):
+            raise TypeError('{} is not a group of elements'.format(elements))
+        self._add_ics(ic, elements)
+        return ic
 
     # ==============================================================================
     # Summary
     # ==============================================================================
-
+    # TODO add shor/ long
     def summary(self):
         # type: () -> str
         """Prints a summary of the Model object.
@@ -641,11 +854,23 @@ class Model(FEAData):
         """
         parts_info = ['\n'.join(['{}'.format(part.name),
                                  '    # of nodes: {}'.format(len(part.nodes)),
-                                 '    # of elements: {}'.format(len(part.elements))]) for part in self.parts]
-        interactions_info = '\n'.join([e.name for e in self.interactions])
+                                 '    # of elements: {}'.format(len(part.elements)),
+                                 '    is_rigid : {}'.format('True' if isinstance(part, RigidPart) else 'False')]) for part in self.parts]
+
         constraints_info = '\n'.join([e.__repr__() for e in self.constraints])
-        bc_info = '\n'.join(['{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(bc, len(nodes))
-                                                                     for bc, nodes in bc_nodes.items()])) for part, bc_nodes in self.bcs.items()])
+
+        bc_info = []
+        for bc, nodes in self.bcs.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
+                bc_info.append('{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(bc, len(list(part_nodes)))])))
+        bc_info = '\n'.join(bc_info)
+
+        ic_info = []
+        for ic, nodes in self.ics.items():
+            for part, part_nodes in groupby(nodes, lambda n: n.part):
+                ic_info.append('{}: \n{}'.format(part.name, '\n'.join(['  {!r} - # of restrained nodes {}'.format(ic, len(list(part_nodes)))])))
+        ic_info = '\n'.join(ic_info)
+
         data = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 compas_fea2 Model: {}
@@ -658,10 +883,6 @@ Parts
 -----
 {}
 
-Interactions
-------------
-{}
-
 Constraints
 -----------
 {}
@@ -669,13 +890,17 @@ Constraints
 Boundary Conditions
 -------------------
 {}
+
+Initial Conditions
+------------------
+{}
 """.format(self.name,
            self.description or 'N/A',
            self.author or 'N/A',
            '\n'.join(parts_info),
-           interactions_info or 'N/A',
            constraints_info or 'N/A',
-           bc_info or 'N/A'
+           bc_info or 'N/A',
+           ic_info or 'N/A'
            )
         print(data)
         return data
@@ -714,30 +939,197 @@ Boundary Conditions
 
         raise NotImplementedError
 
+    # =========================================================================
+    #                       Problems methods
+    # =========================================================================
+
+    def add_problem(self, problem):
+        """Add a :class:`compas_fea2.problem.Problem` object to the model.
+
+        Parameters
+        ----------
+        problem : :class:`compas_fea2.problem.Problem`
+            The problem to add
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.Problem`
+            The added problem
+
+        Raises
+        ------
+        TypeError
+            if problem is not type :class:`compas_fea2.problem.Problem`
+        """
+        if not isinstance(problem, compas_fea2.problem.Problem):
+            raise TypeError('{} is not a Problem'.format(problem))
+        self._problems.add(problem)
+        problem._registration = self
+        return problem
+
+    def add_problems(self, problems):
+        """Add multiple :class:`compas_fea2.problem.Problem` objects to the model.
+
+        Parameters
+        ----------
+        problems : []:class:`compas_fea2.problem.Problem`]
+            The problems to add
+
+        Returns
+        -------
+        [:class:`compas_fea2.problem.Problem`]
+            The added problems
+
+        Raises
+        ------
+        TypeError
+            if a problem is not type :class:`compas_fea2.problem.Problem`
+        """
+        return [self.add_problem(problem) for problem in problems]
+
+    def find_problem_by_name(self, name):
+        """Find a problem in the model using its name.
+
+        Parameters
+        ----------
+        name : str
+            The name of the Problem
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.Problem`
+            The problem
+        """
+        for problem in self.problems:
+            if problem.name == name:
+                return problem
+
+    # =========================================================================
+    #                       Run methods
+    # =========================================================================
+
+    # @get_docstring(Problem)
+    @problem_method
+    def write_input_file(self, problems=None, path=None, *args, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def analyse(self, problems=None, *args, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def analyze(self, problems=None, *args, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def restart_analysis(self, problem, start, steps, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def analyse_and_extract(self, problems=None, path=None, *args, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def analyse_and_store(self, problems=None, memory_only=False, *args, **kwargs):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def store_results_in_model(self, problems=None, *args, **kwargs):
+        pass
+
+    # ==============================================================================
+    # Results methods
+    # ==============================================================================
+    #@get_docstring(Problem)
+    @problem_method
+    def get_reaction_forces_sql(self, *, problem=None, step=None):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def get_reaction_moments_sql(self, problem, step=None):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def get_displacements_sql(self, problem, step=None):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def get_max_displacement_sql(self, problem, step=None, component='magnitude'):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def get_min_displacement_sql(self, problem, step=None, component='magnitude'):
+        pass
+
+    #@get_docstring(Problem)
+    @problem_method
+    def get_displacement_at_nodes_sql(self, problem, nodes, steps=None):
+        pass
+
+    @problem_method
+    def get_displacement_at_point_sql(self, problem, point, steps=None):
+        pass
+
     # ==============================================================================
     # Viewer
     # ==============================================================================
     def show(self, width=1600, height=900, scale_factor=1., parts=None,
-             draw_elements=True, draw_nodes=False, node_labels=False,
-             draw_bcs=1., **kwargs):
+             solid=True, draw_nodes=False, node_labels=False,
+             draw_bcs=1., draw_constraints=True, **kwargs):
+        """WIP
+
+        Parameters
+        ----------
+        width : int, optional
+            _description_, by default 1600
+        height : int, optional
+            _description_, by default 900
+        scale_factor : _type_, optional
+            _description_, by default 1.
+        parts : _type_, optional
+            _description_, by default None
+        solid : bool, optional
+            _description_, by default True
+        draw_nodes : bool, optional
+            _description_, by default False
+        node_labels : bool, optional
+            _description_, by default False
+        draw_bcs : _type_, optional
+            _description_, by default 1.
+        draw_constraints : bool, optional
+            _description_, by default True
+        """
 
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.geometry import Point, Vector
-        import numpy as np
-
-        from compas.colors import ColorMap, Color
-        cmap = ColorMap.from_mpl('viridis')
 
         parts = parts or self.parts
 
-        v = FEA2Viewer(width, height, scale_factor)
+        v = FEA2Viewer(width, height, scale_factor=scale_factor)
 
         v.draw_parts(parts,
-                     draw_elements,
                      draw_nodes,
-                     node_labels)
+                     node_labels,
+                     solid)
 
         if draw_bcs:
             v.draw_bcs(self, parts, draw_bcs)
 
+        # if draw_constraints:
+        #     v.draw_constraint(self.constraints)
+
         v.show()
+
+    @problem_method
+    def show_displacements(self, problem, *args, **kwargs):
+        pass

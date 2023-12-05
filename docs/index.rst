@@ -10,7 +10,6 @@ compas_fea2
    gettingstarted
    backends
    tutorial
-   examples
    api
    devguide
    license

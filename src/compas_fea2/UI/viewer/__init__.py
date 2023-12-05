@@ -1,9 +1,9 @@
 """
 ********************************************************************************
-User Interfaces
+Viewer
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.UI
+.. currentmodule:: compas_fea2.UI.viewer
 
 .. autosummary::
     :toctree: generated/
@@ -13,7 +13,15 @@ User Interfaces
 """
 
 from .viewer import FEA2Viewer
+from .shapes import (
+    BCShape,
+    FixBCShape,
+    PinBCShape,
+)
 
 __all__ = [
     'FEA2Viewer',
+    'BCShape',
+    'FixBCShape',
+    'PinBCShape',
 ]

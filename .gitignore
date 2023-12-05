@@ -111,11 +111,10 @@ ENV/
 temp/**
 !temp/PLACEHOLDER
 
-docs/api/generated/**
-!docs/api/generated/PLACEHOLDER
-
 .DS_Store
-.vscode/
 
-.vs
-.idea
+.vscode
+
+docs/api/generated/
+
+conda.recipe/

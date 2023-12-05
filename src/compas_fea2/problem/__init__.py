@@ -31,6 +31,14 @@ Steps
     QuasiStaticStep
     DirectCyclicStep
 
+Prescribed Fields
+=================
+
+.. autosummary::
+    :toctree: generated/
+
+    _PrescribedField
+    PrescribedTemperatureField
 
 Loads
 =====
@@ -39,12 +47,15 @@ Loads
     :toctree: generated/
 
     _Load
-    PointLoad
     PrestressLoad
+    PointLoad
     LineLoad
     AreaLoad
     GravityLoad
     TributaryLoad
+    HarmonicPointLoad
+    HarmonicPressureLoad
+    ThermalLoad
 
 Displacements
 =============
@@ -53,6 +64,13 @@ Displacements
     :toctree: generated/
 
     GeneralDisplacement
+
+Load Patterns
+=============
+.. autosummary::
+    :toctree: generated/
+
+    Pattern
 
 Outputs
 =======
@@ -79,6 +97,15 @@ from .loads import (
     TributaryLoad,
     HarmonicPointLoad,
     HarmonicPressureLoad,
+    ThermalLoad,
+)
+from .fields import (
+    _PrescribedField,
+    PrescribedTemperatureField,
+)
+
+from .patterns import (
+    Pattern,
 )
 from .steps import (
     _Step,
@@ -113,6 +140,13 @@ __all__ = [
     'TributaryLoad',
     'HarmonicPointLoad',
     'HarmonicPressureLoad',
+    'ThermalLoad',
+
+    'PrescribedTemperatureField',
+
+    'DeadLoad',
+    'LiveLoad',
+    'SuperImposedDeadLoad',
 
     '_Step',
     '_GeneralStep',

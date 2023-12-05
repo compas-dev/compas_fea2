@@ -30,7 +30,7 @@ exclude_patterns = []
 pygments_style = 'sphinx'
 show_authors = True
 add_module_names = True
-language = None
+language = 'en'
 
 
 # -- Extension configuration ------------------------------------------------
@@ -46,7 +46,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'matplotlib.sphinxext.plot_directive',
     'nbsphinx',
-    'sphinxcontrib.gist'
+    # 'sphinxcontrib.gist'
 ]
 
 # autodoc options

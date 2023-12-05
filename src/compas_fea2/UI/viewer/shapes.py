@@ -1,8 +1,5 @@
-from compas.geometry import Scale
-from compas.geometry import Point
 from compas.geometry import Cone
 from compas.geometry import Circle
-from compas.geometry import Line
 from compas.geometry import Plane
 from compas.geometry import Box
 

@@ -4,49 +4,47 @@ from __future__ import print_function
 
 from math import log
 from .material import _Material
+from ...utilities._utils import extend_docstring
 
-
+@extend_docstring(_Material)
 class Concrete(_Material):
-    """Elastic and plastic-cracking Eurocode based concrete material.
+    """
+    Concrete
+    ========
+    Elastic and plastic-cracking Eurocode based concrete material
+
+    Note
+    ----
+    The concrete model is based on Eurocode 2 up to fck=90 MPa.
+
+
+    Additional Parameters and attributes
 
     Parameters
     ----------
-    name : str
-        Material name.
     fck : float
         Characteristic (5%) 28 day cylinder strength [MPa].
     v : float
         Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
     fr : list
         Failure ratios.
 
     Attributes
     ----------
-    name : str
-        Material name.
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     G : float
-        Shear modulus G [Pa].
+        Shear modulus G.
     fck : float
-        Characteristic (5%) 28 day cylinder strength [MPa].
+        Characteristic (5%) 28 day cylinder strength.
     fr : list
         Failure ratios.
     tension : dict
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
-
-    Notes
-    -----
-    - The concrete model is based on Eurocode 2 up to fck=90 MPa.
-
     """
 
     def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
@@ -77,7 +75,7 @@ class Concrete(_Material):
         self.ft = ft
         self.et = et
         self.fr = fr
-        # these necessary if we have the above?
+        # TODO these necessary if we have the above?
         self.tension = {'f': ft, 'e': et}
         self.compression = {'f': f[1:], 'e': ec}
 
@@ -99,58 +97,53 @@ fck : {}
 fr  : {}
 """.format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
 
-
+@extend_docstring(_Material)
 class ConcreteSmearedCrack(_Material):
-    """Elastic and plastic, cracking concrete material.
+    """
+    ConcreteSmearedCrack
+    ====================
+    Elastic and plastic, cracking concrete material.
 
-    Parameters
-    ----------
-    name : str
-        Material name.
+
+    Additional Parameters and Attributes
+    ------------------------------------
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     fc : list
-        Plastic stress data in compression [Pa].
+        Plastic stress data in compression.
     ec : list
-        Plastic strain data in compression [-].
+        Plastic strain data in compression.
     ft : list
-        Plastic stress data in tension [-].
+        Plastic stress data in tension.
     et : list
-        Plastic strain data in tension [-].
+        Plastic strain data in tension.
     fr : list
         Failure ratios.
 
-    Attributes
-    ----------
-    name : str
-        Material name.
+    Additional Attributes
+    ---------------------
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     G : float
-        Shear modulus G [Pa].
+        Shear modulus G.
     fc : list
-        Plastic stress data in compression [Pa].
+        Plastic stress data in compression.
     ec : list
-        Plastic strain data in compression [-].
+        Plastic strain data in compression.
     ft : list
-        Plastic stress data in tension [-].
+        Plastic stress data in tension.
     et : list
-        Plastic strain data in tension [-].
+        Plastic strain data in tension.
     fr : list
         Failure ratios.
     tension : dict
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
-
     """
 
     def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
@@ -191,17 +184,15 @@ fr : {}
 
 class ConcreteDamagedPlasticity(_Material):
     """Damaged plasticity isotropic and homogeneous material.
-
-    Parameters
-    ----------
-    name : str
-        Material name.
+    """
+    __doc__ += _Material.__doc__
+    __doc__ += """
+    Additional Parameters
+    ---------------------
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     damage : list
         Damage parameters.
     hardening : list
@@ -209,18 +200,14 @@ class ConcreteDamagedPlasticity(_Material):
     stiffening : list
         Tension stiffening parameters.
 
-    Attributes
-    ----------
-    name : str
-        Material name.
+    Additional Attributes
+    ---------------------
     E : float
-        Young's modulus E [Pa].
+        Young's modulus E.
     v : float
-        Poisson's ratio v [-].
-    density : float
-        Density [kg/m3].
+        Poisson's ratio v.
     G : float
-        Shear modulus G [Pa].
+        Shear modulus G.
     damage : list
         Damage parameters.
     hardening : list
@@ -236,7 +223,7 @@ class ConcreteDamagedPlasticity(_Material):
         self.E = E
         self.v = v
 
-        # would make sense to validate these inputs
+        # TODO would make sense to validate these inputs
         self.damage = damage
         self.hardening = hardening
         self.stiffening = stiffening

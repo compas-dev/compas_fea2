@@ -19,7 +19,8 @@ Parts
 .. autosummary::
     :toctree: generated/
 
-    Part
+    DeformablePart
+    RigidPart
 
 Nodes
 =====
@@ -44,7 +45,7 @@ Elements
     TieElement
     ShellElement
     MembraneElement
-    SolidElement
+    _Element3D
     TetrahedronElement
     HexahedronElement
 
@@ -65,28 +66,10 @@ Constraints
     :toctree: generated/
 
     _Constraint
+    _MultiPointConstraint
+    TieMPC
+    BeamMPC
     TieConstraint
-
-Interactions
-============
-
-.. autosummary::
-    :toctree: generated/
-
-    _Interaction
-    Contact
-    HardContactNoFriction
-    HardContactFrictionPenalty
-    LinearContactFrictionPenalty
-    HardContactRough
-
-Interfaces
-==========
-
-.. autosummary::
-    :toctree: generated/
-
-    Interface
 
 Materials
 =========
@@ -104,6 +87,7 @@ Materials
     ConcreteSmearedCrack
     ConcreteDamagedPlasticity
     Steel
+    Timber
 
 Sections
 ========
@@ -140,15 +124,25 @@ Boundary Conditions
     GeneralBC
     FixedBC
     PinnedBC
-    FixedBCXX
-    FixedBCYY
-    FixedBCZZ
+    ClampBCXX
+    ClampBCYY
+    ClampBCZZ
     RollerBCX
     RollerBCY
     RollerBCZ
     RollerBCXY
     RollerBCYZ
     RollerBCXZ
+
+Initial Conditions
+==================
+
+.. autosummary::
+    :toctree: generated/
+
+    _InitialCondition
+    InitialTemperatureField
+    InitialStressField
 
 Groups
 ======
@@ -168,7 +162,10 @@ from __future__ import division
 from __future__ import print_function
 
 from .model import Model
-from .parts import Part
+from .parts import (
+    DeformablePart,
+    RigidPart,
+)
 from .nodes import Node
 from .elements import (
     _Element,
@@ -180,7 +177,7 @@ from .elements import (
     TieElement,
     ShellElement,
     MembraneElement,
-    SolidElement,
+    _Element3D,
     TetrahedronElement,
     HexahedronElement,
 )
@@ -196,15 +193,6 @@ from .materials import (
     ElasticPlastic,
     Steel,
     Timber,
-)
-from .interfaces import Interface
-from .interactions import (
-    _Interaction,
-    Contact,
-    HardContactFrictionPenalty,
-    LinearContactFrictionPenalty,
-    HardContactNoFriction,
-    HardContactRough,
 )
 from .sections import (
     _Section,
@@ -228,6 +216,9 @@ from .sections import (
 )
 from .constraints import (
     _Constraint,
+    _MultiPointConstraint,
+    TieMPC,
+    BeamMPC,
     TieConstraint,
 )
 from .groups import (
@@ -243,6 +234,7 @@ from .releases import (
     BeamEndSliderRelease,
 )
 from .bcs import (
+    _BoundaryCondition,
     GeneralBC,
     FixedBC,
     PinnedBC,
@@ -257,11 +249,16 @@ from .bcs import (
     RollerBCXZ,
 )
 
-
+from .ics import (
+    _InitialCondition,
+    InitialTemperatureField,
+    InitialStressField,
+)
 __all__ = [
     'Model',
 
-    'Part',
+    'DeformablePart',
+    'RigidPart',
     'Node',
 
     '_Element',
@@ -273,7 +270,7 @@ __all__ = [
     'TieElement',
     'ShellElement',
     'MembraneElement',
-    'SolidElement',
+    '_Element3D',
     'TetrahedronElement',
     'HexahedronElement',
 
@@ -313,25 +310,19 @@ __all__ = [
     'TieSection',
 
     '_Constraint',
+    '_MultiPointConstraint',
+    'TieMPC',
+    'BeamMPC',
     'TieConstraint',
 
     '_BeamEndRelease',
     'BeamEndPinRelease',
-
-    '_Interaction',
-    'Contact',
-    'HardContactNoFriction',
-    'HardContactFrictionPenalty',
-    'LinearContactFrictionPenalty',
-
-    'Interface',
 
     '_Group',
     'NodesGroup',
     'ElementsGroup',
     'FacesGroup',
     'PartsGroup',
-
 
     '_BoundaryCondition',
     'GeneralBC',
@@ -346,4 +337,8 @@ __all__ = [
     'RollerBCXY',
     'RollerBCYZ',
     'RollerBCXZ',
+
+    '_InitialCondition',
+    'InitialTemperatureField',
+    'InitialStressField',
 ]

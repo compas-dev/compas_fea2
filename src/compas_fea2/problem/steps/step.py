@@ -1,20 +1,37 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from copy import deepcopy
+from importlib.metadata import metadata
+from json import load
+from typing import Type
+import compas_fea2
 
 from compas_fea2.base import FEAData
 
 from compas_fea2.model.nodes import Node
+from compas_fea2.model.elements import _Element
 
 from compas_fea2.problem.loads import _Load
 from compas_fea2.problem.loads import GravityLoad
 from compas_fea2.problem.loads import PointLoad
 
+from compas_fea2.problem.patterns import Pattern
+
 from compas_fea2.problem.displacements import GeneralDisplacement
+
+from compas_fea2.problem.fields import _PrescribedField
+from compas_fea2.problem.fields import PrescribedTemperatureField
 
 from compas_fea2.problem.outputs import _Output
 from compas_fea2.problem.outputs import FieldOutput
 from compas_fea2.problem.outputs import HistoryOutput
+
+from compas.geometry import Vector
+from compas.geometry import sum_vectors
+from compas_fea2.utilities._utils import timer
+
+import copy
 
 # ==============================================================================
 #                                Base Steps
@@ -26,11 +43,15 @@ class _Step(FEAData):
 
     Note
     ----
+    Stpes are registered to a :class:`compas_fea2.problem.Problem`.
+
+    Note
+    ----
     A ``compas_fea2`` analysis is based on the concept of ``steps``,
-    which are the sequence of modification of the state of the model. Steps
-    can be introduced for example to change the output requests or to change loads,
-    boundary conditions, analysis procedure, etc. There is no limit on the number
-    of steps in an analysis.
+    which represent the sequence in which the state of the model is modified.
+    Steps can be introduced for example to change the output requests or to change
+    loads, boundary conditions, analysis procedure, etc. There is no limit on the
+    number of steps in an analysis.
 
     Parameters
     ----------
@@ -44,25 +65,28 @@ class _Step(FEAData):
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
     field_outputs: :class:`compas_fea2.problem.FieldOutput'
-        field outuputs requested for the step.
+        Field outuputs requested for the step.
     history_outputs: :class:`compas_fea2.problem.HistoryOutput'
-        history outuputs requested for the step.
+        History outuputs requested for the step.
+    results : :class:`compas_fea2.results.StepResults`
+        The results of the analysis at this step
 
     """
 
-    def __init__(self, name=None, problem=None, **kwargs):
+    def __init__(self, name=None, **kwargs):
         super(_Step, self).__init__(name=name, **kwargs)
-        self._problem = problem
         self._field_outputs = set()
         self._history_outputs = set()
+        self._results = None
+        self._key = None
 
     @property
     def problem(self):
-        return self._problem
+        return self._registration
 
-    @problem.setter
-    def problem(self, value):
-        self._problem = value
+    @property
+    def model(self):
+        return self.problem._registration
 
     @property
     def field_outputs(self):
@@ -73,21 +97,98 @@ class _Step(FEAData):
         return self._history_outputs
 
     @property
-    def registration(self):
-        return self._problem
+    def results(self):
+        return self._results
 
-    @registration.setter
-    def registration(self, value):
-        self.problem = value
+    @property
+    def key(self):
+        return self._key
 
     def add_output(self, output):
+        """Request a field or history output.
+
+        Parameters
+        ----------
+        output : :class:`compas_fea2.problem._Output`
+            The requested output.
+
+        Returns
+        -------
+        :class:`compas_fea2.problem._Output`
+            The requested output.
+
+        Raises
+        ------
+        TypeError
+            if the output is not an instance of an :class:`compas_fea2.problem._Output`.
+        """
+        output._registration = self
         if isinstance(output, FieldOutput):
             self._field_outputs.add(output)
         elif isinstance(output, HistoryOutput):
             self._history_outputs.add(output)
         else:
-            raise TypeError('{!r} is not a Load.'.format(output))
+            raise TypeError('{!r} is not an _Output.'.format(output))
         return output
+
+    # ==========================================================================
+    #                             Results methods
+    # ==========================================================================
+    @timer(message='Step results copied in the model in ')
+    def _store_results_in_model(self, fields=None):
+        """Copy the results for the step in the model object at the nodal and
+        element level.
+
+        Parameters
+        ----------
+        results : dict
+            results dictionary.
+
+        Returns
+        -------
+        None
+
+        """
+        from compas_fea2.results.sql_wrapper import create_connection_sqlite3, get_database_table, get_all_field_results
+        import sqlalchemy as db
+
+        engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
+        FIELDS = get_database_table(engine, metadata, 'fiedls')
+        if not fields:
+            field_column = FIELDS.query.all()
+            fields=[field for field in field_column.field]
+
+        for field in fields:
+            field_table = get_database_table(engine, metadata, field)
+            _, results = get_all_field_results(engine, metadata, field, field_table)
+            for row in results:
+                part = self.problem.model.find_part_by_name(row[0])
+                if row[2] == 'NODAL':
+                    node_element = part.find_node_by_key(row[3])
+                else:
+                    raise NotImplementedError('elements not supported yet')
+
+                node_element._results.setdefault(self.problem, {})[self] = res_field
+
+
+        step_results = results[self.name]
+        # Get part results
+        for part_name, part_results in step_results.items():
+            # Get node/element results
+            for result_type, nodes_elements_results in part_results.items():
+                if result_type not in ['nodes', 'elements']:
+                    continue
+                # nodes_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
+                func = getattr(self.model.find_part_by_name(part_name, casefold=True),
+                               'find_{}_by_key'.format(result_type[:-1]))
+                # Get field results
+                for key, res_field in nodes_elements_results.items():
+                    node_element = func(key)
+                    if not node_element:
+                        continue
+                    if fields and not res_field in fields:
+                        continue
+                    node_element._results.setdefault(self.problem, {})[self] = res_field
 
 # ==============================================================================
 #                                General Steps
@@ -95,8 +196,8 @@ class _Step(FEAData):
 
 
 class _GeneralStep(_Step):
-    """General Step object for use in a general static, dynamic or
-    multiphysics analysis.
+    """General Step object for use as a base class in a general static, dynamic
+    or multiphysics analysis.
 
     Parameters
     ----------
@@ -121,6 +222,9 @@ class _GeneralStep(_Step):
     modify : bool
         if ``True`` the loads applied in a previous step are substituted by the
         ones defined in the present step, otherwise the loads are added.
+    restart : float, optional
+        Frequency at which saving the results for restarting the analysis,
+        by default `False`.
 
     Attributes
     ----------
@@ -148,25 +252,50 @@ class _GeneralStep(_Step):
     modify : bool
         if ``True`` the loads applied in a previous step are substituted by the
         ones defined in the present step, otherwise the loads are added.
+    restart : float
+        Frequency at which saving the results for restarting the analysis.
     loads : dict
         Dictionary of the loads assigned to each part in the model in the step.
+    fields : dict
+        Dictionary of the prescribed fields assigned to each part in the model in the step.
     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name=None, **kwargs):
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, name=None, **kwargs):
         super(_GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
         self._min_inc_size = min_inc_size
         self._time = time
-        self._nlgeom = 'YES' if nlgeom else 'NO'  # FIXME change to bool
+        self._nlgeom = nlgeom
         self._modify = modify
+        self._restart = restart
 
-        self._loads = {}
+        self._patterns = set()
+
+    def __rmul__(self, other):
+        if not isinstance(other, (float, int)):
+            raise TypeError('Step multiplication only allowed with real numbers')
+        step_copy = copy.copy(self)
+        step_copy._patterns = set()
+        for pattern in self._patterns:
+            pattern_copy = copy.copy(pattern)
+            load_copy = copy.copy(pattern.load)
+            pattern_copy._load = other*load_copy
+            step_copy._add_pattern(pattern_copy)
+        return step_copy
+
+    @property
+    def displacements(self):
+        return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._patterns))
 
     @property
     def loads(self):
-        return self._loads
+        return list(filter(lambda p: isinstance(p.load, _Load), self._patterns))
+
+    @property
+    def fields(self):
+        return list(filter(lambda p: isinstance(p.load, _PrescribedField), self._patterns))
 
     @property
     def max_increments(self):
@@ -192,13 +321,21 @@ class _GeneralStep(_Step):
     def modify(self):
         return self._modify
 
+    @property
+    def restart(self):
+        return self._restart
+
+    @restart.setter
+    def restart(self, value):
+        self._restart = value
+
     # =========================================================================
     #                           Loads methods
     # =========================================================================
 
-    def add_load(self, load, node):
-        # type: (_Load, Node) -> _Load
-        """Add a load to Step object.
+    def _add_pattern(self, load_pattern):
+        # type: (_Load, Node | _Element) -> _Load
+        """Add a general load pattern to the Step object.
 
         Warning
         -------
@@ -210,37 +347,42 @@ class _GeneralStep(_Step):
         ----------
         load : obj
             any ``compas_fea2`` :class:`compas_fea2.problem._Load` subclass object
-        node : :class:`compas_fea2.model.Node`
-            Node where the load is applied
+        location : var
+            Location where the load is applied
 
         Returns
         -------
         None
         """
 
-        if not isinstance(load, _Load):
-            raise TypeError('{!r} is not a Load.'.format(load))
+        if not isinstance(load_pattern, Pattern):
+            raise TypeError('{!r} is not a LoadPattern.'.format(load_pattern))
 
-        if not isinstance(node, Node):
-            raise TypeError('{!r} is not a Node.'.format(node))
-        # self.model.contains_node(node) #TODO implement method
-        node._loads.add(load)  # FIXME this should include the step...
-        self._loads.setdefault(node.part, {}).setdefault(load, set()).add(node)
-        return load
+        if self.problem:
+            if self.model:
+                if not list(load_pattern.distribution).pop().model == self.model:
+                    raise ValueError('The load pattern is not applied to a valid reagion of {!r}'.format(self.model))
 
-    def add_loads(self, load, nodes):
-        """Add a load to multiple nodes.
+        # store location in step
+        self._patterns.add(load_pattern)
+        load_pattern._registration = self
+
+        return load_pattern
+
+    def _add_patterns(self, load_patterns):
+        # type: (_Load, Node | _Element) -> list(_Load)
+        """Add a load to multiple locations.
 
         Parameters
         ----------
         load : :class:`_Load`
             Load to assign to the node
-        nodes : list
-            Nodes where the load is assigned.
+        location : [var]
+            Locations where the load is applied
 
         Returns
         -------
-        load : :class:`_Load`
+        load : [:class:`_Load`]
             Load to assign to the node
         """
-        return [self.add_load(load, node) for node in nodes]
+        return [self.add_pattern(load_pattern) for load_pattern in load_patterns]

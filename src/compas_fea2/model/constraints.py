@@ -6,160 +6,117 @@ from compas_fea2.base import FEAData
 
 
 class _Constraint(FEAData):
-    """Initialises base Constraint object.
+    """A constraint removes degree of freedom of nodes in the model.
+
+    Note
+    ----
+    Constraints are registered to a :class:`compas_fea2.model.Model`.
 
     Parameters
     ----------
     name : str,optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
 
     Attributes
     ----------
     name : str
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
 
     """
 
-    def __init__(self, *, master, slave, tol=None, name=None, **kwargs):
+    def __init__(self, *, name=None, **kwargs):
         super(_Constraint, self).__init__(name, **kwargs)
-        self._master = master
-        self._slave = slave
-        self._tol = tol
 
-    @property
-    def master(self):
-        return self._master
-
-    @property
-    def slave(self):
-        return self._slave
-
-    @property
-    def tol(self):
-        return self._tol
+# ------------------------------------------------------------------------------
+# MPC
+# ------------------------------------------------------------------------------
 
 
-class TieConstraint(_Constraint):
-    """Tie constraint between two sets of nodes, elements or surfaces.
+class _MultiPointConstraint(_Constraint):
+    """A MultiPointContrstaint (MPC) links a node (master) to other nodes
+    (slaves) in the model.
+
+    Note
+    ----
+    Constraints are registered to a :class:`compas_fea2.model.Model`.
 
     Parameters
     ----------
-    name : str, optional
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
+    name : str,optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
-
-    Attributes
-    ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
-
-    """
-
-    def __init__(self, *, master, slave, name=None, **kwargs):
-        super(TieConstraint, self).__init__(master=master, slave=slave, name=name, **kwargs)
-
-
-class Pin3DConstraint(_Constraint):
-    """Pin constraint between two sets of nodes, elements or surfaces that allows
-    all rotations and fixes all translations.
-
-    Parameters
-    ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
-
-    Attributes
-    ----------
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
-
-    """
-    pass
-
-
-class Pin2DConstraint(_Constraint):
-    """Pin constraint between two sets of nodes, elements or surfaces that allows
-    rotations about an axis and fixes all translations.
-
-    Parameters
-    ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
-    tol : float
-        Constraint tolerance, distance limit between master and slave.
-    axis : :class:`compas.geometry.Vector`
-        Axis of rotation.
 
     Attributes
     ----------
     name : str
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    master : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as master.
-    slave : :class:`compas_fea2.model.NodesGroup`
-        Goup of nodes that act as slave.
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
     tol : float
-        Constraint tolerance, distance limit between master and slave.
-    axis : :class:`compas.geometry.Vector`
-        Axis of rotation.
-
+        Constraint tolerance, distance limit between master and slaves.
     """
 
-    def __init__(self, *, master, slave, tol, axis, name=None, **kwargs):
-        super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
-        self.axis = axis
+    def __init__(self, constraint_type, name=None, **kwargs):
+        super(_MultiPointConstraint, self).__init__(name=name, **kwargs)
+        self.constraint_type = constraint_type
 
 
-class SliderConstraint(_Constraint):
-    """Slider constraint between two sets of nodes, elements or surfaces that allows
-    translations on a plane about an axis and fixes all translations.
+class TieMPC(_MultiPointConstraint):
+    """Tie MPC that constraints axial translations.
+    """
+    __doc__ += _MultiPointConstraint.__doc__
 
+
+class BeamMPC(_MultiPointConstraint):
+    """Beam MPC that constraints axial translations and rotations.
+    """
+    __doc__ += _MultiPointConstraint.__doc__
+
+#TODO check!
+class _SurfaceConstraint(_Constraint):
+    """A SurfaceContrstaint links a surface (master) to another surface (slave)
+    in the model.
+
+    Note
+    ----
+    Constraints are registered to a :class:`compas_fea2.model.Model`.
+
+    Parameters
+    ----------
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
+    name : str,optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+
+    Attributes
+    ----------
+    name : str
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
+    master : :class:`compas_fea2.model.Node`
+        Node that act as master.
+    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        List or Group of nodes that act as slaves.
+    tol : float
+        Constraint tolerance, distance limit between master and slaves.
     """
 
-    def __init__(self, *, master, slave, tol, plane, name=None, **kwargs):
-        super(SliderConstraint, self).__init__(master=master, slave=slave, tol=tol, name=name, **kwargs)
-        self.plane = plane
+class TieConstraint(_SurfaceConstraint):
+    """Tie constraint between two surfaces.
+    """

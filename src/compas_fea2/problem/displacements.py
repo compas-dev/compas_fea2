@@ -8,6 +8,10 @@ from compas_fea2.base import FEAData
 class GeneralDisplacement(FEAData):
     """GeneralDisplacement object.
 
+    Note
+    ----
+    Displacements are registered to a :class:`compas_fea2.problem.Step`.
+
     Parameters
     ----------
     name : str, optional
@@ -57,4 +61,16 @@ class GeneralDisplacement(FEAData):
         self.xx = xx
         self.yy = yy
         self.zz = zz
-        self.axes = axes
+        self._axes = axes
+
+    @property
+    def axes(self):
+        return self._axes
+
+    @axes.setter
+    def axes(self, value):
+        self._axes = value
+
+    @property
+    def components(self):
+        return {c: getattr(self, c) for c in ['x', 'y', 'z', 'xx', 'yy', 'zz']}

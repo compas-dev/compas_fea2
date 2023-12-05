@@ -13,6 +13,11 @@ from .materials import _Material
 class _Section(FEAData):
     """Base class for sections.
 
+    Note
+    ----
+    Sections are registered to a :class:`compas_fea2.model.Model` and can be assigned
+    to elements in different Parts.
+
     Parameters
     ----------
     name : str, optional
@@ -26,9 +31,12 @@ class _Section(FEAData):
     name : str
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
+    key : int, read-only
+        Identifier index of the section in the parent Model.
     material : :class:`~compas_fea2.model._Material`
         The material associated with the section.
-
+    model : :class:`compas_fea2.model.Model`
+        The model where the section is assigned.
     """
 
     def __init__(self, material, name=None, **kwargs):
@@ -51,17 +59,18 @@ class _Section(FEAData):
                 raise ValueError('Material must be of type `compas_fea2.model._Material`.')
             self._material = value
 
+    @property
+    def model(self):
+        return self._registration
+
     def __str__(self):
         return """
-Section
--------
-name     : {}
-material : {}
-""".format(self.name, self.material.__class__.__name__)
-
-    @abstractmethod
-    def jobdata(self, *args, **kwargs):
-        raise NotImplementedError
+Section {}
+--------{}
+model    : {!r}
+key      : {}
+material : {!r}
+""".format(self.name, '-'*len(self.name), self.model, self.key, self.material)
 
 
 # ==============================================================================
@@ -73,25 +82,38 @@ class MassSection(FEAData):
 
     Parameters
     ----------
-    name : str
-        Section name.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     mass : float
         Point mass value.
 
+    Attributes
+    ----------
+    name : str
+        Uniqe identifier.
+    key : int, read-only
+        Identifier of the element in the parent part.
+    mass : float
+        Point mass value.
     """
 
     def __init__(self, mass, name=None, **kwargs):
         super(MassSection, self).__init__(name=name, **kwargs)
         self.mass = mass
+        self._key = None
+
+    @property
+    def key(self):
+        return self._key
 
     def __str__(self):
         return """
-Mass Section
-------------
-name     : {}
-material : None
+Mass Section  {}
+--------{}
+model    : {!r}
 mass     : {}
-""".format(self.name, self.mass)
+""".format(self.name, '-'*len(self.name), self.model, self.mass)
 
 
 class SpringSection(FEAData):
@@ -99,8 +121,9 @@ class SpringSection(FEAData):
 
     Parameters
     ----------
-    name : str
-        Section name.
+    name : str, optional
+        Uniqe identifier. If not provided it is automatically generated. Set a
+        name if you want a more human-readable input file.
     forces : dict
         Forces data for non-linear springs.
     displacements : dict
@@ -111,7 +134,9 @@ class SpringSection(FEAData):
     Attributes
     ----------
     name : str
-        Section object name.
+        Uniqe identifier.
+    key : int, read-only
+        Identifier of the element in the parent part.
     forces : dict
         Forces data for non-linear springs.
     displacements : dict
@@ -129,7 +154,7 @@ class SpringSection(FEAData):
 
     def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
         super(SpringSection, self).__init__(name=name, **kwargs)
-        # would be good to know the structure of these dicts and validate
+        #TODO would be good to know the structure of these dicts and validate
         self.forces = forces or {}
         self.displacements = displacements or {}
         self.stiffness = stiffness or {}

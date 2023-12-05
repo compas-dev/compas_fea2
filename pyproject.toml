@@ -4,12 +4,9 @@ line-length = 120
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests", "src/compas_fea2"]
-python_files = [
-    "test_*.py",
-    "tests.py"
-]
+python_files = ["test_*.py", "tests.py"]
 addopts = "-ra --strict --doctest-modules --doctest-glob=*.rst --tb=short"
-doctest_optionflags= "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"
 filterwarnings = "ignore::DeprecationWarning"
 
 [tool.isort]
@@ -24,4 +21,3 @@ known_first_party = "compas_fea2"
 default_section = "THIRDPARTY"
 forced_separate = "test_compas_fea2"
 skip = ["__init__.py"]
-

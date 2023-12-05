@@ -2,8 +2,6 @@
 Introduction
 ********************************************************************************
 
-.. rst-class:: lead
-
 Plug-in architecture
 ====================
 
@@ -25,9 +23,10 @@ Workflow
 
 The image below describes a general FEA workflow:
 
-.. figure:: /_images/workflow_1.png
+.. figure:: /_images/basic_workflow.png
      :figclass: figure
      :class: figure-img img-fluid
+
 
 Collaboration Workflow
 ======================
@@ -52,9 +51,9 @@ engineer using blender and ansys:
      :class: figure-img img-fluid
 
 
-
 Units
 =====
+
 Before starting any model, you need to decide which system of
 units you will use. ``compas_fea2`` has no built-in system of units.
 

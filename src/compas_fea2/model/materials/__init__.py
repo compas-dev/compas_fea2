@@ -11,7 +11,7 @@ General Materials
 .. autosummry::
     :toctree: generated/
 
-    _Material
+    Material
     ElasticIsotropic
     ElasticOrthotropic
     ElasticPlastic
@@ -56,7 +56,7 @@ from .concrete import ConcreteDamagedPlasticity  # noqa : F401
 from .concrete import ConcreteSmearedCrack  # noqa : F401
 
 # Basic Materials
-from .material import _Material  # noqa : F401
+from .material import Material  # noqa : F401
 from .material import ElasticIsotropic  # noqa : F401
 from .material import ElasticOrthotropic  # noqa : F401
 from .material import ElasticPlastic  # noqa : F401

@@ -3,35 +3,38 @@ from __future__ import division
 from __future__ import print_function
 
 from math import sqrt
-from compas.geometry import Point, Plane, Frame, Polygon
+from compas.geometry import Point, Plane, Frame
 from compas.geometry import Transformation, Scale
-from compas.geometry import normalize_vector
 from compas.geometry import distance_point_point_sqrd
 from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
 from compas.utilities import geometric_key
 from compas.geometry import Vector
-from compas.geometry import sum_vectors
 
 import compas_fea2
 from compas_fea2.base import FEAData
 
 from .nodes import Node
-from .elements import _Element, _Element2D, _Element1D, _Element3D, BeamElement, HexahedronElement, ShellElement, TetrahedronElement, Face
-from .materials import _Material
-from .sections import _Section, ShellSection, SolidSection
-from .releases import _BeamEndRelease, BeamEndPinRelease
+from .elements import (
+    Element,
+    Element2D,
+    Element1D,
+    Element3D,
+    BeamElement,
+    HexahedronElement,
+    ShellElement,
+    TetrahedronElement,
+)
+from .materials import Material
+from .sections import Section, ShellSection, SolidSection
+from .releases import BeamEndRelease
 from .groups import NodesGroup, ElementsGroup, FacesGroup
-from .ics import InitialStressField
 
 from compas_fea2.utilities._utils import timer
 
 
-class _Part(FEAData):
-    """
-    Note
-    ----
-    Parts are registered to a :class:`compas_fea2.model.Model`.
+class Part(FEAData):
+    """Base class for Parts.
 
     Parameters
     ----------
@@ -52,13 +55,13 @@ class _Part(FEAData):
         Number of nodes in the part.
     gkey_node : {gkey : :class:`compas_fea2.model.Node`}
         Dictionary that associates each node and its geometric key}
-    materials : Set[:class:`compas_fea2.model._Material`]
+    materials : Set[:class:`compas_fea2.model.Material`]
         The materials belonging to the part.
-    sections : Set[:class:`compas_fea2.model._Section`]
+    sections : Set[:class:`compas_fea2.model.Section`]
         The sections belonging to the part.
-    elements : Set[:class:`compas_fea2.model._Element`]
+    elements : Set[:class:`compas_fea2.model.Element`]
         The elements belonging to the part.
-    element_types : {:class:`compas_fea2.model._Element` : [:class:`compas_fea2.model._Element`]]
+    element_types : {:class:`compas_fea2.model.Element` : [:class:`compas_fea2.model.Element`]]
         Dictionary with the elements of the part for each element type.
     element_count : int
         Number of elements in the part
@@ -72,10 +75,15 @@ class _Part(FEAData):
         The outer boundary mesh enveloping the Part.
     discretized_boundary_mesh : :class:`compas.datastructures.Mesh`
         The discretized outer boundary mesh enveloping the Part.
+
+    Notes
+    -----
+    Parts are registered to a :class:`compas_fea2.model.Model`.
+
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Part, self).__init__(name=name, **kwargs)
+        super(Part, self).__init__(name=name, **kwargs)
         self._nodes = set()
         self._gkey_node = {}
         self._sections = set()
@@ -137,7 +145,7 @@ class _Part(FEAData):
 
     @property
     def volume(self):
-        self._volume = 0.
+        self._volume = 0.0
         for element in self.elements:
             if element.volume:
                 self._volume += element.volume
@@ -153,40 +161,39 @@ class _Part(FEAData):
 
     @property
     def nodes_count(self):
-        return len(self.nodes)-1
+        return len(self.nodes) - 1
 
     @property
     def elements_count(self):
-        return len(self.elements)-1
+        return len(self.elements) - 1
 
     @property
     def element_types(self):
         element_types = {}
         for element in self.elements:
-            element_types.setdefault(type(element),[]).append(element)
+            element_types.setdefault(type(element), []).append(element)
         return element_types
 
+    #     def __str__(self):
+    #         return """
+    # {}
+    # {}
+    # name : {}
 
-#     def __str__(self):
-#         return """
-# {}
-# {}
-# name : {}
-
-# number of elements : {}
-# number of nodes    : {}
-# """.format(self.__class__.__name__,
-#            len(self.__class__.__name__) * '-',
-#            self.name,
-#            self.elements_count,
-#            self.nodes_count)
+    # number of elements : {}
+    # number of nodes    : {}
+    # """.format(self.__class__.__name__,
+    #            len(self.__class__.__name__) * '-',
+    #            self.name,
+    #            self.elements_count,
+    #            self.nodes_count)
 
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
 
     @classmethod
-    def from_compas_line(cls, line, element_model='BeamElement', section=None, name=None, **kwargs):
+    def from_compas_line(cls, line, element_model="BeamElement", section=None, name=None, **kwargs):
         """Generate a part from a class:`compas.geometry.Line`.
 
         Parameters
@@ -204,19 +211,22 @@ class _Part(FEAData):
         -------
         class:`compas_fea2.model.Part`
             The part.
+
         """
         import compas_fea2
+
         prt = cls(name=name)
         element = getattr(compas_fea2.model, element_model)(nodes=[Node(line.start), Node(line.end)], section=section)
-        if not isinstance(element, _Element1D):
+        if not isinstance(element, Element1D):
             raise ValueError("Provide a 1D element")
         prt.add_element(element)
         return prt
 
     @classmethod
-    @timer(message='compas Mesh successfully imported in ')
+    @timer(message="compas Mesh successfully imported in ")
     def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
+
         To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
         objects. Currently, the same section is applied to all the elements.
 
@@ -231,7 +241,7 @@ class _Part(FEAData):
             automatically.
 
         """
-        implementation = kwargs.get('implementation', None)
+        implementation = kwargs.get("implementation", None)
         part = cls(name, **kwargs)
 
         vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
@@ -250,8 +260,8 @@ class _Part(FEAData):
     # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, name=None, **kwargs):
         """Create a Part object from a gmshModel object. According to the
-        `section` type provided, :class:`compas_fea2.model._Element2D` or
-        :class:`compas_fea2.model._Element3D` elements are cretated.
+        `section` type provided, :class:`compas_fea2.model.Element2D` or
+        :class:`compas_fea2.model.Element3D` elements are cretated.
         The same section is applied to all the elements.
 
         Note
@@ -284,7 +294,7 @@ class _Part(FEAData):
 
         Returns
         -------
-        :class:`compas_fea2.model._Part`
+        :class:`compas_fea2.model.Part`
             The part meshed.
 
         References
@@ -304,47 +314,44 @@ class _Part(FEAData):
         part = cls(name=name)
         # add nodes
         gmsh_nodes = gmshModel.mesh.get_nodes()
-        node_coords = gmsh_nodes[1].reshape((-1, 3), order='C')
+        node_coords = gmsh_nodes[1].reshape((-1, 3), order="C")
         fea2_nodes = [part.add_node(Node(coords.tolist())) for coords in node_coords]
         # add elements
         gmsh_elements = gmshModel.mesh.get_elements()
 
-        section = kwargs.get('section', None)
-        split = kwargs.get('split', False)
-        verbose = kwargs.get('verbose', False)
-        rigid = kwargs.get('rigid', False)
-        implementation = kwargs.get('implementation', None)
+        section = kwargs.get("section", None)
+        split = kwargs.get("split", False)
+        verbose = kwargs.get("verbose", False)
+        rigid = kwargs.get("rigid", False)
+        implementation = kwargs.get("implementation", None)
 
         dimension = 2 if isinstance(section, SolidSection) else 1
 
-        ntags_per_element = np.split(gmsh_elements[2][dimension]-1,
-                                     len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
+        ntags_per_element = np.split(
+            gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension])
+        )  # gmsh keys start from 1
 
         for ntags in ntags_per_element:
             if split:
-                raise NotImplementedError('this feature is under development')
+                raise NotImplementedError("this feature is under development")
             element_nodes = [fea2_nodes[ntag] for ntag in ntags]
             if ntags.size == 3:
-                k = part.add_element(ShellElement(nodes=element_nodes,
-                                                  section=section,
-                                                  rigid=rigid,
-                                                  implementation=implementation))
+                k = part.add_element(
+                    ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation)
+                )
             elif ntags.size == 4:
                 if isinstance(section, ShellSection):
-                    k = part.add_element(ShellElement(nodes=element_nodes,
-                                                      section=section,
-                                                      rigid=rigid,
-                                                      implementation=implementation))
+                    k = part.add_element(
+                        ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation)
+                    )
                 else:
-                    k = part.add_element(TetrahedronElement(nodes=element_nodes,
-                                                            section=section))
+                    k = part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
             elif ntags.size == 8:
-                k = part.add_element(HexahedronElement(nodes=element_nodes,
-                                                       section=section))
+                k = part.add_element(HexahedronElement(nodes=element_nodes, section=section))
             else:
-                raise NotImplementedError('Element with {} nodes not supported'.format(ntags.size))
+                raise NotImplementedError("Element with {} nodes not supported".format(ntags.size))
             if verbose:
-                print('element {} added'.format(k))
+                print("element {} added".format(k))
 
         return part
 
@@ -369,11 +376,12 @@ class _Part(FEAData):
 
         """
         from compas_gmsh.models import MeshModel
-        target_mesh_size = kwargs.get('target_mesh_size', 1)
-        mesh_size_at_vertices = kwargs.get('mesh_size_at_vertices', None)
-        target_point_mesh_size = kwargs.get('target_point_mesh_size', None)
-        meshsize_max = kwargs.get('meshsize_max', None)
-        meshsize_min = kwargs.get('meshsize_min', None)
+
+        target_mesh_size = kwargs.get("target_mesh_size", 1)
+        mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
+        target_point_mesh_size = kwargs.get("target_point_mesh_size", None)
+        meshsize_max = kwargs.get("meshsize_max", None)
+        meshsize_min = kwargs.get("meshsize_min", None)
 
         gmshModel = MeshModel.from_mesh(boundary_mesh, targetlength=target_mesh_size)
 
@@ -401,9 +409,9 @@ class _Part(FEAData):
         gmshModel.generate_mesh(2)
         part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
 
-        del(gmshModel)
+        del gmshModel
 
-        if kwargs.get('rigid', False):
+        if kwargs.get("rigid", False):
             point = boundary_mesh.centroid()
             part.reference_point = Node(xyz=[point.x, point.y, point.z])
 
@@ -417,6 +425,7 @@ class _Part(FEAData):
     # =========================================================================
     #                           Nodes methods
     # =========================================================================
+
     def find_node_by_key(self, key):
         # type: (int) -> Node
         """Retrieve a node in the model using its key.
@@ -430,6 +439,7 @@ class _Part(FEAData):
         -------
         :class:`compas_fea2.model.Node`
             The corresponding node.
+
         """
         for node in self.nodes:
             if node.key == key:
@@ -471,12 +481,11 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Node`]
 
         """
-        d2 = distance ** 2
+        d2 = distance**2
         nodes = self.find_nodes_on_plane(plane) if plane else self.nodes
         if report:
-            return {node: sqrt(distance) for node in nodes if (distance := distance_point_point_sqrd(node.xyz, point)) < d2}
-        else:
-            return [node for node in nodes if (distance := distance_point_point_sqrd(node.xyz, point)) < d2]
+            return {node: sqrt(distance) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
+        return [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
 
     def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
         # type: (Point, float, int, Plane) -> list(Node)
@@ -520,6 +529,7 @@ class _Part(FEAData):
         -------
         [:class:`compas_fea2.model.Node]
             The nodes around the given node
+
         """
         nodes = self.find_nodes_by_location(node.xyz, distance, plane, report=True)
         if node in nodes:
@@ -555,10 +565,6 @@ class _Part(FEAData):
         # type: (str, float, float) -> list(Node)
         """Find all nodes with a given value for a the given attribute.
 
-        Note
-        ----
-        Only numeric attributes are supported.
-
         Parameters
         ----------
         attr : str
@@ -569,6 +575,10 @@ class _Part(FEAData):
         Returns
         -------
         list[:class:`compas_fea2.model.Node`]
+
+        Notes
+        -----
+        Only numeric attributes are supported.
 
         """
         return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
@@ -602,21 +612,21 @@ class _Part(FEAData):
         -------
         [:class:`compas_fea2.model.Node]
             List with the nodes contained in the polygon.
+
         """
         # TODO quick fix...change!
-        if not hasattr(polygon, 'plane'):
+        if not hasattr(polygon, "plane"):
             try:
                 polygon.plane = Frame.from_points(*polygon.points[:3])
-            except:
+            except Exception:
                 polygon.plane = Frame.from_points(*polygon.points[-3:])
 
-        S = Scale.from_factors([tolerance]*3, polygon.plane)
+        S = Scale.from_factors([tolerance] * 3, polygon.plane)
         T = Transformation.from_frame_to_frame(polygon.plane, Frame.worldXY())
         nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
         polygon_xy = polygon.transformed(S)
         polygon_xy = polygon.transformed(T)
         return list(filter(lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy), nodes_on_plane))
-
 
     # TODO quite slow...check how to make it faster
     def find_nodes_where(self, conditions):
@@ -632,8 +642,10 @@ class _Part(FEAData):
         -------
         [Node]
             List with the nodes matching the criteria.
+
         """
         import re
+
         nodes = []
         for condition in conditions:
             # limit the serch to the already found nodes
@@ -642,7 +654,9 @@ class _Part(FEAData):
                 eval(condition)
             except NameError as ne:
                 var_name = re.findall(r"'([^']*)'", str(ne))[0]
-                nodes.append(set(filter(lambda n: eval(condition.replace(var_name, str(getattr(n, var_name)))), part_nodes)))
+                nodes.append(
+                    set(filter(lambda n: eval(condition.replace(var_name, str(getattr(n, var_name)))), part_nodes))
+                )
         return list(set.intersection(*nodes))
 
     def contains_node(self, node):
@@ -664,10 +678,6 @@ class _Part(FEAData):
         # type: (Node) -> Node
         """Add a node to the part.
 
-        Note
-        ----
-        By adding a Node to the part, it gets registered to the part.
-
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
@@ -683,6 +693,10 @@ class _Part(FEAData):
         TypeError
             If the node is not a node.
 
+        Notes
+        -----
+        By adding a Node to the part, it gets registered to the part.
+
         Examples
         --------
         >>> part = DeformablePart()
@@ -691,17 +705,17 @@ class _Part(FEAData):
 
         """
         if not isinstance(node, Node):
-            raise TypeError('{!r} is not a node.'.format(node))
+            raise TypeError("{!r} is not a node.".format(node))
 
         if self.contains_node(node):
             if compas_fea2.VERBOSE:
-                print('NODE SKIPPED: Node {!r} already in part.'.format(node))
+                print("NODE SKIPPED: Node {!r} already in part.".format(node))
             return
 
         if not compas_fea2.POINT_OVERLAP:
             if self.find_nodes_by_location(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE):
                 if compas_fea2.VERBOSE:
-                    print('NODE SKIPPED: Part {!r} has already a node at {}.'.format(self, node.xyz))
+                    print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
                 return
 
         node._key = len(self._nodes)
@@ -709,7 +723,7 @@ class _Part(FEAData):
         self._gkey_node[node.gkey] = node
         node._registration = self
         if compas_fea2.VERBOSE:
-            print('Node {!r} registered to {!r}.'.format(node, self))
+            print("Node {!r} registered to {!r}.".format(node, self))
         return node
 
     def add_nodes(self, nodes):
@@ -748,6 +762,7 @@ class _Part(FEAData):
         ----------
         node : :class:`compas_fea2.model.Node`
             The node to remove
+
         """
         # type: (Node) -> None
         if self.contains_node(node):
@@ -755,7 +770,7 @@ class _Part(FEAData):
             self._gkey_node.pop(node.gkey)
             node._registration = None
             if compas_fea2.VERBOSE:
-                print('Node {!r} removed from {!r}.'.format(node, self))
+                print("Node {!r} removed from {!r}.".format(node, self))
 
     def remove_nodes(self, nodes):
         """Remove multiple :class:`compas_fea2.model.Node` from the part.
@@ -766,8 +781,9 @@ class _Part(FEAData):
 
         Parameters
         ----------
-        nodes : []:class:`compas_fea2.model.Node`]
+        nodes : [:class:`compas_fea2.model.Node`]
             List with the nodes to remove
+
         """
         for node in nodes:
             self.remove_node(node)
@@ -783,28 +799,29 @@ class _Part(FEAData):
         precision : ??
             ???
 
-        Note
-        ----
-        The `discretized_boundary_mesh` of the part must have been previously
-        defined.
-
         Returns
         -------
         bool
             `True` if the node is on the boundary, `False` otherwise.
+
+        Notes
+        -----
+        The `discretized_boundary_mesh` of the part must have been previously defined.
+
         """
         if not self.discretized_boundary_mesh:
             raise AttributeError("The discretized_boundary_mesh has not been defined")
         if not node.on_boundary:
-            node._on_boundary = True if geometric_key(
-                node.xyz, precision) in self.discretized_boundary_mesh.gkey_vertex() else False
+            node._on_boundary = (
+                True if geometric_key(node.xyz, precision) in self.discretized_boundary_mesh.gkey_vertex() else False
+            )
         return node.on_boundary
 
     # =========================================================================
     #                           Elements methods
     # =========================================================================
     def find_element_by_key(self, key):
-        # type: (int) -> _Element
+        # type: (int) -> Element
         """Retrieve an element in the model using its key.
 
         Parameters
@@ -814,15 +831,16 @@ class _Part(FEAData):
 
         Returns
         -------
-        :class:`compas_fea2.model._Element`
+        :class:`compas_fea2.model.Element`
             The corresponding element.
+
         """
         for element in self.elements:
             if element.key == key:
                 return element
 
     def find_elements_by_name(self, name):
-        # type: (str) -> list(_Element)
+        # type: (str) -> list(Element)
         """Find all elements with a given name.
 
         Parameters
@@ -831,18 +849,18 @@ class _Part(FEAData):
 
         Returns
         -------
-        list[:class:`compas_fea2.model._Element`]
+        list[:class:`compas_fea2.model.Element`]
 
         """
         return [element for element in self.elements if element.name == name]
 
     def contains_element(self, element):
-        # type: (_Element) -> _Element
+        # type: (Element) -> Element
         """Verify that the part contains a specific element.
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
 
         Returns
         -------
@@ -852,17 +870,17 @@ class _Part(FEAData):
         return element in self.elements
 
     def add_element(self, element):
-        # type: (_Element) -> _Element
+        # type: (Element) -> Element
         """Add an element to the part.
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
             The element instance.
 
         Returns
         -------
-        :class:`compas_fea2.model._Element`
+        :class:`compas_fea2.model.Element`
 
         Raises
         ------
@@ -870,8 +888,8 @@ class _Part(FEAData):
             If the element is not an element.
 
         """
-        if not isinstance(element, _Element):
-            raise TypeError('{!r} is not an element.'.format(element))
+        if not isinstance(element, Element):
+            raise TypeError("{!r} is not an element.".format(element))
 
         if self.contains_element(element):
             if compas_fea2.VERBOSE:
@@ -879,11 +897,11 @@ class _Part(FEAData):
             return
 
         self.add_nodes(element.nodes)
-        if hasattr(element, 'section'):
+        if hasattr(element, "section"):
             if element.section:
                 self.add_section(element.section)
 
-        if hasattr(element.section, 'material'):
+        if hasattr(element.section, "material"):
             if element.section.material:
                 self.add_material(element.section.material)
 
@@ -891,26 +909,26 @@ class _Part(FEAData):
         self.elements.add(element)
         element._registration = self
         if compas_fea2.VERBOSE:
-            print('Element {!r} registered to {!r}.'.format(element, self))
+            print("Element {!r} registered to {!r}.".format(element, self))
         return element
 
     def add_elements(self, elements):
-        # type: (_Element) -> list(_Element)
+        # type: (Element) -> list(Element)
         """Add multiple elements to the part.
 
         Parameters
         ----------
-        elements : list[:class:`compas_fea2.model._Element`]
+        elements : list[:class:`compas_fea2.model.Element`]
 
         Return
         ------
-        list[:class:`compas_fea2.model._Element`]
+        list[:class:`compas_fea2.model.Element`]
 
         """
         return [self.add_element(element) for element in elements]
 
     def remove_element(self, element):
-        """Remove a :class:`compas_fea2.model._Element` from the part.
+        """Remove a :class:`compas_fea2.model.Element` from the part.
 
         Warning
         -------
@@ -918,27 +936,29 @@ class _Part(FEAData):
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
             The element to remove
+
         """
-        # type: (_Element) -> None
+        # type: (Element) -> None
         if self.contains_node(element):
             self.elements.pop(element)
             element._registration = None
             if compas_fea2.VERBOSE:
-                print('Element {!r} removed from {!r}.'.format(element, self))
+                print("Element {!r} removed from {!r}.".format(element, self))
 
     def remove_elements(self, elements):
-        """Remove multiple :class:`compas_fea2.model._Element` from the part.
-
-        Warning
-        -------
-        Removing elements can cause inconsistencies.
+        """Remove multiple :class:`compas_fea2.model.Element` from the part.
 
         Parameters
         ----------
-        elements : []:class:`compas_fea2.model._Element`]
+        elements : []:class:`compas_fea2.model.Element`]
             List with the elements to remove
+
+        Warnings
+        --------
+        Removing elements can cause inconsistencies.
+
         """
         for element in elements:
             self.remove_element(element)
@@ -948,15 +968,16 @@ class _Part(FEAData):
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
             The element to check.
 
         Returns
         -------
         bool
             ``True`` if the element is on the boundary.
+
         """
-        # type: (_Element) -> bool
+        # type: (Element) -> bool
         from compas.geometry import centroid_points
 
         if element.on_boundary is None:
@@ -964,13 +985,20 @@ class _Part(FEAData):
                 centroid_face = {}
                 for face in self._discretized_boundary_mesh.faces():
                     centroid_face[geometric_key(self._discretized_boundary_mesh.face_centroid(face))] = face
-            if isinstance(element, _Element3D):
-                if any(geometric_key(centroid_points([node.xyz for node in face.nodes])) in self._discretized_boundary_mesh.centroid_face for face in element.faces):
+            if isinstance(element, Element3D):
+                if any(
+                    geometric_key(centroid_points([node.xyz for node in face.nodes]))
+                    in self._discretized_boundary_mesh.centroid_face
+                    for face in element.faces
+                ):
                     element.on_boundary = True
                 else:
                     element.on_boundary = False
-            elif isinstance(element, _Element2D):
-                if geometric_key(centroid_points([node.xyz for node in element.nodes])) in self._discretized_boundary_mesh.centroid_face:
+            elif isinstance(element, Element2D):
+                if (
+                    geometric_key(centroid_points([node.xyz for node in element.nodes]))
+                    in self._discretized_boundary_mesh.centroid_face
+                ):
                     element.on_boundary = True
                 else:
                     element.on_boundary = False
@@ -984,10 +1012,6 @@ class _Part(FEAData):
         # type: (Plane) -> list(Face)
         """Find the face of the elements that belongs to a given plane, if any.
 
-        Note
-        ----
-        The search is limited to solid elements.
-
         Parameters
         ----------
         plane : :class:`compas.geometry.Plane`
@@ -997,9 +1021,16 @@ class _Part(FEAData):
         -------
         [:class:`compas_fea2.model.Face`]
             list with the faces belonging to the given plane.
+
+        Notes
+        -----
+        The search is limited to solid elements.
+
         """
         faces = []
-        for element in filter(lambda x: isinstance(x, (_Element2D, _Element3D)) and self.is_element_on_boundary(x), self._elements):
+        for element in filter(
+            lambda x: isinstance(x, (Element2D, Element3D)) and self.is_element_on_boundary(x), self._elements
+        ):
             for face in element.faces:
                 if all([is_point_on_plane(node.xyz, plane) for node in face.nodes]):
                     faces.append(face)
@@ -1042,7 +1073,7 @@ class _Part(FEAData):
         elif isinstance(group, FacesGroup):
             return group in self._facesgroups
         else:
-            raise TypeError('{!r} is not a valid Group'.format(group))
+            raise TypeError("{!r} is not a valid Group".format(group))
 
     def add_group(self, group):
         """Add a node or element group to the part.
@@ -1051,8 +1082,8 @@ class _Part(FEAData):
         ----------
         group : :class:`compas_fea2.model.NodeGroup` | :class:`compas_fea2.model.ElementGroup`
 
-        Return
-        ------
+        Returns
+        -------
         None
 
         Raises
@@ -1089,8 +1120,8 @@ class _Part(FEAData):
         ----------
         groups : list[:class:`compas_fea2.model.Group`]
 
-        Return
-        ------
+        Returns
+        -------
         list[:class:`compas_fea2.model.Group`]
 
         """
@@ -1100,7 +1131,7 @@ class _Part(FEAData):
     # Results methods
     # ==============================================================================
 
-    def sorted_nodes_by_displacement(self, problem, step=None, component='length'):
+    def sorted_nodes_by_displacement(self, problem, step=None, component="length"):
         """Return a list with the nodes sorted by their displacement
 
         Parameters
@@ -1117,11 +1148,12 @@ class _Part(FEAData):
         -------
         [:class:`compas_fea2.model.Node`]
             The node sorted by displacment (ascending).
+
         """
         step = step or problem._steps_order[-1]
-        return sorted(self.nodes, key=lambda n: getattr(Vector(*n.results[problem][step].get('U', None)), component))
+        return sorted(self.nodes, key=lambda n: getattr(Vector(*n.results[problem][step].get("U", None)), component))
 
-    def get_max_displacement(self, problem, step=None, component='length'):
+    def get_max_displacement(self, problem, step=None, component="length"):
         """Retrieve the node with the maximum displacement
 
         Parameters
@@ -1138,13 +1170,14 @@ class _Part(FEAData):
         -------
         :class:`compas_fea2.model.Node`, float
             The node and the displacement
+
         """
         step = step or problem._steps_order[-1]
         node = self.sorted_nodes_by_displacement(problem=problem, step=step, component=component)[-1]
-        displacement = getattr(Vector(*node.results[problem][step].get('U', None)), component)
+        displacement = getattr(Vector(*node.results[problem][step].get("U", None)), component)
         return node, displacement
 
-    def get_min_displacement(self, problem, step=None, component='length'):
+    def get_min_displacement(self, problem, step=None, component="length"):
         """Retrieve the node with the minimum displacement
 
         Parameters
@@ -1161,13 +1194,14 @@ class _Part(FEAData):
         -------
         :class:`compas_fea2.model.Node`, float
             The node and the displacement
+
         """
         step = step or problem._steps_order[-1]
         node = self.sorted_nodes_by_displacement(problem=problem, step=step, component=component)[0]
-        displacement = getattr(Vector(*node.results[problem][step].get('U', None)), component)
+        displacement = getattr(Vector(*node.results[problem][step].get("U", None)), component)
         return node, displacement
 
-    def get_average_displacement_at_point(self, problem, point, distance, step=None, component='length', project=False):
+    def get_average_displacement_at_point(self, problem, point, distance, step=None, component="length", project=False):
         """Compute the average displacement around a point
 
         Parameters
@@ -1184,27 +1218,27 @@ class _Part(FEAData):
         -------
         :class:`compas_fea2.model.Node`, float
             The node and the displacement
+
         """
         step = step or problem._steps_order[-1]
         nodes = self.find_nodes_by_location(point=point, distance=distance, report=True)
         if nodes:
-            displacements = [getattr(Vector(*node.results[problem][step].get('U', None)), component) for node in nodes]
-            return point, sum(displacements)/len(displacements)
+            displacements = [getattr(Vector(*node.results[problem][step].get("U", None)), component) for node in nodes]
+            return point, sum(displacements) / len(displacements)
 
 
-class DeformablePart(_Part):
+class DeformablePart(Part):
     """Deformable part.
-    """
-    __doc__ += _Part.__doc__
-    __doc__ += """
-    Additional Attributes
-    ---------------------
-    materials : Set[:class:`compas_fea2.model._Material`]
+
+    Attributes
+    ----------
+    materials : Set[:class:`compas_fea2.model.Material`]
         The materials belonging to the part.
-    sections : Set[:class:`compas_fea2.model._Section`]
+    sections : Set[:class:`compas_fea2.model.Section`]
         The sections belonging to the part.
-    releases : Set[:class:`compas_fea2.model._BeamEndRelease`]
+    releases : Set[:class:`compas_fea2.model.BeamEndRelease`]
         The releases belonging to the part.
+
     """
 
     def __init__(self, name=None, **kwargs):
@@ -1213,15 +1247,15 @@ class DeformablePart(_Part):
         self._sections = set()
         self._releases = set()
 
-    @ property
+    @property
     def materials(self):
         return self._materials
 
-    @ property
+    @property
     def sections(self):
         return self._sections
 
-    @ property
+    @property
     def releases(self):
         return self._releases
 
@@ -1229,10 +1263,11 @@ class DeformablePart(_Part):
     #                       Constructor methods
     # =========================================================================
 
-    @ classmethod
-    @ timer(message='compas Mesh successfully imported in ')
+    @classmethod
+    @timer(message="compas Mesh successfully imported in ")
     def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a a :class:`compas.datastructures.Mesh`.
+
         To each edge of the mesh is assigned a :class:`compas_fea2.model.BeamElement`.
         Currently, the same section is applied to all the elements.
 
@@ -1251,7 +1286,7 @@ class DeformablePart(_Part):
 
         for edge in mesh.edges():
             nodes = [vertex_node[vertex] for vertex in edge]
-            v = mesh.edge_direction(*edge)
+            v = list(mesh.edge_direction(edge))
             v.append(v.pop(0))
             part.add_element(BeamElement(nodes=[*nodes], section=section, frame=v))
 
@@ -1260,17 +1295,15 @@ class DeformablePart(_Part):
 
         return part
 
-    @ classmethod
+    @classmethod
     # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, section, name=None, **kwargs):
-        """
-        """
+        """ """
         return super().from_gmsh(gmshModel, name=name, section=section, **kwargs)
 
-    @ classmethod
+    @classmethod
     def from_boundary_mesh(cls, boundary_mesh, section, name=None, **kwargs):
-        """
-        """
+        """ """
         return super().from_boundary_mesh(boundary_mesh, section=section, name=name, **kwargs)
 
     # =========================================================================
@@ -1278,7 +1311,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def find_materials_by_name(self, name):
-        # type: (str) -> list(_Material)
+        # type: (str) -> list(Material)
         """Find all materials with a given name.
 
         Parameters
@@ -1293,7 +1326,7 @@ class DeformablePart(_Part):
         return [material for material in self.materials if material.name == name]
 
     def contains_material(self, material):
-        # type: (_Material) -> _Material
+        # type: (Material) -> Material
         """Verify that the part contains a specific material.
 
         Parameters
@@ -1308,7 +1341,7 @@ class DeformablePart(_Part):
         return material in self.materials
 
     def add_material(self, material):
-        # type: (_Material) -> _Material
+        # type: (Material) -> Material
         """Add a material to the part so that it can be referenced in section and element definitions.
 
         Parameters
@@ -1325,12 +1358,12 @@ class DeformablePart(_Part):
             If the material is not a material.
 
         """
-        if not isinstance(material, _Material):
-            raise TypeError('{!r} is not a material.'.format(material))
+        if not isinstance(material, Material):
+            raise TypeError("{!r} is not a material.".format(material))
 
         if self.contains_material(material):
             if compas_fea2.VERBOSE:
-                print('SKIPPED: Material {!r} already in part.'.format(material))
+                print("SKIPPED: Material {!r} already in part.".format(material))
             return
 
         material._key = len(self._materials)
@@ -1339,7 +1372,7 @@ class DeformablePart(_Part):
         return material
 
     def add_materials(self, materials):
-        # type: (_Material) -> list(_Material)
+        # type: (Material) -> list(Material)
         """Add multiple materials to the part.
 
         Parameters
@@ -1358,7 +1391,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def find_sections_by_name(self, name):
-        # type: (str) -> list(_Section)
+        # type: (str) -> list(Section)
         """Find all sections with a given name.
 
         Parameters
@@ -1373,7 +1406,7 @@ class DeformablePart(_Part):
         return [section for section in self.sections if section.name == name]
 
     def contains_section(self, section):
-        # type: (_Section) -> _Section
+        # type: (Section) -> Section
         """Verify that the part contains a specific section.
 
         Parameters
@@ -1388,7 +1421,7 @@ class DeformablePart(_Part):
         return section in self.sections
 
     def add_section(self, section):
-        # type: (_Section) -> _Section
+        # type: (Section) -> Section
         """Add a section to the part so that it can be referenced in element definitions.
 
         Parameters
@@ -1405,8 +1438,8 @@ class DeformablePart(_Part):
             If the section is not a section.
 
         """
-        if not isinstance(section, _Section):
-            raise TypeError('{!r} is not a section.'.format(section))
+        if not isinstance(section, Section):
+            raise TypeError("{!r} is not a section.".format(section))
 
         if self.contains_section(section):
             if compas_fea2.VERBOSE:
@@ -1420,7 +1453,7 @@ class DeformablePart(_Part):
         return section
 
     def add_sections(self, sections):
-        # type: (list(_Section)) -> _Section
+        # type: (list(Section)) -> Section
         """Add multiple sections to the part.
 
         Parameters
@@ -1439,8 +1472,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def add_beam_release(self, element, location, release):
-        """Add a :class:`compas_fea2.model._BeamEndRelease` to an element in the
-        part.
+        """Add a :class:`compas_fea2.model.BeamEndRelease` to an element in the part.
 
         Parameters
         ----------
@@ -1448,73 +1480,72 @@ class DeformablePart(_Part):
             The element to release.
         location : str
             'start' or 'end'.
-        release : :class:`compas_fea2.model._BeamEndRelease`
+        release : :class:`compas_fea2.model.BeamEndRelease`
             Release type to apply.
+
         """
-        if not isinstance(release, _BeamEndRelease):
-            raise TypeError('{!r} is not a beam release element.'.format(release))
+        if not isinstance(release, BeamEndRelease):
+            raise TypeError("{!r} is not a beam release element.".format(release))
         release.element = element
         release.location = location
         self._releases.add(release)
         return release
 
 
-class RigidPart(_Part):
+class RigidPart(Part):
     """Rigid part.
-    """
-    __doc__ += _Part.__doc__
-    __doc__ += """
-    Addtional Attributes
-    --------------------
+
+    Attributes
+    ----------
     reference_point : :class:`compas_fea2.model.Node`
         A node acting as a reference point for the part, by default `None`. This
         is required if the part is rigid as it controls its movement in space.
+
     """
 
     def __init__(self, reference_point=None, name=None, **kwargs):
         super(RigidPart, self).__init__(name=name, **kwargs)
         self._reference_point = reference_point
 
-    @ property
+    @property
     def reference_point(self):
         return self._reference_point
 
-    @ reference_point.setter
+    @reference_point.setter
     def reference_point(self, value):
         self._reference_point = self.add_node(value)
         value._is_reference = True
 
-    @ classmethod
+    @classmethod
     # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, name=None, **kwargs):
-        """
-        """
-        kwargs['rigid'] = True
+        """ """
+        kwargs["rigid"] = True
         return super().from_gmsh(gmshModel, name=name, **kwargs)
 
-    @ classmethod
+    @classmethod
     def from_boundary_mesh(cls, boundary_mesh, name=None, **kwargs):
-        """
-        """
-        kwargs['rigid'] = True
+        """ """
+        kwargs["rigid"] = True
         return super().from_boundary_mesh(boundary_mesh, name=name, **kwargs)
+
     # =========================================================================
     #                        Elements methods
     # =========================================================================
     # TODO this can be removed and the checks on the rigid part can be done in _part
 
     def add_element(self, element):
-        # type: (_Element) -> _Element
+        # type: (Element) -> Element
         """Add an element to the part.
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
             The element instance.
 
         Returns
         -------
-        :class:`compas_fea2.model._Element`
+        :class:`compas_fea2.model.Element`
 
         Raises
         ------
@@ -1522,8 +1553,8 @@ class RigidPart(_Part):
             If the element is not an element.
 
         """
-        if not hasattr(element, 'rigid'):
-            raise TypeError('The element type cannot be assigned to a RigidPart')
-        if not getattr(element, 'rigid'):
-            raise TypeError('Rigid parts can only have rigid elements')
+        if not hasattr(element, "rigid"):
+            raise TypeError("The element type cannot be assigned to a RigidPart")
+        if not getattr(element, "rigid"):
+            raise TypeError("Rigid parts can only have rigid elements")
         return super().add_element(element)

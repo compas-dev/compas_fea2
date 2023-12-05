@@ -1,162 +1,3 @@
-"""
-********************************************************************************
-model
-********************************************************************************
-
-.. currentmodule:: compas_fea2.model
-
-Model
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Model
-
-Parts
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    DeformablePart
-    RigidPart
-
-Nodes
-=====
-
-.. autosummary::
-    :toctree: generated/
-
-    Node
-
-Elements
-========
-
-.. autosummary::
-    :toctree: generated/
-
-    _Element
-    MassElement
-    BeamElement
-    SpringElement
-    TrussElement
-    StrutElement
-    TieElement
-    ShellElement
-    MembraneElement
-    _Element3D
-    TetrahedronElement
-    HexahedronElement
-
-Releases
-========
-
-.. autosummary::
-    :toctree: generated/
-
-    _BeamEndRelease
-    BeamEndPinRelease
-    BeamEndSliderRelease
-
-Constraints
-===========
-
-.. autosummary::
-    :toctree: generated/
-
-    _Constraint
-    _MultiPointConstraint
-    TieMPC
-    BeamMPC
-    TieConstraint
-
-Materials
-=========
-
-.. autosummary::
-    :toctree: generated/
-
-    _Material
-    UserMaterial
-    Stiff
-    ElasticIsotropic
-    ElasticOrthotropic
-    ElasticPlastic
-    Concrete
-    ConcreteSmearedCrack
-    ConcreteDamagedPlasticity
-    Steel
-    Timber
-
-Sections
-========
-
-.. autosummary::
-    :toctree: generated/
-
-    _Section
-    BeamSection
-    SpringSection
-    AngleSection
-    BoxSection
-    CircularSection
-    HexSection
-    ISection
-    PipeSection
-    RectangularSection
-    ShellSection
-    MembraneSection
-    SolidSection
-    TrapezoidalSection
-    TrussSection
-    StrutSection
-    TieSection
-    MassSection
-
-Boundary Conditions
-===================
-
-.. autosummary::
-    :toctree: generated/
-
-    _BoundaryCondition
-    GeneralBC
-    FixedBC
-    PinnedBC
-    ClampBCXX
-    ClampBCYY
-    ClampBCZZ
-    RollerBCX
-    RollerBCY
-    RollerBCZ
-    RollerBCXY
-    RollerBCYZ
-    RollerBCXZ
-
-Initial Conditions
-==================
-
-.. autosummary::
-    :toctree: generated/
-
-    _InitialCondition
-    InitialTemperatureField
-    InitialStressField
-
-Groups
-======
-
-.. autosummary::
-    :toctree: generated/
-
-    _Group
-    NodesGroup
-    ElementsGroup
-    FacesGroup
-    PartsGroup
-
-"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -168,7 +9,7 @@ from .parts import (
 )
 from .nodes import Node
 from .elements import (
-    _Element,
+    Element,
     MassElement,
     BeamElement,
     SpringElement,
@@ -177,12 +18,12 @@ from .elements import (
     TieElement,
     ShellElement,
     MembraneElement,
-    _Element3D,
+    Element3D,
     TetrahedronElement,
     HexahedronElement,
 )
 from .materials import (
-    _Material,
+    Material,
     Concrete,
     ConcreteSmearedCrack,
     ConcreteDamagedPlasticity,
@@ -195,7 +36,7 @@ from .materials import (
     Timber,
 )
 from .sections import (
-    _Section,
+    Section,
     MassSection,
     BeamSection,
     SpringSection,
@@ -215,26 +56,26 @@ from .sections import (
     TieSection,
 )
 from .constraints import (
-    _Constraint,
-    _MultiPointConstraint,
+    Constraint,
+    MultiPointConstraint,
     TieMPC,
     BeamMPC,
     TieConstraint,
 )
 from .groups import (
-    _Group,
+    Group,
     NodesGroup,
     ElementsGroup,
     FacesGroup,
     PartsGroup,
 )
 from .releases import (
-    _BeamEndRelease,
+    BeamEndRelease,
     BeamEndPinRelease,
     BeamEndSliderRelease,
 )
 from .bcs import (
-    _BoundaryCondition,
+    BoundaryCondition,
     GeneralBC,
     FixedBC,
     PinnedBC,
@@ -250,95 +91,87 @@ from .bcs import (
 )
 
 from .ics import (
-    _InitialCondition,
+    InitialCondition,
     InitialTemperatureField,
     InitialStressField,
 )
+
 __all__ = [
-    'Model',
-
-    'DeformablePart',
-    'RigidPart',
-    'Node',
-
-    '_Element',
-    'MassElement',
-    'BeamElement',
-    'SpringElement',
-    'TrussElement',
-    'StrutElement',
-    'TieElement',
-    'ShellElement',
-    'MembraneElement',
-    '_Element3D',
-    'TetrahedronElement',
-    'HexahedronElement',
-
-    '_Material',
-    'UserMaterial',
-    'Concrete',
-    'ConcreteSmearedCrack',
-    'ConcreteDamagedPlasticity',
-    'ElasticIsotropic',
-    'Stiff',
-    'ElasticOrthotropic',
-    'ElasticPlastic',
-    'Steel',
-    'Timber',
-
-    'HardContactFrictionPenalty',
-    'HardContactNoFriction',
-    'HardContactRough',
-
-    '_Section',
-    'MassSection',
-    'BeamSection',
-    'SpringSection',
-    'AngleSection',
-    'BoxSection',
-    'CircularSection',
-    'HexSection',
-    'ISection',
-    'PipeSection',
-    'RectangularSection',
-    'ShellSection',
-    'MembraneSection',
-    'SolidSection',
-    'TrapezoidalSection',
-    'TrussSection',
-    'StrutSection',
-    'TieSection',
-
-    '_Constraint',
-    '_MultiPointConstraint',
-    'TieMPC',
-    'BeamMPC',
-    'TieConstraint',
-
-    '_BeamEndRelease',
-    'BeamEndPinRelease',
-
-    '_Group',
-    'NodesGroup',
-    'ElementsGroup',
-    'FacesGroup',
-    'PartsGroup',
-
-    '_BoundaryCondition',
-    'GeneralBC',
-    'FixedBC',
-    'PinnedBC',
-    'ClampBCXX',
-    'ClampBCYY',
-    'ClampBCZZ',
-    'RollerBCX',
-    'RollerBCY',
-    'RollerBCZ',
-    'RollerBCXY',
-    'RollerBCYZ',
-    'RollerBCXZ',
-
-    '_InitialCondition',
-    'InitialTemperatureField',
-    'InitialStressField',
+    "Model",
+    "DeformablePart",
+    "RigidPart",
+    "Node",
+    "Element",
+    "MassElement",
+    "BeamElement",
+    "SpringElement",
+    "TrussElement",
+    "StrutElement",
+    "TieElement",
+    "ShellElement",
+    "MembraneElement",
+    "Element3D",
+    "TetrahedronElement",
+    "HexahedronElement",
+    "Material",
+    "UserMaterial",
+    "Concrete",
+    "ConcreteSmearedCrack",
+    "ConcreteDamagedPlasticity",
+    "ElasticIsotropic",
+    "Stiff",
+    "ElasticOrthotropic",
+    "ElasticPlastic",
+    "Steel",
+    "Timber",
+    "HardContactFrictionPenalty",
+    "HardContactNoFriction",
+    "HardContactRough",
+    "Section",
+    "MassSection",
+    "BeamSection",
+    "SpringSection",
+    "AngleSection",
+    "BoxSection",
+    "CircularSection",
+    "HexSection",
+    "ISection",
+    "PipeSection",
+    "RectangularSection",
+    "ShellSection",
+    "MembraneSection",
+    "SolidSection",
+    "TrapezoidalSection",
+    "TrussSection",
+    "StrutSection",
+    "TieSection",
+    "Constraint",
+    "MultiPointConstraint",
+    "TieMPC",
+    "BeamMPC",
+    "TieConstraint",
+    "BeamEndRelease",
+    "BeamEndPinRelease",
+    "BeamEndSliderRelease",
+    "Group",
+    "NodesGroup",
+    "ElementsGroup",
+    "FacesGroup",
+    "PartsGroup",
+    "BoundaryCondition",
+    "GeneralBC",
+    "FixedBC",
+    "PinnedBC",
+    "ClampBCXX",
+    "ClampBCYY",
+    "ClampBCZZ",
+    "RollerBCX",
+    "RollerBCY",
+    "RollerBCZ",
+    "RollerBCXY",
+    "RollerBCYZ",
+    "RollerBCXZ",
+    "InitialCondition",
+    "InitialTemperatureField",
+    "InitialStressField",
 ]

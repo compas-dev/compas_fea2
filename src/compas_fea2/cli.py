@@ -4,12 +4,9 @@ Console script for compas_fea2.
 import sys
 import os
 import click
-from compas_fea2 import HOME
-
-import os
 import json
 
-import sys
+from compas_fea2 import HOME
 from fea2_extension.main import init_plugin
 
 
@@ -31,8 +28,8 @@ def one_o_one():
 
 
 @main.command()
-@click.option('--clean', default='False', help='remove existing directories')
-@click.argument('backend')
+@click.option("--clean", default="False", help="remove existing directories")
+@click.argument("backend")
 def init_backend(backend, clean):
     """Initialize a bare backend module.\n
     backend : txt\n
@@ -41,11 +38,12 @@ def init_backend(backend, clean):
     init_plugin(HOME, backend, clean)
     backend = backend.lower()
 
+
 @main.command()
 # @click.option('--clean', default='False', help='remove existing directories')
-@click.argument('backend')
-@click.argument('setting')
-@click.argument('value')
+@click.argument("backend")
+@click.argument("setting")
+@click.argument("value")
 def change_settings(backend, setting, value):
     """Change a setting for the specified backend.\n
     backend : txt\n
@@ -55,14 +53,15 @@ def change_settings(backend, setting, value):
     value : txt\n
         The new value for the setting.
     """
-    backend_settings = os.path.join(HOME, 'src', 'compas_fea2', 'backends', backend.lower(), 'settings.json')
+    backend_settings = os.path.join(HOME, "src", "compas_fea2", "backends", backend.lower(), "settings.json")
 
-    with open(backend_settings, 'r') as f:
+    with open(backend_settings, "r") as f:
         settings = json.load(f)
 
-    with open(backend_settings, 'w') as f:
-        settings[setting]=value
+    with open(backend_settings, "w") as f:
+        settings[setting] = value
         json.dump(settings, f)
+
 
 # -------------------------------- DEBUG ----------------------------------#
 if __name__ == "__main__":

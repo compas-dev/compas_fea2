@@ -3,22 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
-from .material import _Material
-from ...utilities._utils import extend_docstring
-
-@extend_docstring(_Material)
-class Concrete(_Material):
-    """
-    Concrete
-    ========
-    Elastic and plastic-cracking Eurocode based concrete material
-
-    Note
-    ----
-    The concrete model is based on Eurocode 2 up to fck=90 MPa.
+from .material import Material
 
 
-    Additional Parameters and attributes
+class Concrete(Material):
+    """Elastic and plastic-cracking Eurocode based concrete material
 
     Parameters
     ----------
@@ -45,22 +34,27 @@ class Concrete(_Material):
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
+
+    Notes
+    -----
+    The concrete model is based on Eurocode 2 up to fck=90 MPa.
+
     """
 
-    def __init__(self, *, fck, v=0.2, density=2400, fr=None,  name=None, **kwargs):
-        super(Concrete, self).__init__(density=density,  name=name, **kwargs)
+    def __init__(self, *, fck, v=0.2, density=2400, fr=None, name=None, **kwargs):
+        super(Concrete, self).__init__(density=density, name=name, **kwargs)
 
         de = 0.0001
         fcm = fck + 8
-        Ecm = 22 * 10**3 * (fcm / 10)**0.3
+        Ecm = 22 * 10**3 * (fcm / 10) ** 0.3
         ec1 = min(0.7 * fcm**0.31, 2.8) * 0.001
-        ecu1 = 0.0035 if fck < 50 else (2.8 + 27 * ((98 - fcm) / 100.)**4) * 0.001
+        ecu1 = 0.0035 if fck < 50 else (2.8 + 27 * ((98 - fcm) / 100.0) ** 4) * 0.001
 
         k = 1.05 * Ecm * ec1 / fcm
         e = [i * de for i in range(int(ecu1 / de) + 1)]
         ec = [ei - e[1] for ei in e[1:]]
-        fctm = 0.3 * fck**(2 / 3) if fck <= 50 else 2.12 * log(1 + fcm / 10)
-        f = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1)**2) / (1 + (k - 2) * (ei / ec1)) for ei in e]
+        fctm = 0.3 * fck ** (2 / 3) if fck <= 50 else 2.12 * log(1 + fcm / 10)
+        f = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1) ** 2) / (1 + (k - 2) * (ei / ec1)) for ei in e]
 
         E = f[1] / e[1]
         ft = [1.0, 0.0]
@@ -76,8 +70,8 @@ class Concrete(_Material):
         self.et = et
         self.fr = fr
         # TODO these necessary if we have the above?
-        self.tension = {'f': ft, 'e': et}
-        self.compression = {'f': f[1:], 'e': ec}
+        self.tension = {"f": ft, "e": et}
+        self.compression = {"f": f[1:], "e": ec}
 
     @property
     def G(self):
@@ -95,18 +89,16 @@ v   : {}
 G   : {}
 fck : {}
 fr  : {}
-""".format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
-
-@extend_docstring(_Material)
-class ConcreteSmearedCrack(_Material):
-    """
-    ConcreteSmearedCrack
-    ====================
-    Elastic and plastic, cracking concrete material.
+""".format(
+            self.name, self.density, self.E, self.v, self.G, self.fck, self.fr
+        )
 
 
-    Additional Parameters and Attributes
-    ------------------------------------
+class ConcreteSmearedCrack(Material):
+    """Elastic and plastic, cracking concrete material.
+
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -122,8 +114,8 @@ class ConcreteSmearedCrack(_Material):
     fr : list
         Failure ratios.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -144,10 +136,11 @@ class ConcreteSmearedCrack(_Material):
         Parameters for modelling the tension side of the stess--strain curve
     compression : dict
         Parameters for modelling the tension side of the stess--strain curve
+
     """
 
-    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
-        super(ConcreteSmearedCrack, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], **kwargs):
+        super(ConcreteSmearedCrack, self).__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v
@@ -157,8 +150,8 @@ class ConcreteSmearedCrack(_Material):
         self.et = et
         self.fr = fr
         # are these necessary if we have the above?
-        self.tension = {'f': ft, 'e': et}
-        self.compression = {'f': fc, 'e': ec}
+        self.tension = {"f": ft, "e": et}
+        self.compression = {"f": fc, "e": ec}
 
     @property
     def G(self):
@@ -179,16 +172,16 @@ ec : {}
 ft : {}
 et : {}
 fr : {}
-""".format(self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
+""".format(
+            self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr
+        )
 
 
-class ConcreteDamagedPlasticity(_Material):
+class ConcreteDamagedPlasticity(Material):
     """Damaged plasticity isotropic and homogeneous material.
-    """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -200,8 +193,8 @@ class ConcreteDamagedPlasticity(_Material):
     stiffening : list
         Tension stiffening parameters.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -217,8 +210,8 @@ class ConcreteDamagedPlasticity(_Material):
 
     """
 
-    def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
-        super(ConcreteDamagedPlasticity, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, E, v, density, damage, hardening, stiffening, **kwargs):
+        super(ConcreteDamagedPlasticity, self).__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v

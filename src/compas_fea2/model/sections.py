@@ -2,45 +2,39 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from abc import abstractmethod
 from math import pi
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
-from .materials import _Material
+from .materials import Material
 
 
-class _Section(FEAData):
+class Section(FEAData):
     """Base class for sections.
-
-    Note
-    ----
-    Sections are registered to a :class:`compas_fea2.model.Model` and can be assigned
-    to elements in different Parts.
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
-    material : :class:`~compas_fea2.model._Material`
+    material : :class:`~compas_fea2.model.Material`
         A material definition.
 
     Attributes
     ----------
-    name : str
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     key : int, read-only
         Identifier index of the section in the parent Model.
-    material : :class:`~compas_fea2.model._Material`
+    material : :class:`~compas_fea2.model.Material`
         The material associated with the section.
     model : :class:`compas_fea2.model.Model`
         The model where the section is assigned.
+
+    Notes
+    -----
+    Sections are registered to a :class:`compas_fea2.model.Model` and can be assigned
+    to elements in different Parts.
+
     """
 
-    def __init__(self, material, name=None, **kwargs):
-        super(_Section, self).__init__(name=name, **kwargs)
+    def __init__(self, material, **kwargs):
+        super(Section, self).__init__(**kwargs)
         self._key = None
         self._material = material
 
@@ -55,8 +49,8 @@ class _Section(FEAData):
     @material.setter
     def material(self, value):
         if value:
-            if not isinstance(value, _Material):
-                raise ValueError('Material must be of type `compas_fea2.model._Material`.')
+            if not isinstance(value, Material):
+                raise ValueError("Material must be of type `compas_fea2.model.Material`.")
             self._material = value
 
     @property
@@ -70,36 +64,35 @@ Section {}
 model    : {!r}
 key      : {}
 material : {!r}
-""".format(self.name, '-'*len(self.name), self.model, self.key, self.material)
+""".format(
+            self.name, "-" * len(self.name), self.model, self.key, self.material
+        )
 
 
 # ==============================================================================
 # 0D
 # ==============================================================================
 
+
 class MassSection(FEAData):
     """Section for point mass elements.
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     mass : float
         Point mass value.
 
     Attributes
     ----------
-    name : str
-        Uniqe identifier.
     key : int, read-only
         Identifier of the element in the parent part.
     mass : float
         Point mass value.
+
     """
 
-    def __init__(self, mass, name=None, **kwargs):
-        super(MassSection, self).__init__(name=name, **kwargs)
+    def __init__(self, mass, **kwargs):
+        super(MassSection, self).__init__(**kwargs)
         self.mass = mass
         self._key = None
 
@@ -113,7 +106,9 @@ Mass Section  {}
 --------{}
 model    : {!r}
 mass     : {}
-""".format(self.name, '-'*len(self.name), self.model, self.mass)
+""".format(
+            self.name, "-" * len(self.name), self.model, self.mass
+        )
 
 
 class SpringSection(FEAData):
@@ -121,9 +116,6 @@ class SpringSection(FEAData):
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     forces : dict
         Forces data for non-linear springs.
     displacements : dict
@@ -133,8 +125,6 @@ class SpringSection(FEAData):
 
     Attributes
     ----------
-    name : str
-        Uniqe identifier.
     key : int, read-only
         Identifier of the element in the parent part.
     forces : dict
@@ -144,17 +134,17 @@ class SpringSection(FEAData):
     stiffness : dict
         Elastic stiffness for linear springs.
 
-    Note
-    ----
+    Notes
+    -----
     - Force and displacement data should range from negative to positive values.
     - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
     - Directions are 'axial', 'lateral', 'rotation'.
 
     """
 
-    def __init__(self, forces=None, displacements=None, stiffness=None, name=None, **kwargs):
-        super(SpringSection, self).__init__(name=name, **kwargs)
-        #TODO would be good to know the structure of these dicts and validate
+    def __init__(self, forces=None, displacements=None, stiffness=None, **kwargs):
+        super(SpringSection, self).__init__(**kwargs)
+        # TODO would be good to know the structure of these dicts and validate
         self.forces = forces or {}
         self.displacements = displacements or {}
         self.stiffness = stiffness or {}
@@ -168,14 +158,17 @@ material  : None
 forces    : {}
 displ     : {}
 stiffness : {}
-""".format(self.name, self.forces, self.displacements, self.stiffness)
+""".format(
+            self.name, self.forces, self.displacements, self.stiffness
+        )
 
 
 # ==============================================================================
 # 1D
 # ==============================================================================
 
-class BeamSection(_Section):
+
+class BeamSection(Section):
     """Custom section for beam elements.
 
     Parameters
@@ -198,11 +191,8 @@ class BeamSection(_Section):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -224,16 +214,13 @@ class BeamSection(_Section):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, name=None, **kwargs):
-        super(BeamSection, self).__init__(material=material, name=name, **kwargs)
+    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, **kwargs):
+        super(BeamSection, self).__init__(material=material, **kwargs)
         self.A = A
         self.Ixx = Ixx
         self.Iyy = Iyy
@@ -260,27 +247,25 @@ Avy : {:~.2g}
 J   : {}
 g0  : {}
 gw  : {}
-""".format(self.__class__.__name__,
-           len(self.__class__.__name__) * '-',
-           self.name,
-           self.material,
-           (self.A * units['m**2']),
-           (self.Ixx * units['m**4']),
-           (self.Iyy * units['m**4']),
-           (self.Ixy * units['m**4']),
-           (self.Avx * units['m**2']),
-           (self.Avy * units['m**2']),
-           self.J,
-           self.g0,
-           self.gw)
+""".format(
+            self.__class__.__name__,
+            len(self.__class__.__name__) * "-",
+            self.name,
+            self.material,
+            (self.A * units["m**2"]),
+            (self.Ixx * units["m**4"]),
+            (self.Iyy * units["m**4"]),
+            (self.Ixy * units["m**4"]),
+            (self.Avx * units["m**2"]),
+            (self.Avy * units["m**2"]),
+            self.J,
+            self.g0,
+            self.gw,
+        )
 
 
 class AngleSection(BeamSection):
     """Uniform thickness angle cross-section for beam elements.
-
-    Warning
-    -------
-    - Ixy not yet calculated.
 
     Parameters
     ----------
@@ -290,7 +275,7 @@ class AngleSection(BeamSection):
         Height.
     t : float
         Thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
     name : str, optional
         Section name. If not provided, a unique identifier is automatically
@@ -322,49 +307,56 @@ class AngleSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
     name : str
         Section name. If not provided, a unique identifier is automatically
         assigned.
 
+    Warnings
+    --------
+    - Ixy not yet calculated.
+
     """
 
-    def __init__(self, w, h, t, material, name=None, **kwargs):
+    def __init__(self, w, h, t, material, **kwargs):
         self.w = w
         self.h = h
         self.t = t
 
-        p = 2. * (w + h - t)
+        p = 2.0 * (w + h - t)
         xc = (w**2 + h * t - t**2) / p
         yc = (h**2 + w * t - t**2) / p
 
         A = t * (w + h - t)
-        Ixx = (1. / 3) * (w * h**3 - (w - t) * (h - t)**3) - self.A * (h - yc)**2
-        Iyy = (1. / 3) * (h * w**3 - (h - t) * (w - t)**3) - self.A * (w - xc)**2
+        Ixx = (1.0 / 3) * (w * h**3 - (w - t) * (h - t) ** 3) - self.A * (h - yc) ** 2
+        Iyy = (1.0 / 3) * (h * w**3 - (h - t) * (w - t) ** 3) - self.A * (w - xc) ** 2
         Ixy = 0
-        J = (1. / 3) * (h + w - t) * t**3
+        J = (1.0 / 3) * (h + w - t) * t**3
         Avx = 0
         Avy = 0
         g0 = 0
         gw = 0
 
-        super(AngleSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(AngleSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 # TODO implement different thickness along the 4 sides
 class BoxSection(BeamSection):
     """Hollow rectangular box cross-section for beam elements.
 
-    Note
-    ----
-    Currently you can only specify the thickness of the flanges and the webs.
-
-    Warning
-    -------
-    - Ixy not yet calculated.
-
     Parameters
     ----------
     w : float
@@ -375,11 +367,8 @@ class BoxSection(BeamSection):
         Web thickness.
     tf : float
         Flange thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -409,15 +398,20 @@ class BoxSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
+    Notes
+    -----
+    Currently you can only specify the thickness of the flanges and the webs.
+
+    Warnings
+    --------
+    - Ixy not yet calculated.
 
     """
 
-    def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
+    def __init__(self, w, h, tw, tf, material, **kwargs):
         self.w = w
         self.h = h
         self.tw = tw
@@ -427,8 +421,8 @@ class BoxSection(BeamSection):
         p = 2 * ((h - tf) / tw + (w - tw) / tf)
 
         A = w * h - (w - 2 * tw) * (h - 2 * tf)
-        Ixx = (w * h**3) / 12. - ((w - 2 * tw) * (h - 2 * tf)**3) / 12.
-        Iyy = (h * w**3) / 12. - ((h - 2 * tf) * (w - 2 * tw)**3) / 12.
+        Ixx = (w * h**3) / 12.0 - ((w - 2 * tw) * (h - 2 * tf) ** 3) / 12.0
+        Iyy = (h * w**3) / 12.0 - ((h - 2 * tf) * (w - 2 * tw) ** 3) / 12.0
         Ixy = 0
         Avx = 0
         Avy = 0
@@ -436,8 +430,19 @@ class BoxSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(BoxSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                         Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(BoxSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class CircularSection(BeamSection):
@@ -447,11 +452,8 @@ class CircularSection(BeamSection):
     ----------
     r : float
         Radius.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -475,19 +477,17 @@ class CircularSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
     """
 
-    def __init__(self, r, material, name=None, **kwargs):
+    def __init__(self, r, material, **kwargs):
         self.r = r
 
         D = 2 * r
         A = 0.25 * pi * D**2
-        Ixx = Iyy = (pi * D**4) / 64.
+        Ixx = Iyy = (pi * D**4) / 64.0
         Ixy = 0
         Avx = 0
         Avy = 0
@@ -495,8 +495,19 @@ class CircularSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(CircularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                              Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(CircularSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class HexSection(BeamSection):
@@ -535,23 +546,17 @@ class HexSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
     """
 
-    def __init__(self, r, t, material, name=None, **kwargs):
-        raise NotImplementedError('This section is not available for the selected backend')
+    def __init__(self, r, t, material, **kwargs):
+        raise NotImplementedError("This section is not available for the selected backend")
 
 
 class ISection(BeamSection):
     """Equal flanged I-section for beam elements.
-
-    Note
-    ----
-    Currently you the thickness of the two flanges is the same.
 
     Parameters
     ----------
@@ -563,11 +568,8 @@ class ISection(BeamSection):
         Web thickness.
     tf : float
         Flange thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -597,31 +599,44 @@ class ISection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
+    Notes
+    -----
+    Currently you the thickness of the two flanges is the same.
+
     """
 
-    def __init__(self, w, h, tw, tf, material, name=None, **kwargs):
+    def __init__(self, w, h, tw, tf, material, **kwargs):
         self.w = w
         self.h = h
         self.tw = tw
         self.tf = tf
 
         A = 2 * w * tf + (h - 2 * tf) * tw
-        Ixx = (tw * (h - 2 * tf)**3) / 12. + 2 * ((tf**3) * w / 12. + w * tf * (h / 2. - tf / 2.)**2)
-        Iyy = ((h - 2 * tf) * tw**3) / 12. + 2 * ((w**3) * tf / 12.)
+        Ixx = (tw * (h - 2 * tf) ** 3) / 12.0 + 2 * ((tf**3) * w / 12.0 + w * tf * (h / 2.0 - tf / 2.0) ** 2)
+        Iyy = ((h - 2 * tf) * tw**3) / 12.0 + 2 * ((w**3) * tf / 12.0)
         Ixy = 0
         Avx = 0
         Avy = 0
-        J = (1. / 3) * (2 * w * tf**3 + (h - tf) * tw**3)
+        J = (1.0 / 3) * (2 * w * tf**3 + (h - tf) * tw**3)
         g0 = 0
         gw = 0
 
-        super(ISection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                       Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(ISection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class PipeSection(BeamSection):
@@ -633,11 +648,8 @@ class PipeSection(BeamSection):
         Outer radius.
     t : float
         Wall thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -663,30 +675,39 @@ class PipeSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
     """
 
-    def __init__(self, r, t, material, name=None, **kwargs):
+    def __init__(self, r, t, material, **kwargs):
         self.r = r
         self.t = t
 
         D = 2 * r
 
-        A = 0.25 * pi * (D**2 - (D - 2 * t)**2)
-        Ixx = Iyy = 0.25 * pi * (r**4 - (r - t)**4)
+        A = 0.25 * pi * (D**2 - (D - 2 * t) ** 2)
+        Ixx = Iyy = 0.25 * pi * (r**4 - (r - t) ** 4)
         Ixy = 0
         Avx = 0
         Avy = 0
-        J = (2. / 3) * pi * (r + 0.5 * t) * t**3
+        J = (2.0 / 3) * pi * (r + 0.5 * t) * t**3
         g0 = 0
         gw = 0
 
-        super(PipeSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                          Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(PipeSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class RectangularSection(BeamSection):
@@ -698,11 +719,8 @@ class RectangularSection(BeamSection):
         Width.
     h : float
         Height.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -728,15 +746,12 @@ class RectangularSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, w, h, material, name=None, **kwargs):
+    def __init__(self, w, h, material, **kwargs):
         self.w = w
         self.h = h
 
@@ -744,8 +759,8 @@ class RectangularSection(BeamSection):
         l2 = min([w, h])
 
         A = w * h
-        Ixx = (1 / 12.) * w * h**3
-        Iyy = (1 / 12.) * h * w**3
+        Ixx = (1 / 12.0) * w * h**3
+        Iyy = (1 / 12.0) * h * w**3
         Ixy = 0
         Avy = 0.833 * A
         Avx = 0.833 * A
@@ -753,16 +768,23 @@ class RectangularSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(RectangularSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(RectangularSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class TrapezoidalSection(BeamSection):
     """Solid trapezoidal cross-section for beam elements.
-
-    Warning
-    -------
-    - J not yet calculated.
 
     Parameters
     ----------
@@ -772,11 +794,8 @@ class TrapezoidalSection(BeamSection):
         Width at top.
     h : float
         Height.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -804,15 +823,16 @@ class TrapezoidalSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
+    Warnings
+    --------
+    - J not yet calculated.
 
     """
 
-    def __init__(self, w1, w2, h, material, name=None, **kwargs):
+    def __init__(self, w1, w2, h, material, **kwargs):
         self.w1 = w1
         self.w2 = w2
         self.h = h
@@ -820,8 +840,8 @@ class TrapezoidalSection(BeamSection):
         # c = (h * (2 * w2 + w1)) / (3. * (w1 + w2))  # NOTE: not used
 
         A = 0.5 * (w1 + w2) * h
-        Ixx = (1 / 12.) * (3 * w2 + w1) * h**3
-        Iyy = (1 / 48.) * h * (w1 + w2) * (w2**2 + 7 * w1**2)
+        Ixx = (1 / 12.0) * (3 * w2 + w1) * h**3
+        Iyy = (1 / 48.0) * h * (w1 + w2) * (w2**2 + 7 * w1**2)
         Ixy = 0
         Avx = 0
         Avy = 0
@@ -829,8 +849,19 @@ class TrapezoidalSection(BeamSection):
         g0 = 0
         gw = 0
 
-        super(TrapezoidalSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                                 Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(TrapezoidalSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class TrussSection(BeamSection):
@@ -840,11 +871,8 @@ class TrussSection(BeamSection):
     ----------
     A : float
         Area.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -866,15 +894,12 @@ class TrussSection(BeamSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, A, material, name=None, **kwargs):
+    def __init__(self, A, material, **kwargs):
         Ixx = 0
         Iyy = 0
         Ixy = 0
@@ -883,8 +908,19 @@ class TrussSection(BeamSection):
         J = 0
         g0 = 0
         gw = 0
-        super(TrussSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy,
-                                           Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, name=name, **kwargs)
+        super(TrussSection, self).__init__(
+            A=A,
+            Ixx=Ixx,
+            Iyy=Iyy,
+            Ixy=Ixy,
+            Avx=Avx,
+            Avy=Avy,
+            J=J,
+            g0=g0,
+            gw=gw,
+            material=material,
+            **kwargs,
+        )
 
 
 class StrutSection(TrussSection):
@@ -894,11 +930,8 @@ class StrutSection(TrussSection):
     ----------
     A : float
         Area.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -920,16 +953,13 @@ class StrutSection(TrussSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, A, material, name=None, **kwargs):
-        super(StrutSection, self).__init__(A=A, material=material, name=name, **kwargs)
+    def __init__(self, A, material, **kwargs):
+        super(StrutSection, self).__init__(A=A, material=material, **kwargs)
 
 
 class TieSection(TrussSection):
@@ -939,11 +969,8 @@ class TieSection(TrussSection):
     ----------
     A : float
         Area.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
@@ -965,78 +992,65 @@ class TieSection(TrussSection):
         ???
     gw : float
         ???
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
     """
 
-    def __init__(self, A, material, name=None, **kwargs):
-        super(TieSection, self).__init__(A=A, material=material, name=name, **kwargs)
+    def __init__(self, A, material, **kwargs):
+        super(TieSection, self).__init__(A=A, material=material, **kwargs)
 
 
 # ==============================================================================
 # 2D
 # ==============================================================================
 
-class ShellSection(_Section):
+
+class ShellSection(Section):
     """Section for shell elements.
 
     Parameters
     ----------
     t : float
         Thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
     t : float
         Thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, t, material, name=None, **kwargs):
-        super(ShellSection, self).__init__(material=material, name=name, **kwargs)
+    def __init__(self, t, material, **kwargs):
+        super(ShellSection, self).__init__(material=material, **kwargs)
         self.t = t
 
 
-class MembraneSection(_Section):
+class MembraneSection(Section):
     """Section for membrane elements.
 
     Parameters
     ----------
     t : float
         Thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
     t : float
         Thickness.
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     """
 
-    def __init__(self, t, material, name=None, **kwargs):
-        super(MembraneSection, self).__init__(material=material, name=name, **kwargs)
+    def __init__(self, t, material, **kwargs):
+        super(MembraneSection, self).__init__(material=material, **kwargs)
         self.t = t
 
 
@@ -1044,25 +1058,21 @@ class MembraneSection(_Section):
 # 3D
 # ==============================================================================
 
-class SolidSection(_Section):
+
+class SolidSection(Section):
     """Section for solid elements.
 
     Parameters
     ----------
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str, optional
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
 
     Attributes
     ----------
-    material : :class:`compas_fea2.model._Material`
+    material : :class:`compas_fea2.model.Material`
         The section material.
-    name : str
-        Section name. If not provided, a unique identifier is automatically
-        assigned.
+
     """
 
-    def __init__(self, material, name=None, **kwargs):
-        super(SolidSection, self).__init__(material=material, name=name, **kwargs)
+    def __init__(self, material, **kwargs):
+        super(SolidSection, self).__init__(material=material, **kwargs)

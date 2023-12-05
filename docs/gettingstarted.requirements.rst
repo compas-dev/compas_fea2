@@ -1,9 +1,11 @@
-"""
 ********************************************************************************
-Command Line Interface
+Requirements
 ********************************************************************************
 
-.. currentmodule:: compas_fea2.cli
-"""
+To use ``compas_fea2`` to run analyses must have at least one
+of the supported backends installed.
 
-from .cli import *
+* Abaqus
+* ANSYS
+* SOFiSTiK
+* OpenSEES

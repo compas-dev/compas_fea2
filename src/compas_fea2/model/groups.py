@@ -8,7 +8,7 @@ from compas_fea2.base import FEAData
 # TODO change lists to sets
 
 
-class _Group(FEAData):
+class Group(FEAData):
     """Base class for all groups.
 
     Parameters
@@ -16,20 +16,16 @@ class _Group(FEAData):
     members : set, optional
         Set with the members belonging to the group. These can be either node,
         elements, faces or parts. By default ``None``.
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
 
     Attributes
     ----------
     registration : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`
         The parent object where the members of the Group belong.
-    name : str
-        Uniqe identifier.
+
     """
 
-    def __init__(self, members=None, name=None, **kwargs):
-        super(_Group, self).__init__(name=name, **kwargs)
+    def __init__(self, members=None, **kwargs):
+        super(Group, self).__init__(**kwargs)
         self._members = set() if not members else self._check_members(members)
 
     def __str__(self):
@@ -38,39 +34,42 @@ class _Group(FEAData):
 {}
 name            : {}
 # of members    : {}
-""".format(self.__class__.__name__,
-           len(self.__class__.__name__) * '-',
-           self.name,
-           len(self._members))
+""".format(
+            self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, len(self._members)
+        )
 
     def _check_member(self, member):
         if not isinstance(self, FacesGroup):
             if member._registration != self._registration:
-                raise ValueError('{} is registered to a different object'.format(member))
+                raise ValueError("{} is registered to a different object".format(member))
         return member
 
     def _check_members(self, members):
         if not members or not isinstance(members, Iterable):
-            raise ValueError('{} must be a not empty iterable'.format(members))
+            raise ValueError("{} must be a not empty iterable".format(members))
         # FIXME combine in more pythonic way
         if isinstance(self, FacesGroup):
             if len(set([member.element._registration for member in members])) != 1:
                 raise ValueError(
-                    'At least one of the members to add is registered to a different object or not registered')
+                    "At least one of the members to add is registered to a different object or not registered"
+                )
             if self._registration:
                 if list(members).pop().element._registration != self._registration:
                     raise ValueError(
-                        'At least one of the members to add is registered to a different object than the group')
+                        "At least one of the members to add is registered to a different object than the group"
+                    )
             else:
                 self._registration = list(members).pop().element._registration
         else:
             if len(set([member._registration for member in members])) != 1:
                 raise ValueError(
-                    'At least one of the members to add is registered to a different object or not registered')
+                    "At least one of the members to add is registered to a different object or not registered"
+                )
             if self._registration:
                 if list(members).pop()._registration != self._registration:
                     raise ValueError(
-                        'At least one of the members to add is registered to a different object than the group')
+                        "At least one of the members to add is registered to a different object than the group"
+                    )
             else:
                 self._registration = list(members).pop()._registration
         return members
@@ -110,36 +109,32 @@ name            : {}
         return members
 
 
-class NodesGroup(_Group):
+class NodesGroup(Group):
     """Base class nodes groups.
-
-    Note
-    ----
-    NodesGroups are registered to the same :class:`compas_fea2.model._Part` as its nodes
-    and can belong to only one Part.
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
 
     Attributes
     ----------
-    name : str
-        Uniqe identifier.
     nodes : list[:class:`compas_fea2.model.Node`]
         The nodes belonging to the group.
     part : :class:`compas_fea2.model._Part`
         The part where the group is registered, by default `None`.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.
+
+    Notes
+    -----
+    NodesGroups are registered to the same :class:`compas_fea2.model._Part` as its nodes
+    and can belong to only one Part.
+
     """
 
-    def __init__(self, *, nodes, name=None, **kwargs):
-        super(NodesGroup, self).__init__(members=nodes, name=name, **kwargs)
+    def __init__(self, nodes, **kwargs):
+        super(NodesGroup, self).__init__(members=nodes, **kwargs)
 
     @property
     def part(self):
@@ -184,37 +179,32 @@ class NodesGroup(_Group):
         return self._add_members(nodes)
 
 
-class ElementsGroup(_Group):
+class ElementsGroup(Group):
     """Base class for elements groups.
-
-    Note
-    ----
-    ElementsGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as
-    its elements and can belong to only one DeformablePart.
 
     Parameters
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     elements : list[:class:`compas_fea2.model.Element`]
         The elements belonging to the group.
 
     Attributes
     ----------
-    name : str
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
     elements : list[:class:`compas_fea2.model.Element`]
         The elements belonging to the group.
     part : :class:`compas_fea2.model._Part`
         The part where the group is registered, by default `None`.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.
+
+    Notes
+    -----
+    ElementsGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as
+    its elements and can belong to only one DeformablePart.
+
     """
 
-    def __init__(self, *, elements, name=None, **kwargs):
-        super(ElementsGroup, self).__init__(members=elements,  name=name, **kwargs)
+    def __init__(self, elements, **kwargs):
+        super(ElementsGroup, self).__init__(members=elements, **kwargs)
 
     @property
     def part(self):
@@ -233,13 +223,14 @@ class ElementsGroup(_Group):
 
         Parameters
         ----------
-        element : :class:`compas_fea2.model._Element`
+        element : :class:`compas_fea2.model.Element`
             The element to add.
 
         Returns
         -------
-        :class:`compas_fea2.model._Element`
+        :class:`compas_fea2.model.Element`
             The element added.
+
         """
         return self._add_member(element)
 
@@ -248,24 +239,20 @@ class ElementsGroup(_Group):
 
         Parameters
         ----------
-        elements : [:class:`compas_fea2.model._Element`]
+        elements : [:class:`compas_fea2.model.Element`]
             The elements to add.
 
         Returns
         -------
-        [:class:`compas_fea2.model._Element`]
+        [:class:`compas_fea2.model.Element`]
             The elements added.
+
         """
         return self._add_members(elements)
 
 
-class FacesGroup(_Group):
+class FacesGroup(Group):
     """Base class elements faces groups.
-
-    Note
-    ----
-    FacesGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as the
-    elements of its faces.
 
     Parameters
     ----------
@@ -288,6 +275,12 @@ class FacesGroup(_Group):
         The part where the group is registered, by default `None`.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.
+
+    Notes
+    -----
+    FacesGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as the
+    elements of its faces.
+
     """
 
     def __init__(self, *, faces, name=None, **kwargs):
@@ -325,6 +318,7 @@ class FacesGroup(_Group):
         -------
         :class:`compas_fea2.model.Face`
             The element added.
+
         """
         return self._add_member(face)
 
@@ -340,16 +334,13 @@ class FacesGroup(_Group):
         -------
         [:class:`compas_fea2.model.Face`]
             The faces added.
+
         """
         return self._add_members(faces)
 
-class PartsGroup(_Group):
-    """Base class for parts groups.
 
-    Note
-    ----
-    PartsGroups are registered to the same :class:`compas_fea2.model.Model` as its
-    parts and can belong to only one Model.
+class PartsGroup(Group):
+    """Base class for parts groups.
 
     Parameters
     ----------
@@ -365,10 +356,16 @@ class PartsGroup(_Group):
         The parts belonging to the group.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.
+
+    Notes
+    -----
+    PartsGroups are registered to the same :class:`compas_fea2.model.Model` as its
+    parts and can belong to only one Model.
+
     """
 
     def __init__(self, *, parts, name=None, **kwargs):
-        super(PartsGroup, self).__init__(members=parts, name=name,  **kwargs)
+        super(PartsGroup, self).__init__(members=parts, name=name, **kwargs)
 
     @property
     def model(self):

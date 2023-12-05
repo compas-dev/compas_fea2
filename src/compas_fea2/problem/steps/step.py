@@ -10,7 +10,7 @@ import compas_fea2
 from compas_fea2.base import FEAData
 
 from compas_fea2.model.nodes import Node
-from compas_fea2.model.elements import _Element
+from compas_fea2.model.elements import Element
 
 from compas_fea2.problem.loads import _Load
 from compas_fea2.problem.loads import GravityLoad
@@ -128,13 +128,13 @@ class _Step(FEAData):
         elif isinstance(output, HistoryOutput):
             self._history_outputs.add(output)
         else:
-            raise TypeError('{!r} is not an _Output.'.format(output))
+            raise TypeError("{!r} is not an _Output.".format(output))
         return output
 
     # ==========================================================================
     #                             Results methods
     # ==========================================================================
-    @timer(message='Step results copied in the model in ')
+    @timer(message="Step results copied in the model in ")
     def _store_results_in_model(self, fields=None):
         """Copy the results for the step in the model object at the nodal and
         element level.
@@ -153,34 +153,34 @@ class _Step(FEAData):
         import sqlalchemy as db
 
         engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
-        FIELDS = get_database_table(engine, metadata, 'fiedls')
+        FIELDS = get_database_table(engine, metadata, "fiedls")
         if not fields:
             field_column = FIELDS.query.all()
-            fields=[field for field in field_column.field]
+            fields = [field for field in field_column.field]
 
         for field in fields:
             field_table = get_database_table(engine, metadata, field)
             _, results = get_all_field_results(engine, metadata, field, field_table)
             for row in results:
                 part = self.problem.model.find_part_by_name(row[0])
-                if row[2] == 'NODAL':
+                if row[2] == "NODAL":
                     node_element = part.find_node_by_key(row[3])
                 else:
-                    raise NotImplementedError('elements not supported yet')
+                    raise NotImplementedError("elements not supported yet")
 
                 node_element._results.setdefault(self.problem, {})[self] = res_field
-
 
         step_results = results[self.name]
         # Get part results
         for part_name, part_results in step_results.items():
             # Get node/element results
             for result_type, nodes_elements_results in part_results.items():
-                if result_type not in ['nodes', 'elements']:
+                if result_type not in ["nodes", "elements"]:
                     continue
                 # nodes_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
-                func = getattr(self.model.find_part_by_name(part_name, casefold=True),
-                               'find_{}_by_key'.format(result_type[:-1]))
+                func = getattr(
+                    self.model.find_part_by_name(part_name, casefold=True), "find_{}_by_key".format(result_type[:-1])
+                )
                 # Get field results
                 for key, res_field in nodes_elements_results.items():
                     node_element = func(key)
@@ -189,6 +189,7 @@ class _Step(FEAData):
                     if fields and not res_field in fields:
                         continue
                     node_element._results.setdefault(self.problem, {})[self] = res_field
+
 
 # ==============================================================================
 #                                General Steps
@@ -260,7 +261,18 @@ class _GeneralStep(_Step):
         Dictionary of the prescribed fields assigned to each part in the model in the step.
     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, name=None, **kwargs):
+    def __init__(
+        self,
+        max_increments,
+        initial_inc_size,
+        min_inc_size,
+        time,
+        nlgeom=False,
+        modify=False,
+        restart=False,
+        name=None,
+        **kwargs
+    ):
         super(_GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
@@ -275,13 +287,13 @@ class _GeneralStep(_Step):
 
     def __rmul__(self, other):
         if not isinstance(other, (float, int)):
-            raise TypeError('Step multiplication only allowed with real numbers')
+            raise TypeError("Step multiplication only allowed with real numbers")
         step_copy = copy.copy(self)
         step_copy._patterns = set()
         for pattern in self._patterns:
             pattern_copy = copy.copy(pattern)
             load_copy = copy.copy(pattern.load)
-            pattern_copy._load = other*load_copy
+            pattern_copy._load = other * load_copy
             step_copy._add_pattern(pattern_copy)
         return step_copy
 
@@ -334,7 +346,7 @@ class _GeneralStep(_Step):
     # =========================================================================
 
     def _add_pattern(self, load_pattern):
-        # type: (_Load, Node | _Element) -> _Load
+        # type: (_Load, Node | Element) -> _Load
         """Add a general load pattern to the Step object.
 
         Warning
@@ -356,12 +368,12 @@ class _GeneralStep(_Step):
         """
 
         if not isinstance(load_pattern, Pattern):
-            raise TypeError('{!r} is not a LoadPattern.'.format(load_pattern))
+            raise TypeError("{!r} is not a LoadPattern.".format(load_pattern))
 
         if self.problem:
             if self.model:
                 if not list(load_pattern.distribution).pop().model == self.model:
-                    raise ValueError('The load pattern is not applied to a valid reagion of {!r}'.format(self.model))
+                    raise ValueError("The load pattern is not applied to a valid reagion of {!r}".format(self.model))
 
         # store location in step
         self._patterns.add(load_pattern)
@@ -370,7 +382,7 @@ class _GeneralStep(_Step):
         return load_pattern
 
     def _add_patterns(self, load_patterns):
-        # type: (_Load, Node | _Element) -> list(_Load)
+        # type: (_Load, Node | Element) -> list(_Load)
         """Add a load to multiple locations.
 
         Parameters

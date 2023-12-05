@@ -8,7 +8,6 @@ from compas_fea2.base import FEAData
 
 
 class Pattern(FEAData):
-
     def __init__(self, value, distribution, name=None, **kwargs):
         """A pattern is the spatial distribution of a specific set of forces,
         displacements, temperatures, and other effects which act on a structure.
@@ -20,7 +19,7 @@ class Pattern(FEAData):
         value : :class:`compas_fea2.problem._Load` | :class:`compas_fea2.problem.GeneralDisplacement`
             The load/displacement of the pattern
         distribution : list
-            list of :class:`compas_fea2.model.Node` or :class:`compas_fea2.model._Element`
+            list of :class:`compas_fea2.model.Node` or :class:`compas_fea2.model.Element`
         name : str
             Uniqe identifier. If not provided it is automatically generated. Set a
             name if you want a more human-readable input file.
@@ -30,7 +29,7 @@ class Pattern(FEAData):
         value : :class:`compas_fea2.problem._Load`
             The load of the pattern
         distribution : list
-            list of :class:`compas_fea2.model.Node` or :class:`compas_fea2.model._Element`
+            list of :class:`compas_fea2.model.Node` or :class:`compas_fea2.model.Element`
         name : str
             Uniqe identifier.
         """

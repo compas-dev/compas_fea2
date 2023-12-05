@@ -5,56 +5,43 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class _InitialCondition(FEAData):
+class InitialCondition(FEAData):
     """Base class for all predefined initial conditions.
 
-    Note
-    ----
+    Notes
+    -----
     InitialConditions are registered to a :class:`compas_fea2.model.Model`. The
     same InitialCondition can be assigned to Nodes or Elements in multiple Parts
 
-    Parameters
-    ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
-
-    Attributes
-    ----------
-    name : str
-        Uniqe identifier.
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(_InitialCondition, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(InitialCondition, self).__init__(**kwargs)
 
-#FIXME this is not really a field in the sense that it is only applied to 1 node/element
-class InitialTemperatureField(_InitialCondition):
+
+# FIXME this is not really a field in the sense that it is only applied to 1 node/element
+class InitialTemperatureField(InitialCondition):
     """Temperature field.
 
-    Note
-    ----
-    InitialConditions are registered to a :class:`compas_fea2.model.Model`. The
-    same InitialCondition can be assigned to Nodes or Elements in multiple Parts
-
     Parameters
     ----------
     temperature : float
         The temperature value.
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
 
     Attributes
     ----------
     temperature : float
         The temperature value.
-    name : str
-        Uniqe identifier.
+
+    Notes
+    -----
+    InitialConditions are registered to a :class:`compas_fea2.model.Model`. The
+    same InitialCondition can be assigned to Nodes or Elements in multiple Parts
+
     """
 
-    def __init__(self, temperature, name=None, **kwargs):
-        super(InitialTemperatureField, self).__init__(name, **kwargs)
+    def __init__(self, temperature, **kwargs):
+        super(InitialTemperatureField, self).__init__(**kwargs)
         self._t = temperature
 
     @property
@@ -66,32 +53,28 @@ class InitialTemperatureField(_InitialCondition):
         self._t = value
 
 
-class InitialStressField(_InitialCondition):
+class InitialStressField(InitialCondition):
     """Stress field.
-
-    Note
-    ----
-    InitialConditions are registered to a :class:`compas_fea2.model.Model`. The
-    same InitialCondition can be assigned to Nodes or Elements in multiple Parts
 
     Parameters
     ----------
     stress : touple(float, float, float)
         The stress values.
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
 
     Attributes
     ----------
     stress : touple(float, float, float)
         The stress values.
-    name : str
-        Uniqe identifier.
+
+    Notes
+    -----
+    InitialConditions are registered to a :class:`compas_fea2.model.Model`
+    The same InitialCondition can be assigned to Nodes or Elements in multiple Parts.
+
     """
 
-    def __init__(self, stress, name=None, **kwargs):
-        super(InitialStressField, self).__init__(name, **kwargs)
+    def __init__(self, stress, **kwargs):
+        super(InitialStressField, self).__init__(**kwargs)
         self._s = stress
 
     @property

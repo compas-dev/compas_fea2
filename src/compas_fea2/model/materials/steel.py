@@ -3,16 +3,14 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2 import units
-from .material import _Material, ElasticIsotropic
+from .material import ElasticIsotropic
 
 
 class Steel(ElasticIsotropic):
     """Bi-linear steel with given yield stress.
-    """
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -43,8 +41,8 @@ class Steel(ElasticIsotropic):
 
     """
 
-    def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
-        super(Steel, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
+    def __init__(self, *, fy, fu, eu, E, v, density, **kwargs):
+        super(Steel, self).__init__(E=E, v=v, density=density, **kwargs)
 
         fu = fu or fy
 
@@ -65,8 +63,8 @@ class Steel(ElasticIsotropic):
         self.ep = ep
         self.E = E
         self.v = v
-        self.tension = {'f': f, 'e': e}
-        self.compression = {'f': fc, 'e': ec}
+        self.tension = {"f": f, "e": e}
+        self.compression = {"f": fc, "e": ec}
 
     def __str__(self):
         return """
@@ -82,17 +80,19 @@ fu : {:~.0f}
 v  : {:.2f}
 eu : {:.2f}
 ep : {:.2f}
-""".format(self.name,
-           (self.density * units['kg/m**2']),
-           (self.E * units.pascal).to('GPa'),
-           (self.G * units.pascal).to('GPa'),
-           (self.fy * units.pascal).to('MPa'),
-           (self.fu * units.pascal).to('MPa'),
-           (self.v * units.dimensionless),
-           (self.eu * units.dimensionless),
-           (self.ep * units.dimensionless))
+""".format(
+            self.name,
+            (self.density * units["kg/m**2"]),
+            (self.E * units.pascal).to("GPa"),
+            (self.G * units.pascal).to("GPa"),
+            (self.fy * units.pascal).to("MPa"),
+            (self.fu * units.pascal).to("MPa"),
+            (self.v * units.dimensionless),
+            (self.eu * units.dimensionless),
+            (self.ep * units.dimensionless),
+        )
 
-    #TODO check values and make unit independent
+    # TODO check values and make unit independent
     @classmethod
     def S355(cls):
         """Steel S355.

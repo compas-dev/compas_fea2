@@ -6,17 +6,11 @@ from compas.utilities.maps import geometric_key
 from compas.geometry import Point
 from compas_fea2.base import FEAData
 
-from .bcs import _BoundaryCondition
 import compas_fea2
 
-class Node(FEAData):
-    """Initialises base Node object.
 
-    Note
-    ----
-    Nodes are registered to a :class:`compas_fea2.model.DeformablePart` object and can
-    belong to only one Part. Every time a node is added to a Part, it gets
-    registered to that Part.
+class Node(FEAData):
+    """Class representing a Node object.
 
     Parameters
     ----------
@@ -69,6 +63,12 @@ class Node(FEAData):
     temperature : float
         The temperature at the Node.
 
+    Notes
+    -----
+    Nodes are registered to a :class:`compas_fea2.model.DeformablePart` object and can
+    belong to only one Part. Every time a node is added to a Part, it gets
+    registered to that Part.
+
     Examples
     --------
     >>> node = Node(xyz=(1.0, 2.0, 3.0))
@@ -85,9 +85,9 @@ class Node(FEAData):
         self._z = xyz[2]
 
         self._bc = None
-        self._dof = {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
+        self._dof = {"x": True, "y": True, "z": True, "xx": True, "yy": True, "zz": True}
 
-        self._mass = mass if isinstance(mass, tuple) else tuple([mass]*3)
+        self._mass = mass if isinstance(mass, tuple) else tuple([mass] * 3)
         self._temperature = temperature
 
         self._on_boundary = None
@@ -115,8 +115,8 @@ class Node(FEAData):
 
     @xyz.setter
     def xyz(self, value):
-        if len(value)!=3:
-            raise ValueError('Provide a 3 element touple or list')
+        if len(value) != 3:
+            raise ValueError("Provide a 3 element touple or list")
         self._x = value[0]
         self._y = value[1]
         self._z = value[2]
@@ -151,7 +151,7 @@ class Node(FEAData):
 
     @mass.setter
     def mass(self, value):
-        self._mass = value if isinstance(value, tuple) else tuple([value]*3)
+        self._mass = value if isinstance(value, tuple) else tuple([value] * 3)
 
     @property
     def temperature(self):
@@ -168,7 +168,7 @@ class Node(FEAData):
     @property
     def dof(self):
         if self.bc:
-            return {attr: not bool(getattr(self.bc, attr)) for attr in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+            return {attr: not bool(getattr(self.bc, attr)) for attr in ["x", "y", "z", "xx", "yy", "zz"]}
         else:
             return self._dof
 

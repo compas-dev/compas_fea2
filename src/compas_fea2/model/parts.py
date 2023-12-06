@@ -596,7 +596,6 @@ class Part(FEAData):
         return list(filter(lambda x: is_point_on_plane(Point(*x.xyz), plane), self.nodes))
 
     def find_nodes_in_polygon(self, polygon, tolerance=1.1):
-        # type: (Polygon, float) -> list(Node)
         """Find the nodes of the part that are contained within a planar polygon
 
         Parameters
@@ -1005,7 +1004,6 @@ class Part(FEAData):
     # =========================================================================
 
     def find_faces_on_plane(self, plane):
-        # type: (Plane) -> list(Face)
         """Find the face of the elements that belongs to a given plane, if any.
 
         Parameters

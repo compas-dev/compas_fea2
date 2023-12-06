@@ -22,19 +22,21 @@ from .elements import (
     TetrahedronElement,
     HexahedronElement,
 )
-from .materials import (
+from .materials.material import (
     Material,
-    Concrete,
-    ConcreteSmearedCrack,
-    ConcreteDamagedPlasticity,
     ElasticIsotropic,
-    Stiff,
-    UserMaterial,
     ElasticOrthotropic,
     ElasticPlastic,
-    Steel,
-    Timber,
+    Stiff,
+    UserMaterial,
 )
+from .materials.concrete import (
+    Concrete,
+    ConcreteDamagedPlasticity,
+    ConcreteSmearedCrack,
+)
+from .materials.steel import Steel
+from .materials.timber import Timber
 from .sections import (
     Section,
     MassSection,

@@ -1,13 +1,10 @@
-from importlib.metadata import distribution
 from typing import Iterable
 from compas_view2.app import App
 from compas_view2.objects import Collection
 from compas_view2.shapes import Arrow
-from compas_view2.collections import Collection
 from compas_view2.shapes import Text
 
 from compas.datastructures import Mesh
-from compas.geometry import Scale
 from compas.geometry import Line
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
@@ -22,8 +19,6 @@ from compas_fea2.model.bcs import FixedBC, PinnedBC
 
 from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.steps import GeneralStep
-
-from compas_fea2.utilities._utils import _compute_model_dimensions
 
 
 def hextorgb(hex):

@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import inspect
 from subprocess import Popen
 from subprocess import PIPE
 
@@ -12,7 +11,6 @@ from time import perf_counter
 
 from compas.geometry import bounding_box
 from compas.geometry import Point, Box
-import importlib
 import itertools
 from typing import Iterable
 

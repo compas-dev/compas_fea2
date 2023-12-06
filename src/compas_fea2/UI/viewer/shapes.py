@@ -1,6 +1,4 @@
 from compas.geometry import Cone
-from compas.geometry import Circle
-from compas.geometry import Plane
 from compas.geometry import Box
 from compas.geometry import Frame
 

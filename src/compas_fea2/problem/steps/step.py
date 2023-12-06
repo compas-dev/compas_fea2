@@ -101,6 +101,7 @@ class Step(FEAData):
         ------
         TypeError
             if the output is not an instance of an :class:`compas_fea2.problem.Output`.
+
         """
         output._registration = self
         if isinstance(output, FieldOutput):
@@ -130,45 +131,46 @@ class Step(FEAData):
         None
 
         """
-        from compas_fea2.results.sql_wrapper import create_connection_sqlite3, get_database_table, get_all_field_results
+        raise NotImplementedError
+        # from compas_fea2.results.sql_wrapper import create_connection_sqlite3, get_database_table, get_all_field_results
 
-        engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
-        FIELDS = get_database_table(engine, metadata, "fiedls")
-        if not fields:
-            field_column = FIELDS.query.all()
-            fields = [field for field in field_column.field]
+        # engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
+        # FIELDS = get_database_table(engine, metadata, "fields")
+        # if not fields:
+        #     field_column = FIELDS.query.all()
+        #     fields = [field for field in field_column.field]
 
-        for field in fields:
-            field_table = get_database_table(engine, metadata, field)
-            _, results = get_all_field_results(engine, metadata, field, field_table)
-            for row in results:
-                part = self.problem.model.find_part_by_name(row[0])
-                if row[2] == "NODAL":
-                    node_element = part.find_node_by_key(row[3])
-                else:
-                    raise NotImplementedError("elements not supported yet")
+        # for field in fields:
+        #     field_table = get_database_table(engine, metadata, field)
+        #     _, results = get_all_field_results(engine, metadata, field, field_table)
+        #     for row in results:
+        #         part = self.problem.model.find_part_by_name(row[0])
+        #         if row[2] == "NODAL":
+        #             node_element = part.find_node_by_key(row[3])
+        #         else:
+        #             raise NotImplementedError("elements not supported yet")
 
-                node_element._results.setdefault(self.problem, {})[self] = res_field
+        #         node_element._results.setdefault(self.problem, {})[self] = res_field
 
-        step_results = results[self.name]
-        # Get part results
-        for part_name, part_results in step_results.items():
-            # Get node/element results
-            for result_type, nodes_elements_results in part_results.items():
-                if result_type not in ["nodes", "elements"]:
-                    continue
-                # nodes_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
-                func = getattr(
-                    self.model.find_part_by_name(part_name, casefold=True), "find_{}_by_key".format(result_type[:-1])
-                )
-                # Get field results
-                for key, res_field in nodes_elements_results.items():
-                    node_element = func(key)
-                    if not node_element:
-                        continue
-                    if fields and res_field not in fields:
-                        continue
-                    node_element._results.setdefault(self.problem, {})[self] = res_field
+        # step_results = results[self.name]
+        # # Get part results
+        # for part_name, part_results in step_results.items():
+        #     # Get node/element results
+        #     for result_type, nodes_elements_results in part_results.items():
+        #         if result_type not in ["nodes", "elements"]:
+        #             continue
+        #         # nodes_elements = getattr(self.model.find_part_by_name(part_name, casefold=True), result_type)
+        #         func = getattr(
+        #             self.model.find_part_by_name(part_name, casefold=True), "find_{}_by_key".format(result_type[:-1])
+        #         )
+        #         # Get field results
+        #         for key, res_field in nodes_elements_results.items():
+        #             node_element = func(key)
+        #             if not node_element:
+        #                 continue
+        #             if fields and res_field not in fields:
+        #                 continue
+        #             node_element._results.setdefault(self.problem, {})[self] = res_field
 
 
 # ==============================================================================
@@ -239,6 +241,7 @@ class GeneralStep(Step):
         Dictionary of the loads assigned to each part in the model in the step.
     fields : dict
         Dictionary of the prescribed fields assigned to each part in the model in the step.
+
     """
 
     def __init__(
@@ -326,7 +329,6 @@ class GeneralStep(Step):
     # =========================================================================
 
     def _add_pattern(self, load_pattern):
-        # type: (Load, Node | Element) -> Load
         """Add a general load pattern to the Step object.
 
         Parameters
@@ -363,7 +365,6 @@ class GeneralStep(Step):
         return load_pattern
 
     def _add_patterns(self, load_patterns):
-        # type: (Load, Node | Element) -> list(Load)
         """Add a load to multiple locations.
 
         Parameters
@@ -377,5 +378,6 @@ class GeneralStep(Step):
         -------
         load : [:class:`Load`]
             Load to assign to the node
+
         """
         return [self.add_pattern(load_pattern) for load_pattern in load_patterns]

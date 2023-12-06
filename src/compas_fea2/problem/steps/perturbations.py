@@ -2,11 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEAData
 from .step import Step
 
 
-class _Perturbation(Step):
+class Perturbation(Step):
     """A perturbation is a change of the state of the structure after an analysis
     step. Differently from Steps, perturbations' changes are not carried over to
     the next step.
@@ -18,10 +17,10 @@ class _Perturbation(Step):
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Perturbation, self).__init__(name=name, **kwargs)
+        super(Perturbation, self).__init__(name=name, **kwargs)
 
 
-class ModalAnalysis(_Perturbation):
+class ModalAnalysis(Perturbation):
     """Perform a modal analysis of the Model from the resulting state after an
     analysis Step.
 
@@ -31,6 +30,7 @@ class ModalAnalysis(_Perturbation):
         Name of the ModalStep.
     modes : int
         Number of modes to analyse.
+
     """
 
     def __init__(self, modes=1, name=None, **kwargs):
@@ -38,7 +38,7 @@ class ModalAnalysis(_Perturbation):
         self.modes = modes
 
 
-class ComplexEigenValue(_Perturbation):
+class ComplexEigenValue(Perturbation):
     """"""
 
     def __init__(self, name=None, **kwargs):
@@ -46,7 +46,7 @@ class ComplexEigenValue(_Perturbation):
         raise NotImplementedError
 
 
-class BucklingAnalysis(_Perturbation):
+class BucklingAnalysis(Perturbation):
     """"""
 
     def __init__(self, modes, vectors=None, iterations=30, algorithm=None, name=None, **kwargs):
@@ -70,7 +70,7 @@ class BucklingAnalysis(_Perturbation):
         return BucklingAnalysis(modes=modes, vectors=vectors, iterations=iterations, algorithhm="Subspace", name=name)
 
 
-class LinearStaticPerturbation(_Perturbation):
+class LinearStaticPerturbation(Perturbation):
     """"""
 
     def __init__(self, name=None, **kwargs):
@@ -78,7 +78,7 @@ class LinearStaticPerturbation(_Perturbation):
         raise NotImplementedError
 
 
-class StedyStateDynamic(_Perturbation):
+class StedyStateDynamic(Perturbation):
     """"""
 
     def __init__(self, name=None, **kwargs):
@@ -86,7 +86,7 @@ class StedyStateDynamic(_Perturbation):
         raise NotImplementedError
 
 
-class SubstructureGeneration(_Perturbation):
+class SubstructureGeneration(Perturbation):
     """"""
 
     def __init__(self, name=None, **kwargs):

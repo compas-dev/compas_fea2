@@ -16,27 +16,13 @@ from .loads import (
     HarmonicPressureLoad,
     ThermalLoad,
 )
-from .fields import (
-    PrescribedField,
-    PrescribedTemperatureField,
-)
-
-from .patterns import (
-    Pattern,
-)
-from .steps import (
-    Step,
-    GeneralStep,
-    _Perturbation,
-    ModalAnalysis,
-    ComplexEigenValue,
-    StaticStep,
-    LinearStaticPerturbation,
-    BucklingAnalysis,
-    DynamicStep,
-    QuasiStaticStep,
-    DirectCyclicStep,
-)
+from .fields import PrescribedField, PrescribedTemperatureField
+from .patterns import Pattern
+from .steps.step import Step, GeneralStep
+from .steps.dynamic import DynamicStep
+from .steps.perturbations import Perturbation, ModalAnalysis, ComplexEigenValue, BucklingAnalysis
+from .steps.quasistatic import QuasiStaticStep, DirectCyclicStep
+from .steps.static import StaticStep
 
 from .outputs import FieldOutput, HistoryOutput
 
@@ -53,13 +39,15 @@ __all__ = [
     "HarmonicPointLoad",
     "HarmonicPressureLoad",
     "ThermalLoad",
+    "Pattern",
+    "PrescribedField",
     "PrescribedTemperatureField",
     "DeadLoad",
     "LiveLoad",
     "SuperImposedDeadLoad",
     "Step",
     "GeneralStep",
-    "_Perturbation",
+    "Perturbation",
     "ModalAnalysis",
     "ComplexEigenValue",
     "StaticStep",

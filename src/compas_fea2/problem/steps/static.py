@@ -72,6 +72,7 @@ class StaticStep(GeneralStep):
         Gravity load to assing to the whole model.
     displacements : dict
         Dictionary of the displacements assigned to each part in the model in the step.
+
     """
 
     def __init__(
@@ -376,6 +377,7 @@ class StaticStep(GeneralStep):
         Returns
         -------
         None
+
         """
         if axes != "global":
             raise NotImplementedError("local axes are not supported yet")
@@ -386,17 +388,7 @@ class StaticStep(GeneralStep):
 
 
 class StaticRiksStep(StaticStep):
-    """Step for use in a static analysis when Riks method is necessary.
-
-    Parameters
-    ----------
-    None
-
-    Attributes
-    ----------
-    None
-
-    """
+    """Step for use in a static analysis when Riks method is necessary."""
 
     def __init__(
         self,

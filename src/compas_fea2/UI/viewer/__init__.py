@@ -20,8 +20,8 @@ from .shapes import (
 )
 
 __all__ = [
-    'FEA2Viewer',
-    'BCShape',
-    'FixBCShape',
-    'PinBCShape',
+    "FEA2Viewer",
+    "BCShape",
+    "FixBCShape",
+    "PinBCShape",
 ]

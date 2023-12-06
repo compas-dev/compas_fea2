@@ -13,9 +13,9 @@ is complente, the results are recorded in a SQL database and can be accessed by
 the user through the SQL wrapper provided by ``compas_fea2``, by his/her own
 SQL statements or through an external interface.
 
-.. figure:: /_images/registration.jpg
-     :figclass: figure
-     :class: figure-img img-fluid
+.. .. figure:: /_images/registration.jpg
+..      :figclass: figure
+..      :class: figure-img img-fluid
 
 
 Workflow
@@ -23,9 +23,9 @@ Workflow
 
 The image below describes a general FEA workflow:
 
-.. figure:: /_images/basic_workflow.png
-     :figclass: figure
-     :class: figure-img img-fluid
+.. .. figure:: /_images/basic_workflow.png
+..      :figclass: figure
+..      :class: figure-img img-fluid
 
 
 Collaboration Workflow
@@ -41,14 +41,14 @@ of a structural engineer using rhino and abaqus collaborating with an acoustic
 engineer using blender and ansys:
 
 
-.. figure:: /_images/CollaborationWorkflow.jpg
-     :figclass: figure
-     :class: figure-img img-fluid
+.. .. figure:: /_images/CollaborationWorkflow.jpg
+..      :figclass: figure
+..      :class: figure-img img-fluid
 
 
-.. figure:: /_images/CollaborationWorkflow_example.jpg
-     :figclass: figure
-     :class: figure-img img-fluid
+.. .. figure:: /_images/CollaborationWorkflow_example.jpg
+..      :figclass: figure
+..      :class: figure-img img-fluid
 
 
 Units
@@ -65,20 +65,19 @@ units you will use. ``compas_fea2`` has no built-in system of units.
 
 Some common systems of consistent units are shown in the table below:
 
-
 .. csv-table:: Consistent Units
-   :file: ../data/units_consistent.csv
+   :file: units_consistent.csv
    :header-rows: 1
 
 In case you do not want to follow a predefined system, you need to be consistent with
 your units assignemnts. Below there are some exmple of correct choices of units:
 
 .. csv-table:: Consistent Units
-   :file: ../data/units_consistent_2.csv
+   :file: units_consistent_2.csv
    :header-rows: 1
 
 The order of magnitude expected for different properties is shown below:
 
 .. csv-table:: Magnitude
-   :file: ../data/units_magnitude.csv
+   :file: units_magnitude.csv
    :header-rows: 1

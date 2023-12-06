@@ -3,10 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from .step import _Step
+from .step import Step
 
 
-class DynamicStep(_Step):
+class DynamicStep(Step):
     """Step for dynamic analysis.
 
     Parameters

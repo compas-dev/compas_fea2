@@ -5,21 +5,21 @@ from __future__ import print_function
 from compas_fea2.base import FEAData
 
 
-class _PrescribedField(FEAData):
+class PrescribedField(FEAData):
     """Base class for all predefined initial conditions.
 
-    Note
-    ----
+    Notes
+    -----
     Fields are registered to a :class:`compas_fea2.problem.Step`.
+
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_PrescribedField, self).__init__(name=name, **kwargs)
+        super(PrescribedField, self).__init__(name=name, **kwargs)
 
 
-class PrescribedTemperatureField(_PrescribedField):
-    """Temperature field
-    """
+class PrescribedTemperatureField(PrescribedField):
+    """Temperature field"""
 
     def __init__(self, temperature, name=None, **kwargs):
         super(PrescribedTemperatureField, self).__init__(name, **kwargs)

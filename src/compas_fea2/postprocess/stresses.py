@@ -6,7 +6,7 @@ import numpy as np
 
 
 def principal_stresses(data):
-    """ Performs principal stress calculations solving the eigenvalues problem.
+    """Performs principal stress calculations solving the eigenvalues problem.
 
     Parameters
     ----------
@@ -28,10 +28,11 @@ def principal_stresses(data):
     Warnings
     --------
     The function is experimental and works only for shell elements at the moment.
+
     """
-    components = ['sxx', 'sxy', 'syy']
-    stype = ['max', 'min']
-    section_points = ['sp1', 'sp5']
+    components = ["sxx", "sxy", "syy"]
+    stype = ["max", "min"]
+    section_points = ["sp1", "sp5"]
 
     stress_results = list(zip(*[data[stress_name].values() for stress_name in components]))
     array_size = ((len(stress_results)), (2, len(stress_results)))
@@ -42,8 +43,7 @@ def principal_stresses(data):
             # Stresses are computed as mean of the values at each integration points
             stress_vector = [np.mean(np.array([v for k, v in i.items() if sp in k])) for i in element_stresses]
             # The principal stresses and their directions are computed solving the eigenvalues problem
-            stress_matrix = np.array([(stress_vector[0], stress_vector[1]),
-                                      (stress_vector[1], stress_vector[2])])
+            stress_matrix = np.array([(stress_vector[0], stress_vector[1]), (stress_vector[1], stress_vector[2])])
             w_sp, v_sp = np.linalg.eig(stress_matrix)
             # sort by larger to smaller eigenvalue
             idx = w_sp.argsort()[::-1]

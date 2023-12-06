@@ -259,19 +259,11 @@ class Part(FEAData):
     @classmethod
     # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, name=None, **kwargs):
-        """Create a Part object from a gmshModel object. According to the
-        `section` type provided, :class:`compas_fea2.model.Element2D` or
+        """Create a Part object from a gmshModel object.
+
+        According to the `section` type provided, :class:`compas_fea2.model.Element2D` or
         :class:`compas_fea2.model.Element3D` elements are cretated.
         The same section is applied to all the elements.
-
-        Note
-        ----
-        The gmshModel must have the right dimension corresponding to the section
-        provided.
-
-        Warning
-        -------
-        the `split` option is currently not implemented
 
         Parameters
         ----------
@@ -296,6 +288,10 @@ class Part(FEAData):
         -------
         :class:`compas_fea2.model.Part`
             The part meshed.
+
+        Notes
+        -----
+        The gmshModel must have the right dimension corresponding to the section provided.
 
         References
         ----------
@@ -683,8 +679,8 @@ class Part(FEAData):
         node : :class:`compas_fea2.model.Node`
             The node.
 
-        Return
-        ------
+        Returns
+        -------
         :class:`compas_fea2.model.Node`
             The identifier of the node in the part.
 
@@ -735,8 +731,8 @@ class Part(FEAData):
         nodes : list[:class:`compas_fea2.model.Node`]
             The list of nodes.
 
-        Return
-        ------
+        Returns
+        -------
         list[:class:`compas_fea2.model.Node`]
             The identifiers of the nodes in the part.
 
@@ -754,8 +750,8 @@ class Part(FEAData):
     def remove_node(self, node):
         """Remove a :class:`compas_fea2.model.Node` from the part.
 
-        Warning
-        -------
+        Warnings
+        --------
         Removing nodes can cause inconsistencies.
 
         Parameters
@@ -775,8 +771,8 @@ class Part(FEAData):
     def remove_nodes(self, nodes):
         """Remove multiple :class:`compas_fea2.model.Node` from the part.
 
-        Warning
-        -------
+        Warnings
+        --------
         Removing nodes can cause inconsistencies.
 
         Parameters
@@ -920,8 +916,8 @@ class Part(FEAData):
         ----------
         elements : list[:class:`compas_fea2.model.Element`]
 
-        Return
-        ------
+        Returns
+        -------
         list[:class:`compas_fea2.model.Element`]
 
         """
@@ -930,14 +926,14 @@ class Part(FEAData):
     def remove_element(self, element):
         """Remove a :class:`compas_fea2.model.Element` from the part.
 
-        Warning
-        -------
-        Removing elements can cause inconsistencies.
-
         Parameters
         ----------
         element : :class:`compas_fea2.model.Element`
             The element to remove
+
+        Warnings
+        --------
+        Removing elements can cause inconsistencies.
 
         """
         # type: (Element) -> None
@@ -1138,7 +1134,7 @@ class Part(FEAData):
         ----------
         problem : :class:`compas_fea2.problem.Problem`
             The problem
-        step : :class:`compas_fea2.problem._Step`, optional
+        step : :class:`compas_fea2.problem.Step`, optional
             The step, by default None. If not provided, the last step of the
             problem is used.
         component : str, optional
@@ -1160,7 +1156,7 @@ class Part(FEAData):
         ----------
         problem : :class:`compas_fea2.problem.Problem`
             The problem
-        step : :class:`compas_fea2.problem._Step`, optional
+        step : :class:`compas_fea2.problem.Step`, optional
             The step, by default None. If not provided, the last step of the
             problem is used.
         component : str, optional
@@ -1184,7 +1180,7 @@ class Part(FEAData):
         ----------
         problem : :class:`compas_fea2.problem.Problem`
             The problem
-        step : :class:`compas_fea2.problem._Step`, optional
+        step : :class:`compas_fea2.problem.Step`, optional
             The step, by default None. If not provided, the last step of the
             problem is used.
         component : str, optional
@@ -1208,7 +1204,7 @@ class Part(FEAData):
         ----------
         problem : :class:`compas_fea2.problem.Problem`
             The problem
-        step : :class:`compas_fea2.problem._Step`, optional
+        step : :class:`compas_fea2.problem.Step`, optional
             The step, by default None. If not provided, the last step of the
             problem is used.
         component : str, optional

@@ -3,10 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from .step import _Step
+from .step import Step
 
 
-class QuasiStaticStep(_Step):
+class QuasiStaticStep(Step):
     """Step for quasi-static analysis.
 
     Parameters
@@ -24,7 +24,7 @@ class QuasiStaticStep(_Step):
         raise NotImplementedError
 
 
-class DirectCyclicStep(_Step):
+class DirectCyclicStep(Step):
     """Step for a direct cyclic analysis.
 
     Parameters

@@ -1,0 +1,9 @@
+name: fea2-dev
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.8
+  - pip>=19.0
+  - compas
+  - pip:
+    - -r requirements-dev.txt

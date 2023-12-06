@@ -933,8 +933,8 @@ Initial Conditions
         str
             report
 
-        Warning
-        -------
+        Warnings
+        --------
         WIP! It is better if you check yourself...
 
         """

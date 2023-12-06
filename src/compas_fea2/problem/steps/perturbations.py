@@ -3,17 +3,17 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from .step import _Step
+from .step import Step
 
 
-class _Perturbation(_Step):
+class _Perturbation(Step):
     """A perturbation is a change of the state of the structure after an analysis
     step. Differently from Steps, perturbations' changes are not carried over to
     the next step.
 
     Parameters
     ----------
-    _Step : _type_
+    Step : _type_
         _description_
     """
 
@@ -57,17 +57,17 @@ class BucklingAnalysis(_Perturbation):
         self._algorithm = algorithm
 
     def _compute_vectors(self, modes):
-        self._vectors = modes*2
+        self._vectors = modes * 2
         if modes > 9:
             self._vectors += modes
 
     @staticmethod
     def Lanczos(modes, name=None):
-        return BucklingAnalysis(modes=modes, vectors=None,  algorithhm='Lanczos', name=name)
+        return BucklingAnalysis(modes=modes, vectors=None, algorithhm="Lanczos", name=name)
 
     @staticmethod
     def Subspace(modes, iterations, vectors=None, name=None):
-        return BucklingAnalysis(modes=modes, vectors=vectors,  iterations=iterations, algorithhm='Subspace', name=name)
+        return BucklingAnalysis(modes=modes, vectors=vectors, iterations=iterations, algorithhm="Subspace", name=name)
 
 
 class LinearStaticPerturbation(_Perturbation):

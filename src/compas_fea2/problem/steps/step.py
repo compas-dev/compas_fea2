@@ -1,34 +1,16 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from copy import deepcopy
-from importlib.metadata import metadata
-from json import load
-from typing import Type
-import compas_fea2
 
 from compas_fea2.base import FEAData
 
-from compas_fea2.model.nodes import Node
-from compas_fea2.model.elements import Element
-
-from compas_fea2.problem.loads import _Load
-from compas_fea2.problem.loads import GravityLoad
-from compas_fea2.problem.loads import PointLoad
-
+from compas_fea2.problem.loads import Load
 from compas_fea2.problem.patterns import Pattern
-
 from compas_fea2.problem.displacements import GeneralDisplacement
-
-from compas_fea2.problem.fields import _PrescribedField
-from compas_fea2.problem.fields import PrescribedTemperatureField
-
-from compas_fea2.problem.outputs import _Output
+from compas_fea2.problem.fields import PrescribedField
 from compas_fea2.problem.outputs import FieldOutput
 from compas_fea2.problem.outputs import HistoryOutput
 
-from compas.geometry import Vector
-from compas.geometry import sum_vectors
 from compas_fea2.utilities._utils import timer
 
 import copy
@@ -38,20 +20,8 @@ import copy
 # ==============================================================================
 
 
-class _Step(FEAData):
+class Step(FEAData):
     """Initialises base Step object.
-
-    Note
-    ----
-    Stpes are registered to a :class:`compas_fea2.problem.Problem`.
-
-    Note
-    ----
-    A ``compas_fea2`` analysis is based on the concept of ``steps``,
-    which represent the sequence in which the state of the model is modified.
-    Steps can be introduced for example to change the output requests or to change
-    loads, boundary conditions, analysis procedure, etc. There is no limit on the
-    number of steps in an analysis.
 
     Parameters
     ----------
@@ -71,10 +41,20 @@ class _Step(FEAData):
     results : :class:`compas_fea2.results.StepResults`
         The results of the analysis at this step
 
+    Notes
+    -----
+    Steps are registered to a :class:`compas_fea2.problem.Problem`.
+
+    A ``compas_fea2`` analysis is based on the concept of ``steps``,
+    which represent the sequence in which the state of the model is modified.
+    Steps can be introduced for example to change the output requests or to change
+    loads, boundary conditions, analysis procedure, etc. There is no limit on the
+    number of steps in an analysis.
+
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Step, self).__init__(name=name, **kwargs)
+        super(Step, self).__init__(name=name, **kwargs)
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
@@ -109,18 +89,18 @@ class _Step(FEAData):
 
         Parameters
         ----------
-        output : :class:`compas_fea2.problem._Output`
+        output : :class:`compas_fea2.problem.Output`
             The requested output.
 
         Returns
         -------
-        :class:`compas_fea2.problem._Output`
+        :class:`compas_fea2.problem.Output`
             The requested output.
 
         Raises
         ------
         TypeError
-            if the output is not an instance of an :class:`compas_fea2.problem._Output`.
+            if the output is not an instance of an :class:`compas_fea2.problem.Output`.
         """
         output._registration = self
         if isinstance(output, FieldOutput):
@@ -128,12 +108,13 @@ class _Step(FEAData):
         elif isinstance(output, HistoryOutput):
             self._history_outputs.add(output)
         else:
-            raise TypeError("{!r} is not an _Output.".format(output))
+            raise TypeError("{!r} is not an Output.".format(output))
         return output
 
     # ==========================================================================
     #                             Results methods
     # ==========================================================================
+
     @timer(message="Step results copied in the model in ")
     def _store_results_in_model(self, fields=None):
         """Copy the results for the step in the model object at the nodal and
@@ -150,7 +131,6 @@ class _Step(FEAData):
 
         """
         from compas_fea2.results.sql_wrapper import create_connection_sqlite3, get_database_table, get_all_field_results
-        import sqlalchemy as db
 
         engine, connection, metadata = create_connection_sqlite3(self.problem.path_results)
         FIELDS = get_database_table(engine, metadata, "fiedls")
@@ -186,7 +166,7 @@ class _Step(FEAData):
                     node_element = func(key)
                     if not node_element:
                         continue
-                    if fields and not res_field in fields:
+                    if fields and res_field not in fields:
                         continue
                     node_element._results.setdefault(self.problem, {})[self] = res_field
 
@@ -196,7 +176,7 @@ class _Step(FEAData):
 # ==============================================================================
 
 
-class _GeneralStep(_Step):
+class GeneralStep(Step):
     """General Step object for use as a base class in a general static, dynamic
     or multiphysics analysis.
 
@@ -273,7 +253,7 @@ class _GeneralStep(_Step):
         name=None,
         **kwargs
     ):
-        super(_GeneralStep, self).__init__(name=name, **kwargs)
+        super(GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
@@ -303,11 +283,11 @@ class _GeneralStep(_Step):
 
     @property
     def loads(self):
-        return list(filter(lambda p: isinstance(p.load, _Load), self._patterns))
+        return list(filter(lambda p: isinstance(p.load, Load), self._patterns))
 
     @property
     def fields(self):
-        return list(filter(lambda p: isinstance(p.load, _PrescribedField), self._patterns))
+        return list(filter(lambda p: isinstance(p.load, PrescribedField), self._patterns))
 
     @property
     def max_increments(self):
@@ -346,25 +326,26 @@ class _GeneralStep(_Step):
     # =========================================================================
 
     def _add_pattern(self, load_pattern):
-        # type: (_Load, Node | Element) -> _Load
+        # type: (Load, Node | Element) -> Load
         """Add a general load pattern to the Step object.
-
-        Warning
-        -------
-        The *load* and the *keys* must be consistent (you should not assing a
-        line load to a node). Consider using specific methods to assign load,
-        such as ``add_point_load``, ``add_line_load``, etc.
 
         Parameters
         ----------
         load : obj
-            any ``compas_fea2`` :class:`compas_fea2.problem._Load` subclass object
+            any ``compas_fea2`` :class:`compas_fea2.problem.Load` subclass object
         location : var
             Location where the load is applied
 
         Returns
         -------
         None
+
+        Warnings
+        --------
+        The *load* and the *keys* must be consistent (you should not assing a
+        line load to a node). Consider using specific methods to assign load,
+        such as ``add_point_load``, ``add_line_load``, etc.
+
         """
 
         if not isinstance(load_pattern, Pattern):
@@ -382,19 +363,19 @@ class _GeneralStep(_Step):
         return load_pattern
 
     def _add_patterns(self, load_patterns):
-        # type: (_Load, Node | Element) -> list(_Load)
+        # type: (Load, Node | Element) -> list(Load)
         """Add a load to multiple locations.
 
         Parameters
         ----------
-        load : :class:`_Load`
+        load : :class:`Load`
             Load to assign to the node
         location : [var]
             Locations where the load is applied
 
         Returns
         -------
-        load : [:class:`_Load`]
+        load : [:class:`Load`]
             Load to assign to the node
         """
         return [self.add_pattern(load_pattern) for load_pattern in load_patterns]

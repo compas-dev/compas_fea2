@@ -10,44 +10,45 @@ COMPAS FEA2 is a framework for Finite Element Analysis (FEA) written in Python.
 It provides a high-level interface to various open-source and commercial FEA software,
 with a unified API that is easy to use and extend.
 
-Table of Contents
-=================
+
+User Guide
+==========
 
 .. toctree::
     :maxdepth: 2
-    :caption: Getting Started
+    :titlesonly:
 
-    gettingstarted.intro
-    gettingstarted.requirements
-    gettingstarted.installation
+    userguide/index
 
-.. toctree::
-    :maxdepth: 2
-    :caption: Basics
 
-    basics.model
-    basics.problem
-    basics.analysis
+API Reference
+=============
 
 .. toctree::
     :maxdepth: 2
-    :caption: Advanced
+    :titlesonly:
 
-    advanced.backends
-    advanced.results
-    advanced.visualisation
+    api/index
 
-.. toctree::
-    :maxdepth: 2
-    :caption: API Reference
 
-    api/compas_fea2
+Backends
+========
 
 .. toctree::
     :maxdepth: 2
-    :caption: Miscellaneous
+    :titlesonly:
 
-    license
+    backends/index
+
+
+Development
+===========
+
+.. toctree::
+    :maxdepth: 2
+    :titlesonly:
+
+    development/index
 
 
 Indices and tables

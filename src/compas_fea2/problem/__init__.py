@@ -5,7 +5,7 @@ from __future__ import print_function
 from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
-    _Load,
+    Load,
     PrestressLoad,
     PointLoad,
     LineLoad,
@@ -17,7 +17,7 @@ from .loads import (
     ThermalLoad,
 )
 from .fields import (
-    _PrescribedField,
+    PrescribedField,
     PrescribedTemperatureField,
 )
 
@@ -25,8 +25,8 @@ from .patterns import (
     Pattern,
 )
 from .steps import (
-    _Step,
-    _GeneralStep,
+    Step,
+    GeneralStep,
     _Perturbation,
     ModalAnalysis,
     ComplexEigenValue,
@@ -43,7 +43,7 @@ from .outputs import FieldOutput, HistoryOutput
 __all__ = [
     "Problem",
     "GeneralDisplacement",
-    "_Load",
+    "Load",
     "PrestressLoad",
     "PointLoad",
     "LineLoad",
@@ -57,8 +57,8 @@ __all__ = [
     "DeadLoad",
     "LiveLoad",
     "SuperImposedDeadLoad",
-    "_Step",
-    "_GeneralStep",
+    "Step",
+    "GeneralStep",
     "_Perturbation",
     "ModalAnalysis",
     "ComplexEigenValue",

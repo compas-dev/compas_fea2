@@ -17,19 +17,20 @@ import itertools
 from typing import Iterable
 
 
-
 def timer(_func=None, *, message=None):
     """Print the runtime of the decorated function"""
+
     def decorator_timer(func):
         @wraps(func)
         def wrapper_timer(*args, **kwargs):
-            start_time = perf_counter()    # 1
+            start_time = perf_counter()  # 1
             value = func(*args, **kwargs)
-            end_time = perf_counter()      # 2
-            run_time = end_time - start_time    # 3
-            m = message or 'Finished {!r} in'.format(func.__name__)
-            print('{} {:.4f} secs'.format(m, run_time))
+            end_time = perf_counter()  # 2
+            run_time = end_time - start_time  # 3
+            m = message or "Finished {!r} in".format(func.__name__)
+            print("{} {:.4f} secs".format(m, run_time))
             return value
+
         return wrapper_timer
 
     if _func is None:
@@ -92,17 +93,21 @@ def get_docstring(cls):
     """
     Decorator: Append to a function's docstring.
     """
+
     def _decorator(func):
-        func_name = func.__qualname__.split('.')[-1]
-        doc_parts = getattr(cls, func_name).__doc__.split('Returns')
+        func_name = func.__qualname__.split(".")[-1]
+        doc_parts = getattr(cls, func_name).__doc__.split("Returns")
         note = """
         Returns
         -------
         list of {}
 
-        """.format(doc_parts[1].split('-------\n')[1])
+        """.format(
+            doc_parts[1].split("-------\n")[1]
+        )
         func.__doc__ = doc_parts[0] + note
         return func
+
     return _decorator
 
 
@@ -123,26 +128,27 @@ def part_method(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        func_name = f.__qualname__.split('.')[-1]
+        func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-        if kwargs.get('dict_format', None):
+        if kwargs.get("dict_format", None):
             return {part: vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))}
         else:
             res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
-            if kwargs.get('merge', None):
+            if kwargs.get("merge", None):
                 list(itertools.chain.from_iterable(res))
             return res
+
     # func_name = f.__qualname__.split('.')[-1]
     # wrapper.__doc__ = getattr(DeformablePart, func_name).__doc__.split('Returns')[0]
     # wrapper.__doc__ += "ciao"
 
-#         docs = getattr(DeformablePart, method).__doc__.split('Returns', 1)[0]
-#         docs += """
-# Returns
-# -------
-# {:class:`compas_fea2.model.DeformablePart`: var}
-#     dictionary with the results of the method per each part in the model.
-# """
+    #         docs = getattr(DeformablePart, method).__doc__.split('Returns', 1)[0]
+    #         docs += """
+    # Returns
+    # -------
+    # {:class:`compas_fea2.model.DeformablePart`: var}
+    #     dictionary with the results of the method per each part in the model.
+    # """
 
     return wrapper
 
@@ -159,15 +165,16 @@ def step_method(f):
 
     Returns
     -------
-    {:class:`compas_fea2.problem._Step`: var}
+    {:class:`compas_fea2.problem.Step`: var}
         dictionary with the results of the method per each step in the problem.
     """
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        func_name = f.__qualname__.split('.')[-1]
+        func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
         return {step: vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))}
+
     return wrapper
 
 
@@ -190,21 +197,22 @@ def problem_method(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        func_name = f.__qualname__.split('.')[-1]
+        func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-        problems = kwargs.setdefault('problems', self_obj.problems)
+        problems = kwargs.setdefault("problems", self_obj.problems)
         if not problems:
-            raise ValueError('No problems found in the model')
+            raise ValueError("No problems found in the model")
         if not isinstance(problems, Iterable):
             problems = [problems]
         vars = {}
         for problem in problems:
             if problem.model != self_obj:
-                raise ValueError('{} is not registered to this model'.format(problem))
-            if 'steps' in kwargs:
-                kwargs.setdefault('steps', self_obj.steps)
+                raise ValueError("{} is not registered to this model".format(problem))
+            if "steps" in kwargs:
+                kwargs.setdefault("steps", self_obj.steps)
             var = getattr(problem, func_name)(*args[1::], **kwargs)
             if var:
                 vars[problem] = vars
         return vars
+
     return wrapper

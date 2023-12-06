@@ -21,7 +21,7 @@ from compas_fea2.model.elements import BeamElement
 from compas_fea2.model.bcs import FixedBC, PinnedBC
 
 from compas_fea2.problem.loads import PointLoad
-from compas_fea2.problem.steps import _GeneralStep
+from compas_fea2.problem.steps import GeneralStep
 
 from compas_fea2.utilities._utils import _compute_model_dimensions
 
@@ -204,13 +204,13 @@ class FEA2Viewer:
 
         Parameters
         ----------
-        steps : [:class:`compas_fea2.problem._Step`]
+        steps : [:class:`compas_fea2.problem.Step`]
             List of steps. Only the loads in these steps will be shown.
         scale_factor : float, optional
             Scale the loads reppresentation to have a nicer drawing,
             by default 1.
         """
-        if isinstance(step, _GeneralStep):
+        if isinstance(step, GeneralStep):
             for pattern in step._patterns:
                 if isinstance(pattern.load, PointLoad):
                     vector = Vector(

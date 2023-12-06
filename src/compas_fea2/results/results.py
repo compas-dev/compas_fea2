@@ -4,10 +4,8 @@ from __future__ import print_function
 
 from typing import Iterable
 
-from compas_fea2.base import FEAData
-
 from compas.geometry import Vector
-from compas.geometry import sum_vectors
+from compas_fea2.base import FEAData
 
 from .sql_wrapper import get_field_results, get_field_labels, get_database_table, create_connection
 
@@ -16,15 +14,16 @@ class Results(FEAData):
     """Results object. This ensures that the results from all
     the backends are consistent.
 
-    Note
-    ----
-    Results are registered to a :class:`compas_fea2.problem.Problem`.
-
     Parameters
     ----------
     location : var
         location of the result
     value : var
+
+    Notes
+    -----
+    Results are registered to a :class:`compas_fea2.problem.Problem`.
+
     """
 
     def __init__(self, location, components, invariants, name=None, **kwargs):
@@ -220,10 +219,11 @@ class NodeFieldResults(FieldResults):
         steps : _type_, optional
             _description_, by default None
 
-        Return
-        ------
+        Returns
+        -------
         dict
             Dictionary with {'part':..; 'node':..; 'vector':...}
+
         """
         if not isinstance(nodes, Iterable):
             nodes = [nodes]
@@ -260,10 +260,11 @@ GROUP BY {};""".format(
         steps : _type_, optional
             _description_, by default None
 
-        Return
-        ------
+        Returns
+        -------
         dict
             Dictionary with {'part':..; 'node':..; 'vector':...}
+
         """
         steps = [self.step]
         node = self.model.find_node_by_location(point, distance, plane=None)

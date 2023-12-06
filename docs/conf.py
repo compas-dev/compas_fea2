@@ -44,7 +44,13 @@ source_suffix = {
     ".md": "markdown",
 }
 templates_path = sphinx_compas_theme.get_autosummary_templates_path() + ["_templates"]
-exclude_patterns = ["_build", "**.ipynb_checkpoints", "_notebooks", "**/__temp"]
+exclude_patterns = [
+    "_build",
+    "**.ipynb_checkpoints",
+    "_notebooks",
+    "**/__temp",
+    "**/__old",
+]
 
 add_module_names = True
 language = "en"
@@ -254,6 +260,10 @@ html_theme_options = {
     "pygment_dark_style": "monokai",
 }
 
+html_theme_options["external_links"]: [
+    {"name": "COMPAS Framework", "url": "https://compas.dev"},
+]
+
 html_theme_options["icon_links"] = [
     {
         "name": "GitHub",
@@ -295,8 +305,7 @@ html_theme_options["secondary_sidebar_items"] = [
 
 html_sidebars = {
     "**": [
-        "sbt-sidebar-nav.html",
-        "compas-sidebar-footer.html",
+        "sidebar-nav-bs.html",
     ]
 }
 

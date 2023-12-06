@@ -1,17 +1,16 @@
 ********************************************************************************
-compas_fea2
+API Reference
 ********************************************************************************
 
-.. currentmodule:: compas_fea2
-
-
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
+    :titlesonly:
 
+    compas_fea2.job
     compas_fea2.model
+    compas_fea2.postprocess
     compas_fea2.problem
     compas_fea2.results
-    compas_fea2.job
-    compas_fea2.postprocess
-    compas_fea2.utilities
     compas_fea2.units
+    compas_fea2.utilities
+

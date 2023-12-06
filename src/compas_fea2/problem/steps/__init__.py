@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from .step import (
-    _Step,
-    _GeneralStep,
+    Step,
+    GeneralStep,
 )
 
 from .static import (

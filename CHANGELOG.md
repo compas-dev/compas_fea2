@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Updated existing workflows to latest.
 * Build tests are temporarily disabled.
+* Updated `compas-actions.build` and `compas-actions.doc` workflows to v3.
 
 ### Removed
 

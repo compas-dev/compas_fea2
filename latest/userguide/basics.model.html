@@ -62,7 +62,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Problem" href="basics.problem.html" />
-    <link rel="prev" title="Installation" href="gettingstarted.installation.html" />
+    <link rel="prev" title="Data" href="basics.data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -282,6 +282,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -422,9 +426,12 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="gettingstarted.intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingstarted.requirements.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingstarted.installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.nextsteps.html">Next Steps</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="basics.overview.html">Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics.data.html">Data</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="basics.problem.html">Problem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="basics.analysis.html">Analysis</a></li>
@@ -494,6 +501,63 @@ document.write(`
                   
   <section id="model">
 <h1>Model</h1>
+<p>At the heart of every COMPAS FEA2 analysis or simluation is a model.
+A model consists of nodes, elements and parts,
+and defines connections, constraints and boundary conditions.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">compas_fea2.model</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span>
+</pre></div>
+</div>
+<section id="nodes">
+<h2>Nodes</h2>
+<p>Nodes are the basic building blocks of a model.
+They define the locations in space that define all other entities.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">compas_fea2.model</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span>
+<span class="go">Node(...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">x</span>
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">y</span>
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">z</span>
+<span class="go">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">xyz</span>
+<span class="go">[0.0, 0.0, 0.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">point</span>
+<span class="go">Point(0.0, 0.0, 0.0)</span>
+</pre></div>
+</div>
+<p>Besides coordinates, nodes have many other (optional) attributes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">mass</span>
+<span class="go">[None, None, None]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">temperature</span>
+<span class="go">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">dof</span>
+<span class="go">{&#39;x&#39;: True, &#39;y&#39;: True, &#39;z&#39;: True, &#39;xx&#39;: True, &#39;yy&#39;: True, &#39;zz&#39;: True}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">loads</span>
+<span class="go">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">displacements</span>
+<span class="go">{}</span>
+</pre></div>
+</div>
+<p>Nodes also have a container for storing calculation results.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">results</span>
+<span class="go">{}</span>
+</pre></div>
+</div>
+</section>
+<section id="elements">
+<h2>Elements</h2>
+<p>Elements are defined by the nodes they connect to and a section.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="parts">
+<h2>Parts</h2>
+</section>
 </section>
 
 
@@ -508,12 +572,12 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="gettingstarted.installation.html"
+       href="basics.data.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Installation</p>
+        <p class="prev-next-title">Data</p>
       </div>
     </a>
     <a class="right-next"
@@ -534,6 +598,22 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nodes">Nodes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elements">Elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parts">Parts</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

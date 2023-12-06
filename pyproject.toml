@@ -3,7 +3,7 @@ line-length = 120
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = ["tests", "src/compas_fea2"]
+testpaths = ["tests"]
 python_files = ["test_*.py", "tests.py"]
 addopts = "-ra --strict --doctest-modules --doctest-glob=*.rst --tb=short"
 doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL ALLOW_UNICODE ALLOW_BYTES NUMBER"

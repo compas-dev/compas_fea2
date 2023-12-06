@@ -1,0 +1,1179 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>NodeFieldResults.copy &#8212; COMPAS FEA2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/compas.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/tabs.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_fea2.results.NodeFieldResults.copy';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        </script>
+    <link rel="shortcut icon" href="../../_static/compas.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="NodeFieldResults.from_data" href="compas_fea2.results.NodeFieldResults.from_data.html" />
+    <link rel="prev" title="NodeFieldResults.ToString" href="compas_fea2.results.NodeFieldResults.ToString.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/compas_icon.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/compas_icon_white.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">COMPAS FEA2</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../userguide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../backends/index.html">
+                        Backends
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../development/index.html">
+                        Development
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      latest  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/compas-dev/compas_fea2" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://forum.compas-framework.org/" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/compas_fea2/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-python"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../userguide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../backends/index.html">
+                        Backends
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../development/index.html">
+                        Development
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      latest  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/compas-dev/compas_fea2" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://forum.compas-framework.org/" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/compas_fea2/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-python"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.from_problem.html">InputFile.from_problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.write_to_file.html">InputFile.write_to_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.ToString.html">InputFile.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.copy.html">InputFile.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.from_data.html">InputFile.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.from_json.html">InputFile.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.from_jsonstring.html">InputFile.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.from_name.html">InputFile.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.jobdata.html">InputFile.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.sha256.html">InputFile.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.to_data.html">InputFile.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.to_json.html">InputFile.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.to_jsonstring.html">InputFile.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.validate_data.html">InputFile.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.InputFile.validate_json.html">InputFile.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.ToString.html">ParametersFile.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.copy.html">ParametersFile.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.from_data.html">ParametersFile.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.from_json.html">ParametersFile.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.from_jsonstring.html">ParametersFile.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.from_name.html">ParametersFile.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.from_problem.html">ParametersFile.from_problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.jobdata.html">ParametersFile.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.sha256.html">ParametersFile.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.to_data.html">ParametersFile.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.to_json.html">ParametersFile.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.to_jsonstring.html">ParametersFile.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.validate_data.html">ParametersFile.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.validate_json.html">ParametersFile.validate_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.job.ParametersFile.write_to_file.html">ParametersFile.write_to_file</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.model.html">model</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.Problem.html">Problem</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.add_linear_perturbation_step.html">Problem.add_linear_perturbation_step</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.add_step.html">Problem.add_step</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.add_steps.html">Problem.add_steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.analyse.html">Problem.analyse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.analyse_and_extract.html">Problem.analyse_and_extract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.analyse_and_store.html">Problem.analyse_and_store</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.analyze.html">Problem.analyze</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.find_step_by_name.html">Problem.find_step_by_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.get_deformed_model.html">Problem.get_deformed_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.get_reaction_forces_sql.html">Problem.get_reaction_forces_sql</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.get_reaction_moments_sql.html">Problem.get_reaction_moments_sql</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.get_total_moment.html">Problem.get_total_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.get_total_reaction.html">Problem.get_total_reaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.is_step_in_problem.html">Problem.is_step_in_problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.restart_analysis.html">Problem.restart_analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.show_deformed.html">Problem.show_deformed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.show_displacements.html">Problem.show_displacements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.show_nodes_field.html">Problem.show_nodes_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.show_nodes_field_vector.html">Problem.show_nodes_field_vector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.store_results_in_model.html">Problem.store_results_in_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.summary.html">Problem.summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.write_input_file.html">Problem.write_input_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.ToString.html">Problem.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.copy.html">Problem.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.from_data.html">Problem.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.from_json.html">Problem.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.from_jsonstring.html">Problem.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.from_name.html">Problem.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.jobdata.html">Problem.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.sha256.html">Problem.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.to_data.html">Problem.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.to_json.html">Problem.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.to_jsonstring.html">Problem.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.validate_data.html">Problem.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Problem.validate_json.html">Problem.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.Step.html">Step</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.add_output.html">Step.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.ToString.html">Step.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.copy.html">Step.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.from_data.html">Step.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.from_json.html">Step.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.from_jsonstring.html">Step.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.from_name.html">Step.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.jobdata.html">Step.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.sha256.html">Step.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.to_data.html">Step.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.to_json.html">Step.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.to_jsonstring.html">Step.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.validate_data.html">Step.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Step.validate_json.html">Step.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.GeneralStep.html">GeneralStep</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.ToString.html">GeneralStep.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_output.html">GeneralStep.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.copy.html">GeneralStep.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_data.html">GeneralStep.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_json.html">GeneralStep.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_jsonstring.html">GeneralStep.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_name.html">GeneralStep.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.jobdata.html">GeneralStep.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.sha256.html">GeneralStep.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.to_data.html">GeneralStep.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.to_json.html">GeneralStep.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.to_jsonstring.html">GeneralStep.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.validate_data.html">GeneralStep.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralStep.validate_json.html">GeneralStep.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.Perturbation.html">Perturbation</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.ToString.html">Perturbation.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.add_output.html">Perturbation.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.copy.html">Perturbation.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.from_data.html">Perturbation.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.from_json.html">Perturbation.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.from_jsonstring.html">Perturbation.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.from_name.html">Perturbation.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.jobdata.html">Perturbation.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.sha256.html">Perturbation.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.to_data.html">Perturbation.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.to_json.html">Perturbation.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.to_jsonstring.html">Perturbation.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.validate_data.html">Perturbation.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Perturbation.validate_json.html">Perturbation.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.html">ModalAnalysis</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.ToString.html">ModalAnalysis.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.add_output.html">ModalAnalysis.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.copy.html">ModalAnalysis.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.from_data.html">ModalAnalysis.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.from_json.html">ModalAnalysis.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.from_jsonstring.html">ModalAnalysis.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.from_name.html">ModalAnalysis.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.jobdata.html">ModalAnalysis.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.sha256.html">ModalAnalysis.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.to_data.html">ModalAnalysis.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.to_json.html">ModalAnalysis.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.to_jsonstring.html">ModalAnalysis.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.validate_data.html">ModalAnalysis.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ModalAnalysis.validate_json.html">ModalAnalysis.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.html">ComplexEigenValue</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.ToString.html">ComplexEigenValue.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.add_output.html">ComplexEigenValue.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.copy.html">ComplexEigenValue.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.from_data.html">ComplexEigenValue.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.from_json.html">ComplexEigenValue.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.from_jsonstring.html">ComplexEigenValue.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.from_name.html">ComplexEigenValue.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.jobdata.html">ComplexEigenValue.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.sha256.html">ComplexEigenValue.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.to_data.html">ComplexEigenValue.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.to_json.html">ComplexEigenValue.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.to_jsonstring.html">ComplexEigenValue.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.validate_data.html">ComplexEigenValue.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ComplexEigenValue.validate_json.html">ComplexEigenValue.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.StaticStep.html">StaticStep</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_displacement.html">StaticStep.add_displacement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_gravity_load.html">StaticStep.add_gravity_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_line_load.html">StaticStep.add_line_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_node_load.html">StaticStep.add_node_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_planar_area_load.html">StaticStep.add_planar_area_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_point_load.html">StaticStep.add_point_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_prestress_load.html">StaticStep.add_prestress_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_temperature_field.html">StaticStep.add_temperature_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_temperature_fields.html">StaticStep.add_temperature_fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_tributary_load.html">StaticStep.add_tributary_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.ToString.html">StaticStep.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.add_output.html">StaticStep.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.copy.html">StaticStep.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.from_data.html">StaticStep.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.from_json.html">StaticStep.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.from_jsonstring.html">StaticStep.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.from_name.html">StaticStep.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.jobdata.html">StaticStep.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.sha256.html">StaticStep.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.to_data.html">StaticStep.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.to_json.html">StaticStep.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.to_jsonstring.html">StaticStep.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.validate_data.html">StaticStep.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.StaticStep.validate_json.html">StaticStep.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.html">BucklingAnalysis</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.Lanczos.html">BucklingAnalysis.Lanczos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.Subspace.html">BucklingAnalysis.Subspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.ToString.html">BucklingAnalysis.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.add_output.html">BucklingAnalysis.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.copy.html">BucklingAnalysis.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.from_data.html">BucklingAnalysis.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.from_json.html">BucklingAnalysis.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.from_jsonstring.html">BucklingAnalysis.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.from_name.html">BucklingAnalysis.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.jobdata.html">BucklingAnalysis.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.sha256.html">BucklingAnalysis.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.to_data.html">BucklingAnalysis.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.to_json.html">BucklingAnalysis.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.to_jsonstring.html">BucklingAnalysis.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.validate_data.html">BucklingAnalysis.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.BucklingAnalysis.validate_json.html">BucklingAnalysis.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.DynamicStep.html">DynamicStep</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.add_harmonic_point_load.html">DynamicStep.add_harmonic_point_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.add_harmonic_preassure_load.html">DynamicStep.add_harmonic_preassure_load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.ToString.html">DynamicStep.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.add_output.html">DynamicStep.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.copy.html">DynamicStep.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.from_data.html">DynamicStep.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.from_json.html">DynamicStep.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.from_jsonstring.html">DynamicStep.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.from_name.html">DynamicStep.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.jobdata.html">DynamicStep.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.sha256.html">DynamicStep.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.to_data.html">DynamicStep.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.to_json.html">DynamicStep.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.to_jsonstring.html">DynamicStep.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.validate_data.html">DynamicStep.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DynamicStep.validate_json.html">DynamicStep.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.html">QuasiStaticStep</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.ToString.html">QuasiStaticStep.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.add_output.html">QuasiStaticStep.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.copy.html">QuasiStaticStep.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.from_data.html">QuasiStaticStep.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.from_json.html">QuasiStaticStep.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.from_jsonstring.html">QuasiStaticStep.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.from_name.html">QuasiStaticStep.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.jobdata.html">QuasiStaticStep.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.sha256.html">QuasiStaticStep.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.to_data.html">QuasiStaticStep.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.to_json.html">QuasiStaticStep.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.to_jsonstring.html">QuasiStaticStep.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.validate_data.html">QuasiStaticStep.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.QuasiStaticStep.validate_json.html">QuasiStaticStep.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.html">DirectCyclicStep</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.ToString.html">DirectCyclicStep.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.add_output.html">DirectCyclicStep.add_output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.copy.html">DirectCyclicStep.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.from_data.html">DirectCyclicStep.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.from_json.html">DirectCyclicStep.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.from_jsonstring.html">DirectCyclicStep.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.from_name.html">DirectCyclicStep.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.jobdata.html">DirectCyclicStep.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.sha256.html">DirectCyclicStep.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.to_data.html">DirectCyclicStep.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.to_json.html">DirectCyclicStep.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.to_jsonstring.html">DirectCyclicStep.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.validate_data.html">DirectCyclicStep.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.DirectCyclicStep.validate_json.html">DirectCyclicStep.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.PrescribedField.html">PrescribedField</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.ToString.html">PrescribedField.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.copy.html">PrescribedField.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.from_data.html">PrescribedField.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.from_json.html">PrescribedField.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.from_jsonstring.html">PrescribedField.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.from_name.html">PrescribedField.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.jobdata.html">PrescribedField.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.sha256.html">PrescribedField.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.to_data.html">PrescribedField.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.to_json.html">PrescribedField.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.to_jsonstring.html">PrescribedField.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.validate_data.html">PrescribedField.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedField.validate_json.html">PrescribedField.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.ToString.html">PrescribedTemperatureField.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.copy.html">PrescribedTemperatureField.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.from_data.html">PrescribedTemperatureField.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.from_json.html">PrescribedTemperatureField.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.from_jsonstring.html">PrescribedTemperatureField.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.from_name.html">PrescribedTemperatureField.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.jobdata.html">PrescribedTemperatureField.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.sha256.html">PrescribedTemperatureField.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.to_data.html">PrescribedTemperatureField.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.to_json.html">PrescribedTemperatureField.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.to_jsonstring.html">PrescribedTemperatureField.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.validate_data.html">PrescribedTemperatureField.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.validate_json.html">PrescribedTemperatureField.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.Load.html">Load</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.ToString.html">Load.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.copy.html">Load.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.from_data.html">Load.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.from_json.html">Load.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.from_jsonstring.html">Load.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.from_name.html">Load.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.jobdata.html">Load.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.sha256.html">Load.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.to_data.html">Load.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.to_json.html">Load.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.to_jsonstring.html">Load.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.validate_data.html">Load.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Load.validate_json.html">Load.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.html">PrestressLoad</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.ToString.html">PrestressLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.copy.html">PrestressLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.from_data.html">PrestressLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.from_json.html">PrestressLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.from_jsonstring.html">PrestressLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.from_name.html">PrestressLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.jobdata.html">PrestressLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.sha256.html">PrestressLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.to_data.html">PrestressLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.to_json.html">PrestressLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.to_jsonstring.html">PrestressLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.validate_data.html">PrestressLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.validate_json.html">PrestressLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.PointLoad.html">PointLoad</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.ToString.html">PointLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.copy.html">PointLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.from_data.html">PointLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.from_json.html">PointLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.from_jsonstring.html">PointLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.from_name.html">PointLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.jobdata.html">PointLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.sha256.html">PointLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.to_data.html">PointLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.to_json.html">PointLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.to_jsonstring.html">PointLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.validate_data.html">PointLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.PointLoad.validate_json.html">PointLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.LineLoad.html">LineLoad</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.ToString.html">LineLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.copy.html">LineLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.from_data.html">LineLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.from_json.html">LineLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.from_jsonstring.html">LineLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.from_name.html">LineLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.jobdata.html">LineLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.sha256.html">LineLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.to_data.html">LineLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.to_json.html">LineLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.to_jsonstring.html">LineLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.validate_data.html">LineLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.LineLoad.validate_json.html">LineLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.AreaLoad.html">AreaLoad</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.ToString.html">AreaLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.copy.html">AreaLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.from_data.html">AreaLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.from_json.html">AreaLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.from_jsonstring.html">AreaLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.from_name.html">AreaLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.jobdata.html">AreaLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.sha256.html">AreaLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.to_data.html">AreaLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.to_json.html">AreaLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.to_jsonstring.html">AreaLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.validate_data.html">AreaLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.AreaLoad.validate_json.html">AreaLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.GravityLoad.html">GravityLoad</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.ToString.html">GravityLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.copy.html">GravityLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.from_data.html">GravityLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.from_json.html">GravityLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.from_jsonstring.html">GravityLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.from_name.html">GravityLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.jobdata.html">GravityLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.sha256.html">GravityLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.to_data.html">GravityLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.to_json.html">GravityLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.to_jsonstring.html">GravityLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.validate_data.html">GravityLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GravityLoad.validate_json.html">GravityLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.html">TributaryLoad</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.ToString.html">TributaryLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.copy.html">TributaryLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.from_data.html">TributaryLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.from_json.html">TributaryLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.from_jsonstring.html">TributaryLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.from_name.html">TributaryLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.jobdata.html">TributaryLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.sha256.html">TributaryLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.to_data.html">TributaryLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.to_json.html">TributaryLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.to_jsonstring.html">TributaryLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.validate_data.html">TributaryLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.validate_json.html">TributaryLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.ToString.html">HarmonicPointLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.copy.html">HarmonicPointLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.from_data.html">HarmonicPointLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.from_json.html">HarmonicPointLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.from_jsonstring.html">HarmonicPointLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.from_name.html">HarmonicPointLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.jobdata.html">HarmonicPointLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.sha256.html">HarmonicPointLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.to_data.html">HarmonicPointLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.to_json.html">HarmonicPointLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.to_jsonstring.html">HarmonicPointLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.validate_data.html">HarmonicPointLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.validate_json.html">HarmonicPointLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.html">HarmonicPressureLoad</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.ToString.html">HarmonicPressureLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.copy.html">HarmonicPressureLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.from_data.html">HarmonicPressureLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.from_json.html">HarmonicPressureLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.from_jsonstring.html">HarmonicPressureLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.from_name.html">HarmonicPressureLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.jobdata.html">HarmonicPressureLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.sha256.html">HarmonicPressureLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.to_data.html">HarmonicPressureLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.to_json.html">HarmonicPressureLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.to_jsonstring.html">HarmonicPressureLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.validate_data.html">HarmonicPressureLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HarmonicPressureLoad.validate_json.html">HarmonicPressureLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.html">ThermalLoad</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.ToString.html">ThermalLoad.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.copy.html">ThermalLoad.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.from_data.html">ThermalLoad.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.from_json.html">ThermalLoad.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.from_jsonstring.html">ThermalLoad.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.from_name.html">ThermalLoad.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.jobdata.html">ThermalLoad.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.sha256.html">ThermalLoad.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.to_data.html">ThermalLoad.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.to_json.html">ThermalLoad.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.to_jsonstring.html">ThermalLoad.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.validate_data.html">ThermalLoad.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.validate_json.html">ThermalLoad.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.ToString.html">GeneralDisplacement.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.copy.html">GeneralDisplacement.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.from_data.html">GeneralDisplacement.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.from_json.html">GeneralDisplacement.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.from_jsonstring.html">GeneralDisplacement.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.from_name.html">GeneralDisplacement.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.jobdata.html">GeneralDisplacement.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.sha256.html">GeneralDisplacement.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.to_data.html">GeneralDisplacement.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.to_json.html">GeneralDisplacement.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.to_jsonstring.html">GeneralDisplacement.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.validate_data.html">GeneralDisplacement.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.validate_json.html">GeneralDisplacement.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.Pattern.html">Pattern</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.ToString.html">Pattern.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.copy.html">Pattern.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.from_data.html">Pattern.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.from_json.html">Pattern.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.from_jsonstring.html">Pattern.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.from_name.html">Pattern.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.jobdata.html">Pattern.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.sha256.html">Pattern.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.to_data.html">Pattern.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.to_json.html">Pattern.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.to_jsonstring.html">Pattern.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.validate_data.html">Pattern.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.Pattern.validate_json.html">Pattern.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.FieldOutput.html">FieldOutput</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.ToString.html">FieldOutput.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.copy.html">FieldOutput.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.from_data.html">FieldOutput.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.from_json.html">FieldOutput.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.from_jsonstring.html">FieldOutput.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.from_name.html">FieldOutput.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.jobdata.html">FieldOutput.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.sha256.html">FieldOutput.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.to_data.html">FieldOutput.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.to_json.html">FieldOutput.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.to_jsonstring.html">FieldOutput.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.validate_data.html">FieldOutput.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.FieldOutput.validate_json.html">FieldOutput.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.html">HistoryOutput</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.ToString.html">HistoryOutput.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.copy.html">HistoryOutput.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.from_data.html">HistoryOutput.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.from_json.html">HistoryOutput.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.from_jsonstring.html">HistoryOutput.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.from_name.html">HistoryOutput.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.jobdata.html">HistoryOutput.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.sha256.html">HistoryOutput.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.to_data.html">HistoryOutput.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.to_json.html">HistoryOutput.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.to_jsonstring.html">HistoryOutput.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.validate_data.html">HistoryOutput.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.validate_json.html">HistoryOutput.validate_json</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="compas_fea2.results.Results.html">Results</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.to_file.html">Results.to_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.ToString.html">Results.ToString</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.copy.html">Results.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.from_data.html">Results.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.from_json.html">Results.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.from_jsonstring.html">Results.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.from_name.html">Results.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.jobdata.html">Results.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.sha256.html">Results.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.to_data.html">Results.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.to_json.html">Results.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.to_jsonstring.html">Results.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.validate_data.html">Results.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.Results.validate_json.html">Results.validate_json</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.html">NodeFieldResults</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.get_value_at_nodes.html">NodeFieldResults.get_value_at_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.get_value_at_point.html">NodeFieldResults.get_value_at_point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.ToString.html">NodeFieldResults.ToString</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">NodeFieldResults.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.from_data.html">NodeFieldResults.from_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.from_json.html">NodeFieldResults.from_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.from_jsonstring.html">NodeFieldResults.from_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.from_name.html">NodeFieldResults.from_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.jobdata.html">NodeFieldResults.jobdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.sha256.html">NodeFieldResults.sha256</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.to_data.html">NodeFieldResults.to_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.to_json.html">NodeFieldResults.to_json</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.to_jsonstring.html">NodeFieldResults.to_jsonstring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.validate_data.html">NodeFieldResults.validate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compas_fea2.results.NodeFieldResults.validate_json.html">NodeFieldResults.validate_json</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.units.html">Units</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.utilities.html">Utilities</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.colorbar.html">colorbar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.combine_all_sets.html">combine_all_sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.group_keys_by_attribute.html">group_keys_by_attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.group_keys_by_attributes.html">group_keys_by_attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.identify_ranges.html">identify_ranges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.mesh_from_shell_elements.html">mesh_from_shell_elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.network_order.html">network_order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.normalise_data.html">normalise_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.principal_stresses.html">principal_stresses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.process_data.html">process_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.postprocess.html">postprocess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.utilities.plotvoxels.html">plotvoxels</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="compas_fea2.results.NodeFieldResults.html" class="nav-link">NodeFieldResults</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">NodeFieldResults.copy</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="detail" id="nodefieldresults-copy">
+<h1>NodeFieldResults.copy</h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="compas_fea2.results.NodeFieldResults.copy">
+<span class="sig-prename descclassname"><span class="pre">NodeFieldResults.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Make an independent copy of the data object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>cls</strong><span class="classifier">Type[<a class="reference external" href="https://compas.dev/compas/latest/reference/generated/compas.data.Data.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a>], optional</span></dt><dd><p>The type of data object to return.
+Defaults to the type of the current data object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://compas.dev/compas/latest/reference/generated/compas.data.Data.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a></dt><dd><p>An independent copy of this object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="compas_fea2.results.NodeFieldResults.ToString.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">NodeFieldResults.ToString</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="compas_fea2.results.NodeFieldResults.from_data.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">NodeFieldResults.from_data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright COMPAS Association.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

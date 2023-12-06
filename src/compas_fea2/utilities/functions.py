@@ -95,12 +95,10 @@ def process_data(data, dtype, iptype, nodal, elements, n):
     """
 
     if dtype == "nodal":
-
         vn = array(data)[:, newaxis]
         ve = None
 
     elif dtype == "element":
-
         m = len(elements)
         lengths = zeros(m, dtype=int64)
         data_array = zeros((m, 20), dtype=float64)
@@ -130,12 +128,10 @@ def process_data(data, dtype, iptype, nodal, elements, n):
         AT = A.transpose()
 
         def _process(data_array, lengths, iptype):
-
             m = len(lengths)
             ve = zeros((m, 1))
 
             for i in range(m):
-
                 if iptype == 0:
                     ve[i] = max(data_array[i, : lengths[i]])
 
@@ -151,11 +147,9 @@ def process_data(data, dtype, iptype, nodal, elements, n):
             return ve
 
         def _nodal(rows, cols, nodal, ve, n):
-
             vn = zeros((n, 1))
 
             for i in range(len(rows)):
-
                 node = cols[i]
                 element = rows[i]
 
@@ -234,7 +228,6 @@ def colorbar(fsc, input="array", type=255):
     b = -(fsc - 0.25) * 2
 
     if input == "array":
-
         rgb = hstack([r, g, b])
         rgb[rgb > 1] = 1
         rgb[rgb < 0] = 0
@@ -242,7 +235,6 @@ def colorbar(fsc, input="array", type=255):
         return rgb * type
 
     elif input == "float":
-
         r = max([0, min([1, r])])
         g = max([0, min([1, g])])
         b = max([0, min([1, b])])
@@ -280,17 +272,14 @@ def mesh_from_shell_elements(structure):
 
 
 def volmesh_from_solid_elements(structure):
-
     raise NotImplementedError
 
 
 def network_from_line_elements(structure):
-
     raise NotImplementedError
 
 
 def _angle(A, B, C):
-
     AB = B - A
     BC = C - B
     th = arccos(sum(AB * BC) / (sqrt(sum(AB**2)) * sqrt(sum(BC**2)))) * 180 / pi
@@ -298,7 +287,6 @@ def _angle(A, B, C):
 
 
 def _centre(p1, p2, p3):
-
     ax, ay = p1[0], p1[1]
     bx, by = p2[0], p2[1]
     cx, cy = p3[0], p3[1]
@@ -365,7 +353,7 @@ def group_keys_by_attribute(adict, name, tol="3f"):
     for key, item in adict.items():
         if name in item:
             value = item[name]
-            if type(value) == float:
+            if isinstance(value, float):
                 value = "{0:.{1}}".format(value, tol)
             groups.setdefault(value, []).append(key)
     return groups
@@ -396,7 +384,7 @@ def group_keys_by_attributes(adict, names, tol="3f"):
         for name in names:
             if name in item:
                 value = item[name]
-                if type(value) == float:
+                if isinstance(value, float):
                     value = "{0:.{1}}".format(value, tol)
                 else:
                     value = str(value)

@@ -18,5 +18,7 @@ exclude pytest.ini .bumpversion.cfg .editorconfig
 exclude tasks.py
 exclude CONTRIBUTING.md
 exclude conftest.py
+exclude environment.yml
+exclude *.cff
 
 global-exclude *.py[cod] __pycache__ *.dylib *.nb[ic] .DS_Store

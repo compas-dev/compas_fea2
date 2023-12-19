@@ -9,14 +9,15 @@ from itertools import chain
 class _Output(FEAData):
     """Base class for output requests.
 
-    Note
-    ----
-    Outputs are registered to a :class:`compas_fea2.problem._Step`.
-
     Parameters
     ----------
     FEAData : _type_
         _description_
+
+    Notes
+    -----
+    Outputs are registered to a :class:`compas_fea2.problem.Step`.
+
     """
 
     def __init__(self, name=None, **kwargs):
@@ -33,6 +34,7 @@ class _Output(FEAData):
     @property
     def model(self):
         return self.problem._registration
+
 
 class FieldOutput(_Output):
     """FieldOutput object for specification of the fields (stresses, displacements,
@@ -54,6 +56,7 @@ class FieldOutput(_Output):
         list of node fields to output
     elements_outputs : list
         list of elements fields to output
+
     """
 
     def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, name=None, **kwargs):
@@ -78,6 +81,7 @@ class FieldOutput(_Output):
     def outputs(self):
         return chain(self.node_outputs, self.element_outputs, self.contact_outputs)
 
+
 class HistoryOutput(_Output):
     """HistoryOutput object for recording the fields (stresses, displacements,
     etc..) from the analysis.
@@ -93,7 +97,8 @@ class HistoryOutput(_Output):
     name : str
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
+
     """
 
-    def __init__(self,  name=None, **kwargs):
+    def __init__(self, name=None, **kwargs):
         super(HistoryOutput, self).__init__(name=name, **kwargs)

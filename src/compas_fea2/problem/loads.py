@@ -10,10 +10,6 @@ from compas_fea2.base import FEAData
 class _Load(FEAData):
     """Initialises base Load object.
 
-    Note
-    ----
-    Loads are registered to a :class:`compas_fea2.problem.Pattern`.
-
     Parameters
     ----------
     name : str
@@ -33,9 +29,14 @@ class _Load(FEAData):
         Load components. These differ according to each Load type
     axes : str, optional
         Load applied via 'local' or 'global' axes, by default 'global'.
+
+    Notes
+    -----
+    Loads are registered to a :class:`compas_fea2.problem.Pattern`.
+
     """
 
-    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
         super(_Load, self).__init__(name=name, **kwargs)
         self._axes = axes
         self.x = x
@@ -47,11 +48,11 @@ class _Load(FEAData):
 
     def __rmul__(self, other):
         if isinstance(other, (float, int)):
-            components = ['x', 'y', 'z', 'xx', 'yy', 'zz']
+            components = ["x", "y", "z", "xx", "yy", "zz"]
             for component in components:
                 value = getattr(self, component)
                 if value:
-                    setattr(self, component, other*value)
+                    setattr(self, component, other * value)
         return self
 
     @property
@@ -64,7 +65,7 @@ class _Load(FEAData):
 
     @property
     def components(self):
-        keys = ['x', 'y', 'z', 'xx', 'yy', 'zz']
+        keys = ["x", "y", "z", "xx", "yy", "zz"]
         return {key: getattr(self, key) for key in keys}
 
     @components.setter
@@ -87,6 +88,7 @@ class _Load(FEAData):
     @property
     def model(self):
         return self.problem._registration
+
 
 class PointLoad(_Load):
     """Concentrated forces and moments [units:N, Nm] applied to node(s).
@@ -129,7 +131,7 @@ class PointLoad(_Load):
         Load applied via 'local' or 'global' axes.
     """
 
-    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes='global', name=None, **kwargs):
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
         super(PointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
 
@@ -177,9 +179,10 @@ class LineLoad(_Load):
         Load applied via 'local' or 'global' axes, by default 'global'.
     """
 
-    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', name=None, **kwargs):
-        super(LineLoad, self).__init__(components={
-            'x': x, 'y': y, 'z': z, 'xx': xx, 'yy': yy, 'zz': zz}, axes=axes, name=name, **kwargs)
+    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", name=None, **kwargs):
+        super(LineLoad, self).__init__(
+            components={"x": x, "y": y, "z": z, "xx": xx, "yy": yy, "zz": zz}, axes=axes, name=name, **kwargs
+        )
 
 
 class AreaLoad(_Load):
@@ -211,16 +214,12 @@ class AreaLoad(_Load):
         z component of area load.
     """
 
-    def __init__(self, x=0, y=0, z=0, axes='local', name=None, **kwargs):
-        super(AreaLoad, self).__init__(components={'x': x, 'y': y, 'z': z}, axes=axes, name=name, **kwargs)
+    def __init__(self, x=0, y=0, z=0, axes="local", name=None, **kwargs):
+        super(AreaLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, name=name, **kwargs)
 
 
 class GravityLoad(_Load):
     """Gravity load [units:N/m3] applied to element(s).
-
-    Note
-    ----
-    By default gravity is supposed to act along the negative `z` axis.
 
     Parameters
     ----------
@@ -250,10 +249,15 @@ class GravityLoad(_Load):
         Factor to apply to y direction.
     z : float
         Factor to apply to z direction.
+
+    Notes
+    -----
+    By default gravity is supposed to act along the negative `z` axis.
+
     """
 
     def __init__(self, g, x=0, y=0, z=-1, name=None, **kwargs):
-        super(GravityLoad, self).__init__(x=x, y=y, z=z, axes='global', name=name, **kwargs)
+        super(GravityLoad, self).__init__(x=x, y=y, z=z, axes="global", name=name, **kwargs)
         self._g = g
 
     @property
@@ -264,7 +268,7 @@ class GravityLoad(_Load):
 class PrestressLoad(_Load):
     """Prestress load"""
 
-    def __init__(self, components, axes='global', name=None, **kwargs):
+    def __init__(self, components, axes="global", name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
         raise NotImplementedError
 
@@ -272,14 +276,14 @@ class PrestressLoad(_Load):
 class ThermalLoad(_Load):
     """Thermal load"""
 
-    def __init__(self, components, axes='global', name=None, **kwargs):
+    def __init__(self, components, axes="global", name=None, **kwargs):
         super(ThermalLoad, self).__init__(components, axes, name, **kwargs)
 
 
 class TributaryLoad(_Load):
     """Tributary load"""
 
-    def __init__(self, components, axes='global', name=None, **kwargs):
+    def __init__(self, components, axes="global", name=None, **kwargs):
         super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
         raise NotImplementedError
 
@@ -287,7 +291,7 @@ class TributaryLoad(_Load):
 class HarmonicPointLoad(_Load):
     """"""
 
-    def __init__(self, components, axes='global', name=None, **kwargs):
+    def __init__(self, components, axes="global", name=None, **kwargs):
         super(HarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
         raise NotImplementedError
 
@@ -295,6 +299,6 @@ class HarmonicPointLoad(_Load):
 class HarmonicPressureLoad(_Load):
     """"""
 
-    def __init__(self, components, axes='global', name=None, **kwargs):
+    def __init__(self, components, axes="global", name=None, **kwargs):
         super(HarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
         raise NotImplementedError

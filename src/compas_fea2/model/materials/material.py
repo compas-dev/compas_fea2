@@ -6,15 +6,7 @@ from compas_fea2.base import FEAData
 from compas_fea2.utilities._utils import extend_docstring
 
 class _Material(FEAData):
-    """
-    Note
-    ----
-    Materials are registered to a :class:`compas_fea2.model.Model`. The same
-    material can be assigned to multiple sections and in different elements and
-    parts.
-
-
-    Basic Material parameters and attributes
+    """Basic Material parameters and attributes
     ========================================
 
     Parameters
@@ -23,9 +15,6 @@ class _Material(FEAData):
         Density of the material.
     expansion : float, optional
         Thermal expansion coefficient, by default None.
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
 
     Other Parameters
     ----------------
@@ -35,8 +24,6 @@ class _Material(FEAData):
 
     Attributes
     ----------
-    name : str, optional
-        Uniqe identifier.
     density : float
         Density of the material.
     expansion : float
@@ -47,10 +34,16 @@ class _Material(FEAData):
     model : :class:`compas_fea2.model.Model`
         The Model where the material is assigned.
 
+    Notes
+    -----
+    Materials are registered to a :class:`compas_fea2.model.Model`. The same
+    material can be assigned to multiple sections and in different elements and
+    parts.
+
     """
 
-    def __init__(self, *, density, expansion=None, name=None, **kwargs):
-        super(_Material, self).__init__(name=name, **kwargs)
+    def __init__(self, *, density, expansion=None, **kwargs):
+        super(_Material, self).__init__(**kwargs)
         self.density = density
         self.expansion = expansion
         self._key = None
@@ -70,13 +63,16 @@ class _Material(FEAData):
 name        : {}
 density     : {}
 expansion   : {}
-""".format(self.__class__.__name__, len(self.__class__.__name__) * '-', self.name, self.density, self.expansion)
+""".format(
+            self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion
+        )
 
     def __html__(self):
         return """<html>
 <head></head>
 <body><p>Hello World!</p></body>
 </html>"""
+
 
 # ==============================================================================
 # linear elastic
@@ -162,9 +158,22 @@ vzx : {}
 Gxy : {}
 Gyz : {}
 Gzx : {}
-""".format(self.__class__.__name__, len(self.__class__.__name__) * '-',
-           self.name, self.density, self.expansion,
-           self.Ex, self.Ey, self.Ez, self.vxy, self.vyz, self.vzx, self.Gxy, self.Gyz, self.Gzx)
+""".format(
+            self.__class__.__name__,
+            len(self.__class__.__name__) * "-",
+            self.name,
+            self.density,
+            self.expansion,
+            self.Ex,
+            self.Ey,
+            self.Ez,
+            self.vxy,
+            self.vyz,
+            self.vzx,
+            self.Gxy,
+            self.Gyz,
+            self.Gzx,
+        )
 
 @extend_docstring(_Material)
 class ElasticIsotropic(_Material):
@@ -187,6 +196,7 @@ class ElasticIsotropic(_Material):
         Poisson's ratio v.
     G : float
         Shear modulus (automatically computed from E and v)
+
     """
 
     def __init__(self, *, E, v, density, expansion=None, name=None, **kwargs):
@@ -205,15 +215,18 @@ expansion   : {}
 E : {}
 v : {}
 G : {}
-""".format(self.name, self.density, self.expansion, self.E, self.v, self.G)
+""".format(
+            self.name, self.density, self.expansion, self.E, self.v, self.G
+        )
 
     @property
     def G(self):
         return 0.5 * self.E / (1 + self.v)
 
+
 class Stiff(_Material):
-    """Elastic, very stiff and massless material.
-    """
+    """Elastic, very stiff and massless material."""
+
     def __init__(self, *, density, expansion=None, name=None, **kwargs):
         raise NotImplementedError()
 
@@ -271,18 +284,22 @@ v  : {}
 G  : {}
 
 strain_stress : {}
-""".format(self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress)
+""".format(
+            self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress
+        )
 
 
 # ==============================================================================
 # User-defined Materials
 # ==============================================================================
+
+
 class UserMaterial(FEAData):
-    """ User Defined Material. Tho implement this type of material, a
+    """User Defined Material. Tho implement this type of material, a
     separate subroutine is required
 
     """
 
     def __init__(self, name=None, **kwargs):
         super(UserMaterial, self).__init__(self, name=name, **kwargs)
-        raise NotImplementedError('This class is not available for the selected backend plugin')
+        raise NotImplementedError("This class is not available for the selected backend plugin")

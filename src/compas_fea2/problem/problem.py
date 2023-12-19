@@ -2,51 +2,24 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import pickle
+import os
 import compas_fea2
 from pathlib import Path
-import os
 from typing import Iterable
-from unittest import result
+
+from compas.geometry import Vector
+from compas.geometry import sum_vectors
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.steps.step import _Step
 from compas_fea2.job.input_file import InputFile
-
 from compas_fea2.utilities._utils import timer
-from compas_fea2.utilities._utils import step_method
-
 from compas_fea2.results import NodeFieldResults
-
-
-from compas.geometry import Point, Plane
-from compas.geometry import Vector
-from compas.geometry import sum_vectors
 
 
 class Problem(FEAData):
     """A Problem is a collection of analysis steps (:class:`compas_fea2.problem._Step)
     applied in a specific sequence.
-
-    Note
-    ----
-    Problems are registered to a :class:`compas_fea2.model.Model`.
-
-    Problems can also be used as canonical `load combinations`, where each `load`
-    is actually a `factored step`. For example, a typical load combination such
-    as 1.35*DL+1.50LL can be applied to the model by creating the Steps DL and LL,
-    factoring them (see :class:`compas_fea2.problem._Step documentation) and adding
-    them to Problme
-
-    Note
-    ----
-    While for linear models the sequence of the steps is irrelevant, it is not the
-    case for non-linear models.
-
-    Warning
-    -------
-    Factore Steps are new objects! check the :class:`compas_fea2.problem._Step
-    documentation.
 
     Parameters
     ----------
@@ -74,6 +47,24 @@ class Problem(FEAData):
     results : :class:`compas_fea2.results.Results`
         Results object with the analyisis results.
 
+    Notes
+    -----
+    Problems are registered to a :class:`compas_fea2.model.Model`.
+
+    Problems can also be used as canonical `load combinations`, where each `load`
+    is actually a `factored step`. For example, a typical load combination such
+    as 1.35*DL+1.50LL can be applied to the model by creating the Steps DL and LL,
+    factoring them (see :class:`compas_fea2.problem.Step documentation) and adding
+    them to Problme
+
+    While for linear models the sequence of the steps is irrelevant, it is not the
+    case for non-linear models.
+
+    Warnings
+    --------
+    Factore Steps are new objects! check the :class:`compas_fea2.problem._Step
+    documentation.
+
     """
 
     def __init__(self, name=None, description=None, **kwargs):
@@ -96,10 +87,11 @@ class Problem(FEAData):
     @property
     def path(self):
         return self._path
+
     @path.setter
     def path(self, value):
         self._path = value if isinstance(value, Path) else Path(value)
-        self._path_db = os.path.join(self._path, '{}-results.db'.format(self.name))
+        self._path_db = os.path.join(self._path, "{}-results.db".format(self.name))
 
     @property
     def db_connection(self):
@@ -112,17 +104,18 @@ class Problem(FEAData):
     @property
     def steps_order(self):
         return self._steps_order
+
     @steps_order.setter
     def steps_order(self, value):
         for step in value:
             if not self.is_step_in_problem(step, add=False):
-                raise ValueError('{!r} must be previously added to {!r}'.format(step, self))
+                raise ValueError("{!r} must be previously added to {!r}".format(step, self))
         self._steps_order = value
-
 
     # =========================================================================
     #                           Step methods
     # =========================================================================
+
     def find_step_by_name(self, name):
         # type: (str) -> _Step
         """Find if there is a step with the given name in the problem.
@@ -161,13 +154,13 @@ class Problem(FEAData):
             name of a Step already defined in the Problem.
         """
 
-        if not isinstance(step, _Step):
-            raise TypeError('{!r} is not a Step'.format(step))
+        if not isinstance(step, Step):
+            raise TypeError("{!r} is not a Step".format(step))
         if step not in self.steps:
-            print('{!r} not found'.format(step))
+            print("{!r} not found".format(step))
             if add:
                 step = self.add_step(step)
-                print('{!r} added to the Problem'.format(step))
+                print("{!r} added to the Problem".format(step))
                 return step
             return False
         return True
@@ -187,10 +180,10 @@ class Problem(FEAData):
         :class:`compas_fea2.problem._Step`
         """
         if not isinstance(step, _Step):
-            raise TypeError('You must provide a valid compas_fea2 Step object')
+            raise TypeError("You must provide a valid compas_fea2 Step object")
 
         if self.find_step_by_name(step):
-            raise ValueError('There is already a step with the same name in the model.')
+            raise ValueError("There is already a step with the same name in the model.")
 
         step._key = len(self._steps)
         self._steps.add(step)
@@ -237,11 +230,6 @@ class Problem(FEAData):
     def add_linear_perturbation_step(self, lp_step, base_step):
         """Add a linear perturbation step to a previously defined step.
 
-        Note
-        ----
-        Linear perturbartion steps do not change the history of the problem (hence
-        following steps will not consider their effects).
-
         Parameters
         ----------
         lp_step : obj
@@ -249,6 +237,12 @@ class Problem(FEAData):
         base_step : str
             name of a previously defined step which will be used as starting conditions
             for the application of the linear perturbation step.
+
+        Notes
+        -----
+        Linear perturbartion steps do not change the history of the problem (hence
+        following steps will not consider their effects).
+
         """
         raise NotImplementedError
 
@@ -269,7 +263,7 @@ class Problem(FEAData):
         str
             Problem summary
         """
-        steps_data = '\n'.join([f'{step.name}' for step in self.steps])
+        steps_data = "\n".join([f"{step.name}" for step in self.steps])
 
         summary = """
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -284,17 +278,17 @@ Steps (in order of application)
 
 Analysis folder path : {}
 
-""".format(self._name,
-           self.description or 'N/A',
-           steps_data,
-           self.path  or 'N/A')
+""".format(
+            self._name, self.description or "N/A", steps_data, self.path or "N/A"
+        )
         print(summary)
         return summary
 
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
-    @timer(message='Finished writing input file in')
+
+    @timer(message="Finished writing input file in")
     def write_input_file(self, path=None):
         # type: (Path |str) -> None
         """Writes the input file.
@@ -325,15 +319,17 @@ Analysis folder path : {}
         path : :class:`pathlib.Path`
             Path where the input file will be saved.
 
-        Return
+        Returns
+        -------
         :class:`pathlib.Path`
             Path where the input file will be saved.
+
         """
         if path:
             self.model.path = path
             self.path = self.model.path.joinpath(self.name)
         if not self.path and not self.model.path:
-            raise AttributeError('You must provide a path for storing the model and the analysis results.')
+            raise AttributeError("You must provide a path for storing the model and the analysis results.")
         return self.path
 
     def analyse(self, path=None, *args, **kwargs):
@@ -343,12 +339,12 @@ Analysis folder path : {}
         ------
         NotImplementedError
             This method is implemented only at the backend level.
+
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
     def analyze(self, *args, **kwargs):
-        """American spelling of the analyse method \n"""
-        __doc__ += self.analyse.__doc__
+        """American spelling of the analyse method"""
         self.analyse(*args, **kwargs)
 
     def analyse_and_extract(self, path=None, *args, **kwargs):
@@ -362,15 +358,10 @@ Analysis folder path : {}
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
-    #FIXME check the funciton and 'memory only parameter
+    # FIXME check the funciton and 'memory only parameter
     def analyse_and_store(self, memory_only=False, *args, **kwargs):
         """Analyse the problem in the selected backend and stores the results in
         the model.
-
-        Note
-        ----
-        The extraction of the results to SQLite ca be done `in memory` to speed up
-        the process but no database file is generated.
 
         Parameters
         ----------
@@ -380,6 +371,12 @@ Analysis folder path : {}
         memory_only : bool, optional
             store the SQLITE database only in memory (no .db file will be saved),
             by default False
+
+        Notes
+        -----
+        The extraction of the results to SQLite ca be done `in memory` to speed up
+        the process but no database file is generated.
+
         """
         self.analyse(*args, **kwargs)
         self.convert_results_to_sqlite(*args, **kwargs)
@@ -388,11 +385,6 @@ Analysis folder path : {}
     def restart_analysis(self, *args, **kwargs):
         """Continue a previous analysis from a given increement with additional
         steps.
-
-        Note
-        ----
-        For abaqus, you have to specify to save specific files during the original
-        analysis by passing the `restart=True` option.
 
         Parameters
         ----------
@@ -407,6 +399,12 @@ Analysis folder path : {}
         ------
         ValueError
             _description_
+
+        Notes
+        -----
+        For abaqus, you have to specify to save specific files during the original
+        analysis by passing the `restart=True` option.
+
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
@@ -414,8 +412,7 @@ Analysis folder path : {}
     #                         Results methods - general
     # =========================================================================
 
-
-    @timer(message='Problem results copied in the model in ')
+    @timer(message="Problem results copied in the model in ")
     def store_results_in_model(self, database_path=None, database_name=None, steps=None, fields=None, *args, **kwargs):
         """Copy the results form the sqlite database back into the model at the
         nodal and element level.
@@ -438,7 +435,9 @@ Analysis folder path : {}
         None
 
         """
-        databse_full_path = os.path.join(database_path, database_name) if database_path and database_name else self.path_results
+        databse_full_path = (
+            os.path.join(database_path, database_name) if database_path and database_name else self.path_results
+        )
         if not os.path.exists(databse_full_path):
             self.convert_results_to_sqlite(*args, **kwargs)
         for step in steps or self.steps:
@@ -463,7 +462,7 @@ Analysis folder path : {}
         """
         if not step:
             step = self._steps_order[-1]
-        _, col_val = self._get_field_results('RF', step)
+        _, col_val = self._get_field_results("RF", step)
         return self._get_vector_results(col_val)
 
     def get_reaction_moments_sql(self, step=None):
@@ -481,14 +480,14 @@ Analysis folder path : {}
         """
         if not step:
             step = self._steps_order[-1]
-        _, col_val = self._get_field_results('RM', step)
+        _, col_val = self._get_field_results("RM", step)
         return self._get_vector_results(col_val)
 
     # =========================================================================
     #                         Results methods - displacements
     # =========================================================================
 
-   # TODO add moments
+    # TODO add moments
     def get_total_reaction(self):
         reactions_forces = []
         for part in self.step.problem.model.parts:
@@ -507,8 +506,9 @@ Analysis folder path : {}
 
     def get_deformed_model(self, step=None, **kwargs):
         from copy import deepcopy
+
         if not step:
-            step=self.steps_order[-1]
+            step = self.steps_order[-1]
 
         deformed_model = deepcopy(self.model)
         # # # TODO create a copy of the model first
@@ -520,10 +520,10 @@ Analysis folder path : {}
         raise NotImplementedError()
         return deformed_model
 
-
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
+
     # def show(self, scale_factor=1., step=None, width=1600, height=900, parts=None,
     #          solid=True, draw_nodes=False, node_labels=False,
     #          draw_bcs=1., draw_constraints=True, draw_loads=True, **kwargs):
@@ -562,18 +562,20 @@ Analysis folder path : {}
     #         v.draw_loads(step, scale_factor=kwargs['draw_loads'])
     #     v.show()
 
-    def show_nodes_field_vector(self, field_name, vector_sf=1., model_sf=1., step=None, width=1600, height=900, **kwargs):
+    def show_nodes_field_vector(
+        self, field_name, vector_sf=1.0, model_sf=1.0, step=None, width=1600, height=900, **kwargs
+    ):
         from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.colors import ColorMap, Color
-        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
-        #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+        from compas.colors import ColorMap
+
+        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Get values
         if not step:
             step = self._steps_order[-1]
         field = NodeFieldResults(field_name, step)
-        min_value = field._min_invariants['magnitude'].invariants["MIN(magnitude)"]
-        max_value = field._max_invariants['magnitude'].invariants["MAX(magnitude)"]
+        min_value = field._min_invariants["magnitude"].invariants["MIN(magnitude)"]
+        max_value = field._max_invariants["magnitude"].invariants["MAX(magnitude)"]
 
         # Color the mesh
         pts, vectors, colors = [], [], []
@@ -582,19 +584,19 @@ Analysis folder path : {}
                 continue
             vectors.append(r.vector.scaled(vector_sf))
             pts.append(r.location.xyz)
-            colors.append(cmap(r.invariants['magnitude'], minval=min_value, maxval=max_value))
+            colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
 
         # Display results
         v = FEA2Viewer(width, height, scale_factor=model_sf)
         v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
         v.draw_parts(self.model.parts)
-        if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
-        if kwargs.get('draw_loads', None):
-            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+        if kwargs.get("draw_bcs", None):
+            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
+        if kwargs.get("draw_loads", None):
+            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
         v.show()
 
-    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, model_sf=1., **kwargs):
+    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, model_sf=1.0, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -632,65 +634,69 @@ Analysis folder path : {}
         ------
         ValueError
             _description_
+
         """
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.colors import ColorMap, Color
-        cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
-        #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+
+        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+        # ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
 
         # Get mesh
-        parts_gkey_vertex={}
-        parts_mesh={}
+        parts_gkey_vertex = {}
+        parts_mesh = {}
         for part in self.model.parts:
-            if (mesh:= part.discretized_boundary_mesh):
+            if mesh := part.discretized_boundary_mesh:
                 colored_mesh = mesh.copy()
                 parts_gkey_vertex[part.name] = colored_mesh.gkey_key(compas_fea2.PRECISION)
                 parts_mesh[part.name] = colored_mesh
             else:
-                raise AttributeError('Discretized boundary mesh not found')
+                raise AttributeError("Discretized boundary mesh not found")
 
         # Set the bounding limits
-        if kwargs.get('bound', None):
-            if not isinstance(kwargs['bound'], Iterable) or len(kwargs['bound'])!=2:
-                raise ValueError('You need to provide an upper and lower bound -> (lb, up)')
-            if kwargs['bound'][0]>kwargs['bound'][1]:
-                kwargs['bound'][0], kwargs['bound'][1] = kwargs['bound'][1], kwargs['bound'][0]
+        if kwargs.get("bound", None):
+            if not isinstance(kwargs["bound"], Iterable) or len(kwargs["bound"]) != 2:
+                raise ValueError("You need to provide an upper and lower bound -> (lb, up)")
+            if kwargs["bound"][0] > kwargs["bound"][1]:
+                kwargs["bound"][0], kwargs["bound"][1] = kwargs["bound"][1], kwargs["bound"][0]
 
         # Get values
         if not step:
             step = self._steps_order[-1]
         field = NodeFieldResults(field_name, step)
-        min_value = field._min_components[component].components[f'MIN({component})']
-        max_value = field._max_components[component].components[f'MAX({component})']
+        min_value = field._min_components[component].components[f"MIN({component})"]
+        max_value = field._max_components[component].components[f"MAX({component})"]
 
         # Color the mesh
         for r in field.results:
-            if min_value - max_value == 0.:
+            if min_value - max_value == 0.0:
                 color = Color.red()
-            elif kwargs.get('bound', None):
-                if r.components[component]>=kwargs['bound'] or r.components[component]<=kwargs['bound']:
+            elif kwargs.get("bound", None):
+                if r.components[component] >= kwargs["bound"] or r.components[component] <= kwargs["bound"]:
                     color = Color.red()
                 else:
                     color = cmap(r.components[component], minval=min_value, maxval=max_value)
             else:
                 color = cmap(r.components[component], minval=min_value, maxval=max_value)
             if r.location.gkey in parts_gkey_vertex[part.name]:
-                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], 'color', color)
+                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], "color", color)
 
         # Display results
         v = FEA2Viewer(width, height, scale_factor=model_sf)
         for part in self.model.parts:
             v.draw_mesh(parts_mesh[part.name])
 
-        if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
+        if kwargs.get("draw_bcs", None):
+            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
 
-        if kwargs.get('draw_loads', None):
-            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+        if kwargs.get("draw_loads", None):
+            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
 
         v.show()
 
-    def show_displacements(self, component=3, step=None, style='contour', deformed=False, width=1600, height=900, model_sf=1., **kwargs):
+    def show_displacements(
+        self, component=3, step=None, style="contour", deformed=False, width=1600, height=900, model_sf=1.0, **kwargs
+    ):
         """Display the displacement of the nodes.
 
         Parameters
@@ -723,16 +729,25 @@ Analysis folder path : {}
         Raises
         ------
         ValueError
-            "The style can be either 'vector' or 'contour'"
+            The style can be either 'vector' or 'contour'.
+
         """
-        if style == 'contour':
-            self.show_nodes_field(field_name='U', component='U'+str(component), step=step, width=width, height=height, model_sf=model_sf, **kwargs)
-        elif style == 'vector':
-            raise NotImplementedError('WIP')
+        if style == "contour":
+            self.show_nodes_field(
+                field_name="U",
+                component="U" + str(component),
+                step=step,
+                width=width,
+                height=height,
+                model_sf=model_sf,
+                **kwargs,
+            )
+        elif style == "vector":
+            raise NotImplementedError("WIP")
         else:
             raise ValueError("The style can be either 'vector' or 'contour'")
 
-    def show_deformed(self, step=None, width=1600, height=900, scale_factor=1., **kwargs):
+    def show_deformed(self, step=None, width=1600, height=900, scale_factor=1.0, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -745,27 +760,27 @@ Analysis folder path : {}
         height : int, optional
             Height of the viewer window, by default 900
 
-        Return
-        ------
+        Returns
+        -------
         None
+
         """
         from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.geometry import Point, Vector
+        from compas.geometry import Vector
 
-        from compas.colors import ColorMap, Color
         v = FEA2Viewer(width, height)
         if not step:
-            step=self.steps_order[-1]
+            step = self.steps_order[-1]
         # TODO create a copy of the model first
-        displacements = NodeFieldResults('U', step)
+        displacements = NodeFieldResults("U", step)
         for displacement in displacements.results:
             vector = displacement.vector.scaled(scale_factor)
             displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
         v.draw_parts(self.model.parts, solid=True)
 
-        if kwargs.get('draw_bcs', None):
-            v.draw_bcs(self.model, scale_factor=kwargs['draw_bcs'])
+        if kwargs.get("draw_bcs", None):
+            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
 
-        if kwargs.get('draw_loads', None):
-            v.draw_loads(step, scale_factor=kwargs['draw_loads'])
+        if kwargs.get("draw_loads", None):
+            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
         v.show()

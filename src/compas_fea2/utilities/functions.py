@@ -47,18 +47,18 @@ except ImportError:
 
 
 __all__ = [
-    'colorbar',
-    'combine_all_sets',
-    'group_keys_by_attribute',
-    'group_keys_by_attributes',
-    'network_order',
-    'normalise_data',
-    'postprocess',
-    'process_data',
-    'principal_stresses',
-    'plotvoxels',
-    'identify_ranges',
-    'mesh_from_shell_elements'
+    "colorbar",
+    "combine_all_sets",
+    "group_keys_by_attribute",
+    "group_keys_by_attributes",
+    "network_order",
+    "normalise_data",
+    "postprocess",
+    "process_data",
+    "principal_stresses",
+    "plotvoxels",
+    "identify_ranges",
+    "mesh_from_shell_elements",
 ]
 
 
@@ -66,8 +66,9 @@ __all__ = [
 #                         General methods
 # =========================================================================
 
+
 def process_data(data, dtype, iptype, nodal, elements, n):
-    """ Process the raw data.
+    """Process the raw data.
 
     Parameters
     ----------
@@ -93,18 +94,16 @@ def process_data(data, dtype, iptype, nodal, elements, n):
 
     """
 
-    if dtype == 'nodal':
-
+    if dtype == "nodal":
         vn = array(data)[:, newaxis]
         ve = None
 
-    elif dtype == 'element':
-
+    elif dtype == "element":
         m = len(elements)
         lengths = zeros(m, dtype=int64)
         data_array = zeros((m, 20), dtype=float64)
 
-        iptypes = {'max': 0, 'min': 1, 'mean': 2, 'abs': 3}
+        iptypes = {"max": 0, "min": 1, "mean": 2, "abs": 3}
 
         for ekey, item in data.items():
             fdata = list(item.values())
@@ -129,32 +128,28 @@ def process_data(data, dtype, iptype, nodal, elements, n):
         AT = A.transpose()
 
         def _process(data_array, lengths, iptype):
-
             m = len(lengths)
             ve = zeros((m, 1))
 
             for i in range(m):
-
                 if iptype == 0:
-                    ve[i] = max(data_array[i, :lengths[i]])
+                    ve[i] = max(data_array[i, : lengths[i]])
 
                 elif iptype == 1:
-                    ve[i] = min(data_array[i, :lengths[i]])
+                    ve[i] = min(data_array[i, : lengths[i]])
 
                 elif iptype == 2:
-                    ve[i] = mean(data_array[i, :lengths[i]])
+                    ve[i] = mean(data_array[i, : lengths[i]])
 
                 elif iptype == 3:
-                    ve[i] = max(abs(data_array[i, :lengths[i]]))
+                    ve[i] = max(abs(data_array[i, : lengths[i]]))
 
             return ve
 
         def _nodal(rows, cols, nodal, ve, n):
-
             vn = zeros((n, 1))
 
             for i in range(len(rows)):
-
                 node = cols[i]
                 element = rows[i]
 
@@ -170,18 +165,18 @@ def process_data(data, dtype, iptype, nodal, elements, n):
 
         ve = _process(data_array, lengths, iptypes[iptype])
 
-        if nodal == 'mean':
+        if nodal == "mean":
             vsum = asarray(AT.dot(ve))
             vn = vsum / sum(AT, 1)
 
         else:
-            vn = _nodal(rows, cols, 0 if nodal == 'max' else 1, ve, n)
+            vn = _nodal(rows, cols, 0 if nodal == "max" else 1, ve, n)
 
     return vn, ve
 
 
 def identify_ranges(data):
-    """ Identifies continuous interger series from a list and returns a list of ranges.
+    """Identifies continuous interger series from a list and returns a list of ranges.
 
     Parameters
     ----------
@@ -209,8 +204,8 @@ def identify_ranges(data):
     return ranges
 
 
-def colorbar(fsc, input='array', type=255):
-    """ Creates RGB color information from -1 to 1 scaled values.
+def colorbar(fsc, input="array", type=255):
+    """Creates RGB color information from -1 to 1 scaled values.
 
     Parameters
     ----------
@@ -232,16 +227,14 @@ def colorbar(fsc, input='array', type=255):
     g = -abs(fsc - 0.25) * 2 + 1.5
     b = -(fsc - 0.25) * 2
 
-    if input == 'array':
-
+    if input == "array":
         rgb = hstack([r, g, b])
         rgb[rgb > 1] = 1
         rgb[rgb < 0] = 0
 
         return rgb * type
 
-    elif input == 'float':
-
+    elif input == "float":
         r = max([0, min([1, r])])
         g = max([0, min([1, g])])
         b = max([0, min([1, b])])
@@ -250,7 +243,7 @@ def colorbar(fsc, input='array', type=255):
 
 
 def mesh_from_shell_elements(structure):
-    """ Returns a Mesh datastructure object from a Structure's ShellElement objects.
+    """Returns a Mesh datastructure object from a Structure's ShellElement objects.
 
     Parameters
     ----------
@@ -264,7 +257,7 @@ def mesh_from_shell_elements(structure):
 
     """
 
-    ekeys = [ekey for ekey in structure.elements if structure.elements[ekey].__name__ == 'ShellElement']
+    ekeys = [ekey for ekey in structure.elements if structure.elements[ekey].__name__ == "ShellElement"]
     nkeys = {nkey for ekey in ekeys for nkey in structure.elements[ekey].nodes}
 
     mesh = Mesh()
@@ -279,17 +272,14 @@ def mesh_from_shell_elements(structure):
 
 
 def volmesh_from_solid_elements(structure):
-
     raise NotImplementedError
 
 
 def network_from_line_elements(structure):
-
     raise NotImplementedError
 
 
 def _angle(A, B, C):
-
     AB = B - A
     BC = C - B
     th = arccos(sum(AB * BC) / (sqrt(sum(AB**2)) * sqrt(sum(BC**2)))) * 180 / pi
@@ -297,7 +287,6 @@ def _angle(A, B, C):
 
 
 def _centre(p1, p2, p3):
-
     ax, ay = p1[0], p1[1]
     bx, by = p2[0], p2[1]
     cx, cy = p3[0], p3[1]
@@ -310,13 +299,13 @@ def _centre(p1, p2, p3):
     g = 2 * (a * (cy - by) - b * (cx - bx))
     centerx = (d * e - b * f) / g
     centery = (a * f - c * e) / g
-    r = sqrt((ax - centerx)**2 + (ay - centery)**2)
+    r = sqrt((ax - centerx) ** 2 + (ay - centery) ** 2)
 
     return [centerx, centery, 0], r
 
 
 def combine_all_sets(sets_a, sets_b):
-    """ Combines two nested lists of node or element sets into the minimum ammount of set combinations.
+    """Combines two nested lists of node or element sets into the minimum ammount of set combinations.
 
     Parameters
     ----------
@@ -337,12 +326,12 @@ def combine_all_sets(sets_a, sets_b):
         for j in sets_b:
             for x in sets_a[i]:
                 if x in sets_b[j]:
-                    comb.setdefault(str(i) + ',' + str(j), []).append(x)
+                    comb.setdefault(str(i) + "," + str(j), []).append(x)
     return comb
 
 
-def group_keys_by_attribute(adict, name, tol='3f'):
-    """ Make group keys by shared attribute values.
+def group_keys_by_attribute(adict, name, tol="3f"):
+    """Make group keys by shared attribute values.
 
     Parameters
     ----------
@@ -364,14 +353,14 @@ def group_keys_by_attribute(adict, name, tol='3f'):
     for key, item in adict.items():
         if name in item:
             value = item[name]
-            if type(value) == float:
-                value = '{0:.{1}}'.format(value, tol)
+            if isinstance(value, float):
+                value = "{0:.{1}}".format(value, tol)
             groups.setdefault(value, []).append(key)
     return groups
 
 
-def group_keys_by_attributes(adict, names, tol='3f'):
-    """ Make group keys by shared values of attributes.
+def group_keys_by_attributes(adict, names, tol="3f"):
+    """Make group keys by shared values of attributes.
 
     Parameters
     ----------
@@ -395,20 +384,20 @@ def group_keys_by_attributes(adict, names, tol='3f'):
         for name in names:
             if name in item:
                 value = item[name]
-                if type(value) == float:
-                    value = '{0:.{1}}'.format(value, tol)
+                if isinstance(value, float):
+                    value = "{0:.{1}}".format(value, tol)
                 else:
                     value = str(value)
             else:
-                value = '-'
+                value = "-"
             values.append(value)
-        vkey = '_'.join(values)
+        vkey = "_".join(values)
         groups.setdefault(vkey, []).append(key)
     return groups
 
 
 def network_order(start, structure, network):
-    """ Extract node and element orders from a Network for a given start-point.
+    """Extract node and element orders from a Network for a given start-point.
 
     Parameters
     ----------
@@ -433,7 +422,7 @@ def network_order(start, structure, network):
     """
 
     gkey_key = network.gkey_key()
-    start = gkey_key[geometric_key(start, '{0}f'.format(structure.tol))]
+    start = gkey_key[geometric_key(start, "{0}f".format(structure.tol))]
     leaves = network.leaves()
     leaves.remove(start)
     end = leaves[0]
@@ -452,14 +441,14 @@ def network_order(start, structure, network):
         xyz_sp = structure.node_xyz(sp)
         xyz_ep = structure.node_xyz(ep)
         dL = distance_point_point(xyz_sp, xyz_ep)
-        arclengths.append(length + dL / 2.)
+        arclengths.append(length + dL / 2.0)
         length += dL
 
     return nodes, elements, arclengths, length
 
 
 def normalise_data(data, cmin, cmax):
-    """ Normalise a vector of data to between -1 and 1.
+    """Normalise a vector of data to between -1 and 1.
 
     Parameters
     ----------
@@ -491,7 +480,7 @@ def normalise_data(data, cmin, cmax):
 
 
 def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, iptype, nodal):
-    """ Post-process data from analysis results for given step and field.
+    """Post-process data from analysis results for given step and field.
 
     Parameters
     ----------
@@ -547,11 +536,11 @@ def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, ip
     vn, ve = process_data(data=data, dtype=dtype, iptype=iptype, nodal=nodal, elements=elements, n=len(U))
 
     fscaled, fabs = normalise_data(data=vn, cmin=cbar[0], cmax=cbar[1])
-    NodeBases = colorbar(fsc=fscaled, input='array', type=ctype)
+    NodeBases = colorbar(fsc=fscaled, input="array", type=ctype)
 
-    if dtype == 'element':
+    if dtype == "element":
         escaled, eabs = normalise_data(data=ve, cmin=cbar[0], cmax=cbar[1])
-        ElementBases = colorbar(fsc=escaled, input='array', type=ctype)
+        ElementBases = colorbar(fsc=escaled, input="array", type=ctype)
         ElementBases_ = [list(i) for i in list(ElementBases)]
     else:
         eabs = 0
@@ -566,7 +555,7 @@ def postprocess(nodes, elements, ux, uy, uz, data, dtype, scale, cbar, ctype, ip
 
 
 def plotvoxels(values, U, vdx, indexing=None):
-    """ Plot values as voxel data.
+    """Plot values as voxel data.
 
     Parameters
     ----------
@@ -597,7 +586,7 @@ def plotvoxels(values, U, vdx, indexing=None):
     # Zm, Ym, Xm = meshgrid(X, Y, Z, indexing='ij')
 
     f = abs(asarray(values))
-    Am = squeeze(griddata(U, f, (Xm, Ym, Zm), method='linear', fill_value=0))
+    Am = squeeze(griddata(U, f, (Xm, Ym, Zm), method="linear", fill_value=0))
     Am[isnan(Am)] = 0
 
     # voxels = VtkViewer(data={'voxels': Am})
@@ -608,7 +597,7 @@ def plotvoxels(values, U, vdx, indexing=None):
 
 
 def principal_stresses(data, ptype, scale, rotate):
-    """ Performs principal stress calculations.
+    """Performs principal stress calculations.
 
     Parameters
     ----------
@@ -636,11 +625,11 @@ def principal_stresses(data, ptype, scale, rotate):
 
     """
 
-    axes = data['axes']
-    s11 = data['sxx']
-    s22 = data['syy']
-    s12 = data['sxy']
-    spr = data['s{0}p'.format(ptype)]
+    axes = data["axes"]
+    s11 = data["sxx"]
+    s22 = data["syy"]
+    s12 = data["sxy"]
+    spr = data["s{0}p".format(ptype)]
 
     ekeys = spr.keys()
     m = len(ekeys)
@@ -660,14 +649,14 @@ def principal_stresses(data, ptype, scale, rotate):
         try:
             e11[i, :] = axes[ekey][0]
             e22[i, :] = axes[ekey][1]
-            s11_sp1[i] = s11[ekey]['ip1_sp1']
-            s22_sp1[i] = s22[ekey]['ip1_sp1']
-            s12_sp1[i] = s12[ekey]['ip1_sp1']
-            spr_sp1[i] = spr[ekey]['ip1_sp1']
-            s11_sp5[i] = s11[ekey]['ip1_sp5']
-            s22_sp5[i] = s22[ekey]['ip1_sp5']
-            s12_sp5[i] = s12[ekey]['ip1_sp5']
-            spr_sp5[i] = spr[ekey]['ip1_sp5']
+            s11_sp1[i] = s11[ekey]["ip1_sp1"]
+            s22_sp1[i] = s22[ekey]["ip1_sp1"]
+            s12_sp1[i] = s12[ekey]["ip1_sp1"]
+            spr_sp1[i] = spr[ekey]["ip1_sp1"]
+            s11_sp5[i] = s11[ekey]["ip1_sp5"]
+            s22_sp5[i] = s22[ekey]["ip1_sp5"]
+            s12_sp5[i] = s12[ekey]["ip1_sp5"]
+            spr_sp5[i] = spr[ekey]["ip1_sp5"]
         except Exception:
             pass
 

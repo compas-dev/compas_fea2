@@ -1,13 +1,10 @@
-from importlib.metadata import distribution
 from typing import Iterable
 from compas_view2.app import App
 from compas_view2.objects import Collection
 from compas_view2.shapes import Arrow
-from compas_view2.collections import Collection
 from compas_view2.shapes import Text
 
 from compas.datastructures import Mesh
-from compas.geometry import Scale
 from compas.geometry import Line
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
@@ -30,7 +27,7 @@ def hextorgb(hex):
     return tuple(i / 255 for i in hex_to_rgb(hex))
 
 
-class FEA2Viewer():
+class FEA2Viewer:
     """Wrapper for the compas_view2 viewer app.
 
     Parameters
@@ -52,14 +49,14 @@ class FEA2Viewer():
         self.height = height
         self.app = App(width=width, height=height)
 
-        sf = kwargs.get('scale_factor',1)
+        sf = kwargs.get("scale_factor", 1)
 
-        self.app.view.camera.target = [3000*sf, 3000*sf, 1000*sf]
-        self.app.view.camera.position = [7000*sf, 7000*sf, 5000*sf]
-        self.app.view.camera.near = 1*sf
-        self.app.view.camera.far = 100000*sf
-        self.app.view.camera.scale = 1000*sf
-        self.app.view.grid.cell_size = 1000*sf
+        self.app.view.camera.target = [3000 * sf, 3000 * sf, 1000 * sf]
+        self.app.view.camera.position = [7000 * sf, 7000 * sf, 5000 * sf]
+        self.app.view.camera.near = 1 * sf
+        self.app.view.camera.far = 100000 * sf
+        self.app.view.camera.scale = 1000 * sf
+        self.app.view.grid.cell_size = 1000 * sf
 
     def draw_mesh(self, mesh):
         self.app.add(mesh, use_vertex_color=True)
@@ -104,7 +101,7 @@ class FEA2Viewer():
             If `True` add the nodes.
         """
         pts = [node.point for node in nodes]
-        self.app.add(pts, colors=[hextorgb("#386641")]*len(pts))
+        self.app.add(pts, colors=[hextorgb("#386641")] * len(pts))
 
         for node in nodes:
             if node_lables:
@@ -127,14 +124,14 @@ class FEA2Viewer():
             pts = [node.point for node in element.nodes]
             collection_items.append(Polyhedron(pts, list(element._face_indices.values())))
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(.9, .9, .9))
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9))
 
     def draw_shell_elements(self, elements, show_vertices=True):
         """Draw the elements of a part.
 
         Parameters
         ----------
-        elements : :class:`compas_fea2.model.ShellElement` | :class:`compas_fea2.model._Element3D` | :class:`compas_fea2.model.BeamElement`
+        elements : :class:`compas_fea2.model.ShellElement` | :class:`compas_fea2.model.Element3D` | :class:`compas_fea2.model.BeamElement`
             _description_
         show_vertices : bool, optional
             If `True` show the vertices of the elements, by default True
@@ -150,7 +147,7 @@ class FEA2Viewer():
             else:
                 raise NotImplementedError("only 3 and 4 vertices shells supported at the moment")
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(.9, .9, .9))
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9))
 
     def draw_beam_elements(self, elements, show_vertices=True):
         """Draw the elements of a part.
@@ -170,7 +167,7 @@ class FEA2Viewer():
         if collection_items:
             self.app.add(Collection(collection_items), linewidth=10)
 
-    def draw_bcs(self, model, parts=None, scale_factor=1.):
+    def draw_bcs(self, model, parts=None, scale_factor=1.0):
         """Draw the support boundary conditions.
 
         Parameters
@@ -199,12 +196,12 @@ class FEA2Viewer():
             if bcs_collection:
                 self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
 
-    def draw_loads(self, step, scale_factor=1., app_point='end'):
+    def draw_loads(self, step, scale_factor=1.0, app_point="end"):
         """Draw the applied loads for given steps.
 
         Parameters
         ----------
-        steps : [:class:`compas_fea2.problem._Step`]
+        steps : [:class:`compas_fea2.problem.Step`]
             List of steps. Only the loads in these steps will be shown.
         scale_factor : float, optional
             Scale the loads reppresentation to have a nicer drawing,
@@ -213,14 +210,18 @@ class FEA2Viewer():
         if isinstance(step, _GeneralStep):
             for pattern in step._patterns:
                 if isinstance(pattern.load, PointLoad):
-                    vector = Vector(x=pattern.load.components['x'] or 0.,
-                                    y=pattern.load.components['y'] or 0.,
-                                    z=pattern.load.components['z'] or 0.)
+                    vector = Vector(
+                        x=pattern.load.components["x"] or 0.0,
+                        y=pattern.load.components["y"] or 0.0,
+                        z=pattern.load.components["z"] or 0.0,
+                    )
                     if vector.length == 0:
                         continue
                     vector.scale(scale_factor)
-                    if app_point=='end':
-                        pts = [[node.x-vector.x, node.y-vector.y, node.z-vector.z] for node in pattern.distribution]
+                    if app_point == "end":
+                        pts = [
+                            [node.x - vector.x, node.y - vector.y, node.z - vector.z] for node in pattern.distribution
+                        ]
                     else:
                         pts = [node.point for node in pattern.distribution]
                     # TODO add moment components xx, yy, zz
@@ -244,25 +245,21 @@ class FEA2Viewer():
         arrows = []
         arrows_properties = []
         if not colors:
-           colors = [(0, 1, 0)]*len(pts)
+            colors = [(0, 1, 0)] * len(pts)
         for pt, vector, color in zip(pts, vectors, colors):
-            arrows.append(Arrow(pt, vector,
-                                head_portion=0.3, head_width=0.15, body_width=0.05))
-            arrows_properties.append({"u": 3,
-                                      "show_lines": False,
-                                      "facecolor": color})
+            arrows.append(Arrow(pt, vector, head_portion=0.3, head_width=0.15, body_width=0.05))
+            arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
         if arrows:
             self.app.add(Collection(arrows, arrows_properties))
 
     def show(self):
-        """Display the viewport.
-        """
+        """Display the viewport."""
         self.app.show()
 
     def dynamic_show(self):
-        """Display the viewport dynamically.
-        """
+        """Display the viewport dynamically."""
         self.app.run()
+
 
 # class BeamViewer():
 #     pass

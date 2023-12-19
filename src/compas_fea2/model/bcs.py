@@ -49,8 +49,8 @@ class _BoundaryCondition(FEAData):
     """
     __doc__ += docs
 
-    def __init__(self, axes='global', name=None, **kwargs):
-        super(_BoundaryCondition, self).__init__(name=name, **kwargs)
+    def __init__(self, axes="global", **kwargs):
+        super(_BoundaryCondition, self).__init__(**kwargs)
         self._axes = axes
         self._x = False
         self._y = False
@@ -93,7 +93,7 @@ class _BoundaryCondition(FEAData):
 
     @property
     def components(self):
-        return {c: getattr(self, c) for c in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+        return {c: getattr(self, c) for c in ["x", "y", "z", "xx", "yy", "zz"]}
 
 
 class GeneralBC(_BoundaryCondition):
@@ -117,8 +117,8 @@ zz : bool
     Restrain rotations around the z axis.
     """
 
-    def __init__(self, name=None, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
-        super(GeneralBC, self).__init__(name=name, **kwargs)
+    def __init__(self, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
+        super(GeneralBC, self).__init__(**kwargs)
         self._x = x
         self._y = y
         self._z = z
@@ -132,8 +132,8 @@ class FixedBC(_BoundaryCondition):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(FixedBC, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(FixedBC, self).__init__(**kwargs)
         self._x = True
         self._y = True
         self._z = True
@@ -147,8 +147,8 @@ class PinnedBC(_BoundaryCondition):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(PinnedBC, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(PinnedBC, self).__init__(**kwargs)
         self._x = True
         self._y = True
         self._z = True
@@ -159,8 +159,8 @@ class ClampBCXX(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(ClampBCXX, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(ClampBCXX, self).__init__(**kwargs)
         self._xx = True
 
 
@@ -169,8 +169,8 @@ class ClampBCYY(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(ClampBCYY, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(ClampBCYY, self).__init__(**kwargs)
         self._yy = True
 
 
@@ -179,8 +179,8 @@ class ClampBCZZ(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(ClampBCZZ, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(ClampBCZZ, self).__init__(**kwargs)
         self._zz = True
 
 
@@ -189,8 +189,8 @@ class RollerBCX(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCX, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCX, self).__init__(**kwargs)
         self._x = False
 
 
@@ -199,8 +199,8 @@ class RollerBCY(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCY, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCY, self).__init__(**kwargs)
         self._y = False
 
 
@@ -209,8 +209,8 @@ class RollerBCZ(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCZ, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCZ, self).__init__(**kwargs)
         self._z = False
 
 
@@ -219,8 +219,8 @@ class RollerBCXY(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCXY, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCXY, self).__init__(**kwargs)
         self._x = False
         self._y = False
 
@@ -230,8 +230,8 @@ class RollerBCYZ(PinnedBC):
     """
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCYZ, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCYZ, self).__init__(**kwargs)
         self._y = False
         self._z = False
 

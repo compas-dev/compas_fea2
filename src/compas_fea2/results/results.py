@@ -4,10 +4,8 @@ from __future__ import print_function
 
 from typing import Iterable
 
-from compas_fea2.base import FEAData
-
 from compas.geometry import Vector
-from compas.geometry import sum_vectors
+from compas_fea2.base import FEAData
 
 from .sql_wrapper import get_field_results, get_field_labels, get_database_table, create_connection
 
@@ -16,15 +14,16 @@ class Results(FEAData):
     """Results object. This ensures that the results from all
     the backends are consistent.
 
-    Note
-    ----
-    Results are registered to a :class:`compas_fea2.problem.Problem`.
-
     Parameters
     ----------
     location : var
         location of the result
     value : var
+
+    Notes
+    -----
+    Results are registered to a :class:`compas_fea2.problem.Problem`.
+
     """
 
     def __init__(self, location, components, invariants, name=None, **kwargs):
@@ -47,16 +46,16 @@ class Results(FEAData):
 
     @property
     def vector(self):
-        if len(self.components)==3:
+        if len(self.components) == 3:
             return Vector(*list(self.components.values()))
 
     @property
     def value(self):
         return self.vector.length
 
-
     def to_file(self, *args, **kwargs):
         raise NotImplementedError("this function is not available for the selected backend")
+
 
 class FieldResults(FEAData):
     def __init__(self, field_name, step, name=None, *args, **kwargs):
@@ -64,12 +63,8 @@ class FieldResults(FEAData):
         self._registration = step
         self._db_connection = create_connection(self.problem.path_db)
         self._field_name = field_name
-        self._components = get_field_labels(*self.db_connection,
-                                            self.field_name,
-                                            'components')
-        self._invariants = get_field_labels(*self.db_connection,
-                                            self.field_name,
-                                            'invariants')
+        self._components = get_field_labels(*self.db_connection, self.field_name, "components")
+        self._invariants = get_field_labels(*self.db_connection, self.field_name, "invariants")
 
     @property
     def step(self):
@@ -90,7 +85,6 @@ class FieldResults(FEAData):
     @db_connection.setter
     def db_connection(self, path_db):
         self._db_connection = create_connection(path_db)
-
 
     def _get_field_results(self, field):
         """_summary_
@@ -135,7 +129,7 @@ class NodeFieldResults(FieldResults):
     def __init__(self, field_name, step, name=None, *args, **kwargs):
         super(NodeFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
         self._results = self._link_field_results_to_model(self._get_field_results(field=self.field_name)[1])
-        if len(self.results)!=len(self.model.nodes):
+        if len(self.results) != len(self.model.nodes):
             raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
         self._max_components = {c: self._get_limit("MAX", component=c)[0] for c in self._components}
         self._min_components = {c: self._get_limit("MIN", component=c)[0] for c in self._components}
@@ -160,10 +154,11 @@ class NodeFieldResults(FieldResults):
 
     @property
     def max(self):
-        return self._max_invariants['magnitude'][0]
+        return self._max_invariants["magnitude"][0]
+
     @property
     def min(self):
-        return self._min_invariants['magnitude'][0]
+        return self._min_invariants["magnitude"][0]
 
     def _link_field_results_to_model(self, field_results):
         """Converts the values of the results string to actual nodes of the
@@ -197,15 +192,15 @@ class NodeFieldResults(FieldResults):
                 print("Part {} not found in model".format(row[0]))
                 continue
             result = Results(
-            location=part.find_node_by_key(row[2]),
-            components={col_names[i]: row[i] for i in range(3, len(self.components)+3)},
-            invariants={col_names[i]: row[i] for i in range(len(self.components)+3, len(row))}
+                location=part.find_node_by_key(row[2]),
+                components={col_names[i]: row[i] for i in range(3, len(self.components) + 3)},
+                invariants={col_names[i]: row[i] for i in range(len(self.components) + 3, len(row))},
             )
             results.append(result)
         return results
 
     def _get_limit(self, limit="MAX", component="magnitude"):
-        if component not in self.components+self.invariants:
+        if component not in self.components + self.invariants:
             raise ValueError(
                 "The specified component is not valid. Choose from {}".format(self._components + self.invariants)
             )
@@ -224,10 +219,11 @@ class NodeFieldResults(FieldResults):
         steps : _type_, optional
             _description_, by default None
 
-        Return
-        ------
+        Returns
+        -------
         dict
             Dictionary with {'part':..; 'node':..; 'vector':...}
+
         """
         if not isinstance(nodes, Iterable):
             nodes = [nodes]
@@ -264,10 +260,11 @@ GROUP BY {};""".format(
         steps : _type_, optional
             _description_, by default None
 
-        Return
-        ------
+        Returns
+        -------
         dict
             Dictionary with {'part':..; 'node':..; 'vector':...}
+
         """
         steps = [self.step]
         node = self.model.find_node_by_location(point, distance, plane=None)

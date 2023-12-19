@@ -8,10 +8,6 @@ from compas_fea2.base import FEAData
 class GeneralDisplacement(FEAData):
     """GeneralDisplacement object.
 
-    Note
-    ----
-    Displacements are registered to a :class:`compas_fea2.problem.Step`.
-
     Parameters
     ----------
     name : str, optional
@@ -51,9 +47,14 @@ class GeneralDisplacement(FEAData):
         zz component of moment, by default 0.
     axes : str, optional
         BC applied via 'local' or 'global' axes, by default 'global'.
+
+    Notes
+    -----
+    Displacements are registered to a :class:`compas_fea2.problem.Step`.
+
     """
 
-    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes='global', name=None, **kwargs):
+    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", name=None, **kwargs):
         super(GeneralDisplacement, self).__init__(name=name, **kwargs)
         self.x = x
         self.y = y
@@ -73,4 +74,4 @@ class GeneralDisplacement(FEAData):
 
     @property
     def components(self):
-        return {c: getattr(self, c) for c in ['x', 'y', 'z', 'xx', 'yy', 'zz']}
+        return {c: getattr(self, c) for c in ["x", "y", "z", "xx", "yy", "zz"]}

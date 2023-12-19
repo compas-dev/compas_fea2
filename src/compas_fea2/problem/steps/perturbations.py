@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEAData
 from .step import _Step
 
 
@@ -13,7 +12,7 @@ class _Perturbation(_Step):
 
     Parameters
     ----------
-    _Step : _type_
+    Step : _type_
         _description_
     """
 
@@ -31,6 +30,7 @@ class ModalAnalysis(_Perturbation):
         Name of the ModalStep.
     modes : int
         Number of modes to analyse.
+
     """
 
     def __init__(self, modes=1, name=None, **kwargs):
@@ -57,17 +57,17 @@ class BucklingAnalysis(_Perturbation):
         self._algorithm = algorithm
 
     def _compute_vectors(self, modes):
-        self._vectors = modes*2
+        self._vectors = modes * 2
         if modes > 9:
             self._vectors += modes
 
     @staticmethod
     def Lanczos(modes, name=None):
-        return BucklingAnalysis(modes=modes, vectors=None,  algorithhm='Lanczos', name=name)
+        return BucklingAnalysis(modes=modes, vectors=None, algorithhm="Lanczos", name=name)
 
     @staticmethod
     def Subspace(modes, iterations, vectors=None, name=None):
-        return BucklingAnalysis(modes=modes, vectors=vectors,  iterations=iterations, algorithhm='Subspace', name=name)
+        return BucklingAnalysis(modes=modes, vectors=vectors, iterations=iterations, algorithhm="Subspace", name=name)
 
 
 class LinearStaticPerturbation(_Perturbation):

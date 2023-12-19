@@ -14,14 +14,14 @@ Viewer
 
 from .viewer import FEA2Viewer
 from .shapes import (
-    BCShape,
+    _BCShape,
     FixBCShape,
     PinBCShape,
 )
 
 __all__ = [
-    'FEA2Viewer',
-    'BCShape',
-    'FixBCShape',
-    'PinBCShape',
+    "FEA2Viewer",
+    "_BCShape",
+    "FixBCShape",
+    "PinBCShape",
 ]

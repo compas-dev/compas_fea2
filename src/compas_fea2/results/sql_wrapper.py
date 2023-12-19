@@ -1,12 +1,9 @@
-from operator import index
 import sqlalchemy as db
-
-from math import sqrt
-import os
 import sqlite3
 from sqlite3 import Error
 
 # TODO convert to sqlalchemy
+
 
 def create_connection_sqlite3(db_file=None):
     """Create a database connection to the SQLite database specified by db_file.
@@ -17,14 +14,15 @@ def create_connection_sqlite3(db_file=None):
         Path to the .db file, by default 'None'. If not provided, the database
         is run in memory.
 
-    Return
-    ------
+    Returns
+    -------
     :class:`sqlite3.Connection` | None
         Connection object or None
+
     """
     conn = None
     try:
-        conn = sqlite3.connect(db_file or ':memory:')
+        conn = sqlite3.connect(db_file or ":memory:")
     except Error as e:
         print(e)
     return conn
@@ -40,15 +38,17 @@ def _create_table_sqlite3(conn, sql):
     create_table_sql : str
         A CREATE TABLE statement
 
-    Return
-    ------
+    Returns
+    -------
     None
+
     """
     try:
         c = conn.cursor()
         c.execute(sql)
     except Error as e:
         print(e)
+
 
 def _insert_entry__sqlite3(conn, sql):
     """General code to insert an entry in a table
@@ -60,9 +60,10 @@ def _insert_entry__sqlite3(conn, sql):
     sql : _type_
         _description_
 
-    Return
-    ------
+    Returns
+    -------
     lastrowid
+
     """
     try:
         c = conn.cursor()
@@ -73,24 +74,27 @@ def _insert_entry__sqlite3(conn, sql):
         exit()
     return c.lastrowid
 
+
 def create_field_description_table_sqlite3(conn):
-    """ Create the table containing general results information and field
+    """Create the table containing general results information and field
     descriptions.
 
     Parameters
     ----------
     conn :
 
-    Return
-    ------
+    Returns
+    -------
     None
+
     """
     with conn:
         sql = """CREATE TABLE IF NOT EXISTS fields (field text, description text, components text, invariants text, UNIQUE(field) );"""
         _create_table_sqlite3(conn, sql)
 
+
 def insert_field_description_sqlite3(conn, field, description, components_names, invariants_names):
-    """ Create the table containing general results information and field
+    """Create the table containing general results information and field
     descriptions.
 
     Parameters
@@ -104,17 +108,20 @@ def insert_field_description_sqlite3(conn, field, description, components_names,
     invariants_names : Iterable
         Output field invariants names.
 
-    Return
-    ------
+    Returns
+    -------
     None
+
     """
-    sql = """ INSERT OR IGNORE INTO fields VALUES ('{}', '{}', '{}', '{}')""".format(field,
-                                                                               description,
-                                                                               components_names,
-                                                                               invariants_names,
-                                                                               )
+    sql = """ INSERT OR IGNORE INTO fields VALUES ('{}', '{}', '{}', '{}')""".format(
+        field,
+        description,
+        components_names,
+        invariants_names,
+    )
 
     return _insert_entry__sqlite3(conn, sql)
+
 
 def create_field_table_sqlite3(conn, field, components_names):
     """Create the results table for the given field.
@@ -130,14 +137,16 @@ def create_field_table_sqlite3(conn, field, components_names):
     invariants_names : Iterable
         Output field invariants names.
 
-    Return
-    ------
+    Returns
+    -------
     None
+
     """
     # FOREIGN KEY (step) REFERENCES analysis_results (step_name),
     with conn:
         sql = """CREATE TABLE IF NOT EXISTS {} (step text, part text, type text, position text, key integer, {});""".format(
-            field, ', '.join(['{} float'.format(c) for c in components_names]))
+            field, ", ".join(["{} float".format(c) for c in components_names])
+        )
         _create_table_sqlite3(conn, sql)
 
 
@@ -153,19 +162,15 @@ def insert_field_results_sqlite3(conn, field, node_results_data):
     node_results_data : Iterable
         Output field components values.
 
-    Return
-    ------
+    Returns
+    -------
     int
         Index of the inserted item.
+
     """
 
-    sql = """ INSERT INTO {} VALUES ({})""".format(field,
-                                                ', '.join(
-                                                    ["'"+str(c)+"'" for c in node_results_data])
-                                                )
+    sql = """ INSERT INTO {} VALUES ({})""".format(field, ", ".join(["'" + str(c) + "'" for c in node_results_data]))
     return _insert_entry__sqlite3(conn, sql)
-
-
 
 
 def create_connection(db_file=None):
@@ -177,15 +182,17 @@ def create_connection(db_file=None):
         Path to the .db file, by default 'None'. If not provided, the database
         is run in memory.
 
-    Return
-    ------
+    Returns
+    -------
     :class:`sqlite3.Connection` | None
         Connection object or None
+
     """
     engine = db.create_engine("sqlite:///{}".format(db_file))
     connection = engine.connect()
     metadata = db.MetaData()
     return engine, connection, metadata
+
 
 def get_database_table(engine, metadata, table_name):
     """Retrieve a table from the database.
@@ -205,6 +212,7 @@ def get_database_table(engine, metadata, table_name):
         _description_
     """
     return db.Table(table_name, metadata, autoload=True, autoload_with=engine)
+
 
 def get_query_results(connection, table, columns, test):
     """Get the filtering query to execute.
@@ -230,6 +238,7 @@ def get_query_results(connection, table, columns, test):
     ResultSet = ResultProxy.fetchall()
     return ResultProxy, ResultSet
 
+
 def get_field_labels(engine, connection, metadata, field, label):
     """Get the names of the components or invariants of the field
 
@@ -251,40 +260,40 @@ def get_field_labels(engine, connection, metadata, field, label):
     _type_
         _description_
     """
-    FIELDS = get_database_table(engine, metadata, 'fields')
+    FIELDS = get_database_table(engine, metadata, "fields")
     query = db.select([FIELDS.columns[label]]).where(FIELDS.columns.field == field)
     ResultProxy = connection.execute(query)
     ResultSet = ResultProxy.fetchall()
-    return ResultSet[0][0].split(' ')
+    return ResultSet[0][0].split(" ")
+
 
 def get_all_field_results(engine, connection, metadata, table):
-    components = get_field_labels(engine, connection, metadata, str(table), 'components')
-    invariants = get_field_labels(engine, connection, metadata, str(table), 'invariants')
-    columns = ['part', 'position', 'key']+components+invariants
+    components = get_field_labels(engine, connection, metadata, str(table), "components")
+    invariants = get_field_labels(engine, connection, metadata, str(table), "invariants")
+    columns = ["part", "position", "key"] + components + invariants
     query = db.select([table.columns[column] for column in columns])
     ResultProxy = connection.execute(query)
     ResultSet = ResultProxy.fetchall()
     return ResultProxy, ResultSet
 
+
 def get_field_results(engine, connection, metadata, table, test):
-    components = get_field_labels(engine, connection, metadata, str(table), 'components')
-    invariants = get_field_labels(engine, connection, metadata, str(table), 'invariants')
-    labels = ['part', 'position', 'key']+components+invariants
-    ResultProxy, ResultSet = get_query_results(connection,
-                                               table,
-                                               labels,
-                                               test)
+    components = get_field_labels(engine, connection, metadata, str(table), "components")
+    invariants = get_field_labels(engine, connection, metadata, str(table), "invariants")
+    labels = ["part", "position", "key"] + components + invariants
+    ResultProxy, ResultSet = get_query_results(connection, table, labels, test)
 
     return ResultProxy, (labels, ResultSet)
 
 
-if __name__ == '__main__':
-    import os
+if __name__ == "__main__":
     from pprint import pprint
+
     engine, connection, metadata = create_connection_sqlite3(
-        r'C:\Code\myRepos\swissdemo\data\q_5\output\1_0\ULS\ULS-results.db')
+        r"C:\Code\myRepos\swissdemo\data\q_5\output\1_0\ULS\ULS-results.db"
+    )
     # U = db.Table('U', metadata, autoload=True, autoload_with=engine)
-    U = get_database_table(engine, metadata, 'U')
+    U = get_database_table(engine, metadata, "U")
     # print(RF.columns.keys())
     # query = db.select([U]).where(U.columns.key == 0)
     # query = db.select([U]).where(U.columns.part.in_ == ['BLOCK_0', 'TIE_21'])

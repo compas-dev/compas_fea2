@@ -6,8 +6,7 @@ from compas_fea2.base import FEAData
 from compas_fea2.utilities._utils import extend_docstring
 
 class _Material(FEAData):
-    """Basic Material parameters and attributes
-    ========================================
+    """Basic Material
 
     Parameters
     ----------
@@ -77,14 +76,9 @@ expansion   : {}
 # ==============================================================================
 # linear elastic
 # ==============================================================================
-@extend_docstring(_Material)
+# @extend_docstring(_Material)
 class ElasticOrthotropic(_Material):
-    """
-    ElasticOrthotropic material
-    ===========================
-    Elastic, orthotropic and homogeneous material
-
-    Additional paramenters and attributes:
+    """Elastic, orthotropic and homogeneous material
 
     Parameters
     ----------
@@ -175,11 +169,9 @@ Gzx : {}
             self.Gzx,
         )
 
-@extend_docstring(_Material)
+# @extend_docstring(_Material)
 class ElasticIsotropic(_Material):
-    """
-    Elastic, isotropic and homogeneous material
-    ===========================================
+    """Elastic, isotropic and homogeneous material
 
     Parameters
     ----------
@@ -234,15 +226,9 @@ class Stiff(_Material):
 # ==============================================================================
 # non-linear general
 # ==============================================================================
-@extend_docstring(_Material)
+# @extend_docstring(_Material)
 class ElasticPlastic(ElasticIsotropic):
-    """
-    ElasticPlastic
-    ==============
-
-    Elastic and plastic, isotropic and homogeneous material.
-
-    Additional parameters and attributes.
+    """Elastic and plastic, isotropic and homogeneous material.
 
     Parameters
     ----------

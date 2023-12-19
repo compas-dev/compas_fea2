@@ -18,9 +18,9 @@ Steps
 .. autosummary::
     :toctree: generated/
 
-    Step
-    GeneralStep
-    Perturbation
+    _Step
+    _GeneralStep
+    _Perturbation
     ModalAnalysis
     ComplexEigenValue
     StaticStep
@@ -36,7 +36,7 @@ Prescribed Fields
 .. autosummary::
     :toctree: generated/
 
-    PrescribedField
+    _PrescribedField
     PrescribedTemperatureField
 
 Loads
@@ -45,7 +45,7 @@ Loads
 .. autosummary::
     :toctree: generated/
 
-    Load
+    _Load
     PrestressLoad
     PointLoad
     LineLoad

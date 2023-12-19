@@ -35,7 +35,7 @@ Elements
 .. autosummary::
     :toctree: generated/
 
-    Element
+    _Element
     MassElement
     BeamElement
     SpringElement
@@ -44,7 +44,7 @@ Elements
     TieElement
     ShellElement
     MembraneElement
-    Element3D
+    _Element3D
     TetrahedronElement
     HexahedronElement
 
@@ -54,7 +54,7 @@ Releases
 .. autosummary::
     :toctree: generated/
 
-    BeamEndRelease
+    _BeamEndRelease
     BeamEndPinRelease
     BeamEndSliderRelease
 
@@ -64,8 +64,8 @@ Constraints
 .. autosummary::
     :toctree: generated/
 
-    Constraint
-    MultiPointConstraint
+    _Constraint
+    _MultiPointConstraint
     TieMPC
     BeamMPC
     TieConstraint
@@ -76,7 +76,7 @@ Materials
 .. autosummary::
     :toctree: generated/
 
-    Material
+    _Material
     UserMaterial
     Stiff
     ElasticIsotropic
@@ -94,7 +94,7 @@ Sections
 .. autosummary::
     :toctree: generated/
 
-    Section
+    _Section
     BeamSection
     SpringSection
     AngleSection
@@ -119,7 +119,7 @@ Boundary Conditions
 .. autosummary::
     :toctree: generated/
 
-    BoundaryCondition
+    _BoundaryCondition
     GeneralBC
     FixedBC
     PinnedBC
@@ -139,7 +139,7 @@ Initial Conditions
 .. autosummary::
     :toctree: generated/
 
-    InitialCondition
+    _InitialCondition
     InitialTemperatureField
     InitialStressField
 
@@ -149,7 +149,7 @@ Groups
 .. autosummary::
     :toctree: generated/
 
-    Group
+    _Group
     NodesGroup
     ElementsGroup
     FacesGroup

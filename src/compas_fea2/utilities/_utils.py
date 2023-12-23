@@ -128,13 +128,10 @@ def part_method(f):
     def wrapper(*args, **kwargs):
         func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-        if kwargs.get("dict_format", None):
-            return {part: vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))}
-        else:
-            res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
-            if kwargs.get("merge", None):
-                list(itertools.chain.from_iterable(res))
-            return res
+
+        res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
+        res = list(itertools.chain.from_iterable(res))
+        return res
 
     # func_name = f.__qualname__.split('.')[-1]
     # wrapper.__doc__ = getattr(DeformablePart, func_name).__doc__.split('Returns')[0]

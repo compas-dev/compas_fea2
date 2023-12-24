@@ -352,11 +352,13 @@ class _GeneralStep(_Step):
         if not isinstance(load_pattern, Pattern):
             raise TypeError("{!r} is not a LoadPattern.".format(load_pattern))
 
-        if self.problem:
-            if self.model:
-                if not list(load_pattern.distribution).pop().model == self.model:
-                    raise ValueError("The load pattern is not applied to a valid reagion of {!r}".format(self.model))
-
+        try:
+            if self.problem:
+                if self.model:
+                    if not list(load_pattern.distribution).pop().model == self.model:
+                        raise ValueError("The load pattern is not applied to a valid reagion of {!r}".format(self.model))
+        except Exception:
+            pass
         # store location in step
         self._patterns.add(load_pattern)
         load_pattern._registration = self

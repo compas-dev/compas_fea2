@@ -357,12 +357,12 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_by_attribute(self, attr, value, tolerance):
+    def find_nodes_by_attribute(self, attr, value, tolerance=1):
         pass
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_on_plane(self, plane):
+    def find_nodes_on_plane(self, plane, tolerance=1):
         pass
 
     @get_docstring(_Part)

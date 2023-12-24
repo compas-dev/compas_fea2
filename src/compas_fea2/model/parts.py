@@ -418,6 +418,66 @@ class _Part(FEAData):
 
         return part
 
+    @classmethod
+    def from_step_file(cls, step_file, name=None, **kwargs):
+        from compas_occ.brep import BRep
+        from OCC.Extend.DataExchange import read_step_file
+        from compas_gmsh.models import MeshModel
+        import gmsh
+
+        target_mesh_size = kwargs.get('target_mesh_size', 1) #FIXME redundant?
+        mesh_size_at_vertices = kwargs.get('mesh_size_at_vertices', None)
+        target_point_mesh_size = kwargs.get('target_point_mesh_size', None)
+        meshsize_max = kwargs.get('meshsize_max', None)
+        meshsize_min = kwargs.get('meshsize_min', None)
+
+        block = BRep()
+        block.occ_shape = read_step_file(step_file)
+        block.make_solid()
+        gmshModel = MeshModel()
+        gmsh.open(step_file)
+
+        for index, vertex in enumerate(block.vertices):
+            point = vertex.point
+            tag = gmshModel.occ.add_point(*point, target_mesh_size)
+            # tag = gmshModel.occ.add_point(*point)
+
+        if mesh_size_at_vertices:
+            for vertex, target in mesh_size_at_vertices.items():
+                gmshModel.mesh_targetlength_at_vertex(vertex, target)
+
+        if target_point_mesh_size:
+            gmshModel.heal()
+            for point, target in target_point_mesh_size.items():
+                tag = gmshModel.model.occ.addPoint(*point, target)
+                gmshModel.model.occ.mesh.set_size([(0, tag)], target)
+
+        if meshsize_max:
+            gmshModel.heal()
+            gmshModel.options.mesh.meshsize_max = meshsize_max
+        if meshsize_min:
+            gmshModel.heal()
+            gmshModel.options.mesh.meshsize_min = meshsize_min
+
+        gmshModel.heal()
+        gmshModel.generate_mesh(3)
+        part = cls.from_gmsh(gmshModel=gmshModel.model, name=name, **kwargs)
+        part._boundary_mesh = gmshModel.mesh_to_compas()
+        gmshModel.generate_mesh(2)
+        part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
+
+        del gmshModel
+
+        if kwargs.get('rigid', False):
+            point = part._boundary_mesh.centroid()
+            part.reference_point = Node(xyz=point)
+
+        centroid_face = {}
+        for face in part._discretized_boundary_mesh.faces():
+            centroid_face[geometric_key(part._discretized_boundary_mesh.face_centroid(face))] = face
+        part._discretized_boundary_mesh.centroid_face = centroid_face
+
+        return part
     # =========================================================================
     #                           Nodes methods
     # =========================================================================
@@ -579,8 +639,8 @@ class _Part(FEAData):
         """
         return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
 
-    def find_nodes_on_plane(self, plane):
-        # type: (Plane) -> list(Node)
+    def find_nodes_on_plane(self, plane, tolerance=1):
+        # type: (Plane, float) -> list(Node)
         """Find all nodes on a given plane.
 
         Parameters
@@ -593,7 +653,7 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Node`]
 
         """
-        return list(filter(lambda x: is_point_on_plane(Point(*x.xyz), plane), self.nodes))
+        return list(filter(lambda x: is_point_on_plane(Point(*x.xyz), plane, tolerance), self.nodes))
 
     def find_nodes_in_polygon(self, polygon, tolerance=1.1):
         """Find the nodes of the part that are contained within a planar polygon

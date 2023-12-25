@@ -13,6 +13,9 @@ from abc import abstractmethod
 
 from .utilities._utils import to_dimensionless
 
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
 
 class DimensionlessMeta(type):
     """Metaclass for converting pint Quantity objects to dimensionless.
@@ -92,6 +95,9 @@ class FEAData(Data, metaclass=DimensionlessMeta):
             except Exception:
                 pass
         return """\n{}\n{}\n{}\n""".format(title, separator, "\n".join(data_extended))
+
+    def to_html(self):
+        return highlight(str(self), PythonLexer(), HtmlFormatter(full=True, style='friendly'))
 
     @abstractmethod
     def jobdata(self, *args, **kwargs):

@@ -11,8 +11,28 @@ from typing import Iterable
 
 from abc import abstractmethod
 
+from pint import Quantity
+from .utilities._utils import all_methods_to_dimensionless, to_dimensionless
 
-class FEAData(Data):
+
+class DimensionlessMeta(type):
+    def __new__(meta, name, bases, class_dict):
+        # Decorate each method
+        for attributeName, attribute in class_dict.items():
+            if callable(attribute) or isinstance(attribute, (classmethod, staticmethod)):
+                # Unwrap classmethod/staticmethod to decorate the underlying function
+                if isinstance(attribute, (classmethod, staticmethod)):
+                    original_func = attribute.__func__
+                    decorated_func = to_dimensionless(original_func)
+                    # Re-wrap classmethod/staticmethod
+                    attribute = type(attribute)(decorated_func)
+                else:
+                    attribute = to_dimensionless(attribute)
+                class_dict[attributeName] = attribute
+        return type.__new__(meta, name, bases, class_dict)
+
+
+class FEAData(Data, metaclass=DimensionlessMeta):
     """Base class for all FEA model objects.
 
     This base class inherits the serialisation infrastructure

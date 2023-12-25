@@ -94,7 +94,7 @@ def get_docstring(cls):
 
     def _decorator(func):
         func_name = func.__qualname__.split(".")[-1]
-        doc_parts = getattr(cls, func_name).__doc__.split("Returns")
+        doc_parts = getattr(cls, func_name).original.__doc__.split("Returns")
         note = """
         Returns
         -------
@@ -211,3 +211,34 @@ def problem_method(f):
         return vars
 
     return wrapper
+
+
+def to_dimensionless(func):
+    """_summary_
+
+    Parameters
+    ----------
+    func : _type_
+        _description_
+    """
+    def wrapper(*args, **kwargs):
+        new_args = [a.to_base_units().magnitude if hasattr(a, 'to_base_units') else a for a in args]
+        new_kwargs = {k: v.to_base_units().magnitude if hasattr(v, 'to_base_units') else v for k, v in kwargs.items()}
+        return func(*new_args, **new_kwargs)
+    wrapper.original = func  # Preserve the original function
+    return wrapper
+
+def all_methods_to_dimensionless(cls):
+    """_summary_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    for name, method in cls.__dict__.items():
+        if callable(method):
+            # Update the class dictionary with the decorated method
+            setattr(cls, name, to_dimensionless(method))
+    return cls
+

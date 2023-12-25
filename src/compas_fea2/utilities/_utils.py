@@ -9,8 +9,6 @@ from subprocess import PIPE
 from functools import wraps
 from time import perf_counter
 
-from compas.geometry import bounding_box
-from compas.geometry import Point, Box
 import itertools
 from typing import Iterable
 
@@ -67,13 +65,6 @@ def launch_process(cmd_args, cwd, verbose=False):
     # return stdout.decode(), stderr.decode()
 
 
-def _compute_model_dimensions(model):
-    nodes = [Point(*node.xyz) for part in model.parts for node in part.nodes]
-    bbox = bounding_box(nodes)
-    box = Box.from_bounding_box(bbox)
-    return box.width, box.height, box.depth
-
-
 class extend_docstring:
     def __init__(self, method, note=False):
         self.doc = method.__doc__
@@ -120,8 +111,8 @@ def part_method(f):
 
     Returns
     -------
-    {:class:`compas_fea2.model.DeformablePart`: var}
-        dictionary with the results of the method per each part in the model.
+    [var]
+        List results of the method per each part in the model.
     """
 
     @wraps(f)
@@ -132,18 +123,6 @@ def part_method(f):
         res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
-
-    # func_name = f.__qualname__.split('.')[-1]
-    # wrapper.__doc__ = getattr(DeformablePart, func_name).__doc__.split('Returns')[0]
-    # wrapper.__doc__ += "ciao"
-
-    #         docs = getattr(DeformablePart, method).__doc__.split('Returns', 1)[0]
-    #         docs += """
-    # Returns
-    # -------
-    # {:class:`compas_fea2.model.DeformablePart`: var}
-    #     dictionary with the results of the method per each part in the model.
-    # """
 
     return wrapper
 
@@ -212,14 +191,8 @@ def problem_method(f):
 
     return wrapper
 
-
 def to_dimensionless(func):
-    """_summary_
-
-    Parameters
-    ----------
-    func : _type_
-        _description_
+    """Decorator to convert pint Quantity objects to dimensionless in the base units.
     """
     def wrapper(*args, **kwargs):
         new_args = [a.to_base_units().magnitude if hasattr(a, 'to_base_units') else a for a in args]
@@ -227,18 +200,4 @@ def to_dimensionless(func):
         return func(*new_args, **new_kwargs)
     wrapper.original = func  # Preserve the original function
     return wrapper
-
-def all_methods_to_dimensionless(cls):
-    """_summary_
-
-    Returns
-    -------
-    _type_
-        _description_
-    """
-    for name, method in cls.__dict__.items():
-        if callable(method):
-            # Update the class dictionary with the decorated method
-            setattr(cls, name, to_dimensionless(method))
-    return cls
 

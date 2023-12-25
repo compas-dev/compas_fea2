@@ -11,11 +11,12 @@ from typing import Iterable
 
 from abc import abstractmethod
 
-from pint import Quantity
-from .utilities._utils import all_methods_to_dimensionless, to_dimensionless
+from .utilities._utils import to_dimensionless
 
 
 class DimensionlessMeta(type):
+    """Metaclass for converting pint Quantity objects to dimensionless.
+    """
     def __new__(meta, name, bases, class_dict):
         # Decorate each method
         for attributeName, attribute in class_dict.items():

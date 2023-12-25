@@ -5,10 +5,8 @@ from __future__ import print_function
 import importlib
 import gc
 import pathlib
-from typing import Callable, Iterable, Type
-import pint
 from itertools import groupby, chain
-from pathlib import Path, PurePath
+from pathlib import Path
 
 import os
 import pickle
@@ -17,28 +15,21 @@ from compas.geometry import Plane, Box, bounding_box, centroid_points
 
 import compas_fea2
 from compas_fea2.utilities._utils import timer
-from compas_fea2.utilities._utils import part_method, get_docstring, problem_method, extend_docstring
+from compas_fea2.utilities._utils import part_method, get_docstring, problem_method
 
 from compas_fea2.base import FEAData
-from compas_fea2.model.parts import _Part, DeformablePart, RigidPart
+from compas_fea2.model.parts import _Part, RigidPart
 from compas_fea2.model.nodes import Node
 from .elements import (
     _Element,
-    _Element1D,
-    _Element2D,
     _Element3D,
     BeamElement,
-    HexahedronElement,
     ShellElement,
-    TetrahedronElement,
 )
 from compas_fea2.model.bcs import _BoundaryCondition
-from compas_fea2.model.ics import _InitialCondition, InitialStressField
-from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
-from compas_fea2.model.constraints import _Constraint, TieMPC, BeamMPC
+from compas_fea2.model.ics import _InitialCondition
+from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup
 
-
-from compas_fea2.units import units
 
 class Model(FEAData):
     """Class representing an FEA model.

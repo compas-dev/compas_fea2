@@ -7,8 +7,8 @@ import compas_fea2
 from pathlib import Path
 from typing import Iterable
 
-from compas.geometry import Vector
-from compas.geometry import sum_vectors
+from compas.geometry import Vector, Point
+from compas.geometry import sum_vectors, centroid_points_weighted
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.steps.step import _Step
@@ -154,7 +154,7 @@ class Problem(FEAData):
             name of a Step already defined in the Problem.
         """
 
-        if not isinstance(step, Step):
+        if not isinstance(step, _Step):
             raise TypeError("{!r} is not a Step".format(step))
         if step not in self.steps:
             print("{!r} not found".format(step))
@@ -166,7 +166,7 @@ class Problem(FEAData):
         return True
 
     def add_step(self, step):
-        # # type: (Step) -> Step
+        # # type: (_Step) -> Step
         """Adds a :class:`compas_fea2.problem._Step` to the problem. The name of
         the Step must be unique
 
@@ -358,30 +358,6 @@ Analysis folder path : {}
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
-    # FIXME check the funciton and 'memory only parameter
-    def analyse_and_store(self, memory_only=False, *args, **kwargs):
-        """Analyse the problem in the selected backend and stores the results in
-        the model.
-
-        Parameters
-        ----------
-        problems : [:class:`compas_fea2.problem.Problem`], optional
-            List of problems to store, by default None and all the problems of
-            the model are stored.
-        memory_only : bool, optional
-            store the SQLITE database only in memory (no .db file will be saved),
-            by default False
-
-        Notes
-        -----
-        The extraction of the results to SQLite ca be done `in memory` to speed up
-        the process but no database file is generated.
-
-        """
-        self.analyse(*args, **kwargs)
-        self.convert_results_to_sqlite(*args, **kwargs)
-        self.store_results_in_model(*args, **kwargs)
-
     def restart_analysis(self, *args, **kwargs):
         """Continue a previous analysis from a given increement with additional
         steps.
@@ -412,156 +388,58 @@ Analysis folder path : {}
     #                         Results methods - general
     # =========================================================================
 
-    @timer(message="Problem results copied in the model in ")
-    def store_results_in_model(self, database_path=None, database_name=None, steps=None, fields=None, *args, **kwargs):
-        """Copy the results form the sqlite database back into the model at the
-        nodal and element level.
-
-        Parameters
-        ----------
-        database_path : str
-            path to the folder
-        database_name : str
-            name of the database
-        file_format : str, optional
-            serialization type ('pkl' or 'json'), by default 'pkl'
-        steps : :class:`compas_fea2.problem._Step`, optional
-            The steps fro which copy the results, by default `None` (all the steps are saved)
-        fields : _type_, optional
-            Fields results to save, by default `None` (all available fields are saved)
-
-        Returns
-        -------
-        None
-
-        """
-        databse_full_path = (
-            os.path.join(database_path, database_name) if database_path and database_name else self.path_results
-        )
-        if not os.path.exists(databse_full_path):
-            self.convert_results_to_sqlite(*args, **kwargs)
-        for step in steps or self.steps:
-            step._store_results_in_model(databse_full_path, fields)
-
     # =========================================================================
     #                         Results methods - reactions
     # =========================================================================
-
-    def get_reaction_forces_sql(self, step=None):
-        """Retrieve the reaction forces for a given step.
-
-        Parameters
-        ----------
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
-        """
-        if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results("RF", step)
-        return self._get_vector_results(col_val)
-
-    def get_reaction_moments_sql(self, step=None):
-        """_summary_
+    def get_total_reaction(self, step=None):
+        """Compute the total reaction vector
 
         Parameters
         ----------
-        step : _type_
-            _description_
+        step : :class:`compas_fea2.problem._Step`, optional
+            The analysis step, by default the last step.
 
         Returns
         -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        :class:`compas.geometry.Vector`
+            The resultant vector.
+        :class:`compas.geometry.Point`
+            The application point.
         """
         if not step:
-            step = self._steps_order[-1]
-        _, col_val = self._get_field_results("RM", step)
-        return self._get_vector_results(col_val)
+            step = self.steps_order[-1]
+        reactions = NodeFieldResults("RF", step)
+        locations, vectors, vectors_lengths = [], [], []
+        for reaction in reactions.results:
+            locations.append(reaction.location.xyz)
+            vectors.append(reaction.vector)
+            vectors_lengths.append(reaction.vector.length)
+        return Vector(*sum_vectors(vectors)), Point(*centroid_points_weighted(locations, vectors_lengths))
+
+    def get_min_max_reactions(self, step=None):
+        if not step:
+            step = self.steps_order[-1]
+        reactions = NodeFieldResults("RF", step)
+        return reactions.min, reactions.max
+
+    def get_total_moment(self, step=None):
+        if not step:
+            step = self.steps_order[-1]
+        reactions = NodeFieldResults("RM", step)
+        return sum_vectors([reaction.vector for reaction in reactions.results])
+
+
+
 
     # =========================================================================
     #                         Results methods - displacements
     # =========================================================================
 
-    # TODO add moments
-    def get_total_reaction(self):
-        reactions_forces = []
-        for part in self.step.problem.model.parts:
-            for node in part.nodes:
-                rf = node.results[[self.problem]][self.step].get("RF", None)
-                if rf:
-                    x, y, z = rf
-                    vector = Vector(x=x, y=y, z=z)
-                    if vector.length == 0:
-                        continue
-                    reactions_forces.append(vector)
-        return sum_vectors(reactions_forces)
 
-    def get_total_moment(self):
-        raise NotImplementedError()
-
-    def get_deformed_model(self, step=None, **kwargs):
-        from copy import deepcopy
-
-        if not step:
-            step = self.steps_order[-1]
-
-        deformed_model = deepcopy(self.model)
-        # # # TODO create a copy of the model first
-        # displacements = NodeFieldResults('U', step)
-        # for displacement in displacements.results:
-        #     vector = displacement.vector.scaled(scale_factor)
-        #     node = deformed_model.find_node_by_key
-        #     displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-        raise NotImplementedError()
-        return deformed_model
 
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-
-    # def show(self, scale_factor=1., step=None, width=1600, height=900, parts=None,
-    #          solid=True, draw_nodes=False, node_labels=False,
-    #          draw_bcs=1., draw_constraints=True, draw_loads=True, **kwargs):
-
-    #     from compas_fea2.UI.viewer import FEA2Viewer
-    #     from compas.colors import ColorMap, Color
-    #     cmap = kwargs.get('cmap', ColorMap.from_palette('hawaii'))
-    #     #ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
-
-    #     # Get values
-    #     if not step:
-    #         step = self._steps_order[-1]
-
-    #     # # Color the mesh
-    #     # pts, vectors, colors = [], [], []
-    #     # for r in field.results:
-    #     #     if r.vector.length == 0:
-    #     #         continue
-    #     #     vectors.append(r.vector.scaled(scale_factor))
-    #     #     pts.append(r.location.xyz)
-    #     #     colors.append(cmap(r.invariants['magnitude'], minval=min_value, maxval=max_value))
-
-    #     # Display results
-    #     v = FEA2Viewer(width, height, scale_factor=scale_factor)
-    #     # v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
-    #     parts = parts or self.model.parts
-    #     if draw_bcs:
-    #         v.draw_bcs(self.model, parts, draw_bcs)
-
-    #     v.draw_parts(parts,
-    #                  draw_nodes,
-    #                  node_labels,
-    #                  solid)
-
-    #     if kwargs.get('draw_loads', None):
-    #         v.draw_loads(step, scale_factor=kwargs['draw_loads'])
-    #     v.show()
-
     def show_nodes_field_vector(
         self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs
     ):
@@ -640,7 +518,8 @@ Analysis folder path : {}
         from compas.colors import ColorMap, Color
 
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        # ColorMap.from_color(Color.red(), rangetype='light') #ColorMap.from_mpl('viridis')
+        # cmap = ColorMap.from_color(Color.red(), rangetype='light')
+        # cmap = ColorMap.from_mpl('viridis')
 
         # Get mesh
         parts_gkey_vertex = {}
@@ -693,11 +572,7 @@ Analysis folder path : {}
             v.draw_loads(step, scale_factor=kwargs["draw_loads"])
 
         if kwargs.get("draw_reactions", None):
-            reactions = NodeFieldResults('RF', step)
-            min_value = reactions._min_components["magnitude"].components[f"MIN({'magnitude'})"]
-            max_value = reactions._max_components["magnitude"].components[f"MAX({'magnitude'})"]
-            for r in reactions.results:
-                v.draw_nodes_vector(r.location, r.vector, scale_factor=kwargs["draw_reactions"])
+            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
     def show_displacements(
@@ -759,10 +634,6 @@ Analysis folder path : {}
         step : :class:`compas_fea2.problem._Step`, optional
             The Step of the analysis, by default None. If not provided, the last
             step is used.
-        width : int, optional
-            Width of the viewer window, by default 1600
-        height : int, optional
-            Height of the viewer window, by default 900
 
         Returns
         -------
@@ -770,21 +641,20 @@ Analysis folder path : {}
 
         """
         from compas_fea2.UI.viewer import FEA2Viewer
-        from compas.geometry import Vector
-
         v = FEA2Viewer(self.model)
+
         if not step:
             step = self.steps_order[-1]
-        # TODO create a copy of the model first
-        displacements = NodeFieldResults("U", step)
-        for displacement in displacements.results:
-            vector = displacement.vector.scaled(scale_factor)
-            displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-        v.draw_parts(self.model.parts, solid=True)
+
+        v.draw_deformed(step, scale_factor=scale_factor)
 
         if kwargs.get("draw_bcs", None):
             v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
 
         if kwargs.get("draw_loads", None):
             v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+
+        if kwargs.get("draw_reactions", None):
+            v.draw_reactions(step=step, scale_factor=kwargs["draw_reactions"])
         v.show()
+

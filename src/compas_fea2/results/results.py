@@ -57,6 +57,9 @@ class Results(FEAData):
         raise NotImplementedError("this function is not available for the selected backend")
 
 
+
+
+
 class FieldResults(FEAData):
     def __init__(self, field_name, step, name=None, *args, **kwargs):
         super(FieldResults, self).__init__(name, *args, **kwargs)
@@ -154,11 +157,11 @@ class NodeFieldResults(FieldResults):
 
     @property
     def max(self):
-        return self._max_invariants["magnitude"][0]
+        return self._max_invariants["magnitude"]
 
     @property
     def min(self):
-        return self._min_invariants["magnitude"][0]
+        return self._min_invariants["magnitude"]
 
     def _link_field_results_to_model(self, field_results):
         """Converts the values of the results string to actual nodes of the

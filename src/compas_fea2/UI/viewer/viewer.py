@@ -12,6 +12,7 @@ from compas.datastructures import Mesh
 from compas.geometry import Line
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
+from compas.geometry import sum_vectors
 from compas.utilities import hex_to_rgb
 
 from compas_fea2.UI.viewer.shapes import PinBCShape
@@ -23,6 +24,8 @@ from compas_fea2.model.bcs import FixedBC, PinnedBC
 
 from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.steps import _GeneralStep
+
+from compas_fea2.results import NodeFieldResults
 
 def hextorgb(hex):
     return tuple(i / 255 for i in hex_to_rgb(hex))
@@ -178,6 +181,28 @@ class FEA2Viewer:
             if bcs_collection:
                 self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
 
+    def draw_nodes_vector(self, pts, vectors, scale_factor=1, colors=None):
+        """Draw vector arrows at nodes.
+
+        Parameters
+        ----------
+        pts : _type_
+            _description_
+        vectors : _type_
+            _description_
+        colors : tuple, optional
+            _description_, by default (0, 1, 0)
+        """
+        arrows = []
+        arrows_properties = []
+        if not colors:
+            colors = [(0, 1, 0)] * len(pts)
+        for pt, vector, color in zip(pts, vectors, colors):
+            arrows.append(Arrow(pt, vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
+            arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
+        if arrows:
+            self.app.add(Collection(arrows, arrows_properties))
+
     def draw_loads(self, step, scale_factor=1.0, app_point="end"):
         """Draw the applied loads for given steps.
 
@@ -212,8 +237,8 @@ class FEA2Viewer:
                 else:
                     print("WARNING! Only point loads are currently supported!")
 
-    def draw_nodes_vector(self, pts, vectors, colors=None):
-        """Draw vector arrows at nodes.
+    def draw_reactions(self, step=None, scale_factor=1, colors=None, **kwargs):
+        """Draw the reaction forces as vector arrows at nodes.
 
         Parameters
         ----------
@@ -224,15 +249,45 @@ class FEA2Viewer:
         colors : tuple, optional
             _description_, by default (0, 1, 0)
         """
-        arrows = []
-        arrows_properties = []
-        if not colors:
-            colors = [(0, 1, 0)] * len(pts)
-        for pt, vector, color in zip(pts, vectors, colors):
-            arrows.append(Arrow(pt, vector, head_portion=0.3, head_width=0.15, body_width=0.05))
-            arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
-        if arrows:
-            self.app.add(Collection(arrows, arrows_properties))
+        if not step:
+            step = self.steps_order[-1]
+
+        reactions = NodeFieldResults('RF', step)
+        # min_value = reactions._min_components["magnitude"].components[f"MIN({'magnitude'})"]
+        # max_value = reactions._max_components["magnitude"].components[f"MAX({'magnitude'})"]
+        locations = []
+        vectors = []
+        for r in reactions.results:
+            locations.append(r.location.xyz)
+            vectors.append(r.vector)
+        self.draw_nodes_vector(locations, vectors, scale_factor=scale_factor, colors=colors)
+
+    def draw_deformed(self, step=None, scale_factor=1.0, **kwargs):
+        """Display the structure in its deformed configuration.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem._Step`, optional
+            The Step of the analysis, by default None. If not provided, the last
+            step is used.
+
+        Returns
+        -------
+        None
+
+        """
+
+        # TODO create a copy of the model first
+        displacements = NodeFieldResults("U", step)
+        for displacement in displacements.results:
+            vector = displacement.vector.scaled(scale_factor)
+            displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
+
+        for part in self.model.parts:
+            self.draw_beam_elements(part.elements_by_dimension(dimension=1), show_vertices=False)
+            self.draw_shell_elements(part.elements_by_dimension(dimension=2), show_vertices=False)
+            self.draw_solid_elements(part.elements_by_dimension(dimension=3), show_vertices=False)
+
 
     def show(self):
         """Display the viewport."""

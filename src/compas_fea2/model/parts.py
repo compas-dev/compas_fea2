@@ -196,6 +196,15 @@ class _Part(FEAData):
             element_types.setdefault(type(element), []).append(element)
         return element_types
 
+    def elements_by_dimension(self, dimension=1):
+        if dimension == 1:
+            return filter(lambda x: isinstance(x, _Element1D), self.elements)
+        elif dimension == 2:
+            return filter(lambda x: isinstance(x, _Element2D), self.elements)
+        elif dimension == 3:
+            return filter(lambda x: isinstance(x, _Element3D), self.elements)
+        else:
+            raise ValueError("dimension not supported")
     #     def __str__(self):
     #         return """
     # {}

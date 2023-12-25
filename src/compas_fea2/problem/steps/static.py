@@ -198,7 +198,7 @@ class StaticStep(_GeneralStep):
             raise ValueError("No problem assigned to the step.")
         if not self.model:
             raise ValueError("No model assigned to the problem.")
-        nodes = [self.model.find_closest_nodes_to_point(point, distance=tolerance)[0][0] for point in points]
+        nodes = [self.model.find_closest_nodes_to_point(point, distance=tolerance)[0] for point in points]
         self.add_node_load(nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
     def add_gravity_load(self, g=9.81, x=0.0, y=0.0, z=-1.0):
@@ -299,7 +299,7 @@ class StaticStep(_GeneralStep):
         if not self.model:
             raise ValueError("No model assigned to the problem.")
         nodes = [
-            self.model.find_closest_nodes_to_point(point, distance=distance)[0][0]
+            self.model.find_closest_nodes_to_point(point, distance=distance)[0]
             for point in polyline.divide_polyline(discretization)
         ]
         n_nodes = len(nodes)
@@ -325,7 +325,7 @@ class StaticStep(_GeneralStep):
             raise ValueError("No problem assigned to the step.")
         if not self.model:
             raise ValueError("No model assigned to the problem.")
-        nodes = self.model.find_nodes_in_polygon(polygon)[0]
+        nodes = self.model.find_nodes_in_polygon(polygon)
         n_nodes = len(nodes)
         self.add_node_load(
             nodes,

@@ -1,3 +1,7 @@
+import os
+import numpy as np
+
+from math import sqrt
 from typing import Iterable
 from compas_view2.app import App
 from compas_view2.objects import Collection
@@ -20,9 +24,6 @@ from compas_fea2.model.bcs import FixedBC, PinnedBC
 from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.steps import _GeneralStep
 
-from compas_fea2.utilities._utils import _compute_model_dimensions
-
-
 def hextorgb(hex):
     return tuple(i / 255 for i in hex_to_rgb(hex))
 
@@ -44,53 +45,33 @@ class FEA2Viewer:
     None
     """
 
-    def __init__(self, width=800, height=500, **kwargs):
-        self.width = width
-        self.height = height
-        self.app = App(width=width, height=height)
+    def __init__(self, obj, **kwargs):
 
+        VIEWER_CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config_default.json")
         sf = kwargs.get("scale_factor", 1)
+        self.app = App(config=VIEWER_CONFIG_FILE)
+        self.obj = obj
 
-        self.app.view.camera.target = [3000 * sf, 3000 * sf, 1000 * sf]
-        self.app.view.camera.position = [7000 * sf, 7000 * sf, 5000 * sf]
-        self.app.view.camera.near = 1 * sf
-        self.app.view.camera.far = 100000 * sf
-        self.app.view.camera.scale = 1000 * sf
-        self.app.view.grid.cell_size = 1000 * sf
+        self.app.view.camera.target = [i*sf for i in self.obj.center]
+        # V = V1 + t * (V2 - V1) / | V2 - V1 |
+        V1 = np.array([0, 0, 0])
+        V2 = np.array(self.app.view.camera.target)
+        delta = V2 - V1
+        length = np.linalg.norm(delta)
+        distance = length * 3
+        unitSlope = delta / length
+        new_position = V1 + unitSlope * distance
+        self.app.view.camera.position = new_position.tolist()
+
+        self.app.view.camera.near *= sf
+        self.app.view.camera.far *= sf
+        self.app.view.camera.scale *= sf
+        self.app.view.grid.cell_size *= sf
 
     def draw_mesh(self, mesh):
         self.app.add(mesh, use_vertex_color=True)
 
-    def draw_parts(self, parts, draw_nodes=False, node_labels=False, solid=False):
-        """Draw the parts.
-
-        Parameters
-        ----------
-        parts : :class:`compas_fea2.model.DeformablePart` | [:class:`compas_fea2.model.DeformablePart`]
-            The part or parts to draw.
-        draw_nodes : bool, optional
-            if `True` draw the nodes of the part, by default False
-        node_labels : bool, optional
-            if `True` add the node lables, by default False
-        draw_envelope : bool, optional
-            if `True` draw the outer boundary of the part, by default False
-        solid : bool, optional
-            if `True` draw all the elements (also the internal ones) of the part
-            otherwise just show the boundary faces, by default True
-        """
-        parts = parts if isinstance(parts, Iterable) else [parts]
-        for part in parts:
-            if solid:
-                self.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-            else:
-                if part.discretized_boundary_mesh:
-                    self.app.add(part.discretized_boundary_mesh, use_vertex_color=True)
-            self.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
-            self.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
-            if draw_nodes:
-                self.draw_nodes(part.nodes, node_labels)
-
-    def draw_nodes(self, nodes, node_lables):
+    def draw_nodes(self, nodes=None, node_lables=False):
         """Draw nodes.
 
         Parameters
@@ -100,13 +81,14 @@ class FEA2Viewer:
         node_lables : bool
             If `True` add the nodes.
         """
+        if not nodes:
+            nodes = self.obj.nodes
         pts = [node.point for node in nodes]
-        self.app.add(pts, colors=[hextorgb("#386641")] * len(pts))
+        self.app.add(Collection(pts), facecolor=hextorgb("#386641"))
 
-        for node in nodes:
-            if node_lables:
-                txt = Text(str(node.key), node.point, height=35)
-                self.app.add(txt, color=[1, 0, 0])
+        if node_lables:
+            txts = [Text(str(node.key), node.point, height=35) for node in nodes]
+        self.app.add(Collection(txts), facecolor=hextorgb("#386641"))
 
     def draw_solid_elements(self, elements, show_vertices=True):
         """Draw the elements of a part.
@@ -124,7 +106,7 @@ class FEA2Viewer:
             pts = [node.point for node in element.nodes]
             collection_items.append(Polyhedron(pts, list(element._face_indices.values())))
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9))
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices)
 
     def draw_shell_elements(self, elements, show_vertices=True):
         """Draw the elements of a part.
@@ -147,7 +129,7 @@ class FEA2Viewer:
             else:
                 raise NotImplementedError("only 3 and 4 vertices shells supported at the moment")
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9))
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices)
 
     def draw_beam_elements(self, elements, show_vertices=True):
         """Draw the elements of a part.
@@ -259,13 +241,3 @@ class FEA2Viewer:
     def dynamic_show(self):
         """Display the viewport dynamically."""
         self.app.run()
-
-
-# class BeamViewer():
-#     pass
-
-# class ShellViewer():
-#     pass
-
-# class OptiViewer(ProblemViewer):
-#     pass

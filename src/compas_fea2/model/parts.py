@@ -3,7 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 from math import sqrt
-from compas.geometry import Point, Plane, Frame
+from typing import Iterable
+
+from compas.geometry import Plane, Box, bounding_box, centroid_points
+from compas.geometry import Point, Plane, Frame, Box
 from compas.geometry import Transformation, Scale
 from compas.geometry import distance_point_point_sqrd
 from compas.geometry import is_point_in_polygon_xy
@@ -96,6 +99,7 @@ class _Part(FEAData):
 
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
+        self._bounding_box = None
 
         self._results = {}
 
@@ -142,6 +146,24 @@ class _Part(FEAData):
     @property
     def discretized_boundary_mesh(self):
         return self._discretized_boundary_mesh
+
+    @property
+    def bounding_box(self):
+        if not self._boundary_mesh:
+            raise AttributeError("Missing the bounding mesh of the part.")
+        return Box.from_bounding_box(self._boundary_mesh.bounding_box())
+
+    @property
+    def center(self):
+        return centroid_points(self.bounding_box.points)
+
+    @property
+    def bottom_plane(self):
+        return Plane.from_three_points(*[self.bounding_box.points[i] for i in self.bounding_box.bottom[:3]])
+
+    @property
+    def top_plane(self):
+        return Plane.from_three_points(*[self.bounding_box.points[i] for i in self.bounding_box.top[:3]])
 
     @property
     def volume(self):
@@ -1280,6 +1302,45 @@ class _Part(FEAData):
             displacements = [getattr(Vector(*node.results[problem][step].get("U", None)), component) for node in nodes]
             return point, sum(displacements) / len(displacements)
 
+    # ==============================================================================
+    # Viewer
+    # ==============================================================================
+
+    def show(self, scale_factor=1, draw_nodes=False, node_labels=False, solid=False):
+        """Draw the parts.
+
+        Parameters
+        ----------
+        parts : :class:`compas_fea2.model.DeformablePart` | [:class:`compas_fea2.model.DeformablePart`]
+            The part or parts to draw.
+        draw_nodes : bool, optional
+            if `True` draw the nodes of the part, by default False
+        node_labels : bool, optional
+            if `True` add the node lables, by default False
+        draw_envelope : bool, optional
+            if `True` draw the outer boundary of the part, by default False
+        solid : bool, optional
+            if `True` draw all the elements (also the internal ones) of the part
+            otherwise just show the boundary faces, by default True
+        """
+
+        from compas_fea2.UI.viewer import FEA2Viewer
+
+        v = FEA2Viewer(self, scale_factor=scale_factor)
+
+        if solid:
+            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), self.elements), show_vertices=draw_nodes)
+        else:
+            if self.discretized_boundary_mesh:
+                v.app.add(self.discretized_boundary_mesh, use_vertex_color=True)
+        v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), self.elements),
+                              show_vertices=draw_nodes,
+                              )
+        v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), self.elements), show_vertices=draw_nodes)
+        # if draw_nodes:
+        #     v.draw_nodes(self.nodes, node_labels)
+        v.show()
+
 
 class DeformablePart(_Part):
     """Deformable part.
@@ -1367,7 +1428,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def find_materials_by_name(self, name):
-        # type: (str) -> list(Material)
+        # type: (str) -> list(_Material)
         """Find all materials with a given name.
 
         Parameters

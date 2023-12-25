@@ -7,11 +7,14 @@ import gc
 import pathlib
 from typing import Callable, Iterable, Type
 import pint
-from itertools import groupby
+from itertools import groupby, chain
 from pathlib import Path, PurePath
 
 import os
 import pickle
+
+from compas.geometry import Plane, Box, bounding_box, centroid_points
+
 import compas_fea2
 from compas_fea2.utilities._utils import timer
 from compas_fea2.utilities._utils import part_method, get_docstring, problem_method, extend_docstring
@@ -19,7 +22,16 @@ from compas_fea2.utilities._utils import part_method, get_docstring, problem_met
 from compas_fea2.base import FEAData
 from compas_fea2.model.parts import _Part, DeformablePart, RigidPart
 from compas_fea2.model.nodes import Node
-from compas_fea2.model.elements import _Element
+from .elements import (
+    _Element,
+    _Element1D,
+    _Element2D,
+    _Element3D,
+    BeamElement,
+    HexahedronElement,
+    ShellElement,
+    TetrahedronElement,
+)
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.ics import _InitialCondition, InitialStressField
 from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup, FacesGroup
@@ -76,6 +88,7 @@ class Model(FEAData):
         self.description = description
         self.author = author
         self._parts = set()
+        self._nodes = None
         self._bcs = {}
         self._ics = {}
         self._constraints = set()
@@ -84,6 +97,10 @@ class Model(FEAData):
         self._results = {}
         self._loads = {}
         self._path = None
+        self._bounding_box = None
+        self._center = None
+        self._bottom_plane = None
+        self._top_plane = None
 
     @property
     def parts(self):
@@ -143,11 +160,15 @@ class Model(FEAData):
         self._path = value.joinpath(self.name)
 
     @property
-    def nodes(self):
+    def nodes_set(self):
         node_set = set()
         for part in self.parts:
             node_set.update(part.nodes)
         return node_set
+
+    @property
+    def nodes(self):
+        return list(chain([list(part.nodes) for part in self.parts]))
 
     @property
     def elements(self):
@@ -155,6 +176,24 @@ class Model(FEAData):
         for part in self.parts:
             element_set.update(part.elements)
         return element_set
+
+    @property
+    def bounding_box(self):
+        bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts])))
+        return Box.from_bounding_box(bb)
+
+    @property
+    def center(self):
+        return centroid_points(self.bounding_box.points)
+
+    @property
+    def bottom_plane(self):
+        return Plane.from_three_points(*[self.bounding_box.points[i] for i in self.bounding_box.bottom[:3]])
+
+    @property
+    def top_plane(self):
+        return Plane.from_three_points(*[self.bounding_box.points[i] for i in self.bounding_box.top[:3]])
+
 
     # =========================================================================
     #                       Constructor methods
@@ -1103,13 +1142,12 @@ Initial Conditions
 
     def show(
         self,
-        width=1600,
-        height=900,
         scale_factor=1.0,
         parts=None,
-        solid=True,
-        draw_nodes=False,
-        node_labels=False,
+        elements=True,
+        solid=False,
+        draw_nodes=True,
+        node_labels=True,
         draw_bcs=1.0,
         draw_constraints=True,
         **kwargs,
@@ -1141,18 +1179,25 @@ Initial Conditions
 
         from compas_fea2.UI.viewer import FEA2Viewer
 
+        v = FEA2Viewer(self, scale_factor=scale_factor)
+
         parts = parts or self.parts
-
-        v = FEA2Viewer(width, height, scale_factor=scale_factor)
-
-        v.draw_parts(parts, draw_nodes, node_labels, solid)
 
         if draw_bcs:
             v.draw_bcs(self, parts, draw_bcs)
 
         # if draw_constraints:
         #     v.draw_constraint(self.constraints)
+        for part in parts:
+            if solid:
+                v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
+            else:
+                if part.discretized_boundary_mesh:
+                    v.app.add(part.discretized_boundary_mesh, use_vertex_color=True)
 
+
+            v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
+            v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
         v.show()
 
     @problem_method

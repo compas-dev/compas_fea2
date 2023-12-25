@@ -563,7 +563,7 @@ Analysis folder path : {}
     #     v.show()
 
     def show_nodes_field_vector(
-        self, field_name, vector_sf=1.0, model_sf=1.0, step=None, width=1600, height=900, **kwargs
+        self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs
     ):
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.colors import ColorMap
@@ -587,7 +587,7 @@ Analysis folder path : {}
             colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
 
         # Display results
-        v = FEA2Viewer(width, height, scale_factor=model_sf)
+        v = FEA2Viewer(self.model, scale_factor=model_sf)
         v.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
         v.draw_parts(self.model.parts)
         if kwargs.get("draw_bcs", None):
@@ -596,7 +596,7 @@ Analysis folder path : {}
             v.draw_loads(step, scale_factor=kwargs["draw_loads"])
         v.show()
 
-    def show_nodes_field(self, field_name, component, step=None, width=1600, height=900, model_sf=1.0, **kwargs):
+    def show_nodes_field(self, field_name, component, step=None, model_sf=1.0, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -682,7 +682,7 @@ Analysis folder path : {}
                 parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], "color", color)
 
         # Display results
-        v = FEA2Viewer(width, height, scale_factor=model_sf)
+        v = FEA2Viewer(self.model, scale_factor=model_sf)
         for part in self.model.parts:
             v.draw_mesh(parts_mesh[part.name])
 
@@ -692,10 +692,16 @@ Analysis folder path : {}
         if kwargs.get("draw_loads", None):
             v.draw_loads(step, scale_factor=kwargs["draw_loads"])
 
+        if kwargs.get("draw_reactions", None):
+            reactions = NodeFieldResults('RF', step)
+            min_value = reactions._min_components["magnitude"].components[f"MIN({'magnitude'})"]
+            max_value = reactions._max_components["magnitude"].components[f"MAX({'magnitude'})"]
+            for r in reactions.results:
+                v.draw_nodes_vector(r.location, r.vector, scale_factor=kwargs["draw_reactions"])
         v.show()
 
     def show_displacements(
-        self, component=3, step=None, style="contour", deformed=False, width=1600, height=900, model_sf=1.0, **kwargs
+        self, component=3, step=None, style="contour", deformed=False, model_sf=1.0, **kwargs
     ):
         """Display the displacement of the nodes.
 
@@ -737,8 +743,6 @@ Analysis folder path : {}
                 field_name="U",
                 component="U" + str(component),
                 step=step,
-                width=width,
-                height=height,
                 model_sf=model_sf,
                 **kwargs,
             )
@@ -747,7 +751,7 @@ Analysis folder path : {}
         else:
             raise ValueError("The style can be either 'vector' or 'contour'")
 
-    def show_deformed(self, step=None, width=1600, height=900, scale_factor=1.0, **kwargs):
+    def show_deformed(self, step=None, scale_factor=1.0, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -768,7 +772,7 @@ Analysis folder path : {}
         from compas_fea2.UI.viewer import FEA2Viewer
         from compas.geometry import Vector
 
-        v = FEA2Viewer(width, height)
+        v = FEA2Viewer(self.model)
         if not step:
             step = self.steps_order[-1]
         # TODO create a copy of the model first

@@ -25,7 +25,7 @@ class _Group(FEAData):
     """
 
     def __init__(self, members=None, **kwargs):
-        super(Group, self).__init__(**kwargs)
+        super(_Group, self).__init__(**kwargs)
         self._members = set() if not members else self._check_members(members)
 
     def __str__(self):

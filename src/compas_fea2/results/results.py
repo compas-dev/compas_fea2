@@ -129,7 +129,7 @@ class NodeFieldResults(FieldResults):
     def __init__(self, field_name, step, name=None, *args, **kwargs):
         super(NodeFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
         self._results = self._link_field_results_to_model(self._get_field_results(field=self.field_name)[1])
-        if len(self.results) != len(self.model.nodes):
+        if len(self.results) != len(self.model.nodes_set):
             raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
         self._max_components = {c: self._get_limit("MAX", component=c)[0] for c in self._components}
         self._min_components = {c: self._get_limit("MIN", component=c)[0] for c in self._components}

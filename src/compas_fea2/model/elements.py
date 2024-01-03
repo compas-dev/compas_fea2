@@ -6,8 +6,9 @@ from operator import itemgetter
 
 from compas.geometry import Frame
 from compas.geometry import Plane
-from compas.utilities import pairwise
 from compas.geometry import Polygon
+from compas.geometry import centroid_points
+from compas.utilities import pairwise
 
 from compas_fea2.base import FEAData
 
@@ -22,9 +23,6 @@ class _Element(FEAData):
         Ordered list of node identifiers to which the element connects.
     section : :class:`compas_fea2.model._Section`
         Section Object assigned to the element.
-    frame : :class:`compas.geometry.Frame`, optional
-        The local coordinate system for property assignement.
-        Default to the global coordinate system.
     implementation : str, optional
         The name of the backend model implementation of the element.
 
@@ -38,9 +36,6 @@ class _Element(FEAData):
         Identifier based on the conntected nodes.
     section : :class:`compas_fea2.model._Section`
         Section object.
-    frame : :class:`compas.geometry.Frame`
-        The local coordinate system for property assignement.
-        Default to the global coordinate system.
     implementation : str
         The name of the backend model implementation of the element.
     part : :class:`compas_fea2.model.DeformablePart` | None
@@ -74,19 +69,20 @@ class _Element(FEAData):
 
     # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
-    def __init__(self, nodes, section, frame=None, implementation=None, **kwargs):
+    def __init__(self, nodes, section, implementation=None, **kwargs):
         super(_Element, self).__init__(**kwargs)
         self._nodes = self._check_nodes(nodes)
         self._registration = nodes[0]._registration
         self._section = section
-        self._frame = frame
         self._implementation = implementation
+        self._frame = None
         self._on_boundary = None
         self._key = None
         self._area = None
         self._volume = None
         self._results = {}
         self._rigid = False
+        self._reference_point = None
 
     @property
     def part(self):
@@ -168,7 +164,7 @@ class _Element(FEAData):
 # 0D elements
 # ==============================================================================
 
-
+#TODO: remove. This is how abaqus does it but it is better to define the mass as a property of the nodes.
 class MassElement(_Element):
     """A 0D element for concentrated point mass.
     """
@@ -256,6 +252,7 @@ class Face(FEAData):
         self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
         self._registration = element
         self._results = {}
+        self._centroid = centroid_points([node.xyz for node in nodes])
 
     @property
     def nodes(self):
@@ -285,6 +282,10 @@ class Face(FEAData):
     def area(self):
         return self.polygon.area
 
+    @property
+    def centroid(self):
+        return self._centroid
+
 
 class _Element2D(_Element):
     """Element with 2 dimensions.
@@ -300,11 +301,10 @@ class _Element2D(_Element):
         {'s1': (0,1,2), ...}
     """
 
-    def __init__(self, nodes, frame, section=None, implementation=None, rigid=False, **kwargs):
+    def __init__(self, nodes, section=None, implementation=None, rigid=False, **kwargs):
         super(_Element2D, self).__init__(
             nodes=nodes,
             section=section,
-            frame=frame,
             implementation=implementation,
             **kwargs,
         )
@@ -335,6 +335,11 @@ class _Element2D(_Element):
     def volume(self):
         return self._faces[0].area * self.section.t
 
+    @property
+    def reference_point(self):
+        return centroid_points([face.centroid for face in self.faces])
+
+
     def _construct_faces(self, face_indices):
         """Construct the face-nodes dictionary.
 
@@ -363,10 +368,9 @@ class ShellElement(_Element2D):
 
     """
 
-    def __init__(self, nodes, frame=None, section=None, implementation=None, rigid=False, **kwargs):
+    def __init__(self, nodes, section=None, implementation=None, rigid=False, **kwargs):
         super(ShellElement, self).__init__(
             nodes=nodes,
-            frame=frame,
             section=section,
             implementation=implementation,
             rigid=rigid,
@@ -414,7 +418,6 @@ class _Element3D(_Element):
         super(_Element3D, self).__init__(
             nodes=nodes,
             section=section,
-            frame=None,
             implementation=implementation,
             **kwargs,
         )
@@ -437,6 +440,10 @@ class _Element3D(_Element):
     @property
     def faces(self):
         return self._faces
+
+    @property
+    def reference_point(self):
+        return centroid_points([face.centroid for face in self.faces])
 
     def _construct_faces(self, face_indices):
         """Construct the face-nodes dictionary.

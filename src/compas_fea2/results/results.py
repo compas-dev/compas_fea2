@@ -3,147 +3,62 @@ from __future__ import division
 from __future__ import print_function
 
 from typing import Iterable
+import numpy as np
+import matplotlib.pyplot as plt
 
-from compas.geometry import Vector
+from compas.geometry import Vector, Frame
+from compas.geometry import Transformation, Rotation
+
+import compas_fea2
 from compas_fea2.base import FEAData
+
+from compas_fea2.model import _Element
+from compas_fea2.model import ElasticIsotropic
 
 from .sql_wrapper import get_field_results, get_field_labels, get_database_table, create_connection
 
 
-class Results(FEAData):
-    """Results object. This ensures that the results from all
-    the backends are consistent.
+# =========================================================================
+#                               Result
+# =========================================================================
+
+class Result(FEAData):
+    """Result object at the nodes or elements. This ensures that the results from all
+    the backends are consistently stored.
 
     Parameters
     ----------
-    location : var
-        location of the result
-    value : var
+    location : :class:`compas_fea2.model.Node` | :class:`compas_fea2.model._Element`
+        The location of the result. I can be either a Node or an Element.
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
 
-    Notes
-    -----
-    Results are registered to a :class:`compas_fea2.problem.Problem`.
+    Attributes
+    ----------
+    location : :class:`compas_fea2.model.Node` | :class:`compas_fea2.model._Element`
+        The location of the result. I can be either a Node or an Element.
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
+    vector : :class:`compas.geometry.Vector`
+        A vector representation of the components (if len(components) == 3).
 
     """
 
-    def __init__(self, location, components, invariants, name=None, **kwargs):
-        super(Results, self).__init__(name=name, **kwargs)
+    def __init__(self, location, **kwargs):
+        super(Result, self).__init__(**kwargs)
         self._location = location
-        self._components = components
-        self._invariants = invariants
-
-    @property
-    def components(self):
-        return self._components
-
-    @property
-    def invariants(self):
-        return self._invariants
+        self._components = {}
+        self._invariants = {}
 
     @property
     def location(self):
         return self._location
 
     @property
-    def vector(self):
-        if len(self.components) == 3:
-            return Vector(*list(self.components.values()))
-
-    @property
-    def value(self):
-        return self.vector.length
-
-    def to_file(self, *args, **kwargs):
-        raise NotImplementedError("this function is not available for the selected backend")
-
-
-
-
-
-class FieldResults(FEAData):
-    def __init__(self, field_name, step, name=None, *args, **kwargs):
-        super(FieldResults, self).__init__(name, *args, **kwargs)
-        self._registration = step
-        self._db_connection = create_connection(self.problem.path_db)
-        self._field_name = field_name
-        self._components = get_field_labels(*self.db_connection, self.field_name, "components")
-        self._invariants = get_field_labels(*self.db_connection, self.field_name, "invariants")
-
-    @property
-    def step(self):
-        return self._registration
-
-    @property
-    def problem(self):
-        return self.step.problem
-
-    @property
-    def model(self):
-        return self.problem.model
-
-    @property
-    def db_connection(self):
-        return self._db_connection
-
-    @db_connection.setter
-    def db_connection(self, path_db):
-        self._db_connection = create_connection(path_db)
-
-    def _get_field_results(self, field):
-        """_summary_
-
-        Parameters
-        ----------
-        field : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        engine, connection, metadata = self.db_connection
-        TABLE = get_database_table(engine, metadata, field)
-        test = [TABLE.columns.step == self.step.name]
-        # if hasattr(TABLE.columns, 'magnitude'):
-        #     test.append(TABLE.columns.magnitude != 0.)
-        return get_field_results(engine, connection, metadata, TABLE, test)
-
-    def _get_func_field_sql(self, func, field, group_by, component):
-        """Filter the results with a specific function (e.g. MAX, MIN, etc.)"""
-        steps = [self.step]  # FIXME remove the list
-        engine, connection, metadata = self.db_connection
-        labels = ["part", "position", "key"] + self._components + self._invariants
-        labels[labels.index(component)] = "{}({})".format(func, component)
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({})
-GROUP BY {};""".format(
-            ", ".join(labels), field, ", ".join(["'{}'".format(step.name) for step in steps]), group_by
-        )
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        return ResultProxy, (labels, ResultSet)
-
-
-class NodeFieldResults(FieldResults):
-    def __init__(self, field_name, step, name=None, *args, **kwargs):
-        super(NodeFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
-        self._results = self._link_field_results_to_model(self._get_field_results(field=self.field_name)[1])
-        if len(self.results) != len(self.model.nodes_set):
-            raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
-        self._max_components = {c: self._get_limit("MAX", component=c)[0] for c in self._components}
-        self._min_components = {c: self._get_limit("MIN", component=c)[0] for c in self._components}
-        self._max_invariants = {c: self._get_limit("MAX", component=c)[0] for c in self._invariants}
-        self._min_invariants = {c: self._get_limit("MIN", component=c)[0] for c in self._invariants}
-
-    @property
-    def field_name(self):
-        return self._field_name
-
-    @property
     def components(self):
         return self._components
 
@@ -151,139 +66,683 @@ class NodeFieldResults(FieldResults):
     def invariants(self):
         return self._invariants
 
-    @property
-    def results(self):
-        return self._results
+    @classmethod
+    def from_components(cls, location, *args, **kwargs):
+        raise NotImplementedError
+
+    def to_file(self, *args, **kwargs):
+        raise NotImplementedError("this function is not available for the selected backend")
+
+
+class DisplacementResult(Result):
+    def __init__(self, node, x, y, z, **kwargs):
+        super(DisplacementResult, self).__init__(location=node, **kwargs)
+        self._x = x
+        self._y = y
+        self._z = z
+        self._components = {"U1": x, "U2": y, "U3": z}
+        self._vector = Vector(*list(self.components.values()))
+        self._invariants = {"magnitude": self.vector.length}
 
     @property
-    def max(self):
-        return self._max_invariants["magnitude"]
+    def node(self):
+        return self.location
 
     @property
-    def min(self):
-        return self._min_invariants["magnitude"]
+    def x(self):
+        return self._x
 
-    def _link_field_results_to_model(self, field_results):
-        """Converts the values of the results string to actual nodes of the
-        model.
+    @property
+    def y(self):
+        return self._y
 
-        Parameters
-        ----------
-        model : :class:`compas_fea2.model.Model`
-            The model.
-        ResultSet : _type_
-            _description_
+    @property
+    def z(self):
+        return self._z
 
-        Returns
-        -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+    @property
+    def vector(self):
+        return self._vector
+
+    @property
+    def magnitude(self):
+        return self.vector.length
+
+    @classmethod
+    def from_components(cls, location, components):
+        return cls(location, *list(components.values()))
+
+    def safety_factor(self, component, allowable):
+        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
+
+
+class ReactionResult(Result):
+    def __init__(self, node, rf1, rf2, rf3, **kwargs):
+        super(ReactionResult, self).__init__(node, **kwargs)
+        self._rf1 = rf1
+        self._rf2 = rf2
+        self._rf3 = rf3
+        self._components = {"RF1": rf1, "RF2": rf2, "RF3": rf3}
+        self._vector = Vector(*list(self.components.values()))
+        self._invariants = {"magnitude": self.vector.length}
+
+    @property
+    def node(self):
+        return self.location
+
+    @property
+    def rf1(self):
+        return self._rf1
+
+    @property
+    def rf2(self):
+        return self._rf2
+
+    @property
+    def rf3(self):
+        return self._rf3
+
+    @property
+    def vector(self):
+        return self._vector
+
+    @property
+    def magnitude(self):
+        return self.vector.length
+
+    @classmethod
+    def from_components(cls, location, components):
+        return cls(location, *list(components.values()))
+
+    def safety_factor(self, component, allowable):
+        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
+
+
+class SectionForcesResult(Result):
+    def __init__(self, node, **kwargs):
+        super(SectionForcesResult, self).__init__(node, **kwargs)
+
+    @property
+    def forces_vector(self):
+        pass
+
+    @property
+    def moments_vector(self):
+        pass
+
+    @property
+    def element(self):
+        return self.location
+
+    def safety_factor(self, component, allowable):
+        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
+
+    # @property
+    # def global_components(self):
+    #     if compas_fea2.VERBOSE:
+    #         print("For node fields there is no local frame.")
+    #     return self._components
+
+
+class StressResult(Result):
+    def __init__(self, *, element, s11, s12, s13, s22, s23, s33, **kwargs):
+        super(StressResult, self).__init__(element, **kwargs)
+
+        self._local_stress = np.array([[s11, s12, s13],
+                                        [s12, s22, s23],
+                                        [s13, s23, s33]])
+
+        self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
+        self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
+
+    # @classmethod
+    # def from_components(cls, location, components):
+    #     # Determine the size of the array
+    #     max_row = max_col = 0
+    #     for key in components.keys():
+    #         row, col = map(int, key[1:].split('S'))
+    #         max_row = max(max_row, row)
+    #         max_col = max(max_col, col)
+
+    #     # Create an empty array of the right size
+    #     stress_tensor = np.zeros((max_row, max_col))
+
+    #     # Fill the array with values from the dictionary
+    #     for key, value in components.items():
+    #         row, col = map(int, key[1:].split('S'))
+    #         stress_tensor[row-1, col-1] = value  # -1 because indices in the dict are 1-based
+
+    #     return cls(location, stress_tensor)
+
+
+    @property
+    def local_stress(self):
+        # In local coordinates
+        return self._local_stress
+
+    @property
+    def global_stress(self):
+        # In global coordinates
+        return self._global_stress
+
+    @property
+    def global_strain(self):
+        if not isinstance(self.location.section.material, ElasticIsotropic):
+            raise NotImplementedError("This function is currently only available for Elastic Isotropic materials")
+
+        # For brevity
+        s = self.global_stress
+        v = self.element.section.material.v
+        E = self.element.section.material.E
+
+        dim = len(s)
+        strain_tensor = np.zeros((dim, dim))
+
+        # Calculate the strain tensor using Hooke's Law
+        for i in range(dim):
+            for j in range(dim):
+                if i == j:  # Normal components
+                    strain_tensor[i, j] = (s[i, j] - v * (self.I1 - s[i, j])) / E
+                else:  # Shear components
+                    strain_tensor[i, j] = (1 + v) * s[i, j] / E
+
+        return strain_tensor
+
+
+    @property
+    def element(self):
+        return self.location
+
+    @property
+    # First invariant
+    def I1(self):
+        return np.trace(self.global_stress)
+
+    @property
+    # Second invariant
+    def I2(self):
+        return 0.5 * (self.I1**2 - np.trace(np.dot(self.global_stress, self.global_stress)))
+
+    @property
+    # Third invariant
+    def I3(self):
+        return np.linalg.det(self.global_stress)
+
+    @property
+    # Second invariant of the deviatoric stress tensor: J2
+    def J2(self):
+        return 0.5 * np.trace(np.dot(self.deviatoric_stress, self.deviatoric_stress))
+
+    @property
+   # Third invariant of the deviatoric stress tensor: J3
+    def J3(self):
+        return np.linalg.det(self.deviatoric_stress)
+
+    @property
+    def hydrostatic_stress(self):
+        return  self.I1 / len(self.global_stress)
+
+    @property
+    def deviatoric_stress(self):
+        return  self.global_stress - np.eye(len(self.global_stress)) * self.hydrostatic_stress
+
+    @property
+    # Octahedral normal and shear stresses
+    def octahedral_stresses(self):
+        sigma_oct = self.I1 / 3
+        tau_oct = np.sqrt(2 * self.J2 / 3)
+        return sigma_oct, tau_oct
+
+    @property
+    def principal_stresses_values(self):
+        eigenvalues = np.linalg.eigvalsh(self.global_stress)
+        sorted_indices = np.argsort(eigenvalues)
+        return eigenvalues[sorted_indices]
+
+    @property
+    def principal_stresses(self):
+        return zip(self.principal_stresses_values, self.principal_stresses_vectors)
+
+    @property
+    def smax(self):
+        return max(self.principal_stresses_values)
+
+    @property
+    def smin(self):
+        return min(self.principal_stresses_values)
+
+    @property
+    def smid(self):
+        if len(self.principal_stresses_values)==3:
+            return [x for x in self.principal_stresses_values if x != self.smin and x != self.smax]
+        else:
+            return None
+
+    @property
+    def principal_stresses_vectors(self):
+        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress)
+        # Sort the eigenvalues/vectors from low to high
+        sorted_indices = np.argsort(eigenvalues)
+        eigenvectors = eigenvectors[:, sorted_indices]
+        eigenvalues = eigenvalues[sorted_indices]
+        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+
+    @property
+    def von_mises_stress(self):
+        return np.sqrt(self.J2 * 3)
+
+    @property
+    def tresca_stress(self):
+        return max(abs(self.principal_stresses_values - np.roll(self.principal_stresses_values, -1)))
+
+    @property
+    def safety_factor_max(self, allowable_stress):
+        # Simple safety factor analysis based on maximum principal stress
+        return abs(allowable_stress / self.smax) if self.smax != 0 else 1
+
+    @property
+    def safety_factor_min(self, allowable_stress):
+        # Simple safety factor analysis based on maximum principal stress
+        return abs(allowable_stress / self.smin) if self.smin != 0 else 1
+
+    @property
+    def strain_energy_density(self):
         """
-        # _, field_results = self._get_field_results(self.field_name)
-        col_names = field_results[0]
-        values = field_results[1]
-        if not values:
-            raise ValueError("No results found")
-        results = []
-        for row in values:
-            result = {}
-            part = self.model.find_part_by_name(row[0])
-            if not part:
-                # try case insensitive match
-                part = self.model.find_part_by_name(row[0], casefold=True)
-            if not part:
-                print("Part {} not found in model".format(row[0]))
-                continue
-            result = Results(
-                location=part.find_node_by_key(row[2]),
-                components={col_names[i]: row[i] for i in range(3, len(self.components) + 3)},
-                invariants={col_names[i]: row[i] for i in range(len(self.components) + 3, len(row))},
-            )
-            results.append(result)
-        return results
-
-    def _get_limit(self, limit="MAX", component="magnitude"):
-        if component not in self.components + self.invariants:
-            raise ValueError(
-                "The specified component is not valid. Choose from {}".format(self._components + self.invariants)
-            )
-        _, field_results = self._get_func_field_sql(
-            func=limit, field=self.field_name, group_by="step", component=component
-        )
-        return self._link_field_results_to_model(field_results=field_results)
-
-    def get_value_at_nodes(self, nodes):
-        """Get the displacement of a list of :class:`compas_fea2.model.Node`.
-
-        Parameters
-        ----------
-        node : :class:`compas_fea2.model.Node` | [:class:`compas_fea2.model.Node`]
-            The node or the nodes where to retrieve the displacmeent
-        steps : _type_, optional
-            _description_, by default None
-
-        Returns
-        -------
-        dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-
+        Calculates the strain energy density for linear elastic and isotropic materials.
+        :return: The strain energy density value.
         """
-        if not isinstance(nodes, Iterable):
-            nodes = [nodes]
-        steps = [self.step]
-        field = self.field_name
-        group_by = "step"
-        engine, connection, metadata = self.db_connection
-        components = get_field_labels(engine, connection, metadata, field, "components")
-        invariants = get_field_labels(engine, connection, metadata, field, "invariants")
-        labels = ["part", "position", "key"] + components + invariants
+        if not isinstance(self.location.section.material, ElasticIsotropic):
+            raise NotImplementedError("Strain energy density calculation is currently only available for Elastic Isotropic materials")
 
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({}) AND key  in ({})
-GROUP BY {};""".format(
-            ", ".join(labels),
-            field,
-            ", ".join(["'{}'".format(step.name) for step in steps]),
-            ", ".join(["'{}'".format(node.key) for node in nodes]),
-            group_by,
-        )
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        value, _ = self._link_field_results_to_model((labels, ResultSet))
-        return value
+        # Calculate strain energy density
+        s = self.global_stress  # Stress tensor
+        e = self.global_strain  # Strain tensor
 
-    def get_value_at_point(self, point, distance, plane=None, steps=None, group_by=["step", "part"]):
-        """Get the displacement of the model around a location (point).
+        # For isotropic materials, using the formula: U = 1/2 * stress : strain
+        U = 0.5 * np.tensile(s, e)
 
-        Parameters
-        ----------
-        point : [float]
-            The coordinates of the point.
-        steps : _type_, optional
-            _description_, by default None
+        return U
 
-        Returns
-        -------
-        dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-
+    def transform_stress_tensor(self, tensor, new_frame):
         """
-        steps = [self.step]
-        node = self.model.find_node_by_location(point, distance, plane=None)
-        return self.get_value_at_nodes(nodes=[node], steps=steps, group_by=group_by)
+        Transforms the stress tensor to a new frame using the provided 3x3 rotation matrix.
+        This function works for both 2D and 3D stress tensors.
+
+        Parameters:
+        -----------
+        new_frame : `class`:"compas.geometry.Frame"
+            The new refernce Frame
+
+        Returns:
+        numpy array
+            Transformed stress tensor as a numpy array of the same dimension as the input.
+        """
+
+        R = Rotation.from_change_of_basis(self.element.frame, new_frame)
+        R_matrix = np.array(R.matrix)[:3, :3]
+
+        return R_matrix @ tensor @ R_matrix.T
+
+    def stress_along_direction(self, direction):
+        """
+        Computes the stress along a given direction.
+        :param direction: A list or array representing the direction vector.
+        :return: The normal stress along the given direction.
+        """
+        unit_direction = np.array(direction) / np.linalg.norm(direction)
+        return unit_direction.T @ self.global_stress @ unit_direction
+
+    def compute_mohr_circles_3d(self):
+        """
+        Computes the centers and radii of the three Mohr's circles for a 3D stress state.
+        :return: A list of tuples, each containing the center and radius of a Mohr's circle.
+        """
+        # Ensure we're dealing with a 3D stress state
+        if self.global_stress.shape != (3, 3):
+            raise ValueError("Mohr's circles computation requires a 3D stress state.")
 
 
-# class DisplacementFieldResults(NodeFieldResults):
-#     def __init__(self, step, name=None, *args, **kwargs):
-#         self._field_name = "U"
-#         self._components = ["U1", "U2", "U3"]
-#         self._invariants = ["magnitude"]
-#         super(DisplacementFieldResults, self).__init__(step, name, *args, **kwargs)
+        # Calculate the centers and radii of the Mohr's circles
+        circles = []
+        for i in range(3):
+            sigma1 = self.principal_stresses_values[i]
+            for j in range(i+1, 3):
+                sigma2 = self.principal_stresses_values[j]
+                center = (sigma1 + sigma2) / 2
+                radius = abs(sigma1 - sigma2) / 2
+                circles.append((center, radius))
 
-#     @property
-#     def max(self):
-#         return self._max_invariants['magnitude'][0]
-#     @property
-#     def min(self):
-#         return self._min_invariants['magnitude'][0]
+        return circles
+
+    def compute_mohr_circle_2d(self):
+        # Ensure the stress tensor is 2D
+        if self.global_stress.shape != (2, 2):
+            raise ValueError("The stress tensor must be 2D for Mohr's Circle.")
+
+        # Calculate the center and radius of the Mohr's Circle
+        sigma_x, sigma_y, tau_xy = self.global_stress[0, 0], self.global_stress[1, 1], self.global_stress[0, 1]
+        center = ((sigma_x + sigma_y) / 2)
+        radius = np.sqrt(((sigma_x - sigma_y) / 2)**2 + tau_xy**2)
+
+        # Create the circle
+        theta = np.linspace(0, 2 * np.pi, 100)
+        x = center + radius * np.cos(theta)
+        y = radius * np.sin(theta)
+        return x, y, center, radius, sigma_x, sigma_y, tau_xy
+
+    def draw_mohr_circle_2d(self):
+        """
+        Draws the three Mohr's circles for a 3D stress state.
+        """
+        x, y, center, radius, sigma_x, sigma_y, tau_xy = self.compute_mohr_circle_2d()
+        # Plotting
+        plt.figure(figsize=(8, 8))
+        plt.plot(x, y, label="Mohr's Circle")
+
+        # Plotting the principal stresses
+        plt.scatter([center + radius, center - radius], [0, 0], color='red')
+        plt.text(center + radius, 0, f'$\\sigma_1$')
+        plt.text(center - radius, 0, f'$\\sigma_2$')
+
+        # Plotting the original stresses
+        plt.scatter([sigma_x, sigma_y], [tau_xy, -tau_xy], color='blue')
+        plt.text(sigma_x, tau_xy, f'($\\sigma_x$, $\\tau$)')
+        plt.text(sigma_y, -tau_xy, f'($\\sigma_y$, $-\\tau$)')
+
+        # Axes and grid
+        plt.axhline(0, color='black',linewidth=0.5)
+        plt.axvline(center, color='grey', linestyle='--', linewidth=0.5)
+        plt.grid(color = 'gray', linestyle = '--', linewidth = 0.5)
+        plt.xlabel("Normal Stress ($\\sigma$)")
+        plt.ylabel("Shear Stress ($\\tau$)")
+        plt.title("Mohr's Circle")
+        plt.axis('equal')
+        plt.legend()
+        plt.show()
+
+    def draw_mohr_circles_3d(self):
+        """
+        Draws the three Mohr's circles for a 3D stress state.
+        """
+        circles = self.compute_mohrs_circles_3d()
+
+        # Create a figure and axis for the plot
+        fig, ax = plt.subplots(figsize=(8, 8))
+
+        # Plot each circle
+        for i, (center, radius) in enumerate(circles, 1):
+            circle = plt.Circle((center, 0), radius, fill=False, label=f"Circle {i}")
+            ax.add_artist(circle)
+
+            # Plot the center of the circle
+            plt.scatter(center, 0, color='red')
+            plt.text(center, 0, f'C{i}')
+
+        # Set the limits and labels of the plot
+        max_radius = max(radius for _, radius in circles)
+        max_center = max(center for center, _ in circles)
+        min_center = min(center for center, _ in circles)
+        plt.xlim(min_center - max_radius - 10, max_center + max_radius + 10)
+        plt.ylim(-max_radius - 10, max_radius + 10)
+        plt.axhline(0, color='black', linewidth=0.5)
+        plt.axvline(0, color='black', linewidth=0.5)
+        plt.xlabel("Normal Stress ($\\sigma$)")
+        plt.ylabel("Shear Stress ($\\tau$)")
+        plt.title("Mohr's Circles for 3D Stress State")
+        plt.legend()
+        plt.grid(True)
+        plt.axis('equal')
+
+        # Show the plot
+        plt.show()
+
+
+
+    # =========================================================================
+    #                               Yield Criteria
+    # =========================================================================
+    def mohr_coulomb(self, c, phi):
+        return self.smax - self.smin - 2 * c * np.cos(phi) / (1 - np.sin(phi))
+
+    # Drucker-Prager Criterion
+    def drucker_prager(self, c, phi):
+        # Convert angle from degrees to radians
+        phi_radians = np.radians(phi)
+        # Calculate material constants alpha and k from cohesion and internal friction angle
+        alpha = np.sqrt(3) * (2 * np.sin(phi_radians)) / (3 - np.sin(phi_radians))
+        k = np.sqrt(3) * c * (3 - np.sin(phi_radians)) / (3 * np.sin(phi_radians))
+        return alpha * self.I1 + np.sqrt(self.J2) - k
+
+    # Rankine Criterion
+    def rankine(self, tensile_strength, compressive_strength):
+        return max(self.smax - tensile_strength, abs(self.smin) - compressive_strength)
+
+    # Bresler-Pister Criterion (simplified version)
+    def bresler_pister(self, tensile_strength, compressive_strength):
+        return max(self.smax / tensile_strength, abs(self.smin) / compressive_strength)
+
+    # Modified Mohr Criterion (simplified version)
+    def modified_mohr(self, tensile_strength):
+        return (self.smax - self.smin) / 2 - tensile_strength
+
+    # Griffith Criterion
+    def griffith(self, fracture_toughness):
+        return self.smax**2 / (2 * fracture_toughness)
+
+    # Lade-Duncan Criterion (simplified version)
+    def lade_duncan(self, c):
+        return self.I1 - 3 * c
+
+    def thermal_stress_analysis(self, temperature_change):
+        # Simple thermal stress analysis for isotropic material
+        if not isinstance(self.location.section.material, ElasticIsotropic):
+            raise NotImplementedError("This function is only available for Elastic Isotropic materials")
+        # Delta_sigma = E * alpha * Delta_T
+        return self.location.section.material.E * self.location.section.material.expansion * temperature_change
+
+    # @property
+    # def global_components(self):
+    #     X = Transformation.from_frame(self.location.frame)
+    #     .transformed(X)
+
+class SolidStressResult(StressResult):
+    def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
+        super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
+
+    @classmethod
+    def from_components(cls, location, components):
+        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S12","S13", "S21", "S22","S23","S31", "S32","S33")}
+        return cls(location, **stress_components)
+class MembraneStressResult(StressResult):
+    def __init__(self, element, *, s11, s12, s22, **kwargs):
+        super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
+
+
+class ShellStressResult(MembraneStressResult):
+    def __init__(self, element, * s11, s12, s22, m11, m22, m12, **kwargs):
+        super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
+        self._local_bending_moments = np.array([[m11, m12, 0],
+                                                [m12, m22, 0],
+                                                [0,   0,   0]])
+        self._local_stress_top = self.local_stress_membrane + 6/self.element.section.t**2 * self._local_bending_moments
+        self._local_stress_bottom = self.local_stress_membrane - 6/self.element.section.t**2 * self._local_bending_moments
+
+        self._global_stress_membrane = self.transform_stress_tensor(self.local_stress_membrane, Frame.worldXY())
+        self._global_stress_top = self.transform_stress_tensor(self.local_stress_top, Frame.worldXY())
+        self._global_stress_bottom = self.transform_stress_tensor(self.local_stress_bottom, Frame.worldXY())
+
+        self._stress_components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
+        self._bending_components = {f"M{i+1}{j+1}": self._local_bending_moments[i][j] for j in range(len(self._local_bending_moments[0])) for i in range(len(self._local_bending_moments))}
+
+
+    @property
+    def local_stress_membrane(self):
+        return self._local_stress
+
+    @property
+    def local_stress_bottom(self):
+        return self._local_stress_bottom
+
+    @property
+    def local_stress_top(self):
+        return self._local_stress_top
+
+    @property
+    def global_stress_membrane(self):
+        return self._global_stress_membrane
+
+    @property
+    def global_stress_top(self):
+        return self._global_stress_top
+
+    @property
+    def global_stress_bottom(self):
+        return self._global_stress_bottom
+
+    @property
+    def hydrostatic_stress_top(self):
+        return  self.I1_top / len(self.global_stress_top)
+
+    @property
+    def hydrostatic_stress_bottom(self):
+        return  self.I1_bottom / len(self.global_stress_bottom)
+
+    @property
+    def deviatoric_stress_top(self):
+        return  self.global_stress_top - np.eye(len(self.global_stress_top)) * self.hydrostatic_stress_top
+
+    @property
+    def deviatoric_stress_bottom(self):
+        return  self.global_stress_bottom - np.eye(len(self.global_stress_bottom)) * self.hydrostatic_stress_bottom
+
+
+    @property
+    # First invariant
+    def I1_top(self):
+        return np.trace(self.global_stress_top)
+
+    @property
+    # First invariant
+    def I1_bottom(self):
+        return np.trace(self.global_stress_bottom)
+
+    @property
+    # Second invariant
+    def I2_top(self):
+        return 0.5 * (self.I1_top**2 - np.trace(np.dot(self.global_stress_top, self.global_stress_top)))
+
+    @property
+    # Second invariant
+    def I2_bottom(self):
+        return 0.5 * (self.I2_bottom**2 - np.trace(np.dot(self.global_stress_bottom, self.global_stress_bottom)))
+
+    @property
+    # Third invariant
+    def I3_top(self):
+        return np.linalg.det(self.global_stress_top)
+
+    @property
+    # Third invariant
+    def I3_bottom(self):
+        return np.linalg.det(self.global_stress_bottom)
+
+    @property
+    # Second invariant of the deviatoric stress tensor: J2
+    def J2_top(self):
+        return 0.5 * np.trace(np.dot(self.deviatoric_stress_top, self.deviatoric_stress_top))
+
+    @property
+    # Second invariant of the deviatoric stress tensor: J2
+    def J2_bottom(self):
+        return 0.5 * np.trace(np.dot(self.deviatoric_stress_bottom, self.deviatoric_stress_bottom))
+
+    @property
+   # Third invariant of the deviatoric stress tensor: J3
+    def J3_top(self):
+        return np.linalg.det(self.deviatoric_stress_top)
+
+    @property
+   # Third invariant of the deviatoric stress tensor: J3
+    def J3_top(self):
+        return np.linalg.det(self.deviatoric_stress_bottom)
+
+
+    @property
+    def principal_stresses_values(self):
+        eigenvalues = np.linalg.eigvalsh(self.global_stress[:2, :2])
+        sorted_indices = np.argsort(eigenvalues)
+        return eigenvalues[sorted_indices]
+
+    @property
+    def principal_stresses_values_top(self):
+        eigenvalues = np.linalg.eigvalsh(self.global_stress_top[:2, :2])
+        sorted_indices = np.argsort(eigenvalues)
+        return eigenvalues[sorted_indices]
+
+    @property
+    def principal_stresses_values_bottom(self):
+        eigenvalues = np.linalg.eigvalsh(self.global_stress_bottom[:2, :2])
+        sorted_indices = np.argsort(eigenvalues)
+        return eigenvalues[sorted_indices]
+
+    @property
+    def principal_stresses_vectors(self):
+        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress[:2, :2])
+        # Sort the eigenvalues/vectors from low to high
+        sorted_indices = np.argsort(eigenvalues)
+        eigenvectors = eigenvectors[:, sorted_indices]
+        eigenvalues = eigenvalues[sorted_indices]
+        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+
+    @property
+    def principal_stresses_vectors_top(self):
+        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress_top[:2, :2])
+        # Sort the eigenvalues/vectors from low to high
+        sorted_indices = np.argsort(eigenvalues)
+        eigenvectors = eigenvectors[:, sorted_indices]
+        eigenvalues = eigenvalues[sorted_indices]
+        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+
+    @property
+    def principal_stresses_vectors_bottom(self):
+        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress_bottom[:2, :2])
+        # Sort the eigenvalues/vectors from low to high
+        sorted_indices = np.argsort(eigenvalues)
+        eigenvectors = eigenvectors[:, sorted_indices]
+        eigenvalues = eigenvalues[sorted_indices]
+        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+
+    @property
+    def principal_stresses_top(self):
+        return zip(self.principal_stresses_values_top, self.principal_stresses_vectors_top)
+
+    @property
+    def principal_stresses_bottom(self):
+        return zip(self.principal_stresses_values_bottom, self.principal_stresses_vectors_bottom)
+
+
+    @classmethod
+    def from_components(cls, location, components):
+        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S22","S12")}
+        bending_components = {k.lower(): v for k, v in components.items() if k in ("M11", "M22","M12")}
+        return cls(location, **stress_components, **bending_components)
+
+    def membrane_stress(self, frame):
+        return self.transform_stress_tensor(self.local_stress_membrane, frame)
+
+    def top_stress(self, frame):
+        return self.transform_stress_tensor(self.local_stress_top, frame)
+
+    def bottom_stress(self, frame):
+        return self.transform_stress_tensor(self.local_stress_bottom, frame)
+
+
+    def stress_along_direction(self, direction, side='mid'):
+        tensors = {
+            'mid': self.global_stress_bottom,
+            'top': self.global_stress_top,
+            'bottom': self.global_stress_bottom
+        }
+        unit_direction = np.array(direction) / np.linalg.norm(direction)
+        return unit_direction.T @ tensors[side] @ unit_direction
+

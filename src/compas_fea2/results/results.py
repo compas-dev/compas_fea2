@@ -29,7 +29,7 @@ class Result(FEAData):
     Parameters
     ----------
     location : :class:`compas_fea2.model.Node` | :class:`compas_fea2.model._Element`
-        The location of the result. I can be either a Node or an Element.
+        The location of the result. It can be either a Node or an Element.
     components : dict
         A dictionary with {"component name": component value} for each component of the result.
     invariants : dict
@@ -43,20 +43,18 @@ class Result(FEAData):
         A dictionary with {"component name": component value} for each component of the result.
     invariants : dict
         A dictionary with {"invariant name": invariant value} for each invariant of the result.
-    vector : :class:`compas.geometry.Vector`
-        A vector representation of the components (if len(components) == 3).
 
     """
 
     def __init__(self, location, **kwargs):
         super(Result, self).__init__(**kwargs)
-        self._location = location
+        self._registration = location
         self._components = {}
         self._invariants = {}
 
     @property
     def location(self):
-        return self._location
+        return self._registration
 
     @property
     def components(self):
@@ -75,30 +73,68 @@ class Result(FEAData):
 
 
 class DisplacementResult(Result):
-    def __init__(self, node, x, y, z, **kwargs):
+    """DisplacementResult object.
+
+    Parameters
+    ----------
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    x : float
+        The x component of the displacement vector
+    y : float
+        The y component of the displacement vector
+    z : float
+        The z component of the displacement vector
+
+    Attributes
+    ----------
+    location : :class:`compas_fea2.model.Node` `
+        The location of the result.
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
+    u1 : float
+        The x component of the displacement vector.
+    u2 : float
+        The y component of the displacement vector.
+    u3 : float
+        The z component of the displacement vector.
+    vector : :class:`compas.geometry.Vector`
+        The displacement vector.
+    magnitude : float
+        The absolute value of the displacement.
+
+    Notes
+    -----
+    DisplacementResults are registered to a :class:`compas_fea2.model.Node`
+    """
+    def __init__(self, node, u1, u2, u3, **kwargs):
         super(DisplacementResult, self).__init__(location=node, **kwargs)
-        self._x = x
-        self._y = y
-        self._z = z
-        self._components = {"U1": x, "U2": y, "U3": z}
-        self._vector = Vector(*list(self.components.values()))
+        self._u1 = u1
+        self._u2 = u2
+        self._u3 = u3
+        self._components = {"U1": u1, "U2": u2, "U3": u3}
+        self._vector = Vector(u1, u2, u3)
         self._invariants = {"magnitude": self.vector.length}
 
     @property
     def node(self):
-        return self.location
+        return self._registration
 
     @property
-    def x(self):
-        return self._x
+    def u1(self):
+        return self._u1
 
     @property
-    def y(self):
-        return self._y
+    def u2(self):
+        return self._u2
 
     @property
-    def z(self):
-        return self._z
+    def u3(self):
+        return self._u3
 
     @property
     def vector(self):
@@ -109,26 +145,93 @@ class DisplacementResult(Result):
         return self.vector.length
 
     @classmethod
-    def from_components(cls, location, components):
-        return cls(location, *list(components.values()))
+    def from_components(cls, location, components, **kwargs):
+        """Creates a DisplacementResult object from a location and the components of the
+        vector.
+
+        Parameters
+        ----------
+        location : :class:`compas_fea2.model.Node`
+            The location of the result.
+        components : dict
+            Dictionary with the components in the form {"U1": ..., "U2": ..., "U3": ...}.
+
+        Returns
+        -------
+        obj
+            The result object.
+        """
+        return cls(location, **{k.lower(): v for k, v in components.items() if k in ("U1", "U2", "U3")}, **kwargs)
 
     def safety_factor(self, component, allowable):
-        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
+        """Compute the safety factor (absolute ration value/limit) of the displacement.
+
+        Parameters
+        ----------
+        component : int
+            The component of the displacement vector. Either 1, 2, or 3.
+        allowable : float
+            Limit to compare with.
+
+        Returns
+        -------
+        float
+            The safety factor. Values higher than 1 are not safe.
+        """
+        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
 
 
 class ReactionResult(Result):
+    """DisplacementResult object.
+
+    Parameters
+    ----------
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    rf1 : float
+        The x component of the reaction vector.
+    rf2 : float
+        The y component of the reaction vector.
+    rf3 : float
+        The z component of the reaction vector.
+
+    Attributes
+    ----------
+    location : :class:`compas_fea2.model.Node` `
+        The location of the result.
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
+    rf1 : float
+        The x component of the reaction vector.
+    rf2 : float
+        The y component of the reaction vector.
+    rf3 : float
+        The z component of the reaction vector.
+    vector : :class:`compas.geometry.Vector`
+        The displacement vector.
+    magnitude : float
+        The absolute value of the displacement.
+
+    Notes
+    -----
+    ReactionResults are registered to a :class:`compas_fea2.model.Node`
+    """
     def __init__(self, node, rf1, rf2, rf3, **kwargs):
         super(ReactionResult, self).__init__(node, **kwargs)
         self._rf1 = rf1
         self._rf2 = rf2
         self._rf3 = rf3
         self._components = {"RF1": rf1, "RF2": rf2, "RF3": rf3}
-        self._vector = Vector(*list(self.components.values()))
+        self._vector = Vector(rf1, rf2, rf3)
         self._invariants = {"magnitude": self.vector.length}
 
     @property
     def node(self):
-        return self.location
+        return self._registration
 
     @property
     def rf1(self):
@@ -151,14 +254,81 @@ class ReactionResult(Result):
         return self.vector.length
 
     @classmethod
-    def from_components(cls, location, components):
-        return cls(location, *list(components.values()))
+    def from_components(cls, location, components, **kwargs):
+        """Creates a ReactionResult object from a location and the components of the
+        vector.
+
+        Parameters
+        ----------
+        location : :class:`compas_fea2.model.Node`
+            The location of the result.
+        components : dict
+            Dictionary with the components in the form {"RF1": ..., "RF2": ..., "RF3": ...}.
+
+        Returns
+        -------
+        obj
+            The result object.
+        """
+        return cls(location, **{k.lower(): v for k, v in components.items() if k in ("RF1", "RF2", "RF3")}, **kwargs)
 
     def safety_factor(self, component, allowable):
-        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
+        """Compute the safety factor (absolute ration value/limit) of the displacement.
+
+        Parameters
+        ----------
+        component : int
+            The component of the displacement vector. Either 1, 2, or 3.
+        allowable : float
+            Limit to compare with.
+
+        Returns
+        -------
+        float
+            The safety factor. Values higher than 1 are not safe.
+        """
+        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
 
 
 class SectionForcesResult(Result):
+    """DisplacementResult object.
+
+    Parameters
+    ----------
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    rf1 : float
+        The x component of the reaction vector.
+    rf2 : float
+        The y component of the reaction vector.
+    rf3 : float
+        The z component of the reaction vector.
+
+    Attributes
+    ----------
+    location : :class:`compas_fea2.model.Node` `
+        The location of the result.
+    node : :class:`compas_fea2.model.Node`
+        The location of the result.
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
+    rf1 : float
+        The x component of the reaction vector.
+    rf2 : float
+        The y component of the reaction vector.
+    rf3 : float
+        The z component of the reaction vector.
+    vector : :class:`compas.geometry.Vector`
+        The displacement vector.
+    magnitude : float
+        The absolute value of the displacement.
+
+    Notes
+    -----
+    SectionForcesResults are registered to a :class:`compas_fea2.model._Element
+    """
     def __init__(self, node, **kwargs):
         super(SectionForcesResult, self).__init__(node, **kwargs)
 
@@ -177,15 +347,87 @@ class SectionForcesResult(Result):
     def safety_factor(self, component, allowable):
         return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
 
-    # @property
-    # def global_components(self):
-    #     if compas_fea2.VERBOSE:
-    #         print("For node fields there is no local frame.")
-    #     return self._components
 
 
 class StressResult(Result):
-    def __init__(self, *, element, s11, s12, s13, s22, s23, s33, **kwargs):
+    """StressResult object.
+
+    Parameters
+    ----------
+    element : :class:`compas_fea2.model._Element`
+        The location of the result.
+    s11 : float
+        The 11 component of the stress tensor in local coordinates.
+    s12 : float
+        The 12 component of the stress tensor in local coordinates.
+    s13 : float
+        The 13 component of the stress tensor in local coordinates.
+    s22 : float
+        The 22 component of the stress tensor in local coordinates.
+    s23 : float
+        The 23 component of the stress tensor in local coordinates.
+    s33 : float
+        The 33 component of the stress tensor in local coordinates.
+
+
+    Attributes
+    ----------
+    element : :class:`compas_fea2.model._Element`
+        The location of the result.
+    s11 : float
+        The 11 component of the stress tensor in local coordinates.
+    s12 : float
+        The 12 component of the stress tensor in local coordinates.
+    s13 : float
+        The 13 component of the stress tensor in local coordinates.
+    s22 : float
+        The 22 component of the stress tensor in local coordinates.
+    s23 : float
+        The 23 component of the stress tensor in local coordinates.
+    s33 : float
+        The 33 component of the stress tensor in local coordinates.
+    local_stress : numpy array
+        The stress tensor in local coordinates.
+    global_stress : numpy array
+        The stress tensor in global coordinates.
+    global_strains : numpy array
+        The strsin tensor in global coordinates.
+    I1 : numpy array
+        First stress invariant.
+    I2 : numpy array
+        Second stress invariant.
+    I3 : numpy array
+        Second stress invariant.
+    J2 : numpy array
+        Second stress invariant of the deviatoric part.
+    J3 : numpy array
+        Second stress invariant of the deviatoric part.
+    hydrostatic_stress : numpy array
+        Hydrostatic stress.
+    deviatoric_stress : numpy array
+        Deviatoric stress.
+    octahedral_stress : numpy array
+        Octahedral normal and shear stresses
+    principal_stresses_values : list(float)
+        The eigenvalues sorted from low to high.
+    principal_stresses_vectors : list(:class:`compas.geometry.Vector`)
+        The eigenvectors sorted as according to the eigenvalues.
+    principal_stresses : zip obj
+        Iterator providing the eigenvalue/eigenvector pair.
+    smin : float
+        Minimum principal stress.
+    smid : float
+        Middle principal stress.
+    smax : float
+        Maximum principal stress.
+    von_mises_stress : float
+        Von Mises stress.
+
+    Notes
+    -----
+    StressResults are registered to a :class:`compas_fea2.model._Element
+    """
+    def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
 
         self._local_stress = np.array([[s11, s12, s13],
@@ -194,25 +436,6 @@ class StressResult(Result):
 
         self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
-
-    # @classmethod
-    # def from_components(cls, location, components):
-    #     # Determine the size of the array
-    #     max_row = max_col = 0
-    #     for key in components.keys():
-    #         row, col = map(int, key[1:].split('S'))
-    #         max_row = max(max_row, row)
-    #         max_col = max(max_col, col)
-
-    #     # Create an empty array of the right size
-    #     stress_tensor = np.zeros((max_row, max_col))
-
-    #     # Fill the array with values from the dictionary
-    #     for key, value in components.items():
-    #         row, col = map(int, key[1:].split('S'))
-    #         stress_tensor[row-1, col-1] = value  # -1 because indices in the dict are 1-based
-
-    #     return cls(location, stress_tensor)
 
 
     @property
@@ -378,7 +601,7 @@ class StressResult(Result):
             Transformed stress tensor as a numpy array of the same dimension as the input.
         """
 
-        R = Rotation.from_change_of_basis(self.element.frame, new_frame)
+        R = Transformation.from_change_of_basis(self.element.frame, new_frame)
         R_matrix = np.array(R.matrix)[:3, :3]
 
         return R_matrix @ tensor @ R_matrix.T
@@ -559,7 +782,7 @@ class MembraneStressResult(StressResult):
 
 
 class ShellStressResult(MembraneStressResult):
-    def __init__(self, element, * s11, s12, s22, m11, m22, m12, **kwargs):
+    def __init__(self, element, *, s11, s12, s22, m11, m22, m12, **kwargs):
         super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
         self._local_bending_moments = np.array([[m11, m12, 0],
                                                 [m12, m22, 0],
@@ -567,7 +790,7 @@ class ShellStressResult(MembraneStressResult):
         self._local_stress_top = self.local_stress_membrane + 6/self.element.section.t**2 * self._local_bending_moments
         self._local_stress_bottom = self.local_stress_membrane - 6/self.element.section.t**2 * self._local_bending_moments
 
-        self._global_stress_membrane = self.transform_stress_tensor(self.local_stress_membrane, Frame.worldXY())
+        # self._global_stress_membrane = self.transform_stress_tensor(self.local_stress_membrane, Frame.worldXY())
         self._global_stress_top = self.transform_stress_tensor(self.local_stress_top, Frame.worldXY())
         self._global_stress_bottom = self.transform_stress_tensor(self.local_stress_bottom, Frame.worldXY())
 
@@ -589,7 +812,7 @@ class ShellStressResult(MembraneStressResult):
 
     @property
     def global_stress_membrane(self):
-        return self._global_stress_membrane
+        return self._global_stress #self._global_stress_membrane
 
     @property
     def global_stress_top(self):

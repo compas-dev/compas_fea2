@@ -1180,13 +1180,7 @@ Initial Conditions
         # if draw_constraints:
         #     v.draw_constraint(self.constraints)
         for part in parts:
-            if solid:
-                v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-            else:
-                if part.discretized_boundary_mesh:
-                    v.app.add(part.discretized_boundary_mesh, use_vertex_color=True)
-
-
+            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
             v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
             v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
         v.show()

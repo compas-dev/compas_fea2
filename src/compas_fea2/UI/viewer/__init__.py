@@ -17,6 +17,7 @@ from .shapes import (
     _BCShape,
     FixBCShape,
     PinBCShape,
+    RollerBCShape,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "_BCShape",
     "FixBCShape",
     "PinBCShape",
+    "RollerBCShape",
 ]

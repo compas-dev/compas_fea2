@@ -154,7 +154,7 @@ GROUP BY {};""".format(
         )
         ResultProxy = connection.execute(sql)
         ResultSet = ResultProxy.fetchall()
-        return ResultProxy, (labels, ResultSet), field
+        return ResultProxy, (labels, ResultSet)
 
     def _link_field_results_to_model(self, field_results):
         """Converts the values of the results string to actual nodes of the

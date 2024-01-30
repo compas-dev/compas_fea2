@@ -69,7 +69,7 @@ class _Element(FEAData):
 
     # FIXME frame and orientations are a bit different concepts. find a way to unify them
 
-    def __init__(self, nodes, section, implementation=None, **kwargs):
+    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
         super(_Element, self).__init__(**kwargs)
         self._nodes = self._check_nodes(nodes)
         self._registration = nodes[0]._registration
@@ -80,8 +80,8 @@ class _Element(FEAData):
         self._key = None
         self._area = None
         self._volume = None
-        self._results = {}
-        self._rigid = False
+        self._results_format = {}
+        self._rigid = rigid
         self._reference_point = None
 
     @property
@@ -114,17 +114,13 @@ class _Element(FEAData):
 
     @section.setter
     def section(self, value):
+        if self.part:
+            self.part.add_section(value)
         self._section = value
 
     @property
     def frame(self):
-        if self._frame is None:
-            self._frame = Frame.worldXY()
-        return self._frame
-
-    @frame.setter
-    def frame(self, value):
-        self._frame = value
+        raise NotImplementedError()
 
     @property
     def implementation(self):
@@ -152,12 +148,20 @@ class _Element(FEAData):
         raise NotImplementedError()
 
     @property
-    def results(self):
-        return self._results
+    def results_format(self):
+        raise NotImplementedError()
+
+    @property
+    def reference_point(self):
+        raise NotImplementedError()
 
     @property
     def rigid(self):
         return self._rigid
+
+    @property
+    def weight(self):
+        return self.volume * self.section.material.density
 
 
 # ==============================================================================
@@ -176,6 +180,13 @@ class MassElement(_Element):
 class _Element1D(_Element):
     """Element with 1 dimension.
     """
+    def __init__(self, nodes, section, frame, implementation=None, rigid=False, **kwargs):
+        super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
+        self._frame = frame
+
+    @property
+    def frame(self):
+        return self._frame
 
 
 class BeamElement(_Element1D):
@@ -251,7 +262,6 @@ class Face(FEAData):
         self._tag = tag
         self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
         self._registration = element
-        self._results = {}
         self._centroid = centroid_points([node.xyz for node in nodes])
 
     @property
@@ -269,10 +279,6 @@ class Face(FEAData):
     @property
     def element(self):
         return self._registration
-
-    @property
-    def results(self):
-        return self._results
 
     @property
     def polygon(self):
@@ -296,7 +302,7 @@ class _Element2D(_Element):
     ---------------------
     faces : [:class:`compas_fea2.model.elements.Face]
         The faces of the element.
-    faces : dict
+    face_indices : dict
         Dictionary providing for each face the node indices. For example:
         {'s1': (0,1,2), ...}
     """
@@ -306,13 +312,12 @@ class _Element2D(_Element):
             nodes=nodes,
             section=section,
             implementation=implementation,
+            rigid=rigid,
             **kwargs,
         )
 
         self._faces = None
         self._face_indices = None
-        self._rigid = rigid
-        self._implementation = implementation
 
     @property
     def nodes(self):
@@ -320,7 +325,7 @@ class _Element2D(_Element):
 
     @nodes.setter
     def nodes(self, value):
-        self._nodes = value
+        self._nodes = self._check_nodes(value)
         self._faces = self._construct_faces(self._face_indices)
 
     @property
@@ -423,6 +428,11 @@ class _Element3D(_Element):
         )
         self._face_indices = None
         self._faces = None
+        self._frame = Frame.worldXY()
+
+    @property
+    def frame(self):
+        return self._frame
 
     @property
     def nodes(self):

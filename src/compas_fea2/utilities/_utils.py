@@ -3,14 +3,15 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-from subprocess import Popen
-from subprocess import PIPE
+import subprocess
 
 from functools import wraps
 from time import perf_counter
 
 import itertools
 from typing import Iterable
+
+from compas_fea2 import VERBOSE
 
 
 def timer(_func=None, *, message=None):
@@ -19,12 +20,13 @@ def timer(_func=None, *, message=None):
     def decorator_timer(func):
         @wraps(func)
         def wrapper_timer(*args, **kwargs):
-            start_time = perf_counter()  # 1
             value = func(*args, **kwargs)
-            end_time = perf_counter()  # 2
-            run_time = end_time - start_time  # 3
-            m = message or "Finished {!r} in".format(func.__name__)
-            print("{} {:.4f} secs".format(m, run_time))
+            if VERBOSE:
+                start_time = perf_counter()  # 1
+                end_time = perf_counter()  # 2
+                run_time = end_time - start_time  # 3
+                m = message or "Finished {!r} in".format(func.__name__)
+                print("{} {:.4f} secs".format(m, run_time))
             return value
 
         return wrapper_timer
@@ -35,7 +37,7 @@ def timer(_func=None, *, message=None):
         return decorator_timer(_func)
 
 
-def launch_process(cmd_args, cwd, verbose=False):
+def launch_process(cmd_args, cwd, verbose=False, **kwargs):
     """Open a subprocess and print the output.
 
     Parameters
@@ -52,17 +54,36 @@ def launch_process(cmd_args, cwd, verbose=False):
     None
 
     """
-    p = Popen(cmd_args, stdout=PIPE, stderr=PIPE, cwd=cwd, shell=True, env=os.environ)
-    while True:
-        line = p.stdout.readline()
-        if not line:
-            break
-        line = line.strip().decode()
-        if verbose:
-            yield line
+    # p = Popen(cmd_args, stdout=PIPE, stderr=PIPE, cwd=cwd, shell=True, env=os.environ)
+    # while True:
+    #     line = p.stdout.readline()
+    #     if not line:
+    #         break
+    #     line = line.strip().decode()
+    #     if verbose:
+    #         yield line
 
     # stdout, stderr = p.communicate()
     # return stdout.decode(), stderr.decode()
+    try:
+        p = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd, shell=True, env=os.environ)
+
+        while True:
+            line = p.stdout.readline()
+            if not line:
+                break
+            yield line
+
+        p.wait()
+
+        if p.returncode != 0:
+            raise subprocess.CalledProcessError(p.returncode, cmd_args)
+
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error: Command '{cmd_args}' failed with return code {e.returncode}")
+
 
 
 class extend_docstring:

@@ -8,24 +8,46 @@ from compas_view2.objects import Collection
 from compas_view2.shapes import Arrow
 from compas_view2.shapes import Text
 
+from compas.colors import ColorMap, Color
+
 from compas.datastructures import Mesh
+from compas.geometry import Point
 from compas.geometry import Line
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
+from compas.geometry import Transformation, Translation
 from compas.geometry import sum_vectors
 from compas.utilities import hex_to_rgb
+from compas.datastructures import mesh_thicken
 
-from compas_fea2.UI.viewer.shapes import PinBCShape
-from compas_fea2.UI.viewer.shapes import FixBCShape
-from compas_fea2.model.elements import ShellElement
-from compas_fea2.model.elements import _Element3D
-from compas_fea2.model.elements import BeamElement
-from compas_fea2.model.bcs import FixedBC, PinnedBC
+import compas_fea2
+from compas_fea2.UI.viewer.shapes import (
+    PinBCShape,
+    FixBCShape,
+    RollerBCShape,
+    )
+from compas_fea2.model.elements import (
+    _Element3D,
+    BeamElement,
+    ShellElement,
+    )
+from compas_fea2.model.bcs import (
+    FixedBC,
+    PinnedBC,
+    RollerBCX,
+    RollerBCY,
+    RollerBCZ,
+    RollerBCXY,
+    RollerBCXZ,
+    RollerBCYZ,
+    )
+
+from compas_fea2.postprocess import principal_stresses
 
 from compas_fea2.problem.loads import PointLoad
 from compas_fea2.problem.steps import _GeneralStep
 
-from compas_fea2.results import NodeFieldResults
+from compas_fea2.results import NodeFieldResults, ElementFieldResults
 
 def hextorgb(hex):
     return tuple(i / 255 for i in hex_to_rgb(hex))
@@ -71,8 +93,8 @@ class FEA2Viewer:
         self.app.view.camera.scale *= sf
         self.app.view.grid.cell_size *= sf
 
-    def draw_mesh(self, mesh):
-        self.app.add(mesh, use_vertex_color=True)
+    def draw_mesh(self, mesh, opacity=1):
+        self.app.add(mesh, use_vertex_color=True, opacity=opacity)
 
     def draw_nodes(self, nodes=None, node_lables=False):
         """Draw nodes.
@@ -93,7 +115,7 @@ class FEA2Viewer:
             txts = [Text(str(node.key), node.point, height=35) for node in nodes]
         self.app.add(Collection(txts), facecolor=hextorgb("#386641"))
 
-    def draw_solid_elements(self, elements, show_vertices=True):
+    def draw_solid_elements(self, elements, show_vertices=True, opacity=1.):
         """Draw the elements of a part.
 
         Parameters
@@ -109,9 +131,9 @@ class FEA2Viewer:
             pts = [node.point for node in element.nodes]
             collection_items.append(Polyhedron(pts, list(element._face_indices.values())))
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices)
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices, opacity=opacity)
 
-    def draw_shell_elements(self, elements, show_vertices=True):
+    def draw_shell_elements(self, elements, show_vertices=True, opacity=1, thicken=True):
         """Draw the elements of a part.
 
         Parameters
@@ -126,15 +148,18 @@ class FEA2Viewer:
         for element in elements:
             pts = [node.point for node in element.nodes]
             if len(element.nodes) == 4:
-                collection_items.append(Mesh.from_vertices_and_faces(pts, [[1, 2, 3, 0]]))
+                mesh = Mesh.from_vertices_and_faces(pts, [[1, 2, 3, 0]])
             elif len(element.nodes) == 3:
-                collection_items.append(Mesh.from_vertices_and_faces(pts, [[0, 1, 2]]))
+                mesh = Mesh.from_vertices_and_faces(pts, [[0, 1, 2]])
             else:
                 raise NotImplementedError("only 3 and 4 vertices shells supported at the moment")
+            if thicken:
+                mesh = mesh_thicken(mesh, element.section.t)
+            collection_items.append(mesh)
         if collection_items:
-            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices)
+            self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices, opacity=opacity)
 
-    def draw_beam_elements(self, elements, show_vertices=True):
+    def draw_beam_elements(self, elements, show_vertices=True, opacity=1):
         """Draw the elements of a part.
 
         Parameters
@@ -150,7 +175,7 @@ class FEA2Viewer:
             pts = [node.point for node in element.nodes]
             collection_items.append(Line(pts[0], pts[1]))
         if collection_items:
-            self.app.add(Collection(collection_items), linewidth=10)
+            self.app.add(Collection(collection_items), linewidth=10, show_points=show_vertices, opacity=opacity)
 
     def draw_bcs(self, model, parts=None, scale_factor=1.0):
         """Draw the support boundary conditions.
@@ -178,6 +203,8 @@ class FEA2Viewer:
                             bcs_collection.append(PinBCShape(node.xyz, scale=scale_factor).shape)
                         if isinstance(bc, FixedBC):
                             bcs_collection.append(FixBCShape(node.xyz, scale=scale_factor).shape)
+                        if isinstance(bc, (RollerBCX, RollerBCY, RollerBCZ)):
+                            bcs_collection.append(RollerBCShape(node.xyz, scale=scale_factor).shape)
             if bcs_collection:
                 self.app.add(Collection(bcs_collection), facecolor=(1, 0, 0), opacity=0.5)
 
@@ -198,8 +225,9 @@ class FEA2Viewer:
         if not colors:
             colors = [(0, 1, 0)] * len(pts)
         for pt, vector, color in zip(pts, vectors, colors):
-            arrows.append(Arrow(pt, vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
-            arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
+            if vector.length:
+                arrows.append(Arrow(pt, vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
+                arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
         if arrows:
             self.app.add(Collection(arrows, arrows_properties))
 
@@ -233,11 +261,11 @@ class FEA2Viewer:
                         pts = [node.point for node in pattern.distribution]
                     # TODO add moment components xx, yy, zz
                     vectors = [vector] * len(pts)
-                    self.draw_nodes_vector(pts, vectors)
+                    self.draw_nodes_vector(pts, vectors, colors=[(0, 1, 1)]*len(pts))
                 else:
                     print("WARNING! Only point loads are currently supported!")
 
-    def draw_reactions(self, step=None, scale_factor=1, colors=None, **kwargs):
+    def draw_reactions(self, step, scale_factor=1, colors=None, **kwargs):
         """Draw the reaction forces as vector arrows at nodes.
 
         Parameters
@@ -249,9 +277,6 @@ class FEA2Viewer:
         colors : tuple, optional
             _description_, by default (0, 1, 0)
         """
-        if not step:
-            step = self.steps_order[-1]
-
         reactions = NodeFieldResults('RF', step)
         # min_value = reactions._min_components["magnitude"].components[f"MIN({'magnitude'})"]
         # max_value = reactions._max_components["magnitude"].components[f"MAX({'magnitude'})"]
@@ -262,7 +287,7 @@ class FEA2Viewer:
             vectors.append(r.vector)
         self.draw_nodes_vector(locations, vectors, scale_factor=scale_factor, colors=colors)
 
-    def draw_deformed(self, step=None, scale_factor=1.0, **kwargs):
+    def draw_deformed(self, step, scale_factor=1.0, opacity=1., **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -283,10 +308,202 @@ class FEA2Viewer:
             vector = displacement.vector.scaled(scale_factor)
             displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
-        for part in self.model.parts:
-            self.draw_beam_elements(part.elements_by_dimension(dimension=1), show_vertices=False)
-            self.draw_shell_elements(part.elements_by_dimension(dimension=2), show_vertices=False)
-            self.draw_solid_elements(part.elements_by_dimension(dimension=3), show_vertices=False)
+        for part in self.obj.parts:
+            self.draw_beam_elements(part.elements_by_dimension(dimension=1), show_vertices=False, opacity=opacity)
+            self.draw_shell_elements(part.elements_by_dimension(dimension=2), show_vertices=False, opacity=opacity)
+            self.draw_solid_elements(part.elements_by_dimension(dimension=3), show_vertices=False, opacity=opacity)
+
+
+    def draw_nodes_field_vector(self, step, field_name, vector_sf=1, **kwargs):
+        """Display a given vector field.
+
+        Parameters
+        ----------
+        field : str
+            The field to display, e.g. 'U' for displacements.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
+        component : str
+            The compoenet of the field to display, e.g. 'U3' for displacements
+            along the 3 axis.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
+        step : :class:`compas_fea2.problem.Step`, optional
+            The step to show the results of, by default None.
+            if not provided, the last step of the analysis is used.
+        deformed : bool, optional
+            Choose if to display on the deformed configuration or not, by default False
+        width : int, optional
+            Width of the viewer window, by default 1600
+        height : int, optional
+            Height of the viewer window, by default 900
+
+        Options
+        -------
+        draw_loads : float
+            Displays the loads at the step scaled by the given value
+        draw_bcs : float
+            Displays the bcs of the model scaled by the given value
+        bound : float
+            limit the results to the given value
+
+        Raises
+        ------
+        ValueError
+            _description_
+
+        """
+
+        # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+
+        # Get values
+        field = NodeFieldResults(field_name, step)
+        # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
+        # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
+
+        # Color the vector field
+        pts, vectors, colors = [], [], []
+        for r in field.results:
+            if r.vector.length == 0:
+                continue
+            vectors.append(r.vector.scaled(vector_sf))
+            pts.append(r.location.xyz)
+            # colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
+
+        # Display results
+        self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
+
+
+    def draw_nodes_field_contour(self, field_name, component, step, **kwargs):
+        """Display a contour plot of a given field and component. The field must
+        de defined at the nodes of the model (e.g displacement field).
+
+        Parameters
+        ----------
+        field : str
+            The field to display, e.g. 'U' for displacements.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
+        component : str
+            The compoenet of the field to display, e.g. 'U3' for displacements
+            along the 3 axis.
+            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
+            valid components.
+        step : :class:`compas_fea2.problem.Step`, optional
+            The step to show the results of, by default None.
+            if not provided, the last step of the analysis is used.
+        deformed : bool, optional
+            Choose if to display on the deformed configuration or not, by default False
+        width : int, optional
+            Width of the viewer window, by default 1600
+        height : int, optional
+            Height of the viewer window, by default 900
+
+        Options
+        -------
+        draw_loads : float
+            Displays the loads at the step scaled by the given value
+        draw_bcs : float
+            Displays the bcs of the model scaled by the given value
+        bound : float
+            limit the results to the given value
+
+        Raises
+        ------
+        ValueError
+            _description_
+
+        """
+        component = field_name + str(component) if isinstance(component, int) else component
+
+        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+        # cmap = ColorMap.from_color(Color.red(), rangetype='light')
+        # cmap = ColorMap.from_mpl('viridis')
+        # Get mesh
+        parts_gkey_vertex = {}
+        parts_mesh = {}
+        for part in step.model.parts:
+            if mesh := part.discretized_boundary_mesh:
+                colored_mesh = mesh.copy()
+                parts_gkey_vertex[part.name] = colored_mesh.gkey_key(compas_fea2.PRECISION)
+                parts_mesh[part.name] = colored_mesh
+            else:
+                raise AttributeError("Discretized boundary mesh not found")
+
+        # Set the bounding limits
+        if kwargs.get("bound", None):
+            if not isinstance(kwargs["bound"], Iterable) or len(kwargs["bound"]) != 2:
+                raise ValueError("You need to provide an upper and lower bound -> (lb, up)")
+            if kwargs["bound"][0] > kwargs["bound"][1]:
+                kwargs["bound"][0], kwargs["bound"][1] = kwargs["bound"][1], kwargs["bound"][0]
+
+        # Get values
+        field = NodeFieldResults(field_name, step)
+
+        min_value = field.min_components[component].components[component]
+        max_value = field.max_components[component].components[component]
+
+        # Color the mesh
+        for r in field.results:
+            if min_value - max_value == 0.0:
+                color = Color.red()
+            elif kwargs.get("bound", None):
+                if r.components[component] >= kwargs["bound"] or r.components[component] <= kwargs["bound"]:
+                    color = Color.red()
+                else:
+                    color = cmap(r.components[component], minval=min_value, maxval=max_value)
+            else:
+                color = cmap(r.components[component], minval=min_value, maxval=max_value)
+            if r.location.gkey in parts_gkey_vertex[part.name]:
+                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], "color", color)
+
+        # Display results
+        for part in step.model.parts:
+            self.draw_mesh(parts_mesh[part.name])
+
+    def draw_elements_field_vector(self, step, field_name, vector_sf=1, **kwargs):
+        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+
+        # Get values
+        field = ElementFieldResults(field_name, step)
+        # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
+        # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
+
+        # Color the vector field
+        # FIXME temporary test - > change components
+        pts, vectors, colors = [], [], []
+        for r in field.results:
+            ps_results_mid = list(r.principal_stresses)
+            ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
+            ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None
+            all_ps_results = {"mid":ps_results_mid, "top":ps_results_top, "bottom":ps_results_bottom}
+
+            for k, v in all_ps_results.items():
+                if v:
+                    if len(v) == 2:
+                        ps_colors = ((0, 1, 1), (1, 0, 0))
+                    else:
+                        ps_colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
+
+                    for ps, color in zip(v, ps_colors):
+                        for dir in (-0.5, 0.5):
+                            if k == "mid":
+                                pts.append(r.location.reference_point)
+                            elif k == "top":
+                                X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t/2)
+                                pts.append(Point(*r.location.reference_point).transformed(X))
+                            elif k == "bottom":
+                                X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t/2)
+                                pts.append(Point(*r.location.reference_point).transformed(X))
+                            vectors.append(ps[1].scaled(vector_sf*dir))
+                            colors.append(color)
+
+            # colors.append(color)
+            # colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
+
+        # Display results
+        self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
+
 
 
     def show(self):

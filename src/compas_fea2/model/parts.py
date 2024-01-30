@@ -101,6 +101,9 @@ class _Part(FEAData):
         self._discretized_boundary_mesh = None
         self._bounding_box = None
 
+        self._volume = None
+        self._weight = None
+
         self._results = {}
 
     @property
@@ -172,6 +175,14 @@ class _Part(FEAData):
             if element.volume:
                 self._volume += element.volume
         return self._volume
+
+    @property
+    def weight(self):
+        self._weight = 0.0
+        for element in self.elements:
+            if element.weight:
+                self._weight += element.weight
+        return self._weight
 
     @property
     def model(self):
@@ -273,8 +284,8 @@ class _Part(FEAData):
 
         """
         implementation = kwargs.get("implementation", None)
-        part = cls(name, **kwargs)
-
+        ndm = kwargs.get("ndm", None)
+        part = cls(name=name, ndm=ndm)
         vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
 
         for face in mesh.faces():
@@ -373,6 +384,7 @@ class _Part(FEAData):
                     )
                 else:
                     k = part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
+                    part.ndf = 3 #FIXME move outside the loop
             elif ntags.size == 8:
                 k = part.add_element(HexahedronElement(nodes=element_nodes, section=section))
             else:

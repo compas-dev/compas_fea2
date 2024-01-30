@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+from compas_fea2 import VERBOSE
 from compas_fea2.base import FEAData
-
 
 class InputFile(FEAData):
     """Input file object for standard FEA.
@@ -73,7 +73,6 @@ class InputFile(FEAData):
     # ==============================================================================
     # General methods
     # ==============================================================================
-
     def write_to_file(self, path=None):
         """Writes the InputFile to a file in a specified location.
 
@@ -95,7 +94,8 @@ class InputFile(FEAData):
         file_path = os.path.join(path, self._file_name)
         with open(file_path, "w") as f:
             f.writelines(self.jobdata())
-        print("Input file generated in: {}".format(file_path))
+        if VERBOSE:
+            print("Input file generated in: {}".format(file_path))
 
 
 class ParametersFile(InputFile):

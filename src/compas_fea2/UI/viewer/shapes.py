@@ -10,7 +10,7 @@ class BCShape:
         self.scale = scale
 
 
-class PinBCShape(BCShape):
+class PinBCShape(_BCShape):
     def __init__(self, xyz, direction=[0, 0, 1], scale=1):
         super(PinBCShape, self).__init__(xyz, direction, scale)
         self.height = 0.4 * self.scale
@@ -22,7 +22,7 @@ class PinBCShape(BCShape):
         self.shape = Cone(0.5 * self.diameter, self.height, frame=frame)
 
 
-class FixBCShape(BCShape):
+class FixBCShape(_BCShape):
     def __init__(self, xyz, scale=1):
         super(FixBCShape, self).__init__(xyz, [0, 0, 1], scale)
         self.height = 0.8 * self.scale
@@ -30,5 +30,5 @@ class FixBCShape(BCShape):
         self.shape = Box(self.height, self.height, self.height / 2, frame=frame)
 
 
-class MomentShape(BCShape):
+class MomentShape(_BCShape):
     pass

@@ -22,8 +22,8 @@ class Steel(ElasticIsotropic):
     eu : float
         Ultimate strain.
 
-    Attributes
-    ----------
+    Additional Attributes
+    ---------------------
     E : float
         Young's modulus E.
     v : float

@@ -14,7 +14,7 @@ Viewer
 
 from .viewer import FEA2Viewer
 from .shapes import (
-    BCShape,
+    _BCShape,
     FixBCShape,
     PinBCShape,
 )

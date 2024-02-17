@@ -30,6 +30,8 @@ from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.ics import _InitialCondition
 from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup
 
+from pint import UnitRegistry
+
 
 class Model(FEAData):
     """Class representing an FEA model.
@@ -78,6 +80,7 @@ class Model(FEAData):
         super(Model, self).__init__(**kwargs)
         self.description = description
         self.author = author
+        self._units = None
         self._parts = set()
         self._nodes = None
         self._bcs = {}
@@ -92,6 +95,7 @@ class Model(FEAData):
         self._center = None
         self._bottom_plane = None
         self._top_plane = None
+        self._volume = None
 
     @property
     def parts(self):
@@ -185,6 +189,19 @@ class Model(FEAData):
     def top_plane(self):
         return Plane.from_three_points(*[self.bounding_box.points[i] for i in self.bounding_box.top[:3]])
 
+    @property
+    def volume(self):
+        return sum(p.volume for p in self.parts)
+
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, value):
+        if not isinstance(value, UnitRegistry):
+            return ValueError("Pint UnitRegistry required")
+        self._units = value
 
     # =========================================================================
     #                       Constructor methods

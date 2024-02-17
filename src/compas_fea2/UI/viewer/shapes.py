@@ -3,6 +3,7 @@ from compas.geometry import Circle
 from compas.geometry import Plane
 from compas.geometry import Box
 from compas.geometry import Cylinder
+from compas.geometry import Frame
 
 
 class _BCShape:
@@ -37,8 +38,8 @@ class PinBCShape(_BCShape):
         self.diameter = 400 * self.scale
         # FIXME this is wrong because it should follow the normal
         self.plane = Plane([self.x, self.y, self.z-self.height], direction)
-        self.circle = Circle(self.plane, self.diameter)
-        self.shape = Cone(self.circle, self.height)
+        self.circle = Circle(frame=self.plane.frame, radius=self.diameter/2)
+        self.shape = Cone(radius=self.circle.radius, height=self.height, frame=self.plane.frame)
 
 
 class FixBCShape(_BCShape):
@@ -48,8 +49,8 @@ class FixBCShape(_BCShape):
     def __init__(self, xyz, scale=1):
         super(FixBCShape, self).__init__(xyz, [0, 0, 1], scale)
         self.height = 800*self.scale
-        self.shape = Box(([self.x, self.y, self.z-self.height/4], [1, 0, 0],
-                          [0, 1, 0]), self.height, self.height, self.height/2)
+        f=Frame([self.x, self.y, self.z-self.height/4], [1, 0, 0], [0, 1, 0])
+        self.shape = Box(self.height, self.height, self.height/2, f)
 
 # FIXME: orient according to the direction of the restrain
 class RollerBCShape(_BCShape):

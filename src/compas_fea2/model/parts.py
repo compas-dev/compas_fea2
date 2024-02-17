@@ -152,9 +152,11 @@ class _Part(FEAData):
 
     @property
     def bounding_box(self):
-        if not self._boundary_mesh:
-            raise AttributeError("Missing the bounding mesh of the part.")
-        return Box.from_bounding_box(self._boundary_mesh.bounding_box())
+        # if not self._boundary_mesh:
+        return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
+        #     # raise AttributeError("Missing the bounding mesh of the part.")
+        # else:
+        #     return Box.from_bounding_box(self._boundary_mesh.obb())
 
     @property
     def center(self):
@@ -463,7 +465,7 @@ class _Part(FEAData):
 
     @classmethod
     def from_step_file(cls, step_file, name=None, **kwargs):
-        from compas_occ.brep import BRep
+        from compas_occ.brep import Brep
         from OCC.Extend.DataExchange import read_step_file
         from compas_gmsh.models import MeshModel
         import gmsh
@@ -474,7 +476,8 @@ class _Part(FEAData):
         meshsize_max = kwargs.get('meshsize_max', None)
         meshsize_min = kwargs.get('meshsize_min', None)
 
-        block = BRep()
+        print("Creating the part from the step file...")
+        block = Brep()
         block.occ_shape = read_step_file(step_file)
         block.make_solid()
         gmshModel = MeshModel()
@@ -1424,7 +1427,7 @@ class DeformablePart(_Part):
 
         for edge in mesh.edges():
             nodes = [vertex_node[vertex] for vertex in edge]
-            v = list(mesh.edge_direction(*edge))
+            v = list(mesh.edge_direction(edge))
             v.append(v.pop(0))
             part.add_element(BeamElement(nodes=[*nodes], section=section, frame=v))
 

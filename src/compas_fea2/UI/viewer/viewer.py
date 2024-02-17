@@ -17,8 +17,7 @@ from compas.geometry import Polyhedron
 from compas.geometry import Vector
 from compas.geometry import Transformation, Translation
 from compas.geometry import sum_vectors
-from compas.utilities import hex_to_rgb
-from compas.datastructures import mesh_thicken
+from compas.colors import Color
 
 import compas_fea2
 from compas_fea2.UI.viewer.shapes import (
@@ -49,8 +48,8 @@ from compas_fea2.problem.steps import _GeneralStep
 
 from compas_fea2.results import NodeFieldResults, ElementFieldResults
 
-def hextorgb(hex):
-    return tuple(i / 255 for i in hex_to_rgb(hex))
+# def hextorgb(hex):
+#     return tuple(i / 255 for i in hex_to_rgb(hex))
 
 
 class FEA2Viewer:
@@ -109,11 +108,11 @@ class FEA2Viewer:
         if not nodes:
             nodes = self.obj.nodes
         pts = [node.point for node in nodes]
-        self.app.add(Collection(pts), facecolor=hextorgb("#386641"))
+        self.app.add(Collection(pts), facecolor=Color.from_hex("#386641"))
 
         if node_lables:
             txts = [Text(str(node.key), node.point, height=35) for node in nodes]
-        self.app.add(Collection(txts), facecolor=hextorgb("#386641"))
+        self.app.add(Collection(txts), facecolor=Color.from_hex("#386641"))
 
     def draw_solid_elements(self, elements, show_vertices=True, opacity=1.):
         """Draw the elements of a part.
@@ -154,7 +153,7 @@ class FEA2Viewer:
             else:
                 raise NotImplementedError("only 3 and 4 vertices shells supported at the moment")
             if thicken:
-                mesh = mesh_thicken(mesh, element.section.t)
+                mesh.thickened(element.section.t)
             collection_items.append(mesh)
         if collection_items:
             self.app.add(Collection(collection_items), facecolor=(0.9, 0.9, 0.9), show_points=show_vertices, opacity=opacity)
@@ -226,7 +225,7 @@ class FEA2Viewer:
             colors = [(0, 1, 0)] * len(pts)
         for pt, vector, color in zip(pts, vectors, colors):
             if vector.length:
-                arrows.append(Arrow(pt, vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
+                arrows.append(Arrow(position=pt, direction=vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
                 arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
         if arrows:
             self.app.add(Collection(arrows, arrows_properties))
@@ -425,7 +424,8 @@ class FEA2Viewer:
         for part in step.model.parts:
             if mesh := part.discretized_boundary_mesh:
                 colored_mesh = mesh.copy()
-                parts_gkey_vertex[part.name] = colored_mesh.gkey_key(compas_fea2.PRECISION)
+                #FIXME change precision
+                parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(1)
                 parts_mesh[part.name] = colored_mesh
             else:
                 raise AttributeError("Discretized boundary mesh not found")

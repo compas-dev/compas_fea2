@@ -11,7 +11,7 @@ from compas.geometry import Vector, Point
 from compas.geometry import sum_vectors, centroid_points_weighted
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.steps.step import _Step
+from compas_fea2.problem.steps import _Step, StaticStep
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.utilities._utils import timer
 from compas_fea2.results import NodeFieldResults
@@ -190,6 +190,37 @@ class Problem(FEAData):
 
         if self.find_step_by_name(step):
             raise ValueError("There is already a step with the same name in the model.")
+
+        step._key = len(self._steps)
+        self._steps.add(step)
+        step._registration = self
+        self._steps_order.append(step)
+        return step
+
+    def add_static_step(self, step=None, **kwargs):
+        # # type: (_Step) -> Step
+        """Adds a :class:`compas_fea2.problem._Step` to the problem. The name of
+        the Step must be unique
+
+        Parameters
+        ----------
+        Step : :class:`compas_fea2.problem.StaticStep`, optional
+            The analysis step to add to the problem, by default None.
+            If not provided, a :class:`compas_fea2.problem.StaticStep` with default
+            attributes is created.
+
+        Returns
+        -------
+        :class:`compas_fea2.problem._Step`
+        """
+        if step:
+            if not isinstance(step, StaticStep):
+                raise TypeError("You must provide a valid compas_fea2 Step object")
+
+            if self.find_step_by_name(step):
+                raise ValueError("There is already a step with the same name in the model.")
+        else:
+            step = StaticStep(**kwargs)
 
         step._key = len(self._steps)
         self._steps.add(step)
@@ -573,7 +604,6 @@ Analysis folder path : {}
             v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
-
     def show_elements_field_vector(self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.
 
@@ -679,3 +709,6 @@ Analysis folder path : {}
             v.draw_reactions(step=step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
+
+    def show_reactions(self, vector_sf=1.0, model_sf=1.0, step=None, group_nodes=False, **kwargs):
+        self.show_nodes_field_vector(field_name='RF', vector_sf=vector_sf, model_sf=model_sf, step=step, **kwargs)

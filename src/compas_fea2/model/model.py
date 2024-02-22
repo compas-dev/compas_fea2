@@ -1004,13 +1004,14 @@ Initial Conditions
     #                       Problems methods
     # =========================================================================
 
-    def add_problem(self, problem):
+    def add_problem(self, problem=None, **kwargs):
         """Add a :class:`compas_fea2.problem.Problem` object to the model.
 
         Parameters
         ----------
-        problem : :class:`compas_fea2.problem.Problem`
-            The problem to add
+        problem : :class:`compas_fea2.problem.Problem`, optional
+            The problem to add, by default None. If not provided a
+            :class:`compas_fea2.problem.Problem` is created.
 
         Returns
         -------
@@ -1023,8 +1024,12 @@ Initial Conditions
             if problem is not type :class:`compas_fea2.problem.Problem`
 
         """
-        if not isinstance(problem, compas_fea2.problem.Problem):
-            raise TypeError("{} is not a Problem".format(problem))
+        if problem:
+            if not isinstance(problem, compas_fea2.problem.Problem):
+                raise TypeError("{} is not a Problem".format(problem))
+        else:
+            from compas_fea2.problem.problem import Problem
+            problem = Problem(**kwargs)
         self._problems.add(problem)
         problem._registration = self
         return problem

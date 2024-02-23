@@ -7,7 +7,7 @@ from compas_fea2.base import FEAData
 # TODO: make units independent using the utilities function
 
 
-class _Load(FEAData):
+class Load(FEAData):
     """Initialises base Load object.
 
     Parameters
@@ -37,8 +37,8 @@ class _Load(FEAData):
     """
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
-        super(_Load, self).__init__(name=name, **kwargs)
-        self._axes = axes
+        super(Load, self).__init__(name=name, **kwargs)
+        self.axes = axes
         self.x = x
         self.y = y
         self.z = z
@@ -46,27 +46,9 @@ class _Load(FEAData):
         self.yy = yy
         self.zz = zz
 
-    def __rmul__(self, other):
-        if isinstance(other, (float, int)):
-            components = ["x", "y", "z", "xx", "yy", "zz"]
-            for component in components:
-                value = getattr(self, component)
-                if value:
-                    setattr(self, component, other * value)
-        return self
-
-    @property
-    def axes(self):
-        return self._axes
-
-    @axes.setter
-    def axes(self, value):
-        self._axes = value
-
     @property
     def components(self):
-        keys = ["x", "y", "z", "xx", "yy", "zz"]
-        return {key: getattr(self, key) for key in keys}
+        return {i: getattr(self, i) for i in ["x", "y", "z", "xx", "yy", "zz"]}
 
     @components.setter
     def components(self, value):
@@ -90,7 +72,7 @@ class _Load(FEAData):
         return self.problem._registration
 
 
-class PointLoad(_Load):
+class NodeLoad(Load):
     """Concentrated forces and moments [units:N, Nm] applied to node(s).
 
     Parameters
@@ -132,11 +114,30 @@ class PointLoad(_Load):
     """
 
     def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
-        super(PointLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+        super(NodeLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
+    def __mul__(self, factor):
+            if isinstance(factor, (float, int)):
+                new_components = {k: (self.components[k] or 0) * factor for k in self.components}
+                return NodeLoad(**new_components, axes=self.axes)
+            else:
+                raise NotImplementedError
 
-class LineLoad(_Load):
-    """Distributed line forces and moments [units:N/m or Nm/m] applied to element(s).
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __add__(self, other):
+        if isinstance(other, NodeLoad):
+            new_components = {k: (self.components[k] or 0) + (other.components[k] or 0) for k in self.components}
+            return NodeLoad(**new_components, axes=self.axes)
+        else:
+            raise NotImplementedError
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+class EdgeLoad(Load):
+    """Distributed line forces and moments [units:N/m or Nm/m] applied to an edge of an element.
 
     Parameters
     ----------
@@ -180,12 +181,13 @@ class LineLoad(_Load):
     """
 
     def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", name=None, **kwargs):
-        super(LineLoad, self).__init__(
+        super(EdgeLoad, self).__init__(
             components={"x": x, "y": y, "z": z, "xx": xx, "yy": yy, "zz": zz}, axes=axes, name=name, **kwargs
         )
+        raise NotImplementedError
 
 
-class AreaLoad(_Load):
+class FaceLoad(Load):
     """Distributed area force [e.g. units:N/m2] applied to element(s).
 
     Parameters
@@ -193,11 +195,11 @@ class AreaLoad(_Load):
     elements : str, list
         Elements set or elements the load is applied to.
     x : float
-        x component of area load.
+        x component of force / area.
     y : float
-        y component of area load.
+        y component of force / area.
     z : float
-        z component of area load.
+        z component of force / area.
 
     Attributes
     ----------
@@ -207,18 +209,18 @@ class AreaLoad(_Load):
     elements : str, list
         Elements set or elements the load is applied to.
     x : float
-        x component of area load.
+        x component of force / area.
     y : float
-        y component of area load.
+        y component of force / area.
     z : float
-        z component of area load.
+        z component of force / area.
     """
 
     def __init__(self, x=0, y=0, z=0, axes="local", name=None, **kwargs):
-        super(AreaLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, name=name, **kwargs)
+        super(FaceLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, name=name, **kwargs)
+        raise NotImplementedError
 
-
-class GravityLoad(_Load):
+class GravityLoad(Load):
     """Gravity load [units:N/m3] applied to element(s).
 
     Parameters
@@ -265,7 +267,7 @@ class GravityLoad(_Load):
         return self._g
 
 
-class PrestressLoad(_Load):
+class PrestressLoad(Load):
     """Prestress load"""
 
     def __init__(self, components, axes="global", name=None, **kwargs):
@@ -273,14 +275,14 @@ class PrestressLoad(_Load):
         raise NotImplementedError
 
 
-class ThermalLoad(_Load):
+class ThermalLoad(Load):
     """Thermal load"""
 
     def __init__(self, components, axes="global", name=None, **kwargs):
         super(ThermalLoad, self).__init__(components, axes, name, **kwargs)
 
 
-class TributaryLoad(_Load):
+class TributaryLoad(Load):
     """Tributary load"""
 
     def __init__(self, components, axes="global", name=None, **kwargs):
@@ -288,7 +290,7 @@ class TributaryLoad(_Load):
         raise NotImplementedError
 
 
-class HarmonicPointLoad(_Load):
+class HarmonicPointLoad(Load):
     """"""
 
     def __init__(self, components, axes="global", name=None, **kwargs):
@@ -296,7 +298,7 @@ class HarmonicPointLoad(_Load):
         raise NotImplementedError
 
 
-class HarmonicPressureLoad(_Load):
+class HarmonicPressureLoad(Load):
     """"""
 
     def __init__(self, components, axes="global", name=None, **kwargs):

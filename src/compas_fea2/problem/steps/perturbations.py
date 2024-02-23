@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .step import _Step
+from .step import Step
 
 
-class _Perturbation(_Step):
+class _Perturbation(Step):
     """A perturbation is a change of the state of the structure after an analysis
     step. Differently from Steps, perturbations' changes are not carried over to
     the next step.

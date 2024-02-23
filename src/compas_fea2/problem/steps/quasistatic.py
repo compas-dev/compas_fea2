@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .step import _Step
+from .step import GeneralStep
 
 
-class QuasiStaticStep(_Step):
+class QuasiStaticStep(GeneralStep):
     """Step for quasi-static analysis."""
 
     def __init__(self, name=None, **kwargs):
@@ -13,7 +13,7 @@ class QuasiStaticStep(_Step):
         raise NotImplementedError
 
 
-class DirectCyclicStep(_Step):
+class DirectCyclicStep(GeneralStep):
     """Step for a direct cyclic analysis."""
 
     def __init__(self, name=None, **kwargs):

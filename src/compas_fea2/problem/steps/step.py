@@ -4,8 +4,7 @@ from __future__ import print_function
 
 from compas_fea2.base import FEAData
 
-from compas_fea2.problem.loads import _Load
-from compas_fea2.problem.patterns import Pattern
+from compas_fea2.problem.loads import Load
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import _PrescribedField
 from compas_fea2.problem.outputs import FieldOutput
@@ -20,7 +19,7 @@ import copy
 # ==============================================================================
 
 
-class _Step(FEAData):
+class Step(FEAData):
     """Initialises base Step object.
 
     Parameters
@@ -51,14 +50,20 @@ class _Step(FEAData):
     loads, boundary conditions, analysis procedure, etc. There is no limit on the
     number of steps in an analysis.
 
+    Developer-only class.
+
     """
 
     def __init__(self, name=None, **kwargs):
-        super(_Step, self).__init__(name=name, **kwargs)
+        super(Step, self).__init__(name=name, **kwargs)
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
         self._key = None
+
+        self._patterns = set()
+        self._load_cases = set()
+        self._combination = None
 
     @property
     def problem(self):
@@ -71,6 +76,49 @@ class _Step(FEAData):
     @property
     def field_outputs(self):
         return self._field_outputs
+
+    @property
+    def load_cases(self):
+        return self._load_cases
+
+    @property
+    def patterns(self):
+        return self._patterns
+
+    @property
+    def combination(self):
+        return self._combination
+
+    @combination.setter
+    def combination(self, combination):
+        """Combine the load patterns according to their load case.
+
+        Parameters
+        ----------
+        combination : :class:`compas_fea2.problem.combinations.LoadCombination`
+            _description_
+
+        Raises
+        ------
+        ValueError
+            _description_
+        """
+        combination._registration = self
+        self._combination = combination
+        # for case in combination.load_cases:
+        #     if case not in self._load_cases:
+        #         raise ValueError(f"{case} is not a valid load case.")
+        for pattern in self.patterns:
+            if pattern.load_case in combination.load_cases:
+                factor = combination.factors[pattern.load_case]
+                for node, load in pattern.node_load:
+                    factored_load = factor*load
+
+                    node.loads.setdefault(self, {}).setdefault(combination, {})[pattern] = factored_load
+                    if node.total_load:
+                        node.total_load += factored_load
+                    else:
+                        node.total_load = factored_load
 
     @property
     def history_outputs(self):
@@ -121,7 +169,7 @@ class _Step(FEAData):
 # ==============================================================================
 
 
-class _GeneralStep(_Step):
+class GeneralStep(Step):
     """General Step object for use as a base class in a general static, dynamic
     or multiphysics analysis.
 
@@ -199,7 +247,7 @@ class _GeneralStep(_Step):
         name=None,
         **kwargs
     ):
-        super(_GeneralStep, self).__init__(name=name, **kwargs)
+        super(GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
@@ -209,27 +257,13 @@ class _GeneralStep(_Step):
         self._modify = modify
         self._restart = restart
 
-        self._patterns = set()
-
-    def __rmul__(self, other):
-        if not isinstance(other, (float, int)):
-            raise TypeError("Step multiplication only allowed with real numbers")
-        step_copy = copy.copy(self)
-        step_copy._patterns = set()
-        for pattern in self._patterns:
-            pattern_copy = copy.copy(pattern)
-            load_copy = copy.copy(pattern.load)
-            pattern_copy._load = other * load_copy
-            step_copy._add_pattern(pattern_copy)
-        return step_copy
-
     @property
     def displacements(self):
         return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._patterns))
 
     @property
     def loads(self):
-        return list(filter(lambda p: isinstance(p.load, _Load), self._patterns))
+        return list(filter(lambda p: isinstance(p.load, Load), self._patterns))
 
     @property
     def fields(self):
@@ -267,35 +301,28 @@ class _GeneralStep(_Step):
     def restart(self, value):
         self._restart = value
 
-    # =========================================================================
-    #                           Loads methods
-    # =========================================================================
-
-    def _add_pattern(self, load_pattern):
-        """Add a general load pattern to the Step object.
+    # ==============================================================================
+    # Patterns
+    # ==============================================================================
+    def add_load_pattern(self, load_pattern):
+        """Add a general :class:`compas_fea2.problem.patterns.Pattern` to the Step.
 
         Parameters
         ----------
-        load : obj
-            any ``compas_fea2`` :class:`compas_fea2.problem.Load` subclass object
-        location : var
-            Location where the load is applied
+        load_pattern : :class:`compas_fea2.problem.patterns.Pattern`
+            The load pattern to add.
 
         Returns
         -------
-        None
-
-        Warnings
-        --------
-        The *load* and the *keys* must be consistent (you should not assing a
-        line load to a node). Consider using specific methods to assign load,
-        such as ``add_point_load``, ``add_line_load``, etc.
+        :class:`compas_fea2.problem.patterns.Pattern`
 
         """
+        from compas_fea2.problem.patterns import Pattern
 
         if not isinstance(load_pattern, Pattern):
             raise TypeError("{!r} is not a LoadPattern.".format(load_pattern))
 
+        #FIXME: ugly...
         try:
             if self.problem:
                 if self.model:
@@ -303,26 +330,29 @@ class _GeneralStep(_Step):
                         raise ValueError("The load pattern is not applied to a valid reagion of {!r}".format(self.model))
         except Exception:
             pass
-        # store location in step
-        self._patterns.add(load_pattern)
-        load_pattern._registration = self
 
+        self._patterns.add(load_pattern)
+        self._load_cases.add(load_pattern.load_case)
+        load_pattern._registration = self
         return load_pattern
 
-    def _add_patterns(self, load_patterns):
-        """Add a load to multiple locations.
+
+    def add_load_patterns(self, load_patterns):
+        """Add multiple :class:`compas_fea2.problem.patterns.Pattern` to the Problem.
 
         Parameters
         ----------
-        load : :class:`_Load`
-            Load to assign to the node
-        location : [var]
-            Locations where the load is applied
+        load_patterns : list(:class:`compas_fea2.problem.patterns.Pattern`)
+            The load patterns to add to the Problem.
 
         Returns
         -------
-        load : [:class:`_Load`]
-            Load to assign to the node
+        list(:class:`compas_fea2.problem.patterns.Pattern`)
 
         """
-        return [self.add_pattern(load_pattern) for load_pattern in load_patterns]
+        for load_pattern in load_patterns:
+            self.add_load_pattern(load_pattern)
+
+    # ==============================================================================
+    # Combination
+    # ==============================================================================

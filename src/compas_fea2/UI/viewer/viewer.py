@@ -43,8 +43,8 @@ from compas_fea2.model.bcs import (
 
 from compas_fea2.postprocess import principal_stresses
 
-from compas_fea2.problem.loads import PointLoad
-from compas_fea2.problem.steps import _GeneralStep
+from compas_fea2.problem.loads import NodeLoad
+from compas_fea2.problem.steps import GeneralStep
 
 from compas_fea2.results import NodeFieldResults, ElementFieldResults
 
@@ -241,28 +241,27 @@ class FEA2Viewer:
             Scale the loads reppresentation to have a nicer drawing,
             by default 1.
         """
-        if isinstance(step, _GeneralStep):
-            for pattern in step._patterns:
-                if isinstance(pattern.load, PointLoad):
+        if isinstance(step, GeneralStep):
+            pts, vectors = [], []
+            for node, load in step.combination.node_load:
                     vector = Vector(
-                        x=pattern.load.components["x"] or 0.0,
-                        y=pattern.load.components["y"] or 0.0,
-                        z=pattern.load.components["z"] or 0.0,
+                        x=load.components["x"] or 0.0,
+                        y=load.components["y"] or 0.0,
+                        z=load.components["z"] or 0.0,
                     )
                     if vector.length == 0:
                         continue
                     vector.scale(scale_factor)
+                    vectors.append(vector)
                     if app_point == "end":
-                        pts = [
-                            [node.x - vector.x, node.y - vector.y, node.z - vector.z] for node in pattern.distribution
-                        ]
+                        pts.append([node.x - vector.x, node.y - vector.y, node.z - vector.z])
                     else:
-                        pts = [node.point for node in pattern.distribution]
+                        pts.append([node.point])
                     # TODO add moment components xx, yy, zz
-                    vectors = [vector] * len(pts)
-                    self.draw_nodes_vector(pts, vectors, colors=[(0, 1, 1)]*len(pts))
-                else:
-                    print("WARNING! Only point loads are currently supported!")
+
+            self.draw_nodes_vector(pts, vectors, colors=[(0, 1, 1)]*len(pts))
+        else:
+            print("WARNING! Only point loads are currently supported!")
 
     def draw_reactions(self, step, scale_factor=1, colors=None, **kwargs):
         """Draw the reaction forces as vector arrows at nodes.

@@ -163,7 +163,7 @@ class Model(FEAData):
 
     @property
     def nodes(self):
-        return list(chain([list(part.nodes) for part in self.parts]))
+        return list(chain([list(part.nodes) for part in self.parts]))[0]
 
     @property
     def elements(self):

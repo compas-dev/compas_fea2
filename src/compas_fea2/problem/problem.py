@@ -11,7 +11,7 @@ from compas.geometry import Vector, Point
 from compas.geometry import sum_vectors, centroid_points_weighted
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.steps import _Step, StaticStep
+from compas_fea2.problem.steps import Step, StaticStep
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.utilities._utils import timer
 from compas_fea2.results import NodeFieldResults
@@ -21,7 +21,6 @@ from compas_fea2.model.elements import (
     _Element2D,
     _Element3D
 )
-
 
 class Problem(FEAData):
     """A Problem is a collection of analysis steps (:class:`compas_fea2.problem._Step)
@@ -123,7 +122,7 @@ class Problem(FEAData):
     # =========================================================================
 
     def find_step_by_name(self, name):
-        # type: (str) -> _Step
+        # type: (str) -> Step
         """Find if there is a step with the given name in the problem.
 
         Parameters
@@ -160,7 +159,7 @@ class Problem(FEAData):
             name of a Step already defined in the Problem.
         """
 
-        if not isinstance(step, _Step):
+        if not isinstance(step, Step):
             raise TypeError("{!r} is not a Step".format(step))
         if step not in self.steps:
             print("{!r} not found".format(step))
@@ -185,7 +184,7 @@ class Problem(FEAData):
         -------
         :class:`compas_fea2.problem._Step`
         """
-        if not isinstance(step, _Step):
+        if not isinstance(step, Step):
             raise TypeError("You must provide a valid compas_fea2 Step object")
 
         if self.find_step_by_name(step):
@@ -282,6 +281,14 @@ class Problem(FEAData):
 
         """
         raise NotImplementedError
+
+
+
+    # =========================================================================
+    #                           Loads methods
+    # =========================================================================
+
+
 
     # ==============================================================================
     # Summary

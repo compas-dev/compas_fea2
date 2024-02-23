@@ -2,10 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from .step import _Step
+from .step import GeneralStep
 
 
-class DynamicStep(_Step):
+class DynamicStep(GeneralStep):
     """Step for dynamic analysis."""
 
     def __init__(self, name=None, **kwargs):

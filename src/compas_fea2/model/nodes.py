@@ -94,6 +94,7 @@ class Node(FEAData):
         self._is_reference = False
 
         self._loads = {}
+        self.total_load = None
         self._displacements = {}
         self._results = {}
 

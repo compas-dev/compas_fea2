@@ -722,9 +722,9 @@ class _Part(FEAData):
             except Exception:
                 polygon.plane = Frame.from_points(*polygon.points[-3:])
 
-        S = Scale.from_factors([tolerance] * 3, polygon.plane)
-        T = Transformation.from_frame_to_frame(polygon.plane, Frame.worldXY())
-        nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
+        S = Scale.from_factors([tolerance] * 3, polygon.plane.frame)
+        T = Transformation.from_frame_to_frame(polygon.plane.frame, Frame.worldXY())
+        nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane.frame))
         polygon_xy = polygon.transformed(S)
         polygon_xy = polygon.transformed(T)
         return list(filter(lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy), nodes_on_plane))

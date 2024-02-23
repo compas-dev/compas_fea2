@@ -5,11 +5,11 @@ from __future__ import print_function
 from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
-    _Load,
+    Load,
     PrestressLoad,
-    PointLoad,
-    LineLoad,
-    AreaLoad,
+    NodeLoad,
+    EdgeLoad,
+    FaceLoad,
     GravityLoad,
     TributaryLoad,
     HarmonicPointLoad,
@@ -23,10 +23,20 @@ from .fields import (
 
 from .patterns import (
     Pattern,
+    NodeLoadPattern,
+    PointLoadPattern,
+    LineLoadPattern,
+    AreaLoadPattern,
+    VolumeLoadPattern
 )
+
+from .combinations import (
+    LoadCombination
+)
+
 from .steps import (
-    _Step,
-    _GeneralStep,
+    Step,
+    GeneralStep,
     _Perturbation,
     ModalAnalysis,
     ComplexEigenValue,
@@ -48,25 +58,30 @@ __all__ = [
 
     'GeneralDisplacement',
 
-    '_Load',
+    'Load',
     'PrestressLoad',
-    'PointLoad',
-    'LineLoad',
-    'AreaLoad',
+    'NodeLoad',
+    'EdgeLoad',
+    'FaceLoad',
     'GravityLoad',
     'TributaryLoad',
     'HarmonicPointLoad',
     'HarmonicPressureLoad',
     'ThermalLoad',
 
+    'Pattern',
+    'NodeLoadPattern',
+    'PointLoadPattern',
+    'LineLoadPattern',
+    'AreaLoadPattern',
+    'VolumeLoadPattern',
+
     'PrescribedTemperatureField',
 
-    'DeadLoad',
-    'LiveLoad',
-    'SuperImposedDeadLoad',
+    'LoadCombination',
 
-    '_Step',
-    '_GeneralStep',
+    'Step',
+    'GeneralStep',
     '_Perturbation',
     'ModalAnalysis',
     'ComplexEigenValue',

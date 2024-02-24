@@ -18,6 +18,7 @@ from compas_fea2.utilities._utils import timer
 from compas_fea2.results.database import ResultsDatabase
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
+from compas_fea2.results import StressFieldResults
 
 from compas_fea2.model.elements import (
     _Element1D,
@@ -114,16 +115,16 @@ class Problem(FEAData):
         return DisplacementFieldResults(problem=self)
 
     @property
-    def stress_field(self):
-        raise NotImplementedError
-
-    @property
     def reaction_field(self):
         return ReactionFieldResults(problem=self)
 
     @property
     def temperature_field(self):
         raise NotImplementedError
+
+    @property
+    def stress_field(self):
+        return StressFieldResults(problem=self)
 
     @property
     def steps_order(self):
@@ -471,9 +472,9 @@ Analysis folder path : {}
         """
         if not step:
             step = self.steps_order[-1]
-        reactions = DisplacementFieldResults("RF", step)
+        reactions = self.reaction_field
         locations, vectors, vectors_lengths = [], [], []
-        for reaction in reactions.results:
+        for reaction in reactions.results(step):
             locations.append(reaction.location.xyz)
             vectors.append(reaction.vector)
             vectors_lengths.append(reaction.vector.length)
@@ -482,14 +483,21 @@ Analysis folder path : {}
     def get_min_max_reactions(self, step=None):
         if not step:
             step = self.steps_order[-1]
-        reactions = DisplacementFieldResults("RF", step)
-        return reactions.min, reactions.max
+        reactions = self.reaction_field
+        return reactions.get_limits_absolute(step)
 
-    def get_total_moment(self, step=None):
+    def get_min_max_reactions_component(self, component, step=None):
         if not step:
             step = self.steps_order[-1]
-        reactions = DisplacementFieldResults("RM", step)
-        return sum_vectors([reaction.vector for reaction in reactions.results])
+        reactions = self.reaction_field
+        return reactions.get_limits_component(component, step)
+
+    # def get_total_moment(self, step=None):
+    #     if not step:
+    #         step = self.steps_order[-1]
+    #     vector, location = self.get_total_reaction(step)
+
+    #     return sum_vectors([reaction.vector for reaction in reactions.results])
 
 
 
@@ -690,7 +698,7 @@ Analysis folder path : {}
             v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
-    def show_elements_field_vector(self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
+    def show_elements_field_vector(self, field_results, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.
 
         Parameters
@@ -736,16 +744,16 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_elements_field_vector(field_name=field_name,
+        v.draw_elements_field_vector(field_results=field_results,
                                    step=step,
                                    vector_sf=vector_sf,
                                    **kwargs)
 
         opacity = kwargs.get("opacity", 0.5)
         for part in self.model.parts:
-            # v.draw_mesh(part.discretized_boundary_mesh, opacity=opacity)
-            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), opacity=0.5)
-            v.draw_shell_elements(filter(lambda x: isinstance(x, _Element2D), part.elements), opacity=0.5)
+            v.draw_mesh(part.discretized_boundary_mesh, opacity=opacity)
+            # v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), opacity=0.5)
+            # v.draw_shell_elements(filter(lambda x: isinstance(x, _Element2D), part.elements), opacity=0.5)
             v.draw_beam_elements(filter(lambda x: isinstance(x, _Element1D), part.elements), opacity=0.5)
 
         if kwargs.get("draw_bcs", None):

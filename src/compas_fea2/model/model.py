@@ -167,10 +167,7 @@ class Model(FEAData):
 
     @property
     def elements(self):
-        element_set = set()
-        for part in self.parts:
-            element_set.update(part.elements)
-        return element_set
+        return list(chain([list(part.elements) for part in self.parts]))[0]
 
     @property
     def bounding_box(self):

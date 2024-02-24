@@ -17,7 +17,6 @@ from compas.geometry import Polyhedron
 from compas.geometry import Vector
 from compas.geometry import Transformation, Translation
 from compas.geometry import sum_vectors
-from compas.colors import Color
 
 import compas_fea2
 from compas_fea2.UI.viewer.shapes import (
@@ -46,7 +45,7 @@ from compas_fea2.postprocess import principal_stresses
 from compas_fea2.problem.loads import NodeLoad
 from compas_fea2.problem.steps import GeneralStep
 
-from compas_fea2.results import DisplacementFieldResults, ElementFieldResults
+from compas_fea2.results import DisplacementFieldResults, StressFieldResults
 
 # def hextorgb(hex):
 #     return tuple(i / 255 for i in hex_to_rgb(hex))
@@ -410,10 +409,8 @@ class FEA2Viewer:
             _description_
 
         """
-
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        # cmap = ColorMap.from_color(Color.red(), rangetype='light')
-        # cmap = ColorMap.from_mpl('viridis')
+
         # Get mesh
         parts_gkey_vertex = {}
         parts_mesh = {}
@@ -444,7 +441,7 @@ class FEA2Viewer:
             if min_value - max_value == 0.0:
                 color = Color.red()
             elif kwargs.get("bound", None):
-                if r.components[comp_str] >= kwargs["bound"] or r.components[comp_str] <= kwargs["bound"]:
+                if r.components[comp_str] >= kwargs["bound"][1] or r.components[comp_str] <= kwargs["bound"][0]:
                     color = Color.red()
                 else:
                     color = cmap(r.components[comp_str], minval=min_value, maxval=max_value)
@@ -457,18 +454,13 @@ class FEA2Viewer:
         for part in step.model.parts:
             self.draw_mesh(parts_mesh[part.name], opacity=0.75)
 
-    def draw_elements_field_vector(self, step, field_name, vector_sf=1, **kwargs):
-        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-
-        # Get values
-        field = ElementFieldResults(field_name, step)
-        # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
-        # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
+    def draw_elements_field_vector(self, field_results, step, vector_sf=1, **kwargs):
+        # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Color the vector field
         # FIXME temporary test - > change components
         pts, vectors, colors = [], [], []
-        for r in field.results:
+        for r in field_results.results(step):
             ps_results_mid = list(r.principal_stresses)
             ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
             ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None

@@ -61,6 +61,22 @@ class Result(FEAData):
     def to_file(self, *args, **kwargs):
         raise NotImplementedError("this function is not available for the selected backend")
 
+    def safety_factor(self, component, allowable):
+        """Compute the safety factor (absolute ration value/limit) of the displacement.
+
+        Parameters
+        ----------
+        component : int
+            The component of the displacement vector. Either 1, 2, or 3.
+        allowable : float
+            Limit to compare with.
+
+        Returns
+        -------
+        float
+            The safety factor. Values higher than 1 are not safe.
+        """
+        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
 
 class DisplacementResult(Result):
     """DisplacementResult object.
@@ -133,23 +149,6 @@ class DisplacementResult(Result):
     @property
     def magnitude(self):
         return self.vector.length
-
-    def safety_factor(self, component, allowable):
-        """Compute the safety factor (absolute ration value/limit) of the displacement.
-
-        Parameters
-        ----------
-        component : int
-            The component of the displacement vector. Either 1, 2, or 3.
-        allowable : float
-            Limit to compare with.
-
-        Returns
-        -------
-        float
-            The safety factor. Values higher than 1 are not safe.
-        """
-        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
 
 
 class ReactionResult(Result):
@@ -224,43 +223,6 @@ class ReactionResult(Result):
     def magnitude(self):
         return self.vector.length
 
-    @classmethod
-    def from_components(cls, location, components, **kwargs):
-        """Creates a ReactionResult object from a location and the components of the
-        vector.
-
-        Parameters
-        ----------
-        location : :class:`compas_fea2.model.Node`
-            The location of the result.
-        components : dict
-            Dictionary with the components in the form {"RF1": ..., "RF2": ..., "RF3": ...}.
-
-        Returns
-        -------
-        obj
-            The result object.
-        """
-        return cls(location, **{k.lower(): v for k, v in components.items() if k in ("RF1", "RF2", "RF3")}, **kwargs)
-
-    def safety_factor(self, component, allowable):
-        """Compute the safety factor (absolute ration value/limit) of the displacement.
-
-        Parameters
-        ----------
-        component : int
-            The component of the displacement vector. Either 1, 2, or 3.
-        allowable : float
-            Limit to compare with.
-
-        Returns
-        -------
-        float
-            The safety factor. Values higher than 1 are not safe.
-        """
-        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
-
-
 class SectionForcesResult(Result):
     """DisplacementResult object.
 
@@ -314,10 +276,6 @@ class SectionForcesResult(Result):
     @property
     def element(self):
         return self.location
-
-    def safety_factor(self, component, allowable):
-        return abs(allowable / self.vector[component]) if self.vector[component] != 0 else 1
-
 
 
 class StressResult(Result):
@@ -690,8 +648,6 @@ class StressResult(Result):
         # Show the plot
         plt.show()
 
-
-
     # =========================================================================
     #                               Yield Criteria
     # =========================================================================
@@ -747,6 +703,8 @@ class SolidStressResult(StressResult):
     def from_components(cls, location, components):
         stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S12","S13", "S21", "S22","S23","S31", "S32","S33")}
         return cls(location, **stress_components)
+
+
 class MembraneStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s22, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)

@@ -12,7 +12,7 @@ from .results import (
 )
 from .fields import (
     DisplacementFieldResults,
-    ElementFieldResults,
+    StressFieldResults,
     ReactionFieldResults,
 )
 
@@ -26,5 +26,5 @@ __all__ = [
     "SolidStressResult",
     "DisplacementFieldResults",
     "ReactionFieldResults",
-    "ElementFieldResults",
+    "StressFieldResults",
     ]

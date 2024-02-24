@@ -8,7 +8,7 @@ from compas.geometry import Transformation, Rotation
 import compas_fea2
 from compas_fea2.base import FEAData
 
-from compas_fea2.model import _Element
+from compas_fea2.model import _Element, _Element2D, _Element3D
 from compas_fea2.model import ElasticIsotropic
 from .results import (DisplacementResult,
                       ShellStressResult,
@@ -115,14 +115,24 @@ class FieldResults(FEAData):
         if not isinstance(steps, Iterable):
             steps = [steps]
 
-        nodes_keys = set([member.key for member in members])
+        members_keys = set([member.key for member in members])
         parts_names = set([member.part.name for member in members])
         steps_names = set([step.name for step in steps])
 
+        if isinstance(members[0], _Element3D):
+            columns = ["step", "part", "key"]+self._components_names_3d
+            field_name = self._field_name_3d
+        elif isinstance(members[0], _Element2D):
+            columns = ["step", "part", "key"]+self._components_names_2d
+            field_name = self._field_name_2d
+        else:
+            columns = ["step", "part", "key"]+self._components_names
+            field_name = self._field_name
+
         results_set = self.rdb.get_rows(
-            self.field_name,
-            self.results_columns,
-            {"key":nodes_keys, "part": parts_names, "step": steps_names}
+            field_name,
+            columns,
+            {"key":members_keys, "part": parts_names, "step": steps_names}
             )
         return results_set
 
@@ -291,7 +301,7 @@ class ReactionFieldResults(FieldResults):
         nodes = self.model.nodes
         return self.get_results(nodes, steps=step)[step]
 
-class ElementFieldResults(FieldResults):
+class StressFieldResults(FEAData):
     """_summary_
 
     Parameters
@@ -299,7 +309,218 @@ class ElementFieldResults(FieldResults):
     FieldResults : _type_
         _description_
     """
-    def __init__(self, field_name, step, name=None, *args, **kwargs):
-        super(ElementFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
-        self._results = self._rdb.link_field_results_to_model(self._get_field_results(field_name=self.field_name)[1])
+    def __init__(self, problem, name=None, *args, **kwargs):
+        super(StressFieldResults, self).__init__(name, *args, **kwargs)
+        self._registration = problem
+        self._components_names_2d = ['S11', 'S22', 'S12', 'M11', 'M22', 'M12']
+        self._components_names_3d = ["S11", "S22","S23", "S12", "S13","S33"]
+        self._field_name_2d = "S2D"
+        self._field_name_3d = "S3D"
+        self._results_class_2d = ShellStressResult
+        self._results_class_3d = SolidStressResult
+        self._results_func = "find_element_by_key"
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def problem(self):
+        return self._registration
+
+    @property
+    def model(self):
+        return self.problem.model
+
+    @property
+    def rdb(self):
+        return self.problem.results_db
+
+    @property
+    def components_names(self):
+        return self._components_names
+
+    @property
+    def invariants_names(self):
+        return self._invariants_names
+
+    def _get_db_results(self, members, steps):
+        """Get the results for the given members and steps in the database
+        format.
+
+        Parameters
+        ----------
+        members : _type_
+            _description_
+        steps : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        if not isinstance(members, Iterable):
+            members = [members]
+        if not isinstance(steps, Iterable):
+            steps = [steps]
+
+        members_keys = set([member.key for member in members])
+        parts_names = set([member.part.name for member in members])
+        steps_names = set([step.name for step in steps])
+
+        if isinstance(members[0], _Element3D):
+            columns = ["step", "part", "key"]+self._components_names_3d
+            field_name = self._field_name_3d
+        elif isinstance(members[0], _Element2D):
+            columns = ["step", "part", "key"]+self._components_names_2d
+            field_name = self._field_name_2d
+        else:
+            raise ValueError("Not an element")
+
+        results_set = self.rdb.get_rows(
+            field_name,
+            columns,
+            {"key":members_keys, "part": parts_names, "step": steps_names}
+            )
+        return results_set
+
+    def _to_result(self, results_set):
+        """Convert a set of results in database format to the appropriate
+        result object.
+
+        Parameters
+        ----------
+        results_set : _type_
+            _description_
+
+        Returns
+        -------
+        dic
+            Dictiorany grouping the results per Step.
+        """
+        results={}
+        for r in results_set:
+            step = self.problem.find_step_by_name(r[0])
+            results.setdefault(step,[])
+            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
+            if not part:
+                raise ValueError(f"Part {r[1]} not in model")
+            m = getattr(part, self._results_func)(r[2])
+            if isinstance(m, _Element3D):
+                cls = self._results_class_3d
+                columns = self._components_names_3d
+            else:
+                cls = self._results_class_2d
+                columns = self._components_names_2d
+            values = {k.lower(): v for k, v in zip(columns, r[3:])}
+            results[step].append(cls(m, **values))
+        return results
+
+    def get_results(self, members, steps):
+        """Get the results for the given members and steps.
+
+        Parameters
+        ----------
+        members : _type_
+            _description_
+        steps : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        results_set = self._get_db_results(members, steps)
+        return self._to_result(results_set)
+
+    def get_max_component(self, component, step):
+        """Get the result where a component is maximum for a given step.
+
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The appriate Result object.
+        """
+        results_set = self.rdb.get_func_row(self.field_name,
+                                            self.field_name+str(component),
+                                            "MAX",
+                                            {"step":[step.name]},
+                                            self.results_columns
+                                            )
+        return self._to_result(results_set)[step][0]
+
+    def get_min_component(self, component, step):
+        results_set = self.rdb.get_func_row(self.field_name,
+                                            self.field_name+str(component),
+                                            "MIN",
+                                            {"step":[step.name]},
+                                            self.results_columns
+                                            )
+        return self._to_result(results_set)[step][0]
+
+    def get_limits_component(self, component, step):
+        """Get the result objects with the min and max value of a given
+        component in a step.
+
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return [self.get_min_component(component, step), self.get_max_component(component, step)]
+
+    def get_limits_absolute(self, step):
+        limits=[]
+        for func in ["MIN", "MAX"]:
+            limits.append(self.rdb.get_func_row(self.field_name,
+                                                'magnitude',
+                                                func,
+                                                {"step":[step.name]},
+                                                self.results_columns
+                                                ))
+        return [self._to_result(limit)[step][0] for limit in limits]
+
+    def get_results_at_point(self, point, distance, plane=None, steps=None):
+        """Get the displacement of the model around a location (point).
+
+        Parameters
+        ----------
+        point : [float]
+            The coordinates of the point.
+        steps : _type_, optional
+            _description_, by default None
+
+        Returns
+        -------
+        dict
+            Dictionary with {'part':..; 'node':..; 'vector':...}
+
+        """
+        nodes = self.model.find_nodes_around_point(point, distance, plane)
+        results = []
+        for step in steps:
+            results.append(self.get_results(nodes, steps)[step])
+    # @property
+    # def results_columns(self):
+    #     return ["step", "part", "key"]+self.components_names
+
+    def results(self, step):
+        elements = self.model.elements
+        return self.get_results(elements, steps=step)[step]
 

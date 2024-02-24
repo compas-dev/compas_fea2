@@ -46,7 +46,7 @@ from compas_fea2.postprocess import principal_stresses
 from compas_fea2.problem.loads import NodeLoad
 from compas_fea2.problem.steps import GeneralStep
 
-from compas_fea2.results import NodeFieldResults, ElementFieldResults
+from compas_fea2.results import DisplacementFieldResults, ElementFieldResults
 
 # def hextorgb(hex):
 #     return tuple(i / 255 for i in hex_to_rgb(hex))
@@ -275,12 +275,10 @@ class FEA2Viewer:
         colors : tuple, optional
             _description_, by default (0, 1, 0)
         """
-        reactions = NodeFieldResults('RF', step)
-        # min_value = reactions._min_components["magnitude"].components[f"MIN({'magnitude'})"]
-        # max_value = reactions._max_components["magnitude"].components[f"MAX({'magnitude'})"]
+        reactions = step.problem.reaction_field
         locations = []
         vectors = []
-        for r in reactions.results:
+        for r in reactions.results(step):
             locations.append(r.location.xyz)
             vectors.append(r.vector)
         self.draw_nodes_vector(locations, vectors, scale_factor=scale_factor, colors=colors)
@@ -301,8 +299,8 @@ class FEA2Viewer:
         """
 
         # TODO create a copy of the model first
-        displacements = NodeFieldResults("U", step)
-        for displacement in displacements.results:
+        displacements = step.problem.displacement_field
+        for displacement in displacements.results(step):
             vector = displacement.vector.scaled(scale_factor)
             displacement.location.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
@@ -355,7 +353,7 @@ class FEA2Viewer:
         # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Get values
-        field = NodeFieldResults(field_name, step)
+        field = DisplacementFieldResults(field_name, step)
         # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
         # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
 
@@ -372,7 +370,7 @@ class FEA2Viewer:
         self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
 
 
-    def draw_nodes_field_contour(self, field_name, component, step, **kwargs):
+    def draw_nodes_field_contour(self, field_results, component, step, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -412,7 +410,6 @@ class FEA2Viewer:
             _description_
 
         """
-        component = field_name + str(component) if isinstance(component, int) else component
 
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
         # cmap = ColorMap.from_color(Color.red(), rangetype='light')
@@ -424,7 +421,7 @@ class FEA2Viewer:
             if mesh := part.discretized_boundary_mesh:
                 colored_mesh = mesh.copy()
                 #FIXME change precision
-                parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(1)
+                parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(3)
                 parts_mesh[part.name] = colored_mesh
             else:
                 raise AttributeError("Discretized boundary mesh not found")
@@ -437,28 +434,28 @@ class FEA2Viewer:
                 kwargs["bound"][0], kwargs["bound"][1] = kwargs["bound"][1], kwargs["bound"][0]
 
         # Get values
-        field = NodeFieldResults(field_name, step)
-
-        min_value = field.min_components[component].components[component]
-        max_value = field.max_components[component].components[component]
+        min_result, max_result = field_results.get_limits_component(component, step=step)
+        comp_str = field_results.field_name+str(component)
+        min_value = min_result.components[comp_str]
+        max_value = max_result.components[comp_str]
 
         # Color the mesh
-        for r in field.results:
+        for r in field_results.results(step):
             if min_value - max_value == 0.0:
                 color = Color.red()
             elif kwargs.get("bound", None):
-                if r.components[component] >= kwargs["bound"] or r.components[component] <= kwargs["bound"]:
+                if r.components[comp_str] >= kwargs["bound"] or r.components[comp_str] <= kwargs["bound"]:
                     color = Color.red()
                 else:
-                    color = cmap(r.components[component], minval=min_value, maxval=max_value)
+                    color = cmap(r.components[comp_str], minval=min_value, maxval=max_value)
             else:
-                color = cmap(r.components[component], minval=min_value, maxval=max_value)
+                color = cmap(r.components[comp_str], minval=min_value, maxval=max_value)
             if r.location.gkey in parts_gkey_vertex[part.name]:
                 parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][r.location.gkey], "color", color)
 
         # Display results
         for part in step.model.parts:
-            self.draw_mesh(parts_mesh[part.name])
+            self.draw_mesh(parts_mesh[part.name], opacity=0.75)
 
     def draw_elements_field_vector(self, step, field_name, vector_sf=1, **kwargs):
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))

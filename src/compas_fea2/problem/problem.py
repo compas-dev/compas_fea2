@@ -14,7 +14,10 @@ from compas_fea2.base import FEAData
 from compas_fea2.problem.steps import Step, StaticStep
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.utilities._utils import timer
-from compas_fea2.results import NodeFieldResults
+
+from compas_fea2.results.database import ResultsDatabase
+from compas_fea2.results import DisplacementFieldResults
+from compas_fea2.results import ReactionFieldResults
 
 from compas_fea2.model.elements import (
     _Element1D,
@@ -77,7 +80,6 @@ class Problem(FEAData):
         self.description = description
         self._path = None
         self._path_db = None
-        self._db_connection = None
         self._steps = set()
         self._steps_order = []  # TODO make steps a list
 
@@ -99,12 +101,29 @@ class Problem(FEAData):
         self._path_db = os.path.join(self._path, "{}-results.db".format(self.name))
 
     @property
-    def db_connection(self):
-        return self._db_connection
-
-    @property
     def path_db(self):
         return self._path_db
+
+    @property
+    def results_db(self):
+        if os.path.exists(self.path_db):
+            return ResultsDatabase(self.path_db)
+
+    @property
+    def displacement_field(self):
+        return DisplacementFieldResults(problem=self)
+
+    @property
+    def stress_field(self):
+        raise NotImplementedError
+
+    @property
+    def reaction_field(self):
+        return ReactionFieldResults(problem=self)
+
+    @property
+    def temperature_field(self):
+        raise NotImplementedError
 
     @property
     def steps_order(self):
@@ -241,27 +260,27 @@ class Problem(FEAData):
         """
         return [self.add_step(step) for step in steps]
 
-    # def define_steps_order(self, order):
-    #     """Defines the order in which the steps are applied during the analysis.
+    def define_steps_order(self, order):
+        """Defines the order in which the steps are applied during the analysis.
 
-    #     Parameters
-    #     ----------
-    #     order : list
-    #         List contaning the names of the analysis steps in the order in which
-    #         they are meant to be applied during the analysis.
+        Parameters
+        ----------
+        order : list
+            List contaning the names of the analysis steps in the order in which
+            they are meant to be applied during the analysis.
 
-    #     Returns
-    #     -------
-    #     None
+        Returns
+        -------
+        None
 
-    #     Warning
-    #     -------
-    #     Not implemented yet!
-    #     """
-    #     for step in order:
-    #         if not isinstance(step, _Step):
-    #             raise TypeError('{} is not a step'.format(step))
-    #     self._steps_order = order
+        Warning
+        -------
+        Not implemented yet!
+        """
+        for step in order:
+            if not isinstance(step, Step):
+                raise TypeError('{} is not a step'.format(step))
+        self._steps_order = order
 
     def add_linear_perturbation_step(self, lp_step, base_step):
         """Add a linear perturbation step to a previously defined step.
@@ -452,7 +471,7 @@ Analysis folder path : {}
         """
         if not step:
             step = self.steps_order[-1]
-        reactions = NodeFieldResults("RF", step)
+        reactions = DisplacementFieldResults("RF", step)
         locations, vectors, vectors_lengths = [], [], []
         for reaction in reactions.results:
             locations.append(reaction.location.xyz)
@@ -463,13 +482,13 @@ Analysis folder path : {}
     def get_min_max_reactions(self, step=None):
         if not step:
             step = self.steps_order[-1]
-        reactions = NodeFieldResults("RF", step)
+        reactions = DisplacementFieldResults("RF", step)
         return reactions.min, reactions.max
 
     def get_total_moment(self, step=None):
         if not step:
             step = self.steps_order[-1]
-        reactions = NodeFieldResults("RM", step)
+        reactions = DisplacementFieldResults("RM", step)
         return sum_vectors([reaction.vector for reaction in reactions.results])
 
 
@@ -484,6 +503,66 @@ Analysis folder path : {}
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
+    def show(
+        self,
+        scale_factor=1.0,
+        parts=None,
+        elements=True,
+        solid=False,
+        draw_nodes=True,
+        node_labels=True,
+        draw_bcs=1.0,
+        draw_constraints=True,
+        **kwargs,
+    ):
+        """Visualise the model in the viewer.
+
+        Parameters
+        ----------
+        width : int, optional
+            _description_, by default 1600
+        height : int, optional
+            _description_, by default 900
+        scale_factor : _type_, optional
+            _description_, by default 1.
+        parts : _type_, optional
+            _description_, by default None
+        solid : bool, optional
+            _description_, by default True
+        draw_nodes : bool, optional
+            _description_, by default False
+        node_labels : bool, optional
+            _description_, by default False
+        draw_bcs : _type_, optional
+            _description_, by default 1.
+        draw_constraints : bool, optional
+            _description_, by default True
+
+        """
+
+        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas_fea2.model.elements import ShellElement, BeamElement
+
+        v = FEA2Viewer(self.model, scale_factor=scale_factor)
+
+        parts = parts or self.model.parts
+
+        if draw_bcs:
+            v.draw_bcs(self.model, parts, draw_bcs)
+
+        # if draw_constraints:
+        #     v.draw_constraint(self.constraints)
+        for part in parts:
+            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
+            v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
+            v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
+
+        if kwargs.get("draw_loads", None):
+            for step in self.steps:
+                v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+        v.show()
+
+
     def show_nodes_field_vector(self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.
 
@@ -549,7 +628,7 @@ Analysis folder path : {}
             v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
-    def show_nodes_field_contour(self, field_name, component, step=None, model_sf=1.0, **kwargs):
+    def show_nodes_field_contour(self, field_results, component, step=None, model_sf=1.0, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
 
@@ -596,7 +675,7 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_contour(field_name=field_name,
+        v.draw_nodes_field_contour(field_results=field_results,
                                    component=component,
                                    step=step,
                                    **kwargs)

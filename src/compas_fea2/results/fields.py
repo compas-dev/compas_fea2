@@ -15,11 +15,15 @@ from .results import (DisplacementResult,
                       SolidStressResult,
                       ReactionResult)
 
-from .sql_wrapper import get_field_results, get_field_labels, get_database_table, create_connection
-
+from .database import ResultsDatabase
 
 class FieldResults(FEAData):
     """FieldResults object. This is a collection of Result objects that define a field.
+
+    The objects uses SQLite queries to efficiently retrieve the results from the results database.
+
+    The field results are defined over multiple steps
+
     You can use FieldResults to visualise a field over a part or the model, or to compute
     global quantiies, such as maximum or minimum values.
 
@@ -49,222 +53,184 @@ class FieldResults(FEAData):
 
     Notes
     -----
-    FieldResults are registered to a :class:`compas_fea2.problem._Step`.
+    FieldResults are registered to a :class:`compas_fea2.problem.Problem`.
 
     """
-    def __init__(self, field_name, step, name=None, *args, **kwargs):
+    def __init__(self, problem, field_name, name=None, *args, **kwargs):
         super(FieldResults, self).__init__(name, *args, **kwargs)
-        self._results = None
-        self._registration = step
-        self._db_connection = create_connection(self.problem.path_db)
+        self._registration = problem
         self._field_name = field_name
-        self._components_lables = get_field_labels(*self.db_connection, self.field_name, "components")
-        self._invariants_labels = get_field_labels(*self.db_connection, self.field_name, "invariants")
-
-    @property
-    def results(self):
-        return self._results
+        self._table = self.problem.results_db.get_table(field_name)
+        self._components_names = None
+        self._invariants_names = None
+        self._results_class = None
+        self._results_func = None
 
     @property
     def field_name(self):
         return self._field_name
 
     @property
-    def step(self):
-        return self._registration
-
-    @property
     def problem(self):
-        return self.step.problem
+        return self._registration
 
     @property
     def model(self):
         return self.problem.model
 
     @property
-    def db_connection(self):
-        return self._db_connection
-
-    @db_connection.setter
-    def db_connection(self, path_db):
-        self._db_connection = create_connection(path_db)
+    def rdb(self):
+        return self.problem.results_db
 
     @property
-    def components_labels(self):
-        return self._components_lables
+    def components_names(self):
+        return self._components_names
 
     @property
-    def invariants_labels(self):
-        return self._invariants_labels
+    def invariants_names(self):
+        return self._invariants_names
 
     @property
-    def max(self):
-        return self.max_invariants["magnitude"]
+    def results_columns(self):
+        return ["step", "part", "key"]+self.components_names
 
-    @property
-    def min(self):
-        return self.min_invariants["magnitude"]
-
-    @property
-    def max_components(self):
-        return {c: self._get_limit("MAX", component=c)[0] for c in self._components_lables}
-
-    @property
-    def min_components(self):
-        return {c: self._get_limit("MIN", component=c)[0] for c in self._components_lables}
-
-    @property
-    def max_invariants(self):
-        return {c: self._get_limit("MAX", component=c)[0] for c in self._invariants_labels}
-
-    @property
-    def min_invariants(self):
-        return {c: self._get_limit("MIN", component=c)[0] for c in self._invariants_labels}
-
-    def _get_field_results(self, field_name):
-        """Create the connection to the SQLite database and retrieve
-        the Results at each location of the field.
+    def _get_db_results(self, members, steps):
+        """Get the results for the given members and steps in the database
+        format.
 
         Parameters
         ----------
-        field : str
-            The name of the field.
+        members : _type_
+            _description_
+        steps : _type_
+            _description_
 
         Returns
         -------
         _type_
             _description_
         """
-        engine, connection, metadata = self.db_connection
-        TABLE = get_database_table(engine, metadata, field_name)
-        test = [TABLE.columns.step == self.step.name]
-        return get_field_results(engine, connection, metadata, TABLE, test)
+        if not isinstance(members, Iterable):
+            members = [members]
+        if not isinstance(steps, Iterable):
+            steps = [steps]
 
-    def _get_func_field_sql(self, func, field, group_by, component):
-        """Filter the results with a specific function (e.g. MAX, MIN, etc.)"""
-        steps = [self.step]  # FIXME remove the list
-        engine, connection, metadata = self.db_connection
-        labels = ["part", "position", "key"] + self._components_lables + self._invariants_labels
-        labels[labels.index(component)] = "{}({})".format(func, component)
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({})
-GROUP BY {};""".format(
-            ", ".join(labels), field, ", ".join(["'{}'".format(step.name) for step in steps]), group_by
-        )
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        return ResultProxy, (labels, ResultSet)
+        nodes_keys = set([member.key for member in members])
+        parts_names = set([member.part.name for member in members])
+        steps_names = set([step.name for step in steps])
 
-    def _link_field_results_to_model(self, field_results):
-        """Converts the values of the results string to actual nodes of the
-        model.
+        results_set = self.rdb.get_rows(
+            self.field_name,
+            self.results_columns,
+            {"key":nodes_keys, "part": parts_names, "step": steps_names}
+            )
+        return results_set
+
+    def _to_result(self, results_set):
+        """Convert a set of results in database format to the appropriate
+        result object.
 
         Parameters
         ----------
-        ResultSet : _type_
+        results_set : _type_
             _description_
 
         Returns
         -------
-        dict, class:`compas.geoemtry.Vector`
-            Dictionary with {'part':..; 'node':..; 'vector':...} and resultant vector
+        dic
+            Dictiorany grouping the results per Step.
         """
-        # _, field_results = self._get_field_results(self.field_name)
-        col_names = field_results[0]
-        values = field_results[1]
-        if not values:
-            raise ValueError("No results found")
-        results = []
-        for row in values:
-            result = {}
-            part = self.model.find_part_by_name(row[0])
+        results={}
+        for r in results_set:
+            step = self.problem.find_step_by_name(r[0])
+            results.setdefault(step,[])
+            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
             if not part:
-                # try case insensitive match
-                part = self.model.find_part_by_name(row[0], casefold=True)
-            if not part:
-                print("Part {} not found in model".format(row[0]))
-                continue
-
-            func = part.find_node_by_key if isinstance(self, NodeFieldResults) else part.find_element_by_key
-
-            if self.field_name.upper() == 'U':
-                cls = DisplacementResult
-            elif self.field_name.upper() == 'RF':
-                cls = ReactionResult
-            elif self.field_name.upper() == 'S2D':
-                cls = ShellStressResult
-            elif self.field_name.upper() == 'S3D':
-                cls = SolidStressResult
-            else:
-                raise NotImplementedError(f"{self.field_name} not implemented")
-
-            result = cls.from_components(
-                location=func(row[2]),
-                components={col_names[i]: row[i] for i in range(3, len(self.components_labels) + 3)},
-                # invariants={col_names[i]: row[i] for i in range(len(self.components_labels) + 3, len(row))},
-            )
-            results.append(result)
+                raise ValueError(f"Part {r[1]} not in model")
+            m = getattr(part, self._results_func)(r[2])
+            results[step].append(self._results_class(m, *r[3:]))
         return results
 
-    def _get_limit(self, limit="MAX", component="magnitude"):
-        if component not in self.components_labels + self.invariants_labels:
-            raise ValueError(
-                "The specified component is not valid. Choose from {}".format(self._components_lables + self.invariants_labels)
-            )
-        _, field_results = self._get_func_field_sql(
-            func=limit, field=self.field_name, group_by="step", component=component
-        )
-        return self._link_field_results_to_model(field_results=field_results)
-
-    def get_value_at_location(self, location):
-        """Get the displacement of a list of :class:`compas_fea2.model.Node`.
+    def get_results(self, members, steps):
+        """Get the results for the given members and steps.
 
         Parameters
         ----------
-        location : [:class:`compas_fea2.model.Node`] | []:class:`compas_fea2.model._Element`]
-            The node or the nodes where to retrieve the displacmeent
+        members : _type_
+            _description_
+        steps : _type_
+            _description_
 
         Returns
         -------
-        dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-
+        _type_
+            _description_
         """
-        if not isinstance(location, Iterable):
-            location = [location]
-        steps = [self.step]
-        group_by = "step"
-        engine, connection, metadata = self.db_connection
-        components = get_field_labels(engine, connection, metadata, self.field_name, "components")
-        invariants = get_field_labels(engine, connection, metadata, self.field_name, "invariants")
-        labels = ["part", "position", "key"] + components + invariants
+        results_set = self._get_db_results(members, steps)
+        return self._to_result(results_set)
 
-        sql = """SELECT {}
-FROM {}
-WHERE step IN ({}) AND key  in ({})
-GROUP BY {};""".format(
-            ", ".join(labels),
-            self.field_name,
-            ", ".join(["'{}'".format(step.name) for step in steps]),
-            ", ".join(["'{}'".format(node.key) for node in location]),
-            group_by,
-        )
-        ResultProxy = connection.execute(sql)
-        ResultSet = ResultProxy.fetchall()
-        value, _ = self._link_field_results_to_model(field_results=(labels, ResultSet))
-        return value
+    def get_max_component(self, component, step):
+        """Get the result where a component is maximum for a given step.
 
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_
+            _description_
 
-class NodeFieldResults(FieldResults):
-    def __init__(self, field_name, step, name=None, *args, **kwargs):
-        super(NodeFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
-        self._results = self._link_field_results_to_model(self._get_field_results(field_name=self.field_name)[1])
-        if len(self.results) != len(self.model.nodes_set):
-            raise ValueError('The requested field is not defined at the nodes. Try "show_elements_field" instead".')
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The appriate Result object.
+        """
+        results_set = self.rdb.get_func_row(self.field_name,
+                                            self.field_name+str(component),
+                                            "MAX",
+                                            {"step":[step.name]},
+                                            self.results_columns
+                                            )
+        return self._to_result(results_set)[step][0]
 
+    def get_min_component(self, component, step):
+        results_set = self.rdb.get_func_row(self.field_name,
+                                            self.field_name+str(component),
+                                            "MIN",
+                                            {"step":[step.name]},
+                                            self.results_columns
+                                            )
+        return self._to_result(results_set)[step][0]
 
-    def get_value_at_point(self, point, distance, plane=None, steps=None, group_by=["step", "part"]):
+    def get_limits_component(self, component, step):
+        """Get the result objects with the min and max value of a given
+        component in a step.
+
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return [self.get_min_component(component, step), self.get_max_component(component, step)]
+
+    def get_limits_absolute(self, step):
+        limits=[]
+        for func in ["MIN", "MAX"]:
+            limits.append(self.rdb.get_func_row(self.field_name,
+                                                'magnitude',
+                                                func,
+                                                {"step":[step.name]},
+                                                self.results_columns
+                                                ))
+        return [self._to_result(limit)[step][0] for limit in limits]
+
+    def get_results_at_point(self, point, distance, plane=None, steps=None):
         """Get the displacement of the model around a location (point).
 
         Parameters
@@ -280,17 +246,60 @@ class NodeFieldResults(FieldResults):
             Dictionary with {'part':..; 'node':..; 'vector':...}
 
         """
-        steps = [self.step]
-        node = self.model.find_node_by_location(point, distance, plane=None)
-        return self.get_value_at_location(location=[node], steps=steps, group_by=group_by)
+        nodes = self.model.find_nodes_around_point(point, distance, plane)
+        results = []
+        for step in steps:
+            results.append(self.get_results(nodes, steps)[step])
 
 
+class DisplacementFieldResults(FieldResults):
+    """Displacement field.
 
+    Parameters
+    ----------
+    FieldResults : _type_
+        _description_
+    """
+    def __init__(self, problem, name=None, *args, **kwargs):
+        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="U", name=name, *args, **kwargs)
+        self._components_names = ['U1', 'U2', 'U3']
+        self._invariants_names = ['magnitude']
+        self._results_class = DisplacementResult
+        self._results_func = "find_node_by_key"
+
+    def results(self, step):
+        nodes = self.model.nodes
+        return self.get_results(nodes, steps=step)[step]
+
+
+class ReactionFieldResults(FieldResults):
+    """Reaction field.
+
+    Parameters
+    ----------
+    FieldResults : _type_
+        _description_
+    """
+    def __init__(self, problem, name=None, *args, **kwargs):
+        super(ReactionFieldResults, self).__init__(problem=problem, field_name="RF", name=name, *args, **kwargs)
+        self._components_names = ['RF1', 'RF2', 'RF3']
+        self._invariants_names = ['magnitude']
+        self._results_class = ReactionResult
+        self._results_func = "find_node_by_key"
+
+    def results(self, step):
+        nodes = self.model.nodes
+        return self.get_results(nodes, steps=step)[step]
 
 class ElementFieldResults(FieldResults):
+    """_summary_
+
+    Parameters
+    ----------
+    FieldResults : _type_
+        _description_
+    """
     def __init__(self, field_name, step, name=None, *args, **kwargs):
         super(ElementFieldResults, self).__init__(field_name, step, name, *args, **kwargs)
-        self._results = self._link_field_results_to_model(self._get_field_results(field_name=self.field_name)[1])
+        self._results = self._rdb.link_field_results_to_model(self._get_field_results(field_name=self.field_name)[1])
 
-    def compute_principal_stresses():
-        pass

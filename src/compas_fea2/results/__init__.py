@@ -10,7 +10,11 @@ from .results import (
     ShellStressResult,
     SolidStressResult
 )
-from .fields import NodeFieldResults, ElementFieldResults
+from .fields import (
+    DisplacementFieldResults,
+    ElementFieldResults,
+    ReactionFieldResults,
+)
 
 
 __all__ = [
@@ -20,6 +24,7 @@ __all__ = [
     "MembraneStressResult",
     "ShellStressResult",
     "SolidStressResult",
-    "NodeFieldResults",
-    "ElementFieldResults"
+    "DisplacementFieldResults",
+    "ReactionFieldResults",
+    "ElementFieldResults",
     ]

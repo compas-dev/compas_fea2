@@ -15,12 +15,6 @@ from compas_fea2.base import FEAData
 from compas_fea2.model import _Element
 from compas_fea2.model import ElasticIsotropic
 
-from .sql_wrapper import get_field_results, get_field_labels, get_database_table, create_connection
-
-
-# =========================================================================
-#                               Result
-# =========================================================================
 
 class Result(FEAData):
     """Result object at the nodes or elements. This ensures that the results from all
@@ -63,10 +57,6 @@ class Result(FEAData):
     @property
     def invariants(self):
         return self._invariants
-
-    @classmethod
-    def from_components(cls, location, *args, **kwargs):
-        raise NotImplementedError
 
     def to_file(self, *args, **kwargs):
         raise NotImplementedError("this function is not available for the selected backend")
@@ -111,7 +101,7 @@ class DisplacementResult(Result):
     -----
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
-    def __init__(self, node, u1, u2, u3, **kwargs):
+    def __init__(self, node, u1=0., u2=0., u3=0., **kwargs):
         super(DisplacementResult, self).__init__(location=node, **kwargs)
         self._u1 = u1
         self._u2 = u2
@@ -143,25 +133,6 @@ class DisplacementResult(Result):
     @property
     def magnitude(self):
         return self.vector.length
-
-    @classmethod
-    def from_components(cls, location, components, **kwargs):
-        """Creates a DisplacementResult object from a location and the components of the
-        vector.
-
-        Parameters
-        ----------
-        location : :class:`compas_fea2.model.Node`
-            The location of the result.
-        components : dict
-            Dictionary with the components in the form {"U1": ..., "U2": ..., "U3": ...}.
-
-        Returns
-        -------
-        obj
-            The result object.
-        """
-        return cls(location, **{k.lower(): v for k, v in components.items() if k in ("U1", "U2", "U3")}, **kwargs)
 
     def safety_factor(self, component, allowable):
         """Compute the safety factor (absolute ration value/limit) of the displacement.

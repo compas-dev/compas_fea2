@@ -352,12 +352,17 @@ class _Part(FEAData):
         import numpy as np
 
         part = cls(name=name)
+
+        gmshModel.heal()
+        gmshModel.generate_mesh(3)
+
+        model = gmshModel.model
         # add nodes
-        gmsh_nodes = gmshModel.mesh.get_nodes()
+        gmsh_nodes = model.mesh.get_nodes()
         node_coords = gmsh_nodes[1].reshape((-1, 3), order="C")
         fea2_nodes = [part.add_node(Node(coords.tolist())) for coords in node_coords]
         # add elements
-        gmsh_elements = gmshModel.mesh.get_elements()
+        gmsh_elements = model.mesh.get_elements()
 
         section = kwargs.get("section", None)
         split = kwargs.get("split", False)
@@ -393,6 +398,21 @@ class _Part(FEAData):
                 raise NotImplementedError("Element with {} nodes not supported".format(ntags.size))
             if verbose:
                 print("element {} added".format(k))
+
+        if not part._discretized_boundary_mesh:
+            gmshModel.generate_mesh(2)
+            part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
+
+
+        if kwargs.get("rigid", False):
+            point = part._discretized_boundary_mesh.centroid()
+            part.reference_point = Node(xyz=[point.x, point.y, point.z])
+
+        #FIXME get the planes on each face of the part and compute the centroid -> move to Part
+        # centroid_face = {}
+        # for face in part._discretized_boundary_mesh.faces():
+        #     centroid_face[geometric_key(part._discretized_boundary_mesh.face_centroid(face))] = face
+        # part._discretized_boundary_mesh.centroid_face = centroid_face
 
         return part
 
@@ -441,25 +461,9 @@ class _Part(FEAData):
         if meshsize_min:
             gmshModel.options.mesh.meshsize_min = meshsize_min
 
-        gmshModel.heal()
-        gmshModel.generate_mesh(3)
-
-        part = cls.from_gmsh(gmshModel=gmshModel.model, name=name, **kwargs)
-        part._boundary_mesh = boundary_mesh
-
-        gmshModel.generate_mesh(2)
-        part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
+        part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
 
         del gmshModel
-
-        if kwargs.get("rigid", False):
-            point = boundary_mesh.centroid()
-            part.reference_point = Node(xyz=[point.x, point.y, point.z])
-
-        centroid_face = {}
-        for face in part._discretized_boundary_mesh.faces():
-            centroid_face[geometric_key(part._discretized_boundary_mesh.face_centroid(face))] = face
-        part._discretized_boundary_mesh.centroid_face = centroid_face
 
         return part
 
@@ -505,25 +509,19 @@ class _Part(FEAData):
             gmshModel.heal()
             gmshModel.options.mesh.meshsize_min = meshsize_min
 
-        gmshModel.heal()
-        gmshModel.generate_mesh(3)
-        part = cls.from_gmsh(gmshModel=gmshModel.model, name=name, **kwargs)
-        part._boundary_mesh = gmshModel.mesh_to_compas()
-        gmshModel.generate_mesh(2)
-        part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
+        part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
 
         del gmshModel
 
-        if kwargs.get('rigid', False):
-            point = part._boundary_mesh.centroid()
-            part.reference_point = Node(xyz=point)
-
-        centroid_face = {}
-        for face in part._discretized_boundary_mesh.faces():
-            centroid_face[geometric_key(part._discretized_boundary_mesh.face_centroid(face))] = face
-        part._discretized_boundary_mesh.centroid_face = centroid_face
-
         return part
+
+    # =========================================================================
+    #                           General methods
+    # =========================================================================
+
+    def find(self):
+        raise NotImplementedError
+
     # =========================================================================
     #                           Nodes methods
     # =========================================================================

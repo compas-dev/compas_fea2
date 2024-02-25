@@ -570,7 +570,6 @@ Analysis folder path : {}
                 v.draw_loads(step, scale_factor=kwargs["draw_loads"])
         v.show()
 
-
     def show_nodes_field_vector(self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.
 
@@ -803,6 +802,43 @@ Analysis folder path : {}
             v.draw_reactions(step=step, scale_factor=kwargs["draw_reactions"])
         v.show()
 
-
     def show_reactions(self, vector_sf=1.0, model_sf=1.0, step=None, group_nodes=False, **kwargs):
         self.show_nodes_field_vector(field_name='RF', vector_sf=vector_sf, model_sf=model_sf, step=step, **kwargs)
+
+    def show_stress_contours(self, stress_type="von_mises_stress", side=None, step=None, model_sf=1.0, **kwargs):
+        stresses = self.stress_field
+        if not step:
+            step = self.steps_order[-1]
+        nodes_stress = {}
+        for stress in stresses.results(step):
+            for node in stress.location.nodes:
+                if node not in nodes_stress:
+                    nodes_stress[node] = 2.
+
+                if not isinstance(stress.location, _Element3D):
+                    func = stress_type+"_"+side
+                else:
+                    func = stress_type
+                # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
+                # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
+                nodes_stress[node] += getattr(stress, func)/len(stress.location.nodes)
+
+        from compas_fea2.UI.viewer import FEA2Viewer
+
+        if not step:
+            step = self.steps_order[-1]
+
+        # Display results
+        v = FEA2Viewer(self.model, scale_factor=model_sf)
+
+        v.draw_nodes_contour(model=self.model, nodes_values=nodes_stress, **kwargs)
+
+        if kwargs.get("draw_bcs", None):
+            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
+
+        if kwargs.get("draw_loads", None):
+            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+
+        if kwargs.get("draw_reactions", None):
+            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
+        v.show()

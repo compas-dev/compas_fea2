@@ -18,17 +18,12 @@ from compas.geometry import Vector
 from compas.geometry import Transformation, Translation
 from compas.geometry import sum_vectors
 
-import compas_fea2
 from compas_fea2.UI.viewer.shapes import (
     PinBCShape,
     FixBCShape,
     RollerBCShape,
     )
-from compas_fea2.model.elements import (
-    _Element3D,
-    BeamElement,
-    ShellElement,
-    )
+
 from compas_fea2.model.bcs import (
     FixedBC,
     PinnedBC,
@@ -368,7 +363,6 @@ class FEA2Viewer:
         # Display results
         self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
 
-
     def draw_nodes_field_contour(self, field_results, component, step, **kwargs):
         """Display a contour plot of a given field and component. The field must
         de defined at the nodes of the model (e.g displacement field).
@@ -492,7 +486,53 @@ class FEA2Viewer:
         # Display results
         self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
 
+    def draw_nodes_contour(self, model, nodes_values, **kwargs):
+        """
 
+        """
+        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+
+        # Get mesh
+        parts_gkey_vertex = {}
+        parts_mesh = {}
+        for part in model.parts:
+            if mesh := part.discretized_boundary_mesh:
+                colored_mesh = mesh.copy()
+                #FIXME change precision
+                parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(3)
+                parts_mesh[part.name] = colored_mesh
+            else:
+                raise AttributeError("Discretized boundary mesh not found")
+
+        # Set the bounding limits
+        if kwargs.get("bound", None):
+            if not isinstance(kwargs["bound"], Iterable) or len(kwargs["bound"]) != 2:
+                raise ValueError("You need to provide an upper and lower bound -> (lb, up)")
+            if kwargs["bound"][0] > kwargs["bound"][1]:
+                kwargs["bound"][0], kwargs["bound"][1] = kwargs["bound"][1], kwargs["bound"][0]
+
+        # Get values
+        values = list(nodes_values.values())
+        min_value = kwargs["bound"][0] if kwargs.get("bound", None) else min(values)
+        max_value = kwargs["bound"][1] if kwargs.get("bound", None) else min(values)
+
+        # Color the mesh
+        for n, v in nodes_values.items():
+            if min_value - max_value == 0.0:
+                color = Color.red()
+            elif kwargs.get("bound", None):
+                if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
+                    color = Color.red()
+                else:
+                    color = cmap(v, minval=min_value, maxval=max_value)
+            else:
+                color = cmap(v, minval=min_value, maxval=max_value)
+            if n.gkey in parts_gkey_vertex[part.name]:
+                parts_mesh[part.name].vertex_attribute(parts_gkey_vertex[part.name][n.gkey], "color", color)
+
+        # Display results
+        for part in model.parts:
+            self.draw_mesh(parts_mesh[part.name], opacity=0.75)
 
     def show(self):
         """Display the viewport."""

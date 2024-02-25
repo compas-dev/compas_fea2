@@ -699,12 +699,6 @@ class SolidStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
 
-    @classmethod
-    def from_components(cls, location, components):
-        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S12","S13", "S21", "S22","S23","S31", "S32","S33")}
-        return cls(location, **stress_components)
-
-
 class MembraneStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s22, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
@@ -818,7 +812,6 @@ class ShellStressResult(MembraneStressResult):
     def J3_top(self):
         return np.linalg.det(self.deviatoric_stress_bottom)
 
-
     @property
     def principal_stresses_values(self):
         eigenvalues = np.linalg.eigvalsh(self.global_stress[:2, :2])
@@ -872,6 +865,9 @@ class ShellStressResult(MembraneStressResult):
     def principal_stresses_bottom(self):
         return zip(self.principal_stresses_values_bottom, self.principal_stresses_vectors_bottom)
 
+    @property
+    def von_mises_stress_top(self):
+        return np.sqrt(self.J2_top * 3)
 
     @classmethod
     def from_components(cls, location, components):

@@ -17,7 +17,7 @@ from compas_fea2.model import ElasticIsotropic
 
 
 class Result(FEAData):
-    """Result object at the nodes or elements. This ensures that the results from all
+    """Result object defined at the nodes or elements. This ensures that the results from all
     the backends are consistently stored.
 
     Parameters
@@ -222,6 +222,7 @@ class ReactionResult(Result):
     @property
     def magnitude(self):
         return self.vector.length
+
 
 class SectionForcesResult(Result):
     """DisplacementResult object.

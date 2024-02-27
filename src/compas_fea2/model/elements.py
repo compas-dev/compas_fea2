@@ -8,6 +8,7 @@ from compas.geometry import Frame
 from compas.geometry import Plane
 from compas.geometry import Polygon
 from compas.geometry import centroid_points
+from compas.geometry import distance_point_point
 from compas.utilities import pairwise
 
 from compas_fea2.base import FEAData
@@ -188,6 +189,13 @@ class _Element1D(_Element):
     def frame(self):
         return self._frame
 
+    @property
+    def length(self):
+        return distance_point_point(*[node.point for node in self.nodes])
+
+    @property
+    def volume(self):
+        return self.section.A * self.length
 
 class BeamElement(_Element1D):
     """A 1D element that resists axial, shear, bending and torsion.

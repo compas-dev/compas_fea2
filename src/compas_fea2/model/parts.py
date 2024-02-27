@@ -237,13 +237,13 @@ class _Part(FEAData):
     # =========================================================================
 
     @classmethod
-    def from_compas_line(cls, line, element_model="BeamElement", section=None, name=None, **kwargs):
+    def from_compas_lines(cls, lines, element_model="BeamElement", section=None, name=None, **kwargs):
         """Generate a part from a class:`compas.geometry.Line`.
 
         Parameters
         ----------
-        line : class:`compas.geometry.Line`
-            The line
+        line : list(class:`compas.geometry.Line`)
+            The lines to be converted.
         element_model : str, optional
             Implementation model for the element, by default 'BeamElement'
         section : :class:`compas_fea2.model.BeamSection`, optional
@@ -260,10 +260,15 @@ class _Part(FEAData):
         import compas_fea2
 
         prt = cls(name=name)
-        element = getattr(compas_fea2.model, element_model)(nodes=[Node(line.start), Node(line.end)], section=section)
-        if not isinstance(element, _Element1D):
-            raise ValueError("Provide a 1D element")
-        prt.add_element(element)
+        # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
+        for line in lines:
+            #FIXME change tolerance
+            nodes = [prt.find_nodes_by_location(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
+            prt.add_nodes(nodes)
+            element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section)
+            if not isinstance(element, _Element1D):
+                raise ValueError("Provide a 1D element")
+            prt.add_element(element)
         return prt
 
     @classmethod
@@ -546,7 +551,7 @@ class _Part(FEAData):
                 return node
 
     def find_nodes_by_name(self, name):
-        # type: (str) -> list(Node)
+        # type: (str) -> list[Node]
         """Find all nodes with a given name.
 
         Parameters
@@ -560,8 +565,8 @@ class _Part(FEAData):
         """
         return [node for node in self.nodes if node.name == name]
 
-    def find_nodes_by_location(self, point, distance, plane=None, report=False, **kwargs):
-        # type: (Point, float, Plane, bool, bool) -> list(Node)
+    def find_nodes_by_location(self, point, distance, plane=None, report=False, single=False, **kwargs):
+        # type: (Point, float, Plane, bool, bool, bool) -> list[Node]
         """Find all nodes within a distance of a given geometrical location.
 
         Parameters
@@ -585,10 +590,18 @@ class _Part(FEAData):
         nodes = self.find_nodes_on_plane(plane) if plane else self.nodes
         if report:
             return {node: sqrt(distance) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
-        return [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
+        nodes = [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
+        if len(nodes)==0:
+            if compas_fea2.VERBOSE:
+                print(f"No nodes found at {point}")
+            return
+        if single:
+            return nodes[0]
+        else:
+            return nodes
 
     def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
-        # type: (Point, float, int, Plane) -> list(Node)
+        # type: (Point, float, int, Plane) -> list[Node]
         """Find the n closest nodes within a distance of a given geometrical location.
 
         Parameters
@@ -613,7 +626,7 @@ class _Part(FEAData):
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
 
     def find_nodes_around_node(self, node, distance, plane=None):
-        # type: (Node, float, Plane) -> list(Node)
+        # type: (Node, float, Plane) -> list[Node]
         """Find all nodes around a given node (excluding the node itself).
 
         Parameters
@@ -637,7 +650,7 @@ class _Part(FEAData):
         return nodes
 
     def find_closest_nodes_to_node(self, node, distance, number_of_nodes=1, plane=None):
-        # type: (Point, float, int, Plane) -> list(Node)
+        # type: (Point, float, int, Plane) -> list[Node]
         """Find the n closest nodes around a given node (excluding the node itself).
 
         Parameters
@@ -662,7 +675,7 @@ class _Part(FEAData):
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
 
     def find_nodes_by_attribute(self, attr, value, tolerance=0.001):
-        # type: (str, float, float) -> list(Node)
+        # type: (str, float, float) -> list[Node]
         """Find all nodes with a given value for a the given attribute.
 
         Parameters
@@ -684,7 +697,7 @@ class _Part(FEAData):
         return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
 
     def find_nodes_on_plane(self, plane, tolerance=1):
-        # type: (Plane, float) -> list(Node)
+        # type: (Plane, float) -> list[Node]
         """Find all nodes on a given plane.
 
         Parameters
@@ -729,7 +742,7 @@ class _Part(FEAData):
 
     # TODO quite slow...check how to make it faster
     def find_nodes_where(self, conditions):
-        # type: (list(str)) -> list(Node)
+        # type: (list[str]) -> list[Node]
         """Find the nodes where some conditions are met.
 
         Parameters
@@ -759,12 +772,15 @@ class _Part(FEAData):
         return list(set.intersection(*nodes))
 
     def contains_node(self, node):
-        # type: (Node) -> Node
+        # type: (Node, bool) -> Node
         """Verify that the part contains a given node.
 
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
+            The node to check.
+        location : bool
+            check for overlapping nodes at the same location.
 
         Returns
         -------
@@ -772,6 +788,7 @@ class _Part(FEAData):
 
         """
         return node in self.nodes
+
 
     def add_node(self, node):
         # type: (Node) -> Node

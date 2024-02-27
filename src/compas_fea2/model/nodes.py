@@ -65,7 +65,7 @@ class Node(FEAData):
 
     Notes
     -----
-    Nodes are registered to a :class:`compas_fea2.model.DeformablePart` object and can
+    Nodes are registered to a :class:`compas_fea2.model.Part` object and can
     belong to only one Part. Every time a node is added to a Part, it gets
     registered to that Part.
 

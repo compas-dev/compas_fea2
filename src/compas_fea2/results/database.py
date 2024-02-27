@@ -1,4 +1,12 @@
-from sqlalchemy import create_engine, MetaData, Table, select, text, and_, inspect, desc, asc
+from sqlalchemy import create_engine
+from sqlalchemy import MetaData
+from sqlalchemy import Table
+from sqlalchemy import select
+from sqlalchemy import text
+from sqlalchemy import and_
+from sqlalchemy import inspect
+from sqlalchemy import desc
+from sqlalchemy import asc
 
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Iterable

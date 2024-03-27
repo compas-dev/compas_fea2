@@ -56,13 +56,13 @@ class Model(FEAData):
         The constraints of the model.
     partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
-    materials : Set[:class:`compas_fea2.model.materials.Material]
+    materials : Set[:class:`compas_fea2.model.materials.Material`]
         The materials assigned in the model.
-    sections : Set[:class:`compas_fea2.model._Section]
+    sections : Set[:class:`compas_fea2.model._Section`]
         The sections assigned in the model.
-    problems : Set[:class:`compas_fea2.problem._Problem]
+    problems : Set[:class:`compas_fea2.problem._Problem`]
         The problems added to the model.
-    path : ::class::`pathlib.Path`
+    path : :class:`pathlib.Path`
         Path to the main folder where the problems' results are stored.
 
     """

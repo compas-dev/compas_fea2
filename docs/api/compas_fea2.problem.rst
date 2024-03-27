@@ -24,11 +24,13 @@ Steps
     ModalAnalysis
     ComplexEigenValue
     StaticStep
-    LinearStaticPerturbation
     BucklingAnalysis
     DynamicStep
     QuasiStaticStep
     DirectCyclicStep
+
+.. LinearStaticPerturbation
+
 
 Prescribed Fields
 =================

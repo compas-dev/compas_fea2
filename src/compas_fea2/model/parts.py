@@ -35,7 +35,6 @@ from .groups import NodesGroup, ElementsGroup, FacesGroup
 
 from compas_fea2.utilities._utils import timer
 
-
 class _Part(FEAData):
     """Base class for Parts.
 
@@ -153,7 +152,11 @@ class _Part(FEAData):
     @property
     def bounding_box(self):
         # if not self._boundary_mesh:
-        return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
+        try:
+            return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
+        except:
+            print("WARNING: BoundingBox not generated")
+            return None
         #     # raise AttributeError("Missing the bounding mesh of the part.")
         # else:
         #     return Box.from_bounding_box(self._boundary_mesh.obb())

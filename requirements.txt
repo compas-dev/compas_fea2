@@ -4,3 +4,6 @@ Click
 pint
 python-dotenv
 sqlalchemy==1.4
+compas_occ
+matplotlib
+jinja2

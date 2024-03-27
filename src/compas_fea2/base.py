@@ -13,10 +13,6 @@ from abc import abstractmethod
 
 from .utilities._utils import to_dimensionless
 
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
-
 class DimensionlessMeta(type):
     """Metaclass for converting pint Quantity objects to dimensionless.
     """

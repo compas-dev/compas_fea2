@@ -570,7 +570,7 @@ Analysis folder path : {}
                 v.draw_loads(step, scale_factor=kwargs["draw_loads"])
         v.show()
 
-    def show_nodes_field_vector(self, field_name, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
+    def show_nodes_field_vector(self, field_results, component=None, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.
 
         Parameters
@@ -616,8 +616,9 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_vector(field_name=field_name,
-                                   step=step,
+        v.draw_nodes_field_vector(field_results,
+                                  component,
+                                  step=step,
                                    vector_sf=vector_sf,
                                    **kwargs)
 

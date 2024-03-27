@@ -140,15 +140,12 @@ def part_method(f):
     def wrapper(*args, **kwargs):
         func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-
         res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
-
     return wrapper
 
 
-# TODO combine with part_method
 def step_method(f):
     """Run a step level method. In this way it is possible to bring to the
     problem level some of the functions of the steps.
@@ -160,21 +157,20 @@ def step_method(f):
 
     Returns
     -------
-    {:class:`compas_fea2.problem._Step`: var}
-        dictionary with the results of the method per each step in the problem.
+    [var]
+        List results of the method per each step in the problem.
     """
 
     @wraps(f)
     def wrapper(*args, **kwargs):
         func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-        return {step: vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))}
-
+        res = [vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))]
+        res = list(itertools.chain.from_iterable(res))
+        return res
     return wrapper
 
 
-# TODO combine with part_method
-# TODO add parameter to differentiate from action and return dict or add @problem_step_method
 def problem_method(f):
     """Run a problem level method. In this way it is possible to bring to the
     model level some of the functions of the problems.
@@ -186,8 +182,8 @@ def problem_method(f):
 
     Returns
     -------
-    {:class:`compas_fea2.problem.Problem`: var}
-        dictionary with the results of the method per each step in the problem.
+    [var]
+        List results of the method per each problem in the model.
     """
 
     @wraps(f)
@@ -199,7 +195,7 @@ def problem_method(f):
             raise ValueError("No problems found in the model")
         if not isinstance(problems, Iterable):
             problems = [problems]
-        vars = {}
+        vars = []
         for problem in problems:
             if problem.model != self_obj:
                 raise ValueError("{} is not registered to this model".format(problem))
@@ -207,7 +203,7 @@ def problem_method(f):
                 kwargs.setdefault("steps", self_obj.steps)
             var = getattr(problem, func_name)(*args[1::], **kwargs)
             if var:
-                vars[problem] = vars
+                vars.append(var)
         return vars
 
     return wrapper
@@ -221,4 +217,6 @@ def to_dimensionless(func):
         return func(*new_args, **new_kwargs)
     wrapper.original = func  # Preserve the original function
     return wrapper
+
+
 

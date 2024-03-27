@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 from dotenv import load_dotenv
+from compas.tolerance import Tolerance
 
 
 __author__ = ["Francesco Ranaudo"]
@@ -42,7 +43,7 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision="
                     [
                         "VERBOSE={}".format(verbose),
                         "POINT_OVERLAP={}".format(point_overlap),
-                        "GLOBAL_TOLERANCE={}".format(point_overlap),
+                        "GLOBAL_TOLERANCE={}".format(global_tolerance),
                         "PRECISION={}".format(precision),
                     ]
                 )

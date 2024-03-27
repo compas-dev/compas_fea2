@@ -304,7 +304,7 @@ class FEA2Viewer:
             self.draw_solid_elements(part.elements_by_dimension(dimension=3), show_vertices=False, opacity=opacity)
 
 
-    def draw_nodes_field_vector(self, step, field_name, vector_sf=1, **kwargs):
+    def draw_nodes_field_vector(self, field_results, component, step, vector_sf=1, **kwargs):
         """Display a given vector field.
 
         Parameters
@@ -347,13 +347,12 @@ class FEA2Viewer:
         # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Get values
-        field = DisplacementFieldResults(field_name, step)
         # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
         # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
 
         # Color the vector field
         pts, vectors, colors = [], [], []
-        for r in field.results:
+        for r in field_results.results(step):
             if r.vector.length == 0:
                 continue
             vectors.append(r.vector.scaled(vector_sf))

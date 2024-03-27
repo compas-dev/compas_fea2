@@ -7,7 +7,10 @@ import click
 import json
 
 from compas_fea2 import HOME
-from fea2_extension.main import init_plugin
+try:
+    from fea2_extension.main import init_plugin
+except:
+    print("WARNING: fea2_extension module not installed.")
 
 
 # -------------------------------- MAIN ----------------------------------#

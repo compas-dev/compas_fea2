@@ -33,6 +33,7 @@ from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGro
 from pint import UnitRegistry
 
 
+
 class Model(FEAData):
     """Class representing an FEA model.
 
@@ -166,17 +167,28 @@ class Model(FEAData):
         return list(chain([list(part.nodes) for part in self.parts]))[0]
 
     @property
+    def points(self):
+        return [n.point for n in self.nodes]
+
+    @property
     def elements(self):
         return list(chain([list(part.elements) for part in self.parts]))[0]
 
     @property
     def bounding_box(self):
-        bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts])))
-        return Box.from_bounding_box(bb)
+        try:
+            bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
+            return Box.from_bounding_box(bb)
+        except:
+            print("WARNING: bounding box not generated")
+            return None
 
     @property
     def center(self):
-        return centroid_points(self.bounding_box.points)
+        if self.bounding_box:
+            return centroid_points(self.bounding_box.points)
+        else:
+            return centroid_points(self.points)
 
     @property
     def bottom_plane(self):

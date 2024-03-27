@@ -4,9 +4,14 @@ from __future__ import print_function
 
 from operator import itemgetter
 
+from compas.datastructures import Mesh
+from compas.geometry import Brep
 from compas.geometry import Frame
 from compas.geometry import Plane
 from compas.geometry import Polygon
+from compas.geometry import Line
+from compas.geometry import Vector
+from compas.geometry import Box
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.utilities import pairwise
@@ -84,6 +89,7 @@ class _Element(FEAData):
         self._results_format = {}
         self._rigid = rigid
         self._reference_point = None
+        self._shape = None
 
     @property
     def part(self):
@@ -91,7 +97,7 @@ class _Element(FEAData):
 
     @property
     def model(self):
-        return self.part._registration
+        return self.part.model
 
     @property
     def key(self):
@@ -164,6 +170,9 @@ class _Element(FEAData):
     def weight(self):
         return self.volume * self.section.material.density
 
+    @property
+    def shape(self):
+        return self._shape
 
 # ==============================================================================
 # 0D elements
@@ -172,6 +181,21 @@ class _Element(FEAData):
 #TODO: remove. This is how abaqus does it but it is better to define the mass as a property of the nodes.
 class MassElement(_Element):
     """A 0D element for concentrated point mass.
+    """
+
+class _Element0D(_Element):
+    """Element with 1 dimension.
+    """
+    def __init__(self, nodes, frame, implementation=None, rigid=False, **kwargs):
+        super(_Element1D, self).__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
+        self._frame = frame
+
+class SpringElement(_Element0D):
+    """A 0D spring element.
+    """
+
+class LinkElement(_Element0D):
+    """A 0D link element.
     """
 
 
@@ -184,6 +208,9 @@ class _Element1D(_Element):
     def __init__(self, nodes, section, frame, implementation=None, rigid=False, **kwargs):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
+        self._curve = Line(nodes[0].point, nodes[-1].point)
+        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
+        self._shape = Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
 
     @property
     def frame(self):
@@ -197,6 +224,8 @@ class _Element1D(_Element):
     def volume(self):
         return self.section.A * self.length
 
+
+
 class BeamElement(_Element1D):
     """A 1D element that resists axial, shear, bending and torsion.
 
@@ -206,12 +235,6 @@ class BeamElement(_Element1D):
     in space, torsion.
 
     """
-
-
-class SpringElement(_Element1D):
-    """A 1D spring element.
-    """
-
 
 class TrussElement(_Element1D):
     """A 1D element that resists axial loads.

@@ -8,6 +8,10 @@ from compas_fea2 import units
 from compas_fea2.base import FEAData
 from .materials.material import _Material
 
+from compas.geometry import Circle
+from compas.geometry import Polygon
+from compas.geometry import Frame
+
 
 class _Section(FEAData):
     """Base class for sections.
@@ -37,6 +41,11 @@ class _Section(FEAData):
         super(_Section, self).__init__(**kwargs)
         self._key = None
         self._material = material
+        self._shape = None
+
+    @property
+    def model(self):
+        return self._registration
 
     @property
     def key(self):
@@ -54,8 +63,8 @@ class _Section(FEAData):
             self._material = value
 
     @property
-    def model(self):
-        return self._registration
+    def shape(self):
+        return self._shape
 
     def __str__(self):
         return """
@@ -508,7 +517,7 @@ class CircularSection(BeamSection):
             material=material,
             **kwargs,
         )
-
+        self._shape = Circle(radius=r, frame=Frame([0,0,0], [1,0,0], [0,1,0]))
 
 class HexSection(BeamSection):
     """Hexagonal hollow section.
@@ -752,8 +761,8 @@ class RectangularSection(BeamSection):
     """
 
     def __init__(self, w, h, material, **kwargs):
-        self.w = w
-        self.h = h
+        self._w = w
+        self._h = h
 
         l1 = max([w, h])
         l2 = min([w, h])
@@ -781,6 +790,9 @@ class RectangularSection(BeamSection):
             material=material,
             **kwargs,
         )
+        self._shape = Polygon(points=[[-w/2, -h/2, 0], [w/2, -h/2, 0], [w/2, h/2, 0], [-w/2, h/2, 0]])
+
+
 
 
 class TrapezoidalSection(BeamSection):

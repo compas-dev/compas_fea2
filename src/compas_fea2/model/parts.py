@@ -495,10 +495,10 @@ class _Part(FEAData):
         gmshModel = MeshModel()
         gmsh.open(step_file)
 
-        for index, vertex in enumerate(block.vertices):
-            point = vertex.point
-            tag = gmshModel.occ.add_point(*point, target_mesh_size)
-            # tag = gmshModel.occ.add_point(*point)
+        # for index, vertex in enumerate(block.vertices):
+        #     point = vertex.point
+        #     tag = gmshModel.occ.add_point(*point, target_mesh_size)
+        #     # tag = gmshModel.occ.add_point(*point)
 
         if mesh_size_at_vertices:
             for vertex, target in mesh_size_at_vertices.items():

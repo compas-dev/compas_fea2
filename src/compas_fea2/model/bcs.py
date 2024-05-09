@@ -142,6 +142,36 @@ class FixedBC(_BoundaryCondition):
         self._zz = True
 
 
+class FixedBCX(_BoundaryCondition):
+    """A fixed nodal displacement boundary condition  along and around Z
+    """
+    __doc__ += docs
+
+    def __init__(self, **kwargs):
+        super(FixedBC, self).__init__(**kwargs)
+        self._x = True
+        self._xx = True
+
+class FixedBCY(_BoundaryCondition):
+    """A fixed nodal displacement boundary condition along and around Y
+    """
+    __doc__ += docs
+
+    def __init__(self, **kwargs):
+        super(FixedBC, self).__init__(**kwargs)
+        self._y = True
+        self._yy = True
+
+class FixedBCZ(_BoundaryCondition):
+    """A fixed nodal displacement boundary condition along and around Z
+    """
+    __doc__ += docs
+
+    def __init__(self, **kwargs):
+        super(FixedBC, self).__init__(**kwargs)
+        self._z = True
+        self._z = True
+
 class PinnedBC(_BoundaryCondition):
     """A pinned nodal displacement boundary condition.
     """

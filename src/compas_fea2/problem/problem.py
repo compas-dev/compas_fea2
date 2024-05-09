@@ -369,6 +369,8 @@ Analysis folder path : {}
             The InputFile objects that generates the input file.
         """
         path = path or self.path
+        if not isinstance(path, Path):
+            path = Path(path)
         if not path.exists():
             path.mkdir(parents=True)
         input_file = InputFile.from_problem(self)

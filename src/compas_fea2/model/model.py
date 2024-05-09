@@ -393,7 +393,7 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_by_location(self, point, distance, plane=None):
+    def find_nodes_around_point(self, point, distance, plane=None, single=False):
         pass
 
     @get_docstring(_Part)

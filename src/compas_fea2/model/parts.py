@@ -266,7 +266,7 @@ class _Part(FEAData):
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         for line in lines:
             #FIXME change tolerance
-            nodes = [prt.find_nodes_by_location(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
+            nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
             prt.add_nodes(nodes)
             element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section)
             if not isinstance(element, _Element1D):
@@ -568,7 +568,7 @@ class _Part(FEAData):
         """
         return [node for node in self.nodes if node.name == name]
 
-    def find_nodes_by_location(self, point, distance, plane=None, report=False, single=False, **kwargs):
+    def find_nodes_around_point(self, point, distance, plane=None, report=False, single=False, **kwargs):
         # type: (Point, float, Plane, bool, bool, bool) -> list[Node]
         """Find all nodes within a distance of a given geometrical location.
 
@@ -623,7 +623,7 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Node`]
 
         """
-        nodes = self.find_nodes_by_location(point, distance, plane, report=True)
+        nodes = self.find_nodes_around_point(point, distance, plane, report=True)
         if number_of_nodes > len(nodes):
             number_of_nodes = len(nodes)
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
@@ -647,7 +647,7 @@ class _Part(FEAData):
             The nodes around the given node
 
         """
-        nodes = self.find_nodes_by_location(node.xyz, distance, plane, report=True)
+        nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=True)
         if node in nodes:
             del nodes[node]
         return nodes
@@ -672,7 +672,7 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Node`]
 
         """
-        nodes = self.find_nodes_by_location(node.xyz, distance, plane, report=True)
+        nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=True)
         if number_of_nodes > len(nodes):
             number_of_nodes = len(nodes)
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
@@ -832,7 +832,7 @@ class _Part(FEAData):
             return
 
         if not compas_fea2.POINT_OVERLAP:
-            if self.find_nodes_by_location(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE):
+            if self.find_nodes_around_point(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE):
                 if compas_fea2.VERBOSE:
                     print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
                 return
@@ -1339,7 +1339,7 @@ class _Part(FEAData):
 
         """
         step = step or problem._steps_order[-1]
-        nodes = self.find_nodes_by_location(point=point, distance=distance, report=True)
+        nodes = self.find_nodes_around_point(point=point, distance=distance, report=True)
         if nodes:
             displacements = [getattr(Vector(*node.results[problem][step].get("U", None)), component) for node in nodes]
             return point, sum(displacements) / len(displacements)

@@ -210,7 +210,7 @@ class _Element1D(_Element):
         self._frame = frame
         self._curve = Line(nodes[0].point, nodes[-1].point)
         # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        self._shape = Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
+        self._shape = section._shape #Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
 
     @property
     def frame(self):

@@ -788,7 +788,10 @@ Analysis folder path : {}
 
         if original:
             for part in step.model.parts:
-                v.draw_mesh(part.discretized_boundary_mesh, opacity=original)
+                try:
+                    v.draw_mesh(part.discretized_boundary_mesh, opacity=original)
+                except:
+                    print("No mesh found")
                 # v.draw_nodes_field_vector(step=step, field_name='U', vector_sf=scale_factor)
 
         v.draw_deformed(step, scale_factor=scale_factor, opacity=opacity)

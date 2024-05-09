@@ -253,13 +253,17 @@ class FieldResults(FEAData):
         Returns
         -------
         dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
+            Dictionary with {step: result}
 
         """
         nodes = self.model.find_nodes_around_point(point, distance, plane)
-        results = []
-        for step in steps:
-            results.append(self.get_results(nodes, steps)[step])
+        if not nodes:
+            print(f"WARNING: No nodes found at {point} within {distance}")
+        else:
+            results = []
+            steps = steps or self.problem.steps
+            results = self.get_results(nodes, steps)
+            return results
 
 
 class DisplacementFieldResults(FieldResults):

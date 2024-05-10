@@ -295,7 +295,7 @@ class _Part(FEAData):
         """
         implementation = kwargs.get("implementation", None)
         ndm = kwargs.get("ndm", None)
-        part = cls(name=name, ndm=ndm)
+        part = cls(name=name, ndm=ndm) if ndm else cls(name=name)
         vertex_node = {vertex: part.add_node(Node(mesh.vertex_coordinates(vertex))) for vertex in mesh.vertices()}
 
         for face in mesh.faces():

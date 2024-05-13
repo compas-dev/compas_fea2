@@ -40,8 +40,8 @@ class PinBCShape(_BCShape):
         self.diameter = 400 * self.scale
         # FIXME this is wrong because it should follow the normal
         self.plane = Plane([self.x, self.y, self.z - self.height], direction)
-        self.circle = Circle(frame=self.plane.frame, radius=self.diameter / 2)
-        self.shape = Cone(radius=self.circle.radius, height=self.height, frame=self.plane.frame)
+        self.circle = Circle(frame=Frame.from_plane(self.plane), radius=self.diameter / 2)
+        self.shape = Cone(radius=self.circle.radius, height=self.height, frame=Frame.from_plane(self.plane))
 
 
 class FixBCShape(_BCShape):

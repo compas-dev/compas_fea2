@@ -18,6 +18,8 @@ from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
 from compas.tolerance import TOL
 
+from compas.tolerance import TOL
+
 import compas_fea2
 from compas_fea2.base import FEAData
 from compas_fea2.utilities._utils import timer
@@ -39,6 +41,7 @@ from .releases import _BeamEndRelease
 from .sections import ShellSection
 from .sections import SolidSection
 from .sections import _Section
+
 
 
 class _Part(FEAData):
@@ -736,9 +739,9 @@ class _Part(FEAData):
             except Exception:
                 polygon.plane = Frame.from_points(*polygon.points[-3:])
 
-        S = Scale.from_factors([tolerance] * 3, polygon.plane.frame)
-        T = Transformation.from_frame_to_frame(polygon.plane.frame, Frame.worldXY())
-        nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane.frame))
+        S = Scale.from_factors([tolerance] * 3, polygon.frame)
+        T = Transformation.from_frame_to_frame(Frame.from_plane(polygon.plane), Frame.worldXY())
+        nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
         polygon_xy = polygon.transformed(S)
         polygon_xy = polygon.transformed(T)
         return list(filter(lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy), nodes_on_plane))

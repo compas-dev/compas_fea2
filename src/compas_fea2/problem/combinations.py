@@ -44,7 +44,7 @@ class LoadCombination(FEAData):
 
     @classmethod
     def SLS(cls):
-        return cls(factors={"DL": 1, "SDL": 1, "LL": 1}, name="ULS")
+        return cls(factors={"DL": 1, "SDL": 1, "LL": 1}, name="SLS")
 
     @classmethod
     def Fire(cls):

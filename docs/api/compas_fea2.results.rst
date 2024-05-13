@@ -7,5 +7,12 @@ results
 .. autosummary::
     :toctree: generated/
 
-    Results
-    NodeFieldResults
+    Result
+    DisplacementResult
+    StressResult
+    MembraneStressResult
+    ShellStressResult
+    SolidStressResult
+    DisplacementFieldResults
+    ReactionFieldResults
+    StressFieldResults

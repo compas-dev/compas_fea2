@@ -18,8 +18,8 @@ Steps
 .. autosummary::
     :toctree: generated/
 
-    _Step
-    _GeneralStep
+    Step
+    GeneralStep
     _Perturbation
     ModalAnalysis
     ComplexEigenValue
@@ -45,16 +45,24 @@ Loads
 .. autosummary::
     :toctree: generated/
 
-    _Load
+    Load
     PrestressLoad
-    PointLoad
-    LineLoad
-    AreaLoad
+    NodeLoad
+    EdgeLoad
+    FaceLoad
     GravityLoad
     TributaryLoad
     HarmonicPointLoad
     HarmonicPressureLoad
     ThermalLoad
+
+Combinations
+============
+
+.. autosummary::
+    :toctree: generated/
+
+    LoadCombination
 
 Displacements
 =============
@@ -71,6 +79,11 @@ Load Patterns
     :toctree: generated/
 
     Pattern
+    NodeLoadPattern
+    PointLoadPattern
+    LineLoadPattern
+    AreaLoadPattern
+    VolumeLoadPattern
 
 Outputs
 =======

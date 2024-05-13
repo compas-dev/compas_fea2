@@ -55,9 +55,7 @@ Elements
 
 Elements are defined by the nodes they connect to and a section.
 
-
 >>>
-
 
 Parts
 =====

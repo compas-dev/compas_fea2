@@ -359,9 +359,9 @@ class _Part(FEAData):
 
         Examples
         --------
-        >>> mat = ElasticIsotropic(name='mat', E=29000, v=0.17, density=2.5e-9)
-        >>> sec = SolidSection('mysec', mat)
-        >>> part = DeformablePart.from_gmsh('part_gmsh', gmshModel, sec)
+        >>> mat = ElasticIsotropic(name="mat", E=29000, v=0.17, density=2.5e-9)
+        >>> sec = SolidSection("mysec", mat)
+        >>> part = DeformablePart.from_gmsh("part_gmsh", gmshModel, sec)
 
         """
         import numpy as np

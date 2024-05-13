@@ -49,7 +49,6 @@ class FEA2Viewer:
     """
 
     def __init__(self, obj, **kwargs):
-
         VIEWER_CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config_default.json")
         sf = kwargs.get("scale_factor", 1)
         self.app = App(config=VIEWER_CONFIG_FILE)

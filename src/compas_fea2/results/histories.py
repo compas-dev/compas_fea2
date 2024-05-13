@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 
 
 class StressHistoryResult:
-
     def __init__(self, name=None, **kwargs):
         super(StressHistoryResult, self).__init__(name=name, **kwargs)
         self.stress_history = []  # Initialize an empty list to store stress history

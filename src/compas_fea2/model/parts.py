@@ -3,37 +3,43 @@ from __future__ import division
 from __future__ import print_function
 
 from math import sqrt
-from typing import Iterable
 
-from compas.geometry import Plane, Box, bounding_box, centroid_points
-from compas.geometry import Point, Plane, Frame, Box
-from compas.geometry import Transformation, Scale
+from compas.geometry import Box
+from compas.geometry import Frame
+from compas.geometry import Plane
+from compas.geometry import Point
+from compas.geometry import Scale
+from compas.geometry import Transformation
+from compas.geometry import Vector
+from compas.geometry import bounding_box
+from compas.geometry import centroid_points
 from compas.geometry import distance_point_point_sqrd
 from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
-from compas.utilities import geometric_key
-from compas.geometry import Vector
+from compas.tolerance import TOL
 
 import compas_fea2
 from compas_fea2.base import FEAData
-
-from .nodes import Node
-from .elements import (
-    _Element,
-    _Element2D,
-    _Element1D,
-    _Element3D,
-    BeamElement,
-    HexahedronElement,
-    ShellElement,
-    TetrahedronElement,
-)
-from .materials.material import _Material
-from .sections import _Section, ShellSection, SolidSection
-from .releases import _BeamEndRelease
-from .groups import NodesGroup, ElementsGroup, FacesGroup
-
 from compas_fea2.utilities._utils import timer
+
+from .elements import BeamElement
+from .elements import HexahedronElement
+from .elements import ShellElement
+from .elements import TetrahedronElement
+from .elements import _Element
+from .elements import _Element1D
+from .elements import _Element2D
+from .elements import _Element3D
+from .groups import ElementsGroup
+from .groups import FacesGroup
+from .groups import NodesGroup
+from .materials.material import _Material
+from .nodes import Node
+from .releases import _BeamEndRelease
+from .sections import ShellSection
+from .sections import SolidSection
+from .sections import _Section
+
 
 class _Part(FEAData):
     """Base class for Parts.
@@ -221,6 +227,7 @@ class _Part(FEAData):
             return filter(lambda x: isinstance(x, _Element3D), self.elements)
         else:
             raise ValueError("dimension not supported")
+
     #     def __str__(self):
     #         return """
     # {}
@@ -265,7 +272,7 @@ class _Part(FEAData):
         prt = cls(name=name)
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         for line in lines:
-            #FIXME change tolerance
+            # FIXME change tolerance
             nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
             prt.add_nodes(nodes)
             element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section)
@@ -380,26 +387,20 @@ class _Part(FEAData):
 
         dimension = 2 if isinstance(section, SolidSection) else 1
 
-        ntags_per_element = np.split(
-            gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension])
-        )  # gmsh keys start from 1
+        ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
 
         for ntags in ntags_per_element:
             if split:
                 raise NotImplementedError("this feature is under development")
             element_nodes = [fea2_nodes[ntag] for ntag in ntags]
             if ntags.size == 3:
-                k = part.add_element(
-                    ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation)
-                )
+                k = part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
             elif ntags.size == 4:
                 if isinstance(section, ShellSection):
-                    k = part.add_element(
-                        ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation)
-                    )
+                    k = part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
                 else:
                     k = part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
-                    part.ndf = 3 #FIXME move outside the loop
+                    part.ndf = 3  # FIXME move outside the loop
             elif ntags.size == 8:
                 k = part.add_element(HexahedronElement(nodes=element_nodes, section=section))
             else:
@@ -411,12 +412,11 @@ class _Part(FEAData):
             gmshModel.generate_mesh(2)
             part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
 
-
         if kwargs.get("rigid", False):
             point = part._discretized_boundary_mesh.centroid()
             part.reference_point = Node(xyz=[point.x, point.y, point.z])
 
-        #FIXME get the planes on each face of the part and compute the centroid -> move to Part
+        # FIXME get the planes on each face of the part and compute the centroid -> move to Part
         # centroid_face = {}
         # for face in part._discretized_boundary_mesh.faces():
         #     centroid_face[geometric_key(part._discretized_boundary_mesh.face_centroid(face))] = face
@@ -477,16 +477,16 @@ class _Part(FEAData):
 
     @classmethod
     def from_step_file(cls, step_file, name=None, **kwargs):
+        import gmsh
+        from compas_gmsh.models import MeshModel
         from compas_occ.brep import Brep
         from OCC.Extend.DataExchange import read_step_file
-        from compas_gmsh.models import MeshModel
-        import gmsh
 
-        target_mesh_size = kwargs.get('target_mesh_size', 1) #FIXME redundant?
-        mesh_size_at_vertices = kwargs.get('mesh_size_at_vertices', None)
-        target_point_mesh_size = kwargs.get('target_point_mesh_size', None)
-        meshsize_max = kwargs.get('meshsize_max', None)
-        meshsize_min = kwargs.get('meshsize_min', None)
+        target_mesh_size = kwargs.get("target_mesh_size", 1)  # FIXME redundant?
+        mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
+        target_point_mesh_size = kwargs.get("target_point_mesh_size", None)
+        meshsize_max = kwargs.get("meshsize_max", None)
+        meshsize_min = kwargs.get("meshsize_min", None)
 
         print("Creating the part from the step file...")
         block = Brep()
@@ -594,7 +594,7 @@ class _Part(FEAData):
         if report:
             return {node: sqrt(distance) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
         nodes = [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
-        if len(nodes)==0:
+        if len(nodes) == 0:
             if compas_fea2.VERBOSE:
                 print(f"No nodes found at {point}")
             return
@@ -769,9 +769,7 @@ class _Part(FEAData):
                 eval(condition)
             except NameError as ne:
                 var_name = re.findall(r"'([^']*)'", str(ne))[0]
-                nodes.append(
-                    set(filter(lambda n: eval(condition.replace(var_name, str(getattr(n, var_name)))), part_nodes))
-                )
+                nodes.append(set(filter(lambda n: eval(condition.replace(var_name, str(getattr(n, var_name)))), part_nodes)))
         return list(set.intersection(*nodes))
 
     def contains_node(self, node):
@@ -791,7 +789,6 @@ class _Part(FEAData):
 
         """
         return node in self.nodes
-
 
     def add_node(self, node):
         # type: (Node) -> Node
@@ -931,9 +928,7 @@ class _Part(FEAData):
         if not self.discretized_boundary_mesh:
             raise AttributeError("The discretized_boundary_mesh has not been defined")
         if not node.on_boundary:
-            node._on_boundary = (
-                True if geometric_key(node.xyz, precision) in self.discretized_boundary_mesh.gkey_vertex() else False
-            )
+            node._on_boundary = True if TOL.geometric_key(node.xyz, precision) in self.discretized_boundary_mesh.gkey_vertex() else False
         return node.on_boundary
 
     # =========================================================================
@@ -1008,7 +1003,7 @@ class _Part(FEAData):
 
         """
         if not isinstance(element, _Element):
-            raise TypeError('{!r} is not an element.'.format(element))
+            raise TypeError("{!r} is not an element.".format(element))
 
         if self.contains_element(element):
             if compas_fea2.VERBOSE:
@@ -1103,21 +1098,14 @@ class _Part(FEAData):
             if not self._discretized_boundary_mesh.centroid_face:
                 centroid_face = {}
                 for face in self._discretized_boundary_mesh.faces():
-                    centroid_face[geometric_key(self._discretized_boundary_mesh.face_centroid(face))] = face
+                    centroid_face[TOL.geometric_key(self._discretized_boundary_mesh.face_centroid(face))] = face
             if isinstance(element, _Element3D):
-                if any(
-                    geometric_key(centroid_points([node.xyz for node in face.nodes]))
-                    in self._discretized_boundary_mesh.centroid_face
-                    for face in element.faces
-                ):
+                if any(TOL.geometric_key(centroid_points([node.xyz for node in face.nodes])) in self._discretized_boundary_mesh.centroid_face for face in element.faces):
                     element.on_boundary = True
                 else:
                     element.on_boundary = False
             elif isinstance(element, _Element2D):
-                if (
-                    geometric_key(centroid_points([node.xyz for node in element.nodes]))
-                    in self._discretized_boundary_mesh.centroid_face
-                ):
+                if TOL.geometric_key(centroid_points([node.xyz for node in element.nodes])) in self._discretized_boundary_mesh.centroid_face:
                     element.on_boundary = True
                 else:
                     element.on_boundary = False
@@ -1146,9 +1134,7 @@ class _Part(FEAData):
 
         """
         faces = []
-        for element in filter(
-            lambda x: isinstance(x, (_Element2D, _Element3D)) and self.is_element_on_boundary(x), self._elements
-        ):
+        for element in filter(lambda x: isinstance(x, (_Element2D, _Element3D)) and self.is_element_on_boundary(x), self._elements):
             for face in element.faces:
                 if all([is_point_on_plane(node.xyz, plane) for node in face.nodes]):
                     faces.append(face)
@@ -1375,9 +1361,10 @@ class _Part(FEAData):
         else:
             if self.discretized_boundary_mesh:
                 v.app.add(self.discretized_boundary_mesh, use_vertex_color=True)
-        v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), self.elements),
-                              show_vertices=draw_nodes,
-                              )
+        v.draw_shell_elements(
+            filter(lambda x: isinstance(x, ShellElement), self.elements),
+            show_vertices=draw_nodes,
+        )
         v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), self.elements), show_vertices=draw_nodes)
         # if draw_nodes:
         #     v.draw_nodes(self.nodes, node_labels)
@@ -1385,8 +1372,8 @@ class _Part(FEAData):
 
 
 class DeformablePart(_Part):
-    """Deformable part.
-    """
+    """Deformable part."""
+
     __doc__ += _Part.__doc__
     __doc__ += """
     Additional Attributes
@@ -1653,8 +1640,8 @@ class DeformablePart(_Part):
 
 
 class RigidPart(_Part):
-    """Rigid part.
-    """
+    """Rigid part."""
+
     __doc__ += _Part.__doc__
     __doc__ += """
     Addtional Attributes

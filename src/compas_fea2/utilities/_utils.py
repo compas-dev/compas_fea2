@@ -2,14 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import itertools
 import os
 import subprocess
-
 from functools import wraps
 from time import perf_counter
-
-import itertools
-from typing import Iterable
 
 from compas_fea2 import VERBOSE
 
@@ -85,7 +82,6 @@ def launch_process(cmd_args, cwd, verbose=False, **kwargs):
         print(f"Error: Command '{cmd_args}' failed with return code {e.returncode}")
 
 
-
 class extend_docstring:
     def __init__(self, method, note=False):
         self.doc = method.__doc__
@@ -143,6 +139,7 @@ def part_method(f):
         res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
+
     return wrapper
 
 
@@ -168,6 +165,7 @@ def step_method(f):
         res = [vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
+
     return wrapper
 
 
@@ -193,7 +191,9 @@ def problem_method(f):
         res = [vars for problem in self_obj.problems if (vars := getattr(problem, func_name)(*args[1::], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
+
     return wrapper
+
 
 # def problem_method(f):
 #     """Run a problem level method. In this way it is possible to bring to the
@@ -232,15 +232,14 @@ def problem_method(f):
 
 #     return wrapper
 
+
 def to_dimensionless(func):
-    """Decorator to convert pint Quantity objects to dimensionless in the base units.
-    """
+    """Decorator to convert pint Quantity objects to dimensionless in the base units."""
+
     def wrapper(*args, **kwargs):
-        new_args = [a.to_base_units().magnitude if hasattr(a, 'to_base_units') else a for a in args]
-        new_kwargs = {k: v.to_base_units().magnitude if hasattr(v, 'to_base_units') else v for k, v in kwargs.items()}
+        new_args = [a.to_base_units().magnitude if hasattr(a, "to_base_units") else a for a in args]
+        new_kwargs = {k: v.to_base_units().magnitude if hasattr(v, "to_base_units") else v for k, v in kwargs.items()}
         return func(*new_args, **new_kwargs)
+
     wrapper.original = func  # Preserve the original function
     return wrapper
-
-
-

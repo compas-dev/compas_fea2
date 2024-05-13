@@ -2,11 +2,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas.utilities.maps import geometric_key
 from compas.geometry import Point
-from compas_fea2.base import FEAData
+from compas.tolerance import TOL
 
 import compas_fea2
+from compas_fea2.base import FEAData
 
 
 class Node(FEAData):
@@ -164,7 +164,7 @@ class Node(FEAData):
 
     @property
     def gkey(self):
-        return geometric_key(self.xyz, precision=compas_fea2.PRECISION)
+        return TOL.geometric_key(self.xyz, precision=compas_fea2.PRECISION)
 
     @property
     def dof(self):

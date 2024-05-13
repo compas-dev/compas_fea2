@@ -20,7 +20,7 @@ DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
 
-def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision="3f"):
+def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3):
     """Create a default environment file if it doesn't exist and loads its variables.
 
     Parameters
@@ -57,7 +57,7 @@ if not load_dotenv():
 VERBOSE = os.getenv("VERBOSE").lower() == "true"
 POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
 GLOBAL_TOLERANCE = os.getenv("GLOBAL_TOLERANCE")
-PRECISION = os.getenv("PRECISION")
+PRECISION = int(os.getenv("PRECISION"))
 BACKEND = None
 BACKENDS = defaultdict(dict)
 

@@ -1,46 +1,30 @@
 import os
-import numpy as np
-
-from math import sqrt
 from typing import Iterable
+
+import numpy as np
+from compas.colors import Color
+from compas.colors import ColorMap
+from compas.datastructures import Mesh
+from compas.geometry import Line
+from compas.geometry import Point
+from compas.geometry import Polyhedron
+from compas.geometry import Translation
+from compas.geometry import Vector
+from compas.geometry import sum_vectors
 from compas_view2.app import App
 from compas_view2.objects import Collection
 from compas_view2.shapes import Arrow
 from compas_view2.shapes import Text
 
-from compas.colors import ColorMap, Color
-
-from compas.datastructures import Mesh
-from compas.geometry import Point
-from compas.geometry import Line
-from compas.geometry import Polyhedron
-from compas.geometry import Vector
-from compas.geometry import Transformation, Translation
-from compas.geometry import sum_vectors
-
-from compas_fea2.UI.viewer.shapes import (
-    PinBCShape,
-    FixBCShape,
-    RollerBCShape,
-    )
-
-from compas_fea2.model.bcs import (
-    FixedBC,
-    PinnedBC,
-    RollerBCX,
-    RollerBCY,
-    RollerBCZ,
-    RollerBCXY,
-    RollerBCXZ,
-    RollerBCYZ,
-    )
-
-from compas_fea2.postprocess import principal_stresses
-
-from compas_fea2.problem.loads import NodeLoad
+from compas_fea2.model.bcs import FixedBC
+from compas_fea2.model.bcs import PinnedBC
+from compas_fea2.model.bcs import RollerBCX
+from compas_fea2.model.bcs import RollerBCY
+from compas_fea2.model.bcs import RollerBCZ
 from compas_fea2.problem.steps import GeneralStep
-
-from compas_fea2.results import DisplacementFieldResults, StressFieldResults
+from compas_fea2.UI.viewer.shapes import FixBCShape
+from compas_fea2.UI.viewer.shapes import PinBCShape
+from compas_fea2.UI.viewer.shapes import RollerBCShape
 
 # def hextorgb(hex):
 #     return tuple(i / 255 for i in hex_to_rgb(hex))

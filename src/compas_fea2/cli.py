@@ -1,12 +1,15 @@
 """
 Console script for compas_fea2.
 """
-import sys
-import os
-import click
+
 import json
+import os
+import sys
+
+import click
 
 from compas_fea2 import HOME
+
 try:
     from fea2_extension.main import init_plugin
 except:

@@ -4,20 +4,15 @@ from __future__ import print_function
 
 from operator import itemgetter
 
-from compas.datastructures import Mesh
-from compas.geometry import Brep
 from compas.geometry import Frame
+from compas.geometry import Line
 from compas.geometry import Plane
 from compas.geometry import Polygon
-from compas.geometry import Line
-from compas.geometry import Vector
-from compas.geometry import Box
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
-from compas.utilities import pairwise
+from compas.itertools import pairwise
 
 from compas_fea2.base import FEAData
-
 
 
 class _Element(FEAData):
@@ -174,43 +169,45 @@ class _Element(FEAData):
     def shape(self):
         return self._shape
 
+
 # ==============================================================================
 # 0D elements
 # ==============================================================================
 
-#TODO: remove. This is how abaqus does it but it is better to define the mass as a property of the nodes.
+
+# TODO: remove. This is how abaqus does it but it is better to define the mass as a property of the nodes.
 class MassElement(_Element):
-    """A 0D element for concentrated point mass.
-    """
+    """A 0D element for concentrated point mass."""
+
 
 class _Element0D(_Element):
-    """Element with 1 dimension.
-    """
+    """Element with 1 dimension."""
+
     def __init__(self, nodes, frame, implementation=None, rigid=False, **kwargs):
         super(_Element0D, self).__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
 
+
 class SpringElement(_Element0D):
-    """A 0D spring element.
-    """
+    """A 0D spring element."""
+
 
 class LinkElement(_Element0D):
-    """A 0D link element.
-    """
+    """A 0D link element."""
 
 
 # ==============================================================================
 # 1D elements
 # ==============================================================================
 class _Element1D(_Element):
-    """Element with 1 dimension.
-    """
+    """Element with 1 dimension."""
+
     def __init__(self, nodes, section, frame=None, implementation=None, rigid=False, **kwargs):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
         self._curve = Line(nodes[0].point, nodes[-1].point)
         # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        self._shape = section._shape #Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
+        self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
 
     @property
     def frame(self):
@@ -225,7 +222,6 @@ class _Element1D(_Element):
         return self.section.A * self.length
 
 
-
 class BeamElement(_Element1D):
     """A 1D element that resists axial, shear, bending and torsion.
 
@@ -236,19 +232,17 @@ class BeamElement(_Element1D):
 
     """
 
+
 class TrussElement(_Element1D):
-    """A 1D element that resists axial loads.
-    """
+    """A 1D element that resists axial loads."""
 
 
 class StrutElement(TrussElement):
-    """A truss element that resists axial compressive loads.
-    """
+    """A truss element that resists axial compressive loads."""
 
 
 class TieElement(TrussElement):
-    """A truss element that resists axial tensile loads.
-    """
+    """A truss element that resists axial tensile loads."""
 
 
 # ==============================================================================
@@ -325,10 +319,10 @@ class Face(FEAData):
 
 
 class _Element2D(_Element):
-    """Element with 2 dimensions.
-    """
+    """Element with 2 dimensions."""
+
     __doc__ += _Element.__doc__
-    __doc__ +="""
+    __doc__ += """
     Additional Parameters
     ---------------------
     faces : [:class:`compas_fea2.model.elements.Face]
@@ -375,7 +369,6 @@ class _Element2D(_Element):
     def reference_point(self):
         return centroid_points([face.centroid for face in self.faces])
 
-
     def _construct_faces(self, face_indices):
         """Construct the face-nodes dictionary.
 
@@ -390,10 +383,7 @@ class _Element2D(_Element):
         dict
             Dictionary with face names and the corresponding nodes.
         """
-        return [
-            Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self)
-            for name, indices in face_indices.items()
-        ]
+        return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
 
 class ShellElement(_Element2D):
@@ -501,10 +491,7 @@ class _Element3D(_Element):
             Dictionary with face names and the corresponding nodes.
 
         """
-        return [
-            Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self)
-            for name, indices in face_indices.items()
-        ]
+        return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
     @property
     def area(self):
@@ -560,11 +547,7 @@ class TetrahedronElement(_Element3D):
         """The volume property."""
 
         def determinant_3x3(m):
-            return (
-                m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
-                - m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
-                + m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1])
-            )
+            return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1]) + m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1])
 
         def subtract(a, b):
             return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
@@ -586,13 +569,11 @@ class TetrahedronElement(_Element3D):
 
 
 class PentahedronElement(_Element3D):
-    """A Solid element with 5 faces (extruded triangle).
-    """
+    """A Solid element with 5 faces (extruded triangle)."""
 
 
 class HexahedronElement(_Element3D):
-    """A Solid cuboid element with 6 faces (extruded rectangle).
-    """
+    """A Solid cuboid element with 6 faces (extruded rectangle)."""
 
     def __init__(self, nodes, section, implementation=None, **kwargs):
         super(HexahedronElement, self).__init__(

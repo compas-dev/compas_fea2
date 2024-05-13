@@ -3,8 +3,9 @@ from __future__ import division
 from __future__ import print_function
 
 from math import log
+
 from .material import _Material
-from ...utilities._utils import extend_docstring
+
 
 class Concrete(_Material):
     """Elastic and plastic-cracking Eurocode based concrete material
@@ -93,6 +94,7 @@ fr  : {}
             self.name, self.density, self.E, self.v, self.G, self.fck, self.fr
         )
 
+
 # @extend_docstring(_Material)
 class ConcreteSmearedCrack(_Material):
     """Elastic and plastic, cracking concrete material.
@@ -178,8 +180,8 @@ fr : {}
 
 
 class ConcreteDamagedPlasticity(_Material):
-    """Damaged plasticity isotropic and homogeneous material.
-    """
+    """Damaged plasticity isotropic and homogeneous material."""
+
     __doc__ += _Material.__doc__
     __doc__ += """
     Additional Parameters

@@ -1,7 +1,7 @@
 import os
 from collections import defaultdict
 from dotenv import load_dotenv
-from compas.tolerance import Tolerance
+from compas.tolerance import Tolerance  # noqa: F401
 
 
 __author__ = ["Francesco Ranaudo"]
@@ -32,7 +32,8 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
     global_tolerance : int, optional
         Tolerance for the model, by default 1
     precision : str, optional
-        Values approximation, by default '3f'
+        Values approximation, by default '3'.
+        See `compas.tolerance.Tolerance.precision` for more information.
 
     """
     env_path = os.path.abspath(os.path.join(HERE, ".env"))

@@ -184,7 +184,7 @@ class Model(FEAData):
         try:
             bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
             return Box.from_bounding_box(bb)
-        except:
+        except Exception:
             print("WARNING: bounding box not generated")
             return None
 

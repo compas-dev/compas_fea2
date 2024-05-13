@@ -23,7 +23,6 @@ from compas_fea2.results.database import ResultsDatabase
 from compas_fea2.utilities._utils import timer
 
 
-
 class Problem(FEAData):
     """A Problem is a collection of analysis steps (:class:`compas_fea2.problem._Step)
     applied in a specific sequence.
@@ -773,7 +772,7 @@ Analysis folder path : {}
             for part in step.model.parts:
                 try:
                     v.draw_mesh(part.discretized_boundary_mesh, opacity=original)
-                except:
+                except Exception:
                     print("No mesh found")
                 # v.draw_nodes_field_vector(step=step, field_name='U', vector_sf=scale_factor)
 

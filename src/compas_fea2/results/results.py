@@ -806,7 +806,7 @@ class ShellStressResult(MembraneStressResult):
 
     @property
     # Third invariant of the deviatoric stress tensor: J3
-    def J3_top(self):
+    def J3_bottom(self):
         return np.linalg.det(self.deviatoric_stress_bottom)
 
     @property

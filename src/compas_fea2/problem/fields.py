@@ -19,8 +19,7 @@ class _PrescribedField(FEAData):
 
 
 class PrescribedTemperatureField(_PrescribedField):
-    """Temperature field
-    """
+    """Temperature field"""
 
     def __init__(self, temperature, name=None, **kwargs):
         super(PrescribedTemperatureField, self).__init__(name, **kwargs)

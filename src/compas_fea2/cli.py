@@ -11,8 +11,8 @@ import click
 from compas_fea2 import HOME
 
 try:
-    from fea2_extension.main import init_plugin
-except:
+    from fea2_extension.main import init_plugin  # type: ignore
+except Exception:
     print("WARNING: fea2_extension module not installed.")
 
 

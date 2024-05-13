@@ -18,8 +18,6 @@ from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
 from compas.tolerance import TOL
 
-from compas.tolerance import TOL
-
 import compas_fea2
 from compas_fea2.base import FEAData
 from compas_fea2.utilities._utils import timer
@@ -41,7 +39,6 @@ from .releases import _BeamEndRelease
 from .sections import ShellSection
 from .sections import SolidSection
 from .sections import _Section
-
 
 
 class _Part(FEAData):
@@ -163,7 +160,7 @@ class _Part(FEAData):
         # if not self._boundary_mesh:
         try:
             return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
-        except:
+        except Exception:
             print("WARNING: BoundingBox not generated")
             return None
         #     # raise AttributeError("Missing the bounding mesh of the part.")
@@ -480,23 +477,16 @@ class _Part(FEAData):
 
     @classmethod
     def from_step_file(cls, step_file, name=None, **kwargs):
-        import gmsh
         from compas_gmsh.models import MeshModel
-        from compas_occ.brep import Brep
-        from OCC.Extend.DataExchange import read_step_file
 
-        target_mesh_size = kwargs.get("target_mesh_size", 1)  # FIXME redundant?
+        target_mesh_size = kwargs.get("target_mesh_size", 1)  # FIXME redundant?  # noqa: F841
         mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
         target_point_mesh_size = kwargs.get("target_point_mesh_size", None)
         meshsize_max = kwargs.get("meshsize_max", None)
         meshsize_min = kwargs.get("meshsize_min", None)
 
         print("Creating the part from the step file...")
-        block = Brep()
-        block.occ_shape = read_step_file(step_file)
-        block.make_solid()
-        gmshModel = MeshModel()
-        gmsh.open(step_file)
+        gmshModel = MeshModel.from_step(step_file)
 
         # for index, vertex in enumerate(block.vertices):
         #     point = vertex.point

@@ -7,13 +7,16 @@ import os
 import sys
 
 import click
+import importlib
+import dotenv
 
-from compas_fea2 import HOME
+from compas_fea2 import HOME, VERBOSE
 
 try:
     from fea2_extension.main import init_plugin  # type: ignore
 except Exception:
-    print("WARNING: fea2_extension module not installed.")
+    if VERBOSE:
+        print("WARNING: fea2_extension module not installed.")
 
 
 # -------------------------------- MAIN ----------------------------------#
@@ -46,11 +49,10 @@ def init_backend(backend, clean):
 
 
 @main.command()
-# @click.option('--clean', default='False', help='remove existing directories')
 @click.argument("backend")
 @click.argument("setting")
 @click.argument("value")
-def change_settings(backend, setting, value):
+def change_setting(backend, setting, value):
     """Change a setting for the specified backend.\n
     backend : txt\n
         The name of the backend.
@@ -58,16 +60,14 @@ def change_settings(backend, setting, value):
         The setting to be changed.
     value : txt\n
         The new value for the setting.
+
+Example usage:\n
+    fea2 change-setting opensees exe "Applications/OpenSees3.5.0/bin/OpenSees"
     """
-    backend_settings = os.path.join(HOME, "src", "compas_fea2", "backends", backend.lower(), "settings.json")
-
-    with open(backend_settings, "r") as f:
-        settings = json.load(f)
-
-    with open(backend_settings, "w") as f:
-        settings[setting] = value
-        json.dump(settings, f)
-
+    m = importlib.import_module("compas_fea2_"+backend.lower())
+    env = os.path.join(m.HOME,"src", "compas_fea2_"+backend.lower(),".env")
+    dotenv.set_key(env, setting.upper(), value)
+    print(f"{setting.upper()} set to {value} for compas_fea2_{backend.lower()}")
 
 # -------------------------------- DEBUG ----------------------------------#
 if __name__ == "__main__":

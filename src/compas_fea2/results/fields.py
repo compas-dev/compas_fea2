@@ -1,21 +1,14 @@
 from typing import Iterable
-import numpy as np
-import matplotlib.pyplot as plt
 
-from compas.geometry import Vector, Frame
-from compas.geometry import Transformation, Rotation
-
-import compas_fea2
 from compas_fea2.base import FEAData
+from compas_fea2.model import _Element2D
+from compas_fea2.model import _Element3D
 
-from compas_fea2.model import _Element, _Element2D, _Element3D
-from compas_fea2.model import ElasticIsotropic
-from .results import (DisplacementResult,
-                      ShellStressResult,
-                      SolidStressResult,
-                      ReactionResult)
+from .results import DisplacementResult
+from .results import ReactionResult
+from .results import ShellStressResult
+from .results import SolidStressResult
 
-from .database import ResultsDatabase
 
 class FieldResults(FEAData):
     """FieldResults object. This is a collection of Result objects that define a field.
@@ -56,6 +49,7 @@ class FieldResults(FEAData):
     FieldResults are registered to a :class:`compas_fea2.problem.Problem`.
 
     """
+
     def __init__(self, problem, field_name, name=None, *args, **kwargs):
         super(FieldResults, self).__init__(name, *args, **kwargs)
         self._registration = problem
@@ -92,7 +86,7 @@ class FieldResults(FEAData):
 
     @property
     def results_columns(self):
-        return ["step", "part", "key"]+self.components_names
+        return ["step", "part", "key"] + self.components_names
 
     def _get_db_results(self, members, steps):
         """Get the results for the given members and steps in the database
@@ -120,20 +114,16 @@ class FieldResults(FEAData):
         steps_names = set([step.name for step in steps])
 
         if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "key"]+self._components_names_3d
+            columns = ["step", "part", "key"] + self._components_names_3d
             field_name = self._field_name_3d
         elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "key"]+self._components_names_2d
+            columns = ["step", "part", "key"] + self._components_names_2d
             field_name = self._field_name_2d
         else:
-            columns = ["step", "part", "key"]+self._components_names
+            columns = ["step", "part", "key"] + self._components_names
             field_name = self._field_name
 
-        results_set = self.rdb.get_rows(
-            field_name,
-            columns,
-            {"key":members_keys, "part": parts_names, "step": steps_names}
-            )
+        results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
         return results_set
 
     def _to_result(self, results_set):
@@ -150,10 +140,10 @@ class FieldResults(FEAData):
         dic
             Dictiorany grouping the results per Step.
         """
-        results={}
+        results = {}
         for r in results_set:
             step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step,[])
+            results.setdefault(step, [])
             part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
             if not part:
                 raise ValueError(f"Part {r[1]} not in model")
@@ -194,21 +184,11 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        results_set = self.rdb.get_func_row(self.field_name,
-                                            self.field_name+str(component),
-                                            "MAX",
-                                            {"step":[step.name]},
-                                            self.results_columns
-                                            )
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
     def get_min_component(self, component, step):
-        results_set = self.rdb.get_func_row(self.field_name,
-                                            self.field_name+str(component),
-                                            "MIN",
-                                            {"step":[step.name]},
-                                            self.results_columns
-                                            )
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
     def get_limits_component(self, component, step):
@@ -230,14 +210,9 @@ class FieldResults(FEAData):
         return [self.get_min_component(component, step), self.get_max_component(component, step)]
 
     def get_limits_absolute(self, step):
-        limits=[]
+        limits = []
         for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name,
-                                                'magnitude',
-                                                func,
-                                                {"step":[step.name]},
-                                                self.results_columns
-                                                ))
+            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
         return [self._to_result(limit)[step][0] for limit in limits]
 
     def get_results_at_point(self, point, distance, plane=None, steps=None):
@@ -274,10 +249,11 @@ class DisplacementFieldResults(FieldResults):
     FieldResults : _type_
         _description_
     """
+
     def __init__(self, problem, name=None, *args, **kwargs):
         super(DisplacementFieldResults, self).__init__(problem=problem, field_name="U", name=name, *args, **kwargs)
-        self._components_names = ['U1', 'U2', 'U3']
-        self._invariants_names = ['magnitude']
+        self._components_names = ["U1", "U2", "U3"]
+        self._invariants_names = ["magnitude"]
         self._results_class = DisplacementResult
         self._results_func = "find_node_by_key"
 
@@ -294,16 +270,18 @@ class ReactionFieldResults(FieldResults):
     FieldResults : _type_
         _description_
     """
+
     def __init__(self, problem, name=None, *args, **kwargs):
         super(ReactionFieldResults, self).__init__(problem=problem, field_name="RF", name=name, *args, **kwargs)
-        self._components_names = ['RF1', 'RF2', 'RF3']
-        self._invariants_names = ['magnitude']
+        self._components_names = ["RF1", "RF2", "RF3"]
+        self._invariants_names = ["magnitude"]
         self._results_class = ReactionResult
         self._results_func = "find_node_by_key"
 
     def results(self, step):
         nodes = self.model.nodes
         return self.get_results(nodes, steps=step)[step]
+
 
 class StressFieldResults(FEAData):
     """_summary_
@@ -313,11 +291,12 @@ class StressFieldResults(FEAData):
     FieldResults : _type_
         _description_
     """
+
     def __init__(self, problem, name=None, *args, **kwargs):
         super(StressFieldResults, self).__init__(name, *args, **kwargs)
         self._registration = problem
-        self._components_names_2d = ['S11', 'S22', 'S12', 'M11', 'M22', 'M12']
-        self._components_names_3d = ["S11", "S22","S23", "S12", "S13","S33"]
+        self._components_names_2d = ["S11", "S22", "S12", "M11", "M22", "M12"]
+        self._components_names_3d = ["S11", "S22", "S23", "S12", "S13", "S33"]
         self._field_name_2d = "S2D"
         self._field_name_3d = "S3D"
         self._results_class_2d = ShellStressResult
@@ -374,19 +353,15 @@ class StressFieldResults(FEAData):
         steps_names = set([step.name for step in steps])
 
         if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "key"]+self._components_names_3d
+            columns = ["step", "part", "key"] + self._components_names_3d
             field_name = self._field_name_3d
         elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "key"]+self._components_names_2d
+            columns = ["step", "part", "key"] + self._components_names_2d
             field_name = self._field_name_2d
         else:
             raise ValueError("Not an element")
 
-        results_set = self.rdb.get_rows(
-            field_name,
-            columns,
-            {"key":members_keys, "part": parts_names, "step": steps_names}
-            )
+        results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
         return results_set
 
     def _to_result(self, results_set):
@@ -403,10 +378,10 @@ class StressFieldResults(FEAData):
         dic
             Dictiorany grouping the results per Step.
         """
-        results={}
+        results = {}
         for r in results_set:
             step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step,[])
+            results.setdefault(step, [])
             part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
             if not part:
                 raise ValueError(f"Part {r[1]} not in model")
@@ -454,21 +429,11 @@ class StressFieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        results_set = self.rdb.get_func_row(self.field_name,
-                                            self.field_name+str(component),
-                                            "MAX",
-                                            {"step":[step.name]},
-                                            self.results_columns
-                                            )
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
     def get_min_component(self, component, step):
-        results_set = self.rdb.get_func_row(self.field_name,
-                                            self.field_name+str(component),
-                                            "MIN",
-                                            {"step":[step.name]},
-                                            self.results_columns
-                                            )
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
     def get_limits_component(self, component, step):
@@ -490,14 +455,9 @@ class StressFieldResults(FEAData):
         return [self.get_min_component(component, step), self.get_max_component(component, step)]
 
     def get_limits_absolute(self, step):
-        limits=[]
+        limits = []
         for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name,
-                                                'magnitude',
-                                                func,
-                                                {"step":[step.name]},
-                                                self.results_columns
-                                                ))
+            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
         return [self._to_result(limit)[step][0] for limit in limits]
 
     def get_results_at_point(self, point, distance, plane=None, steps=None):
@@ -520,6 +480,7 @@ class StressFieldResults(FEAData):
         results = []
         for step in steps:
             results.append(self.get_results(nodes, steps)[step])
+
     # @property
     # def results_columns(self):
     #     return ["step", "part", "key"]+self.components_names
@@ -527,4 +488,3 @@ class StressFieldResults(FEAData):
     def results(self, step):
         elements = self.model.elements
         return self.get_results(elements, steps=step)[step]
-

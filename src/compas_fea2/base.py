@@ -1,21 +1,22 @@
-from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 
-from typing import Iterable
-from compas.data import Data
-import compas_fea2
 import importlib
 import uuid
+from abc import abstractmethod
 from typing import Iterable
 
-from abc import abstractmethod
+from compas.data import Data
+
+import compas_fea2
 
 from .utilities._utils import to_dimensionless
 
+
 class DimensionlessMeta(type):
-    """Metaclass for converting pint Quantity objects to dimensionless.
-    """
+    """Metaclass for converting pint Quantity objects to dimensionless."""
+
     def __new__(meta, name, bases, class_dict):
         # Decorate each method
         for attributeName, attribute in class_dict.items():
@@ -56,6 +57,7 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         The mother object where this object is registered to.
 
     """
+
     def __new__(cls, *args, **kwargs):
         """Try to get the backend plug-in implementation, otherwise use the base
         one.
@@ -78,9 +80,7 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         title = "compas_fea2 {0} object".format(self.__class__.__name__)
         separator = "-" * (len(title))
         data_extended = []
-        for a in list(
-            filter(lambda a: not a.startswith("__") and not a.startswith("_") and a != "jsondefinitions", dir(self))
-        ):
+        for a in list(filter(lambda a: not a.startswith("__") and not a.startswith("_") and a != "jsondefinitions", dir(self))):
             try:
                 attr = getattr(self, a)
                 if not callable(attr):
@@ -92,8 +92,8 @@ class FEAData(Data, metaclass=DimensionlessMeta):
                 pass
         return """\n{}\n{}\n{}\n""".format(title, separator, "\n".join(data_extended))
 
-    def to_html(self):
-        return highlight(str(self), PythonLexer(), HtmlFormatter(full=True, style='friendly'))
+    # def to_html(self):
+    #     return highlight(str(self), PythonLexer(), HtmlFormatter(full=True, style="friendly"))
 
     @abstractmethod
     def jobdata(self, *args, **kwargs):

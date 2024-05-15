@@ -4,13 +4,14 @@ from __future__ import print_function
 
 from math import pi
 
+from compas.geometry import Circle
+from compas.geometry import Frame
+from compas.geometry import Polygon
+
 from compas_fea2 import units
 from compas_fea2.base import FEAData
-from .materials.material import _Material
 
-from compas.geometry import Circle
-from compas.geometry import Polygon
-from compas.geometry import Frame
+from .materials.material import _Material
 
 
 class _Section(FEAData):
@@ -517,7 +518,8 @@ class CircularSection(BeamSection):
             material=material,
             **kwargs,
         )
-        self._shape = Circle(radius=r, frame=Frame([0,0,0], [1,0,0], [0,1,0]))
+        self._shape = Circle(radius=r, frame=Frame([0, 0, 0], [1, 0, 0], [0, 1, 0]))
+
 
 class HexSection(BeamSection):
     """Hexagonal hollow section.
@@ -790,9 +792,7 @@ class RectangularSection(BeamSection):
             material=material,
             **kwargs,
         )
-        self._shape = Polygon(points=[[-w/2, -h/2, 0], [w/2, -h/2, 0], [w/2, h/2, 0], [-w/2, h/2, 0]])
-
-
+        self._shape = Polygon(points=[[-w / 2, -h / 2, 0], [w / 2, -h / 2, 0], [w / 2, h / 2, 0], [-w / 2, h / 2, 0]])
 
 
 class TrapezoidalSection(BeamSection):
@@ -1017,6 +1017,7 @@ class TieSection(TrussSection):
 # 2D
 # ==============================================================================
 
+
 class ShellSection(_Section):
     """Section for shell elements.
 
@@ -1068,6 +1069,7 @@ class MembraneSection(_Section):
 # ==============================================================================
 # 3D
 # ==============================================================================
+
 
 class SolidSection(_Section):
     """Section for solid elements.

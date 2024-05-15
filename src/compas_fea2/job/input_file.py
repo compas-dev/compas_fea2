@@ -3,8 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+
 from compas_fea2 import VERBOSE
 from compas_fea2.base import FEAData
+
 
 class InputFile(FEAData):
     """Input file object for standard FEA.

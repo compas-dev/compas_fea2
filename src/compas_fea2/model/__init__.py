@@ -126,7 +126,6 @@ __all__ = [
     "_Element3D",
     "TetrahedronElement",
     "HexahedronElement",
-
     "_Material",
     "UserMaterial",
     "Concrete",
@@ -138,11 +137,9 @@ __all__ = [
     "ElasticPlastic",
     "Steel",
     "Timber",
-
     "HardContactFrictionPenalty",
     "HardContactNoFriction",
     "HardContactRough",
-
     "_Section",
     "MassSection",
     "BeamSection",
@@ -161,23 +158,19 @@ __all__ = [
     "TrussSection",
     "StrutSection",
     "TieSection",
-
     "_Constraint",
-    "MultiPointConstraint",
+    "_MultiPointConstraint",
     "TieMPC",
     "BeamMPC",
     "TieConstraint",
-
     "_BeamEndRelease",
     "BeamEndPinRelease",
     "BeamEndSliderRelease",
-
     "_Group",
     "NodesGroup",
     "ElementsGroup",
     "FacesGroup",
     "PartsGroup",
-
     "_BoundaryCondition",
     "GeneralBC",
     "FixedBCX",
@@ -194,7 +187,6 @@ __all__ = [
     "RollerBCXY",
     "RollerBCYZ",
     "RollerBCXZ",
-
     "_InitialCondition",
     "InitialTemperatureField",
     "InitialStressField",

@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from compas_fea2.utilities._utils import extend_docstring
+
 
 class _Material(FEAData):
     """Basic Material
@@ -168,6 +168,7 @@ Gzx : {}
             self.Gyz,
             self.Gzx,
         )
+
 
 # @extend_docstring(_Material)
 class ElasticIsotropic(_Material):

@@ -2,17 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from typing import Iterable
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from compas.geometry import Frame
+from compas.geometry import Transformation
+from compas.geometry import Vector
 
-from compas.geometry import Vector, Frame
-from compas.geometry import Transformation, Rotation
-
-import compas_fea2
 from compas_fea2.base import FEAData
-
-from compas_fea2.model import _Element
 from compas_fea2.model import ElasticIsotropic
 
 
@@ -76,7 +72,8 @@ class Result(FEAData):
         float
             The safety factor. Values higher than 1 are not safe.
         """
-        return abs(self.vector[component]/allowable) if self.vector[component] != 0 else 1
+        return abs(self.vector[component] / allowable) if self.vector[component] != 0 else 1
+
 
 class DisplacementResult(Result):
     """DisplacementResult object.
@@ -117,7 +114,8 @@ class DisplacementResult(Result):
     -----
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
-    def __init__(self, node, u1=0., u2=0., u3=0., **kwargs):
+
+    def __init__(self, node, u1=0.0, u2=0.0, u3=0.0, **kwargs):
         super(DisplacementResult, self).__init__(location=node, **kwargs)
         self._u1 = u1
         self._u2 = u2
@@ -190,6 +188,7 @@ class ReactionResult(Result):
     -----
     ReactionResults are registered to a :class:`compas_fea2.model.Node`
     """
+
     def __init__(self, node, rf1, rf2, rf3, **kwargs):
         super(ReactionResult, self).__init__(node, **kwargs)
         self._rf1 = rf1
@@ -263,6 +262,7 @@ class SectionForcesResult(Result):
     -----
     SectionForcesResults are registered to a :class:`compas_fea2.model._Element
     """
+
     def __init__(self, node, **kwargs):
         super(SectionForcesResult, self).__init__(node, **kwargs)
 
@@ -357,16 +357,14 @@ class StressResult(Result):
     -----
     StressResults are registered to a :class:`compas_fea2.model._Element
     """
+
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
 
-        self._local_stress = np.array([[s11, s12, s13],
-                                        [s12, s22, s23],
-                                        [s13, s23, s33]])
+        self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
 
         self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
-
 
     @property
     def local_stress(self):
@@ -401,7 +399,6 @@ class StressResult(Result):
 
         return strain_tensor
 
-
     @property
     def element(self):
         return self.location
@@ -427,17 +424,17 @@ class StressResult(Result):
         return 0.5 * np.trace(np.dot(self.deviatoric_stress, self.deviatoric_stress))
 
     @property
-   # Third invariant of the deviatoric stress tensor: J3
+    # Third invariant of the deviatoric stress tensor: J3
     def J3(self):
         return np.linalg.det(self.deviatoric_stress)
 
     @property
     def hydrostatic_stress(self):
-        return  self.I1 / len(self.global_stress)
+        return self.I1 / len(self.global_stress)
 
     @property
     def deviatoric_stress(self):
-        return  self.global_stress - np.eye(len(self.global_stress)) * self.hydrostatic_stress
+        return self.global_stress - np.eye(len(self.global_stress)) * self.hydrostatic_stress
 
     @property
     # Octahedral normal and shear stresses
@@ -466,7 +463,7 @@ class StressResult(Result):
 
     @property
     def smid(self):
-        if len(self.principal_stresses_values)==3:
+        if len(self.principal_stresses_values) == 3:
             return [x for x in self.principal_stresses_values if x != self.smin and x != self.smax]
         else:
             return None
@@ -478,7 +475,7 @@ class StressResult(Result):
         sorted_indices = np.argsort(eigenvalues)
         eigenvectors = eigenvectors[:, sorted_indices]
         eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
 
     @property
     def von_mises_stress(self):
@@ -554,12 +551,11 @@ class StressResult(Result):
         if self.global_stress.shape != (3, 3):
             raise ValueError("Mohr's circles computation requires a 3D stress state.")
 
-
         # Calculate the centers and radii of the Mohr's circles
         circles = []
         for i in range(3):
             sigma1 = self.principal_stresses_values[i]
-            for j in range(i+1, 3):
+            for j in range(i + 1, 3):
                 sigma2 = self.principal_stresses_values[j]
                 center = (sigma1 + sigma2) / 2
                 radius = abs(sigma1 - sigma2) / 2
@@ -574,8 +570,8 @@ class StressResult(Result):
 
         # Calculate the center and radius of the Mohr's Circle
         sigma_x, sigma_y, tau_xy = self.global_stress[0, 0], self.global_stress[1, 1], self.global_stress[0, 1]
-        center = ((sigma_x + sigma_y) / 2)
-        radius = np.sqrt(((sigma_x - sigma_y) / 2)**2 + tau_xy**2)
+        center = (sigma_x + sigma_y) / 2
+        radius = np.sqrt(((sigma_x - sigma_y) / 2) ** 2 + tau_xy**2)
 
         # Create the circle
         theta = np.linspace(0, 2 * np.pi, 100)
@@ -593,23 +589,23 @@ class StressResult(Result):
         plt.plot(x, y, label="Mohr's Circle")
 
         # Plotting the principal stresses
-        plt.scatter([center + radius, center - radius], [0, 0], color='red')
-        plt.text(center + radius, 0, f'$\\sigma_1$')
-        plt.text(center - radius, 0, f'$\\sigma_2$')
+        plt.scatter([center + radius, center - radius], [0, 0], color="red")
+        plt.text(center + radius, 0, "$\\sigma_1$")
+        plt.text(center - radius, 0, "$\\sigma_2$")
 
         # Plotting the original stresses
-        plt.scatter([sigma_x, sigma_y], [tau_xy, -tau_xy], color='blue')
-        plt.text(sigma_x, tau_xy, f'($\\sigma_x$, $\\tau$)')
-        plt.text(sigma_y, -tau_xy, f'($\\sigma_y$, $-\\tau$)')
+        plt.scatter([sigma_x, sigma_y], [tau_xy, -tau_xy], color="blue")
+        plt.text(sigma_x, tau_xy, "($\\sigma_x$, $\\tau$)")
+        plt.text(sigma_y, -tau_xy, "($\\sigma_y$, $-\\tau$)")
 
         # Axes and grid
-        plt.axhline(0, color='black',linewidth=0.5)
-        plt.axvline(center, color='grey', linestyle='--', linewidth=0.5)
-        plt.grid(color = 'gray', linestyle = '--', linewidth = 0.5)
+        plt.axhline(0, color="black", linewidth=0.5)
+        plt.axvline(center, color="grey", linestyle="--", linewidth=0.5)
+        plt.grid(color="gray", linestyle="--", linewidth=0.5)
         plt.xlabel("Normal Stress ($\\sigma$)")
         plt.ylabel("Shear Stress ($\\tau$)")
         plt.title("Mohr's Circle")
-        plt.axis('equal')
+        plt.axis("equal")
         plt.legend()
         plt.show()
 
@@ -628,8 +624,8 @@ class StressResult(Result):
             ax.add_artist(circle)
 
             # Plot the center of the circle
-            plt.scatter(center, 0, color='red')
-            plt.text(center, 0, f'C{i}')
+            plt.scatter(center, 0, color="red")
+            plt.text(center, 0, f"C{i}")
 
         # Set the limits and labels of the plot
         max_radius = max(radius for _, radius in circles)
@@ -637,14 +633,14 @@ class StressResult(Result):
         min_center = min(center for center, _ in circles)
         plt.xlim(min_center - max_radius - 10, max_center + max_radius + 10)
         plt.ylim(-max_radius - 10, max_radius + 10)
-        plt.axhline(0, color='black', linewidth=0.5)
-        plt.axvline(0, color='black', linewidth=0.5)
+        plt.axhline(0, color="black", linewidth=0.5)
+        plt.axvline(0, color="black", linewidth=0.5)
         plt.xlabel("Normal Stress ($\\sigma$)")
         plt.ylabel("Shear Stress ($\\tau$)")
         plt.title("Mohr's Circles for 3D Stress State")
         plt.legend()
         plt.grid(True)
-        plt.axis('equal')
+        plt.axis("equal")
 
         # Show the plot
         plt.show()
@@ -696,9 +692,11 @@ class StressResult(Result):
     #     X = Transformation.from_frame(self.location.frame)
     #     .transformed(X)
 
+
 class SolidStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
+
 
 class MembraneStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s22, **kwargs):
@@ -708,19 +706,18 @@ class MembraneStressResult(StressResult):
 class ShellStressResult(MembraneStressResult):
     def __init__(self, element, *, s11, s12, s22, m11, m22, m12, **kwargs):
         super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
-        self._local_bending_moments = np.array([[m11, m12, 0],
-                                                [m12, m22, 0],
-                                                [0,   0,   0]])
-        self._local_stress_top = self.local_stress_membrane + 6/self.element.section.t**2 * self._local_bending_moments
-        self._local_stress_bottom = self.local_stress_membrane - 6/self.element.section.t**2 * self._local_bending_moments
+        self._local_bending_moments = np.array([[m11, m12, 0], [m12, m22, 0], [0, 0, 0]])
+        self._local_stress_top = self.local_stress_membrane + 6 / self.element.section.t**2 * self._local_bending_moments
+        self._local_stress_bottom = self.local_stress_membrane - 6 / self.element.section.t**2 * self._local_bending_moments
 
         # self._global_stress_membrane = self.transform_stress_tensor(self.local_stress_membrane, Frame.worldXY())
         self._global_stress_top = self.transform_stress_tensor(self.local_stress_top, Frame.worldXY())
         self._global_stress_bottom = self.transform_stress_tensor(self.local_stress_bottom, Frame.worldXY())
 
         self._stress_components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
-        self._bending_components = {f"M{i+1}{j+1}": self._local_bending_moments[i][j] for j in range(len(self._local_bending_moments[0])) for i in range(len(self._local_bending_moments))}
-
+        self._bending_components = {
+            f"M{i+1}{j+1}": self._local_bending_moments[i][j] for j in range(len(self._local_bending_moments[0])) for i in range(len(self._local_bending_moments))
+        }
 
     @property
     def local_stress_membrane(self):
@@ -736,7 +733,7 @@ class ShellStressResult(MembraneStressResult):
 
     @property
     def global_stress_membrane(self):
-        return self._global_stress #self._global_stress_membrane
+        return self._global_stress  # self._global_stress_membrane
 
     @property
     def global_stress_top(self):
@@ -748,20 +745,19 @@ class ShellStressResult(MembraneStressResult):
 
     @property
     def hydrostatic_stress_top(self):
-        return  self.I1_top / len(self.global_stress_top)
+        return self.I1_top / len(self.global_stress_top)
 
     @property
     def hydrostatic_stress_bottom(self):
-        return  self.I1_bottom / len(self.global_stress_bottom)
+        return self.I1_bottom / len(self.global_stress_bottom)
 
     @property
     def deviatoric_stress_top(self):
-        return  self.global_stress_top - np.eye(len(self.global_stress_top)) * self.hydrostatic_stress_top
+        return self.global_stress_top - np.eye(len(self.global_stress_top)) * self.hydrostatic_stress_top
 
     @property
     def deviatoric_stress_bottom(self):
-        return  self.global_stress_bottom - np.eye(len(self.global_stress_bottom)) * self.hydrostatic_stress_bottom
-
+        return self.global_stress_bottom - np.eye(len(self.global_stress_bottom)) * self.hydrostatic_stress_bottom
 
     @property
     # First invariant
@@ -804,13 +800,13 @@ class ShellStressResult(MembraneStressResult):
         return 0.5 * np.trace(np.dot(self.deviatoric_stress_bottom, self.deviatoric_stress_bottom))
 
     @property
-   # Third invariant of the deviatoric stress tensor: J3
+    # Third invariant of the deviatoric stress tensor: J3
     def J3_top(self):
         return np.linalg.det(self.deviatoric_stress_top)
 
     @property
-   # Third invariant of the deviatoric stress tensor: J3
-    def J3_top(self):
+    # Third invariant of the deviatoric stress tensor: J3
+    def J3_bottom(self):
         return np.linalg.det(self.deviatoric_stress_bottom)
 
     @property
@@ -838,7 +834,7 @@ class ShellStressResult(MembraneStressResult):
         sorted_indices = np.argsort(eigenvalues)
         eigenvectors = eigenvectors[:, sorted_indices]
         eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
 
     @property
     def principal_stresses_vectors_top(self):
@@ -847,7 +843,7 @@ class ShellStressResult(MembraneStressResult):
         sorted_indices = np.argsort(eigenvalues)
         eigenvectors = eigenvectors[:, sorted_indices]
         eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
 
     @property
     def principal_stresses_vectors_bottom(self):
@@ -856,7 +852,7 @@ class ShellStressResult(MembraneStressResult):
         sorted_indices = np.argsort(eigenvalues)
         eigenvectors = eigenvectors[:, sorted_indices]
         eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist())*abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
 
     @property
     def principal_stresses_top(self):
@@ -872,8 +868,8 @@ class ShellStressResult(MembraneStressResult):
 
     @classmethod
     def from_components(cls, location, components):
-        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S22","S12")}
-        bending_components = {k.lower(): v for k, v in components.items() if k in ("M11", "M22","M12")}
+        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S22", "S12")}
+        bending_components = {k.lower(): v for k, v in components.items() if k in ("M11", "M22", "M12")}
         return cls(location, **stress_components, **bending_components)
 
     def membrane_stress(self, frame):
@@ -885,13 +881,7 @@ class ShellStressResult(MembraneStressResult):
     def bottom_stress(self, frame):
         return self.transform_stress_tensor(self.local_stress_bottom, frame)
 
-
-    def stress_along_direction(self, direction, side='mid'):
-        tensors = {
-            'mid': self.global_stress_bottom,
-            'top': self.global_stress_top,
-            'bottom': self.global_stress_bottom
-        }
+    def stress_along_direction(self, direction, side="mid"):
+        tensors = {"mid": self.global_stress_bottom, "top": self.global_stress_top, "bottom": self.global_stress_bottom}
         unit_direction = np.array(direction) / np.linalg.norm(direction)
         return unit_direction.T @ tensors[side] @ unit_direction
-

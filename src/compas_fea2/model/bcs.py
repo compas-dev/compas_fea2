@@ -45,8 +45,8 @@ axes : str
 
 
 class _BoundaryCondition(FEAData):
-    """Base class for all zero-valued boundary conditions.
-    """
+    """Base class for all zero-valued boundary conditions."""
+
     __doc__ += docs
 
     def __init__(self, axes="global", **kwargs):
@@ -97,8 +97,8 @@ class _BoundaryCondition(FEAData):
 
 
 class GeneralBC(_BoundaryCondition):
-    """Costumized boundary condition.
-    """
+    """Costumized boundary condition."""
+
     __doc__ += docs
     __doc__ += """
 Additional Parameters
@@ -128,8 +128,8 @@ zz : bool
 
 
 class FixedBC(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition.
-    """
+    """A fixed nodal displacement boundary condition."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -143,8 +143,8 @@ class FixedBC(_BoundaryCondition):
 
 
 class FixedBCX(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition  along and around Z
-    """
+    """A fixed nodal displacement boundary condition  along and around Z"""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -152,9 +152,10 @@ class FixedBCX(_BoundaryCondition):
         self._x = True
         self._xx = True
 
+
 class FixedBCY(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition along and around Y
-    """
+    """A fixed nodal displacement boundary condition along and around Y"""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -162,9 +163,10 @@ class FixedBCY(_BoundaryCondition):
         self._y = True
         self._yy = True
 
+
 class FixedBCZ(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition along and around Z
-    """
+    """A fixed nodal displacement boundary condition along and around Z"""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -172,9 +174,10 @@ class FixedBCZ(_BoundaryCondition):
         self._z = True
         self._z = True
 
+
 class PinnedBC(_BoundaryCondition):
-    """A pinned nodal displacement boundary condition.
-    """
+    """A pinned nodal displacement boundary condition."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -185,8 +188,8 @@ class PinnedBC(_BoundaryCondition):
 
 
 class ClampBCXX(PinnedBC):
-    """A pinned nodal displacement boundary condition clamped in XX.
-    """
+    """A pinned nodal displacement boundary condition clamped in XX."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -195,8 +198,8 @@ class ClampBCXX(PinnedBC):
 
 
 class ClampBCYY(PinnedBC):
-    """A pinned nodal displacement boundary condition clamped in YY.
-    """
+    """A pinned nodal displacement boundary condition clamped in YY."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -205,8 +208,8 @@ class ClampBCYY(PinnedBC):
 
 
 class ClampBCZZ(PinnedBC):
-    """A pinned nodal displacement boundary condition clamped in ZZ.
-    """
+    """A pinned nodal displacement boundary condition clamped in ZZ."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -215,8 +218,8 @@ class ClampBCZZ(PinnedBC):
 
 
 class RollerBCX(PinnedBC):
-    """A pinned nodal displacement boundary condition released in X.
-    """
+    """A pinned nodal displacement boundary condition released in X."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -225,8 +228,8 @@ class RollerBCX(PinnedBC):
 
 
 class RollerBCY(PinnedBC):
-    """A pinned nodal displacement boundary condition released in Y.
-    """
+    """A pinned nodal displacement boundary condition released in Y."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -235,8 +238,8 @@ class RollerBCY(PinnedBC):
 
 
 class RollerBCZ(PinnedBC):
-    """A pinned nodal displacement boundary condition released in Z.
-    """
+    """A pinned nodal displacement boundary condition released in Z."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -245,8 +248,8 @@ class RollerBCZ(PinnedBC):
 
 
 class RollerBCXY(PinnedBC):
-    """A pinned nodal displacement boundary condition released in X and Y.
-    """
+    """A pinned nodal displacement boundary condition released in X and Y."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -256,8 +259,8 @@ class RollerBCXY(PinnedBC):
 
 
 class RollerBCYZ(PinnedBC):
-    """A pinned nodal displacement boundary condition released in Y and Z.
-    """
+    """A pinned nodal displacement boundary condition released in Y and Z."""
+
     __doc__ += docs
 
     def __init__(self, **kwargs):
@@ -267,8 +270,8 @@ class RollerBCYZ(PinnedBC):
 
 
 class RollerBCXZ(PinnedBC):
-    """A pinned nodal displacement boundary condition released in X and Z.
-    """
+    """A pinned nodal displacement boundary condition released in X and Z."""
+
     __doc__ += docs
 
     def __init__(self, name=None, **kwargs):

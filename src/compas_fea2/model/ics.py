@@ -19,7 +19,7 @@ class _InitialCondition(FEAData):
         super(_InitialCondition, self).__init__(**kwargs)
 
 
-#FIXME this is not really a field in the sense that it is only applied to 1 node/element
+# FIXME this is not really a field in the sense that it is only applied to 1 node/element
 class InitialTemperatureField(_InitialCondition):
     """Temperature field.
 

@@ -5,7 +5,4 @@ from __future__ import print_function
 from .stresses import principal_stresses
 from .report import Report
 
-__all__ = [
-    "principal_stresses",
-    "Report"
-]
+__all__ = ["principal_stresses", "Report"]

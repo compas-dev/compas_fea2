@@ -117,11 +117,11 @@ class NodeLoad(Load):
         super(NodeLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
 
     def __mul__(self, factor):
-            if isinstance(factor, (float, int)):
-                new_components = {k: (self.components[k] or 0) * factor for k in self.components}
-                return NodeLoad(**new_components, axes=self.axes)
-            else:
-                raise NotImplementedError
+        if isinstance(factor, (float, int)):
+            new_components = {k: (self.components[k] or 0) * factor for k in self.components}
+            return NodeLoad(**new_components, axes=self.axes)
+        else:
+            raise NotImplementedError
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -135,6 +135,7 @@ class NodeLoad(Load):
 
     def __radd__(self, other):
         return self.__add__(other)
+
 
 class EdgeLoad(Load):
     """Distributed line forces and moments [units:N/m or Nm/m] applied to an edge of an element.
@@ -181,9 +182,7 @@ class EdgeLoad(Load):
     """
 
     def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", name=None, **kwargs):
-        super(EdgeLoad, self).__init__(
-            components={"x": x, "y": y, "z": z, "xx": xx, "yy": yy, "zz": zz}, axes=axes, name=name, **kwargs
-        )
+        super(EdgeLoad, self).__init__(components={"x": x, "y": y, "z": z, "xx": xx, "yy": yy, "zz": zz}, axes=axes, name=name, **kwargs)
         raise NotImplementedError
 
 
@@ -219,6 +218,7 @@ class FaceLoad(Load):
     def __init__(self, x=0, y=0, z=0, axes="local", name=None, **kwargs):
         super(FaceLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, name=name, **kwargs)
         raise NotImplementedError
+
 
 class GravityLoad(Load):
     """Gravity load [units:N/m3] applied to element(s).

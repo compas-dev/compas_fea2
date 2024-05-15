@@ -2,36 +2,41 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import importlib
 import gc
+import importlib
+import os
 import pathlib
-from itertools import groupby, chain
+import pickle
+from itertools import chain
+from itertools import groupby
 from pathlib import Path
 
-import os
-import pickle
-
-from compas.geometry import Plane, Box, bounding_box, centroid_points
-
-import compas_fea2
-from compas_fea2.utilities._utils import timer
-from compas_fea2.utilities._utils import part_method, get_docstring, problem_method
-
-from compas_fea2.base import FEAData
-from compas_fea2.model.parts import _Part, RigidPart
-from compas_fea2.model.nodes import Node
-from .elements import (
-    _Element,
-    _Element3D,
-    BeamElement,
-    ShellElement,
-)
-from compas_fea2.model.bcs import _BoundaryCondition
-from compas_fea2.model.ics import _InitialCondition
-from compas_fea2.model.groups import _Group, NodesGroup, PartsGroup, ElementsGroup
-
+from compas.geometry import Box
+from compas.geometry import Plane
+from compas.geometry import bounding_box
+from compas.geometry import centroid_points
 from pint import UnitRegistry
 
+import compas_fea2
+from compas_fea2.base import FEAData
+from compas_fea2.model.bcs import _BoundaryCondition
+from compas_fea2.model.groups import ElementsGroup
+from compas_fea2.model.groups import NodesGroup
+from compas_fea2.model.groups import PartsGroup
+from compas_fea2.model.groups import _Group
+from compas_fea2.model.ics import _InitialCondition
+from compas_fea2.model.nodes import Node
+from compas_fea2.model.parts import RigidPart
+from compas_fea2.model.parts import _Part
+from compas_fea2.utilities._utils import get_docstring
+from compas_fea2.utilities._utils import part_method
+from compas_fea2.utilities._utils import problem_method
+from compas_fea2.utilities._utils import timer
+
+from .elements import BeamElement
+from .elements import ShellElement
+from .elements import _Element
+from .elements import _Element3D
 
 
 class Model(FEAData):
@@ -179,7 +184,7 @@ class Model(FEAData):
         try:
             bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
             return Box.from_bounding_box(bb)
-        except:
+        except Exception:
             print("WARNING: bounding box not generated")
             return None
 
@@ -924,21 +929,13 @@ class Model(FEAData):
         bc_info = []
         for bc, nodes in self.bcs.items():
             for part, part_nodes in groupby(nodes, lambda n: n.part):
-                bc_info.append(
-                    "{}: \n{}".format(
-                        part.name, "\n".join(["  {!r} - # of restrained nodes {}".format(bc, len(list(part_nodes)))])
-                    )
-                )
+                bc_info.append("{}: \n{}".format(part.name, "\n".join(["  {!r} - # of restrained nodes {}".format(bc, len(list(part_nodes)))])))
         bc_info = "\n".join(bc_info)
 
         ic_info = []
         for ic, nodes in self.ics.items():
             for part, part_nodes in groupby(nodes, lambda n: n.part):
-                ic_info.append(
-                    "{}: \n{}".format(
-                        part.name, "\n".join(["  {!r} - # of restrained nodes {}".format(ic, len(list(part_nodes)))])
-                    )
-                )
+                ic_info.append("{}: \n{}".format(part.name, "\n".join(["  {!r} - # of restrained nodes {}".format(ic, len(list(part_nodes)))])))
         ic_info = "\n".join(ic_info)
 
         data = """
@@ -1038,6 +1035,7 @@ Initial Conditions
                 raise TypeError("{} is not a Problem".format(problem))
         else:
             from compas_fea2.problem.problem import Problem
+
             problem = Problem(**kwargs)
         self._problems.add(problem)
         problem._registration = self
@@ -1091,32 +1089,32 @@ Initial Conditions
     def write_input_file(self, problems=None, path=None, *args, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def analyse(self, problems=None, *args, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def analyze(self, problems=None, *args, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def restart_analysis(self, problem, start, steps, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def analyse_and_extract(self, problems=None, path=None, *args, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def analyse_and_store(self, problems=None, memory_only=False, *args, **kwargs):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def store_results_in_model(self, problems=None, *args, **kwargs):
         pass
@@ -1124,32 +1122,32 @@ Initial Conditions
     # ==============================================================================
     # Results methods
     # ==============================================================================
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_reaction_forces_sql(self, *, problem=None, step=None):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_reaction_moments_sql(self, problem, step=None):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_displacements_sql(self, problem, step=None):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_max_displacement_sql(self, problem, step=None, component="magnitude"):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_min_displacement_sql(self, problem, step=None, component="magnitude"):
         pass
 
-    #@get_docstring(Problem)
+    # @get_docstring(Problem)
     @problem_method
     def get_displacement_at_nodes_sql(self, problem, nodes, steps=None):
         pass

@@ -3,16 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-
-from compas_fea2.problem.loads import Load
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import _PrescribedField
+from compas_fea2.problem.loads import Load
 from compas_fea2.problem.outputs import FieldOutput
 from compas_fea2.problem.outputs import HistoryOutput
-
-from compas_fea2.utilities._utils import timer
-
-import copy
 
 # ==============================================================================
 #                                Base Steps
@@ -112,7 +107,7 @@ class Step(FEAData):
             if pattern.load_case in combination.load_cases:
                 factor = combination.factors[pattern.load_case]
                 for node, load in pattern.node_load:
-                    factored_load = factor*load
+                    factored_load = factor * load
 
                     node.loads.setdefault(self, {}).setdefault(combination, {})[pattern] = factored_load
                     if node.total_load:
@@ -156,7 +151,7 @@ class Step(FEAData):
         elif isinstance(output, HistoryOutput):
             self._history_outputs.add(output)
         else:
-            raise TypeError('{!r} is not an _Output.'.format(output))
+            raise TypeError("{!r} is not an _Output.".format(output))
         return output
 
     # ==========================================================================
@@ -235,18 +230,7 @@ class GeneralStep(Step):
 
     """
 
-    def __init__(
-        self,
-        max_increments,
-        initial_inc_size,
-        min_inc_size,
-        time,
-        nlgeom=False,
-        modify=False,
-        restart=False,
-        name=None,
-        **kwargs
-    ):
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, name=None, **kwargs):
         super(GeneralStep, self).__init__(name=name, **kwargs)
 
         self._max_increments = max_increments
@@ -322,7 +306,7 @@ class GeneralStep(Step):
         if not isinstance(load_pattern, Pattern):
             raise TypeError("{!r} is not a LoadPattern.".format(load_pattern))
 
-        #FIXME: ugly...
+        # FIXME: ugly...
         try:
             if self.problem:
                 if self.model:
@@ -335,7 +319,6 @@ class GeneralStep(Step):
         self._load_cases.add(load_pattern.load_case)
         load_pattern._registration = self
         return load_pattern
-
 
     def add_load_patterns(self, load_patterns):
         """Add multiple :class:`compas_fea2.problem.patterns.Pattern` to the Problem.

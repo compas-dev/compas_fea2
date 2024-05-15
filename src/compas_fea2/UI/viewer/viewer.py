@@ -1,49 +1,34 @@
 import os
-import numpy as np
-
-from math import sqrt
 from typing import Iterable
-from compas_view2.app import App
-from compas_view2.objects import Collection
-from compas_view2.shapes import Arrow
-from compas_view2.shapes import Text
 
-from compas.colors import ColorMap, Color
-
+import numpy as np
+from compas.colors import Color
+from compas.colors import ColorMap
 from compas.datastructures import Mesh
-from compas.geometry import Point
 from compas.geometry import Line
+from compas.geometry import Point
 from compas.geometry import Polyhedron
+from compas.geometry import Translation
 from compas.geometry import Vector
-from compas.geometry import Transformation, Translation
 from compas.geometry import sum_vectors
 
-from compas_fea2.UI.viewer.shapes import (
-    PinBCShape,
-    FixBCShape,
-    RollerBCShape,
-    )
-
-from compas_fea2.model.bcs import (
-    FixedBC,
-    PinnedBC,
-    RollerBCX,
-    RollerBCY,
-    RollerBCZ,
-    RollerBCXY,
-    RollerBCXZ,
-    RollerBCYZ,
-    )
-
-from compas_fea2.postprocess import principal_stresses
-
-from compas_fea2.problem.loads import NodeLoad
+from compas_fea2.model.bcs import FixedBC
+from compas_fea2.model.bcs import PinnedBC
+from compas_fea2.model.bcs import RollerBCX
+from compas_fea2.model.bcs import RollerBCY
+from compas_fea2.model.bcs import RollerBCZ
 from compas_fea2.problem.steps import GeneralStep
+from compas_fea2.UI.viewer.shapes import FixBCShape
+from compas_fea2.UI.viewer.shapes import PinBCShape
+from compas_fea2.UI.viewer.shapes import RollerBCShape
 
-from compas_fea2.results import DisplacementFieldResults, StressFieldResults
-
-# def hextorgb(hex):
-#     return tuple(i / 255 for i in hex_to_rgb(hex))
+try:
+    from compas_view2.app import App  # type: ignore
+    from compas_view2.objects import Collection  # type: ignore
+    from compas_view2.shapes import Arrow  # type: ignore
+    from compas_view2.shapes import Text  # type: ignore
+except Exception:
+    pass
 
 
 class FEA2Viewer:
@@ -64,13 +49,12 @@ class FEA2Viewer:
     """
 
     def __init__(self, obj, **kwargs):
-
         VIEWER_CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config_default.json")
         sf = kwargs.get("scale_factor", 1)
         self.app = App(config=VIEWER_CONFIG_FILE)
         self.obj = obj
 
-        self.app.view.camera.target = [i*sf for i in self.obj.center]
+        self.app.view.camera.target = [i * sf for i in self.obj.center]
         # V = V1 + t * (V2 - V1) / | V2 - V1 |
         V1 = np.array([0, 0, 0])
         V2 = np.array(self.app.view.camera.target)
@@ -108,7 +92,7 @@ class FEA2Viewer:
             txts = [Text(str(node.key), node.point, height=35) for node in nodes]
         self.app.add(Collection(txts), facecolor=Color.from_hex("#386641"))
 
-    def draw_solid_elements(self, elements, show_vertices=True, opacity=1.):
+    def draw_solid_elements(self, elements, show_vertices=True, opacity=1.0):
         """Draw the elements of a part.
 
         Parameters
@@ -219,7 +203,7 @@ class FEA2Viewer:
             colors = [(0, 1, 0)] * len(pts)
         for pt, vector, color in zip(pts, vectors, colors):
             if vector.length:
-                arrows.append(Arrow(position=pt, direction=vector*scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
+                arrows.append(Arrow(position=pt, direction=vector * scale_factor, head_portion=0.3, head_width=0.15, body_width=0.05))
                 arrows_properties.append({"u": 3, "show_lines": False, "facecolor": color})
         if arrows:
             self.app.add(Collection(arrows, arrows_properties))
@@ -238,22 +222,22 @@ class FEA2Viewer:
         if isinstance(step, GeneralStep):
             pts, vectors = [], []
             for node, load in step.combination.node_load:
-                    vector = Vector(
-                        x=load.components["x"] or 0.0,
-                        y=load.components["y"] or 0.0,
-                        z=load.components["z"] or 0.0,
-                    )
-                    if vector.length == 0:
-                        continue
-                    vector.scale(scale_factor)
-                    vectors.append(vector)
-                    if app_point == "end":
-                        pts.append([node.x - vector.x, node.y - vector.y, node.z - vector.z])
-                    else:
-                        pts.append([node.point])
-                    # TODO add moment components xx, yy, zz
+                vector = Vector(
+                    x=load.components["x"] or 0.0,
+                    y=load.components["y"] or 0.0,
+                    z=load.components["z"] or 0.0,
+                )
+                if vector.length == 0:
+                    continue
+                vector.scale(scale_factor)
+                vectors.append(vector)
+                if app_point == "end":
+                    pts.append([node.x - vector.x, node.y - vector.y, node.z - vector.z])
+                else:
+                    pts.append([node.point])
+                # TODO add moment components xx, yy, zz
 
-            self.draw_nodes_vector(pts, vectors, colors=[(0, 1, 1)]*len(pts))
+            self.draw_nodes_vector(pts, vectors, colors=[(0, 1, 1)] * len(pts))
         else:
             print("WARNING! Only point loads are currently supported!")
 
@@ -277,7 +261,7 @@ class FEA2Viewer:
             vectors.append(r.vector)
         self.draw_nodes_vector(locations, vectors, scale_factor=scale_factor, colors=colors)
 
-    def draw_deformed(self, step, scale_factor=1.0, opacity=1., **kwargs):
+    def draw_deformed(self, step, scale_factor=1.0, opacity=1.0, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -302,7 +286,6 @@ class FEA2Viewer:
             self.draw_beam_elements(part.elements_by_dimension(dimension=1), show_vertices=False, opacity=opacity)
             self.draw_shell_elements(part.elements_by_dimension(dimension=2), show_vertices=False, opacity=opacity)
             self.draw_solid_elements(part.elements_by_dimension(dimension=3), show_vertices=False, opacity=opacity)
-
 
     def draw_nodes_field_vector(self, field_results, component, step, vector_sf=1, **kwargs):
         """Display a given vector field.
@@ -410,7 +393,7 @@ class FEA2Viewer:
         for part in step.model.parts:
             if mesh := part.discretized_boundary_mesh:
                 colored_mesh = mesh.copy()
-                #FIXME change precision
+                # FIXME change precision
                 parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(3)
                 parts_mesh[part.name] = colored_mesh
             else:
@@ -425,7 +408,7 @@ class FEA2Viewer:
 
         # Get values
         min_result, max_result = field_results.get_limits_component(component, step=step)
-        comp_str = field_results.field_name+str(component)
+        comp_str = field_results.field_name + str(component)
         min_value = min_result.components[comp_str]
         max_value = max_result.components[comp_str]
 
@@ -457,7 +440,7 @@ class FEA2Viewer:
             ps_results_mid = list(r.principal_stresses)
             ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
             ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None
-            all_ps_results = {"mid":ps_results_mid, "top":ps_results_top, "bottom":ps_results_bottom}
+            all_ps_results = {"mid": ps_results_mid, "top": ps_results_top, "bottom": ps_results_bottom}
 
             for k, v in all_ps_results.items():
                 if v:
@@ -471,12 +454,12 @@ class FEA2Viewer:
                             if k == "mid":
                                 pts.append(r.location.reference_point)
                             elif k == "top":
-                                X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t/2)
+                                X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t / 2)
                                 pts.append(Point(*r.location.reference_point).transformed(X))
                             elif k == "bottom":
-                                X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t/2)
+                                X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t / 2)
                                 pts.append(Point(*r.location.reference_point).transformed(X))
-                            vectors.append(ps[1].scaled(vector_sf*dir))
+                            vectors.append(ps[1].scaled(vector_sf * dir))
                             colors.append(color)
 
             # colors.append(color)
@@ -486,9 +469,7 @@ class FEA2Viewer:
         self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
 
     def draw_nodes_contour(self, model, nodes_values, **kwargs):
-        """
-
-        """
+        """ """
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Get mesh
@@ -497,7 +478,7 @@ class FEA2Viewer:
         for part in model.parts:
             if mesh := part.discretized_boundary_mesh:
                 colored_mesh = mesh.copy()
-                #FIXME change precision
+                # FIXME change precision
                 parts_gkey_vertex[part.name] = colored_mesh.gkey_vertex(3)
                 parts_mesh[part.name] = colored_mesh
             else:

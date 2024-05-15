@@ -3,28 +3,25 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import compas_fea2
 from pathlib import Path
-from typing import Iterable
 
-from compas.geometry import Vector, Point
-from compas.geometry import sum_vectors, centroid_points_weighted
+from compas.geometry import Point
+from compas.geometry import Vector
+from compas.geometry import centroid_points_weighted
+from compas.geometry import sum_vectors
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.steps import Step, StaticStep
 from compas_fea2.job.input_file import InputFile
-from compas_fea2.utilities._utils import timer
-
-from compas_fea2.results.database import ResultsDatabase
+from compas_fea2.model.elements import _Element1D
+from compas_fea2.model.elements import _Element3D
+from compas_fea2.problem.steps import StaticStep
+from compas_fea2.problem.steps import Step
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import StressFieldResults
+from compas_fea2.results.database import ResultsDatabase
+from compas_fea2.utilities._utils import timer
 
-from compas_fea2.model.elements import (
-    _Element1D,
-    _Element2D,
-    _Element3D
-)
 
 class Problem(FEAData):
     """A Problem is a collection of analysis steps (:class:`compas_fea2.problem._Step)
@@ -280,7 +277,7 @@ class Problem(FEAData):
         """
         for step in order:
             if not isinstance(step, Step):
-                raise TypeError('{} is not a step'.format(step))
+                raise TypeError("{} is not a step".format(step))
         self._steps_order = order
 
     def add_linear_perturbation_step(self, lp_step, base_step):
@@ -302,13 +299,9 @@ class Problem(FEAData):
         """
         raise NotImplementedError
 
-
-
     # =========================================================================
     #                           Loads methods
     # =========================================================================
-
-
 
     # ==============================================================================
     # Summary
@@ -501,14 +494,9 @@ Analysis folder path : {}
 
     #     return sum_vectors([reaction.vector for reaction in reactions.results])
 
-
-
-
     # =========================================================================
     #                         Results methods - displacements
     # =========================================================================
-
-
 
     # =========================================================================
     #                         Viewer methods
@@ -550,8 +538,9 @@ Analysis folder path : {}
 
         """
 
+        from compas_fea2.model.elements import BeamElement
+        from compas_fea2.model.elements import ShellElement
         from compas_fea2.UI.viewer import FEA2Viewer
-        from compas_fea2.model.elements import ShellElement, BeamElement
 
         v = FEA2Viewer(self.model, scale_factor=scale_factor)
 
@@ -618,11 +607,7 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_vector(field_results,
-                                  component,
-                                  step=step,
-                                   vector_sf=vector_sf,
-                                   **kwargs)
+        v.draw_nodes_field_vector(field_results, component, step=step, vector_sf=vector_sf, **kwargs)
 
         opacity = kwargs.get("opacity", 0.5)
         for part in self.model.parts:
@@ -685,10 +670,7 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_contour(field_results=field_results,
-                                   component=component,
-                                   step=step,
-                                   **kwargs)
+        v.draw_nodes_field_contour(field_results=field_results, component=component, step=step, **kwargs)
 
         if kwargs.get("draw_bcs", None):
             v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
@@ -746,10 +728,7 @@ Analysis folder path : {}
 
         # Display results
         v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_elements_field_vector(field_results=field_results,
-                                   step=step,
-                                   vector_sf=vector_sf,
-                                   **kwargs)
+        v.draw_elements_field_vector(field_results=field_results, step=step, vector_sf=vector_sf, **kwargs)
 
         opacity = kwargs.get("opacity", 0.5)
         for part in self.model.parts:
@@ -783,6 +762,7 @@ Analysis folder path : {}
 
         """
         from compas_fea2.UI.viewer import FEA2Viewer
+
         v = FEA2Viewer(self.model)
 
         if not step:
@@ -792,7 +772,7 @@ Analysis folder path : {}
             for part in step.model.parts:
                 try:
                     v.draw_mesh(part.discretized_boundary_mesh, opacity=original)
-                except:
+                except Exception:
                     print("No mesh found")
                 # v.draw_nodes_field_vector(step=step, field_name='U', vector_sf=scale_factor)
 
@@ -809,7 +789,7 @@ Analysis folder path : {}
         v.show()
 
     def show_reactions(self, vector_sf=1.0, model_sf=1.0, step=None, group_nodes=False, **kwargs):
-        self.show_nodes_field_vector(field_name='RF', vector_sf=vector_sf, model_sf=model_sf, step=step, **kwargs)
+        self.show_nodes_field_vector(field_name="RF", vector_sf=vector_sf, model_sf=model_sf, step=step, **kwargs)
 
     def show_stress_contours(self, stress_type="von_mises_stress", side=None, step=None, model_sf=1.0, **kwargs):
         stresses = self.stress_field
@@ -819,15 +799,15 @@ Analysis folder path : {}
         for stress in stresses.results(step):
             for node in stress.location.nodes:
                 if node not in nodes_stress:
-                    nodes_stress[node] = 2.
+                    nodes_stress[node] = 2.0
 
                 if not isinstance(stress.location, _Element3D):
-                    func = stress_type+"_"+side
+                    func = stress_type + "_" + side
                 else:
                     func = stress_type
                 # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
                 # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
-                nodes_stress[node] += getattr(stress, func)/len(stress.location.nodes)
+                nodes_stress[node] += getattr(stress, func) / len(stress.location.nodes)
 
         from compas_fea2.UI.viewer import FEA2Viewer
 

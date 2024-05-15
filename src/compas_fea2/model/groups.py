@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 from typing import Iterable
 
 from compas_fea2.base import FEAData
@@ -50,26 +51,18 @@ name            : {}
         # FIXME combine in more pythonic way
         if isinstance(self, FacesGroup):
             if len(set([member.element._registration for member in members])) != 1:
-                raise ValueError(
-                    "At least one of the members to add is registered to a different object or not registered"
-                )
+                raise ValueError("At least one of the members to add is registered to a different object or not registered")
             if self._registration:
                 if list(members).pop().element._registration != self._registration:
-                    raise ValueError(
-                        "At least one of the members to add is registered to a different object than the group"
-                    )
+                    raise ValueError("At least one of the members to add is registered to a different object than the group")
             else:
                 self._registration = list(members).pop().element._registration
         else:
             if len(set([member._registration for member in members])) != 1:
-                raise ValueError(
-                    "At least one of the members to add is registered to a different object or not registered"
-                )
+                raise ValueError("At least one of the members to add is registered to a different object or not registered")
             if self._registration:
                 if list(members).pop()._registration != self._registration:
-                    raise ValueError(
-                        "At least one of the members to add is registered to a different object than the group"
-                    )
+                    raise ValueError("At least one of the members to add is registered to a different object than the group")
             else:
                 self._registration = list(members).pop()._registration
         return members

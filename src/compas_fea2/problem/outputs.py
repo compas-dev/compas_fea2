@@ -2,8 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2.base import FEAData
 from itertools import chain
+
+from compas_fea2.base import FEAData
 
 
 class _Output(FEAData):

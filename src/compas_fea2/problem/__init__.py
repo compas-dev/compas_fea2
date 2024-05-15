@@ -21,18 +21,9 @@ from .fields import (
     PrescribedTemperatureField,
 )
 
-from .patterns import (
-    Pattern,
-    NodeLoadPattern,
-    PointLoadPattern,
-    LineLoadPattern,
-    AreaLoadPattern,
-    VolumeLoadPattern
-)
+from .patterns import Pattern, NodeLoadPattern, PointLoadPattern, LineLoadPattern, AreaLoadPattern, VolumeLoadPattern
 
-from .combinations import (
-    LoadCombination
-)
+from .combinations import LoadCombination
 
 from .steps import (
     Step,
@@ -48,50 +39,41 @@ from .steps import (
     DirectCyclicStep,
 )
 
-from .outputs import (
-    FieldOutput,
-    HistoryOutput
-)
+from .outputs import FieldOutput, HistoryOutput
 
 __all__ = [
-    'Problem',
-
-    'GeneralDisplacement',
-
-    'Load',
-    'PrestressLoad',
-    'NodeLoad',
-    'EdgeLoad',
-    'FaceLoad',
-    'GravityLoad',
-    'TributaryLoad',
-    'HarmonicPointLoad',
-    'HarmonicPressureLoad',
-    'ThermalLoad',
-
-    'Pattern',
-    'NodeLoadPattern',
-    'PointLoadPattern',
-    'LineLoadPattern',
-    'AreaLoadPattern',
-    'VolumeLoadPattern',
-
-    'PrescribedTemperatureField',
-
-    'LoadCombination',
-
-    'Step',
-    'GeneralStep',
-    '_Perturbation',
-    'ModalAnalysis',
-    'ComplexEigenValue',
-    'StaticStep',
-    'LinearStaticPerturbation',
-    'BucklingAnalysis',
-    'DynamicStep',
-    'QuasiStaticStep',
-    'DirectCyclicStep',
-
-    'FieldOutput',
-    'HistoryOutput',
+    "Problem",
+    "GeneralDisplacement",
+    "Load",
+    "PrestressLoad",
+    "NodeLoad",
+    "EdgeLoad",
+    "FaceLoad",
+    "GravityLoad",
+    "TributaryLoad",
+    "HarmonicPointLoad",
+    "HarmonicPressureLoad",
+    "ThermalLoad",
+    "Pattern",
+    "NodeLoadPattern",
+    "PointLoadPattern",
+    "LineLoadPattern",
+    "AreaLoadPattern",
+    "VolumeLoadPattern",
+    "_PrescribedField",
+    "PrescribedTemperatureField",
+    "LoadCombination",
+    "Step",
+    "GeneralStep",
+    "_Perturbation",
+    "ModalAnalysis",
+    "ComplexEigenValue",
+    "StaticStep",
+    "LinearStaticPerturbation",
+    "BucklingAnalysis",
+    "DynamicStep",
+    "QuasiStaticStep",
+    "DirectCyclicStep",
+    "FieldOutput",
+    "HistoryOutput",
 ]

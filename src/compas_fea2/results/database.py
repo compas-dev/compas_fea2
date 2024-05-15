@@ -1,15 +1,11 @@
-from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
-from sqlalchemy import select
-from sqlalchemy import text
 from sqlalchemy import and_
-from sqlalchemy import inspect
-from sqlalchemy import desc
 from sqlalchemy import asc
-
-from sqlalchemy.exc import SQLAlchemyError
-from typing import Iterable
+from sqlalchemy import create_engine
+from sqlalchemy import desc
+from sqlalchemy import inspect
+from sqlalchemy import select
 
 
 class ResultsDatabase:
@@ -154,9 +150,7 @@ class ResultsDatabase:
             list with each row as a list
         """
         table = self.get_table(table_name)
-        query = select([table.columns[c] for c in columns_names]).where(
-            and_(*[table.columns[k].in_(v) for k, v in filters.items()])
-        )
+        query = select([table.columns[c] for c in columns_names]).where(and_(*[table.columns[k].in_(v) for k, v in filters.items()]))
         return self.execute_query(query)
 
     def get_func_row(self, table_name, column_name, func, filters, columns_names):

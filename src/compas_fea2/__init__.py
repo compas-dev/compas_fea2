@@ -1,14 +1,14 @@
 import os
 from collections import defaultdict
 from dotenv import load_dotenv
-from compas.tolerance import Tolerance
+from compas.tolerance import Tolerance  # noqa: F401
 
 
 __author__ = ["Francesco Ranaudo"]
 __copyright__ = "Block Research Group"
 __license__ = "MIT License"
 __email__ = "ranaudo@arch.ethz.ch"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 HERE = os.path.dirname(__file__)
@@ -20,7 +20,7 @@ DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
 
-def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision="3f"):
+def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3):
     """Create a default environment file if it doesn't exist and loads its variables.
 
     Parameters
@@ -32,7 +32,8 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision="
     global_tolerance : int, optional
         Tolerance for the model, by default 1
     precision : str, optional
-        Values approximation, by default '3f'
+        Values approximation, by default '3'.
+        See `compas.tolerance.Tolerance.precision` for more information.
 
     """
     env_path = os.path.abspath(os.path.join(HERE, ".env"))
@@ -57,7 +58,7 @@ if not load_dotenv():
 VERBOSE = os.getenv("VERBOSE").lower() == "true"
 POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
 GLOBAL_TOLERANCE = os.getenv("GLOBAL_TOLERANCE")
-PRECISION = os.getenv("PRECISION")
+PRECISION = int(os.getenv("PRECISION"))
 BACKEND = None
 BACKENDS = defaultdict(dict)
 

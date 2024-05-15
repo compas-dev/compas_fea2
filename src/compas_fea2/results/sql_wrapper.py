@@ -1,6 +1,7 @@
-import sqlalchemy as db
 import sqlite3
 from sqlite3 import Error
+
+import sqlalchemy as db
 
 # TODO convert to sqlalchemy
 
@@ -289,9 +290,7 @@ def get_field_results(engine, connection, metadata, table, test):
 if __name__ == "__main__":
     from pprint import pprint
 
-    engine, connection, metadata = create_connection_sqlite3(
-        r"C:\Code\myRepos\swissdemo\data\q_5\output\1_0\ULS\ULS-results.db"
-    )
+    engine, connection, metadata = create_connection_sqlite3(r"C:\Code\myRepos\swissdemo\data\q_5\output\1_0\ULS\ULS-results.db")
     # U = db.Table('U', metadata, autoload=True, autoload_with=engine)
     U = get_database_table(engine, metadata, "U")
     # print(RF.columns.keys())

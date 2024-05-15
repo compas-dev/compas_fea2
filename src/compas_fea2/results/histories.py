@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-class StressHistoryResult:
 
+class StressHistoryResult:
     def __init__(self, name=None, **kwargs):
         super(StressHistoryResult, self).__init__(name=name, **kwargs)
         self.stress_history = []  # Initialize an empty list to store stress history
@@ -12,7 +12,7 @@ class StressHistoryResult:
         """
         self.stress_history.append(result)
 
-    def plot_stress_path(self, stress_components=('S11', 'S22')):
+    def plot_stress_path(self, stress_components=("S11", "S22")):
         """
         Plots the stress path for the specified stress components.
         :param stress_components: A tuple of the stress components to plot (default is ('S11', 'S22')).
@@ -23,7 +23,7 @@ class StressHistoryResult:
 
         # Create the plot
         plt.figure(figsize=(8, 6))
-        plt.plot(stress_x, stress_y, '-o', label='Stress Path')
+        plt.plot(stress_x, stress_y, "-o", label="Stress Path")
         plt.xlabel(f"{stress_components[0]} (Pa)")
         plt.ylabel(f"{stress_components[1]} (Pa)")
         plt.title("Stress Path")

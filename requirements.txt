@@ -1,9 +1,7 @@
-compas>=1.0
+compas>=2.0
 compas_gmsh
 Click
+matplotlib
 pint
 python-dotenv
 sqlalchemy==1.4
-compas_occ
-matplotlib
-jinja2

@@ -3,12 +3,14 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2 import units
-from .material import _Material, ElasticIsotropic
+
+from .material import ElasticIsotropic
+from .material import _Material
 
 
 class Steel(ElasticIsotropic):
-    """Bi-linear steel with given yield stress.
-    """
+    """Bi-linear steel with given yield stress."""
+
     __doc__ += _Material.__doc__
     __doc__ += """
     Additional Parameters

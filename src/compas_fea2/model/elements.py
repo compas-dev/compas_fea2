@@ -193,11 +193,16 @@ class _Element0D(_Element):
 class SpringElement(_Element0D):
     """A 0D spring element.
     """
+    def __init__(self, nodes, frame=None, implementation=None, rigid=False, **kwargs):
+        super(_Element0D, self).__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
+        self._frame = frame
 
 class LinkElement(_Element0D):
     """A 0D link element.
     """
-
+    def __init__(self, nodes, section, frame=None, implementation=None, rigid=False, **kwargs):
+        super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
+        self._frame = frame
 
 # ==============================================================================
 # 1D elements

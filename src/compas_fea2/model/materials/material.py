@@ -41,7 +41,7 @@ class _Material(FEAData):
 
     """
 
-    def __init__(self, *, density, expansion=None, **kwargs):
+    def __init__(self, density, expansion=None, **kwargs):
         super(_Material, self).__init__(**kwargs)
         self.density = density
         self.expansion = expansion
@@ -123,7 +123,7 @@ class ElasticOrthotropic(_Material):
         Shear modulus Gzx in z-x directions.
     """
 
-    def __init__(self, *, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, name=None, **kwargs):
+    def __init__(self, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, name=None, **kwargs):
         super(ElasticOrthotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
@@ -191,7 +191,7 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, *, E, v, density, expansion=None, name=None, **kwargs):
+    def __init__(self, E, v, density, expansion=None, name=None, **kwargs):
         super(ElasticIsotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
         self.E = E
         self.v = v

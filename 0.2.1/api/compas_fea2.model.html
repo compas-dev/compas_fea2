@@ -1,0 +1,1021 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <link rel="icon" href="../_static/compas.ico" type="image/x-icon">
+    <title>model &#8212; COMPAS FEA2</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/compas.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/tabs.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/compas_fea2.model';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.2';
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model" href="generated/compas_fea2.model.Model.html" />
+    <link rel="prev" title="ParametersFile.write_to_file" href="generated/compas_fea2.job.ParametersFile.write_to_file.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/compas_icon_white.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/compas_icon_white.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">COMPAS FEA2</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../userguide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../backends/index.html">
+                        Backends
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../development/index.html">
+                        Development
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://compas.dev">
+                    COMPAS Framework
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      0.2  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/compas-dev/compas_fea2" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://forum.compas-framework.org/" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/compas_fea2/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-python"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../userguide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../backends/index.html">
+                        Backends
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../development/index.html">
+                        Development
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://compas.dev">
+                    COMPAS Framework
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      0.2  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/compas-dev/compas_fea2" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="http://forum.compas-framework.org/" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/compas_fea2/" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-python"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.job.InputFile.html">InputFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Model.html">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.DeformablePart.html">DeformablePart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RigidPart.html">RigidPart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Node.html">Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Element.html">_Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.MassElement.html">MassElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BeamElement.html">BeamElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.SpringElement.html">SpringElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TrussElement.html">TrussElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.StrutElement.html">StrutElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TieElement.html">TieElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ShellElement.html">ShellElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.MembraneElement.html">MembraneElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Element3D.html">_Element3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TetrahedronElement.html">TetrahedronElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.HexahedronElement.html">HexahedronElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._BeamEndRelease.html">_BeamEndRelease</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BeamEndPinRelease.html">BeamEndPinRelease</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BeamEndSliderRelease.html">BeamEndSliderRelease</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Constraint.html">_Constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._MultiPointConstraint.html">_MultiPointConstraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TieMPC.html">TieMPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BeamMPC.html">BeamMPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TieConstraint.html">TieConstraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Material.html">_Material</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.UserMaterial.html">UserMaterial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Stiff.html">Stiff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ElasticIsotropic.html">ElasticIsotropic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ElasticOrthotropic.html">ElasticOrthotropic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ElasticPlastic.html">ElasticPlastic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Concrete.html">Concrete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ConcreteSmearedCrack.html">ConcreteSmearedCrack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ConcreteDamagedPlasticity.html">ConcreteDamagedPlasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Steel.html">Steel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.Timber.html">Timber</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Section.html">_Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BeamSection.html">BeamSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.SpringSection.html">SpringSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.AngleSection.html">AngleSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.BoxSection.html">BoxSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.CircularSection.html">CircularSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.HexSection.html">HexSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ISection.html">ISection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.PipeSection.html">PipeSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RectangularSection.html">RectangularSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ShellSection.html">ShellSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.MembraneSection.html">MembraneSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.SolidSection.html">SolidSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TrapezoidalSection.html">TrapezoidalSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TrussSection.html">TrussSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.StrutSection.html">StrutSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.TieSection.html">TieSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.MassSection.html">MassSection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._BoundaryCondition.html">_BoundaryCondition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.GeneralBC.html">GeneralBC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.FixedBC.html">FixedBC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.PinnedBC.html">PinnedBC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ClampBCXX.html">ClampBCXX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ClampBCYY.html">ClampBCYY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ClampBCZZ.html">ClampBCZZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCX.html">RollerBCX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCY.html">RollerBCY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCZ.html">RollerBCZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCXY.html">RollerBCXY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCYZ.html">RollerBCYZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.RollerBCXZ.html">RollerBCXZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._InitialCondition.html">_InitialCondition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.InitialTemperatureField.html">InitialTemperatureField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.InitialStressField.html">InitialStressField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model._Group.html">_Group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.NodesGroup.html">NodesGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.ElementsGroup.html">ElementsGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.FacesGroup.html">FacesGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.model.PartsGroup.html">PartsGroup</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.Problem.html">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.Step.html">Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.GeneralStep.html">GeneralStep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem._Perturbation.html">_Perturbation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.ModalAnalysis.html">ModalAnalysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.ComplexEigenValue.html">ComplexEigenValue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.StaticStep.html">StaticStep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.LinearStaticPerturbation.html">LinearStaticPerturbation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.BucklingAnalysis.html">BucklingAnalysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.DynamicStep.html">DynamicStep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.QuasiStaticStep.html">QuasiStaticStep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.DirectCyclicStep.html">DirectCyclicStep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem._PrescribedField.html">_PrescribedField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.Load.html">Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.PrestressLoad.html">PrestressLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.NodeLoad.html">NodeLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.EdgeLoad.html">EdgeLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.FaceLoad.html">FaceLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.GravityLoad.html">GravityLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.TributaryLoad.html">TributaryLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.HarmonicPressureLoad.html">HarmonicPressureLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.ThermalLoad.html">ThermalLoad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.LoadCombination.html">LoadCombination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.Pattern.html">Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.NodeLoadPattern.html">NodeLoadPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.PointLoadPattern.html">PointLoadPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.LineLoadPattern.html">LineLoadPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.AreaLoadPattern.html">AreaLoadPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.VolumeLoadPattern.html">VolumeLoadPattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.FieldOutput.html">FieldOutput</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.problem.HistoryOutput.html">HistoryOutput</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.Result.html">Result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.DisplacementResult.html">DisplacementResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.StressResult.html">StressResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.MembraneStressResult.html">MembraneStressResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.ShellStressResult.html">ShellStressResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.SolidStressResult.html">SolidStressResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.DisplacementFieldResults.html">DisplacementFieldResults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.ReactionFieldResults.html">ReactionFieldResults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/compas_fea2.results.StressFieldResults.html">StressFieldResults</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compas_fea2.units.html">Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compas_fea2.utilities.html">Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">model</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="model">
+<h1>model</h1>
+<section id="id1">
+<h2>Model</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.Model.html" title="compas_fea2.model.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></a></p></td>
+<td><p>Class representing an FEA model.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="parts">
+<h2>Parts</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.DeformablePart.html" title="compas_fea2.model.DeformablePart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DeformablePart</span></code></a></p></td>
+<td><p>Deformable part.Base class for Parts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.RigidPart.html" title="compas_fea2.model.RigidPart"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RigidPart</span></code></a></p></td>
+<td><p>Rigid part.Base class for Parts.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="nodes">
+<h2>Nodes</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.Node.html" title="compas_fea2.model.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a></p></td>
+<td><p>Class representing a Node object.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="elements">
+<h2>Elements</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._Element.html" title="compas_fea2.model._Element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Element</span></code></a></p></td>
+<td><p>Initialises a base Element object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.MassElement.html" title="compas_fea2.model.MassElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassElement</span></code></a></p></td>
+<td><p>A 0D element for concentrated point mass.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.BeamElement.html" title="compas_fea2.model.BeamElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamElement</span></code></a></p></td>
+<td><p>A 1D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.SpringElement.html" title="compas_fea2.model.SpringElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpringElement</span></code></a></p></td>
+<td><p>A 0D spring element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TrussElement.html" title="compas_fea2.model.TrussElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussElement</span></code></a></p></td>
+<td><p>A 1D element that resists axial loads.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.StrutElement.html" title="compas_fea2.model.StrutElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrutElement</span></code></a></p></td>
+<td><p>A truss element that resists axial compressive loads.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TieElement.html" title="compas_fea2.model.TieElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieElement</span></code></a></p></td>
+<td><p>A truss element that resists axial tensile loads.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ShellElement.html" title="compas_fea2.model.ShellElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellElement</span></code></a></p></td>
+<td><p>A 2D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.MembraneElement.html" title="compas_fea2.model.MembraneElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneElement</span></code></a></p></td>
+<td><p>A shell element that resists only axial loads.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model._Element3D.html" title="compas_fea2.model._Element3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Element3D</span></code></a></p></td>
+<td><p>A 3D element that resists axial, shear, bending and torsion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TetrahedronElement.html" title="compas_fea2.model.TetrahedronElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TetrahedronElement</span></code></a></p></td>
+<td><p>A Solid element with 4 faces.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.HexahedronElement.html" title="compas_fea2.model.HexahedronElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HexahedronElement</span></code></a></p></td>
+<td><p>A Solid cuboid element with 6 faces (extruded rectangle).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="releases">
+<h2>Releases</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._BeamEndRelease.html" title="compas_fea2.model._BeamEndRelease"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BeamEndRelease</span></code></a></p></td>
+<td><p>Assign a general end release to a <cite>compas_fea2.model.BeamElement</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.BeamEndPinRelease.html" title="compas_fea2.model.BeamEndPinRelease"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamEndPinRelease</span></code></a></p></td>
+<td><p>Assign a pin end release to a <cite>compas_fea2.model.BeamElement</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.BeamEndSliderRelease.html" title="compas_fea2.model.BeamEndSliderRelease"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamEndSliderRelease</span></code></a></p></td>
+<td><p>Assign a slider end release to a <cite>compas_fea2.model.BeamElement</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="constraints">
+<h2>Constraints</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._Constraint.html" title="compas_fea2.model._Constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Constraint</span></code></a></p></td>
+<td><p>Base class for constraints.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model._MultiPointConstraint.html" title="compas_fea2.model._MultiPointConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_MultiPointConstraint</span></code></a></p></td>
+<td><p>A MultiPointContrstaint (MPC) links a node (master) to other nodes (slaves) in the model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TieMPC.html" title="compas_fea2.model.TieMPC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieMPC</span></code></a></p></td>
+<td><p>Tie MPC that constraints axial translations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.BeamMPC.html" title="compas_fea2.model.BeamMPC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamMPC</span></code></a></p></td>
+<td><p>Beam MPC that constraints axial translations and rotations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TieConstraint.html" title="compas_fea2.model.TieConstraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieConstraint</span></code></a></p></td>
+<td><p>Tie constraint between two surfaces.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="materials">
+<h2>Materials</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._Material.html" title="compas_fea2.model._Material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Material</span></code></a></p></td>
+<td><p>Basic Material</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.UserMaterial.html" title="compas_fea2.model.UserMaterial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserMaterial</span></code></a></p></td>
+<td><p>User Defined Material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.Stiff.html" title="compas_fea2.model.Stiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stiff</span></code></a></p></td>
+<td><p>Elastic, very stiff and massless material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ElasticIsotropic.html" title="compas_fea2.model.ElasticIsotropic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticIsotropic</span></code></a></p></td>
+<td><p>Elastic, isotropic and homogeneous material</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ElasticOrthotropic.html" title="compas_fea2.model.ElasticOrthotropic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticOrthotropic</span></code></a></p></td>
+<td><p>Elastic, orthotropic and homogeneous material</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ElasticPlastic.html" title="compas_fea2.model.ElasticPlastic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElasticPlastic</span></code></a></p></td>
+<td><p>Elastic and plastic, isotropic and homogeneous material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.Concrete.html" title="compas_fea2.model.Concrete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Concrete</span></code></a></p></td>
+<td><p>Elastic and plastic-cracking Eurocode based concrete material</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ConcreteSmearedCrack.html" title="compas_fea2.model.ConcreteSmearedCrack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteSmearedCrack</span></code></a></p></td>
+<td><p>Elastic and plastic, cracking concrete material.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ConcreteDamagedPlasticity.html" title="compas_fea2.model.ConcreteDamagedPlasticity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConcreteDamagedPlasticity</span></code></a></p></td>
+<td><p>Damaged plasticity isotropic and homogeneous material.Basic Material</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.Steel.html" title="compas_fea2.model.Steel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Steel</span></code></a></p></td>
+<td><p>Bi-linear steel with given yield stress.Basic Material</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.Timber.html" title="compas_fea2.model.Timber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Timber</span></code></a></p></td>
+<td><p>Base class for Timber material</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sections">
+<h2>Sections</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._Section.html" title="compas_fea2.model._Section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Section</span></code></a></p></td>
+<td><p>Base class for sections.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.BeamSection.html" title="compas_fea2.model.BeamSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeamSection</span></code></a></p></td>
+<td><p>Custom section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.SpringSection.html" title="compas_fea2.model.SpringSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpringSection</span></code></a></p></td>
+<td><p>Section for use with spring elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.AngleSection.html" title="compas_fea2.model.AngleSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleSection</span></code></a></p></td>
+<td><p>Uniform thickness angle cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.BoxSection.html" title="compas_fea2.model.BoxSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxSection</span></code></a></p></td>
+<td><p>Hollow rectangular box cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.CircularSection.html" title="compas_fea2.model.CircularSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircularSection</span></code></a></p></td>
+<td><p>Solid circular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.HexSection.html" title="compas_fea2.model.HexSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HexSection</span></code></a></p></td>
+<td><p>Hexagonal hollow section.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ISection.html" title="compas_fea2.model.ISection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISection</span></code></a></p></td>
+<td><p>Equal flanged I-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.PipeSection.html" title="compas_fea2.model.PipeSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PipeSection</span></code></a></p></td>
+<td><p>Hollow circular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.RectangularSection.html" title="compas_fea2.model.RectangularSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RectangularSection</span></code></a></p></td>
+<td><p>Solid rectangular cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ShellSection.html" title="compas_fea2.model.ShellSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShellSection</span></code></a></p></td>
+<td><p>Section for shell elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.MembraneSection.html" title="compas_fea2.model.MembraneSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MembraneSection</span></code></a></p></td>
+<td><p>Section for membrane elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.SolidSection.html" title="compas_fea2.model.SolidSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolidSection</span></code></a></p></td>
+<td><p>Section for solid elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.TrapezoidalSection.html" title="compas_fea2.model.TrapezoidalSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrapezoidalSection</span></code></a></p></td>
+<td><p>Solid trapezoidal cross-section for beam elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TrussSection.html" title="compas_fea2.model.TrussSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrussSection</span></code></a></p></td>
+<td><p>For use with truss elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.StrutSection.html" title="compas_fea2.model.StrutSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrutSection</span></code></a></p></td>
+<td><p>For use with strut elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.TieSection.html" title="compas_fea2.model.TieSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TieSection</span></code></a></p></td>
+<td><p>For use with tie elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.MassSection.html" title="compas_fea2.model.MassSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassSection</span></code></a></p></td>
+<td><p>Section for point mass elements.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="boundary-conditions">
+<h2>Boundary Conditions</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._BoundaryCondition.html" title="compas_fea2.model._BoundaryCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BoundaryCondition</span></code></a></p></td>
+<td><p>Base class for all zero-valued boundary conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.GeneralBC.html" title="compas_fea2.model.GeneralBC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralBC</span></code></a></p></td>
+<td><p>Costumized boundary condition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.FixedBC.html" title="compas_fea2.model.FixedBC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FixedBC</span></code></a></p></td>
+<td><p>A fixed nodal displacement boundary condition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.PinnedBC.html" title="compas_fea2.model.PinnedBC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinnedBC</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ClampBCXX.html" title="compas_fea2.model.ClampBCXX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClampBCXX</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in XX.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.ClampBCYY.html" title="compas_fea2.model.ClampBCYY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClampBCYY</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in YY.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ClampBCZZ.html" title="compas_fea2.model.ClampBCZZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClampBCZZ</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition clamped in ZZ.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCX.html" title="compas_fea2.model.RollerBCX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCX</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in X.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCY.html" title="compas_fea2.model.RollerBCY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCY</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in Y.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCZ.html" title="compas_fea2.model.RollerBCZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCZ</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in Z.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCXY.html" title="compas_fea2.model.RollerBCXY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCXY</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in X and Y.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCYZ.html" title="compas_fea2.model.RollerBCYZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCYZ</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in Y and Z.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.RollerBCXZ.html" title="compas_fea2.model.RollerBCXZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RollerBCXZ</span></code></a></p></td>
+<td><p>A pinned nodal displacement boundary condition released in X and Z.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="initial-conditions">
+<h2>Initial Conditions</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._InitialCondition.html" title="compas_fea2.model._InitialCondition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_InitialCondition</span></code></a></p></td>
+<td><p>Base class for all predefined initial conditions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.InitialTemperatureField.html" title="compas_fea2.model.InitialTemperatureField"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InitialTemperatureField</span></code></a></p></td>
+<td><p>Temperature field.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.InitialStressField.html" title="compas_fea2.model.InitialStressField"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InitialStressField</span></code></a></p></td>
+<td><p>Stress field.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="groups">
+<h2>Groups</h2>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model._Group.html" title="compas_fea2.model._Group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_Group</span></code></a></p></td>
+<td><p>Base class for all groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.NodesGroup.html" title="compas_fea2.model.NodesGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodesGroup</span></code></a></p></td>
+<td><p>Base class nodes groups.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.ElementsGroup.html" title="compas_fea2.model.ElementsGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElementsGroup</span></code></a></p></td>
+<td><p>Base class for elements groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/compas_fea2.model.FacesGroup.html" title="compas_fea2.model.FacesGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FacesGroup</span></code></a></p></td>
+<td><p>Base class elements faces groups.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_fea2.model.PartsGroup.html" title="compas_fea2.model.PartsGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartsGroup</span></code></a></p></td>
+<td><p>Base class for parts groups.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parts">Parts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nodes">Nodes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elements">Elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#releases">Releases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constraints">Constraints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#materials">Materials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sections">Sections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions">Boundary Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-conditions">Initial Conditions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groups">Groups</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright COMPAS Association.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

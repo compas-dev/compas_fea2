@@ -28,6 +28,7 @@ from compas_fea2.model.ics import _InitialCondition
 from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart
 from compas_fea2.model.parts import _Part
+from compas_fea2.model.connectors import Connector
 from compas_fea2.utilities._utils import get_docstring
 from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
@@ -91,6 +92,7 @@ class Model(FEAData):
         self._nodes = None
         self._bcs = {}
         self._ics = {}
+        self._connectors = set()
         self._constraints = set()
         self._partsgroups = set()
         self._problems = set()
@@ -122,6 +124,10 @@ class Model(FEAData):
     @property
     def constraints(self):
         return self._constraints
+
+    @property
+    def connectors(self):
+        return self._connectors
 
     @property
     def materials(self):
@@ -169,7 +175,10 @@ class Model(FEAData):
 
     @property
     def nodes(self):
-        return list(chain([list(part.nodes) for part in self.parts]))[0]
+        n=[]
+        for part in self.parts:
+            n += list(part.nodes)
+        return n
 
     @property
     def points(self):
@@ -177,7 +186,10 @@ class Model(FEAData):
 
     @property
     def elements(self):
-        return list(chain([list(part.elements) for part in self.parts]))[0]
+        e=[]
+        for part in self.parts:
+            e += list(part.elements)
+        return e
 
     @property
     def bounding_box(self):
@@ -358,6 +370,7 @@ class Model(FEAData):
             print("{!r} registered to {!r}.".format(part, self))
 
         self._parts.add(part)
+        part._key = len(self._parts)
 
         if not isinstance(part, RigidPart):
             for material in part.materials:
@@ -894,6 +907,52 @@ class Model(FEAData):
             raise TypeError("{} is not a group of elements".format(elements))
         self._add_ics(ic, elements)
         return ic
+
+    # ==============================================================================
+    # Connectors methods
+    # ==============================================================================
+
+
+    def add_connectors(self, connector, nodes):
+        """Add a :class:`compas_fea2.model._InitialCondition` to the model.
+
+        Parameters
+        ----------
+        ic : :class:`compas_fea2.model._InitialCondition`
+            Initial condition object to add to the model.
+        group : :class:`compas_fea2.model._Group`
+            Group of Nodes/Elements where the initial condition is assigned.
+
+        Returns
+        -------
+        :class:`compas_fea2.model._InitialCondition`
+
+        """
+        if isinstance(nodes, _Group):
+            nodes = nodes._members
+
+        if isinstance(nodes, Node):
+            nodes = [nodes]
+
+        if not isinstance(connector, Connector):
+            raise TypeError("{!r} is not a Connector.".format(connector))
+
+        for node in nodes:
+            if not isinstance(node, Node):
+                raise TypeError("{!r} is not a Node.".format(node))
+            if not node.part:
+                raise ValueError("{!r} is not registered to any part.".format(node))
+            elif node.part not in self.parts:
+                raise ValueError("{!r} belongs to a part not registered to this model.".format(node))
+            if isinstance(node.part, RigidPart):
+                if len(nodes) != 1 or not node.is_reference:
+                    raise ValueError("For rigid parts bundary conditions can be assigned only to the reference point")
+            node._connector = connector
+
+        self._connectors.add(connector)
+        connector._registration = self
+
+        return connector
 
     # ==============================================================================
     # Summary

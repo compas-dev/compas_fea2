@@ -68,6 +68,10 @@ from .constraints import (
     BeamMPC,
     TieConstraint,
 )
+from .connectors import (
+    Connector,
+    SpringConnector,
+)
 from .groups import (
     _Group,
     NodesGroup,
@@ -137,9 +141,6 @@ __all__ = [
     "ElasticPlastic",
     "Steel",
     "Timber",
-    "HardContactFrictionPenalty",
-    "HardContactNoFriction",
-    "HardContactRough",
     "_Section",
     "MassSection",
     "BeamSection",
@@ -190,4 +191,6 @@ __all__ = [
     "_InitialCondition",
     "InitialTemperatureField",
     "InitialStressField",
+    "Connector",
+    "SpringConnector",
 ]

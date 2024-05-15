@@ -92,6 +92,7 @@ class _Part(FEAData):
 
     def __init__(self, name=None, **kwargs):
         super(_Part, self).__init__(name=name, **kwargs)
+        self._key = None
         self._nodes = set()
         self._gkey_node = {}
         self._sections = set()
@@ -110,6 +111,10 @@ class _Part(FEAData):
         self._weight = None
 
         self._results = {}
+
+    @property
+    def key(self):
+        return self._key
 
     @property
     def nodes(self):

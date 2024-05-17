@@ -1,3 +1,4 @@
+from itertools import groupby
 from typing import Iterable
 import numpy as np
 
@@ -364,9 +365,11 @@ class StressFieldResults(FEAData):
             raise ValueError("Not an element")
 
         results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
-        return self._to_fea2_results(results_set=results_set)
+        part_results = {k: list(g) for k, g in groupby(results_set, lambda row: row[1])}
 
-    def _to_fea2_results(self, results_set):
+        return self._to_fea2_results(part_results)
+
+    def _to_fea2_results(self, part_results):
         """Convert a set of results from database format to the appropriate
         result object.
 
@@ -381,21 +384,25 @@ class StressFieldResults(FEAData):
             Dictiorany grouping the results per Step.
         """
         results = {}
-        for r in results_set:
-            step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step, [])
-            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
+        for name, results in part_results.items():
+            part = self.model.find_part_by_name(name) or self.model.find_part_by_name(name, casefold=True)
+
             if not part:
-                raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, self._results_func)(r[2])
-            if isinstance(m, _Element3D):
-                cls = self._results_class_3d
-                columns = self._components_names_3d
-            else:
-                cls = self._results_class_2d
-                columns = self._components_names_2d
-            values = {k.lower(): v for k, v in zip(columns, r[3:])}
-            results[step].append(cls(m, **values))
+                raise ValueError(f"Part {name} not in model")
+
+            key_element = {e.key: e for e in part.elements}
+            for r in results:
+                step = self.problem.find_step_by_name(r[0])
+                results.setdefault(step, [])
+                m = key_element[r[2]]
+                if isinstance(m, _Element3D):
+                    cls = self._results_class_3d
+                    columns = self._components_names_3d
+                else:
+                    cls = self._results_class_2d
+                    columns = self._components_names_2d
+                values = {k.lower(): v for k, v in zip(columns, r[3:])}
+                results[step].append(cls(m, **values))
         return results
 
     def get_max_component(self, component, step):

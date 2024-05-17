@@ -947,7 +947,7 @@ class _Part(FEAData):
                 return element
 
     def find_elements_by_name(self, name):
-        # type: (str) -> list(_Element)
+        # type: (str) -> list[_Element]
         """Find all elements with a given name.
 
         Parameters

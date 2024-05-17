@@ -383,7 +383,7 @@ class StressFieldResults(FEAData):
         dic
             Dictiorany grouping the results per Step.
         """
-        results = {}
+        field_results = {}
         for name, results in part_results.items():
             part = self.model.find_part_by_name(name) or self.model.find_part_by_name(name, casefold=True)
 
@@ -393,7 +393,7 @@ class StressFieldResults(FEAData):
             key_element = {e.key: e for e in part.elements}
             for r in results:
                 step = self.problem.find_step_by_name(r[0])
-                results.setdefault(step, [])
+                field_results.setdefault(step, [])
                 m = key_element[r[2]]
                 if isinstance(m, _Element3D):
                     cls = self._results_class_3d
@@ -402,8 +402,8 @@ class StressFieldResults(FEAData):
                     cls = self._results_class_2d
                     columns = self._components_names_2d
                 values = {k.lower(): v for k, v in zip(columns, r[3:])}
-                results[step].append(cls(m, **values))
-        return results
+                field_results[step].append(cls(m, **values))
+        return field_results
 
     def get_max_component(self, component, step):
         """Get the result where a component is maximum for a given step.

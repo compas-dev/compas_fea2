@@ -1,8 +1,10 @@
 from typing import Iterable
+import numpy as np
 
 from compas_fea2.base import FEAData
 from compas_fea2.model import _Element2D
 from compas_fea2.model import _Element3D
+from compas.geometry import Vector, Point
 
 from .results import DisplacementResult
 from .results import ReactionResult
@@ -327,7 +329,7 @@ class StressFieldResults(FEAData):
     def invariants_names(self):
         return self._invariants_names
 
-    def _get_db_results(self, members, steps):
+    def _get_results_from_db(self, members, steps):
         """Get the results for the given members and steps in the database
         format.
 
@@ -362,10 +364,10 @@ class StressFieldResults(FEAData):
             raise ValueError("Not an element")
 
         results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
-        return results_set
+        return self._to_fea2_results(results_set=results_set)
 
-    def _to_result(self, results_set):
-        """Convert a set of results in database format to the appropriate
+    def _to_fea2_results(self, results_set):
+        """Convert a set of results from database format to the appropriate
         result object.
 
         Parameters
@@ -396,24 +398,6 @@ class StressFieldResults(FEAData):
             results[step].append(cls(m, **values))
         return results
 
-    def get_results(self, members, steps):
-        """Get the results for the given members and steps.
-
-        Parameters
-        ----------
-        members : _type_
-            _description_
-        steps : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        results_set = self._get_db_results(members, steps)
-        return self._to_result(results_set)
-
     def get_max_component(self, component, step):
         """Get the result where a component is maximum for a given step.
 
@@ -430,11 +414,11 @@ class StressFieldResults(FEAData):
             The appriate Result object.
         """
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
+        return self._to_fea2_results(results_set)[step][0]
 
     def get_min_component(self, component, step):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
+        return self._to_fea2_results(results_set)[step][0]
 
     def get_limits_component(self, component, step):
         """Get the result objects with the min and max value of a given
@@ -449,7 +433,7 @@ class StressFieldResults(FEAData):
 
         Returns
         -------
-        _type_
+        list(:class:`compas_fea2.results.StressResults)
             _description_
         """
         return [self.get_min_component(component, step), self.get_max_component(component, step)]
@@ -458,7 +442,7 @@ class StressFieldResults(FEAData):
         limits = []
         for func in ["MIN", "MAX"]:
             limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
-        return [self._to_result(limit)[step][0] for limit in limits]
+        return [self._to_fea2_results(limit)[step][0] for limit in limits]
 
     def get_results_at_point(self, point, distance, plane=None, steps=None):
         """Get the displacement of the model around a location (point).
@@ -481,10 +465,91 @@ class StressFieldResults(FEAData):
         for step in steps:
             results.append(self.get_results(nodes, steps)[step])
 
-    # @property
-    # def results_columns(self):
-    #     return ["step", "part", "key"]+self.components_names
+    def results(self, step=None):
+        """Return the stress results for the given analysis Step.
+        If the step is not specified, the last step is used.
 
-    def results(self, step):
-        elements = self.model.elements
-        return self.get_results(elements, steps=step)[step]
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step, optional
+            The analysis step. By default, the last step is used.
+
+        Returns
+        -------
+        list(:class:`compas_fea2.results.StressResult`)
+            A list with al the results of the field for the analysis step.
+        """
+        step = step or self.problem.steps[-1]
+        return self._get_results_from_db(self.model.elements, steps=step)[step]
+
+    def locations(self, step=None):
+        """Return the locations where the field is defined.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step, by default None
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        for s in self.results(step):
+            yield Point(*s.reference_point)
+
+    def global_stresses(self, step):
+        """_summary_
+
+        Parameters
+        ----------
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return np.array([s.global_stress for s in self.results(step)])
+
+    def principal_components(self, step=None):
+        """Compute the eigenvalues and eigenvetors of the stress field at each location.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step in which the stress filed is defined. If not
+            provided, the last analysis step is used.
+
+        Returns
+        -------
+        touple(np.array, np.array)
+            The eigenvalues and the eigenvectors, not ordered.
+        """
+        if not step:
+            step = self.problem.steps[-1]
+        return np.linalg.eig(self.global_stresses(step))
+
+    def principal_components_vectors(self, step):
+        """Compute the principal components of the stress field at each location
+        as vectors.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step in which the stress filed is defined. If not
+            provided, the last analysis step is used.
+
+
+        Yields
+        ------
+        list(:class:`compas.geometry.Vector)
+            list with the vectors corresponding to max, mid and min principal componets.
+        """
+        eigenvalues, eigenvectors = self.principal_components(step)
+        sorted_indices = np.argsort(eigenvalues, axis=1)
+        sorted_eigenvalues = np.take_along_axis(eigenvalues, sorted_indices, axis=1)
+        sorted_eigenvectors = np.take_along_axis(eigenvectors, sorted_indices[:, np.newaxis, :], axis=2)
+        for i in range(eigenvalues.shape[0]):
+            yield [Vector(*sorted_eigenvectors[i, :, j]) * sorted_eigenvalues[i, j] for j in range(eigenvalues.shape[1])]

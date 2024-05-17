@@ -2,15 +2,15 @@
 Console script for compas_fea2.
 """
 
-import json
+import importlib
 import os
 import sys
 
 import click
-import importlib
 import dotenv
 
-from compas_fea2 import HOME, VERBOSE
+from compas_fea2 import HOME
+from compas_fea2 import VERBOSE
 
 try:
     from fea2_extension.main import init_plugin  # type: ignore
@@ -54,20 +54,21 @@ def init_backend(backend, clean):
 @click.argument("value")
 def change_setting(backend, setting, value):
     """Change a setting for the specified backend.\n
-    backend : txt\n
-        The name of the backend.
-    setting : txt\n
-        The setting to be changed.
-    value : txt\n
-        The new value for the setting.
+        backend : txt\n
+            The name of the backend.
+        setting : txt\n
+            The setting to be changed.
+        value : txt\n
+            The new value for the setting.
 
-Example usage:\n
-    fea2 change-setting opensees exe "Applications/OpenSees3.5.0/bin/OpenSees"
+    Example usage:\n
+        fea2 change-setting opensees exe "Applications/OpenSees3.5.0/bin/OpenSees"
     """
-    m = importlib.import_module("compas_fea2_"+backend.lower())
-    env = os.path.join(m.HOME,"src", "compas_fea2_"+backend.lower(),".env")
+    m = importlib.import_module("compas_fea2_" + backend.lower())
+    env = os.path.join(m.HOME, "src", "compas_fea2_" + backend.lower(), ".env")
     dotenv.set_key(env, setting.upper(), value)
     print(f"{setting.upper()} set to {value} for compas_fea2_{backend.lower()}")
+
 
 # -------------------------------- DEBUG ----------------------------------#
 if __name__ == "__main__":

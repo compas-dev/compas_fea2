@@ -222,7 +222,7 @@ class Model(FEAData):
     # =========================================================================
 
     @staticmethod
-    @timer(message="Model loaded from cfm file in ")
+    # @timer(message="Model loaded from cfm file in ")
     def from_cfm(path):
         """Imports a Problem object from an .cfm file through Pickle.
 

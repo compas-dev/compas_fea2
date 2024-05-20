@@ -40,17 +40,12 @@ class _Section(FEAData):
 
     def __init__(self, material, **kwargs):
         super(_Section, self).__init__(**kwargs)
-        self._key = None
         self._material = material
         self._shape = None
 
     @property
     def model(self):
         return self._registration
-
-    @property
-    def key(self):
-        return self._key
 
     @property
     def material(self):
@@ -104,11 +99,6 @@ class MassSection(FEAData):
     def __init__(self, mass, **kwargs):
         super(MassSection, self).__init__(**kwargs)
         self.mass = mass
-        self._key = None
-
-    @property
-    def key(self):
-        return self._key
 
     def __str__(self):
         return """
@@ -126,51 +116,53 @@ class SpringSection(FEAData):
 
     Parameters
     ----------
-    forces : dict
-        Forces data for non-linear springs.
-    displacements : dict
-        Displacements data for non-linear springs.
-    stiffness : dict
-        Elastic stiffness for linear springs.
+    axial : float
+        Axial stiffness value.
+    lateral : float
+        Lateral stiffness value.
+    axial : float
+        Rotational stiffness value.
 
     Attributes
     ----------
-    key : int, read-only
-        Identifier of the element in the parent part.
-    forces : dict
-        Forces data for non-linear springs.
-    displacements : dict
-        Displacements data for non-linear springs.
-    stiffness : dict
-        Elastic stiffness for linear springs.
+    axial : float
+        Axial stiffness value.
+    lateral : float
+        Lateral stiffness value.
+    axial : float
+        Rotational stiffness value.
 
     Notes
     -----
-    - Force and displacement data should range from negative to positive values.
-    - Requires either a stiffness dict for linear springs, or forces and displacement lists for non-linear springs.
-    - Directions are 'axial', 'lateral', 'rotation'.
-
+    SpringSections are registered to a :class:`compas_fea2.model.Model` and can be assigned
+    to elements in different Parts.
     """
 
-    def __init__(self, forces=None, displacements=None, stiffness=None, **kwargs):
+    def __init__(self, axial, lateral, rotational, **kwargs):
         super(SpringSection, self).__init__(**kwargs)
-        # TODO would be good to know the structure of these dicts and validate
-        self.forces = forces or {}
-        self.displacements = displacements or {}
-        self.stiffness = stiffness or {}
+        self.axial = axial
+        self.lateral = lateral
+        self.rotational = rotational
 
     def __str__(self):
         return """
 Spring Section
 --------------
-name      : {}
-material  : None
-forces    : {}
-displ     : {}
-stiffness : {}
+Key                     : {}
+axial stiffness         : {}
+lateral stiffness       : {}
+rotational stiffness    : {}
 """.format(
-            self.name, self.forces, self.displacements, self.stiffness
+            self.key, self.axial, self.lateral, self.rotational
         )
+
+    @property
+    def model(self):
+        return self._registration
+
+    @property
+    def stiffness(self):
+        return {"Axial": self._axial, "Lateral": self._lateral, "Rotational": self._rotational}
 
 
 # ==============================================================================

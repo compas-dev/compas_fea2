@@ -71,6 +71,7 @@ from .constraints import (
 from .connectors import (
     Connector,
     SpringConnector,
+    ZeroLengthSpringConnector,
 )
 from .groups import (
     _Group,
@@ -193,4 +194,5 @@ __all__ = [
     "InitialStressField",
     "Connector",
     "SpringConnector",
+    "ZeroLengthSpringConnector",
 ]

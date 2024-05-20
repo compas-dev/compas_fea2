@@ -72,6 +72,21 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         super().__init__(name=name, **kwargs)
         self._name = name or "".join([c for c in type(self).__name__ if c.isupper()]) + "_" + str(id(self))
         self._registration = None
+        self._key = None
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def input_key(self):
+        if type(self._key)==type(None):
+            raise AttributeError(f"{self!r} does not have a key.")
+        if type(self._registration)==type(None):
+            raise AttributeError(f"{self!r} is not registered to any part.")
+        if type(self._registration._key)==type(None):
+            raise AttributeError(f"{self._registration!r} is not registered to a model.")
+        return self._key + self._registration._key
 
     def __repr__(self):
         return "{0}({1})".format(self.__class__.__name__, id(self))

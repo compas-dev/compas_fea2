@@ -12,6 +12,7 @@ from compas.geometry import Translation
 from compas.geometry import Vector
 from compas.geometry import sum_vectors
 
+import compas_fea2
 from compas_fea2.model.bcs import FixedBC
 from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import RollerBCX
@@ -28,6 +29,8 @@ try:
     from compas_view2.shapes import Arrow  # type: ignore
     from compas_view2.shapes import Text  # type: ignore
 except Exception:
+    if compas_fea2.VERBOSE:
+        print("WARNING: Viewer not loaded!")
     pass
 
 

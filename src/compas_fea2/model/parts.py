@@ -92,7 +92,6 @@ class _Part(FEAData):
 
     def __init__(self, name=None, **kwargs):
         super(_Part, self).__init__(name=name, **kwargs)
-        self._key = None
         self._nodes = set()
         self._gkey_node = {}
         self._sections = set()
@@ -111,10 +110,6 @@ class _Part(FEAData):
         self._weight = None
 
         self._results = {}
-
-    @property
-    def key(self):
-        return self._key
 
     @property
     def nodes(self):
@@ -841,7 +836,7 @@ class _Part(FEAData):
         return node
 
     def add_nodes(self, nodes):
-        # type: (list(Node)) -> list(Node)
+        # type: (list) -> list
         """Add multiple nodes to the part.
 
         Parameters
@@ -952,7 +947,7 @@ class _Part(FEAData):
                 return element
 
     def find_elements_by_name(self, name):
-        # type: (str) -> list(_Element)
+        # type: (str) -> list
         """Find all elements with a given name.
 
         Parameters
@@ -1025,7 +1020,7 @@ class _Part(FEAData):
         return element
 
     def add_elements(self, elements):
-        # type: (_Element) -> list(_Element)
+        # type: (_Element) -> list
         """Add multiple elements to the part.
 
         Parameters
@@ -1455,7 +1450,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def find_materials_by_name(self, name):
-        # type: (str) -> list(_Material)
+        # type: (str) -> list
         """Find all materials with a given name.
 
         Parameters
@@ -1516,7 +1511,7 @@ class DeformablePart(_Part):
         return material
 
     def add_materials(self, materials):
-        # type: (_Material) -> list(_Material)
+        # type: (_Material) -> list
         """Add multiple materials to the part.
 
         Parameters
@@ -1535,7 +1530,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     def find_sections_by_name(self, name):
-        # type: (str) -> list(_Section)
+        # type: (str) -> list
         """Find all sections with a given name.
 
         Parameters
@@ -1597,7 +1592,7 @@ class DeformablePart(_Part):
         return section
 
     def add_sections(self, sections):
-        # type: (list(_Section)) -> _Section
+        # type: (list) -> _Section
         """Add multiple sections to the part.
 
         Parameters

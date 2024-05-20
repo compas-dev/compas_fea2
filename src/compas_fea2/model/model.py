@@ -18,6 +18,7 @@ from compas.geometry import centroid_points
 from pint import UnitRegistry
 
 import compas_fea2
+from compas_fea2 import PART_NODES_LIMIT
 from compas_fea2.base import FEAData
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.groups import ElementsGroup
@@ -87,6 +88,7 @@ class Model(FEAData):
         super(Model, self).__init__(**kwargs)
         self.description = description
         self.author = author
+        self._key = 0
         self._units = None
         self._parts = set()
         self._nodes = None
@@ -369,8 +371,8 @@ class Model(FEAData):
         if compas_fea2.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
+        part._key = len(self._parts)*PART_NODES_LIMIT
         self._parts.add(part)
-        part._key = len(self._parts)
 
         if not isinstance(part, RigidPart):
             for material in part.materials:
@@ -570,6 +572,7 @@ class Model(FEAData):
                     raise ValueError("For rigid parts bundary conditions can be assigned only to the reference point")
             node._bc = bc
 
+        bc._key = len(self.bcs)
         self._bcs[bc] = set(nodes)
         bc._registration = self
 
@@ -863,6 +866,7 @@ class Model(FEAData):
                 raise ValueError("{!r} belongs to a part not registered to this model.".format(member))
             member._ic = ic
 
+        ic._key = len(self._ics)
         self._ics[ic] = group.members
         ic._registration = self
 
@@ -913,7 +917,7 @@ class Model(FEAData):
     # ==============================================================================
 
 
-    def add_connectors(self, connector, nodes):
+    def add_connector(self, connector):
         """Add a :class:`compas_fea2.model._InitialCondition` to the model.
 
         Parameters
@@ -928,27 +932,9 @@ class Model(FEAData):
         :class:`compas_fea2.model._InitialCondition`
 
         """
-        if isinstance(nodes, _Group):
-            nodes = nodes._members
-
-        if isinstance(nodes, Node):
-            nodes = [nodes]
-
         if not isinstance(connector, Connector):
             raise TypeError("{!r} is not a Connector.".format(connector))
-
-        for node in nodes:
-            if not isinstance(node, Node):
-                raise TypeError("{!r} is not a Node.".format(node))
-            if not node.part:
-                raise ValueError("{!r} is not registered to any part.".format(node))
-            elif node.part not in self.parts:
-                raise ValueError("{!r} belongs to a part not registered to this model.".format(node))
-            if isinstance(node.part, RigidPart):
-                if len(nodes) != 1 or not node.is_reference:
-                    raise ValueError("For rigid parts bundary conditions can be assigned only to the reference point")
-            node._connector = connector
-
+        connector._key = len(self._connectors)
         self._connectors.add(connector)
         connector._registration = self
 

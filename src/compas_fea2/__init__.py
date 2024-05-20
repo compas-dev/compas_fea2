@@ -59,6 +59,7 @@ VERBOSE = os.getenv("VERBOSE").lower() == "true"
 POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
 GLOBAL_TOLERANCE = os.getenv("GLOBAL_TOLERANCE")
 PRECISION = int(os.getenv("PRECISION"))
+PART_NODES_LIMIT = int(os.getenv("PART_NODES_LIMIT"))
 BACKEND = None
 BACKENDS = defaultdict(dict)
 

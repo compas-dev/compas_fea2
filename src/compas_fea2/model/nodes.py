@@ -107,10 +107,6 @@ class Node(FEAData):
         return self.part._registration
 
     @property
-    def key(self):
-        return self._key
-
-    @property
     def xyz(self):
         return [self._x, self._y, self._z]
 
@@ -200,3 +196,4 @@ class Node(FEAData):
     @property
     def point(self):
         return Point(*self.xyz)
+

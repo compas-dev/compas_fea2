@@ -78,7 +78,6 @@ class _Element(FEAData):
         self._implementation = implementation
         self._frame = None
         self._on_boundary = None
-        self._key = None
         self._area = None
         self._volume = None
         self._results_format = {}
@@ -93,10 +92,6 @@ class _Element(FEAData):
     @property
     def model(self):
         return self.part.model
-
-    @property
-    def key(self):
-        return self._key
 
     @property
     def nodes(self):

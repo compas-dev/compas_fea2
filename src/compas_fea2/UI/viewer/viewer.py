@@ -433,43 +433,54 @@ class FEA2Viewer:
         for part in step.model.parts:
             self.draw_mesh(parts_mesh[part.name], opacity=0.75)
 
-    def draw_elements_field_vector(self, field_results, step, vector_sf=1, **kwargs):
+    def draw_elements_field_vector(self, field_results, vector_sf=1, **kwargs):
         # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
 
         # Color the vector field
         # FIXME temporary test - > change components
-        pts, vectors, colors = [], [], []
-        for r in field_results.results(step):
-            ps_results_mid = list(r.principal_stresses)
-            ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
-            ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None
-            all_ps_results = {"mid": ps_results_mid, "top": ps_results_top, "bottom": ps_results_bottom}
+        # for p, v in zip(field_results.locations(), field_results.principal_components_vectors()):
+            # ps_results_mid = list(r.principal_stresses)
+            # ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
+            # ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None
+            # all_ps_results = {"mid": ps_results_mid, "top": ps_results_top, "bottom": ps_results_bottom}
 
-            for k, v in all_ps_results.items():
-                if v:
-                    if len(v) == 2:
-                        ps_colors = ((0, 1, 1), (1, 0, 0))
-                    else:
-                        ps_colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
+            # for k, v in all_ps_results.items():
+            #     if v:
+            #         if len(v) == 2:
+            #             ps_colors = ((0, 1, 1), (1, 0, 0))
+            #         else:
+            #             ps_colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
 
-                    for ps, color in zip(v, ps_colors):
-                        for dir in (-0.5, 0.5):
-                            if k == "mid":
-                                pts.append(r.location.reference_point)
-                            elif k == "top":
-                                X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t / 2)
-                                pts.append(Point(*r.location.reference_point).transformed(X))
-                            elif k == "bottom":
-                                X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t / 2)
-                                pts.append(Point(*r.location.reference_point).transformed(X))
-                            vectors.append(ps[1].scaled(vector_sf * dir))
-                            colors.append(color)
+            #         for ps, color in zip(v, ps_colors):
+            #             for dir in (-0.5, 0.5):
+            #                 if k == "mid":
+            #                     pts.append(r.location.reference_point)
+            #                 elif k == "top":
+            #                     X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t / 2)
+            #                     pts.append(Point(*r.location.reference_point).transformed(X))
+            #                 elif k == "bottom":
+            #                     X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t / 2)
+            #                     pts.append(Point(*r.location.reference_point).transformed(X))
+            #                 vectors.append(ps[1].scaled(vector_sf * dir))
+            #                 colors.append(color)
 
             # colors.append(color)
             # colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
 
-        # Display results
-        self.draw_nodes_vector(pts=pts, vectors=vectors, colors=colors)
+        arrows = []
+        arrows_properties = []
+        components = kwargs.get('components', [0,1,2])
+        colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
+
+        # if not colors:
+        #     colors = [(0, 1, 0)] * len(pts)
+        for pt, vector in zip(field_results.locations(), field_results.principal_components_vectors()):
+            for comp in components:
+                if vector[comp].length:
+                    arrows.append(Arrow(position=pt, direction=vector[comp] * vector_sf, head_portion=0.3, head_width=0.15, body_width=0.05))
+                    arrows_properties.append({"u": 3, "show_lines": False, "facecolor": colors[comp]})
+        if arrows:
+            self.app.add(Collection(arrows, arrows_properties))
 
     def draw_nodes_contour(self, model, nodes_values, **kwargs):
         """ """

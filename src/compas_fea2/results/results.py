@@ -47,6 +47,10 @@ class Result(FEAData):
         return self._registration
 
     @property
+    def reference_point(self):
+        return self.location.reference_point
+
+    @property
     def components(self):
         return self._components
 
@@ -360,9 +364,7 @@ class StressResult(Result):
 
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
-
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
-
         self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
 
@@ -686,11 +688,6 @@ class StressResult(Result):
             raise NotImplementedError("This function is only available for Elastic Isotropic materials")
         # Delta_sigma = E * alpha * Delta_T
         return self.location.section.material.E * self.location.section.material.expansion * temperature_change
-
-    # @property
-    # def global_components(self):
-    #     X = Transformation.from_frame(self.location.frame)
-    #     .transformed(X)
 
 
 class SolidStressResult(StressResult):

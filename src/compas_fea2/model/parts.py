@@ -282,7 +282,7 @@ class _Part(FEAData):
         return prt
 
     @classmethod
-    @timer(message="compas Mesh successfully imported in ")
+    # @timer(message="compas Mesh successfully imported in ")
     def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
 
@@ -947,7 +947,7 @@ class _Part(FEAData):
                 return element
 
     def find_elements_by_name(self, name):
-        # type: (str) -> list
+        # type: (str) -> list[_Element]
         """Find all elements with a given name.
 
         Parameters
@@ -1403,7 +1403,7 @@ class DeformablePart(_Part):
     # =========================================================================
 
     @classmethod
-    @timer(message="compas Mesh successfully imported in ")
+    # @timer(message="compas Mesh successfully imported in ")
     def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a a :class:`compas.datastructures.Mesh`.
 

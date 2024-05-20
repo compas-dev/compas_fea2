@@ -345,7 +345,7 @@ Analysis folder path : {}
     #                         Analysis methods
     # =========================================================================
 
-    @timer(message="Finished writing input file in")
+    # @timer(message="Finished writing input file in")
     def write_input_file(self, path=None):
         # type: (Path |str) -> None
         """Writes the input file.
@@ -727,6 +727,7 @@ Analysis folder path : {}
             step = self.steps_order[-1]
 
         # Display results
+
         v = FEA2Viewer(self.model, scale_factor=model_sf)
         v.draw_elements_field_vector(field_results=field_results, step=step, vector_sf=vector_sf, **kwargs)
 

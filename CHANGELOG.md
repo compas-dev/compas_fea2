@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Changed processing of stress field results to iterate of rows grouped per part.
+
+### Removed
+
+
+## [0.2.1] 2024-05-15
+
+### Added
+
+### Changed
+
 ### Removed
 
 

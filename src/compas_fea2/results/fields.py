@@ -113,7 +113,7 @@ class FieldResults(FEAData):
         if not isinstance(steps, Iterable):
             steps = [steps]
 
-        members_keys = set([member.key for member in members])
+``        members_keys = set([member.input_key for member in members])
         parts_names = set([member.part.name for member in members])
         steps_names = set([step.name for step in steps])
 
@@ -355,7 +355,7 @@ class StressFieldResults(FEAData):
         members_keys = {}
         parts_names = {}
         for member in members:
-            members_keys[member.key]=member
+            members_keys[member.input_key]=member
             parts_names[member.part.name]=member.part
         steps_names = {step.name: step for step in steps}
 

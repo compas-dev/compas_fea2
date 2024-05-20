@@ -92,7 +92,7 @@ class FEA2Viewer:
         self.app.add(Collection(pts), facecolor=Color.from_hex("#386641"))
 
         if node_lables:
-            txts = [Text(str(node.key), node.point, height=35) for node in nodes]
+            txts = [Text(str(node.input_key), node.point, height=35) for node in nodes]
         self.app.add(Collection(txts), facecolor=Color.from_hex("#386641"))
 
     def draw_solid_elements(self, elements, show_vertices=True, opacity=1.0):

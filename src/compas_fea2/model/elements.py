@@ -106,6 +106,10 @@ class _Element(FEAData):
         return "-".join(sorted([str(node.key) for node in self.nodes], key=int))
 
     @property
+    def nodes_inputkey(self):
+        return "-".join(sorted([str(node.input_key) for node in self.nodes], key=int))
+
+    @property
     def section(self):
         return self._section
 

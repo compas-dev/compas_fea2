@@ -113,7 +113,7 @@ class FieldResults(FEAData):
         if not isinstance(steps, Iterable):
             steps = [steps]
 
-``        members_keys = set([member.input_key for member in members])
+        members_keys = set([member.input_key for member in members])
         parts_names = set([member.part.name for member in members])
         steps_names = set([step.name for step in steps])
 

@@ -89,6 +89,7 @@ class Model(FEAData):
         self.description = description
         self.author = author
         self._key = 0
+        self._starting_key = None
         self._units = None
         self._parts = set()
         self._nodes = None

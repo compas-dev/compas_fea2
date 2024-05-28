@@ -86,7 +86,7 @@ class FEAData(Data, metaclass=DimensionlessMeta):
             raise AttributeError(f"{self!r} is not registered to any part.")
         if type(self._registration._key)==type(None):
             raise AttributeError(f"{self._registration!r} is not registered to a model.")
-        return self._key + self._registration._key
+        return self._key + self._registration._key + self.model._starting_key
 
     def __repr__(self):
         return "{0}({1})".format(self.__class__.__name__, id(self))

@@ -542,23 +542,26 @@ Analysis folder path : {}
         from compas_fea2.model.elements import ShellElement
         from compas_fea2.UI.viewer import FEA2Viewer
 
-        v = FEA2Viewer(self.model, scale_factor=scale_factor)
+        # v = FEA2Viewer(self.model, scale_factor=scale_factor)
+        v = FEA2Viewer(self.model, camera={})
 
-        parts = parts or self.model.parts
+        # parts = parts or self.model.parts
 
-        if draw_bcs:
-            v.draw_bcs(self.model, parts, draw_bcs)
+        # if draw_bcs:
+        #     v.draw_bcs(self.model, parts, draw_bcs)
 
-        # if draw_constraints:
-        #     v.draw_constraint(self.constraints)
-        for part in parts:
-            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-            v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
-            v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
+        # # if draw_constraints:
+        # #     v.draw_constraint(self.constraints)
+        # for part in parts:
+        #     v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
+        #     v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
+        #     v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
 
-        if kwargs.get("draw_loads", None):
-            for step in self.steps:
-                v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+        # if kwargs.get("draw_loads", None):
+        #     for step in self.steps:
+        #         v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+        bm =  [p for p in self.model.parts][0].boundary_mesh
+        v.draw_mesh(bm)
         v.show()
 
     def show_nodes_field_vector(self, field_results, component=None, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):

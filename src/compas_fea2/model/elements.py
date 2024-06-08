@@ -222,6 +222,8 @@ class _Element1D(_Element):
             self._shape_i.points+self._shape_j.points,
             [[p.index(v1), p.index(v2), p.index(v2)+n, p.index(v1)+n] for v1, v2 in pairwise(p)]+[[n-1, 0, n, 2*n-1]]
         )
+        self._outermesh.join(self._shape_i.to_mesh())
+        self._outermesh.join(self._shape_j.to_mesh())
 
         # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point), cap_ends=False)
         # Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))

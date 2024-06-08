@@ -523,7 +523,6 @@ color_palette = {
 class FEA2Viewer:
     def __init__(self, center=[0, 0, 0], camera=None, grid=None, scale_model=1, *args, **kwargs):
         self.viewer = Viewer()
-
         self.viewer.renderer.camera.target = [i * scale_model for i in center]
         self.viewer.config.vectorsize = 0.5
         V1 = np.array([0, 0, 0])
@@ -534,9 +533,9 @@ class FEA2Viewer:
         unitSlope = delta / length
         new_position = V1 + unitSlope * distance
         self.viewer.renderer.camera.position = new_position.tolist()
-        self.viewer.renderer.camera.near *= 10
+        self.viewer.renderer.camera.near *= 1
         self.viewer.renderer.camera.far *= 10000
-        self.viewer.renderer.camera.scale *= scale_model
+        self.viewer.renderer.camera.scale *= scale_model*1000
 
     # def _add_sidebar_items(self, items, *args, **kwargs):
     #     for item in items:
@@ -556,16 +555,16 @@ class FEA2Viewer:
 
 
 class FEA2ModelObject(GroupObject):
-    def __init__(self, model, scale_model=1, show_bcs=True, **kwargs):
+    def __init__(self, model, show_bcs=True, **kwargs):
 
         part_meshes = []
 
         for part in model.parts:
-            face_color = color_palette["faces"]
-            line_color = color_palette["edges"]
-            show_faces = True
-            show_lines = True
-            show_points = True
+            face_color = kwargs.get("face_color", color_palette["faces"])
+            line_color = kwargs.get("line_color", color_palette["edges"])
+            show_faces = kwargs.get("show_faces", True)
+            show_lines = kwargs.get("show_lines", True)
+            show_points = kwargs.get("show_points", True)
             if part._discretized_boundary_mesh:
                 part_meshes.append(
                     (
@@ -591,6 +590,7 @@ class FEA2ModelObject(GroupObject):
                                 "show_points": show_points,
                                 "facecolor": face_color,
                                 "linecolor": line_color,
+                                "opacity": 1.
                             },
                         )
                     )

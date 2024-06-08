@@ -377,18 +377,18 @@ class IShape(Shape):
         self._direction = direction
         self._type = "I-shape_" + direction
         points = [
-            Point(-a / 2, -b / 2, 0.0),
-            Point(a / 2, -b / 2, 0.0),
-            Point(a / 2, 1 - b / 2, 0.0),
-            Point((a + 1) / 2 - a / 2, 1 - b / 2, 0.0),
-            Point((a + 1) / 2 - a / 2, b - 1 - b / 2, 0.0),
-            Point(a / 2, b - 1 - b / 2, 0.0),
-            Point(a / 2, b / 2, 0.0),
-            Point(-a / 2, b / 2, 0.0),
-            Point(-a / 2, b - 1 - b / 2, 0.0),
-            Point((a - 1) / 2 - a / 2, b - 1 - b / 2, 0.0),
-            Point((a - 1) / 2 - a / 2, 1 - b / 2, 0.0),
-            Point(-a / 2, 1 - b / 2, 0.0),
+            Point(-a/2, -b/2, 0.0),
+            Point(a/2, -b/2, 0.0),
+            Point(a/2, -b/2+t2, 0.0),
+            Point(t1/2, -b/2+t2, 0.0),
+            Point(t1/2, b/2-t2, 0.0),
+            Point(a/2, b/2-t2, 0.0),
+            Point(a/2, b/2, 0.0),
+            Point(-a/2, b/2, 0.0),
+            Point(-a/2, b/2-t2, 0.0),
+            Point(-t1/2, b/2-t2, 0.0),
+            Point(-t1/2, -b/2+t2, 0.0),
+            Point(-a/2, -b/2+t2, 0.0)
         ]
         super().__init__(points)
 

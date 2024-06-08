@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from math import sqrt
+from math import pi
 
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -1399,10 +1400,9 @@ class DeformablePart(_Part):
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
-    from compas.datastructures import Mesh
     @classmethod
     # @timer(message="compas Mesh successfully imported in ")
-    def frame_from_compas_mesh(cls, mesh: Mesh, section, name=None, **kwargs):
+    def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a a :class:`compas.datastructures.Mesh`.
 
         To each edge of the mesh is assigned a :class:`compas_fea2.model.BeamElement`.
@@ -1431,14 +1431,8 @@ class DeformablePart(_Part):
                 n = n[0]+n[1]
             v = list(mesh.edge_direction(edge))
             frame = Frame(nodes[0].xyz, v, n)
-            from math import pi
-            # v.append(v.pop(0))
-            # v = v[-1:] + v[:-1]
             frame.rotate(pi/2, n, nodes[0].xyz)
             part.add_element(BeamElement(nodes=[*nodes], section=section, frame=frame))
-
-        part._boundary_mesh = mesh
-        part._discretized_boundary_mesh = None
 
         return part
 

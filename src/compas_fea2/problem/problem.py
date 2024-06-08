@@ -503,13 +503,14 @@ Analysis folder path : {}
     # =========================================================================
     def show(
         self,
-        scale_factor=1.0,
+        scale_model=1.0,
+        step=None,
         parts=None,
         elements=True,
         solid=False,
         draw_nodes=True,
         node_labels=True,
-        draw_bcs=1.0,
+        show_bcs=1.0,
         draw_constraints=True,
         **kwargs,
     ):
@@ -537,32 +538,72 @@ Analysis folder path : {}
             _description_, by default True
 
         """
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2VectorFieldObject
+        from compas_viewer import Viewer
+        from compas.plugins import plugin
+        from compas.scene import register
+        from compas.scene import register_scene_objects
 
-        from compas_fea2.model.elements import BeamElement
-        from compas_fea2.model.elements import ShellElement
-        from compas_fea2.UI.viewer import FEA2Viewer
+        import numpy as np
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-        # v = FEA2Viewer(self.model, scale_factor=scale_factor)
-        v = FEA2Viewer(self.model, camera={})
+        # v = FEA2Viewer(self, scale_factor=scale_factor)
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)  # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+        viewer.viewer.show()
 
-        # parts = parts or self.model.parts
+    def show_displacement_vectors(self, step, component=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, filter_parts=None):
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2VectorFieldObject
+        from compas_viewer import Viewer
+        from compas.plugins import plugin
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+        from compas_fea2_opensees import OpenseesDisplacementFieldResults
+        import numpy as np
 
-        # if draw_bcs:
-        #     v.draw_bcs(self.model, parts, draw_bcs)
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+        register(self.displacement_field.__class__.__bases__[-1], FEA2VectorFieldObject, context="Viewer")
 
-        # # if draw_constraints:
-        # #     v.draw_constraint(self.constraints)
-        # for part in parts:
-        #     v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-        #     v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
-        #     v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
+        viewer = Viewer() # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
+        viewer.app.setApplicationName("compas_fea2 Viewer")
+        viewer.app.setApplicationDisplayName("compas_fea2 Viewer")
+        viewer.renderer.camera.target = [i * scale_model for i in self.model.center]
+        viewer.config.vectorsize=0.5
+        V1 = np.array([0, 0, 0])
+        V2 = np.array(viewer.renderer.camera.target)
+        delta = V2 - V1
+        length = np.linalg.norm(delta)
+        distance = length * 3
+        unitSlope = delta / length
+        new_position = V1 + unitSlope * distance
+        viewer.renderer.camera.position = new_position.tolist()
+        viewer.renderer.camera.near *= scale_model
+        viewer.renderer.camera.far *= 100*scale_model
+        viewer.renderer.camera.scale *= 100*scale_model/2
+        viewer.scene.add(self.model, scale_model=scale_model, opacity=0.5)
+        viewer.scene.add(self.displacement_field, step=step, component=component, scale_results=scale_results)
+        viewer.show()
 
-        # if kwargs.get("draw_loads", None):
-        #     for step in self.steps:
-        #         v.draw_loads(step, scale_factor=kwargs["draw_loads"])
-        bm =  [p for p in self.model.parts][0].boundary_mesh
-        v.draw_mesh(bm)
-        v.show()
+    def show_principal_stress_vectors(self, step, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, filter_parts=None):
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2VectorFieldObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+        register(self.stress_field.__class__.__bases__[-1], FEA2VectorFieldObject, context="Viewer")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model) # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+
+        if not components:
+            components = [0,1,2]
+
+        for component in components:
+            viewer.viewer.scene.add(self.stress_field, component=component, scale_results=scale_results, step=step)
+        viewer.viewer.show()
 
     def show_nodes_field_vector(self, field_results, component=None, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
         """Display a given vector field.

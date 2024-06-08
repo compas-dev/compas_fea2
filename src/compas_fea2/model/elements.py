@@ -6,10 +6,14 @@ from operator import itemgetter
 
 from compas.geometry import Frame
 from compas.geometry import Line
+from compas.geometry import Vector
 from compas.geometry import Plane
 from compas.geometry import Polygon
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
+from compas.itertools import pairwise
+from compas.datastructures import Mesh
+from compas_occ.brep import Brep
 from compas.itertools import pairwise
 
 from compas_fea2.base import FEAData
@@ -209,8 +213,19 @@ class _Element1D(_Element):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
         self._curve = Line(nodes[0].point, nodes[-1].point)
-        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
+        self._shape_i = section._shape.oriented(self._frame)
+        self._shape_j = self._shape_i.translated(Vector.from_start_end(nodes[0].point, nodes[-1].point))
+        #create the outer mesh using the section information
+        p = self._shape_i.points
+        n = len(p)
+        self._outermesh = Mesh.from_vertices_and_faces(
+            self._shape_i.points+self._shape_j.points,
+            [[p.index(v1), p.index(v2), p.index(v2)+n, p.index(v1)+n] for v1, v2 in pairwise(p)]+[[n-1, 0, n, 2*n-1]]
+        )
+
+        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point), cap_ends=False)
+        # Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
+        # self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
 
     @property
     def frame(self):

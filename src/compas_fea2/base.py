@@ -107,6 +107,12 @@ class FEAData(Data, metaclass=DimensionlessMeta):
                 pass
         return """\n{}\n{}\n{}\n""".format(title, separator, "\n".join(data_extended))
 
+    def __getstate__(self):
+        return self.__dict__
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
     # def to_html(self):
     #     return highlight(str(self), PythonLexer(), HtmlFormatter(full=True, style="friendly"))
 
@@ -141,3 +147,5 @@ class FEAData(Data, metaclass=DimensionlessMeta):
 
     def data(self):
         pass
+
+

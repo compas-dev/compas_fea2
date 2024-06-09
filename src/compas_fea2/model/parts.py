@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from math import sqrt
+from math import pi
 
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -40,6 +41,7 @@ from .sections import ShellSection
 from .sections import SolidSection
 from .sections import _Section
 
+import timeit
 
 class _Part(FEAData):
     """Base class for Parts.
@@ -163,9 +165,6 @@ class _Part(FEAData):
         except Exception:
             print("WARNING: BoundingBox not generated")
             return None
-        #     # raise AttributeError("Missing the bounding mesh of the part.")
-        # else:
-        #     return Box.from_bounding_box(self._boundary_mesh.obb())
 
     @property
     def center(self):
@@ -247,7 +246,7 @@ class _Part(FEAData):
     # =========================================================================
 
     @classmethod
-    def from_compas_lines(cls, lines, element_model="BeamElement", section=None, name=None, **kwargs):
+    def from_compas_lines(cls, lines, element_model="BeamElement", xaxis=[0,1,0], section=None, name=None, **kwargs):
         """Generate a part from a class:`compas.geometry.Line`.
 
         Parameters
@@ -268,14 +267,15 @@ class _Part(FEAData):
 
         """
         import compas_fea2
-
         prt = cls(name=name)
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         for line in lines:
+            frame = Frame(line[0], xaxis, line.vector)
+            frame.rotate(pi/2, xaxis, line[0])
             # FIXME change tolerance
             nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
             prt.add_nodes(nodes)
-            element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section)
+            element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section, frame=frame)
             if not isinstance(element, _Element1D):
                 raise ValueError("Provide a 1D element")
             prt.add_element(element)
@@ -317,7 +317,7 @@ class _Part(FEAData):
 
     @classmethod
     # @timer(message='part successfully imported from gmsh model in ')
-    def from_gmsh(cls, gmshModel, name=None, **kwargs):
+    def from_gmsh(cls, gmshModel, section=None, name=None, **kwargs):
         """Create a Part object from a gmshModel object.
 
         According to the `section` type provided, :class:`compas_fea2.model._Element2D` or
@@ -365,34 +365,33 @@ class _Part(FEAData):
 
         """
         import numpy as np
+        import time
 
         part = cls(name=name)
 
         gmshModel.heal()
         gmshModel.generate_mesh(3)
-
         model = gmshModel.model
+
         # add nodes
-        gmsh_nodes = model.mesh.get_nodes()
-        node_coords = gmsh_nodes[1].reshape((-1, 3), order="C")
-        fea2_nodes = [part.add_node(Node(coords.tolist())) for coords in node_coords]
+        node_coords = model.mesh.get_nodes()[1].reshape((-1, 3), order="C")
+        fea2_nodes = np.array([part.add_node(Node(coords)) for coords in node_coords])
+
         # add elements
         gmsh_elements = model.mesh.get_elements()
+        dimension = 2 if isinstance(section, SolidSection) else 1
+        ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
 
-        section = kwargs.get("section", None)
-        split = kwargs.get("split", False)
         verbose = kwargs.get("verbose", False)
         rigid = kwargs.get("rigid", False)
         implementation = kwargs.get("implementation", None)
 
-        dimension = 2 if isinstance(section, SolidSection) else 1
-
-        ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
-
         for ntags in ntags_per_element:
-            if split:
+            if kwargs.get("split", False):
                 raise NotImplementedError("this feature is under development")
-            element_nodes = [fea2_nodes[ntag] for ntag in ntags]
+            # element_nodes = [fea2_nodes[ntag] for ntag in ntags]
+            element_nodes = fea2_nodes[ntags]
+
             if ntags.size == 3:
                 k = part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
             elif ntags.size == 4:
@@ -400,7 +399,7 @@ class _Part(FEAData):
                     k = part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
                 else:
                     k = part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
-                    part.ndf = 3  # FIXME move outside the loop
+                    part.ndf = 3  # FIXME try to move outside the loop
             elif ntags.size == 8:
                 k = part.add_element(HexahedronElement(nodes=element_nodes, section=section))
             else:
@@ -408,11 +407,15 @@ class _Part(FEAData):
             if verbose:
                 print("element {} added".format(k))
 
-        if not part._discretized_boundary_mesh:
-            gmshModel.generate_mesh(2)
-            part._discretized_boundary_mesh = gmshModel.mesh_to_compas()
+        if not part._boundary_mesh:
+            gmshModel.generate_mesh(2)  # FIXME Get the volumes without the mesh
+            part._boundary_mesh = gmshModel.mesh_to_compas()
 
-        if kwargs.get("rigid", False):
+        if not part._discretized_boundary_mesh:
+            # gmshModel.generate_mesh(2)
+            part._discretized_boundary_mesh = part._boundary_mesh
+
+        if rigid:
             point = part._discretized_boundary_mesh.centroid()
             part.reference_point = Node(xyz=[point.x, point.y, point.z])
 
@@ -479,7 +482,6 @@ class _Part(FEAData):
     def from_step_file(cls, step_file, name=None, **kwargs):
         from compas_gmsh.models import MeshModel
 
-        target_mesh_size = kwargs.get("target_mesh_size", 1)  # FIXME redundant?  # noqa: F841
         mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
         target_point_mesh_size = kwargs.get("target_point_mesh_size", None)
         meshsize_max = kwargs.get("meshsize_max", None)
@@ -487,11 +489,6 @@ class _Part(FEAData):
 
         print("Creating the part from the step file...")
         gmshModel = MeshModel.from_step(step_file)
-
-        # for index, vertex in enumerate(block.vertices):
-        #     point = vertex.point
-        #     tag = gmshModel.occ.add_point(*point, target_mesh_size)
-        #     # tag = gmshModel.occ.add_point(*point)
 
         if mesh_size_at_vertices:
             for vertex, target in mesh_size_at_vertices.items():
@@ -1401,7 +1398,6 @@ class DeformablePart(_Part):
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
-
     @classmethod
     # @timer(message="compas Mesh successfully imported in ")
     def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
@@ -1425,12 +1421,16 @@ class DeformablePart(_Part):
 
         for edge in mesh.edges():
             nodes = [vertex_node[vertex] for vertex in edge]
+            faces = mesh.edge_faces(edge)
+            n = [mesh.face_normal(f) for f in faces if f!=None]
+            if len(n)==1:
+                n = n[0]
+            else:
+                n = n[0]+n[1]
             v = list(mesh.edge_direction(edge))
-            v.append(v.pop(0))
-            part.add_element(BeamElement(nodes=[*nodes], section=section, frame=v))
-
-        part._boundary_mesh = mesh
-        part._discretized_boundary_mesh = mesh
+            frame = Frame(nodes[0].xyz, v, n)
+            frame.rotate(pi/2, n, nodes[0].xyz)
+            part.add_element(BeamElement(nodes=[*nodes], section=section, frame=frame))
 
         return part
 

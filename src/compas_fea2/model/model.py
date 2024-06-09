@@ -89,7 +89,7 @@ class Model(FEAData):
         self.description = description
         self.author = author
         self._key = 0
-        self._starting_key = None
+        self._starting_key = 0
         self._units = None
         self._parts = set()
         self._nodes = None
@@ -107,6 +107,9 @@ class Model(FEAData):
         self._bottom_plane = None
         self._top_plane = None
         self._volume = None
+
+    def __data__(self):
+        return None
 
     @property
     def parts(self):
@@ -1243,22 +1246,35 @@ Initial Conditions
 
         """
 
-        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas_viewer import Viewer
+        from compas.plugins import plugin
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+        from compas_fea2_sofistik import SofistikModel
+        from compas_fea2_opensees import OpenseesModel
+        import numpy as np
+        register_scene_objects()  # This has to be called before registering the model object
+        register(OpenseesModel, FEA2ModelObject, context="Viewer")
 
-        v = FEA2Viewer(self, scale_factor=scale_factor)
+        # v = FEA2Viewer(self, scale_factor=scale_factor)
+        viewer = Viewer()
+        viewer.renderer.camera.target = [i * scale_factor for i in self.center]
+        V1 = np.array([0, 0, 0])
+        V2 = np.array(viewer.renderer.camera.target)
+        delta = V2 - V1
+        length = np.linalg.norm(delta)
+        distance = length * 3
+        unitSlope = delta / length
+        new_position = V1 + unitSlope * distance
+        viewer.renderer.camera.position = new_position.tolist()
+        viewer.renderer.camera.near *= scale_factor
+        viewer.renderer.camera.far *= scale_factor
+        viewer.renderer.camera.scale *= scale_factor
+        # viewer.renderer.grid.cell_size *= scale_factor
+        viewer.scene.add(self)
+        viewer.show()
 
-        parts = parts or self.parts
-
-        if draw_bcs:
-            v.draw_bcs(self, parts, draw_bcs)
-
-        # if draw_constraints:
-        #     v.draw_constraint(self.constraints)
-        for part in parts:
-            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-            v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
-            v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
-        v.show()
 
     @problem_method
     def show_displacements(self, problem, *args, **kwargs):

@@ -1,4 +1,8 @@
+
+
+from compas_fea2.model import Model
 from .viewer import FEA2Viewer
+from .viewer import FEA2ModelObject
 from .shapes import (
     _BCShape,
     FixBCShape,
@@ -13,3 +17,5 @@ __all__ = [
     "PinBCShape",
     "RollerBCShape",
 ]
+
+

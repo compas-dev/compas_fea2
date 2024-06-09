@@ -9,6 +9,10 @@ from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import centroid_points_weighted
 from compas.geometry import sum_vectors
+from compas.colors import Color
+from compas.colors import ColorMap
+from compas.colors import Color
+from typing import Iterable
 
 from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
@@ -501,18 +505,7 @@ Analysis folder path : {}
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-    def show(
-        self,
-        scale_factor=1.0,
-        parts=None,
-        elements=True,
-        solid=False,
-        draw_nodes=True,
-        node_labels=True,
-        draw_bcs=1.0,
-        draw_constraints=True,
-        **kwargs,
-    ):
+    def show(self, scale_model=1.0, show_bcs=1.0, **kwargs):
         """Visualise the model in the viewer.
 
         Parameters
@@ -537,218 +530,192 @@ Analysis folder path : {}
             _description_, by default True
 
         """
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2VectorFieldObject
+        from compas_viewer import Viewer
+        from compas.plugins import plugin
+        from compas.scene import register
+        from compas.scene import register_scene_objects
 
-        from compas_fea2.model.elements import BeamElement
-        from compas_fea2.model.elements import ShellElement
-        from compas_fea2.UI.viewer import FEA2Viewer
+        import numpy as np
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-        v = FEA2Viewer(self.model, scale_factor=scale_factor)
+        # v = FEA2Viewer(self, scale_factor=scale_factor)
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)  # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+        viewer.viewer.show()
 
-        parts = parts or self.model.parts
+    def show_displacement_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, filter_parts=None, **kwargs):
 
-        if draw_bcs:
-            v.draw_bcs(self.model, parts, draw_bcs)
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+        from compas_viewer.scene import Collection
 
-        # if draw_constraints:
-        #     v.draw_constraint(self.constraints)
-        for part in parts:
-            v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), draw_nodes)
-            v.draw_shell_elements(filter(lambda x: isinstance(x, ShellElement), part.elements), draw_nodes)
-            v.draw_beam_elements(filter(lambda x: isinstance(x, BeamElement), part.elements), draw_nodes)
 
-        if kwargs.get("draw_loads", None):
-            for step in self.steps:
-                v.draw_loads(step, scale_factor=kwargs["draw_loads"])
-        v.show()
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-    def show_nodes_field_vector(self, field_results, component=None, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+
+        if not step:
+            step = self.steps_order[-1]
+        field_locations =list( self.displacement_field.locations(step, point=True))
+        field_results = list(self.displacement_field.vectors(step))
+
+        if not components:
+            components = [0,1,2]
+        names ={0: "min", 1: "mid", 2: "max"}
+        colors ={0: Color.blue(), 1: Color.yellow(), 2: Color.red()}
+
+        collections = []
+        for component in components:
+            lines = self.draw_field_vectors(field_locations, field_results, scale_results)
+            collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth":3}))
+        viewer.viewer.scene.add(collections, name="Principal Stresses")
+        viewer.viewer.show()
+
+    def show_principal_stress_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, **kwargs):
+        """Display the principal stress results for a given step.
+
+        Parameters
+        ----------
+        step : _type_, optional
+            _description_, by default None
+        components : _type_, optional
+            _description_, by default None
+        scale_model : int, optional
+            _description_, by default 1
+        scale_results : int, optional
+            _description_, by default 1
+        show_loads : bool, optional
+            _description_, by default True
+        show_bcs : bool, optional
+            _description_, by default True
+        """
+
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+        from compas_viewer.scene import Collection
+        from compas_viewer.scene import Group
+        from compas.colors import Color
+
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+
+        if not step:
+            step = self.steps_order[-1]
+        field_locations =list( self.stress_field.locations(step))
+
+        if not components:
+            components = [0,1,2]
+        names ={0: "min", 1: "mid", 2: "max"}
+        colors ={0: Color.blue(), 1: Color.yellow(), 2: Color.red()}
+
+        collections = []
+        for component in components:
+            field_results = [v[component] for v in self.stress_field.principal_components_vectors(step)]
+            lines = self.draw_field_vectors(field_locations, field_results, scale_results, translate=-0.5)
+            collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth":3}))
+        viewer.viewer.scene.add(collections, name="Principal Stresses")
+        viewer.viewer.show()
+
+    def draw_field_vectors(self, field_locations, field_results, scale_results, translate=0):
         """Display a given vector field.
-
-        Parameters
-        ----------
-        field : str
-            The field to display, e.g. 'U' for displacements.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        component : str
-            The compoenet of the field to display, e.g. 'U3' for displacements
-            along the 3 axis.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        step : :class:`compas_fea2.problem.Step`, optional
-            The step to show the results of, by default None.
-            if not provided, the last step of the analysis is used.
-        deformed : bool, optional
-            Choose if to display on the deformed configuration or not, by default False
-        width : int, optional
-            Width of the viewer window, by default 1600
-        height : int, optional
-            Height of the viewer window, by default 900
-
-        Options
-        -------
-        draw_loads : float
-            Displays the loads at the step scaled by the given value
-        draw_bcs : float
-            Displays the bcs of the model scaled by the given value
-        bound : float
-            limit the results to the given value
-
-        Raises
-        ------
-        ValueError
-            _description_
-
         """
-        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas.geometry import Line
+        vectors = []
+        for pt, vector in zip(field_locations, field_results):
+            if vector.length == 0:
+                continue
+            else:
+                v = vector.scaled(scale_results)
+                vectors.append(Line.from_point_and_vector(pt, v).translated(v*translate))
+        return vectors
 
-        if not step:
-            step = self.steps_order[-1]
+    def draw_field_contour(self, field_locations, field_results, high=None, low=None, cmap=None, **kwargs):
+        """ """
+        from compas_fea2.model import BeamElement
+        # # Get values
+        min_value = high or min(field_results)
+        max_value = low or max(field_results)
+        cmap = cmap or ColorMap.from_palette("hawaii")
 
-        # Display results
-        v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_vector(field_results, component, step=step, vector_sf=vector_sf, **kwargs)
-
-        opacity = kwargs.get("opacity", 0.5)
+        # Get mesh
+        part_vertexcolor = {}
         for part in self.model.parts:
-            v.draw_mesh(part.discretized_boundary_mesh, opacity=opacity)
+            if not part.discretized_boundary_mesh:
+                continue
+                # raise AttributeError("Discretized boundary mesh not found")
+            # Color the mesh
+            vertexcolor={}
+            gkey_vertex = part.discretized_boundary_mesh.gkey_vertex(3)
+            for n, v in zip(field_locations, field_results):
+                if not n.part == part:
+                    continue
+                if kwargs.get("bound", None):
+                    if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
+                        color = Color.red()
+                    else:
+                        color = cmap(v, minval=min_value, maxval=max_value)
+                else:
+                    color = cmap(v, minval=min_value, maxval=max_value)
+                    vertex = gkey_vertex.get(n.gkey, None)
+                    vertexcolor[vertex] = color
+            part_vertexcolor[part] = vertexcolor
 
-        if kwargs.get("draw_bcs", None):
-            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
+        return part_vertexcolor
 
-        if kwargs.get("draw_loads", None):
-            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
 
-        if kwargs.get("draw_reactions", None):
-            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
-        v.show()
+    def show_displacements_contour(self, step=None, show_bcs=1, scale_model=1, component=None, **kwargs):
 
-    def show_nodes_field_contour(self, field_results, component, step=None, model_sf=1.0, **kwargs):
-        """Display a contour plot of a given field and component. The field must
-        de defined at the nodes of the model (e.g displacement field).
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
 
-        Parameters
-        ----------
-        field : str
-            The field to display, e.g. 'U' for displacements.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        component : str
-            The compoenet of the field to display, e.g. 'U3' for displacements
-            along the 3 axis.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        step : :class:`compas_fea2.problem.Step`, optional
-            The step to show the results of, by default None.
-            if not provided, the last step of the analysis is used.
-        deformed : bool, optional
-            Choose if to display on the deformed configuration or not, by default False
-        width : int, optional
-            Width of the viewer window, by default 1600
-        height : int, optional
-            Height of the viewer window, by default 900
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-        Options
-        -------
-        draw_loads : float
-            Displays the loads at the step scaled by the given value
-        draw_bcs : float
-            Displays the bcs of the model scaled by the given value
-        bound : float
-            limit the results to the given value
-
-        Raises
-        ------
-        ValueError
-            _description_
-
-        """
-        from compas_fea2.UI.viewer import FEA2Viewer
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, opacity=1, show_bcs=show_bcs, show_parts=False)
 
         if not step:
             step = self.steps_order[-1]
+        field_locations =list(self.displacement_field.locations(step))
+        field_results = list(self.displacement_field.component(step, component))
 
-        # Display results
-        v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_nodes_field_contour(field_results=field_results, component=component, step=step, **kwargs)
+        part_vertexcolor = self.draw_field_contour(field_locations, field_results)
+        colored_meshes = []
+        for part, vertexcolor in part_vertexcolor.items():
+            colored_meshes.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors":True}))
+        viewer.viewer.scene.add(colored_meshes, name=f"U{component} Contour")
 
-        if kwargs.get("draw_bcs", None):
-            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
-
-        if kwargs.get("draw_loads", None):
-            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
-
-        if kwargs.get("draw_reactions", None):
-            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
-        v.show()
-
-    def show_elements_field_vector(self, field_results, vector_sf=1.0, model_sf=1.0, step=None, **kwargs):
-        """Display a given vector field.
-
-        Parameters
-        ----------
-        field : str
-            The field to display, e.g. 'U' for displacements.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        component : str
-            The compoenet of the field to display, e.g. 'U3' for displacements
-            along the 3 axis.
-            Check the :class:`compas_fea2.problem.FieldOutput` for more info about
-            valid components.
-        step : :class:`compas_fea2.problem.Step`, optional
-            The step to show the results of, by default None.
-            if not provided, the last step of the analysis is used.
-        deformed : bool, optional
-            Choose if to display on the deformed configuration or not, by default False
-        width : int, optional
-            Width of the viewer window, by default 1600
-        height : int, optional
-            Height of the viewer window, by default 900
-
-        Options
-        -------
-        draw_loads : float
-            Displays the loads at the step scaled by the given value
-        draw_bcs : float
-            Displays the bcs of the model scaled by the given value
-        bound : float
-            limit the results to the given value
-
-        Raises
-        ------
-        ValueError
-            _description_
-
-        """
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        if not step:
-            step = self.steps_order[-1]
-
-        # Display results
-
-        v = FEA2Viewer(self.model, scale_factor=model_sf)
-        v.draw_elements_field_vector(field_results=field_results, step=step, vector_sf=vector_sf, **kwargs)
-
-        opacity = kwargs.get("opacity", 0.5)
+        #TODO move to separate method
+        from compas_fea2.model import BeamElement
+        cmap = ColorMap.from_palette("hawaii")
+        min_value = min(field_results)
+        max_value = max(field_results)
         for part in self.model.parts:
-            v.draw_mesh(part.discretized_boundary_mesh, opacity=opacity)
-            # v.draw_solid_elements(filter(lambda x: isinstance(x, _Element3D), part.elements), opacity=0.5)
-            # v.draw_shell_elements(filter(lambda x: isinstance(x, _Element2D), part.elements), opacity=0.5)
-            v.draw_beam_elements(filter(lambda x: isinstance(x, _Element1D), part.elements), opacity=0.5)
+            colored_meshes = []
+            for element in part.elements:
+                vertexcolor = {}
+                if isinstance(element, BeamElement):
+                    for c, n in enumerate(element.nodes):
+                        v = field_results[field_locations.index(n)]
+                        for p in range(len(element.section._shape.points)):
+                            vertexcolor[p+c*len(element.section._shape.points)] = cmap(v, minval=min_value, maxval=max_value)
+                    # vertexcolor = {c: Color.red() for c in range(2*len(element.section._shape.points))}
+                    colored_meshes.append((element.outermesh, {"name": element.name, "vertexcolor": vertexcolor, "use_vertexcolors":True}))
+            viewer.viewer.scene.add(colored_meshes, name=f"U{component} Contour")
 
-        if kwargs.get("draw_bcs", None):
-            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
+        viewer.viewer.show()
 
-        if kwargs.get("draw_loads", None):
-            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
-
-        if kwargs.get("draw_reactions", None):
-            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
-        v.show()
-
-    def show_deformed(self, step=None, scale_factor=1.0, original=0.5, opacity=0.5, **kwargs):
+    def show_deformed(self, step=None, scale_results=100, original=0.5, opacity=0.5, scale_model=1, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -762,70 +729,94 @@ Analysis folder path : {}
         None
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
 
-        v = FEA2Viewer(self.model)
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model) # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
         if not step:
             step = self.steps_order[-1]
 
-        if original:
-            for part in step.model.parts:
-                try:
-                    v.draw_mesh(part.discretized_boundary_mesh, opacity=original)
-                except Exception:
-                    print("No mesh found")
-                # v.draw_nodes_field_vector(step=step, field_name='U', vector_sf=scale_factor)
+        # if original:
+        #     viewer.viewer.scene.add(self.model, opacity=original, show_bcs=kwargs.get("show_bcs", True))
 
-        v.draw_deformed(step, scale_factor=scale_factor, opacity=opacity)
+        # TODO create a copy of the model first
+        displacements = step.problem.displacement_field
+        for displacement in displacements.results(step):
+            vector = displacement.vector.scaled(scale_results)
+            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
+        #NOTE it is not changeing the discretised boundary mesh
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=kwargs.get("show_bcs", False))
+        viewer.viewer.show()
 
-        if kwargs.get("draw_bcs", None):
-            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
+    def show_reactions(self, step=None, scale_results=1, components=None, translate=-1, scale_model=1, show_bcs=True):
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
 
-        if kwargs.get("draw_loads", None):
-            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
+        from compas_viewer.scene import Group
+        from compas.colors import Color
 
-        if kwargs.get("draw_reactions", None):
-            v.draw_reactions(step=step, scale_factor=kwargs["draw_reactions"])
-        v.show()
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-    def show_reactions(self, vector_sf=1.0, model_sf=1.0, step=None, group_nodes=False, **kwargs):
-        self.show_nodes_field_vector(field_name="RF", vector_sf=vector_sf, model_sf=model_sf, step=step, **kwargs)
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
 
-    def show_stress_contours(self, stress_type="von_mises_stress", side=None, step=None, model_sf=1.0, **kwargs):
-        stresses = self.stress_field
+        collections = self.draw_reactions(step, scale_results)
+
+        viewer.viewer.scene.add(collections, name="Principal Stresses")
+        viewer.viewer.show()
+
+    def draw_reactions(self, step=None, scale_results=1, translate=0, components=None):
+        from compas_viewer.scene import Collection
         if not step:
             step = self.steps_order[-1]
-        nodes_stress = {}
-        for stress in stresses.results(step):
-            for node in stress.location.nodes:
-                if node not in nodes_stress:
-                    nodes_stress[node] = 2.0
+        field_locations =list( self.reaction_field.locations(step, point=True))
+        field_results = list(self.reaction_field.vectors(step))
 
-                if not isinstance(stress.location, _Element3D):
-                    func = stress_type + "_" + side
+        if not components:
+            components = [0,1,2]
+
+        collections = []
+        for component in components:
+            lines = self.draw_field_vectors(field_locations, field_results, scale_results, translate=translate)
+            collections.append((Collection(lines), {"name": f"RF-{component}", "linecolor": Color.green(), "linewidth":3}))
+        return collections
+
+    def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
+
+        if not step:
+            step = self.steps_order[-1]
+        field_locations =list(self.stress_field.locations(step, point=True))
+        field_results = list(getattr(self.stress_field, stresstype)(step))
+
+        # # Get values
+        min_value = high or min(field_results)
+        max_value = low or max(field_results)
+        cmap = cmap or ColorMap.from_palette("hawaii")
+        points = []
+        for n, v in zip(field_locations, field_results):
+            if kwargs.get("bound", None):
+                if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
+                    color = Color.red()
                 else:
-                    func = stress_type
-                # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
-                # nodes_stress[node] += min(stress.principal_stresses_values_top)/len(stress.location.nodes)
-                nodes_stress[node] += getattr(stress, func) / len(stress.location.nodes)
+                    color = cmap(v, minval=min_value, maxval=max_value)
+            else:
+                color = cmap(v, minval=min_value, maxval=max_value)
+            points.append((n, {"pointcolor": color, "pointsize": 20}))
 
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        if not step:
-            step = self.steps_order[-1]
-
-        # Display results
-        v = FEA2Viewer(self.model, scale_factor=model_sf)
-
-        v.draw_nodes_contour(model=self.model, nodes_values=nodes_stress, **kwargs)
-
-        if kwargs.get("draw_bcs", None):
-            v.draw_bcs(self.model, scale_factor=kwargs["draw_bcs"])
-
-        if kwargs.get("draw_loads", None):
-            v.draw_loads(step, scale_factor=kwargs["draw_loads"])
-
-        if kwargs.get("draw_reactions", None):
-            v.draw_reactions(step, scale_factor=kwargs["draw_reactions"])
-        v.show()
+        viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
+        viewer.viewer.show()

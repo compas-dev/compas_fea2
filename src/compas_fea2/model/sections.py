@@ -12,6 +12,23 @@ from compas_fea2 import units
 from compas_fea2.base import FEAData
 
 from .materials.material import _Material
+from .shapes import Rectangle, IShape
+
+
+def from_shape(shape, material, **kwargs):
+    return {
+        "A": shape.A,
+        "Ixx": shape.Ixx,
+        "Iyy": shape.Iyy,
+        "Ixy": shape.Ixy,
+        "Avx": shape.Avx,
+        "Avy": shape.Avy,
+        "J": shape.J,
+        "g0": shape.g0,
+        "gw": shape.gw,
+        "material": material,
+        **kwargs,
+    }
 
 
 class _Section(FEAData):
@@ -38,10 +55,9 @@ class _Section(FEAData):
 
     """
 
-    def __init__(self, material, **kwargs):
+    def __init__(self, *, material, **kwargs):
         super(_Section, self).__init__(**kwargs)
         self._material = material
-        self._shape = None
 
     @property
     def model(self):
@@ -57,10 +73,6 @@ class _Section(FEAData):
             if not isinstance(value, _Material):
                 raise ValueError("Material must be of type `compas_fea2.model._Material`.")
             self._material = value
-
-    @property
-    def shape(self):
-        return self._shape
 
     def __str__(self):
         return """
@@ -169,6 +181,9 @@ rotational stiffness    : {}
 # 1D
 # ==============================================================================
 
+# # ============================================================================
+# # 1D - beam cross-sections
+# # ============================================================================
 
 class BeamSection(_Section):
     """Custom section for beam elements.
@@ -265,6 +280,16 @@ gw  : {}
             self.gw,
         )
 
+    @classmethod
+    def from_shape(cls, shape, material, **kwargs):
+        section = cls(**from_shape(shape, material, **kwargs))
+        section._shape = shape
+        return section
+
+    @property
+    def shape(self):
+        return self._shape
+
 
 class AngleSection(BeamSection):
     """Uniform thickness angle cross-section for beam elements.
@@ -333,12 +358,12 @@ class AngleSection(BeamSection):
         A = t * (w + h - t)
         Ixx = (1.0 / 3) * (w * h**3 - (w - t) * (h - t) ** 3) - self.A * (h - yc) ** 2
         Iyy = (1.0 / 3) * (h * w**3 - (h - t) * (w - t) ** 3) - self.A * (w - xc) ** 2
-        Ixy = 0
+        Ixy = 0  # FIXME
         J = (1.0 / 3) * (h + w - t) * t**3
-        Avx = 0
-        Avy = 0
-        g0 = 0
-        gw = 0
+        Avx = 0  # FIXME
+        Avy = 0  # FIXME
+        g0 = 0  # FIXME
+        gw = 0  # FIXME
 
         super(AngleSection, self).__init__(
             A=A,
@@ -425,12 +450,12 @@ class BoxSection(BeamSection):
         A = w * h - (w - 2 * tw) * (h - 2 * tf)
         Ixx = (w * h**3) / 12.0 - ((w - 2 * tw) * (h - 2 * tf) ** 3) / 12.0
         Iyy = (h * w**3) / 12.0 - ((h - 2 * tf) * (w - 2 * tw) ** 3) / 12.0
-        Ixy = 0
-        Avx = 0
-        Avy = 0
+        Ixy = 0  # FIXME
+        Avx = 0  # FIXME
+        Avy = 0  # FIXME
         J = 4 * (Ap**2) / p
-        g0 = 0
-        gw = 0
+        g0 = 0  # FIXME
+        gw = 0  # FIXME
 
         super(BoxSection, self).__init__(
             A=A,
@@ -612,34 +637,8 @@ class ISection(BeamSection):
     """
 
     def __init__(self, w, h, tw, tf, material, **kwargs):
-        self.w = w
-        self.h = h
-        self.tw = tw
-        self.tf = tf
-
-        A = 2 * w * tf + (h - 2 * tf) * tw
-        Ixx = (tw * (h - 2 * tf) ** 3) / 12.0 + 2 * ((tf**3) * w / 12.0 + w * tf * (h / 2.0 - tf / 2.0) ** 2)
-        Iyy = ((h - 2 * tf) * tw**3) / 12.0 + 2 * ((w**3) * tf / 12.0)
-        Ixy = 0
-        Avx = 0
-        Avy = 0
-        J = (1.0 / 3) * (2 * w * tf**3 + (h - tf) * tw**3)
-        g0 = 0
-        gw = 0
-
-        super(ISection, self).__init__(
-            A=A,
-            Ixx=Ixx,
-            Iyy=Iyy,
-            Ixy=Ixy,
-            Avx=Avx,
-            Avy=Avy,
-            J=J,
-            g0=g0,
-            gw=gw,
-            material=material,
-            **kwargs,
-        )
+        self._shape = IShape(w, h, tw, tf, tf)
+        super().__init__(**from_shape(self._shape, material, **kwargs))
 
 
 class PipeSection(BeamSection):
@@ -755,36 +754,8 @@ class RectangularSection(BeamSection):
     """
 
     def __init__(self, w, h, material, **kwargs):
-        self._w = w
-        self._h = h
-
-        l1 = max([w, h])
-        l2 = min([w, h])
-
-        A = w * h
-        Ixx = (1 / 12.0) * w * h**3
-        Iyy = (1 / 12.0) * h * w**3
-        Ixy = 0
-        Avy = 0.833 * A
-        Avx = 0.833 * A
-        J = (l1 * l2**3) * (0.33333 - 0.21 * (l2 / l1) * (1 - (l2**4) / (l2 * l1**4)))
-        g0 = 0
-        gw = 0
-
-        super(RectangularSection, self).__init__(
-            A=A,
-            Ixx=Ixx,
-            Iyy=Iyy,
-            Ixy=Ixy,
-            Avx=Avx,
-            Avy=Avy,
-            J=J,
-            g0=g0,
-            gw=gw,
-            material=material,
-            **kwargs,
-        )
-        self._shape = Polygon(points=[[-w / 2, -h / 2, 0], [w / 2, -h / 2, 0], [w / 2, h / 2, 0], [-w / 2, h / 2, 0]])
+        self._shape = Rectangle(w, h)
+        super().__init__(**from_shape(self._shape, material, **kwargs))
 
 
 class TrapezoidalSection(BeamSection):
@@ -867,6 +838,10 @@ class TrapezoidalSection(BeamSection):
             **kwargs,
         )
 
+
+# ==============================================================================
+# 1D - no cross-section
+# ==============================================================================
 
 class TrussSection(BeamSection):
     """For use with truss elements.

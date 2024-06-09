@@ -213,8 +213,16 @@ class _Element1D(_Element):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
         self._curve = Line(nodes[0].point, nodes[-1].point)
-        self._shape_i = section._shape.oriented(self._frame)
-        self._shape_j = self._shape_i.translated(Vector.from_start_end(nodes[0].point, nodes[-1].point))
+
+
+        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point), cap_ends=False)
+        # Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
+        # self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
+
+    @property
+    def outermesh(self):
+        self._shape_i = self.section._shape.oriented(self._frame)
+        self._shape_j = self._shape_i.translated(Vector.from_start_end(self.nodes[0].point, self.nodes[-1].point))
         #create the outer mesh using the section information
         p = self._shape_i.points
         n = len(p)
@@ -224,10 +232,7 @@ class _Element1D(_Element):
         )
         self._outermesh.join(self._shape_i.to_mesh())
         self._outermesh.join(self._shape_j.to_mesh())
-
-        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point), cap_ends=False)
-        # Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        # self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
+        return self._outermesh
 
     @property
     def frame(self):

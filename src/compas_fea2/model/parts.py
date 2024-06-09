@@ -165,9 +165,6 @@ class _Part(FEAData):
         except Exception:
             print("WARNING: BoundingBox not generated")
             return None
-        #     # raise AttributeError("Missing the bounding mesh of the part.")
-        # else:
-        #     return Box.from_bounding_box(self._boundary_mesh.obb())
 
     @property
     def center(self):

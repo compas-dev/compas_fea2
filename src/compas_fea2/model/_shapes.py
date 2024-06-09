@@ -368,49 +368,53 @@ class TShape(Shape):
 
 
 class IShape(Shape):
-    def __init__(self, a, b, t1, t2, t3, direction="up"):
-        self._a = a
-        self._b = b
-        self._t1 = t1
-        self._t2 = t2
-        self._t3 = t3
+    def __init__(self, w, h, tw, tbf, ttf, direction="up"):
+        self._w = w
+        self._h = h
+        self._tw = tw
+        self._tbf = tbf
+        self._ttf = ttf
         self._direction = direction
         self._type = "I-shape_" + direction
         points = [
-            Point(-a/2, -b/2, 0.0),
-            Point(a/2, -b/2, 0.0),
-            Point(a/2, -b/2+t2, 0.0),
-            Point(t1/2, -b/2+t2, 0.0),
-            Point(t1/2, b/2-t2, 0.0),
-            Point(a/2, b/2-t2, 0.0),
-            Point(a/2, b/2, 0.0),
-            Point(-a/2, b/2, 0.0),
-            Point(-a/2, b/2-t2, 0.0),
-            Point(-t1/2, b/2-t2, 0.0),
-            Point(-t1/2, -b/2+t2, 0.0),
-            Point(-a/2, -b/2+t2, 0.0)
+            Point(-w/2, -h/2, 0.0),
+            Point(w/2, -h/2, 0.0),
+            Point(w/2, -h/2+tbf, 0.0),
+            Point(tw/2, -h/2+tbf, 0.0),
+            Point(tw/2, h/2-tbf, 0.0),
+            Point(w/2, h/2-tbf, 0.0),
+            Point(w/2, h/2, 0.0),
+            Point(-w/2, h/2, 0.0),
+            Point(-w/2, h/2-tbf, 0.0),
+            Point(-tw/2, h/2-tbf, 0.0),
+            Point(-tw/2, -h/2+tbf, 0.0),
+            Point(-w/2, -h/2+tbf, 0.0)
         ]
         super().__init__(points)
 
     @property
-    def a(self):
-        return self._a
+    def w(self):
+        return self._w
 
     @property
-    def b(self):
-        return self._b
+    def h(self):
+        return self._h
 
     @property
-    def t1(self):
-        return self._t1
+    def tw(self):
+        return self._tw
 
     @property
-    def t2(self):
-        return self._t2
+    def tbf(self):
+        return self._tbf
 
     @property
-    def t3(self):
-        return self._t3
+    def ttf(self):
+        return self._ttf
+
+    @property
+    def J(self):
+        return (1/3) * (self.w * (self.tbf**3 + self.ttf**3) + (self.h - self.tbf - self.ttf) * self.tw**3)
 
 
 class LShape(Shape):

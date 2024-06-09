@@ -28,6 +28,7 @@ from compas_fea2.model.elements import _Element1D
 import os
 from compas_viewer.viewer import Viewer
 from compas_viewer.scene import GroupObject
+from compas_viewer.scene import Collection
 
 # from compas_view2.app import App
 # from compas_view2.objects import Collection
@@ -424,54 +425,6 @@ color_palette = {
 #         for part in step.model.parts:
 #             self.draw_mesh(parts_mesh[part.name], opacity=0.75)
 
-#     def draw_elements_field_vector(self, field_results, vector_sf=1, **kwargs):
-#         # cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-
-#         # Color the vector field
-#         # FIXME temporary test - > change components
-#         # for p, v in zip(field_results.locations(), field_results.principal_components_vectors()):
-#         # ps_results_mid = list(r.principal_stresses)
-#         # ps_results_top = list(r.principal_stresses_top) if hasattr(r, "principal_stresses_top") else None
-#         # ps_results_bottom = list(r.principal_stresses_bottom) if hasattr(r, "principal_stresses_bottom") else None
-#         # all_ps_results = {"mid": ps_results_mid, "top": ps_results_top, "bottom": ps_results_bottom}
-
-#         # for k, v in all_ps_results.items():
-#         #     if v:
-#         #         if len(v) == 2:
-#         #             ps_colors = ((0, 1, 1), (1, 0, 0))
-#         #         else:
-#         #             ps_colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
-
-#         #         for ps, color in zip(v, ps_colors):
-#         #             for dir in (-0.5, 0.5):
-#         #                 if k == "mid":
-#         #                     pts.append(r.location.reference_point)
-#         #                 elif k == "top":
-#         #                     X = Translation.from_vector(r.location.frame.zaxis.unitized() * r.location.section.t / 2)
-#         #                     pts.append(Point(*r.location.reference_point).transformed(X))
-#         #                 elif k == "bottom":
-#         #                     X = Translation.from_vector(-r.location.frame.zaxis.unitized() * r.location.section.t / 2)
-#         #                     pts.append(Point(*r.location.reference_point).transformed(X))
-#         #                 vectors.append(ps[1].scaled(vector_sf * dir))
-#         #                 colors.append(color)
-
-#         # colors.append(color)
-#         # colors.append(cmap(r.invariants["magnitude"], minval=min_value, maxval=max_value))
-
-#         arrows = []
-#         arrows_properties = []
-#         components = kwargs.get("components", [0, 1, 2])
-#         colors = ((0, 1, 1), (1, 1, 0), (1, 0, 0))
-
-#         # if not colors:
-#         #     colors = [(0, 1, 0)] * len(pts)
-#         for pt, vector in zip(field_results.locations(), field_results.principal_components_vectors()):
-#             for comp in components:
-#                 if vector[comp].length:
-#                     arrows.append(Arrow(position=pt, direction=vector[comp] * vector_sf, head_portion=0.3, head_width=0.15, body_width=0.05))
-#                     arrows_properties.append({"u": 3, "show_lines": False, "facecolor": colors[comp]})
-#         if arrows:
-#             self.app.add(Collection(arrows, arrows_properties))
 
 #     def draw_nodes_contour(self, model, nodes_values, **kwargs):
 #         """ """
@@ -521,7 +474,7 @@ color_palette = {
 
 
 class FEA2Viewer:
-    def __init__(self, center=[0, 0, 0], camera=None, grid=None, scale_model=1, *args, **kwargs):
+    def __init__(self, center=[1, 1, 1], camera=None, grid=None, scale_model=1000, *args, **kwargs):
         self.viewer = Viewer()
         self.viewer.renderer.camera.target = [i * scale_model for i in center]
         self.viewer.config.vectorsize = 0.5
@@ -535,65 +488,49 @@ class FEA2Viewer:
         self.viewer.renderer.camera.position = new_position.tolist()
         self.viewer.renderer.camera.near *= 1
         self.viewer.renderer.camera.far *= 10000
-        self.viewer.renderer.camera.scale *= scale_model*1000
-
-    # def _add_sidebar_items(self, items, *args, **kwargs):
-    #     for item in items:
-    #         if item["type"] == "radio":
-    #             action = item["action"]
-    #             item["action"] = action if callable(action) else getattr(self.controller, action)
-    #         elif item["type"] == "checkbox":
-    #             action = item["action"]
-    #             item["action"] = action if callable(action) else getattr(self.controller, action)
-    #         elif item["type"] == "slider":
-    #             action = item["action"]
-    #             item["action"] = action if callable(action) else getattr(self.controller, action)
-    #         elif item["type"] == "button":
-    #             action = item["action"]
-    #             item["action"] = action if callable(action) else getattr(self.controller, action)
-    #     super()._add_sidebar_items(items, *args, **kwargs)
+        self.viewer.renderer.camera.scale *= scale_model
 
 
 class FEA2ModelObject(GroupObject):
-    def __init__(self, model, show_bcs=True, **kwargs):
+    def __init__(self, model, show_bcs=True, show_parts=True, **kwargs):
 
+        face_color = kwargs.get("face_color", color_palette["faces"])
+        line_color = kwargs.get("line_color", color_palette["edges"])
+        show_faces = kwargs.get("show_faces", True)
+        show_lines = kwargs.get("show_lines", True)
+        show_points = kwargs.get("show_points", True)
         part_meshes = []
-
-        for part in model.parts:
-            face_color = kwargs.get("face_color", color_palette["faces"])
-            line_color = kwargs.get("line_color", color_palette["edges"])
-            show_faces = kwargs.get("show_faces", True)
-            show_lines = kwargs.get("show_lines", True)
-            show_points = kwargs.get("show_points", True)
-            if part._discretized_boundary_mesh:
-                part_meshes.append(
-                    (
-                        # part._boundary_mesh,
-                        part._discretized_boundary_mesh,
-                        {
-                            "show_faces": show_faces,
-                            "show_lines": show_lines,
-                            "show_points": show_points,
-                            "facecolor": face_color,
-                            "linecolor": line_color,
-                        },
-                    )
-                )
-            for element in part.elements:
-                if isinstance(element, _Element1D):
+        if show_parts:
+            for part in model.parts:
+                if part._discretized_boundary_mesh:
                     part_meshes.append(
                         (
-                            element._outermesh,
+                            # part._boundary_mesh,
+                            part._discretized_boundary_mesh,
                             {
                                 "show_faces": show_faces,
                                 "show_lines": show_lines,
                                 "show_points": show_points,
                                 "facecolor": face_color,
                                 "linecolor": line_color,
-                                "opacity": 1.
                             },
                         )
                     )
+                for element in part.elements:
+                    if isinstance(element, _Element1D):
+                        part_meshes.append(
+                            (
+                                element.outermesh,
+                                {
+                                    "show_faces": show_faces,
+                                    "show_lines": show_lines,
+                                    "show_points": show_points,
+                                    "facecolor": face_color,
+                                    "linecolor": line_color,
+                                    "opacity": 1.
+                                },
+                            )
+                        )
 
         bcs_meshes = []
         if show_bcs:
@@ -658,71 +595,3 @@ class FEA2ProblemObject(GroupObject):
 
         loads = (loads_meshes, {"name": "loads"})
         super().__init__([loads], name=model.name, **kwargs)
-
-
-class FEA2VectorFieldObject(GroupObject):
-    def __init__(self, field, step=None, component=None, scale_results=1, **kwargs):
-
-        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-
-        # Get values
-        # min_value = field.min_invariants["magnitude"].invariants["MIN(magnitude)"]
-        # max_value = field.max_invariants["magnitude"].invariants["MAX(magnitude)"]
-
-        face_color = color_palette["faces"]
-        line_color = color_palette["edges"]
-        show_faces = True
-        components_colors = [Color.blue(), Color.yellow(), Color.red()]
-        if not step:
-            step = field.problem.steps_order[-1]
-
-        vectors = []
-        for pt, vector in zip(field.locations(step), field.principal_components_vectors(step)):
-            vector = Vector(*vector[component])
-            if vector.length == 0:
-                continue
-            else:
-                vectors.append(
-                    (
-                        vector.scaled(scale_results),
-                        {
-                            "anchor": Vector(*pt),
-                            "show_faces": show_faces,
-                            "facecolor": face_color,
-                            "linecolor": components_colors[component],
-                            "show_points": True,
-                        },
-                    )
-                )
-
-        arrows = (vectors, {"name": "field"})
-
-        super().__init__([arrows], name=field.name, **kwargs)
-
-
-class FEA2ContourFieldObject(GroupObject):
-    def __init__(self, field, step, **kwargs):
-
-        part_meshes = []
-
-        for part in model.parts:
-            face_color = color_palette["faces"]
-            line_color = color_palette["edges"]
-            show_faces = True
-
-            part_meshes.append(
-                (
-                    part._boundary_mesh,
-                    {
-                        "show_faces": show_faces,
-                        "surfacecolor": face_color,
-                        "linecolor": line_color,
-                        "show_points": True,
-                    },
-                )
-            )
-
-        parts = (part_meshes, {"name": "parts"})
-        interfaces = ([], {"name": "interfaces"})
-        forces = ([], {"name": "forces"})
-        super().__init__([parts, interfaces, forces], name=model.name, **kwargs)

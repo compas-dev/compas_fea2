@@ -244,6 +244,62 @@ class FieldResults(FEAData):
             results = self.get_results(nodes, steps)
             return results
 
+    def locations(self, step=None, point=False):
+        """Return the locations where the field is defined.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step, by default None
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        step = step or self.problem.steps_order[-1]
+        for r in self.results(step):
+            if point:
+                yield r.node.point
+            else:
+                yield r.node
+
+    def vectors(self, step=None):
+        """Return the locations where the field is defined.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step, by default None
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        step = step or self.problem.steps_order[-1]
+        for r in self.results(step):
+            yield r.vector
+
+    def component(self, step=None, component=None):
+        """Return the locations where the field is defined.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step, by default None
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        step = step or self.problem.steps_order[-1]
+        for r in self.results(step):
+            if component==None:
+                yield r.vector.magnitude
+            else:
+                yield r.vector[component]
 
 class DisplacementFieldResults(FieldResults):
     """Displacement field.
@@ -485,7 +541,7 @@ class StressFieldResults(FEAData):
         step or self.problem.steps_order[-1]
         return self._get_results_from_db(self.model.elements, steps=step)[step]
 
-    def locations(self, step=None):
+    def locations(self, step=None, point=False):
         """Return the locations where the field is defined.
 
         Parameters
@@ -500,7 +556,10 @@ class StressFieldResults(FEAData):
         """
         step = step or self.problem.steps_order[-1]
         for s in self.results(step):
-            yield Point(*s.reference_point)
+            if point:
+                yield Point(*s.reference_point)
+            else:
+                yield s.reference_point
 
     def global_stresses(self, step=None):
         """Stress field in global coordinates
@@ -579,3 +638,23 @@ class StressFieldResults(FEAData):
         sorted_eigenvectors = np.take_along_axis(eigenvectors, sorted_indices[:, np.newaxis, :], axis=2)
         for i in range(eigenvalues.shape[0]):
             yield [Vector(*sorted_eigenvectors[i, :, j]) * sorted_eigenvalues[i, j] for j in range(eigenvalues.shape[1])]
+
+    def vonmieses(self, step=None):
+        """Compute the principal components of the stress field at each location
+        as vectors.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step in which the stress filed is defined. If not
+            provided, the last analysis step is used.
+
+
+        Yields
+        ------
+        list(:class:`compas.geometry.Vector)
+            list with the vectors corresponding to max, mid and min principal componets.
+        """
+        step = step or self.problem.steps_order[-1]
+        for r in self.results(step):
+            yield r.von_mises_stress

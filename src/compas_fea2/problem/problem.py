@@ -640,6 +640,7 @@ Analysis folder path : {}
 
     def draw_field_contour(self, field_locations, field_results, high=None, low=None, cmap=None, **kwargs):
         """ """
+        from compas_fea2.model import BeamElement
         # # Get values
         min_value = high or min(field_results)
         max_value = low or max(field_results)
@@ -649,7 +650,8 @@ Analysis folder path : {}
         part_vertexcolor = {}
         for part in self.model.parts:
             if not part.discretized_boundary_mesh:
-                raise AttributeError("Discretized boundary mesh not found")
+                continue
+                # raise AttributeError("Discretized boundary mesh not found")
             # Color the mesh
             vertexcolor={}
             gkey_vertex = part.discretized_boundary_mesh.gkey_vertex(3)
@@ -692,6 +694,25 @@ Analysis folder path : {}
         for part, vertexcolor in part_vertexcolor.items():
             colored_meshes.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors":True}))
         viewer.viewer.scene.add(colored_meshes, name=f"U{component} Contour")
+
+        #TODO move to separate method
+        from compas_fea2.model import BeamElement
+        cmap = ColorMap.from_palette("hawaii")
+        min_value = min(field_results)
+        max_value = max(field_results)
+        for part in self.model.parts:
+            colored_meshes = []
+            for element in part.elements:
+                vertexcolor = {}
+                if isinstance(element, BeamElement):
+                    for c, n in enumerate(element.nodes):
+                        v = field_results[field_locations.index(n)]
+                        for p in range(len(element.section._shape.points)):
+                            vertexcolor[p+c*len(element.section._shape.points)] = cmap(v, minval=min_value, maxval=max_value)
+                    # vertexcolor = {c: Color.red() for c in range(2*len(element.section._shape.points))}
+                    colored_meshes.append((element.outermesh, {"name": element.name, "vertexcolor": vertexcolor, "use_vertexcolors":True}))
+            viewer.viewer.scene.add(colored_meshes, name=f"U{component} Contour")
+
         viewer.viewer.show()
 
     def show_deformed(self, step=None, scale_results=100, original=0.5, opacity=0.5, scale_model=1, **kwargs):

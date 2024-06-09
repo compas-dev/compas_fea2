@@ -12,7 +12,7 @@ from compas_fea2 import units
 from compas_fea2.base import FEAData
 
 from .materials.material import _Material
-from ._shapes import Rectangle, IShape
+from .shapes import Rectangle, IShape
 
 
 def from_shape(shape, material, **kwargs):

@@ -385,10 +385,10 @@ class IShape(Shape):
             Point(w/2, h/2-tbf, 0.0),
             Point(w/2, h/2, 0.0),
             Point(-w/2, h/2, 0.0),
-            Point(-w/2, h/2-tbf, 0.0),
-            Point(-tw/2, h/2-tbf, 0.0),
-            Point(-tw/2, -h/2+tbf, 0.0),
-            Point(-w/2, -h/2+tbf, 0.0)
+            Point(-w/2, h/2-ttf, 0.0),
+            Point(-tw/2, h/2-ttf, 0.0),
+            Point(-tw/2, -h/2+ttf, 0.0),
+            Point(-w/2, -h/2+ttf, 0.0)
         ]
         super().__init__(points)
 

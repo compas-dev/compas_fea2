@@ -246,7 +246,7 @@ class _Part(FEAData):
     # =========================================================================
 
     @classmethod
-    def from_compas_lines(cls, lines, element_model="BeamElement", section=None, name=None, **kwargs):
+    def from_compas_lines(cls, lines, element_model="BeamElement", xaxis=[0,1,0], section=None, name=None, **kwargs):
         """Generate a part from a class:`compas.geometry.Line`.
 
         Parameters
@@ -267,14 +267,15 @@ class _Part(FEAData):
 
         """
         import compas_fea2
-
         prt = cls(name=name)
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         for line in lines:
+            frame = Frame(line[0], xaxis, line.vector)
+            frame.rotate(pi/2, xaxis, line[0])
             # FIXME change tolerance
             nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
             prt.add_nodes(nodes)
-            element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section)
+            element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section, frame=frame)
             if not isinstance(element, _Element1D):
                 raise ValueError("Provide a 1D element")
             prt.add_element(element)

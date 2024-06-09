@@ -230,8 +230,10 @@ class _Element1D(_Element):
             self._shape_i.points+self._shape_j.points,
             [[p.index(v1), p.index(v2), p.index(v2)+n, p.index(v1)+n] for v1, v2 in pairwise(p)]+[[n-1, 0, n, 2*n-1]]
         )
-        self._outermesh.join(self._shape_i.to_mesh())
-        self._outermesh.join(self._shape_j.to_mesh())
+        # self._outermesh.join(self._shape_i.to_mesh())
+        # mj = self._shape_j.to_mesh()
+        # mj.flip_cycles()
+        # self._outermesh.join(mj, weld=True)
         return self._outermesh
 
     @property

@@ -530,7 +530,7 @@ Analysis folder path : {}
             _description_, by default True
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2VectorFieldObject
+        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
         from compas_viewer import Viewer
         from compas.plugins import plugin
         from compas.scene import register

@@ -211,7 +211,11 @@ class _Element1D(_Element):
 
     def __init__(self, nodes, section, frame=None, implementation=None, rigid=False, **kwargs):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
-        self._frame = frame
+        self._frame = frame if isinstance(frame, Frame) else Frame(
+            nodes[0].point,
+            Vector.from_start_end(nodes[0].point, nodes[-1].point),
+            Vector(*frame)
+            )
         self._curve = Line(nodes[0].point, nodes[-1].point)
 
 

@@ -4,15 +4,13 @@ from __future__ import print_function
 
 from math import pi
 
-from compas.geometry import Circle
 from compas.geometry import Frame
-from compas.geometry import Polygon
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
 
 from .materials.material import _Material
-from .shapes import Rectangle, IShape
+from .shapes import Rectangle, IShape, Circle
 
 
 def from_shape(shape, material, **kwargs):
@@ -535,7 +533,7 @@ class CircularSection(BeamSection):
             material=material,
             **kwargs,
         )
-        self._shape = Circle(radius=r, frame=Frame([0, 0, 0], [1, 0, 0], [0, 1, 0]))
+        self._shape = Circle(radius=r, segments=16)
 
 
 class HexSection(BeamSection):

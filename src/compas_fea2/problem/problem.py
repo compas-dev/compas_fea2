@@ -531,19 +531,16 @@ Analysis folder path : {}
 
         """
         from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
-        from compas_viewer import Viewer
-        from compas.plugins import plugin
         from compas.scene import register
         from compas.scene import register_scene_objects
 
-        import numpy as np
         register_scene_objects()  # This has to be called before registering the model object
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+        register(self.model.__class__, FEA2ModelObject, context="Viewer")
 
-        # v = FEA2Viewer(self, scale_factor=scale_factor)
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)  # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
-        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs)
         viewer.viewer.show()
+
 
     def show_displacement_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, filter_parts=None, **kwargs):
 
@@ -682,7 +679,7 @@ Analysis folder path : {}
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, opacity=1, show_bcs=show_bcs, show_parts=False)
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=1, show_bcs=show_bcs, show_parts=False)
 
         if not step:
             step = self.steps_order[-1]
@@ -715,7 +712,7 @@ Analysis folder path : {}
 
         viewer.viewer.show()
 
-    def show_deformed(self, step=None, scale_results=100, original=0.5, opacity=0.5, scale_model=1, **kwargs):
+    def show_deformed(self, step=None, scale_results=100, show_original=False, opacity=0.5, scale_model=1, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -736,20 +733,20 @@ Analysis folder path : {}
         register_scene_objects()  # This has to be called before registering the model object
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model) # show_grid=False, show_gridz=True, gridsize=(1000.0, 10, 1000.0, 10)
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
         if not step:
             step = self.steps_order[-1]
 
-        # if original:
-        #     viewer.viewer.scene.add(self.model, opacity=original, show_bcs=kwargs.get("show_bcs", True))
+        if show_original:
+            viewer.viewer.scene.add(self.model, model=self.model, opacity=show_original, show_bcs=kwargs.get("show_bcs", True))
 
         # TODO create a copy of the model first
         displacements = step.problem.displacement_field
         for displacement in displacements.results(step):
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-        #NOTE it is not changeing the discretised boundary mesh
-        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=kwargs.get("show_bcs", False))
+            
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=opacity, **kwargs)
         viewer.viewer.show()
 
     def show_reactions(self, step=None, scale_results=1, components=None, translate=-1, scale_model=1, show_bcs=True):
@@ -764,7 +761,7 @@ Analysis folder path : {}
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs)
 
         collections = self.draw_reactions(step, scale_results)
 
@@ -796,7 +793,7 @@ Analysis folder path : {}
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
 
         if not step:
             step = self.steps_order[-1]

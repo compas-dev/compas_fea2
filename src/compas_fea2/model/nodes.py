@@ -97,6 +97,41 @@ class Node(FEAData):
         self.total_load = None
         self._displacements = {}
         self._results = {}
+        
+        self._connected_elements = []
+        
+    @classmethod
+    def from_compas_point(cls, point, mass=None, temperature=None, name=None):
+        """Create a Node from a :class:`compas.geometry.Point`.
+
+        Parameters
+        ----------
+        point : :class:`compas.geometry.Point`
+            The location of the node in the global coordinate system.
+        mass : float or tuple, optional
+            Lumped nodal mass, by default ``None``. If ``float``, the same value is
+            used in all 3 directions. if you want to specify a different mass for each
+            direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
+            coordinates.
+        temperature : float, optional
+            The temperature at the Node.
+        name : str, optional
+            Uniqe identifier. If not provided it is automatically generated. Set a
+            name if you want a more human-readable input file.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Node`
+            The Node object.
+
+        Examples
+        --------
+        >>> from compas.geometry import Point
+        >>> point = Point(1.0, 2.0, 3.0)
+        >>> node = Node.from_compas_point(point)
+
+        """
+        return cls(xyz=[point.x, point.y, point.z], mass=mass, temperature=temperature, name=name)
 
     @property
     def part(self):
@@ -196,4 +231,8 @@ class Node(FEAData):
     @property
     def point(self):
         return Point(*self.xyz)
+    
+    @property
+    def connected_elements(self):
+        return self._connected_elements
 

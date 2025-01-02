@@ -20,7 +20,7 @@ DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
 
-def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3):
+def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3, part_nodes_limit=100000):
     """Create a default environment file if it doesn't exist and loads its variables.
 
     Parameters
@@ -34,7 +34,8 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
     precision : str, optional
         Values approximation, by default '3'.
         See `compas.tolerance.Tolerance.precision` for more information.
-
+    part_nodes_limit : int, optional
+        Limit of nodes for a part, by default 100000.
     """
     env_path = os.path.abspath(os.path.join(HERE, ".env"))
     if not os.path.exists(env_path):
@@ -46,6 +47,7 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
                         "POINT_OVERLAP={}".format(point_overlap),
                         "GLOBAL_TOLERANCE={}".format(global_tolerance),
                         "PRECISION={}".format(precision),
+                        "PART_NODES_LIMIT={}" .format(part_nodes_limit),
                     ]
                 )
             )
@@ -57,7 +59,7 @@ if not load_dotenv():
 
 VERBOSE = os.getenv("VERBOSE").lower() == "true"
 POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
-GLOBAL_TOLERANCE = os.getenv("GLOBAL_TOLERANCE")
+GLOBAL_TOLERANCE = float(os.getenv("GLOBAL_TOLERANCE"))
 PRECISION = int(os.getenv("PRECISION"))
 PART_NODES_LIMIT = int(os.getenv("PART_NODES_LIMIT"))
 BACKEND = None

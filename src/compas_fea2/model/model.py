@@ -35,10 +35,10 @@ from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
 from compas_fea2.utilities._utils import timer
 
-from .elements import BeamElement
-from .elements import ShellElement
-from .elements import _Element
-from .elements import _Element3D
+from compas_fea2.model.elements import BeamElement
+from compas_fea2.model.elements import ShellElement
+from compas_fea2.model.elements import _Element
+from compas_fea2.model.elements import _Element3D
 
 
 class Model(FEAData):
@@ -1211,15 +1211,7 @@ Initial Conditions
 
     def show(
         self,
-        scale_factor=1.0,
-        parts=None,
-        elements=True,
-        solid=False,
-        draw_nodes=True,
-        node_labels=True,
-        draw_bcs=1.0,
-        draw_constraints=True,
-        **kwargs,
+        scale_model=1.0, show_bcs=1.0, **kwargs
     ):
         """Visualise the model in the viewer.
 
@@ -1247,33 +1239,16 @@ Initial Conditions
         """
 
         from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
-        from compas_viewer import Viewer
-        from compas.plugins import plugin
         from compas.scene import register
         from compas.scene import register_scene_objects
-        from compas_fea2_sofistik import SofistikModel
-        from compas_fea2_opensees import OpenseesModel
-        import numpy as np
-        register_scene_objects()  # This has to be called before registering the model object
-        register(OpenseesModel, FEA2ModelObject, context="Viewer")
 
-        # v = FEA2Viewer(self, scale_factor=scale_factor)
-        viewer = Viewer()
-        viewer.renderer.camera.target = [i * scale_factor for i in self.center]
-        V1 = np.array([0, 0, 0])
-        V2 = np.array(viewer.renderer.camera.target)
-        delta = V2 - V1
-        length = np.linalg.norm(delta)
-        distance = length * 3
-        unitSlope = delta / length
-        new_position = V1 + unitSlope * distance
-        viewer.renderer.camera.position = new_position.tolist()
-        viewer.renderer.camera.near *= scale_factor
-        viewer.renderer.camera.far *= scale_factor
-        viewer.renderer.camera.scale *= scale_factor
-        # viewer.renderer.grid.cell_size *= scale_factor
-        viewer.scene.add(self)
-        viewer.show()
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.__class__, FEA2ModelObject, context="Viewer")
+
+        viewer = FEA2Viewer(center=self.center, scale_model=scale_model)
+        viewer.viewer.scene.add(self, model=self, opacity=0.5, show_bcs=show_bcs, kwargs=kwargs)
+        viewer.viewer.show()
+
 
 
     @problem_method

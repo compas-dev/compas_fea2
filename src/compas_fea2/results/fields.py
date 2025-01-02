@@ -173,7 +173,7 @@ class FieldResults(FEAData):
         results_set = self._get_db_results(members, steps)
         return self._to_result(results_set)
 
-    def get_max_component(self, component, step):
+    def get_max_result(self, component, step):
         """Get the result where a component is maximum for a given step.
 
         Parameters
@@ -191,9 +191,43 @@ class FieldResults(FEAData):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
-    def get_min_component(self, component, step):
+    def get_min_result(self, component, step):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
+    
+    def get_max_component(self, component, step):
+        """Get the result where a component is maximum for a given step.
+
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The appriate Result object.
+        """
+        return self.get_max_result(component, step).vector[component]
+    
+    def get_min_component(self, component, step):
+        """ Get the result where a component is minimum for a given step.
+        
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_   
+            _description_
+        
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The appriate Result object.        
+        """
+        return self.get_min_result(component, step).vector[component]
 
     def get_limits_component(self, component, step):
         """Get the result objects with the min and max value of a given
@@ -211,7 +245,7 @@ class FieldResults(FEAData):
         _type_
             _description_
         """
-        return [self.get_min_component(component, step), self.get_max_component(component, step)]
+        return [self.get_min_result(component, step), self.get_max_result(component, step)]
 
     def get_limits_absolute(self, step):
         limits = []

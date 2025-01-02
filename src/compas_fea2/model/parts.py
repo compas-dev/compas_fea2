@@ -271,7 +271,6 @@ class _Part(FEAData):
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         for line in lines:
             frame = Frame(line[0], xaxis, line.vector)
-            frame.rotate(pi/2, xaxis, line[0])
             # FIXME change tolerance
             nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
             prt.add_nodes(nodes)
@@ -819,10 +818,11 @@ class _Part(FEAData):
             return
 
         if not compas_fea2.POINT_OVERLAP:
-            if self.find_nodes_around_point(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE):
+            existing_node = self.find_nodes_around_point(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE)
+            if existing_node:
                 if compas_fea2.VERBOSE:
                     print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
-                return
+                return existing_node[0]
 
         node._key = len(self._nodes)
         self._nodes.add(node)
@@ -1001,6 +1001,11 @@ class _Part(FEAData):
             return
 
         self.add_nodes(element.nodes)
+        
+        for node in element.nodes:
+            if not element in node.connected_elements:
+                node.connected_elements.append(element)
+        
         if hasattr(element, "section"):
             if element.section:
                 self.add_section(element.section)
@@ -1428,8 +1433,8 @@ class DeformablePart(_Part):
             else:
                 n = n[0]+n[1]
             v = list(mesh.edge_direction(edge))
-            frame = Frame(nodes[0].xyz, v, n)
-            frame.rotate(pi/2, n, nodes[0].xyz)
+            frame = n
+            frame.rotate(pi/2, v, nodes[0].xyz)
             part.add_element(BeamElement(nodes=[*nodes], section=section, frame=frame))
 
         return part

@@ -192,52 +192,65 @@ class _Element0D(_Element):
 
 
 class SpringElement(_Element0D):
-    """A 0D spring element.
-    """
+    """A 0D spring element."""
+
     def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
         super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
+
 class LinkElement(_Element0D):
-    """A 0D link element.
-    """
+    """A 0D link element."""
+
     def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
         super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
+
 
 # ==============================================================================
 # 1D elements
 # ==============================================================================
 class _Element1D(_Element):
-    """Element with 1 dimension."""
+    """Element with 1 dimension.
+
+    Parameters
+    ----------
+    nodes : list[:class:`compas_fea2.model.Node`]
+        Ordered list of nodes to which the element connects.
+    section : :class:`compas_fea2.model._Section`
+        Section Object assigned to the element.
+    frame : :class:`compas.geometry.Frame` or list
+        Frame or local X axis in global coordinates. This is used to define the section orientation.
+    implementation : str, optional
+        The name of the backend model implementation of the element.
+    rigid : bool, optional
+        Define the element as rigid (no deformations allowed) or not. For Rigid
+        elements sections are not needed.
+    
+    Attributes
+    ----------
+    frame : :class:`compas.geometry.Frame`
+        The frame of the element.
+    length : float
+        The length of the element.
+    volume : float
+        The volume of the element.
+    """
 
     def __init__(self, nodes, section, frame=None, implementation=None, rigid=False, **kwargs):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
-        self._frame = frame if isinstance(frame, Frame) else Frame(
-            nodes[0].point,
-            Vector.from_start_end(nodes[0].point, nodes[-1].point),
-            Vector(*frame)
-            )
+        self._frame = frame if isinstance(frame, Frame) else Frame(nodes[0].point, Vector(*frame), Vector.from_start_end(nodes[0].point, nodes[-1].point))
         self._curve = Line(nodes[0].point, nodes[-1].point)
-
-
-        # self._shape = Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point), cap_ends=False)
-        # Brep.from_extrusion(curve=self.section._shape, vector=Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        # self._shape = section._shape  # Box(self.length, self.section._w, self.section._h, frame=Frame(self.nodes[0].point, [1,0,0], [0,1,0]))
-
+        
     @property
     def outermesh(self):
-        self._shape_i = self.section._shape.oriented(self._frame)
-        self._shape_j = self._shape_i.translated(Vector.from_start_end(self.nodes[0].point, self.nodes[-1].point))
-        #create the outer mesh using the section information
+        self._frame.point = self.nodes[0].point
+        self._shape_i = self.section._shape.oriented(self._frame, check_planarity=False)
+        self._shape_j = self._shape_i.translated(Vector.from_start_end(self.nodes[0].point, self.nodes[-1].point), check_planarity=False)
+        # create the outer mesh using the section information
         p = self._shape_i.points
         n = len(p)
         self._outermesh = Mesh.from_vertices_and_faces(
-            self._shape_i.points+self._shape_j.points,
-            [[p.index(v1), p.index(v2), p.index(v2)+n, p.index(v1)+n] for v1, v2 in pairwise(p)]+[[n-1, 0, n, 2*n-1]]
+            self._shape_i.points + self._shape_j.points, [[p.index(v1), p.index(v2), p.index(v2) + n, p.index(v1) + n] for v1, v2 in pairwise(p)] + [[n - 1, 0, n, 2 * n - 1]]
         )
-        # self._outermesh.join(self._shape_i.to_mesh())
-        # mj = self._shape_j.to_mesh()
-        # mj.flip_cycles()
-        # self._outermesh.join(mj, weld=True)
         return self._outermesh
 
     @property

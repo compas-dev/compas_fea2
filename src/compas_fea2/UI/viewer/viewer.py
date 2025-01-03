@@ -70,7 +70,7 @@ class FEA2ModelObject(GroupObject):
         show_faces = kwargs.get("show_faces", True)
         show_lines = kwargs.get("show_lines", False)
         show_points = kwargs.get("show_points", False)
-        show_nodes = kwargs.get("show_nodes", True)
+        show_nodes = kwargs.get("show_nodes", False)
         opacity = kwargs.get("opacity", 1.0)
         part_meshes = []
         if show_parts:

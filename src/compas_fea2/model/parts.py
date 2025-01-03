@@ -269,10 +269,11 @@ class _Part(FEAData):
         import compas_fea2
         prt = cls(name=name)
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
+        mass = kwargs.get("mass", None)
         for line in lines:
             frame = Frame(line[0], xaxis, line.vector)
             # FIXME change tolerance
-            nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p)) for p in list(line)]
+            nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p), mass=mass) for p in list(line)]
             prt.add_nodes(nodes)
             element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section, frame=frame)
             if not isinstance(element, _Element1D):
@@ -872,7 +873,7 @@ class _Part(FEAData):
         """
         # type: (Node) -> None
         if self.contains_node(node):
-            self.nodes.pop(node)
+            self.nodes.remove(node)
             self._gkey_node.pop(node.gkey)
             node._registration = None
             if compas_fea2.VERBOSE:

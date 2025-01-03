@@ -125,7 +125,7 @@ class _Element(FEAData):
 
     @property
     def frame(self):
-        raise NotImplementedError()
+        return self._frame
 
     @property
     def implementation(self):

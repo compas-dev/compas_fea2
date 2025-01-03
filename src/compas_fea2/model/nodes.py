@@ -18,20 +18,19 @@ class Node(FEAData):
         The location of the node in the global coordinate system.
     mass : float or tuple, optional
         Lumped nodal mass, by default ``None``. If ``float``, the same value is
-        used in all 3 directions. if you want to specify a different mass for each
+        used in all 3 directions. If you want to specify a different mass for each
         direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
         coordinates.
     temperature : float, optional
         The temperature at the Node.
     name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
+        Unique identifier. If not provided, it is automatically generated. Set a
         name if you want a more human-readable input file.
 
     Attributes
     ----------
     name : str
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
+        Unique identifier.
     mass : tuple
         Lumped nodal mass in the 3 global directions (mass_x, mass_y, mass_z).
     key : str, read-only
@@ -110,13 +109,13 @@ class Node(FEAData):
             The location of the node in the global coordinate system.
         mass : float or tuple, optional
             Lumped nodal mass, by default ``None``. If ``float``, the same value is
-            used in all 3 directions. if you want to specify a different mass for each
+            used in all 3 directions. If you want to specify a different mass for each
             direction, provide a ``tuple`` as (mass_x, mass_y, mass_z) in global
             coordinates.
         temperature : float, optional
             The temperature at the Node.
         name : str, optional
-            Uniqe identifier. If not provided it is automatically generated. Set a
+            Unique identifier. If not provided, it is automatically generated. Set a
             name if you want a more human-readable input file.
 
         Returns
@@ -148,7 +147,7 @@ class Node(FEAData):
     @xyz.setter
     def xyz(self, value):
         if len(value) != 3:
-            raise ValueError("Provide a 3 element touple or list")
+            raise ValueError("Provide a 3 element tuple or list")
         self._x = value[0]
         self._y = value[1]
         self._z = value[2]

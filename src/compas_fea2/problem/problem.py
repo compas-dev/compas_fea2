@@ -603,7 +603,7 @@ Analysis folder path : {}
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, opacity=0.5, show_bcs=show_bcs)
+        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs)
 
         if not step:
             step = self.steps_order[-1]

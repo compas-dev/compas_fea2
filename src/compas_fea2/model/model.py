@@ -57,10 +57,8 @@ class Model(FEAData):
     ----------
     description : str
         Some description of the model.
-        This will be added to the input file and can be useful for future reference.
     author : str
         The name of the author of the model.
-        This will be added to the input file and can be useful for future reference.
     parts : Set[:class:`compas_fea2.model.DeformablePart`]
         The parts of the model.
     bcs : dict
@@ -73,13 +71,13 @@ class Model(FEAData):
         The constraints of the model.
     partgroups : Set[:class:`compas_fea2.model.PartsGroup`]
         The part groups of the model.
-    materials : Set[:class:`compas_fea2.model.materials.Material]
+    materials : Set[:class:`compas_fea2.model.materials.Material`]
         The materials assigned in the model.
-    sections : Set[:class:`compas_fea2.model._Section]
+    sections : Set[:class:`compas_fea2.model._Section`]
         The sections assigned in the model.
-    problems : Set[:class:`compas_fea2.problem._Problem]
+    problems : Set[:class:`compas_fea2.problem._Problem`]
         The problems added to the model.
-    path : ::class::`pathlib.Path`
+    path : :class:`pathlib.Path`
         Path to the main folder where the problems' results are stored.
 
     """
@@ -242,12 +240,12 @@ class Model(FEAData):
     @staticmethod
     # @timer(message="Model loaded from cfm file in ")
     def from_cfm(path):
-        """Imports a Problem object from an .cfm file through Pickle.
+        """Imports a Model object from a .cfm file using Pickle.
 
         Parameters
         ----------
         path : str
-            Complete path of the file. (for example 'C:/temp/model.cfm')
+            Complete path of the file (e.g., 'C:/temp/model.cfm').
 
         Returns
         -------
@@ -283,12 +281,12 @@ class Model(FEAData):
         raise NotImplementedError()
 
     def to_cfm(self, path):
-        """Exports the Model object to an .cfm file through Pickle.
+        """Exports the Model object to a .cfm file using Pickle.
 
         Parameters
         ----------
-        path : path
-            Complete path to the new file. (for example 'C:/temp/model.cfm')
+        path : str
+            Complete path to the new file (e.g., 'C:/temp/model.cfm').
 
         Returns
         -------
@@ -358,6 +356,8 @@ class Model(FEAData):
         ------
         TypeError
             If the part is not a part.
+        ValueError
+            If a part with the same name already exists in the model.
 
         """
         if not isinstance(part, _Part):
@@ -542,17 +542,13 @@ class Model(FEAData):
         Parameters
         ----------
         bc : :class:`compas_fea2.model._BoundaryCondition`
-            Boundary condition object to add to the model.
         nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
-            List or Group with the nodes where the boundary condition is assigned.
+        axes : str, optional
+            Axes of the boundary condition, by default 'global'.
 
         Returns
         -------
         :class:`compas_fea2.model._BoundaryCondition`
-
-        Notes
-        -----
-        Currently global axes are used in the Boundary Conditions definition.
 
         """
         if isinstance(nodes, _Group):
@@ -882,13 +878,11 @@ class Model(FEAData):
         Parameters
         ----------
         ic : :class:`compas_fea2.model._InitialCondition`
-            Initial condition object to add to the model.
         nodes : list[:class:`compas_fea2.model.Node`] or :class:`compas_fea2.model.NodesGroup`
-            List or Group with the nodes where the initial condition is assigned.
 
         Returns
         -------
-        list[:class:`compas_fea2.model._InitialCondition`]
+        :class:`compas_fea2.model._InitialCondition`
 
         """
         if not isinstance(nodes, NodesGroup):
@@ -902,9 +896,7 @@ class Model(FEAData):
         Parameters
         ----------
         ic : :class:`compas_fea2.model._InitialCondition`
-            Initial condition object to add to the model.
         elements : :class:`compas_fea2.model.ElementsGroup`
-            List or Group with the elements where the initial condition is assigned.
 
         Returns
         -------
@@ -922,18 +914,15 @@ class Model(FEAData):
 
 
     def add_connector(self, connector):
-        """Add a :class:`compas_fea2.model._InitialCondition` to the model.
+        """Add a :class:`compas_fea2.model.Connector` to the model.
 
         Parameters
         ----------
-        ic : :class:`compas_fea2.model._InitialCondition`
-            Initial condition object to add to the model.
-        group : :class:`compas_fea2.model._Group`
-            Group of Nodes/Elements where the initial condition is assigned.
+        connector : :class:`compas_fea2.model.Connector`
 
         Returns
         -------
-        :class:`compas_fea2.model._InitialCondition`
+        :class:`compas_fea2.model.Connector`
 
         """
         if not isinstance(connector, Connector):
@@ -950,10 +939,6 @@ class Model(FEAData):
 
     def summary(self):
         """Prints a summary of the Model object.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -1027,17 +1012,17 @@ Initial Conditions
     # ==============================================================================
 
     def check(self, type="quick"):
-        """Check for possible problems in the model
+        """Check for possible problems in the model.
 
         Parameters
         ----------
         type : str, optional
-            *quick* or *deep* check, by default 'quick'
+            'quick' or 'deep' check, by default 'quick'.
 
         Returns
         -------
         str
-            report
+            Report
 
         Warnings
         --------
@@ -1065,18 +1050,17 @@ Initial Conditions
         Parameters
         ----------
         problem : :class:`compas_fea2.problem.Problem`, optional
-            The problem to add, by default None. If not provided a
-            :class:`compas_fea2.problem.Problem` is created.
+        kwargs : dict, optional
+            Additional keyword arguments for creating a new problem.
 
         Returns
         -------
         :class:`compas_fea2.problem.Problem`
-            The added problem
 
         Raises
         ------
         TypeError
-            if problem is not type :class:`compas_fea2.problem.Problem`
+            If problem is not of type :class:`compas_fea2.problem.Problem`.
 
         """
         if problem:
@@ -1095,18 +1079,11 @@ Initial Conditions
 
         Parameters
         ----------
-        problems : []:class:`compas_fea2.problem.Problem`]
-            The problems to add
+        problems : list[:class:`compas_fea2.problem.Problem`]
 
         Returns
         -------
-        [:class:`compas_fea2.problem.Problem`]
-            The added problems
-
-        Raises
-        ------
-        TypeError
-            if a problem is not type :class:`compas_fea2.problem.Problem`
+        list[:class:`compas_fea2.problem.Problem`]
 
         """
         return [self.add_problem(problem) for problem in problems]
@@ -1117,12 +1094,10 @@ Initial Conditions
         Parameters
         ----------
         name : str
-            The name of the Problem
 
         Returns
         -------
         :class:`compas_fea2.problem.Problem`
-            The problem
 
         """
         for problem in self.problems:
@@ -1217,27 +1192,12 @@ Initial Conditions
 
         Parameters
         ----------
-        width : int, optional
-            _description_, by default 1600
-        height : int, optional
-            _description_, by default 900
-        scale_factor : _type_, optional
-            _description_, by default 1.
-        parts : _type_, optional
-            _description_, by default None
-        solid : bool, optional
-            _description_, by default True
-        draw_nodes : bool, optional
-            _description_, by default False
-        node_labels : bool, optional
-            _description_, by default False
-        draw_bcs : _type_, optional
-            _description_, by default 1.
-        draw_constraints : bool, optional
-            _description_, by default True
+        scale_model : float, optional
+        show_bcs : float, optional
+        kwargs : dict, optional
+            Additional keyword arguments for the viewer.
 
         """
-
         from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
         from compas.scene import register
         from compas.scene import register_scene_objects

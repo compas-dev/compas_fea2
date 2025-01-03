@@ -210,7 +210,7 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        return self.get_max_result(component, step).vector[component]
+        return self.get_max_result(component, step).vector[component-1]
     
     def get_min_component(self, component, step):
         """ Get the result where a component is minimum for a given step.
@@ -227,7 +227,7 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.        
         """
-        return self.get_min_result(component, step).vector[component]
+        return self.get_min_result(component, step).vector[component-1]
 
     def get_limits_component(self, component, step):
         """Get the result objects with the min and max value of a given

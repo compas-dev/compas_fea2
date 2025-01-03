@@ -3,7 +3,7 @@ Installation
 ********************************************************************************
 
 The recommended way to install ``compas_fea2``
-is in in a dedicated ``conda`` environment.
+is in a dedicated ``conda`` environment.
 
 .. code-block:: bash
 

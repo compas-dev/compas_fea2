@@ -2,7 +2,7 @@
 Model
 ******************************************************************************
 
-At the heart of every COMPAS FEA2 analysis or simluation is a model.
+At the heart of every COMPAS FEA2 analysis or simulation is a model.
 A model consists of nodes, elements and parts,
 and defines connections, constraints and boundary conditions.
 

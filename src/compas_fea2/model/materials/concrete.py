@@ -16,8 +16,12 @@ class Concrete(_Material):
         Characteristic (5%) 28 day cylinder strength [MPa].
     v : float
         Poisson's ratio v [-].
-    fr : list
+    fr : list, optional
         Failure ratios.
+    density : float, optional
+        Density of the concrete material [kg/m^3].
+    name : str, optional
+        Name of the material.
 
     Attributes
     ----------
@@ -32,14 +36,13 @@ class Concrete(_Material):
     fr : list
         Failure ratios.
     tension : dict
-        Parameters for modelling the tension side of the stess--strain curve
+        Parameters for modelling the tension side of the stress-strain curve.
     compression : dict
-        Parameters for modelling the tension side of the stess--strain curve
+        Parameters for modelling the compression side of the stress-strain curve.
 
     Notes
     -----
     The concrete model is based on Eurocode 2 up to fck=90 MPa.
-
     """
 
     def __init__(self, *, fck, v=0.2, density=2400, fr=None, name=None, **kwargs):
@@ -95,7 +98,6 @@ fr  : {}
         )
 
 
-# @extend_docstring(_Material)
 class ConcreteSmearedCrack(_Material):
     """Elastic and plastic, cracking concrete material.
 
@@ -113,8 +115,12 @@ class ConcreteSmearedCrack(_Material):
         Plastic stress data in tension.
     et : list
         Plastic strain data in tension.
-    fr : list
+    fr : list, optional
         Failure ratios.
+    density : float, optional
+        Density of the concrete material [kg/m^3].
+    name : str, optional
+        Name of the material.
 
     Attributes
     ----------
@@ -135,14 +141,13 @@ class ConcreteSmearedCrack(_Material):
     fr : list
         Failure ratios.
     tension : dict
-        Parameters for modelling the tension side of the stess--strain curve
+        Parameters for modelling the tension side of the stress-strain curve.
     compression : dict
-        Parameters for modelling the tension side of the stess--strain curve
-
+        Parameters for modelling the compression side of the stress-strain curve.
     """
 
-    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], **kwargs):
-        super(ConcreteSmearedCrack, self).__init__(density=density, **kwargs)
+    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
+        super(ConcreteSmearedCrack, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v
@@ -180,12 +185,10 @@ fr : {}
 
 
 class ConcreteDamagedPlasticity(_Material):
-    """Damaged plasticity isotropic and homogeneous material."""
+    """Damaged plasticity isotropic and homogeneous material.
 
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -196,9 +199,13 @@ class ConcreteDamagedPlasticity(_Material):
         Compression hardening parameters.
     stiffening : list
         Tension stiffening parameters.
+    density : float, optional
+        Density of the concrete material [kg/m^3].
+    name : str, optional
+        Name of the material.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -211,11 +218,10 @@ class ConcreteDamagedPlasticity(_Material):
         Compression hardening parameters.
     stiffening : list
         Tension stiffening parameters.
-
     """
 
-    def __init__(self, *, E, v, density, damage, hardening, stiffening, **kwargs):
-        super(ConcreteDamagedPlasticity, self).__init__(density=density, **kwargs)
+    def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
+        super(ConcreteDamagedPlasticity, self).__init__(density=density, name=name, **kwargs)
 
         self.E = E
         self.v = v

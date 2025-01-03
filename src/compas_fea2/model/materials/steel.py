@@ -2,19 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas_fea2 import units
-
 from .material import ElasticIsotropic
 from .material import _Material
 
 
 class Steel(ElasticIsotropic):
-    """Bi-linear steel with given yield stress."""
+    """Bi-linear steel with given yield stress.
 
-    __doc__ += _Material.__doc__
-    __doc__ += """
-    Additional Parameters
-    ---------------------
+    Parameters
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -25,9 +21,13 @@ class Steel(ElasticIsotropic):
         Ultimate stress.
     eu : float
         Ultimate strain.
+    density : float, optional
+        Density of the steel material [kg/m^3].
+    name : str, optional
+        Name of the material.
 
-    Additional Attributes
-    ---------------------
+    Attributes
+    ----------
     E : float
         Young's modulus E.
     v : float
@@ -42,11 +42,14 @@ class Steel(ElasticIsotropic):
         Ultimate strain.
     ep : float
         Plastic strain.
-
+    tension : dict
+        Parameters for modelling the tension side of the stress-strain curve.
+    compression : dict
+        Parameters for modelling the compression side of the stress-strain curve.
     """
 
-    def __init__(self, *, fy, fu, eu, E, v, density, **kwargs):
-        super(Steel, self).__init__(E=E, v=v, density=density, **kwargs)
+    def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
+        super(Steel, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
 
         fu = fu or fy
 
@@ -75,25 +78,25 @@ class Steel(ElasticIsotropic):
 Steel Material
 --------------
 name    : {}
-density : {:~.0f}
+density : {:.2f}
 
-E  : {:~.0f}
-G  : {:~.0f}
-fy : {:~.0f}
-fu : {:~.0f}
+E  : {:.2f}
+G  : {:.2f}
+fy : {:.2f}
+fu : {:.2f}
 v  : {:.2f}
 eu : {:.2f}
 ep : {:.2f}
 """.format(
             self.name,
-            (self.density * units["kg/m**2"]),
-            (self.E * units.pascal).to("GPa"),
-            (self.G * units.pascal).to("GPa"),
-            (self.fy * units.pascal).to("MPa"),
-            (self.fu * units.pascal).to("MPa"),
-            (self.v * units.dimensionless),
-            (self.eu * units.dimensionless),
-            (self.ep * units.dimensionless),
+            self.density,
+            self.E,
+            self.G,
+            self.fy,
+            self.fu,
+            self.v,
+            self.eu,
+            self.ep,
         )
 
     # TODO check values and make unit independent

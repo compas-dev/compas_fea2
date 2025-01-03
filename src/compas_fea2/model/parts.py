@@ -99,6 +99,7 @@ class _Part(FEAData):
         self._sections = set()
         self._materials = set()
         self._elements = set()
+        self._releases = set()
 
         self._nodesgroups = set()
         self._elementsgroups = set()
@@ -247,22 +248,24 @@ class _Part(FEAData):
 
     @classmethod
     def from_compas_lines(cls, lines, element_model="BeamElement", xaxis=[0,1,0], section=None, name=None, **kwargs):
-        """Generate a part from a class:`compas.geometry.Line`.
+        """Generate a part from a list of :class:`compas.geometry.Line`.
 
         Parameters
         ----------
-        line : list(class:`compas.geometry.Line`)
+        lines : list[:class:`compas.geometry.Line`]
             The lines to be converted.
         element_model : str, optional
-            Implementation model for the element, by default 'BeamElement'
+            Implementation model for the element, by default 'BeamElement'.
+        xaxis : list[float], optional
+            The x-axis direction, by default [0,1,0].
         section : :class:`compas_fea2.model.BeamSection`, optional
-            _description_, by default None
+            The section to be assigned to the elements, by default None.
         name : str, optional
-            The name of the part, by default None (one is automatically generated)
+            The name of the part, by default None (one is automatically generated).
 
         Returns
         -------
-        class:`compas_fea2.model.Part`
+        :class:`compas_fea2.model.Part`
             The part.
 
         """
@@ -287,17 +290,22 @@ class _Part(FEAData):
         """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
 
         To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
-        objects. Currently, the same section is applied to all the elements.
+        object. Currently, the same section is applied to all the elements.
 
         Parameters
         ----------
         mesh : :class:`compas.datastructures.Mesh`
             Mesh to convert to a DeformablePart.
-        section : :class:`compas_fea2.model.ShellElement`
+        section : :class:`compas_fea2.model.ShellSection`
             Shell section assigned to each face.
         name : str, optional
-            name of the new part. If ``None``, a unique identifier is assigned
+            Name of the new part. If ``None``, a unique identifier is assigned
             automatically.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Part`
+            The part.
 
         """
         implementation = kwargs.get("implementation", None)
@@ -321,23 +329,23 @@ class _Part(FEAData):
         """Create a Part object from a gmshModel object.
 
         According to the `section` type provided, :class:`compas_fea2.model._Element2D` or
-        :class:`compas_fea2.model._Element3D` elements are cretated.
+        :class:`compas_fea2.model._Element3D` elements are created.
         The same section is applied to all the elements.
 
         Parameters
         ----------
-        name : str
-            Name of the new part.
         gmshModel : obj
-            gmsh Model to convert. See [1]_
+            gmsh Model to convert. See [1]_.
         section : obj
             `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
-            object to to apply to the elements.
+            object to apply to the elements.
+        name : str, optional
+            Name of the new part.
         split : bool, optional
             If ``True`` create an additional node in the middle of the edges of the
             elements to implement more refined element types. Check for example [2]_.
         verbose : bool, optional
-            If ``True`` print a log, by default False
+            If ``True`` print a log, by default False.
         check : bool, optional
             If ``True`` performs sanity checks, by default False. This is a quite
             resource-intense operation! Set to ``False`` for large models (>10000
@@ -345,7 +353,7 @@ class _Part(FEAData):
 
         Returns
         -------
-        :class:`compas_fea2.model._Part`
+        :class:`compas_fea2.model.Part`
             The part meshed.
 
         Notes
@@ -430,16 +438,26 @@ class _Part(FEAData):
     @classmethod
     def from_boundary_mesh(cls, boundary_mesh, name=None, **kwargs):
         """Create a Part object from a 3-dimensional :class:`compas.datastructures.Mesh`
-        object reppresenting the boundary envelope of the Part. The Part is
-        discretized uniformly in Thetrahedra of a given mesh size.
+        object representing the boundary envelope of the Part. The Part is
+        discretized uniformly in Tetrahedra of a given mesh size.
         The same section is applied to all the elements.
 
         Parameters
         ----------
-        name : str, optional
-            Name of the new Part.
         boundary_mesh : :class:`compas.datastructures.Mesh`
             Boundary envelope of the DeformablePart.
+        name : str, optional
+            Name of the new Part.
+        target_mesh_size : float, optional
+            Target mesh size for the discretization, by default 1.
+        mesh_size_at_vertices : dict, optional
+            Dictionary of vertex keys and target mesh sizes, by default None.
+        target_point_mesh_size : dict, optional
+            Dictionary of point coordinates and target mesh sizes, by default None.
+        meshsize_max : float, optional
+            Maximum mesh size, by default None.
+        meshsize_min : float, optional
+            Minimum mesh size, by default None.
 
         Returns
         -------
@@ -480,6 +498,29 @@ class _Part(FEAData):
 
     @classmethod
     def from_step_file(cls, step_file, name=None, **kwargs):
+        """Create a Part object from a STEP file.
+
+        Parameters
+        ----------
+        step_file : str
+            Path to the STEP file.
+        name : str, optional
+            Name of the new Part.
+        mesh_size_at_vertices : dict, optional
+            Dictionary of vertex keys and target mesh sizes, by default None.
+        target_point_mesh_size : dict, optional
+            Dictionary of point coordinates and target mesh sizes, by default None.
+        meshsize_max : float, optional
+            Maximum mesh size, by default None.
+        meshsize_min : float, optional
+            Minimum mesh size, by default None.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Part`
+            The part.
+
+        """
         from compas_gmsh.models import MeshModel
 
         mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
@@ -514,18 +555,10 @@ class _Part(FEAData):
         return part
 
     # =========================================================================
-    #                           General methods
-    # =========================================================================
-
-    def find(self):
-        raise NotImplementedError
-
-    # =========================================================================
     #                           Nodes methods
     # =========================================================================
 
     def find_node_by_key(self, key):
-        # type: (int) -> Node
         """Retrieve a node in the model using its key.
 
         Parameters
@@ -544,7 +577,6 @@ class _Part(FEAData):
                 return node
 
     def find_nodes_by_name(self, name):
-        # type: (str) -> list[Node]
         """Find all nodes with a given name.
 
         Parameters
@@ -559,7 +591,6 @@ class _Part(FEAData):
         return [node for node in self.nodes if node.name == name]
 
     def find_nodes_around_point(self, point, distance, plane=None, report=False, single=False, **kwargs):
-        # type: (Point, float, Plane, bool, bool, bool) -> list[Node]
         """Find all nodes within a distance of a given geometrical location.
 
         Parameters
@@ -573,6 +604,8 @@ class _Part(FEAData):
         report : bool, optional
             If True, return a dictionary with the node and its distance to the
             point, otherwise, just the node. By default is False.
+        single : bool, optional
+            If True, return only the closest node, by default False.
 
         Returns
         -------
@@ -594,7 +627,6 @@ class _Part(FEAData):
             return nodes
 
     def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
-        # type: (Point, float, int, Plane) -> list[Node]
         """Find the n closest nodes within a distance of a given geometrical location.
 
         Parameters
@@ -603,7 +635,7 @@ class _Part(FEAData):
             A geometrical location.
         distance : float
             Distance from the location.
-        numnber_of_nodes : int
+        number_of_nodes : int
             Number of nodes to return.
         plane : :class:`compas.geometry.Plane`, optional
             Limit the search to one plane.
@@ -619,22 +651,20 @@ class _Part(FEAData):
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
 
     def find_nodes_around_node(self, node, distance, plane=None):
-        # type: (Node, float, Plane) -> list[Node]
         """Find all nodes around a given node (excluding the node itself).
 
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
             The given node.
-        radius : float
-            Search radious.
+        distance : float
+            Search radius.
         plane : :class:`compas.geometry.Plane`, optional
             Limit the search to one plane.
 
         Returns
         -------
-        [:class:`compas_fea2.model.Node]
-            The nodes around the given node
+        list[:class:`compas_fea2.model.Node`]
 
         """
         nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=True)
@@ -643,16 +673,15 @@ class _Part(FEAData):
         return nodes
 
     def find_closest_nodes_to_node(self, node, distance, number_of_nodes=1, plane=None):
-        # type: (Point, float, int, Plane) -> list[Node]
         """Find the n closest nodes around a given node (excluding the node itself).
 
         Parameters
         ----------
-        point : :class:`compas.geometry.Point`
-            A geometrical location.
+        node : :class:`compas_fea2.model.Node`
+            The given node.
         distance : float
             Distance from the location.
-        numnber_of_nodes : int
+        number_of_nodes : int
             Number of nodes to return.
         plane : :class:`compas.geometry.Plane`, optional
             Limit the search to one plane.
@@ -668,8 +697,7 @@ class _Part(FEAData):
         return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
 
     def find_nodes_by_attribute(self, attr, value, tolerance=0.001):
-        # type: (str, float, float) -> list[Node]
-        """Find all nodes with a given value for a the given attribute.
+        """Find all nodes with a given value for the given attribute.
 
         Parameters
         ----------
@@ -677,6 +705,8 @@ class _Part(FEAData):
             Attribute name.
         value : any
             Appropriate value for the given attribute.
+        tolerance : float, optional
+            Tolerance for numeric attributes, by default 0.001.
 
         Returns
         -------
@@ -690,13 +720,14 @@ class _Part(FEAData):
         return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
 
     def find_nodes_on_plane(self, plane, tolerance=1):
-        # type: (Plane, float) -> list[Node]
         """Find all nodes on a given plane.
 
         Parameters
         ----------
         plane : :class:`compas.geometry.Plane`
             The plane.
+        tolerance : float, optional
+            Tolerance for the search, by default 1.
 
         Returns
         -------
@@ -706,17 +737,18 @@ class _Part(FEAData):
         return list(filter(lambda x: is_point_on_plane(Point(*x.xyz), plane, tolerance), self.nodes))
 
     def find_nodes_in_polygon(self, polygon, tolerance=1.1):
-        """Find the nodes of the part that are contained within a planar polygon
+        """Find the nodes of the part that are contained within a planar polygon.
 
         Parameters
         ----------
         polygon : :class:`compas.geometry.Polygon`
             The polygon for the search.
+        tolerance : float, optional
+            Tolerance for the search, by default 1.1.
 
         Returns
         -------
-        [:class:`compas_fea2.model.Node]
-            List with the nodes contained in the polygon.
+        list[:class:`compas_fea2.model.Node`]
 
         """
         # TODO quick fix...change!
@@ -735,18 +767,16 @@ class _Part(FEAData):
 
     # TODO quite slow...check how to make it faster
     def find_nodes_where(self, conditions):
-        # type: (list[str]) -> list[Node]
         """Find the nodes where some conditions are met.
 
         Parameters
         ----------
-        conditions : [str]
+        conditions : list[str]
             List with the strings of the required conditions.
 
         Returns
         -------
-        [Node]
-            List with the nodes matching the criteria.
+        list[:class:`compas_fea2.model.Node`]
 
         """
         import re
@@ -763,15 +793,12 @@ class _Part(FEAData):
         return list(set.intersection(*nodes))
 
     def contains_node(self, node):
-        # type: (Node, bool) -> Node
         """Verify that the part contains a given node.
 
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
             The node to check.
-        location : bool
-            check for overlapping nodes at the same location.
 
         Returns
         -------
@@ -781,7 +808,6 @@ class _Part(FEAData):
         return node in self.nodes
 
     def add_node(self, node):
-        # type: (Node) -> Node
         """Add a node to the part.
 
         Parameters
@@ -834,7 +860,6 @@ class _Part(FEAData):
         return node
 
     def add_nodes(self, nodes):
-        # type: (list) -> list
         """Add multiple nodes to the part.
 
         Parameters
@@ -845,7 +870,6 @@ class _Part(FEAData):
         Returns
         -------
         list[:class:`compas_fea2.model.Node`]
-            The identifiers of the nodes in the part.
 
         Examples
         --------
@@ -868,7 +892,7 @@ class _Part(FEAData):
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
-            The node to remove
+            The node to remove.
 
         """
         # type: (Node) -> None
@@ -888,23 +912,22 @@ class _Part(FEAData):
 
         Parameters
         ----------
-        nodes : [:class:`compas_fea2.model.Node`]
-            List with the nodes to remove
+        nodes : list[:class:`compas_fea2.model.Node`]
+            List with the nodes to remove.
 
         """
         for node in nodes:
             self.remove_node(node)
 
     def is_node_on_boundary(self, node, precision=None):
-        # type: (Node, str) -> bool
         """Check if a node is on the boundary mesh of the DeformablePart.
 
         Parameters
         ----------
         node : :class:`compas_fea2.model.Node`
             The node to evaluate.
-        precision : ??
-            ???
+        precision : float, optional
+            Precision for the geometric key comparison, by default None.
 
         Returns
         -------
@@ -926,7 +949,6 @@ class _Part(FEAData):
     #                           Elements methods
     # =========================================================================
     def find_element_by_key(self, key):
-        # type: (int) -> _Element
         """Retrieve an element in the model using its key.
 
         Parameters
@@ -945,7 +967,6 @@ class _Part(FEAData):
                 return element
 
     def find_elements_by_name(self, name):
-        # type: (str) -> list[_Element]
         """Find all elements with a given name.
 
         Parameters
@@ -960,7 +981,6 @@ class _Part(FEAData):
         return [element for element in self.elements if element.name == name]
 
     def contains_element(self, element):
-        # type: (_Element) -> _Element
         """Verify that the part contains a specific element.
 
         Parameters
@@ -975,7 +995,6 @@ class _Part(FEAData):
         return element in self.elements
 
     def add_element(self, element):
-        # type: (_Element) -> _Element
         """Add an element to the part.
 
         Parameters
@@ -1023,7 +1042,6 @@ class _Part(FEAData):
         return element
 
     def add_elements(self, elements):
-        # type: (_Element) -> list
         """Add multiple elements to the part.
 
         Parameters
@@ -1043,7 +1061,7 @@ class _Part(FEAData):
         Parameters
         ----------
         element : :class:`compas_fea2.model._Element`
-            The element to remove
+            The element to remove.
 
         Warnings
         --------
@@ -1062,8 +1080,8 @@ class _Part(FEAData):
 
         Parameters
         ----------
-        elements : []:class:`compas_fea2.model._Element`]
-            List with the elements to remove
+        elements : list[:class:`compas_fea2.model._Element`]
+            List with the elements to remove.
 
         Warnings
         --------
@@ -1121,8 +1139,8 @@ class _Part(FEAData):
 
         Returns
         -------
-        [:class:`compas_fea2.model.Face`]
-            list with the faces belonging to the given plane.
+        list[:class:`compas_fea2.model.Face`]
+            List with the faces belonging to the given plane.
 
         Notes
         -----
@@ -1184,7 +1202,7 @@ class _Part(FEAData):
 
         Returns
         -------
-        None
+        :class:`compas_fea2.model.Group`
 
         Raises
         ------
@@ -1231,7 +1249,7 @@ class _Part(FEAData):
     # Results methods
     # ==============================================================================
 
-    def sorted_nodes_by_displacement(self, problem, step=None, component="length"):
+    def sorted_nodes_by_displacement(self, step, component="length"):
         """Return a list with the nodes sorted by their displacement
 
         Parameters
@@ -1246,12 +1264,11 @@ class _Part(FEAData):
 
         Returns
         -------
-        [:class:`compas_fea2.model.Node`]
+        list[:class:`compas_fea2.model.Node`]
             The node sorted by displacment (ascending).
 
         """
-        step = step or problem._steps_order[-1]
-        return sorted(self.nodes, key=lambda n: getattr(Vector(*n.results[problem][step].get("U", None)), component))
+        return sorted(self.nodes, key=lambda n: getattr(Vector(*n.results[step.problem][step].get("U", None)), component))
 
     def get_max_displacement(self, problem, step=None, component="length"):
         """Retrieve the node with the maximum displacement

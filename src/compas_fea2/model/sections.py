@@ -4,8 +4,6 @@ from __future__ import print_function
 
 from math import pi
 
-from compas.geometry import Frame
-
 from compas_fea2 import units
 from compas_fea2.base import FEAData
 

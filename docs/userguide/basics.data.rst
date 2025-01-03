@@ -57,7 +57,7 @@ They have a guid, a name, and general attributes.
 >>> node.attributes
 {}
 
-The can be converted to data and serialised to a JSON string or file.
+They can be converted to data and serialized to a JSON string or file.
 
 >>> node.to_data()
 {'name': 'node', 'guid': ..., 'attributes': {}}

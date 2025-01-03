@@ -5,9 +5,9 @@
 Optimized shapes code for compas + compas_fea2.
 """
 
-from compas.geometry import Point, Polygon, Frame, Plane, Translation, Transformation, Rotation
+from compas.geometry import Point, Frame, Translation, Transformation, Rotation, Polygon
 from compas.datastructures import Mesh
-from compas_fea2.base import DimensionlessMeta, FEAData
+from compas_fea2.base import FEAData
 
 import numpy as np
 from math import degrees, sqrt, atan2, pi
@@ -256,6 +256,12 @@ class Shape(Polygon, FEAData):
     θ       = {props[12]}°
     """
         return summ
+
+    def to_mesh(self):
+        """Convert the shape to a mesh."""
+        vertices = [point for point in self.points]
+        faces = [list(range(len(vertices)))]
+        return Mesh.from_vertices_and_faces(vertices, faces)
 
 
 class Rectangle(Shape):
@@ -736,19 +742,3 @@ class Trapezoid(Shape):
             Point(self._bottom_width, self._height, 0),
             Point(0, self._height, 0),
         ]
-
-
-if __name__ == "__main__":
-    r = Rectangle(w=100, h=300)
-    print(r.summary())
-
-    # Example of applying a transformation:
-    new_frame = Frame([0, 0, 1000], [1, 0, 0], [0, 1, 0])
-    r_transf = r.oriented(new_frame)
-
-    # Convert to meshes (if needed):
-    m1 = r.to_mesh()
-    m2 = r_transf.to_mesh()
-
-    print("Original rectangle centroid:", r.centroid)
-    print("Transformed rectangle centroid:", r_transf.centroid)

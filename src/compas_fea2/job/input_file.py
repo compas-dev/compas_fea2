@@ -14,18 +14,17 @@ class InputFile(FEAData):
     Parameters
     ----------
     name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
+        Unique identifier. If not provided, it is automatically generated. Set a
         name if you want a more human-readable input file.
 
     Attributes
     ----------
-    name : str, optional
-        Uniqe identifier. If not provided it is automatically generated. Set a
-        name if you want a more human-readable input file.
+    name : str
+        Unique identifier.
     problem : :class:`compas_fea2.problem.Problem`
         The problem to generate the input file from.
     model : :class:`compas_fea2.model.Model`
-        The model associated to the Problem.
+        The model associated with the problem.
     path : str
         Complete path to the input file.
 

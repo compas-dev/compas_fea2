@@ -102,13 +102,11 @@ class _Output(FEAData):
         cursor.execute(create_sql)
         connection.commit()
 
-        # Skip PRIMARY KEY columns
+        # Insert data into the table:
         insert_columns = [col_name for (col_name, col_def) in columns_info if "PRIMARY KEY" not in col_def.upper()]
         col_names_str = ", ".join(insert_columns)
         placeholders_str = ", ".join(["?"] * len(insert_columns))
         sql = f"INSERT INTO {table_name} ({col_names_str}) VALUES ({placeholders_str})"
-
-        # Build a list of tuples from rows_data
         cursor.executemany(sql, results)
         connection.commit()
 

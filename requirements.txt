@@ -4,4 +4,3 @@ Click
 matplotlib
 pint
 python-dotenv
-sqlalchemy==1.4

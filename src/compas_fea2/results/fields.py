@@ -1,4 +1,3 @@
-from itertools import groupby
 from typing import Iterable
 import numpy as np
 
@@ -54,8 +53,8 @@ class FieldResults(FEAData):
 
     """
 
-    def __init__(self, problem, field_name, name=None, *args, **kwargs):
-        super(FieldResults, self).__init__(name, *args, **kwargs)
+    def __init__(self, problem, field_name, *args, **kwargs):
+        super(FieldResults, self).__init__(*args, **kwargs)
         self._registration = problem
         self._field_name = field_name
         self._table = self.problem.results_db.get_table(field_name)
@@ -88,10 +87,6 @@ class FieldResults(FEAData):
     def invariants_names(self):
         return self._invariants_names
 
-    # @property
-    # def results_columns(self):
-    #     return ["step", "part", "input_key"] + self.components_names
-
     def _get_db_results(self, members, steps):
         """Get the results for the given members and steps in the database
         format.
@@ -99,7 +94,7 @@ class FieldResults(FEAData):
         Parameters
         ----------
         members : _type_
-            _description_
+            The FieldResults object containing the field results data.
         steps : _type_
             _description_
 
@@ -213,19 +208,20 @@ class FieldResults(FEAData):
         return self.get_max_result(component, step).vector[component-1]
     
     def get_min_component(self, component, step):
-        """ Get the result where a component is minimum for a given step.
-        
+
+        """Get the result where a component is minimum for a given step.
+    
         Parameters
         ----------
         component : _type_
             _description_
-        step : _type_   
+        step : _type_
             _description_
-        
+    
         Returns
         -------
         :class:`compas_fea2.results.Result`
-            The appriate Result object.        
+            The appropriate Result object.
         """
         return self.get_min_result(component, step).vector[component-1]
 
@@ -235,15 +231,15 @@ class FieldResults(FEAData):
 
         Parameters
         ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
+        component : int
+            The index of the component to retrieve (e.g., 0 for the first component).
+        step : :class:`compas_fea2.problem.Step`
+            The analysis step where the results are defined.
 
         Returns
         -------
-        _type_
-            _description_
+        list
+            A list containing the result objects with the minimum and maximum value of the given component in the step.
         """
         return [self.get_min_result(component, step), self.get_max_result(component, step)]
 
@@ -336,16 +332,27 @@ class FieldResults(FEAData):
                 yield r.vector[component]
 
 class DisplacementFieldResults(FieldResults):
-    """Displacement field.
+    """Displacement field results.
 
-    Parameters
+    This class handles the displacement field results from a finite element analysis.
+
+    problem : :class:`compas_fea2.problem.Problem`
+        The Problem where the Step is registered.
+
+    Attributes
     ----------
-    FieldResults : _type_
-        _description_
+    components_names : list of str
+        Names of the displacement components.
+    invariants_names : list of str
+        Names of the invariants of the displacement field.
+    results_class : class
+        The class used to instantiate the displacement results.
+    results_func : str
+        The function used to find nodes by key.
     """
 
-    def __init__(self, problem, name=None, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="u", name=name, *args, **kwargs)
+    def __init__(self, problem, *args, **kwargs):
+        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="u", *args, **kwargs)
         self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = DisplacementResult
@@ -361,12 +368,12 @@ class ReactionFieldResults(FieldResults):
 
     Parameters
     ----------
-    FieldResults : _type_
-        _description_
+    problem : :class:`compas_fea2.problem.Problem`
+        The Problem where the Step is registered.
     """
 
-    def __init__(self, problem, name=None, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(problem=problem, field_name="rf", name=name, *args, **kwargs)
+    def __init__(self, problem, *args, **kwargs):
+        super(ReactionFieldResults, self).__init__(problem=problem, field_name="rf", *args, **kwargs)
         self._components_names = ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = ReactionResult
@@ -386,8 +393,8 @@ class StressFieldResults(FEAData):
         _description_
     """
 
-    def __init__(self, problem, name=None, *args, **kwargs):
-        super(StressFieldResults, self).__init__(name, *args, **kwargs)
+    def __init__(self, problem, *args, **kwargs):
+        super(StressFieldResults, self).__init__(*args, **kwargs)
         self._registration = problem
         self._components_names_2d = ["s11", "s22", "s12", "m11", "m22", "m12"]
         self._components_names_3d = ["s11", "s22", "s23", "s12", "s13", "s33"]

@@ -1,28 +1,34 @@
+import unittest
 from compas_fea2.model.bcs import FixedBC, PinnedBC, RollerBCX
 
-def test_fixed_bc():
-    bc = FixedBC()
-    assert bc.x
-    assert bc.y
-    assert bc.z
-    assert bc.xx
-    assert bc.yy
-    assert bc.zz
+class TestBCs(unittest.TestCase):
 
-def test_pinned_bc():
-    bc = PinnedBC()
-    assert bc.x
-    assert bc.y
-    assert bc.z
-    assert not bc.xx
-    assert not bc.yy
-    assert not bc.zz
+    def test_fixed_bc(self):
+        bc = FixedBC()
+        self.assertTrue(bc.x)
+        self.assertTrue(bc.y)
+        self.assertTrue(bc.z)
+        self.assertTrue(bc.xx)
+        self.assertTrue(bc.yy)
+        self.assertTrue(bc.zz)
 
-def test_roller_bc_x():
-    bc = RollerBCX()
-    assert not bc.x
-    assert bc.y
-    assert bc.z
-    assert not bc.xx
-    assert not bc.yy
-    assert not bc.zz
+    def test_pinned_bc(self):
+        bc = PinnedBC()
+        self.assertTrue(bc.x)
+        self.assertTrue(bc.y)
+        self.assertTrue(bc.z)
+        self.assertFalse(bc.xx)
+        self.assertFalse(bc.yy)
+        self.assertFalse(bc.zz)
+
+    def test_roller_bc_x(self):
+        bc = RollerBCX()
+        self.assertFalse(bc.x)
+        self.assertTrue(bc.y)
+        self.assertTrue(bc.z)
+        self.assertFalse(bc.xx)
+        self.assertFalse(bc.yy)
+        self.assertFalse(bc.zz)
+
+if __name__ == "__main__":
+    unittest.main()

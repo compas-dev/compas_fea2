@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import pi
+from math import pi, sqrt
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
@@ -896,7 +896,7 @@ class TrussSection(BeamSection):
             material=material,
             **kwargs,
         )
-
+        self._shape = Circle(radius=sqrt(A)/pi, segments=16)
 
 class StrutSection(TrussSection):
     """For use with strut elements.

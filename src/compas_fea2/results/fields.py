@@ -118,16 +118,16 @@ class FieldResults(FEAData):
         steps_names = set([step.name for step in steps])
 
         if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "key"] + self._components_names_3d
+            columns = ["step", "part", "input_key"] + self._components_names_3d
             field_name = self._field_name_3d
         elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "key"] + self._components_names_2d
+            columns = ["step", "part", "input_key"] + self._components_names_2d
             field_name = self._field_name_2d
         else:
-            columns = ["step", "part", "key"] + self._components_names
+            columns = ["step", "part", "input_key"] + self._components_names
             field_name = self._field_name
 
-        results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
+        results_set = self.rdb.get_rows(field_name, columns, {"input_key": members_keys, "part": parts_names, "step": steps_names})
         return results_set
 
     def _to_result(self, results_set):
@@ -345,8 +345,8 @@ class DisplacementFieldResults(FieldResults):
     """
 
     def __init__(self, problem, name=None, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="U", name=name, *args, **kwargs)
-        self._components_names = ["U1", "U2", "U3"]
+        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="u", name=name, *args, **kwargs)
+        self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = DisplacementResult
         self._results_func = "find_node_by_key"
@@ -366,8 +366,8 @@ class ReactionFieldResults(FieldResults):
     """
 
     def __init__(self, problem, name=None, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(problem=problem, field_name="RF", name=name, *args, **kwargs)
-        self._components_names = ["RF1", "RF2", "RF3"]
+        super(ReactionFieldResults, self).__init__(problem=problem, field_name="rf", name=name, *args, **kwargs)
+        self._components_names = ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = ReactionResult
         self._results_func = "find_node_by_key"

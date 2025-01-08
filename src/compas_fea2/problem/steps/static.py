@@ -95,7 +95,7 @@ class StaticStep(GeneralStep):
             **kwargs,
         )
 
-    def add_node_pattern(self, nodes, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
+    def add_node_pattern(self, nodes, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` at specific points.
 
@@ -127,7 +127,9 @@ class StaticStep(GeneralStep):
         local axes are not supported yet
 
         """
-        return self.add_load_pattern(NodeLoadPattern(nodes=nodes, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, name=name, axes=axes, **kwargs))
+        from compas_fea2.problem import ConcentratedLoad
+        
+        return self.add_load_pattern(NodeLoadPattern(load=ConcentratedLoad(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes), nodes=nodes, load_case=load_case, **kwargs))
 
     def add_point_pattern(self, points, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, tolerance=None, **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
@@ -279,7 +281,8 @@ class StaticStep(GeneralStep):
         model!
 
         """
-        return self.add_load_pattern(VolumeLoadPattern(parts=parts, x=g * x, y=g * y, z=g * z, name=name, load_case=load_case, **kwargs))
+        from compas_fea2.problem import GravityLoad
+        return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
 
     # =========================================================================
     #                           Fields methods

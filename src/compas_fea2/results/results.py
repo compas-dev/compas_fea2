@@ -119,13 +119,17 @@ class DisplacementResult(Result):
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, u1=0.0, u2=0.0, u3=0.0, **kwargs):
+    def __init__(self, node, ux=0.0, uy=0.0, uz=0.0, uxx=0.0, uyy=0.0, uzz=0.0, **kwargs):
         super(DisplacementResult, self).__init__(location=node, **kwargs)
-        self._u1 = u1
-        self._u2 = u2
-        self._u3 = u3
-        self._components = {"U1": u1, "U2": u2, "U3": u3}
-        self._vector = Vector(u1, u2, u3)
+        self._ux = ux
+        self._uy = uy
+        self._uz = uz
+        self._uxx = uxx
+        self._uyy = uyy
+        self._uzz = uzz
+        self._components = {"ux": ux, "uy": uy, "uz": uz, "uxx": uxx, "uyy": uyy, "uzz": uzz}
+        self._vector = Vector(ux, uy, uz)
+        self._vector_rotation = Vector(uxx, uyy, uzz)
         self._invariants = {"magnitude": self.vector.length}
 
     @property
@@ -133,20 +137,36 @@ class DisplacementResult(Result):
         return self._registration
 
     @property
-    def u1(self):
-        return self._u1
+    def ux(self):
+        return self._ux
 
     @property
-    def u2(self):
-        return self._u2
+    def uy(self):
+        return self._uy
 
     @property
-    def u3(self):
-        return self._u3
+    def uz(self):
+        return self._uz
+    
+    @property
+    def uxx(self):
+        return self._uxx
+    
+    @property
+    def uyy(self):
+        return self._uyy
+    
+    @property
+    def uzz(self):
+        return self._uzz
 
     @property
     def vector(self):
         return self._vector
+    
+    @property
+    def vector_rotation(self):
+        return self._vector_rotation
 
     @property
     def magnitude(self):
@@ -193,13 +213,17 @@ class ReactionResult(Result):
     ReactionResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, rf1, rf2, rf3, **kwargs):
+    def __init__(self, node, rfx, rfy, rfz, rfxx, rfyy, rfzz, **kwargs):
         super(ReactionResult, self).__init__(node, **kwargs)
-        self._rf1 = rf1
-        self._rf2 = rf2
-        self._rf3 = rf3
-        self._components = {"RF1": rf1, "RF2": rf2, "RF3": rf3}
-        self._vector = Vector(rf1, rf2, rf3)
+        self._rfx = rfx
+        self._rfy = rfy
+        self._rfz = rfz
+        self._rfxx = rfxx
+        self._rfyy = rfyy
+        self._rfzz = rfzz
+        self._components = {"rfx": rfx, "rfy": rfy, "rfz": rfz, "rfxx": rfxx, "rfyy": rfyy, "rfzz": rfzz}
+        self._vector = Vector(rfx, rfy, rfz)
+        self._vector_moments = Vector(rfxx, rfyy, rfzz)
         self._invariants = {"magnitude": self.vector.length}
 
     @property
@@ -207,16 +231,28 @@ class ReactionResult(Result):
         return self._registration
 
     @property
-    def rf1(self):
-        return self._rf1
+    def rfx(self):
+        return self._rfx
 
     @property
-    def rf2(self):
-        return self._rf2
+    def rfy(self):
+        return self._rfy
 
     @property
-    def rf3(self):
-        return self._rf3
+    def rfz(self):
+        return self._rfz
+    
+    @property
+    def rfxx(self):
+        return self._rfxx
+    
+    @property
+    def rfyy(self):
+        return self._rfyy
+    
+    @property
+    def rfzz(self):
+        return self._rfzz
 
     @property
     def vector(self):

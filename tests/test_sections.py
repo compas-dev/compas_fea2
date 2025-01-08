@@ -1,29 +1,33 @@
-import pytest
+import unittest
 from compas_fea2.model.sections import RectangularSection, CircularSection, ISection
-from compas_fea2.model import Steel
+from compas_fea2.model.materials.material import _Material
 
-@pytest.fixture
-def material():
-    return Steel.S355()
+class TestSections(unittest.TestCase):
 
-def test_rectangular_section(material):
-    section = RectangularSection(w=100, h=50, material=material)
-    assert section.shape.w == 100
-    assert section.shape.h == 50
-    assert pytest.approx(section.A) == 5000
-    assert section.material == material
+    def setUp(self):
+        self.material = _Material(name="Steel")
 
-def test_circular_section(material):
-    section = CircularSection(r=10, material=material)
-    assert section.shape.radius == 10
-    assert pytest.approx(section.A, 0.001) == 314.159
-    assert section.material == material
+    def test_rectangular_section(self):
+        section = RectangularSection(w=100, h=50, material=self.material)
+        self.assertEqual(section.shape.w, 100)
+        self.assertEqual(section.shape.h, 50)
+        self.assertAlmostEqual(section.A, 5000)
+        self.assertEqual(section.material, self.material)
 
-def test_isection(material):
-    section = ISection(w=100, h=200, tw=10, tf=20, material=material)
-    assert section.shape.w == 100
-    assert section.shape.h == 200
-    assert section.shape.tw == 10
-    assert section.shape.tbf == 20
-    assert section.shape.ttf == 20
-    assert section.material == material
+    def test_circular_section(self):
+        section = CircularSection(r=10, material=self.material)
+        self.assertEqual(section.shape.radius, 10)
+        self.assertAlmostEqual(section.A, 314.159, places=3)
+        self.assertEqual(section.material, self.material)
+
+    def test_isection(self):
+        section = ISection(w=100, h=200, tw=10, tf=20, material=self.material)
+        self.assertEqual(section.shape.w, 100)
+        self.assertEqual(section.shape.h, 200)
+        self.assertEqual(section.shape.tw, 10)
+        self.assertEqual(section.shape.tbf, 20)
+        self.assertEqual(section.shape.ttf, 20)
+        self.assertEqual(section.material, self.material)
+
+if __name__ == "__main__":
+    unittest.main()

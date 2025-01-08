@@ -33,8 +33,8 @@ class ModalAnalysis(_Perturbation):
 
     """
 
-    def __init__(self, modes=1, name=None, **kwargs):
-        super(ModalAnalysis, self).__init__(name=name, **kwargs)
+    def __init__(self, modes=1, **kwargs):
+        super(ModalAnalysis, self).__init__(**kwargs)
         self.modes = modes
 
 

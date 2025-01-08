@@ -146,12 +146,14 @@ class Step(FEAData):
             if the output is not an instance of an :class:`compas_fea2.problem._Output`.
         """
         output._registration = self
-        if isinstance(output, FieldOutput):
-            self._field_outputs.add(output)
-        elif isinstance(output, HistoryOutput):
-            self._history_outputs.add(output)
-        else:
-            raise TypeError("{!r} is not an _Output.".format(output))
+        self._field_outputs.add(output)
+        #FIXME: this is a hack  - need to fix this
+        # if isinstance(output, FieldOutput):
+        #     self._field_outputs.add(output)
+        # elif isinstance(output, HistoryOutput):
+        #     self._history_outputs.add(output)
+        # else:
+        #     raise TypeError("{!r} is not an _Output.".format(output))
         return output
 
     # ==========================================================================

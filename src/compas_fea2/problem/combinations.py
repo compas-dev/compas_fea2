@@ -50,6 +50,8 @@ class LoadCombination(FEAData):
     def Fire(cls):
         return cls(factors={"DL": 1, "SDL": 1, "LL": 0.3}, name="Fire")
 
+
+    #BUG: Rewrite. this is not general and does not account for different loads types
     @property
     def node_load(self):
         """Generator returning each node and the correponding total factored

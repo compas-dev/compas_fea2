@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from math import sqrt
 from math import pi
+from typing import Iterable
 
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -576,6 +577,25 @@ class _Part(FEAData):
             if node.key == key:
                 return node
 
+
+    def find_node_by_inputkey(self, input_key):
+        """Retrieve a node in the model using its key.
+
+        Parameters
+        ----------
+        input_key : int
+            The node's inputkey.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Node`
+            The corresponding node.
+
+        """
+        for node in self.nodes:
+            if node.input_key == input_key:
+                return node
+
     def find_nodes_by_name(self, name):
         """Find all nodes with a given name.
 
@@ -626,31 +646,31 @@ class _Part(FEAData):
         else:
             return nodes
 
-    def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
-        """Find the n closest nodes within a distance of a given geometrical location.
+    # def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
+    #     """Find the n closest nodes within a distance of a given geometrical location.
 
-        Parameters
-        ----------
-        point : :class:`compas.geometry.Point`
-            A geometrical location.
-        distance : float
-            Distance from the location.
-        number_of_nodes : int
-            Number of nodes to return.
-        plane : :class:`compas.geometry.Plane`, optional
-            Limit the search to one plane.
+    #     Parameters
+    #     ----------
+    #     point : :class:`compas.geometry.Point`
+    #         A geometrical location.
+    #     distance : float
+    #         Distance from the location.
+    #     number_of_nodes : int
+    #         Number of nodes to return.
+    #     plane : :class:`compas.geometry.Plane`, optional
+    #         Limit the search to one plane.
 
-        Returns
-        -------
-        list[:class:`compas_fea2.model.Node`]
+    #     Returns
+    #     -------
+    #     list[:class:`compas_fea2.model.Node`]
 
-        """
-        nodes = self.find_nodes_around_point(point, distance, plane, report=True)
-        if number_of_nodes > len(nodes):
-            number_of_nodes = len(nodes)
-        return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
+    #     """
+    #     nodes = self.find_nodes_around_point(point, distance, plane, report=True)
+    #     if number_of_nodes > len(nodes):
+    #         number_of_nodes = len(nodes)
+    #     return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
 
-    def find_nodes_around_node(self, node, distance, plane=None):
+    def find_nodes_around_node(self, node, distance, plane=None, report=False, single=False):
         """Find all nodes around a given node (excluding the node itself).
 
         Parameters
@@ -667,9 +687,10 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Node`]
 
         """
-        nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=True)
-        if node in nodes:
-            del nodes[node]
+        nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=report, single=single)
+        if nodes and isinstance(nodes, Iterable):
+            if node in nodes:
+                del nodes[node]
         return nodes
 
     def find_closest_nodes_to_node(self, node, distance, number_of_nodes=1, plane=None):
@@ -1069,8 +1090,8 @@ class _Part(FEAData):
 
         """
         # type: (_Element) -> None
-        if self.contains_node(element):
-            self.elements.pop(element)
+        if self.contains_element(element):
+            self.elements.remove(element)
             element._registration = None
             if compas_fea2.VERBOSE:
                 print("Element {!r} removed from {!r}.".format(element, self))

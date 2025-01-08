@@ -409,6 +409,11 @@ class Model(FEAData):
     @part_method
     def find_node_by_key(self, key):
         pass
+    
+    @get_docstring(_Part)
+    @part_method
+    def find_node_by_inputkey(self, input_key):
+        pass
 
     @get_docstring(_Part)
     @part_method
@@ -420,10 +425,10 @@ class Model(FEAData):
     def find_nodes_around_point(self, point, distance, plane=None, single=False):
         pass
 
-    @get_docstring(_Part)
-    @part_method
-    def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
-        pass
+    # @get_docstring(_Part)
+    # @part_method
+    # def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
+    #     pass
 
     @get_docstring(_Part)
     @part_method
@@ -911,7 +916,6 @@ class Model(FEAData):
     # ==============================================================================
     # Connectors methods
     # ==============================================================================
-
 
     def add_connector(self, connector):
         """Add a :class:`compas_fea2.model.Connector` to the model.

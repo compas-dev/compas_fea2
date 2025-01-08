@@ -7,9 +7,8 @@ from .displacements import GeneralDisplacement
 from .loads import (
     Load,
     PrestressLoad,
-    NodeLoad,
-    EdgeLoad,
-    FaceLoad,
+    ConcentratedLoad,
+    PressureLoad,
     GravityLoad,
     TributaryLoad,
     HarmonicPointLoad,
@@ -21,8 +20,14 @@ from .fields import (
     PrescribedTemperatureField,
 )
 
-from .patterns import Pattern, NodeLoadPattern, PointLoadPattern, LineLoadPattern, AreaLoadPattern, VolumeLoadPattern
-
+from .patterns import (
+    Pattern,
+    NodeLoadPattern, 
+    PointLoadPattern, 
+    LineLoadPattern, 
+    AreaLoadPattern, 
+    VolumeLoadPattern
+)
 from .combinations import LoadCombination
 
 from .steps import (
@@ -39,16 +44,22 @@ from .steps import (
     DirectCyclicStep,
 )
 
-from .outputs import FieldOutput, HistoryOutput
+from .outputs import (
+    FieldOutput, 
+    DisplacementFieldOutput,
+    # StressFieldOutput,
+    # StrainFieldOutput,
+    ReactionFieldOutput,
+    HistoryOutput,
+)
 
 __all__ = [
     "Problem",
     "GeneralDisplacement",
     "Load",
     "PrestressLoad",
-    "NodeLoad",
-    "EdgeLoad",
-    "FaceLoad",
+    "ConcentratedLoad",
+    "PressureLoad",
     "GravityLoad",
     "TributaryLoad",
     "HarmonicPointLoad",

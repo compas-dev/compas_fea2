@@ -9,6 +9,7 @@ from compas.geometry import Line
 from compas.geometry import Vector
 from compas.geometry import Plane
 from compas.geometry import Polygon
+from compas.geometry import Polyhedron
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.itertools import pairwise
@@ -114,6 +115,10 @@ class _Element(FEAData):
         return "-".join(sorted([str(node.input_key) for node in self.nodes], key=int))
 
     @property
+    def points(self):
+        return [node.point for node in self.nodes]
+    
+    @property
     def section(self):
         return self._section
 
@@ -192,14 +197,27 @@ class _Element0D(_Element):
 
 
 class SpringElement(_Element0D):
-    """A 0D spring element."""
+    """A 0D spring element.
+
+    Notes
+    -----
+    Link elements are used within a part. If you want to connect nodes from different parts 
+    use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
+
+    """
 
     def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
         super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
 
 class LinkElement(_Element0D):
-    """A 0D link element."""
+    """A 0D link element. 
+    
+    Notes
+    -----
+    Link elements are used within a part. If you want to connect nodes from different parts 
+    use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
+    """
 
     def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
         super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
@@ -279,7 +297,9 @@ class BeamElement(_Element1D):
 
 class TrussElement(_Element1D):
     """A 1D element that resists axial loads."""
-
+    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
+        #TODO remove frame
+        super(TrussElement, self).__init__(nodes, section, frame=[1,1,1], implementation=implementation, rigid=rigid, **kwargs)
 
 class StrutElement(TrussElement):
     """A truss element that resists axial compressive loads."""
@@ -412,6 +432,10 @@ class _Element2D(_Element):
     @property
     def reference_point(self):
         return centroid_points([face.centroid for face in self.faces])
+    
+    @property
+    def outermesh(self):
+        return Mesh.from_vertices_and_faces(self.points, list(self._face_indices.values()))
 
     def _construct_faces(self, face_indices):
         """Construct the face-nodes dictionary.
@@ -501,7 +525,7 @@ class _Element3D(_Element):
 
     @property
     def nodes(self):
-        return self._nodes
+        return self._nodes    
 
     @nodes.setter
     def nodes(self, value):
@@ -547,6 +571,10 @@ class _Element3D(_Element):
 
         element = cls([Node(vertex) for vertex in polyhedron.vertices], section, implementation, **kwargs)
         return element
+    
+    @property
+    def outermesh(self):
+        return Polyhedron(self.points, list(self._face_indices.values())).to_mesh()
 
 
 class TetrahedronElement(_Element3D):

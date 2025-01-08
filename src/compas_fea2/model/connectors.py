@@ -106,4 +106,24 @@ class ZeroLengthSpringConnector(SpringConnector):
     @property
     def directions(self):
         return self._directions
+    
+class RigidLinkConnector(Connector):
+    """Rigid link connector.
+    
+    Parameters
+    ----------
+    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+        The connected nodes. The nodes must be registered to different parts.
+        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
+    dofs : str
+        The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
+    """
+
+    def __init__(self, nodes, dofs='beam', **kwargs):
+        super(RigidLinkConnector, self).__init__(nodes, None, **kwargs)
+        self._dofs = dofs
+        
+    @property
+    def dofs(self):
+        return self._dofs
 

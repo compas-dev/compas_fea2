@@ -38,9 +38,14 @@ class Result(FEAData):
 
     def __init__(self, location, **kwargs):
         super(Result, self).__init__(**kwargs)
+        self._title = None
         self._registration = location
         self._components = {}
         self._invariants = {}
+        
+    @property
+    def title(self):
+        return self._title
 
     @property
     def location(self):
@@ -121,6 +126,7 @@ class DisplacementResult(Result):
 
     def __init__(self, node, ux=0.0, uy=0.0, uz=0.0, uxx=0.0, uyy=0.0, uzz=0.0, **kwargs):
         super(DisplacementResult, self).__init__(location=node, **kwargs)
+        self._title = 'u'
         self._ux = ux
         self._uy = uy
         self._uz = uz
@@ -215,6 +221,7 @@ class ReactionResult(Result):
 
     def __init__(self, node, rfx, rfy, rfz, rfxx, rfyy, rfzz, **kwargs):
         super(ReactionResult, self).__init__(node, **kwargs)
+        self._title = 'rf'
         self._rfx = rfx
         self._rfy = rfy
         self._rfz = rfz
@@ -400,6 +407,7 @@ class StressResult(Result):
 
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
+        self._title = None
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
         self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
@@ -729,16 +737,17 @@ class StressResult(Result):
 class SolidStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
-
+        self._title = 's3d'
 
 class MembraneStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s22, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
-
+        self._title = 's2d'
 
 class ShellStressResult(MembraneStressResult):
     def __init__(self, element, *, s11, s12, s22, m11, m22, m12, **kwargs):
         super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
+        self._title = 's2d'
         self._local_bending_moments = np.array([[m11, m12, 0], [m12, m22, 0], [0, 0, 0]])
         self._local_stress_top = self.local_stress_membrane + 6 / self.element.section.t**2 * self._local_bending_moments
         self._local_stress_bottom = self.local_stress_membrane - 6 / self.element.section.t**2 * self._local_bending_moments

@@ -88,9 +88,9 @@ class FieldResults(FEAData):
     def invariants_names(self):
         return self._invariants_names
 
-    @property
-    def results_columns(self):
-        return ["step", "part", "key"] + self.components_names
+    # @property
+    # def results_columns(self):
+    #     return ["step", "part", "input_key"] + self.components_names
 
     def _get_db_results(self, members, steps):
         """Get the results for the given members and steps in the database
@@ -389,10 +389,10 @@ class StressFieldResults(FEAData):
     def __init__(self, problem, name=None, *args, **kwargs):
         super(StressFieldResults, self).__init__(name, *args, **kwargs)
         self._registration = problem
-        self._components_names_2d = ["S11", "S22", "S12", "M11", "M22", "M12"]
-        self._components_names_3d = ["S11", "S22", "S23", "S12", "S13", "S33"]
-        self._field_name_2d = "S2D"
-        self._field_name_3d = "S3D"
+        self._components_names_2d = ["s11", "s22", "s12", "m11", "m22", "m12"]
+        self._components_names_3d = ["s11", "s22", "s23", "s12", "s13", "s33"]
+        self._field_name_2d = "s2d"
+        self._field_name_3d = "s3d"
         self._results_class_2d = ShellStressResult
         self._results_class_3d = SolidStressResult
         self._results_func = "find_element_by_key"
@@ -450,15 +450,15 @@ class StressFieldResults(FEAData):
         steps_names = {step.name: step for step in steps}
 
         if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "key"] + self._components_names_3d
+            columns = ["step", "part", "input_key"] + self._components_names_3d
             field_name = self._field_name_3d
         elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "key"] + self._components_names_2d
+            columns = ["step", "part", "input_key"] + self._components_names_2d
             field_name = self._field_name_2d
         else:
             raise ValueError("Not an element")
 
-        results_set = self.rdb.get_rows(field_name, columns, {"key": members_keys, "part": parts_names, "step": steps_names})
+        results_set = self.rdb.get_rows(field_name, columns, {"input_key": members_keys, "part": parts_names, "step": steps_names})
         return self._to_fea2_results(results_set, members_keys, steps_names)
 
     def _to_fea2_results(self, results_set, members_keys, steps_names):

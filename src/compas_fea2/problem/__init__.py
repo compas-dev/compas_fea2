@@ -47,7 +47,7 @@ from .steps import (
 from .outputs import (
     FieldOutput, 
     DisplacementFieldOutput,
-    # StressFieldOutput,
+    Stress2DFieldOutput,
     # StrainFieldOutput,
     ReactionFieldOutput,
     HistoryOutput,

@@ -5,8 +5,6 @@ from __future__ import print_function
 from itertools import chain
 
 from compas_fea2.base import FEAData
-import os
-import sqlite3
 
 
 class _Output(FEAData):
@@ -23,12 +21,12 @@ class _Output(FEAData):
 
     """
 
-    def __init__(self, title, description, components, invariants, **kwargs):
+    def __init__(self, field_name, components_names, invariants_names, **kwargs):
         super(_Output, self).__init__(**kwargs)
-        self._title = title
-        self._description = description
-        self._components = components
-        self._invariants = invariants
+        self._field_name = field_name
+        self._components_names = components_names
+        self._invariants_names = invariants_names
+        self._results_func = None
 
     @property
     def step(self):
@@ -43,20 +41,20 @@ class _Output(FEAData):
         return self.problem._registration
 
     @property
-    def title(self):
-        return self._title
+    def field_name(self):
+        return self._field_name
 
     @property
     def description(self):
         return self._description
 
     @property
-    def components(self):
-        return self._components
+    def components_names(self):
+        return self._components_names
 
     @property
-    def invariants(self):
-        return self._invariants
+    def invariants_names(self):
+        return self._invariants_names
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -114,21 +112,27 @@ class _Output(FEAData):
         cursor.executemany(sql, results)
         connection.commit()
 
+
 class _NodeFieldOutput(_Output):
     """NodeFieldOutput object for requesting the fields at the nodes from the analysis."""
 
+    def __init__(self, field_name, components_names, invariants_names, **kwargs):
+        super().__init__(field_name, components_names, invariants_names, **kwargs)
+        self._results_func = "find_node_by_key"
 
 class _ElementFieldOutput(_Output):
     """ElementFieldOutput object for requesting the fields at the elements from the analysis."""
-
+    def __init__(self, field_name, components_names, invariants_names, **kwargs):
+        super().__init__(field_name, components_names, invariants_names, **kwargs)
+        self._results_func = "find_element_by_key"
 
 class DisplacementFieldOutput(_NodeFieldOutput):
     """DisplacmentFieldOutput object for requesting the displacements at the nodes
     from the analysis."""
 
     def __init__(self, **kwargs):
-        super(DisplacementFieldOutput, self).__init__("u", "Displacement field output", ["ux", "uy", "uz", "uxx", "uyy", "uzz"], ["magnitude"], **kwargs)
-
+        super(DisplacementFieldOutput, self).__init__('u', ["ux", "uy", "uz", "uxx", "uyy", "uzz"],['magnitude'], **kwargs)
+        
     @classmethod
     def get_sqltable_schema(cls):
         """
@@ -151,33 +155,13 @@ class DisplacementFieldOutput(_NodeFieldOutput):
             ],
         }
 
-    @classmethod
-    def get_jsontable_schema(cls):
-        """
-        Return a dict describing the table name and columns in JSON-like format.
-        """
-        return {
-            "table_name": "node_output",
-            "columns": [
-                {"name": "id", "type": "INTEGER", "primary_key": True, "autoincrement": True},
-                {"name": "node_key", "type": "INTEGER"},
-                {"name": "ux", "type": "REAL"},
-                {"name": "uy", "type": "REAL"},
-                {"name": "uz", "type": "REAL"},
-                {"name": "uxx", "type": "REAL"},
-                {"name": "uyy", "type": "REAL"},
-                {"name": "uzz", "type": "REAL"},
-            ],
-        }
-
-
 
 class ReactionFieldOutput(_NodeFieldOutput):
-    """ ReactionFieldOutput object for requesting the reaction forces at the nodes
+    """ReactionFieldOutput object for requesting the reaction forces at the nodes
     from the analysis."""
-    
+
     def __init__(self, **kwargs):
-        super(ReactionFieldOutput, self).__init__("rf", "Reaction field output", ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"], ["magnitude"], **kwargs)
+        super(ReactionFieldOutput, self).__init__('rf', ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"],['magnitude'], **kwargs)
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -201,30 +185,14 @@ class ReactionFieldOutput(_NodeFieldOutput):
             ],
         }
 
-    @classmethod
-    def get_jsontable_schema(cls):
-        """
-        Return a dict describing the table name and columns in JSON-like format.
-        """
-        return {
-            "table_name": "node_output",
-            "columns": [
-                {"name": "id", "type": "INTEGER", "primary_key": True, "autoincrement": True},
-                {"name": "node_key", "type": "INTEGER"},
-                {"name": "rx", "type": "REAL"},
-                {"name": "ry", "type": "REAL"},
-                {"name": "rz", "type": "REAL"},
-                {"name": "rxx", "type": "REAL"},
-                {"name": "ryy", "type": "REAL"},
-                {"name": "rzz", "type": "REAL"},
-            ],
-        }
-        
-class StressFieldOutput(_ElementFieldOutput):
+
+class Stress2DFieldOutput(_ElementFieldOutput):
     """StressFieldOutput object for requesting the stresses at the elements from the analysis."""
 
     def __init__(self, **kwargs):
-        super(StressFieldOutput, self).__init__("s", "Stress field output", ["sxx", "syy", "szz", "sxy", "sxz", "syz"], ["von_mises"], **kwargs)
+        super(Stress2DFieldOutput, self).__init__('s2d', ["s11", "s22", "s12", "m11", "m22", "m12"], 
+                                                  ['von_mises'],
+                                                  **kwargs)
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -233,42 +201,21 @@ class StressFieldOutput(_ElementFieldOutput):
         (column_name, column_type, constraints).
         """
         return {
-            "table_name": "s",
+            "table_name": "s2d",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
                 ("input_key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
-                ("sxx", "REAL"),
-                ("syy", "REAL"),
-                ("szz", "REAL"),
-                ("sxy", "REAL"),
-                ("sxz", "REAL"),
-                ("syz", "REAL"),
-                ("von_mises", "REAL"),
+                ("s11", "REAL"),
+                ("s22", "REAL"),
+                ("s12", "REAL"),
+                ("m11", "REAL"),
+                ("m22", "REAL"),
+                ("m12", "REAL"),
+                # ("von_mises", "REAL"),
             ],
         }
-
-    @classmethod
-    def get_jsontable_schema(cls):
-        """
-        Return a dict describing the table name and columns in JSON-like format.
-        """
-        return {
-            "table_name": "element_output",
-            "columns": [
-                {"name": "id", "type": "INTEGER", "primary_key": True, "autoincrement": True},
-                {"name": "element_key", "type": "INTEGER"},
-                {"name": "sxx", "type": "REAL"},
-                {"name": "syy", "type": "REAL"},
-                {"name": "szz", "type": "REAL"},
-                {"name": "sxy", "type": "REAL"},
-                {"name": "sxz", "type": "REAL"},
-                {"name": "syz", "type": "REAL"},
-                {"name": "von_mises", "type": "REAL"},
-            ],
-        }
-
 
 
 class FieldOutput(_Output):

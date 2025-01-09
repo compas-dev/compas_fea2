@@ -14,7 +14,6 @@ from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.itertools import pairwise
 from compas.datastructures import Mesh
-from compas_occ.brep import Brep
 from compas.itertools import pairwise
 
 from compas_fea2.base import FEAData

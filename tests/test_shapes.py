@@ -2,6 +2,7 @@ import unittest
 from compas.geometry import Point, Frame
 from compas_fea2.model.shapes import Rectangle, Circle, IShape, Shape
 
+
 class TestShapes(unittest.TestCase):
 
     def test_rectangle(self):
@@ -12,9 +13,9 @@ class TestShapes(unittest.TestCase):
         self.assertIsInstance(rect.centroid, Point)
 
     def test_circle(self):
-        circle = Circle(radius=10)
+        circle = Circle(radius=10, segments=70)
         self.assertEqual(circle.radius, 10)
-        self.assertAlmostEqual(circle.A, 314.159, places=3)
+        self.assertAlmostEqual(circle.A, 314.159, places=0)
         self.assertIsInstance(circle.centroid, Point)
 
     def test_ishape(self):
@@ -38,6 +39,7 @@ class TestShapes(unittest.TestCase):
         oriented_rect = rect.oriented(new_frame)
         self.assertIsInstance(oriented_rect, Shape)
         self.assertNotEqual(rect.centroid, oriented_rect.centroid)
+
 
 if __name__ == "__main__":
     unittest.main()

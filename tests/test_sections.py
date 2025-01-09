@@ -1,11 +1,12 @@
 import unittest
 from compas_fea2.model.sections import RectangularSection, CircularSection, ISection
-from compas_fea2.model.materials.material import _Material
+from compas_fea2.model.materials.steel import Steel
+
 
 class TestSections(unittest.TestCase):
 
     def setUp(self):
-        self.material = _Material(name="Steel")
+        self.material = Steel.S355()
 
     def test_rectangular_section(self):
         section = RectangularSection(w=100, h=50, material=self.material)
@@ -28,6 +29,7 @@ class TestSections(unittest.TestCase):
         self.assertEqual(section.shape.tbf, 20)
         self.assertEqual(section.shape.ttf, 20)
         self.assertEqual(section.material, self.material)
+
 
 if __name__ == "__main__":
     unittest.main()

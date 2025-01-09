@@ -532,7 +532,7 @@ class CircularSection(BeamSection):
             material=material,
             **kwargs,
         )
-        self._shape = Circle(radius=r, segments=16)
+        self._shape = Circle(radius=r)
 
 
 class HexSection(BeamSection):

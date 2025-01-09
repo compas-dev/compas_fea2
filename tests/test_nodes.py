@@ -2,6 +2,7 @@ import unittest
 from compas_fea2.model.nodes import Node
 from compas.geometry import Point
 
+
 class TestNode(unittest.TestCase):
     def test_initialization(self):
         node = Node([1, 2, 3])
@@ -29,6 +30,7 @@ class TestNode(unittest.TestCase):
         point = Point(1, 2, 3)
         node = Node.from_compas_point(point)
         self.assertEqual(node.xyz, [1, 2, 3])
+
 
 if __name__ == "__main__":
     unittest.main()

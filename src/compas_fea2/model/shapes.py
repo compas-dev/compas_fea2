@@ -578,7 +578,7 @@ class Star(Shape):
 
 
 class Circle(Shape):
-    def __init__(self, radius, segments=32, frame=None):
+    def __init__(self, radius, segments=70, frame=None):
         self._radius = radius
         self._segments = segments
         points = self._set_points()

@@ -1,6 +1,7 @@
 import unittest
 from compas_fea2.model.bcs import FixedBC, PinnedBC, RollerBCX
 
+
 class TestBCs(unittest.TestCase):
 
     def test_fixed_bc(self):
@@ -29,6 +30,7 @@ class TestBCs(unittest.TestCase):
         self.assertFalse(bc.xx)
         self.assertFalse(bc.yy)
         self.assertFalse(bc.zz)
+
 
 if __name__ == "__main__":
     unittest.main()

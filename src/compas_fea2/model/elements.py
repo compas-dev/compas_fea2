@@ -4,16 +4,16 @@ from __future__ import print_function
 
 from operator import itemgetter
 
+from compas.datastructures import Mesh
 from compas.geometry import Frame
 from compas.geometry import Line
-from compas.geometry import Vector
 from compas.geometry import Plane
 from compas.geometry import Polygon
 from compas.geometry import Polyhedron
+from compas.geometry import Vector
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.itertools import pairwise
-from compas.datastructures import Mesh
 
 from compas_fea2.base import FEAData
 

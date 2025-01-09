@@ -3,7 +3,6 @@ from compas_fea2.model.bcs import FixedBC, PinnedBC, RollerBCX
 
 
 class TestBCs(unittest.TestCase):
-
     def test_fixed_bc(self):
         bc = FixedBC()
         self.assertTrue(bc.x)

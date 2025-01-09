@@ -1,6 +1,5 @@
 import unittest
 from compas_fea2.model.releases import _BeamEndRelease, BeamEndPinRelease, BeamEndSliderRelease
-from compas_fea2.model import BeamElement
 
 
 class TestBeamEndRelease(unittest.TestCase):

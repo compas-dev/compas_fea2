@@ -3,11 +3,11 @@ from __future__ import division
 from __future__ import print_function
 
 from .results import (
-    Result, 
-    DisplacementResult, 
-    StressResult, 
-    MembraneStressResult, 
-    ShellStressResult, 
+    Result,
+    DisplacementResult,
+    StressResult,
+    MembraneStressResult,
+    ShellStressResult,
     SolidStressResult,
 )
 

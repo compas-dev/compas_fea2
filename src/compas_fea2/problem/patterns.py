@@ -6,7 +6,8 @@ import itertools
 from typing import Iterable
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.loads import ConcentratedLoad, GravityLoad
+from compas_fea2.problem.loads import ConcentratedLoad
+from compas_fea2.problem.loads import GravityLoad
 
 # TODO implement __*__ magic method for combination
 

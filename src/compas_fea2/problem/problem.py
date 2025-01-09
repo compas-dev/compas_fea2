@@ -5,12 +5,12 @@ from __future__ import print_function
 import os
 from pathlib import Path
 
+from compas.colors import Color
+from compas.colors import ColorMap
 from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import centroid_points_weighted
 from compas.geometry import sum_vectors
-from compas.colors import Color
-from compas.colors import ColorMap
 
 from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
@@ -525,9 +525,12 @@ Analysis folder path : {self.path or "N/A"}
             Scale factor for the loads, by default 1.0
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2StepObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2StepObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
         viewer.viewer.config.vectorsize = 0.2
@@ -564,9 +567,13 @@ Analysis folder path : {self.path or "N/A"}
             _description_, by default True
         """
 
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2StepObject, FEA2StressFieldResultsObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2StepObject
+        from compas_fea2.UI.viewer import FEA2StressFieldResultsObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         if not step:
             step = self.steps_order[-1]
@@ -602,9 +609,11 @@ Analysis folder path : {self.path or "N/A"}
         None
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         if not step:
             step = self.steps_order[-1]
@@ -642,9 +651,13 @@ Analysis folder path : {self.path or "N/A"}
             _description_, by default
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2DisplacementFieldResultsObject, FEA2StepObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2DisplacementFieldResultsObject
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2StepObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         if not step:
             step = self.steps_order[-1]
@@ -689,9 +702,13 @@ Analysis folder path : {self.path or "N/A"}
         scale_results : _type_, optional
             _description_, by default 1
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2ReactionFieldResultsObject, FEA2StepObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2ReactionFieldResultsObject
+        from compas_fea2.UI.viewer import FEA2StepObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         if not step:
             step = self.steps_order[-1]
@@ -719,9 +736,11 @@ Analysis folder path : {self.path or "N/A"}
         viewer.viewer.show()
 
     def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         register_scene_objects()  # This has to be called before registering the model object
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")

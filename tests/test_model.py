@@ -3,6 +3,7 @@ from compas_fea2.model.model import Model
 from compas_fea2.model.parts import DeformablePart
 from compas_fea2.problem import Problem
 
+
 class TestModel(unittest.TestCase):
     def test_add_part(self):
         model = Model()
@@ -22,6 +23,7 @@ class TestModel(unittest.TestCase):
         problem = Problem()  # Replace with actual problem class
         model.add_problem(problem)
         self.assertIn(problem, model.problems)
+
 
 if __name__ == "__main__":
     unittest.main()

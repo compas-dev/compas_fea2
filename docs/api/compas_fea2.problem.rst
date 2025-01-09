@@ -47,8 +47,6 @@ Loads
 
     Load
     PrestressLoad
-    NodeLoad
-    FaceLoad
     GravityLoad
     TributaryLoad
     HarmonicPointLoad

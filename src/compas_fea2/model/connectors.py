@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from compas_fea2.model.nodes import Node
 from compas_fea2.model.groups import _Group
+from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart
 
 

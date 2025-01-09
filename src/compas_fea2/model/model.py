@@ -21,6 +21,8 @@ import compas_fea2
 from compas_fea2 import PART_NODES_LIMIT
 from compas_fea2.base import FEAData
 from compas_fea2.model.bcs import _BoundaryCondition
+from compas_fea2.model.connectors import Connector
+from compas_fea2.model.elements import _Element
 from compas_fea2.model.groups import ElementsGroup
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import PartsGroup
@@ -29,11 +31,9 @@ from compas_fea2.model.ics import _InitialCondition
 from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart
 from compas_fea2.model.parts import _Part
-from compas_fea2.model.connectors import Connector
 from compas_fea2.utilities._utils import get_docstring
 from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
-from compas_fea2.model.elements import _Element
 
 
 class Model(FEAData):
@@ -1194,9 +1194,11 @@ Initial Conditions
             Additional keyword arguments for the viewer.
 
         """
-        from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject
         from compas.scene import register
         from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2Viewer
 
         register_scene_objects()  # This has to be called before registering the model object
         register(self.__class__, FEA2ModelObject, context="Viewer")

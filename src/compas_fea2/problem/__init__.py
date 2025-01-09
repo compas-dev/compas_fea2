@@ -20,14 +20,7 @@ from .fields import (
     PrescribedTemperatureField,
 )
 
-from .patterns import (
-    Pattern,
-    NodeLoadPattern, 
-    PointLoadPattern, 
-    LineLoadPattern, 
-    AreaLoadPattern, 
-    VolumeLoadPattern
-)
+from .patterns import Pattern, NodeLoadPattern, PointLoadPattern, LineLoadPattern, AreaLoadPattern, VolumeLoadPattern
 from .combinations import LoadCombination
 
 from .steps import (
@@ -45,7 +38,7 @@ from .steps import (
 )
 
 from .outputs import (
-    FieldOutput, 
+    FieldOutput,
     DisplacementFieldOutput,
     Stress2DFieldOutput,
     # StrainFieldOutput,
@@ -87,4 +80,7 @@ __all__ = [
     "DirectCyclicStep",
     "FieldOutput",
     "HistoryOutput",
+    "DisplacementFieldOutput",
+    "Stress2DFieldOutput",
+    "ReactionFieldOutput",
 ]

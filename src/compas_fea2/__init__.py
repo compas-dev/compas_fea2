@@ -47,7 +47,7 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
                         "POINT_OVERLAP={}".format(point_overlap),
                         "GLOBAL_TOLERANCE={}".format(global_tolerance),
                         "PRECISION={}".format(precision),
-                        "PART_NODES_LIMIT={}" .format(part_nodes_limit),
+                        "PART_NODES_LIMIT={}".format(part_nodes_limit),
                     ]
                 )
             )

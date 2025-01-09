@@ -1,13 +1,12 @@
 import os
-import numpy as np
 
+import numpy as np
 from compas.colors import Color
 from compas.colors import ColorMap
 from compas.geometry import Vector
-
-from compas_viewer.viewer import Viewer
-from compas_viewer.scene import GroupObject
 from compas_viewer.scene import Collection
+from compas_viewer.scene import GroupObject
+from compas_viewer.viewer import Viewer
 
 from compas_fea2.model.bcs import FixedBC
 from compas_fea2.model.bcs import PinnedBC
@@ -18,8 +17,8 @@ from compas_fea2.UI.viewer.primitives import FixBCShape
 from compas_fea2.UI.viewer.primitives import PinBCShape
 from compas_fea2.UI.viewer.primitives import RollerBCShape
 
-from .drawer import draw_field_vectors, draw_field_contour
-
+from .drawer import draw_field_contour
+from .drawer import draw_field_vectors
 
 HERE = os.path.dirname(__file__)
 CONFIG = os.path.join(HERE, "config.json")
@@ -75,7 +74,6 @@ class FEA2ModelObject(GroupObject):
     """
 
     def __init__(self, model, fast=False, show_bcs=True, show_parts=True, show_connectors=True, **kwargs):
-
         model = kwargs.pop("item")
 
         face_color = kwargs.get("face_color", color_palette["faces"])
@@ -148,7 +146,6 @@ class FEA2ModelObject(GroupObject):
             if model.bcs:
                 for bc, nodes in model.bcs.items():
                     for node in nodes:
-
                         if isinstance(bc, PinnedBC):
                             shape = PinBCShape(node.xyz, scale=show_bcs).shape
                         if isinstance(bc, FixedBC):
@@ -207,7 +204,6 @@ class FEA2StepObject(GroupObject):
     """
 
     def __init__(self, step, scale_factor, **kwargs):
-
         step = kwargs.pop("item")
 
         # DRAW PATTERNS
@@ -257,7 +253,6 @@ class FEA2StressFieldResultsObject(GroupObject):
     """
 
     def __init__(self, field, step, scale_factor, components=None, **kwargs):
-
         field = kwargs.pop("item")
 
         field_locations = list(field.locations(step))

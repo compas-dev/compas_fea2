@@ -162,6 +162,7 @@ __all__ = [
     "StrutSection",
     "TieSection",
     "_Constraint",
+    "RigidLinkConnector",
     "_MultiPointConstraint",
     "TieMPC",
     "BeamMPC",

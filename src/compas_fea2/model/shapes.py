@@ -1,9 +1,18 @@
-from compas.geometry import Point, Frame, Translation, Transformation, Rotation, Polygon
-from compas.datastructures import Mesh
-from compas_fea2.base import FEAData
+from math import atan2
+from math import degrees
+from math import pi
+from math import sqrt
 
 import numpy as np
-from math import degrees, sqrt, atan2, pi
+from compas.datastructures import Mesh
+from compas.geometry import Frame
+from compas.geometry import Point
+from compas.geometry import Polygon
+from compas.geometry import Rotation
+from compas.geometry import Transformation
+from compas.geometry import Translation
+
+from compas_fea2.base import FEAData
 
 
 class Shape(Polygon, FEAData):

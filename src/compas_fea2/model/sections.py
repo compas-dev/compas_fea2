@@ -2,13 +2,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import pi, sqrt
+from math import pi
+from math import sqrt
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
 
 from .materials.material import _Material
-from .shapes import Rectangle, IShape, Circle
+from .shapes import Circle
+from .shapes import IShape
+from .shapes import Rectangle
 
 
 def from_shape(shape, material, **kwargs):

@@ -1,17 +1,19 @@
 from typing import Iterable
+
 import numpy as np
+from compas.geometry import Frame
+from compas.geometry import Point
+from compas.geometry import Transformation
+from compas.geometry import Vector
 
 from compas_fea2.base import FEAData
 from compas_fea2.model import _Element2D
 from compas_fea2.model import _Element3D
-from compas.geometry import Vector, Point
 
 from .results import DisplacementResult
 from .results import ReactionResult
 from .results import ShellStressResult
 from .results import SolidStressResult
-
-from compas.geometry import Transformation, Frame
 
 
 class FieldResults(FEAData):

@@ -144,15 +144,17 @@ class PointLoadPattern(NodeLoadPattern):
 
     def __init__(self, load, points, load_case=None, tolerance=1, **kwargs):
         super(PointLoadPattern, self).__init__(load, points, load_case, **kwargs)
+        self._points = points
         self.tolerance = tolerance
+        self._distribution =[self.model.find_closest_nodes_to_point(point, distance=self.tolerance)[0] for point in self.points]
 
     @property
     def points(self):
-        return self._distribution
+        return self._points
 
     @property
     def nodes(self):
-        return [self.model.find_closest_nodes_to_point(point, distance=self.tolerance)[0] for point in self.points]
+        return self._distribution
 
 
 class LineLoadPattern(Pattern):

@@ -6,8 +6,6 @@ from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import _PrescribedField
 from compas_fea2.problem.loads import Load
-from compas_fea2.problem.outputs import FieldOutput
-from compas_fea2.problem.outputs import HistoryOutput
 
 # ==============================================================================
 #                                Base Steps
@@ -147,14 +145,28 @@ class Step(FEAData):
         """
         output._registration = self
         self._field_outputs.add(output)
-        #FIXME: this is a hack  - need to fix this
-        # if isinstance(output, FieldOutput):
-        #     self._field_outputs.add(output)
-        # elif isinstance(output, HistoryOutput):
-        #     self._history_outputs.add(output)
-        # else:
-        #     raise TypeError("{!r} is not an _Output.".format(output))
         return output
+    
+    def add_outputs(self, outputs):
+        """Request multiple field or history outputs.
+
+        Parameters
+        ----------
+        outputs : list(:class:`compas_fea2.problem._Output`)
+            The requested outputs.
+
+        Returns
+        -------
+        list(:class:`compas_fea2.problem._Output`)
+            The requested outputs.
+
+        Raises
+        ------
+        TypeError
+            if the output is not an instance of an :class:`compas_fea2.problem._Output`.
+        """
+        for output in outputs:
+            self.add_output(output)
 
     # ==========================================================================
     #                             Results methods

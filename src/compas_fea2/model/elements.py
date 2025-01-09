@@ -116,7 +116,7 @@ class _Element(FEAData):
     @property
     def points(self):
         return [node.point for node in self.nodes]
-    
+
     @property
     def section(self):
         return self._section
@@ -200,7 +200,7 @@ class SpringElement(_Element0D):
 
     Notes
     -----
-    Link elements are used within a part. If you want to connect nodes from different parts 
+    Link elements are used within a part. If you want to connect nodes from different parts
     use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
 
     """
@@ -210,11 +210,11 @@ class SpringElement(_Element0D):
 
 
 class LinkElement(_Element0D):
-    """A 0D link element. 
-    
+    """A 0D link element.
+
     Notes
     -----
-    Link elements are used within a part. If you want to connect nodes from different parts 
+    Link elements are used within a part. If you want to connect nodes from different parts
     use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
     """
 
@@ -241,7 +241,7 @@ class _Element1D(_Element):
     rigid : bool, optional
         Define the element as rigid (no deformations allowed) or not. For Rigid
         elements sections are not needed.
-    
+
     Attributes
     ----------
     frame : :class:`compas.geometry.Frame`
@@ -256,7 +256,7 @@ class _Element1D(_Element):
         super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame if isinstance(frame, Frame) else Frame(nodes[0].point, Vector(*frame), Vector.from_start_end(nodes[0].point, nodes[-1].point))
         self._curve = Line(nodes[0].point, nodes[-1].point)
-        
+
     @property
     def outermesh(self):
         self._frame.point = self.nodes[0].point
@@ -296,9 +296,11 @@ class BeamElement(_Element1D):
 
 class TrussElement(_Element1D):
     """A 1D element that resists axial loads."""
+
     def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
-        #TODO remove frame
-        super(TrussElement, self).__init__(nodes, section, frame=[1,1,1], implementation=implementation, rigid=rigid, **kwargs)
+        # TODO remove frame
+        super(TrussElement, self).__init__(nodes, section, frame=[1, 1, 1], implementation=implementation, rigid=rigid, **kwargs)
+
 
 class StrutElement(TrussElement):
     """A truss element that resists axial compressive loads."""
@@ -431,7 +433,7 @@ class _Element2D(_Element):
     @property
     def reference_point(self):
         return centroid_points([face.centroid for face in self.faces])
-    
+
     @property
     def outermesh(self):
         return Mesh.from_vertices_and_faces(self.points, list(self._face_indices.values()))
@@ -524,7 +526,7 @@ class _Element3D(_Element):
 
     @property
     def nodes(self):
-        return self._nodes    
+        return self._nodes
 
     @nodes.setter
     def nodes(self, value):
@@ -570,7 +572,7 @@ class _Element3D(_Element):
 
         element = cls([Node(vertex) for vertex in polyhedron.vertices], section, implementation, **kwargs)
         return element
-    
+
     @property
     def outermesh(self):
         return Polyhedron(self.points, list(self._face_indices.values())).to_mesh()

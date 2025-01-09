@@ -22,7 +22,6 @@ from compas.tolerance import TOL
 
 import compas_fea2
 from compas_fea2.base import FEAData
-from compas_fea2.utilities._utils import timer
 
 from .elements import BeamElement
 from .elements import HexahedronElement
@@ -41,8 +40,6 @@ from .releases import _BeamEndRelease
 from .sections import ShellSection
 from .sections import SolidSection
 from .sections import _Section
-
-import timeit
 
 class _Part(FEAData):
     """Base class for Parts.
@@ -113,7 +110,19 @@ class _Part(FEAData):
         self._volume = None
         self._weight = None
 
-        self._results = {}
+    def __str__(self):
+            return """
+{}
+{}
+name : {}
+
+number of elements : {}
+number of nodes    : {}
+""".format(self.__class__.__name__,
+            len(self.__class__.__name__) * '-',
+            self.name,
+            self.elements_count,
+            self.nodes_count)
 
     @property
     def nodes(self):
@@ -161,7 +170,6 @@ class _Part(FEAData):
 
     @property
     def bounding_box(self):
-        # if not self._boundary_mesh:
         try:
             return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
         except Exception:
@@ -229,20 +237,6 @@ class _Part(FEAData):
         else:
             raise ValueError("dimension not supported")
 
-    #     def __str__(self):
-    #         return """
-    # {}
-    # {}
-    # name : {}
-
-    # number of elements : {}
-    # number of nodes    : {}
-    # """.format(self.__class__.__name__,
-    #            len(self.__class__.__name__) * '-',
-    #            self.name,
-    #            self.elements_count,
-    #            self.nodes_count)
-
     # =========================================================================
     #                       Constructor methods
     # =========================================================================
@@ -286,7 +280,6 @@ class _Part(FEAData):
         return prt
 
     @classmethod
-    # @timer(message="compas Mesh successfully imported in ")
     def shell_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
 
@@ -325,7 +318,6 @@ class _Part(FEAData):
         return part
 
     @classmethod
-    # @timer(message='part successfully imported from gmsh model in ')
     def from_gmsh(cls, gmshModel, section=None, name=None, **kwargs):
         """Create a Part object from a gmshModel object.
 
@@ -1093,6 +1085,8 @@ class _Part(FEAData):
         if self.contains_element(element):
             self.elements.remove(element)
             element._registration = None
+            for node in element.nodes:
+                node.connected_elements.remove(element)
             if compas_fea2.VERBOSE:
                 print("Element {!r} removed from {!r}.".format(element, self))
 

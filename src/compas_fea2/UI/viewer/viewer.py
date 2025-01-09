@@ -298,7 +298,6 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
 
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        cmap=None
 
         group_elements = []
         if show_vectors:

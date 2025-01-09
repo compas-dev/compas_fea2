@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 from .material import ElasticIsotropic
-from .material import _Material
 
 
 class Steel(ElasticIsotropic):
@@ -48,8 +47,8 @@ class Steel(ElasticIsotropic):
         Parameters for modelling the compression side of the stress-strain curve.
     """
 
-    def __init__(self, *, fy, fu, eu, E, v, density, name=None, **kwargs):
-        super(Steel, self).__init__(E=E, v=v, density=density, name=name, **kwargs)
+    def __init__(self, *, fy, fu, eu, E, v, density, **kwargs):
+        super(Steel, self).__init__(E=E, v=v, density=density, **kwargs)
 
         fu = fu or fy
 

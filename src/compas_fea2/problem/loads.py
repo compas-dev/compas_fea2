@@ -36,8 +36,8 @@ class Load(FEAData):
 
     """
 
-    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
-        super(Load, self).__init__(name=name, **kwargs)
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+        super(Load, self).__init__(**kwargs)
         self.axes = axes
         self.x = x
         self.y = y
@@ -113,8 +113,8 @@ class ConcentratedLoad(Load):
         Load applied via 'local' or 'global' axes.
     """
 
-    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
-        super(ConcentratedLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+    def __init__(self, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+        super(ConcentratedLoad, self).__init__(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, **kwargs)
 
     def __mul__(self, factor):
         if isinstance(factor, (float, int)):
@@ -166,8 +166,8 @@ class PressureLoad(Load):
         z component of force / area.
     """
 
-    def __init__(self, x=0, y=0, z=0, axes="local", name=None, **kwargs):
-        super(PressureLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, name=name, **kwargs)
+    def __init__(self, x=0, y=0, z=0, axes="local", **kwargs):
+        super(PressureLoad, self).__init__(components={"x": x, "y": y, "z": z}, axes=axes, **kwargs)
         raise NotImplementedError
 
 
@@ -209,8 +209,8 @@ class GravityLoad(Load):
 
     """
 
-    def __init__(self, g, x=0, y=0, z=-1, name=None, **kwargs):
-        super(GravityLoad, self).__init__(x=x, y=y, z=z, axes="global", name=name, **kwargs)
+    def __init__(self, g, x=0, y=0, z=-1, **kwargs):
+        super(GravityLoad, self).__init__(x=x, y=y, z=z, axes="global", **kwargs)
         self._g = g
 
     @property
@@ -221,37 +221,37 @@ class GravityLoad(Load):
 class PrestressLoad(Load):
     """Prestress load"""
 
-    def __init__(self, components, axes="global", name=None, **kwargs):
-        super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
+    def __init__(self, components, axes="global", **kwargs):
+        super(TributaryLoad, self).__init__(components, axes, **kwargs)
         raise NotImplementedError
 
 
 class ThermalLoad(Load):
     """Thermal load"""
 
-    def __init__(self, components, axes="global", name=None, **kwargs):
-        super(ThermalLoad, self).__init__(components, axes, name, **kwargs)
+    def __init__(self, components, axes="global", **kwargs):
+        super(ThermalLoad, self).__init__(components, axes, **kwargs)
 
 
 class TributaryLoad(Load):
     """Tributary load"""
 
-    def __init__(self, components, axes="global", name=None, **kwargs):
-        super(TributaryLoad, self).__init__(components, axes, name, **kwargs)
+    def __init__(self, components, axes="global", **kwargs):
+        super(TributaryLoad, self).__init__(components, axes, **kwargs)
         raise NotImplementedError
 
 
 class HarmonicPointLoad(Load):
     """"""
 
-    def __init__(self, components, axes="global", name=None, **kwargs):
-        super(HarmonicPointLoad, self).__init__(components, axes, name, **kwargs)
+    def __init__(self, components, axes="global", **kwargs):
+        super(HarmonicPointLoad, self).__init__(components, axes, **kwargs)
         raise NotImplementedError
 
 
 class HarmonicPressureLoad(Load):
     """"""
 
-    def __init__(self, components, axes="global", name=None, **kwargs):
-        super(HarmonicPressureLoad, self).__init__(components, axes, name, **kwargs)
+    def __init__(self, components, axes="global", **kwargs):
+        super(HarmonicPressureLoad, self).__init__(components, axes, **kwargs)
         raise NotImplementedError

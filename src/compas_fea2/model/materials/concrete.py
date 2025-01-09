@@ -45,8 +45,8 @@ class Concrete(_Material):
     The concrete model is based on Eurocode 2 up to fck=90 MPa.
     """
 
-    def __init__(self, *, fck, v=0.2, density=2400, fr=None, name=None, **kwargs):
-        super(Concrete, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, fck, v=0.2, density=2400, fr=None, **kwargs):
+        super(Concrete, self).__init__(density=density, **kwargs)
 
         de = 0.0001
         fcm = fck + 8
@@ -146,8 +146,8 @@ class ConcreteSmearedCrack(_Material):
         Parameters for modelling the compression side of the stress-strain curve.
     """
 
-    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], name=None, **kwargs):
-        super(ConcreteSmearedCrack, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], **kwargs):
+        super(ConcreteSmearedCrack, self).__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v
@@ -220,8 +220,8 @@ class ConcreteDamagedPlasticity(_Material):
         Tension stiffening parameters.
     """
 
-    def __init__(self, *, E, v, density, damage, hardening, stiffening, name=None, **kwargs):
-        super(ConcreteDamagedPlasticity, self).__init__(density=density, name=name, **kwargs)
+    def __init__(self, *, E, v, density, damage, hardening, stiffening, **kwargs):
+        super(ConcreteDamagedPlasticity, self).__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v

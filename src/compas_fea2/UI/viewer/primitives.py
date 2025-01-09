@@ -4,7 +4,6 @@ from compas.geometry import Cone
 from compas.geometry import Cylinder
 from compas.geometry import Frame
 from compas.geometry import Plane
-from compas.geometry import Vector  # Add import for Vector
 
 
 class _BCShape:
@@ -24,7 +23,8 @@ class _BCShape:
         self.x, self.y, self.z = xyz
         self.direction = direction
         self.scale = scale
-        
+
+
 class _LoadShape:
     """Basic shape for reppresenting the boundary conditions.
 

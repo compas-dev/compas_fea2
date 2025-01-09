@@ -48,7 +48,6 @@ Loads
     Load
     PrestressLoad
     NodeLoad
-    EdgeLoad
     FaceLoad
     GravityLoad
     TributaryLoad

@@ -24,5 +24,5 @@ class StepsCombination(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, **kwargs):
         raise NotImplementedError()

@@ -80,11 +80,11 @@ class FEAData(Data, metaclass=DimensionlessMeta):
 
     @property
     def input_key(self):
-        if type(self._key)==type(None):
+        if type(self._key) == type(None):
             raise AttributeError(f"{self!r} does not have a key.")
-        if type(self._registration)==type(None):
+        if type(self._registration) == type(None):
             raise AttributeError(f"{self!r} is not registered to any part.")
-        if type(self._registration._key)==type(None):
+        if type(self._registration._key) == type(None):
             raise AttributeError(f"{self._registration!r} is not registered to a model.")
         return self._key + self._registration._key + self.model._starting_key
 
@@ -112,9 +112,6 @@ class FEAData(Data, metaclass=DimensionlessMeta):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-
-    # def to_html(self):
-    #     return highlight(str(self), PythonLexer(), HtmlFormatter(full=True, style="friendly"))
 
     @abstractmethod
     def jobdata(self, *args, **kwargs):
@@ -147,5 +144,3 @@ class FEAData(Data, metaclass=DimensionlessMeta):
 
     def data(self):
         pass
-
-

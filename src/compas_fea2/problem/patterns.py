@@ -58,11 +58,11 @@ class Pattern(FEAData):
         self._nodes = None
         self.load_case = load_case
         self._registration = None
-        
+
     @property
     def load(self):
         return self._load
-    
+
     @property
     def distribution(self):
         return self._distribution
@@ -117,14 +117,14 @@ class NodeLoadPattern(Pattern):
     @property
     def nodes(self):
         return self._distribution
-    
+
     @property
     def load(self):
         return self._load
 
     @property
     def node_load(self):
-        return zip(self.nodes, [self.load]*len(self.nodes))
+        return zip(self.nodes, [self.load] * len(self.nodes))
 
 
 class PointLoadPattern(NodeLoadPattern):
@@ -146,7 +146,7 @@ class PointLoadPattern(NodeLoadPattern):
         super(PointLoadPattern, self).__init__(load, points, load_case, **kwargs)
         self._points = points
         self.tolerance = tolerance
-        self._distribution =[self.model.find_closest_nodes_to_point(point, distance=self.tolerance)[0] for point in self.points]
+        self._distribution = [self.model.find_closest_nodes_to_point(point, distance=self.tolerance)[0] for point in self.points]
 
     @property
     def points(self):
@@ -184,7 +184,7 @@ class LineLoadPattern(Pattern):
     @property
     def polyline(self):
         return self._distribution
-    
+
     @property
     def points(self):
         return self.polyline.divide_polyline(self.discretization)
@@ -231,6 +231,7 @@ class AreaLoadPattern(Pattern):
     def node_load(self):
         return zip(self.nodes, [self.load] * self.nodes)
 
+
 class VolumeLoadPattern(Pattern):
     """Volume distribution of a load case (e.g., gravity load).
 
@@ -244,7 +245,7 @@ class VolumeLoadPattern(Pattern):
         The load case to which this pattern belongs.
     """
 
-    def __init__(self, load, parts,  load_case=None,  **kwargs):
+    def __init__(self, load, parts, load_case=None, **kwargs):
         if not isinstance(load, GravityLoad):
             raise TypeError("For the moment VolumeLoadPattern only supports ConcentratedLoad")
         super(VolumeLoadPattern, self).__init__(load, parts, load_case, **kwargs)

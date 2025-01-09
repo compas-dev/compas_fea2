@@ -7,6 +7,7 @@ from compas_fea2.model.nodes import Node
 from compas_fea2.model.groups import _Group
 from compas_fea2.model.parts import RigidPart
 
+
 class Connector(FEAData):
     """Base class for connectors.
 
@@ -47,7 +48,7 @@ class Connector(FEAData):
             nodes = nodes._members
         if isinstance(nodes, Node):
             nodes = [nodes]
-        if len(nodes)!=2:
+        if len(nodes) != 2:
             raise ValueError("You can only connect two nodes")
         for n in nodes:
             if not isinstance(n, Node):
@@ -61,6 +62,7 @@ class Connector(FEAData):
     @property
     def section(self):
         return self._section
+
 
 class SpringConnector(Connector):
     """Spring connector."""
@@ -79,7 +81,7 @@ class SpringConnector(Connector):
         try:
             value["c"]
             value["t"]
-        except:
+        except KeyError:
             raise ValueError("You must provide the yielding value for both compression and tension")
         self._yielding = value
 
@@ -92,9 +94,10 @@ class SpringConnector(Connector):
         try:
             value["c"]
             value["t"]
-        except:
+        except KeyError:
             raise ValueError("You must provide the failure value for both compression and tension")
         self._failure = value
+
 
 class ZeroLengthSpringConnector(SpringConnector):
     """Spring connector connecting overlapping nodes."""
@@ -106,10 +109,11 @@ class ZeroLengthSpringConnector(SpringConnector):
     @property
     def directions(self):
         return self._directions
-    
+
+
 class RigidLinkConnector(Connector):
     """Rigid link connector.
-    
+
     Parameters
     ----------
     nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
@@ -119,11 +123,10 @@ class RigidLinkConnector(Connector):
         The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
     """
 
-    def __init__(self, nodes, dofs='beam', **kwargs):
+    def __init__(self, nodes, dofs="beam", **kwargs):
         super(RigidLinkConnector, self).__init__(nodes, None, **kwargs)
         self._dofs = dofs
-        
+
     @property
     def dofs(self):
         return self._dofs
-

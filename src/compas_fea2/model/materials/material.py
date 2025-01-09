@@ -123,8 +123,8 @@ class ElasticOrthotropic(_Material):
         Shear modulus Gzx in z-x directions.
     """
 
-    def __init__(self, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, name=None, **kwargs):
-        super(ElasticOrthotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
+    def __init__(self, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, **kwargs):
+        super(ElasticOrthotropic, self).__init__(density=density, expansion=expansion, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -192,8 +192,8 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, E, v, density, expansion=None, name=None, **kwargs):
-        super(ElasticIsotropic, self).__init__(density=density, expansion=expansion, name=name, **kwargs)
+    def __init__(self, E, v, density, expansion=None, **kwargs):
+        super(ElasticIsotropic, self).__init__(density=density, expansion=expansion, **kwargs)
         self.E = E
         self.v = v
 
@@ -254,8 +254,8 @@ class ElasticPlastic(ElasticIsotropic):
         in the form of strain/stress value pairs.
     """
 
-    def __init__(self, *, E, v, density, strain_stress, expansion=None, name=None, **kwargs):
-        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, expansion=expansion, name=name, **kwargs)
+    def __init__(self, *, E, v, density, strain_stress, expansion=None, **kwargs):
+        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, expansion=expansion, **kwargs)
         self.strain_stress = strain_stress
 
     def __str__(self):
@@ -287,6 +287,6 @@ class UserMaterial(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(UserMaterial, self).__init__(self, name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(UserMaterial, self).__init__(self, **kwargs)
         raise NotImplementedError("This class is not available for the selected backend plugin")

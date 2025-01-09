@@ -118,19 +118,22 @@ class _NodeFieldOutput(_Output):
         super().__init__(field_name, components_names, invariants_names, **kwargs)
         self._results_func = "find_node_by_key"
 
+
 class _ElementFieldOutput(_Output):
     """ElementFieldOutput object for requesting the fields at the elements from the analysis."""
+
     def __init__(self, field_name, components_names, invariants_names, **kwargs):
         super().__init__(field_name, components_names, invariants_names, **kwargs)
         self._results_func = "find_element_by_key"
+
 
 class DisplacementFieldOutput(_NodeFieldOutput):
     """DisplacmentFieldOutput object for requesting the displacements at the nodes
     from the analysis."""
 
     def __init__(self, **kwargs):
-        super(DisplacementFieldOutput, self).__init__('u', ["ux", "uy", "uz", "uxx", "uyy", "uzz"],['magnitude'], **kwargs)
-        
+        super(DisplacementFieldOutput, self).__init__("u", ["ux", "uy", "uz", "uxx", "uyy", "uzz"], ["magnitude"], **kwargs)
+
     @classmethod
     def get_sqltable_schema(cls):
         """
@@ -159,7 +162,7 @@ class ReactionFieldOutput(_NodeFieldOutput):
     from the analysis."""
 
     def __init__(self, **kwargs):
-        super(ReactionFieldOutput, self).__init__('rf', ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"],['magnitude'], **kwargs)
+        super(ReactionFieldOutput, self).__init__("rf", ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"], ["magnitude"], **kwargs)
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -188,9 +191,7 @@ class Stress2DFieldOutput(_ElementFieldOutput):
     """StressFieldOutput object for requesting the stresses at the elements from the analysis."""
 
     def __init__(self, **kwargs):
-        super(Stress2DFieldOutput, self).__init__('s2d', ["s11", "s22", "s12", "m11", "m22", "m12"], 
-                                                  ['von_mises'],
-                                                  **kwargs)
+        super(Stress2DFieldOutput, self).__init__("s2d", ["s11", "s22", "s12", "m11", "m22", "m12"], ["von_mises"], **kwargs)
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -239,8 +240,8 @@ class FieldOutput(_Output):
 
     """
 
-    def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, name=None, **kwargs):
-        super(FieldOutput, self).__init__(name=name, **kwargs)
+    def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, **kwargs):
+        super(FieldOutput, self).__init__(**kwargs)
         self._node_outputs = node_outputs
         self._element_outputs = element_outputs
         self._contact_outputs = contact_outputs
@@ -280,5 +281,5 @@ class HistoryOutput(_Output):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(HistoryOutput, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(HistoryOutput, self).__init__(**kwargs)

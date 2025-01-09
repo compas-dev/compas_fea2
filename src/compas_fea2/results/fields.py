@@ -13,6 +13,7 @@ from .results import SolidStressResult
 
 from compas.geometry import Transformation, Frame
 
+
 class FieldResults(FEAData):
     """FieldResults object. This is a collection of Result objects that define a field.
 
@@ -189,7 +190,7 @@ class FieldResults(FEAData):
     def get_min_result(self, component, step):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
-    
+
     def get_max_component(self, component, step):
         """Get the result where a component is maximum for a given step.
 
@@ -205,25 +206,24 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        return self.get_max_result(component, step).vector[component-1]
-    
-    def get_min_component(self, component, step):
+        return self.get_max_result(component, step).vector[component - 1]
 
+    def get_min_component(self, component, step):
         """Get the result where a component is minimum for a given step.
-    
+
         Parameters
         ----------
         component : _type_
             _description_
         step : _type_
             _description_
-    
+
         Returns
         -------
         :class:`compas_fea2.results.Result`
             The appropriate Result object.
         """
-        return self.get_min_result(component, step).vector[component-1]
+        return self.get_min_result(component, step).vector[component - 1]
 
     def get_limits_component(self, component, step):
         """Get the result objects with the min and max value of a given
@@ -326,10 +326,11 @@ class FieldResults(FEAData):
         """
         step = step or self.problem.steps_order[-1]
         for r in self.results(step):
-            if component==None:
+            if component is None:
                 yield r.vector.magnitude
             else:
                 yield r.vector[component]
+
 
 class DisplacementFieldResults(FieldResults):
     """Displacement field results.
@@ -452,8 +453,8 @@ class StressFieldResults(FEAData):
         members_keys = {}
         parts_names = {}
         for member in members:
-            members_keys[member.input_key]=member
-            parts_names[member.part.name]=member.part
+            members_keys[member.input_key] = member
+            parts_names[member.part.name] = member.part
         steps_names = {step.name: step for step in steps}
 
         if isinstance(members[0], _Element3D):
@@ -637,7 +638,6 @@ class StressFieldResults(FEAData):
         transformed_tensors = rotation_matrices @ tensors @ rotation_matrices.transpose(0, 2, 1)
 
         return transformed_tensors
-
 
     def principal_components(self, step=None):
         """Compute the eigenvalues and eigenvetors of the stress field at each location.

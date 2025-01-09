@@ -47,8 +47,8 @@ class Step(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(Step, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(Step, self).__init__(**kwargs)
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
@@ -146,7 +146,7 @@ class Step(FEAData):
         output._registration = self
         self._field_outputs.add(output)
         return output
-    
+
     def add_outputs(self, outputs):
         """Request multiple field or history outputs.
 
@@ -244,8 +244,8 @@ class GeneralStep(Step):
 
     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, name=None, **kwargs):
-        super(GeneralStep, self).__init__(name=name, **kwargs)
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, **kwargs):
+        super(GeneralStep, self).__init__(**kwargs)
 
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size

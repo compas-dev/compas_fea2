@@ -30,8 +30,8 @@ class InputFile(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(InputFile, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(InputFile, self).__init__(**kwargs)
         self._job_name = None
         self._file_name = None
         self._extension = None

@@ -81,7 +81,6 @@ class StaticStep(GeneralStep):
         time=1,
         nlgeom=False,
         modify=True,
-        name=None,
         **kwargs,
     ):
         super(StaticStep, self).__init__(
@@ -91,7 +90,6 @@ class StaticStep(GeneralStep):
             time=time,
             nlgeom=nlgeom,
             modify=modify,
-            name=name,
             **kwargs,
         )
 
@@ -128,10 +126,10 @@ class StaticStep(GeneralStep):
 
         """
         from compas_fea2.problem import ConcentratedLoad
-        
+
         return self.add_load_pattern(NodeLoadPattern(load=ConcentratedLoad(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes), nodes=nodes, load_case=load_case, **kwargs))
 
-    def add_point_pattern(self, points, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, tolerance=None, **kwargs):
+    def add_point_pattern(self, points, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` at specific points.
 
@@ -163,12 +161,12 @@ class StaticStep(GeneralStep):
         local axes are not supported yet
 
         """
-        return self.add_load_pattern(PointLoadPattern(points=points, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, name=name, axes=axes, tolerance=tolerance, **kwargs))
+        return self.add_load_pattern(PointLoadPattern(points=points, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, **kwargs))
 
     def add_prestress_load(self):
         raise NotImplementedError
 
-    def add_line_load(self, polyline, load_case=None, discretization=10, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, tolerance=None, **kwargs):
+    def add_line_load(self, polyline, load_case=None, discretization=10, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` along a prescribed path.
 
@@ -206,12 +204,10 @@ class StaticStep(GeneralStep):
 
         """
         return self.add_load_pattern(
-            LineLoadPattern(
-                polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, name=name, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs
-            )
+            LineLoadPattern(polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs)
         )
 
-    def add_area_pattern(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
+    def add_area_pattern(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` along a prescribed path.
 
@@ -248,12 +244,12 @@ class StaticStep(GeneralStep):
         local axes are not supported yet
 
         """
-        return self.add_load_pattern(AreaLoadPattern(polygon=polygon, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, name=name, **kwargs))
+        return self.add_load_pattern(AreaLoadPattern(polygon=polygon, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, **kwargs))
 
     def add_tributary_load(self):
         raise NotImplementedError
 
-    def add_gravity_load_pattern(self, parts, g=9.81, x=0.0, y=0.0, z=-1.0, name=None, load_case=None, **kwargs):
+    def add_gravity_load_pattern(self, parts, g=9.81, x=0.0, y=0.0, z=-1.0, load_case=None, **kwargs):
         """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
 
         Parameters
@@ -282,6 +278,7 @@ class StaticStep(GeneralStep):
 
         """
         from compas_fea2.problem import GravityLoad
+
         return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
 
     # =========================================================================
@@ -307,7 +304,7 @@ class StaticStep(GeneralStep):
     # =========================================================================
     #                           Displacements methods
     # =========================================================================
-    def add_displacement(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", name=None, **kwargs):
+    def add_displacement(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a displacement at give nodes to the Step object.
 
         Parameters
@@ -323,7 +320,7 @@ class StaticStep(GeneralStep):
         raise NotImplementedError()
         # if axes != "global":
         #     raise NotImplementedError("local axes are not supported yet")
-        # displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, name=name, **kwargs)
+        # displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, , **kwargs)
         # if not isinstance(nodes, Iterable):
         #     nodes = [nodes]
         # return self.add_load_pattern(Pattern(value=displacement, distribution=nodes))
@@ -340,8 +337,7 @@ class StaticRiksStep(StaticStep):
         time=1,
         nlgeom=False,
         modify=True,
-        name=None,
         **kwargs,
     ):
-        super().__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, name, **kwargs)
+        super().__init__(max_increments, initial_inc_size, min_inc_size, time, nlgeom, modify, **kwargs)
         raise NotImplementedError

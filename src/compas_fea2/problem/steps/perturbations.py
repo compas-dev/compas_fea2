@@ -16,8 +16,8 @@ class _Perturbation(Step):
         _description_
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(_Perturbation, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(_Perturbation, self).__init__(**kwargs)
 
 
 class ModalAnalysis(_Perturbation):
@@ -41,16 +41,16 @@ class ModalAnalysis(_Perturbation):
 class ComplexEigenValue(_Perturbation):
     """"""
 
-    def __init__(self, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         raise NotImplementedError
 
 
 class BucklingAnalysis(_Perturbation):
     """"""
 
-    def __init__(self, modes, vectors=None, iterations=30, algorithm=None, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, modes, vectors=None, iterations=30, algorithm=None, **kwargs):
+        super().__init__(**kwargs)
         self._modes = modes
         self._vectors = vectors or self._compute_vectors(modes)
         self._iterations = iterations
@@ -62,33 +62,42 @@ class BucklingAnalysis(_Perturbation):
             self._vectors += modes
 
     @staticmethod
-    def Lanczos(modes, name=None):
-        return BucklingAnalysis(modes=modes, vectors=None, algorithhm="Lanczos", name=name)
+    def Lanczos(modes):
+        return BucklingAnalysis(modes=modes, vectors=None, algorithhm="Lanczos")
 
     @staticmethod
-    def Subspace(modes, iterations, vectors=None, name=None):
-        return BucklingAnalysis(modes=modes, vectors=vectors, iterations=iterations, algorithhm="Subspace", name=name)
+    def Subspace(
+        modes,
+        iterations,
+        vectors=None,
+    ):
+        return BucklingAnalysis(
+            modes=modes,
+            vectors=vectors,
+            iterations=iterations,
+            algorithhm="Subspace",
+        )
 
 
 class LinearStaticPerturbation(_Perturbation):
     """"""
 
-    def __init__(self, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         raise NotImplementedError
 
 
 class StedyStateDynamic(_Perturbation):
     """"""
 
-    def __init__(self, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         raise NotImplementedError
 
 
 class SubstructureGeneration(_Perturbation):
     """"""
 
-    def __init__(self, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         raise NotImplementedError

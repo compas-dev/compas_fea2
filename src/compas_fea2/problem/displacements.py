@@ -54,8 +54,8 @@ class GeneralDisplacement(FEAData):
 
     """
 
-    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", name=None, **kwargs):
-        super(GeneralDisplacement, self).__init__(name=name, **kwargs)
+    def __init__(self, x=0, y=0, z=0, xx=0, yy=0, zz=0, axes="global", **kwargs):
+        super(GeneralDisplacement, self).__init__(**kwargs)
         self.x = x
         self.y = y
         self.z = z

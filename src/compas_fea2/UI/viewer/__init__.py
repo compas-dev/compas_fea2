@@ -1,6 +1,3 @@
-
-
-from compas_fea2.model import Model
 from .viewer import FEA2Viewer
 from .viewer import FEA2ModelObject
 from .viewer import FEA2StepObject
@@ -22,9 +19,10 @@ __all__ = [
     "FixBCShape",
     "PinBCShape",
     "RollerBCShape",
+    "ArrowShape",
     "FEA2ModelObject",
     "FEA2StepObject",
     "FEA2StressFieldResultsObject",
+    "FEA2DisplacementFieldResultsObject",
+    "FEA2ReactionFieldResultsObject",
 ]
-
-

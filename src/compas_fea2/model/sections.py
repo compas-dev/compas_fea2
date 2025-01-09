@@ -181,6 +181,7 @@ rotational stiffness    : {}
 # # 1D - beam cross-sections
 # # ============================================================================
 
+
 class BeamSection(_Section):
     """Custom section for beam elements.
 
@@ -839,6 +840,7 @@ class TrapezoidalSection(BeamSection):
 # 1D - no cross-section
 # ==============================================================================
 
+
 class TrussSection(BeamSection):
     """For use with truss elements.
 
@@ -896,7 +898,8 @@ class TrussSection(BeamSection):
             material=material,
             **kwargs,
         )
-        self._shape = Circle(radius=sqrt(A)/pi, segments=16)
+        self._shape = Circle(radius=sqrt(A) / pi, segments=16)
+
 
 class StrutSection(TrussSection):
     """For use with strut elements.

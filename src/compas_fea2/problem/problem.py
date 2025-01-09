@@ -11,20 +11,15 @@ from compas.geometry import centroid_points_weighted
 from compas.geometry import sum_vectors
 from compas.colors import Color
 from compas.colors import ColorMap
-from compas.colors import Color
-from typing import Iterable
 
 from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
-from compas_fea2.model.elements import _Element1D
-from compas_fea2.model.elements import _Element3D
 from compas_fea2.problem.steps import StaticStep
 from compas_fea2.problem.steps import Step
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import StressFieldResults
 from compas_fea2.results.database import ResultsDatabase
-from compas_fea2.utilities._utils import timer
 
 
 class Problem(FEAData):
@@ -77,8 +72,8 @@ class Problem(FEAData):
 
     """
 
-    def __init__(self, name=None, description=None, **kwargs):
-        super(Problem, self).__init__(name=name, **kwargs)
+    def __init__(self, description=None, **kwargs):
+        super(Problem, self).__init__(**kwargs)
         self.description = description
         self._path = None
         self._path_db = None
@@ -476,8 +471,8 @@ Analysis folder path : {self.path or "N/A"}
         return Vector(*sum_vectors(vectors)), Point(*centroid_points_weighted(locations, vectors_lengths))
 
     def get_min_max_reactions(self, step=None):
-        """ Get the minimum and maximum reaction values for the last step.
-        
+        """Get the minimum and maximum reaction values for the last step.
+
         Parameters
         ----------
         step : _type_, optional
@@ -490,7 +485,7 @@ Analysis folder path : {self.path or "N/A"}
 
     def get_min_max_reactions_component(self, component, step=None):
         """Get the minimum and maximum reaction values for the last step.
-        
+
         Parameters
         ----------
         component : _type_
@@ -533,22 +528,22 @@ Analysis folder path : {self.path or "N/A"}
         from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2StepObject
         from compas.scene import register
         from compas.scene import register_scene_objects
-            
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize=0.2
-        
+        viewer.viewer.config.vectorsize = 0.2
+
         register_scene_objects()  # This has to be called before registering the model object
-        
+
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
         viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        
+
         if show_loads:
             if not kwargs.get("step", None):
                 step = self.steps_order[-1]
                 register(step.__class__, FEA2StepObject, context="Viewer")
                 viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-        
-        viewer.viewer.show()    
+
+        viewer.viewer.show()
 
     def show_principal_stress_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, **kwargs):
         """Display the principal stress results for a given step.
@@ -575,24 +570,23 @@ Analysis folder path : {self.path or "N/A"}
 
         if not step:
             step = self.steps_order[-1]
-            
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize=0.2
-        
+        viewer.viewer.config.vectorsize = 0.2
+
         register_scene_objects()  # This has to be called before registering the model object
-        
+
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
         viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        
+
         register(self.stress_field.__class__.__bases__[-1], FEA2StressFieldResultsObject, context="Viewer")
         viewer.viewer.scene.add(self.stress_field, field=self.stress_field, step=step, scale_factor=scale_results, components=components, **kwargs)
-          
+
         if show_loads:
             register(step.__class__, FEA2StepObject, context="Viewer")
             viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-        
-        viewer.viewer.show()
 
+        viewer.viewer.show()
 
     def show_deformed(self, step=None, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
         """Display the structure in its deformed configuration.
@@ -614,9 +608,9 @@ Analysis folder path : {self.path or "N/A"}
 
         if not step:
             step = self.steps_order[-1]
-            
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        
+
         register_scene_objects()  # This has to be called before registering the model object
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
 
@@ -628,15 +622,14 @@ Analysis folder path : {self.path or "N/A"}
         for displacement in displacements.results(step):
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-       
+
         viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=1, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-                   
 
         viewer.viewer.show()
 
     def show_displacements(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
         """Display the displacement field results for a given step.
-        
+
         Parameters
         ----------
         step : _type_, optional
@@ -647,7 +640,7 @@ Analysis folder path : {self.path or "N/A"}
             _description_, by default True
         component : _type_, optional
             _description_, by default
-            
+
         """
         from compas_fea2.UI.viewer import FEA2Viewer, FEA2ModelObject, FEA2DisplacementFieldResultsObject, FEA2StepObject
         from compas.scene import register
@@ -658,27 +651,29 @@ Analysis folder path : {self.path or "N/A"}
 
         if not step.problem.displacement_field:
             raise ValueError("No displacement field results available for this step")
-            
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize=0.2
-        
+        viewer.viewer.config.vectorsize = 0.2
+
         register_scene_objects()  # This has to be called before registering the model object
-        
+
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
         viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
         register(step.problem.displacement_field.__class__.__bases__[-1], FEA2DisplacementFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(step.problem.displacement_field, field=step.problem.displacement_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
-          
+        viewer.viewer.scene.add(
+            step.problem.displacement_field, field=step.problem.displacement_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs
+        )
+
         if show_loads:
             register(step.__class__, FEA2StepObject, context="Viewer")
             viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-            
+
         viewer.viewer.show()
-        
+
     def show_reactions(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
-        """  Display the reaction field results for a given step.
-        
+        """Display the reaction field results for a given step.
+
         Parameters
         ----------
         step : _type_, optional
@@ -703,22 +698,24 @@ Analysis folder path : {self.path or "N/A"}
 
         if not step.problem.reaction_field:
             raise ValueError("No reaction field results available for this step")
-            
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize=0.2
-        
+        viewer.viewer.config.vectorsize = 0.2
+
         register_scene_objects()  # This has to be called before registering the model object
-        
+
         register(self.model.__class__, FEA2ModelObject, context="Viewer")
         viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
         register(step.problem.reaction_field.__class__, FEA2ReactionFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(step.problem.reaction_field, field=step.problem.reaction_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
-          
+        viewer.viewer.scene.add(
+            step.problem.reaction_field, field=step.problem.reaction_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs
+        )
+
         if show_loads:
             register(step.__class__, FEA2StepObject, context="Viewer")
             viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-            
+
         viewer.viewer.show()
 
     def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
@@ -734,7 +731,7 @@ Analysis folder path : {self.path or "N/A"}
 
         if not step:
             step = self.steps_order[-1]
-        field_locations =list(self.stress_field.locations(step, point=True))
+        field_locations = list(self.stress_field.locations(step, point=True))
         field_results = list(getattr(self.stress_field, stresstype)(step))
 
         # # Get values

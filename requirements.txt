@@ -1,5 +1,6 @@
 compas>=2.0
 compas_gmsh
+compas_viewer
 Click
 matplotlib
 pint

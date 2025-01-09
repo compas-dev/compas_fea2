@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-Optimized shapes code for compas + compas_fea2.
-"""
-
 from compas.geometry import Point, Frame, Translation, Transformation, Rotation, Polygon
 from compas.datastructures import Mesh
 from compas_fea2.base import FEAData
@@ -169,9 +162,9 @@ class Shape(Polygon, FEAData):
         for i in range(n):
             j = (i + 1) % n
             a = x[i] * y[j] - x[j] * y[i]
-            sum_x += (y[i]**2 + y[i]*y[j] + y[j]**2) * a
-            sum_y += (x[i]**2 + x[i]*x[j] + x[j]**2) * a
-            sum_xy += (x[i]*y[j] + 2*x[i]*y[i] + 2*x[j]*y[j] + x[j]*y[i]) * a
+            sum_x += (y[i] ** 2 + y[i] * y[j] + y[j] ** 2) * a
+            sum_y += (x[i] ** 2 + x[i] * x[j] + x[j] ** 2) * a
+            sum_xy += (x[i] * y[j] + 2 * x[i] * y[i] + 2 * x[j] * y[j] + x[j] * y[i]) * a
         area = self.area
         cx, cy, _ = self.centroid_xy
         factor = 1 / 12
@@ -208,7 +201,7 @@ class Shape(Polygon, FEAData):
         I2 = avg - radius
         return (I1, I2, theta)
 
-    def translated(self, vector,check_planarity=True):
+    def translated(self, vector, check_planarity=True):
         """Return a translated copy of the shape."""
         T = Translation.from_vector(vector)
         new_frame = Frame.from_transformation(T)
@@ -217,18 +210,25 @@ class Shape(Polygon, FEAData):
     def oriented(self, frame, check_planarity=True):
         """Return a shape oriented to a new frame."""
         from math import pi
-        T = Transformation.from_frame_to_frame(self._frame, frame) * Rotation.from_axis_and_angle([1, 0, 0], pi/2)
+
+        T = Transformation.from_frame_to_frame(self._frame, frame) * Rotation.from_axis_and_angle([1, 0, 0], pi / 2)
         return Shape([point.transformed(T) for point in self._points], frame, check_planarity=check_planarity)
 
     def summary(self):
         """Provide a text summary of cross-sectional properties."""
         props = (
             self.A,
-            self.centroid[0], self.centroid[1],
-            self.Ixx, self.Iyy, self.Ixy,
-            self.rx, self.ry,
-            self.I1, self.I2,
-            self.r1, self.r2,
+            self.centroid[0],
+            self.centroid[1],
+            self.Ixx,
+            self.Iyy,
+            self.Ixy,
+            self.rx,
+            self.ry,
+            self.I1,
+            self.I2,
+            self.r1,
+            self.r2,
             degrees(self.theta),
         )
         props = [round(prop, 2) for prop in props]
@@ -275,8 +275,8 @@ class Rectangle(Shape):
             Point(-w / 2, h / 2, 0.0),
         ]
         super().__init__(points, frame=frame)
-        self._Avy = 0.833 * self.area # TODO: Check this
-        self._Avx = 0.833 * self.area # TODO: Check this
+        self._Avy = 0.833 * self.area  # TODO: Check this
+        self._Avx = 0.833 * self.area  # TODO: Check this
         l1 = max(w, h)
         l2 = min(w, h)
         self._J = (l1 * l2**3) * (0.33333 - 0.21 * (l2 / l1) * (1 - (l2**4) / (l2 * l1**4)))
@@ -399,18 +399,18 @@ class IShape(Shape):
         self._ttf = ttf
         self._direction = direction
         points = [
-            Point(-w/2, -h/2, 0.0),
-            Point(w/2, -h/2, 0.0),
-            Point(w/2, -h/2 + tbf, 0.0),
-            Point(tw/2, -h/2 + tbf, 0.0),
-            Point(tw/2, h/2 - tbf, 0.0),
-            Point(w/2, h/2 - tbf, 0.0),
-            Point(w/2, h/2, 0.0),
-            Point(-w/2, h/2, 0.0),
-            Point(-w/2, h/2 - ttf, 0.0),
-            Point(-tw/2, h/2 - ttf, 0.0),
-            Point(-tw/2, -h/2 + ttf, 0.0),
-            Point(-w/2, -h/2 + ttf, 0.0),
+            Point(-w / 2, -h / 2, 0.0),
+            Point(w / 2, -h / 2, 0.0),
+            Point(w / 2, -h / 2 + tbf, 0.0),
+            Point(tw / 2, -h / 2 + tbf, 0.0),
+            Point(tw / 2, h / 2 - tbf, 0.0),
+            Point(w / 2, h / 2 - tbf, 0.0),
+            Point(w / 2, h / 2, 0.0),
+            Point(-w / 2, h / 2, 0.0),
+            Point(-w / 2, h / 2 - ttf, 0.0),
+            Point(-tw / 2, h / 2 - ttf, 0.0),
+            Point(-tw / 2, -h / 2 + ttf, 0.0),
+            Point(-w / 2, -h / 2 + ttf, 0.0),
         ]
         super().__init__(points, frame=frame)
 
@@ -437,8 +437,7 @@ class IShape(Shape):
     @property
     def J(self):
         """Torsional constant approximation."""
-        return (1/3) * (self.w * (self.tbf**3 + self.ttf**3) +
-                         (self.h - self.tbf - self.ttf) * self.tw**3)
+        return (1 / 3) * (self.w * (self.tbf**3 + self.ttf**3) + (self.h - self.tbf - self.ttf) * self.tw**3)
 
 
 class LShape(Shape):
@@ -486,21 +485,20 @@ class CShape(Shape):
         h = self._height
         ft = self._flange_thickness
         points = [
-            Point(0,        0, 0),
-            Point(hf,       0, 0),
-            Point(hf,       ft, 0),
-            Point(hw,       ft, 0),
-            Point(hw,       h - ft, 0),
-            Point(hf,       h - ft, 0),
-            Point(hf,       h, 0),
-            Point(0,        h, 0),
+            Point(0, 0, 0),
+            Point(hf, 0, 0),
+            Point(hf, ft, 0),
+            Point(hw, ft, 0),
+            Point(hw, h - ft, 0),
+            Point(hf, h - ft, 0),
+            Point(hf, h, 0),
+            Point(0, h, 0),
         ]
         super().__init__(points, frame=frame)
 
 
 class CustomI(Shape):
-    def __init__(self, height, top_flange_width, bottom_flange_width,
-                 web_thickness, top_flange_thickness, bottom_flange_thickness, frame=None):
+    def __init__(self, height, top_flange_width, bottom_flange_width, web_thickness, top_flange_thickness, bottom_flange_thickness, frame=None):
         self._height = height
         self._top_flange_width = top_flange_width
         self._bottom_flange_width = bottom_flange_width
@@ -515,18 +513,18 @@ class CustomI(Shape):
         shift_x = hw / 2
         shift_y = height / 2
         points = [
-            Point(-hbf - shift_x,             -shift_y, 0),
-            Point(hbf - shift_x,              -shift_y, 0),
-            Point(hbf - shift_x,              bottom_flange_thickness - shift_y, 0),
-            Point(hw - shift_x,               bottom_flange_thickness - shift_y, 0),
-            Point(hw - shift_x,               height - top_flange_thickness - shift_y, 0),
-            Point(htf - shift_x,              height - top_flange_thickness - shift_y, 0),
-            Point(htf - shift_x,              height - shift_y, 0),
-            Point(-htf - shift_x,             height - shift_y, 0),
-            Point(-htf - shift_x,             height - top_flange_thickness - shift_y, 0),
-            Point(-hw - shift_x,              height - top_flange_thickness - shift_y, 0),
-            Point(-hw - shift_x,              bottom_flange_thickness - shift_y, 0),
-            Point(-hbf - shift_x,             bottom_flange_thickness - shift_y, 0),
+            Point(-hbf - shift_x, -shift_y, 0),
+            Point(hbf - shift_x, -shift_y, 0),
+            Point(hbf - shift_x, bottom_flange_thickness - shift_y, 0),
+            Point(hw - shift_x, bottom_flange_thickness - shift_y, 0),
+            Point(hw - shift_x, height - top_flange_thickness - shift_y, 0),
+            Point(htf - shift_x, height - top_flange_thickness - shift_y, 0),
+            Point(htf - shift_x, height - shift_y, 0),
+            Point(-htf - shift_x, height - shift_y, 0),
+            Point(-htf - shift_x, height - top_flange_thickness - shift_y, 0),
+            Point(-hw - shift_x, height - top_flange_thickness - shift_y, 0),
+            Point(-hw - shift_x, bottom_flange_thickness - shift_y, 0),
+            Point(-hbf - shift_x, bottom_flange_thickness - shift_y, 0),
         ]
         super().__init__(points, frame=frame)
 
@@ -541,14 +539,14 @@ class Star(Shape):
 
     def _set_points(self):
         return [
-            Point(0.0,         0.0, 0.0),
-            Point(self._a/2,   self._c, 0.0),
-            Point(self._a,     0.0, 0.0),
-            Point(self._a - self._c, self._b/2, 0.0),
-            Point(self._a,     self._b, 0.0),
-            Point(self._a/2,   self._b - self._c, 0.0),
-            Point(0.0,         self._b, 0.0),
-            Point(self._c,     self._b/2, 0.0),
+            Point(0.0, 0.0, 0.0),
+            Point(self._a / 2, self._c, 0.0),
+            Point(self._a, 0.0, 0.0),
+            Point(self._a - self._c, self._b / 2, 0.0),
+            Point(self._a, self._b, 0.0),
+            Point(self._a / 2, self._b - self._c, 0.0),
+            Point(0.0, self._b, 0.0),
+            Point(self._c, self._b / 2, 0.0),
         ]
 
     @property
@@ -596,12 +594,7 @@ class Circle(Shape):
         self.points = self._set_points()
 
     def _set_points(self):
-        return [
-            Point(self._radius * np.cos(theta),
-                  self._radius * np.sin(theta),
-                  0.0)
-            for theta in np.linspace(0, 2 * pi, self._segments, endpoint=False)
-        ]
+        return [Point(self._radius * np.cos(theta), self._radius * np.sin(theta), 0.0) for theta in np.linspace(0, 2 * pi, self._segments, endpoint=False)]
 
 
 class Ellipse(Shape):
@@ -631,12 +624,7 @@ class Ellipse(Shape):
         self.points = self._set_points()
 
     def _set_points(self):
-        return [
-            Point(self._radius_a * np.cos(theta),
-                  self._radius_b * np.sin(theta),
-                  0.0)
-            for theta in np.linspace(0, 2 * pi, self._segments, endpoint=False)
-        ]
+        return [Point(self._radius_a * np.cos(theta), self._radius_b * np.sin(theta), 0.0) for theta in np.linspace(0, 2 * pi, self._segments, endpoint=False)]
 
 
 class Hexagon(Shape):
@@ -646,11 +634,7 @@ class Hexagon(Shape):
         super().__init__(points, frame=frame)
 
     def _set_points(self):
-        return [
-            Point(self._side_length * np.cos(np.pi / 3 * i),
-                  self._side_length * np.sin(np.pi / 3 * i), 0.0)
-            for i in range(6)
-        ]
+        return [Point(self._side_length * np.cos(np.pi / 3 * i), self._side_length * np.sin(np.pi / 3 * i), 0.0) for i in range(6)]
 
     @property
     def side_length(self):
@@ -670,11 +654,7 @@ class Pentagon(Shape):
 
     def _set_points(self):
         angle = 2 * pi / 5
-        return [
-            Point(self._circumradius * np.cos(i * angle),
-                  self._circumradius * np.sin(i * angle), 0.0)
-            for i in range(5)
-        ]
+        return [Point(self._circumradius * np.cos(i * angle), self._circumradius * np.sin(i * angle), 0.0) for i in range(5)]
 
 
 class Octagon(Shape):
@@ -685,11 +665,7 @@ class Octagon(Shape):
 
     def _set_points(self):
         angle = 2 * pi / 8
-        return [
-            Point(self._circumradius * np.cos(i * angle),
-                  self._circumradius * np.sin(i * angle), 0.0)
-            for i in range(8)
-        ]
+        return [Point(self._circumradius * np.cos(i * angle), self._circumradius * np.sin(i * angle), 0.0) for i in range(8)]
 
 
 class Triangle(Shape):
@@ -700,11 +676,7 @@ class Triangle(Shape):
 
     def _set_points(self):
         angle = 2 * pi / 3
-        return [
-            Point(self._circumradius * np.cos(i * angle),
-                  self._circumradius * np.sin(i * angle), 0.0)
-            for i in range(3)
-        ]
+        return [Point(self._circumradius * np.cos(i * angle), self._circumradius * np.sin(i * angle), 0.0) for i in range(3)]
 
 
 class Parallelogram(Shape):

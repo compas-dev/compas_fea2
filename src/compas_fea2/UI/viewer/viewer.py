@@ -17,9 +17,8 @@ from compas_fea2.model.bcs import RollerBCZ
 from compas_fea2.UI.viewer.primitives import FixBCShape
 from compas_fea2.UI.viewer.primitives import PinBCShape
 from compas_fea2.UI.viewer.primitives import RollerBCShape
-from compas_fea2.UI.viewer.primitives import ArrowShape
 
-from .drawer import draw_field_vectors, draw_field_contour, draw_reactions
+from .drawer import draw_field_vectors, draw_field_contour
 
 
 HERE = os.path.dirname(__file__)
@@ -124,7 +123,7 @@ class FEA2ModelObject(GroupObject):
                 else:
                     collection = []
                     for element in part.elements:
-                    # if part._discretized_boundary_mesh:
+                        # if part._discretized_boundary_mesh:
                         collection.append(
                             element.outermesh
                             # (
@@ -176,17 +175,17 @@ class FEA2ModelObject(GroupObject):
         connectors_meshes = []
         if show_connectors:
             for connector in model.connectors:
-                    connectors_meshes.append(
-                        (
-                            connector.nodes[0].point,
-                            {
-                                "pointcolor": Color.red(),
-                                "pointsize": 50,
-                                "opacity": 0.2,
-                                "name": connector.name,
-                            },
-                        )
+                connectors_meshes.append(
+                    (
+                        connector.nodes[0].point,
+                        {
+                            "pointcolor": Color.red(),
+                            "pointsize": 50,
+                            "opacity": 0.2,
+                            "name": connector.name,
+                        },
                     )
+                )
 
         parts = (part_meshes, {"name": "parts"})
         interfaces = ([], {"name": "interfaces"})
@@ -294,7 +293,7 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
     """
 
     def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
-        #FIXME: component is not used
+        # FIXME: component is not used
 
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
@@ -351,11 +350,11 @@ class FEA2ReactionFieldResultsObject(GroupObject):
     """
 
     def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
-        #FIXME: component is not used
+        # FIXME: component is not used
 
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        cmap=None
+        cmap = None
 
         group_elements = []
         if show_vectors:

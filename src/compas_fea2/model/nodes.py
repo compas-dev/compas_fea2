@@ -74,8 +74,8 @@ class Node(FEAData):
 
     """
 
-    def __init__(self, xyz, mass=None, temperature=None, name=None, **kwargs):
-        super(Node, self).__init__(name=name, **kwargs)
+    def __init__(self, xyz, mass=None, temperature=None, **kwargs):
+        super(Node, self).__init__(**kwargs)
         self._key = None
 
         self.xyz = xyz
@@ -96,11 +96,11 @@ class Node(FEAData):
         self.total_load = None
         self._displacements = {}
         self._results = {}
-        
+
         self._connected_elements = []
-        
+
     @classmethod
-    def from_compas_point(cls, point, mass=None, temperature=None, name=None):
+    def from_compas_point(cls, point, mass=None, temperature=None):
         """Create a Node from a :class:`compas.geometry.Point`.
 
         Parameters
@@ -130,7 +130,7 @@ class Node(FEAData):
         >>> node = Node.from_compas_point(point)
 
         """
-        return cls(xyz=[point.x, point.y, point.z], mass=mass, temperature=temperature, name=name)
+        return cls(xyz=[point.x, point.y, point.z], mass=mass, temperature=temperature)
 
     @property
     def part(self):
@@ -230,8 +230,7 @@ class Node(FEAData):
     @property
     def point(self):
         return Point(*self.xyz)
-    
+
     @property
     def connected_elements(self):
         return self._connected_elements
-

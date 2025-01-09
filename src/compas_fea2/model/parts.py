@@ -41,6 +41,7 @@ from .sections import ShellSection
 from .sections import SolidSection
 from .sections import _Section
 
+
 class _Part(FEAData):
     """Base class for Parts.
 
@@ -90,8 +91,8 @@ class _Part(FEAData):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(_Part, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(_Part, self).__init__(**kwargs)
         self._nodes = set()
         self._gkey_node = {}
         self._sections = set()
@@ -109,20 +110,6 @@ class _Part(FEAData):
 
         self._volume = None
         self._weight = None
-
-    def __str__(self):
-            return """
-{}
-{}
-name : {}
-
-number of elements : {}
-number of nodes    : {}
-""".format(self.__class__.__name__,
-            len(self.__class__.__name__) * '-',
-            self.name,
-            self.elements_count,
-            self.nodes_count)
 
     @property
     def nodes(self):
@@ -242,7 +229,7 @@ number of nodes    : {}
     # =========================================================================
 
     @classmethod
-    def from_compas_lines(cls, lines, element_model="BeamElement", xaxis=[0,1,0], section=None, name=None, **kwargs):
+    def from_compas_lines(cls, lines, element_model="BeamElement", xaxis=[0, 1, 0], section=None, name=None, **kwargs):
         """Generate a part from a list of :class:`compas.geometry.Line`.
 
         Parameters
@@ -265,6 +252,7 @@ number of nodes    : {}
 
         """
         import compas_fea2
+
         prt = cls(name=name)
         # nodes = [Node(n) for n in set([list(p) for l in lines for p in list(l)])]
         mass = kwargs.get("mass", None)
@@ -366,7 +354,6 @@ number of nodes    : {}
 
         """
         import numpy as np
-        import time
 
         part = cls(name=name)
 
@@ -568,7 +555,6 @@ number of nodes    : {}
         for node in self.nodes:
             if node.key == key:
                 return node
-
 
     def find_node_by_inputkey(self, input_key):
         """Retrieve a node in the model using its key.
@@ -1034,11 +1020,11 @@ number of nodes    : {}
             return
 
         self.add_nodes(element.nodes)
-        
+
         for node in element.nodes:
-            if not element in node.connected_elements:
+            if element not in node.connected_elements:
                 node.connected_elements.append(element)
-        
+
         if hasattr(element, "section"):
             if element.section:
                 self.add_section(element.section)
@@ -1415,8 +1401,8 @@ class DeformablePart(_Part):
 
     """
 
-    def __init__(self, name=None, **kwargs):
-        super(DeformablePart, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(DeformablePart, self).__init__(**kwargs)
         self._materials = set()
         self._sections = set()
         self._releases = set()
@@ -1437,7 +1423,6 @@ class DeformablePart(_Part):
     #                       Constructor methods
     # =========================================================================
     @classmethod
-    # @timer(message="compas Mesh successfully imported in ")
     def frame_from_compas_mesh(cls, mesh, section, name=None, **kwargs):
         """Creates a DeformablePart object from a a :class:`compas.datastructures.Mesh`.
 
@@ -1460,14 +1445,14 @@ class DeformablePart(_Part):
         for edge in mesh.edges():
             nodes = [vertex_node[vertex] for vertex in edge]
             faces = mesh.edge_faces(edge)
-            n = [mesh.face_normal(f) for f in faces if f!=None]
-            if len(n)==1:
+            n = [mesh.face_normal(f) for f in faces if f is not None]
+            if len(n) == 1:
                 n = n[0]
             else:
-                n = n[0]+n[1]
+                n = n[0] + n[1]
             v = list(mesh.edge_direction(edge))
             frame = n
-            frame.rotate(pi/2, v, nodes[0].xyz)
+            frame.rotate(pi / 2, v, nodes[0].xyz)
             part.add_element(BeamElement(nodes=[*nodes], section=section, frame=frame))
 
         return part
@@ -1683,8 +1668,8 @@ class RigidPart(_Part):
 
     """
 
-    def __init__(self, reference_point=None, name=None, **kwargs):
-        super(RigidPart, self).__init__(name=name, **kwargs)
+    def __init__(self, reference_point=None, **kwargs):
+        super(RigidPart, self).__init__(**kwargs)
         self._reference_point = reference_point
 
     @property

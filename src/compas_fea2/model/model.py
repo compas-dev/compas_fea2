@@ -33,12 +33,7 @@ from compas_fea2.model.connectors import Connector
 from compas_fea2.utilities._utils import get_docstring
 from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
-from compas_fea2.utilities._utils import timer
-
-from compas_fea2.model.elements import BeamElement
-from compas_fea2.model.elements import ShellElement
 from compas_fea2.model.elements import _Element
-from compas_fea2.model.elements import _Element3D
 
 
 class Model(FEAData):
@@ -179,7 +174,7 @@ class Model(FEAData):
 
     @property
     def nodes(self):
-        n=[]
+        n = []
         for part in self.parts:
             n += list(part.nodes)
         return n
@@ -190,7 +185,7 @@ class Model(FEAData):
 
     @property
     def elements(self):
-        e=[]
+        e = []
         for part in self.parts:
             e += list(part.elements)
         return e
@@ -375,7 +370,7 @@ class Model(FEAData):
         if compas_fea2.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
-        part._key = len(self._parts)*PART_NODES_LIMIT
+        part._key = len(self._parts) * PART_NODES_LIMIT
         self._parts.add(part)
 
         if not isinstance(part, RigidPart):
@@ -409,7 +404,7 @@ class Model(FEAData):
     @part_method
     def find_node_by_key(self, key):
         pass
-    
+
     @get_docstring(_Part)
     @part_method
     def find_node_by_inputkey(self, input_key):
@@ -1188,10 +1183,7 @@ Initial Conditions
     # Viewer
     # ==============================================================================
 
-    def show(
-        self,
-        scale_model=1.0, show_bcs=1.0, **kwargs
-    ):
+    def show(self, scale_model=1.0, show_bcs=1.0, **kwargs):
         """Visualise the model in the viewer.
 
         Parameters
@@ -1212,8 +1204,6 @@ Initial Conditions
         viewer = FEA2Viewer(center=self.center, scale_model=scale_model)
         viewer.viewer.scene.add(self, model=self, opacity=0.5, show_bcs=show_bcs, kwargs=kwargs)
         viewer.viewer.show()
-
-
 
     @problem_method
     def show_displacements(self, problem, *args, **kwargs):

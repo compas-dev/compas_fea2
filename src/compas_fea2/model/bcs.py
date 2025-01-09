@@ -274,7 +274,7 @@ class RollerBCXZ(PinnedBC):
 
     __doc__ += docs
 
-    def __init__(self, name=None, **kwargs):
-        super(RollerBCXZ, self).__init__(name=name, **kwargs)
+    def __init__(self, **kwargs):
+        super(RollerBCXZ, self).__init__(**kwargs)
         self._x = False
         self._z = False

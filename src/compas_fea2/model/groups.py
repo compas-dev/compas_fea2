@@ -276,8 +276,8 @@ class FacesGroup(_Group):
 
     """
 
-    def __init__(self, *, faces, name=None, **kwargs):
-        super(FacesGroup, self).__init__(members=faces, name=name, **kwargs)
+    def __init__(self, *, faces, **kwargs):
+        super(FacesGroup, self).__init__(members=faces, **kwargs)
 
     @property
     def part(self):
@@ -357,8 +357,8 @@ class PartsGroup(_Group):
 
     """
 
-    def __init__(self, *, parts, name=None, **kwargs):
-        super(PartsGroup, self).__init__(members=parts, name=name, **kwargs)
+    def __init__(self, *, parts, **kwargs):
+        super(PartsGroup, self).__init__(members=parts, **kwargs)
 
     @property
     def model(self):

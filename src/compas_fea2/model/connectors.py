@@ -84,7 +84,7 @@ class SpringConnector(Connector):
     """Spring connector."""
 
     def __init__(self, nodes, section, yielding=None, failure=None, **kwargs):
-        super(SpringConnector, self).__init__(nodes, section, **kwargs)
+        super(SpringConnector, self).__init__(nodes, **kwargs)
         self._section = section
         self._yielding = yielding
         self._failure = failure
@@ -132,12 +132,12 @@ class ZeroLengthConnector(Connector):
         return self._direction
 
 
-class ZeroLengthSpringConnector(ZeroLengthConnector, SpringConnector):
+class ZeroLengthSpringConnector(ZeroLengthConnector):
     """Spring connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, section, directions, yielding=None, failure=None, **kwargs):
-        ZeroLengthConnector.__init__(self, nodes, directions, **kwargs)
-        SpringConnector.__init__(self, section, yielding, failure)
+    def __init__(self, nodes, direction, section, yielding=None, failure=None, **kwargs):
+        # SpringConnector.__init__(self, nodes=nodes, section=section, yielding=yielding, failure=failure)
+        ZeroLengthConnector.__init__(self, nodes, direction, **kwargs)
 
 
 class ZeroLengthContactConnector(ZeroLengthConnector):

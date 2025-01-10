@@ -8,7 +8,7 @@ and defines connections, constraints and boundary conditions.
 
 >>> from compas_fea2.model import Model
 >>> model = Model()
->>> model
+>>> 
 
 Nodes
 =====
@@ -17,8 +17,8 @@ Nodes are the basic building blocks of a model.
 They define the locations in space that define all other entities.
 
 >>> from compas_fea2.model import Node
->>> node = Node(x=0, y=0, z=0)
->>> node
+>>> node = Node(xyz=(0.,0.,0.))
+>>> 
 Node(...)
 >>> node.x
 0.0
@@ -29,14 +29,14 @@ Node(...)
 >>> node.xyz
 [0.0, 0.0, 0.0]
 >>> node.point
-Point(0.0, 0.0, 0.0)
+Point(x=0.0, y=0.0, z=0.0)
 
 Besides coordinates, nodes have many other (optional) attributes.
 
 >>> node.mass
-[None, None, None]
+(None, None, None)
 >>> node.temperature
-None
+>>>
 >>> node.dof
 {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
 >>> node.loads

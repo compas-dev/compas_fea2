@@ -49,24 +49,7 @@ This means that all these components have the same base data infrastructure as a
 They have a guid, a name, and general attributes.
 
 >>> from compas_fea2.model import Node
->>> node = Node(name='node')
+>>> node = Node(xyz=(0., 0., 0.), name='node')
 >>> node.name
 'node'
->>> node.guid
-...
->>> node.attributes
-{}
-
-They can be converted to data and serialized to a JSON string or file.
-
->>> node.to_data()
-{'name': 'node', 'guid': ..., 'attributes': {}}
->>> node.to_jsonstring()
-'{"name": "node", "guid": ..., "attributes": {}}'
-
-The only difference from other COMPAS objects is their default name.
-
->>> node = Node()
->>> node.name
-...
 

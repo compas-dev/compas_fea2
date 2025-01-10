@@ -248,8 +248,6 @@ class BeamSection(_Section):
         self.g0 = g0
         self.gw = gw
 
-        self._shape = Circle(radius=sqrt(A) / pi)
-
     def __str__(self):
         return """
 {}
@@ -291,6 +289,15 @@ gw  : {}
     @property
     def shape(self):
         return self._shape
+
+
+class GenericBeamSection(BeamSection):
+    """Generic beam cross-section for beam elements."""
+
+    def __init__(self, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, **kwargs):
+        super(GenericBeamSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+
+        self._shape = Circle(radius=sqrt(self.A) / pi)
 
 
 class AngleSection(BeamSection):

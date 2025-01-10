@@ -2,6 +2,7 @@ import unittest
 from compas_fea2.model.connectors import SpringConnector, ZeroLengthSpringConnector
 from compas_fea2.model import Node
 from compas_fea2.model import DeformablePart
+from compas_fea2.model import SpringSection
 
 
 class TestSpringConnector(unittest.TestCase):
@@ -12,7 +13,7 @@ class TestSpringConnector(unittest.TestCase):
         node2 = Node([1, 0, 0])
         prt_2 = DeformablePart()
         prt_2.add_node(node2)
-        section = object()  # Replace with actual section class
+        section = SpringSection(axial=1, lateral=1, rotational=1)  # Replace with actual section class
         connector = SpringConnector(nodes=[node1, node2], section=section)
         self.assertEqual(connector.nodes, [node1, node2])
 
@@ -25,11 +26,11 @@ class TestZeroLengthSpringConnector(unittest.TestCase):
         node2 = Node([1, 0, 0])
         prt_2 = DeformablePart()
         prt_2.add_node(node2)
-        section = object()  # Replace with actual section class
-        directions = [1, 0, 0]
-        connector = ZeroLengthSpringConnector(nodes=[node1, node2], section=section, directions=directions)
+        direction = [1, 0, 0]
+        section = SpringSection(axial=1, lateral=1, rotational=1)
+        connector = ZeroLengthSpringConnector(nodes=[node1, node2], direction=direction, section=section)
         self.assertEqual(connector.nodes, [node1, node2])
-        self.assertEqual(connector.directions, directions)
+        self.assertEqual(connector.direction, direction)
 
 
 if __name__ == "__main__":

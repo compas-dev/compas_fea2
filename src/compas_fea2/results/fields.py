@@ -92,7 +92,7 @@ class FieldResults(FEAData):
     def invariants_names(self):
         return self._invariants_names
 
-    def _get_db_results(self, members, steps):
+    def _get_db_results(self, members, steps, **kwargs):
         """Get the results for the given members and steps in the database
         format.
 
@@ -127,7 +127,12 @@ class FieldResults(FEAData):
             columns = ["step", "part", "input_key"] + self._components_names
             field_name = self._field_name
 
-        results_set = self.rdb.get_rows(field_name, columns, {"input_key": members_keys, "part": parts_names, "step": steps_names})
+        filters = {"input_key": members_keys, "part": parts_names, "step": steps_names}
+
+        if kwargs.get("mode", None):
+            filters["mode"] = set([kwargs['mode'] for member in members])
+
+        results_set = self.rdb.get_rows(field_name, columns, filters)
         return results_set
 
     def _to_result(self, results_set):
@@ -155,7 +160,7 @@ class FieldResults(FEAData):
             results[step].append(self._results_class(m, *r[3:]))
         return results
 
-    def get_results(self, members, steps):
+    def get_results(self, members, steps, **kwargs):
         """Get the results for the given members and steps.
 
         Parameters
@@ -170,10 +175,10 @@ class FieldResults(FEAData):
         _type_
             _description_
         """
-        results_set = self._get_db_results(members, steps)
+        results_set = self._get_db_results(members, steps, **kwargs)
         return self._to_result(results_set)
 
-    def get_max_result(self, component, step):
+    def get_max_result(self, component, step, **kwargs):
         """Get the result where a component is maximum for a given step.
 
         Parameters
@@ -191,11 +196,11 @@ class FieldResults(FEAData):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
-    def get_min_result(self, component, step):
+    def get_min_result(self, component, step, **kwargs):
         results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
         return self._to_result(results_set)[step][0]
 
-    def get_max_component(self, component, step):
+    def get_max_component(self, component, step, **kwargs):
         """Get the result where a component is maximum for a given step.
 
         Parameters
@@ -212,7 +217,7 @@ class FieldResults(FEAData):
         """
         return self.get_max_result(component, step).vector[component - 1]
 
-    def get_min_component(self, component, step):
+    def get_min_component(self, component, step, **kwargs):
         """Get the result where a component is minimum for a given step.
 
         Parameters
@@ -229,7 +234,7 @@ class FieldResults(FEAData):
         """
         return self.get_min_result(component, step).vector[component - 1]
 
-    def get_limits_component(self, component, step):
+    def get_limits_component(self, component, step, **kwargs):
         """Get the result objects with the min and max value of a given
         component in a step.
 
@@ -247,13 +252,13 @@ class FieldResults(FEAData):
         """
         return [self.get_min_result(component, step), self.get_max_result(component, step)]
 
-    def get_limits_absolute(self, step):
+    def get_limits_absolute(self, step, **kwargs):
         limits = []
         for func in ["MIN", "MAX"]:
             limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
         return [self._to_result(limit)[step][0] for limit in limits]
 
-    def get_results_at_point(self, point, distance, plane=None, steps=None):
+    def get_results_at_point(self, point, distance, plane=None, steps=None, **kwargs):
         """Get the displacement of the model around a location (point).
 
         Parameters
@@ -278,7 +283,7 @@ class FieldResults(FEAData):
             results = self.get_results(nodes, steps)
             return results
 
-    def locations(self, step=None, point=False):
+    def locations(self, step=None, point=False, **kwargs):
         """Return the locations where the field is defined.
 
         Parameters
@@ -298,7 +303,7 @@ class FieldResults(FEAData):
             else:
                 yield r.node
 
-    def vectors(self, step=None):
+    def vectors(self, step=None, **kwargs):
         """Return the locations where the field is defined.
 
         Parameters
@@ -315,7 +320,7 @@ class FieldResults(FEAData):
         for r in self.results(step):
             yield r.vector
 
-    def component(self, step=None, component=None):
+    def component(self, step=None, component=None, **kwargs):
         """Return the locations where the field is defined.
 
         Parameters
@@ -366,6 +371,39 @@ class DisplacementFieldResults(FieldResults):
     def results(self, step):
         nodes = self.model.nodes
         return self.get_results(nodes, steps=step)[step]
+
+
+class ModalShape(FieldResults):
+    """Displacement field results.
+
+    This class handles the displacement field results from a finite element analysis.
+
+    problem : :class:`compas_fea2.problem.Problem`
+        The Problem where the Step is registered.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the displacement components.
+    invariants_names : list of str
+        Names of the invariants of the displacement field.
+    results_class : class
+        The class used to instantiate the displacement results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, problem, mode, *args, **kwargs):
+        super(ModalShape, self).__init__(problem=problem, field_name="eigenvectors", *args, **kwargs)
+        self._components_names = ["dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"]
+        self._invariants_names = ["magnitude"]
+        self._results_class = DisplacementResult
+        self._results_func = "find_node_by_key"
+        self.mode = mode
+
+    def results(self, step):
+        nodes = self.model.nodes
+        return self.get_results(nodes, steps=step, mode=self.mode)[step]
 
 
 class AccelerationFieldResults(FieldResults):

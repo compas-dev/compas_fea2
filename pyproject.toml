@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 name = "compas_fea2"
 description = "This package is the 2nd generation of Finite element Analysis tools for COMPAS."
 keywords = []
-authors = [{ name = "Francesco Ranaudo", email = "ranaudo@arch.ethz.ch" }]
+authors = [{ name = "Francesco Ranaudo", email = "francesco.ranaudo@gmail.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.9"

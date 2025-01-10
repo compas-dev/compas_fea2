@@ -19,6 +19,7 @@ from compas_fea2.problem.steps import Step
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import StressFieldResults
+from compas_fea2.results import ModalShape
 from compas_fea2.results.database import ResultsDatabase
 
 
@@ -121,6 +122,9 @@ class Problem(FEAData):
     @property
     def stress_field(self):
         return StressFieldResults(problem=self)
+
+    def modal_shape(self, mode):
+        return ModalShape(problem=self, mode=mode)
 
     @property
     def steps_order(self):
@@ -769,4 +773,32 @@ Analysis folder path : {self.path or "N/A"}
             points.append((n, {"pointcolor": color, "pointsize": 20}))
 
         viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
+        viewer.viewer.show()
+
+    def show_mode_shape(self, step, mode, scale_results=1, scale_model=1.0, show_bcs=True, show_original=0.25, **kwargs):
+        from compas.scene import register
+        from compas.scene import register_scene_objects
+
+        from compas_fea2.UI.viewer import FEA2ModelObject
+        from compas_fea2.UI.viewer import FEA2Viewer
+
+        if not step:
+            step = self.steps_order[-1]
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+
+        register_scene_objects()  # This has to be called before registering the model object
+        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+
+        if show_original:
+            viewer.viewer.scene.add(self.model, model=self.model, opacity=show_original, show_bcs=False)
+
+        # TODO create a copy of the model first
+        shapes = step.problem.modal_shape(mode)
+        for displacement in shapes.results(step):
+            vector = displacement.vector.scaled(scale_results)
+            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
+
+        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=1, show_bcs=show_bcs, show_loads=False, **kwargs)
+
         viewer.viewer.show()

@@ -5,9 +5,9 @@ from compas.tolerance import Tolerance  # noqa: F401
 
 
 __author__ = ["Francesco Ranaudo"]
-__copyright__ = "Block Research Group"
+__copyright__ = "COMPAS Association"
 __license__ = "MIT License"
-__email__ = "ranaudo@arch.ethz.ch"
+__email__ = "francesco.ranaudo@gmail.com"
 __version__ = "0.3.1"
 
 

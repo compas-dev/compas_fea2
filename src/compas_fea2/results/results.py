@@ -36,10 +36,10 @@ class Result(FEAData):
 
     """
 
-    def __init__(self, location, **kwargs):
+    def __init__(self, **kwargs):
         super(Result, self).__init__(**kwargs)
         self._title = None
-        self._registration = location
+        self._registration = None
         self._components = {}
         self._invariants = {}
 
@@ -113,7 +113,8 @@ class NodeResult(Result):
     """
 
     def __init__(self, node, title, x=None, y=None, z=None, xx=None, yy=None, zz=None, **kwargs):
-        super(NodeResult, self).__init__(location=node, **kwargs)
+        super(NodeResult, self).__init__(**kwargs)
+        self._registration = node
         self._title = title
         self._x = x
         self._y = y
@@ -227,14 +228,15 @@ class Element1DResult(Result):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element1DResult, self).__init__(element, **kwargs)
+        super(Element1DResult, self).__init__(**kwargs)
+        self._registration = element
 
     @property
     def element(self):
-        return self.location
+        return self._registration
 
 
-class SectionForcesResult(Result):
+class SectionForcesResult(Element1DResult):
     """DisplacementResult object.
 
     Parameters
@@ -294,14 +296,15 @@ class Element2DResult(Result):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(element, **kwargs)
+        super(Element2DResult, self).__init__(**kwargs)
+        self._registration = element
 
     @property
     def element(self):
-        return self.location
+        return self._registration
 
 
-class StressResult(Result):
+class StressResult(Element2DResult):
     """StressResult object.
 
     Parameters
@@ -904,13 +907,15 @@ class Element3DResult(Result):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(element, **kwargs)
+        super(Element2DResult, self).__init__(**kwargs)
+        self._registration = element
 
     @property
     def element(self):
-        return self.location
+        return self._registration
 
 
+# TODO: double inheritance StressResult and Element3DResult
 class SolidStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)

@@ -8,7 +8,7 @@ __author__ = ["Francesco Ranaudo"]
 __copyright__ = "Block Research Group"
 __license__ = "MIT License"
 __email__ = "ranaudo@arch.ethz.ch"
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 HERE = os.path.dirname(__file__)

@@ -5,7 +5,6 @@ from __future__ import print_function
 from math import pi
 from math import sqrt
 from typing import Iterable
-from scipy.spatial import KDTree
 
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -20,6 +19,7 @@ from compas.geometry import distance_point_point_sqrd
 from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
 from compas.tolerance import TOL
+from scipy.spatial import KDTree
 
 import compas_fea2
 from compas_fea2.base import FEAData

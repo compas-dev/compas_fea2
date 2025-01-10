@@ -70,9 +70,11 @@ from .constraints import (
 )
 from .connectors import (
     Connector,
-    SpringConnector,
-    ZeroLengthSpringConnector,
     RigidLinkConnector,
+    SpringConnector,
+    ZeroLengthConnector,
+    ZeroLengthSpringConnector,
+    ZeroLengthContactConnector,
 )
 from .groups import (
     _Group,
@@ -196,5 +198,8 @@ __all__ = [
     "InitialStressField",
     "Connector",
     "SpringConnector",
+    "RigidLinkConnector",
+    "ZeroLengthConnector",
+    "ZeroLengthContactConnector",
     "ZeroLengthSpringConnector",
 ]

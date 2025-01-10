@@ -116,7 +116,7 @@ class _NodeFieldOutput(_Output):
 
     def __init__(self, field_name, components_names, invariants_names, **kwargs):
         super().__init__(field_name, components_names, invariants_names, **kwargs)
-        self._results_func = "find_node_by_key"
+        self._results_func = "find_node_by_inputkey"
 
 
 class _ElementFieldOutput(_Output):
@@ -124,7 +124,7 @@ class _ElementFieldOutput(_Output):
 
     def __init__(self, field_name, components_names, invariants_names, **kwargs):
         super().__init__(field_name, components_names, invariants_names, **kwargs)
-        self._results_func = "find_element_by_key"
+        self._results_func = "find_element_by_inputkey"
 
 
 class DisplacementFieldOutput(_NodeFieldOutput):

@@ -279,6 +279,7 @@ class StaticStep(GeneralStep):
         """
         raise NotImplementedError()
         from compas_fea2.problem import GravityLoad
+
         return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
 
     # =========================================================================

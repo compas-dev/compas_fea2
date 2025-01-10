@@ -10,12 +10,12 @@ from compas_fea2.base import FEAData
 from compas_fea2.model import _Element2D
 from compas_fea2.model import _Element3D
 
-from .results import DisplacementResult
 from .results import AccelerationResult
-from .results import VelocityResult
+from .results import DisplacementResult
 from .results import ReactionResult
 from .results import ShellStressResult
 from .results import SolidStressResult
+from .results import VelocityResult
 
 
 class FieldResults(FEAData):

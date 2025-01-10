@@ -155,7 +155,7 @@ class DisplacementResult(NodeResult):
         super(DisplacementResult, self).__init__(node, "u", x, y, z, xx, yy, zz, **kwargs)
 
 
-class AccelerationResult(Result):
+class AccelerationResult(NodeResult):
     """AccelerationResult object.
 
     Notes
@@ -167,7 +167,7 @@ class AccelerationResult(Result):
         super(AccelerationResult, self).__init__(node, "a", x, y, z, xx, yy, zz, **kwargs)
 
 
-class VelocityResult(Result):
+class VelocityResult(NodeResult):
     """AccelerationResult object.
 
     Notes
@@ -179,7 +179,7 @@ class VelocityResult(Result):
         super(VelocityResult, self).__init__(node, "v", x, y, z, xx, yy, zz, **kwargs)
 
 
-class ReactionResult(Result):
+class ReactionResult(NodeResult):
     """DisplacementResult object.
 
     Parameters

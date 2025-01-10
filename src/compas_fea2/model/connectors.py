@@ -27,12 +27,11 @@ class Connector(FEAData):
 
     """
 
-    def __init__(self, nodes, section, **kwargs):
+    def __init__(self, nodes, **kwargs):
         super(Connector, self).__init__(**kwargs)
         self._key = None
         self._nodes = None
         self.nodes = nodes
-        self._section = section
 
     @property
     def nodes(self):
@@ -59,9 +58,26 @@ class Connector(FEAData):
             raise ValueError("Nodes must belong to different parts")
         self._nodes = nodes
 
+
+class RigidLinkConnector(Connector):
+    """Rigid link connector.
+
+    Parameters
+    ----------
+    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+        The connected nodes. The nodes must be registered to different parts.
+        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
+    dofs : str
+        The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
+    """
+
+    def __init__(self, nodes, dofs="beam", **kwargs):
+        super(RigidLinkConnector, self).__init__(nodes, **kwargs)
+        self._dofs = dofs
+
     @property
-    def section(self):
-        return self._section
+    def dofs(self):
+        return self._dofs
 
 
 class SpringConnector(Connector):
@@ -69,8 +85,13 @@ class SpringConnector(Connector):
 
     def __init__(self, nodes, section, yielding=None, failure=None, **kwargs):
         super(SpringConnector, self).__init__(nodes, section, **kwargs)
+        self._section = section
         self._yielding = yielding
         self._failure = failure
+
+    @property
+    def section(self):
+        return self._section
 
     @property
     def yielding(self):
@@ -99,34 +120,43 @@ class SpringConnector(Connector):
         self._failure = value
 
 
-class ZeroLengthSpringConnector(SpringConnector):
+class ZeroLengthConnector(Connector):
+    """Zero length connector connecting overlapping nodes."""
+
+    def __init__(self, nodes, direction, **kwargs):
+        super(ZeroLengthConnector, self).__init__(nodes, **kwargs)
+        self._direction = direction
+
+    @property
+    def direction(self):
+        return self._direction
+
+
+class ZeroLengthSpringConnector(ZeroLengthConnector, SpringConnector):
     """Spring connector connecting overlapping nodes."""
 
     def __init__(self, nodes, section, directions, yielding=None, failure=None, **kwargs):
-        super(ZeroLengthSpringConnector, self).__init__(nodes, section, yielding, failure, **kwargs)
-        self._directions = directions
+        ZeroLengthConnector.__init__(self, nodes, directions, **kwargs)
+        SpringConnector.__init__(self, section, yielding, failure)
+
+
+class ZeroLengthContactConnector(ZeroLengthConnector):
+    """Contact connector connecting overlapping nodes."""
+
+    def __init__(self, nodes, direction, Kn, Kt, mu, **kwargs):
+        super(ZeroLengthContactConnector, self).__init__(nodes, direction, **kwargs)
+        self._Kn = Kn
+        self._Kt = Kt
+        self._mu = mu
 
     @property
-    def directions(self):
-        return self._directions
-
-
-class RigidLinkConnector(Connector):
-    """Rigid link connector.
-
-    Parameters
-    ----------
-    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
-        The connected nodes. The nodes must be registered to different parts.
-        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
-    dofs : str
-        The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
-    """
-
-    def __init__(self, nodes, dofs="beam", **kwargs):
-        super(RigidLinkConnector, self).__init__(nodes, None, **kwargs)
-        self._dofs = dofs
+    def Kn(self):
+        return self._Kn
 
     @property
-    def dofs(self):
-        return self._dofs
+    def Kt(self):
+        return self._Kt
+
+    @property
+    def mu(self):
+        return self._mu

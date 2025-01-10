@@ -84,23 +84,21 @@ class Result(FEAData):
         return abs(self.vector[component] / allowable) if self.vector[component] != 0 else 1
 
 
-class DisplacementResult(Result):
-    """DisplacementResult object.
+class NodeResult(Result):
+    """NodeResult object.
 
     Parameters
     ----------
     node : :class:`compas_fea2.model.Node`
         The location of the result.
-    x : float
-        The x component of the displacement vector
-    y : float
-        The y component of the displacement vector
-    z : float
-        The z component of the displacement vector
+    components : dict
+        A dictionary with {"component name": component value} for each component of the result.
+    invariants : dict
+        A dictionary with {"invariant name": invariant value} for each invariant of the result.
 
     Attributes
     ----------
-    location : :class:`compas_fea2.model.Node` `
+    location : :class:`compas_fea2.model.Node`
         The location of the result.
     node : :class:`compas_fea2.model.Node`
         The location of the result.
@@ -108,75 +106,77 @@ class DisplacementResult(Result):
         A dictionary with {"component name": component value} for each component of the result.
     invariants : dict
         A dictionary with {"invariant name": invariant value} for each invariant of the result.
-    u1 : float
-        The x component of the displacement vector.
-    u2 : float
-        The y component of the displacement vector.
-    u3 : float
-        The z component of the displacement vector.
-    vector : :class:`compas.geometry.Vector`
-        The displacement vector.
-    magnitude : float
-        The absolute value of the displacement.
 
     Notes
     -----
-    DisplacementResults are registered to a :class:`compas_fea2.model.Node`
+    NodeResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, ux=0.0, uy=0.0, uz=0.0, uxx=0.0, uyy=0.0, uzz=0.0, **kwargs):
-        super(DisplacementResult, self).__init__(location=node, **kwargs)
-        self._title = "u"
-        self._ux = ux
-        self._uy = uy
-        self._uz = uz
-        self._uxx = uxx
-        self._uyy = uyy
-        self._uzz = uzz
-        self._components = {"ux": ux, "uy": uy, "uz": uz, "uxx": uxx, "uyy": uyy, "uzz": uzz}
-        self._vector = Vector(ux, uy, uz)
-        self._vector_rotation = Vector(uxx, uyy, uzz)
-        self._invariants = {"magnitude": self.vector.length}
+    def __init__(self, node, title, x=None, y=None, z=None, xx=None, yy=None, zz=None, **kwargs):
+        super(NodeResult, self).__init__(location=node, **kwargs)
+        self._title = title
+        self._x = x
+        self._y = y
+        self._z = z
+        self._xx = xx
+        self._yy = yy
+        self._zz = zz
 
     @property
     def node(self):
         return self._registration
 
     @property
-    def ux(self):
-        return self._ux
-
-    @property
-    def uy(self):
-        return self._uy
-
-    @property
-    def uz(self):
-        return self._uz
-
-    @property
-    def uxx(self):
-        return self._uxx
-
-    @property
-    def uyy(self):
-        return self._uyy
-
-    @property
-    def uzz(self):
-        return self._uzz
+    def components(self):
+        return {self._title + component: getattr(self, component) for component in ["x", "y", "z", "xx", "yy", "zz"]}
 
     @property
     def vector(self):
-        return self._vector
+        return Vector(self._x, self._y, self._z)
 
     @property
     def vector_rotation(self):
-        return self._vector_rotation
+        return Vector(self._xx, self._yy, self._zz)
 
     @property
     def magnitude(self):
         return self.vector.length
+
+
+class DisplacementResult(NodeResult):
+    """DisplacementResult object.
+
+    Notes
+    -----
+    DisplacementResults are registered to a :class:`compas_fea2.model.Node`
+    """
+
+    def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
+        super(DisplacementResult, self).__init__(node, "u", x, y, z, xx, yy, zz, **kwargs)
+
+
+class AccelerationResult(Result):
+    """AccelerationResult object.
+
+    Notes
+    -----
+    DisplacementResults are registered to a :class:`compas_fea2.model.Node`
+    """
+
+    def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
+        super(AccelerationResult, self).__init__(node, "a", x, y, z, xx, yy, zz, **kwargs)
+
+
+class VelocityResult(Result):
+    """AccelerationResult object.
+
+    Notes
+    -----
+    DisplacementResults are registered to a :class:`compas_fea2.model.Node`
+    """
+
+    def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
+        super(VelocityResult, self).__init__(node, "v", x, y, z, xx, yy, zz, **kwargs)
 
 
 class ReactionResult(Result):
@@ -219,55 +219,19 @@ class ReactionResult(Result):
     ReactionResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, rfx, rfy, rfz, rfxx, rfyy, rfzz, **kwargs):
-        super(ReactionResult, self).__init__(node, **kwargs)
-        self._title = "rf"
-        self._rfx = rfx
-        self._rfy = rfy
-        self._rfz = rfz
-        self._rfxx = rfxx
-        self._rfyy = rfyy
-        self._rfzz = rfzz
-        self._components = {"rfx": rfx, "rfy": rfy, "rfz": rfz, "rfxx": rfxx, "rfyy": rfyy, "rfzz": rfzz}
-        self._vector = Vector(rfx, rfy, rfz)
-        self._vector_moments = Vector(rfxx, rfyy, rfzz)
-        self._invariants = {"magnitude": self.vector.length}
+    def __init__(self, node, x, y, z, xx, yy, zz, **kwargs):
+        super(ReactionResult, self).__init__(node, "rf", x, y, z, xx, yy, zz, **kwargs)
+
+
+class Element1DResult(Result):
+    """Element1DResult object."""
+
+    def __init__(self, element, **kwargs):
+        super(Element1DResult, self).__init__(element, **kwargs)
 
     @property
-    def node(self):
-        return self._registration
-
-    @property
-    def rfx(self):
-        return self._rfx
-
-    @property
-    def rfy(self):
-        return self._rfy
-
-    @property
-    def rfz(self):
-        return self._rfz
-
-    @property
-    def rfxx(self):
-        return self._rfxx
-
-    @property
-    def rfyy(self):
-        return self._rfyy
-
-    @property
-    def rfzz(self):
-        return self._rfzz
-
-    @property
-    def vector(self):
-        return self._vector
-
-    @property
-    def magnitude(self):
-        return self.vector.length
+    def element(self):
+        return self.location
 
 
 class SectionForcesResult(Result):
@@ -310,8 +274,8 @@ class SectionForcesResult(Result):
     SectionForcesResults are registered to a :class:`compas_fea2.model._Element
     """
 
-    def __init__(self, node, **kwargs):
-        super(SectionForcesResult, self).__init__(node, **kwargs)
+    def __init__(self, element, **kwargs):
+        super(SectionForcesResult, self).__init__(element, **kwargs)
 
     @property
     def forces_vector(self):
@@ -320,6 +284,17 @@ class SectionForcesResult(Result):
     @property
     def moments_vector(self):
         pass
+
+    @property
+    def element(self):
+        return self.location
+
+
+class Element2DResult(Result):
+    """Element1DResult object."""
+
+    def __init__(self, element, **kwargs):
+        super(Element2DResult, self).__init__(element, **kwargs)
 
     @property
     def element(self):
@@ -734,12 +709,6 @@ class StressResult(Result):
         return self.location.section.material.E * self.location.section.material.expansion * temperature_change
 
 
-class SolidStressResult(StressResult):
-    def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
-        super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
-        self._title = "s3d"
-
-
 class MembraneStressResult(StressResult):
     def __init__(self, element, *, s11, s12, s22, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
@@ -929,3 +898,117 @@ class ShellStressResult(MembraneStressResult):
         tensors = {"mid": self.global_stress_bottom, "top": self.global_stress_top, "bottom": self.global_stress_bottom}
         unit_direction = np.array(direction) / np.linalg.norm(direction)
         return unit_direction.T @ tensors[side] @ unit_direction
+
+
+class Element3DResult(Result):
+    """Element1DResult object."""
+
+    def __init__(self, element, **kwargs):
+        super(Element2DResult, self).__init__(element, **kwargs)
+
+    @property
+    def element(self):
+        return self.location
+
+
+class SolidStressResult(StressResult):
+    def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
+        super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
+        self._title = "s3d"
+
+
+class StrainResult(Result):
+    pass
+
+
+class EnergyResult(Result):
+    pass
+
+
+class ModalAnalysisResult(Result):
+    def __init__(self, mode, eigenvalue, eigenvector, **kwargs):
+        super(ModalAnalysisResult, self).__init__(mode, **kwargs)
+        self._mode = mode
+        self._eigenvalue = eigenvalue
+        self._eigenvector = eigenvector
+
+    @property
+    def mode(self):
+        return self._mode
+
+    @property
+    def eigenvalue(self):
+        return self._eigenvalue
+
+    @property
+    def frequency(self):
+        return self._eigenvalue
+
+    @property
+    def omega(self):
+        return np.sqrt(self._eigenvalue)
+
+    @property
+    def period(self):
+        return 2 * np.pi / self.omega
+
+    @property
+    def eigenvector(self):
+        return self._eigenvector
+
+    def _normalize_eigenvector(self):
+        """
+        Normalize the eigenvector to obtain the mode shape.
+        Mode shapes are typically scaled so the maximum displacement is 1.
+        """
+        max_val = np.max(np.abs(self._eigenvector))
+        return self._eigenvector / max_val if max_val != 0 else self._eigenvector
+
+    def participation_factor(self, mass_matrix):
+        """
+        Calculate the modal participation factor.
+        :param mass_matrix: Global mass matrix.
+        :return: Participation factor.
+        """
+        if len(self.eigenvector) != len(mass_matrix):
+            raise ValueError("Eigenvector length must match the mass matrix size")
+        return np.dot(self.eigenvector.T, np.dot(mass_matrix, self.eigenvector))
+
+    def modal_contribution(self, force_vector):
+        """
+        Calculate the contribution of this mode to the global response for a given force vector.
+        :param force_vector: External force vector.
+        :return: Modal contribution.
+        """
+        return np.dot(self.eigenvector, force_vector) / self.eigenvalue
+
+    def to_dict(self):
+        """
+        Export the modal analysis result as a dictionary.
+        """
+        return {
+            "mode": self.mode,
+            "eigenvalue": self.eigenvalue,
+            "frequency": self.frequency,
+            "omega": self.omega,
+            "period": self.period,
+            "eigenvector": self.eigenvector.tolist(),
+            "mode_shape": self.mode_shape.tolist(),
+        }
+
+    def to_json(self, filepath):
+        import json
+
+        with open(filepath, "w") as f:
+            json.dump(self.to_dict(), f, indent=4)
+
+    def to_csv(self, filepath):
+        import csv
+
+        with open(filepath, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Mode", "Eigenvalue", "Frequency", "Omega", "Period", "Eigenvector", "Mode Shape"])
+            writer.writerow([self.mode, self.eigenvalue, self.frequency, self.omega, self.period, ", ".join(map(str, self.eigenvector)), ", ".join(map(str, self.mode_shape))])
+
+    def __repr__(self):
+        return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, " f"frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"

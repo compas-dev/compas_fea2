@@ -5,6 +5,7 @@ from __future__ import print_function
 from math import pi
 from math import sqrt
 from typing import Iterable
+from scipy.spatial import KDTree
 
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -114,6 +115,10 @@ class _Part(FEAData):
     @property
     def nodes(self):
         return self._nodes
+
+    @property
+    def points(self):
+        return [node.xyz for node in self.nodes]
 
     @property
     def elements(self):
@@ -618,35 +623,47 @@ class _Part(FEAData):
         if len(nodes) == 0:
             if compas_fea2.VERBOSE:
                 print(f"No nodes found at {point}")
-            return
+            return []
         if single:
             return nodes[0]
         else:
             return nodes
 
-    # def find_closest_nodes_to_point(self, point, distance, number_of_nodes=1, plane=None):
-    #     """Find the n closest nodes within a distance of a given geometrical location.
+    def find_closest_nodes_to_point(self, point, number_of_nodes, report=False):
+        """
+        Find the closest number_of_nodes nodes to a given point in the part.
 
-    #     Parameters
-    #     ----------
-    #     point : :class:`compas.geometry.Point`
-    #         A geometrical location.
-    #     distance : float
-    #         Distance from the location.
-    #     number_of_nodes : int
-    #         Number of nodes to return.
-    #     plane : :class:`compas.geometry.Plane`, optional
-    #         Limit the search to one plane.
+        Parameters
+        ----------
+        point): list
+            List of coordinates representing the point in x,y,z.
+        number_of_nodes: int
+            The number of closest points to find.
+        report: bool
+            Whether to return distances along with the nodes.
 
-    #     Returns
-    #     -------
-    #     list[:class:`compas_fea2.model.Node`]
+        Returns
+        -------
+        list or dict: A list of the closest nodes, or a dictionary with nodes
+                    and distances if report=True.
+        """
+        if number_of_nodes <= 0:
+            raise ValueError("The number of nodes to find must be greater than 0.")
+        if number_of_nodes > len(self.points):
+            raise ValueError("The number of nodes to find exceeds the available nodes.")
 
-    #     """
-    #     nodes = self.find_nodes_around_point(point, distance, plane, report=True)
-    #     if number_of_nodes > len(nodes):
-    #         number_of_nodes = len(nodes)
-    #     return [k for k, v in sorted(nodes.items(), key=lambda item: item[1])][:number_of_nodes]
+        tree = KDTree(self.points)
+        distances, indices = tree.query(point, k=number_of_nodes)
+        if number_of_nodes == 1:
+            distances = [distances]
+            indices = [indices]
+        closest_nodes = [list(self.nodes)[i] for i in indices]
+
+        if report:
+            # Return a dictionary with nodes and their distances
+            return {node: distance for node, distance in zip(closest_nodes, distances)}
+
+        return closest_nodes
 
     def find_nodes_around_node(self, node, distance, plane=None, report=False, single=False):
         """Find all nodes around a given node (excluding the node itself).

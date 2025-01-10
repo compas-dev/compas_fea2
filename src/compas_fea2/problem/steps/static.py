@@ -207,7 +207,7 @@ class StaticStep(GeneralStep):
             LineLoadPattern(polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs)
         )
 
-    def add_area_pattern(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+    def add_areaload_pattern(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` along a prescribed path.
 
@@ -277,15 +277,15 @@ class StaticStep(GeneralStep):
         model!
 
         """
+        raise NotImplementedError()
         from compas_fea2.problem import GravityLoad
-
         return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
 
     # =========================================================================
     #                           Fields methods
     # =========================================================================
     # FIXME change to pattern
-    def add_temperature_field(self, field, node):
+    def add_temperature_pattern(self, field, node):
         raise NotImplementedError()
         # if not isinstance(field, PrescribedTemperatureField):
         #     raise TypeError("{!r} is not a PrescribedTemperatureField.".format(field))
@@ -296,10 +296,6 @@ class StaticStep(GeneralStep):
         # node._temperature = field
         # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
         # return field
-
-    def add_temperature_fields(self, field, nodes):
-        raise NotImplementedError()
-        # return [self.add_temperature_field(field, node) for node in nodes]
 
     # =========================================================================
     #                           Displacements methods

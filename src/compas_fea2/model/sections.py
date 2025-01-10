@@ -248,6 +248,8 @@ class BeamSection(_Section):
         self.g0 = g0
         self.gw = gw
 
+        self._shape = Circle(radius=sqrt(A) / pi)
+
     def __str__(self):
         return """
 {}

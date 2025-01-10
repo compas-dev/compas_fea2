@@ -11,6 +11,8 @@ from compas_fea2.model import _Element2D
 from compas_fea2.model import _Element3D
 
 from .results import DisplacementResult
+from .results import AccelerationResult
+from .results import VelocityResult
 from .results import ReactionResult
 from .results import ShellStressResult
 from .results import SolidStressResult
@@ -359,6 +361,70 @@ class DisplacementFieldResults(FieldResults):
         self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = DisplacementResult
+        self._results_func = "find_node_by_key"
+
+    def results(self, step):
+        nodes = self.model.nodes
+        return self.get_results(nodes, steps=step)[step]
+
+
+class AccelerationFieldResults(FieldResults):
+    """Displacement field results.
+
+    This class handles the displacement field results from a finite element analysis.
+
+    problem : :class:`compas_fea2.problem.Problem`
+        The Problem where the Step is registered.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the displacement components.
+    invariants_names : list of str
+        Names of the invariants of the displacement field.
+    results_class : class
+        The class used to instantiate the displacement results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, problem, *args, **kwargs):
+        super(AccelerationFieldResults, self).__init__(problem=problem, field_name="a", *args, **kwargs)
+        self._components_names = ["ax", "ay", "az", "axx", "ayy", "azz"]
+        self._invariants_names = ["magnitude"]
+        self._results_class = AccelerationResult
+        self._results_func = "find_node_by_key"
+
+    def results(self, step):
+        nodes = self.model.nodes
+        return self.get_results(nodes, steps=step)[step]
+
+
+class VelocityFieldResults(FieldResults):
+    """Displacement field results.
+
+    This class handles the displacement field results from a finite element analysis.
+
+    problem : :class:`compas_fea2.problem.Problem`
+        The Problem where the Step is registered.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the displacement components.
+    invariants_names : list of str
+        Names of the invariants of the displacement field.
+    results_class : class
+        The class used to instantiate the displacement results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, problem, *args, **kwargs):
+        super(VelocityFieldResults, self).__init__(problem=problem, field_name="v", *args, **kwargs)
+        self._components_names = ["vx", "vy", "vz", "vxx", "vyy", "vzz"]
+        self._invariants_names = ["magnitude"]
+        self._results_class = VelocityResult
         self._results_func = "find_node_by_key"
 
     def results(self, step):

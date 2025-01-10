@@ -39,12 +39,10 @@ class Step(FEAData):
 
     A ``compas_fea2`` analysis is based on the concept of ``steps``,
     which represent the sequence in which the state of the model is modified.
-    Steps can be introduced for example to change the output requests or to change
-    loads, boundary conditions, analysis procedure, etc. There is no limit on the
-    number of steps in an analysis.
+    Steps can be introduced for example to change loads, boundary conditions,
+    analysis procedure, etc. There is no limit on the number of steps in an analysis.
 
     Developer-only class.
-
     """
 
     def __init__(self, **kwargs):
@@ -75,7 +73,7 @@ class Step(FEAData):
         return self._load_cases
 
     @property
-    def patterns(self):
+    def load_patterns(self):
         return self._patterns
 
     @property
@@ -101,7 +99,7 @@ class Step(FEAData):
         # for case in combination.load_cases:
         #     if case not in self._load_cases:
         #         raise ValueError(f"{case} is not a valid load case.")
-        for pattern in self.patterns:
+        for pattern in self.load_patterns:
             if pattern.load_case in combination.load_cases:
                 factor = combination.factors[pattern.load_case]
                 for node, load in pattern.node_load:
@@ -254,13 +252,19 @@ class GeneralStep(Step):
         self._nlgeom = nlgeom
         self._modify = modify
         self._restart = restart
+        self._patterns = set()
+        self._load_cases = set()
+
+    @property
+    def patterns(self):
+        return self._patterns
 
     @property
     def displacements(self):
         return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._patterns))
 
     @property
-    def loads(self):
+    def load_patterns(self):
         return list(filter(lambda p: isinstance(p.load, Load), self._patterns))
 
     @property

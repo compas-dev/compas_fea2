@@ -157,6 +157,66 @@ class DisplacementFieldOutput(_NodeFieldOutput):
         }
 
 
+class AccelerationFieldOutput(_NodeFieldOutput):
+    """AccelerationFieldOutput object for requesting the accelerations at the nodes
+    from the analysis."""
+
+    def __init__(self, **kwargs):
+        super(AccelerationFieldOutput, self).__init__("a", ["ax", "ay", "az", "axx", "ayy", "azz"], ["magnitude"], **kwargs)
+
+    @classmethod
+    def get_sqltable_schema(cls):
+        """
+        Return a dict describing the table name and each column
+        (column_name, column_type, constraints).
+        """
+        return {
+            "table_name": "a",
+            "columns": [
+                ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+                ("input_key", "INTEGER"),
+                ("step", "TEXT"),
+                ("part", "TEXT"),
+                ("ax", "REAL"),
+                ("ay", "REAL"),
+                ("az", "REAL"),
+                ("axx", "REAL"),
+                ("ayy", "REAL"),
+                ("azz", "REAL"),
+            ],
+        }
+
+
+class VelocityFieldOutput(_NodeFieldOutput):
+    """VelocityFieldOutput object for requesting the velocities at the nodes
+    from the analysis."""
+
+    def __init__(self, **kwargs):
+        super(VelocityFieldOutput, self).__init__("v", ["vx", "vy", "vz", "vxx", "vyy", "vzz"], ["magnitude"], **kwargs)
+
+    @classmethod
+    def get_sqltable_schema(cls):
+        """
+        Return a dict describing the table name and each column
+        (column_name, column_type, constraints).
+        """
+        return {
+            "table_name": "v",
+            "columns": [
+                ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+                ("input_key", "INTEGER"),
+                ("step", "TEXT"),
+                ("part", "TEXT"),
+                ("vx", "REAL"),
+                ("vy", "REAL"),
+                ("vz", "REAL"),
+                ("vxx", "REAL"),
+                ("vyy", "REAL"),
+                ("vzz", "REAL"),
+            ],
+        }
+
+
 class ReactionFieldOutput(_NodeFieldOutput):
     """ReactionFieldOutput object for requesting the reaction forces at the nodes
     from the analysis."""

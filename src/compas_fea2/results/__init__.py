@@ -5,6 +5,8 @@ from __future__ import print_function
 from .results import (
     Result,
     DisplacementResult,
+    AccelerationResult,
+    VelocityResult,
     StressResult,
     MembraneStressResult,
     ShellStressResult,
@@ -13,6 +15,8 @@ from .results import (
 
 from .fields import (
     DisplacementFieldResults,
+    AccelerationFieldResults,
+    VelocityFieldResults,
     StressFieldResults,
     ReactionFieldResults,
 )
@@ -21,11 +25,15 @@ from .fields import (
 __all__ = [
     "Result",
     "DisplacementResult",
+    "AccelerationResult",
+    "VelocityResult",
     "StressResult",
     "MembraneStressResult",
     "ShellStressResult",
     "SolidStressResult",
     "DisplacementFieldResults",
+    "AccelerationFieldResults",
+    "VelocityFieldResults",
     "ReactionFieldResults",
     "StressFieldResults",
 ]

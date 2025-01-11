@@ -982,6 +982,24 @@ class _Part(FEAData):
             if element.key == key:
                 return element
 
+    def find_element_by_inputkey(self, input_key):
+        """Retrieve an element in the model using its key.
+
+        Parameters
+        ----------
+        input_key : int
+            The element's inputkey.
+
+        Returns
+        -------
+        :class:`compas_fea2.model._Element`
+            The corresponding element.
+
+        """
+        for element in self.elements:
+            if element.input_key == input_key:
+                return element
+
     def find_elements_by_name(self, name):
         """Find all elements with a given name.
 

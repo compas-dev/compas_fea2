@@ -461,12 +461,17 @@ class Model(FEAData):
         pass
 
     # =========================================================================
-    #                           Nodes methods
+    #                           Elements methods
     # =========================================================================
 
     @get_docstring(_Part)
     @part_method
     def find_element_by_key(self, key):
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_element_by_inputkey(self, key):
         pass
 
     @get_docstring(_Part)

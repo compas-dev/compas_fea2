@@ -22,6 +22,8 @@ from compas_fea2.results import StressFieldResults
 from compas_fea2.results import ModalShape
 from compas_fea2.results.database import ResultsDatabase
 
+from compas_fea2.UI.viewer import FEA2Viewer
+
 
 class Problem(FEAData):
     """A Problem is a collection of analysis steps (:class:`compas_fea2.problem._Step)
@@ -516,7 +518,7 @@ Analysis folder path : {self.path or "N/A"}
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-    def show(self, scale_model=1.0, show_bcs=1.0, show_loads=1.0, **kwargs):
+    def show(self, fast=True, scale_model=1.0, show_parts=True, show_bcs=1.0, show_loads=1.0, **kwargs):
         """Visualise the model in the viewer.
 
         Parameters
@@ -529,28 +531,15 @@ Analysis folder path : {self.path or "N/A"}
             Scale factor for the loads, by default 1.0
 
         """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2StepObject
-        from compas_fea2.UI.viewer import FEA2Viewer
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
-
-        register_scene_objects()  # This has to be called before registering the model object
-
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
-        if show_loads:
-            if not kwargs.get("step", None):
-                step = self.steps_order[-1]
-                register(step.__class__, FEA2StepObject, context="Viewer")
-                viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-
-        viewer.viewer.show()
+        viewer.config.vectorsize = 0.2
+        viewer.add_model(self.model, show_parts=show_parts, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        # if show_loads:
+        #     register(step.__class__, FEA2StepObject, context="Viewer")
+        #     viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
+        viewer.show()
+        viewer.scene.clear()
 
     def show_principal_stress_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, **kwargs):
         """Display the principal stress results for a given step.
@@ -599,7 +588,7 @@ Analysis folder path : {self.path or "N/A"}
 
         viewer.viewer.show()
 
-    def show_deformed(self, step=None, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
+    def show_deformed(self, step=None, opacity=1, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
         """Display the structure in its deformed configuration.
 
         Parameters
@@ -613,34 +602,22 @@ Analysis folder path : {self.path or "N/A"}
         None
 
         """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
         if not step:
             step = self.steps_order[-1]
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
 
-        register_scene_objects()  # This has to be called before registering the model object
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-
         if show_original:
-            viewer.viewer.scene.add(self.model, model=self.model, opacity=show_original, show_bcs=False)
-
+            viewer.add_model(self.model, fast=True, opacity=show_original, show_bcs=False, **kwargs)
         # TODO create a copy of the model first
         displacements = step.problem.displacement_field
         for displacement in displacements.results(step):
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-
-        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=1, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
+        viewer.add_model(self.model, fast=True, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
         viewer.viewer.show()
 
-    def show_displacements(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
+    def show_displacements(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
         """Display the displacement field results for a given step.
 
         Parameters
@@ -655,14 +632,6 @@ Analysis folder path : {self.path or "N/A"}
             _description_, by default
 
         """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2DisplacementFieldResultsObject
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2StepObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
         if not step:
             step = self.steps_order[-1]
 
@@ -670,23 +639,12 @@ Analysis folder path : {self.path or "N/A"}
             raise ValueError("No displacement field results available for this step")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
-
-        register_scene_objects()  # This has to be called before registering the model object
-
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
-        register(step.problem.displacement_field.__class__.__bases__[-1], FEA2DisplacementFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(
-            step.problem.displacement_field, field=step.problem.displacement_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs
-        )
-
+        viewer.add_model(self.model, fast=fast, show_parts=False, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_displacement_field(step.problem.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
         if show_loads:
-            register(step.__class__, FEA2StepObject, context="Viewer")
-            viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-
-        viewer.viewer.show()
+            self.add_step(step, show_loads=show_loads)
+        viewer.show()
+        viewer.scene.clear()
 
     def show_reactions(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
         """Display the reaction field results for a given step.
@@ -775,30 +733,25 @@ Analysis folder path : {self.path or "N/A"}
         viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
         viewer.viewer.show()
 
-    def show_mode_shape(self, step, mode, scale_results=1, scale_model=1.0, show_bcs=True, show_original=0.25, **kwargs):
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        if not step:
-            step = self.steps_order[-1]
+    def show_mode_shape(
+        self, step, mode, fast=True, opacity=1, scale_results=1, scale_model=1.0, show_bcs=True, show_original=0.25, show_contour=False, show_vectors=False, **kwargs
+    ):
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
 
-        register_scene_objects()  # This has to be called before registering the model object
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-
         if show_original:
-            viewer.viewer.scene.add(self.model, model=self.model, opacity=show_original, show_bcs=False)
+            viewer.add_model(self.model, show_parts=True, fast=True, opacity=show_original, show_bcs=False, **kwargs)
+
+        shape = step.problem.modal_shape(mode)
+        if show_vectors:
+            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
 
         # TODO create a copy of the model first
-        shapes = step.problem.modal_shape(mode)
-        for displacement in shapes.results(step):
+        for displacement in shape.results(step):
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
-        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=1, show_bcs=show_bcs, show_loads=False, **kwargs)
-
-        viewer.viewer.show()
+        if show_contour:
+            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+        viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
+        viewer.show()

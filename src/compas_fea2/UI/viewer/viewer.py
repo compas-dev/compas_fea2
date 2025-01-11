@@ -1,36 +1,109 @@
-import os
-
 import numpy as np
-from compas.colors import Color
-from compas.colors import ColorMap
-from compas.geometry import Vector
-from compas_viewer.scene import Collection
-from compas_viewer.scene import GroupObject
+from compas.itertools import remap_values
+from compas_viewer.components import Button
 from compas_viewer.viewer import Viewer
+from compas_viewer.scene import GroupObject
+from compas.scene import register
+from compas.scene import register_scene_objects
 
-from compas_fea2.model.bcs import FixedBC
-from compas_fea2.model.bcs import PinnedBC
-from compas_fea2.model.bcs import RollerBCX
-from compas_fea2.model.bcs import RollerBCY
-from compas_fea2.model.bcs import RollerBCZ
-from compas_fea2.UI.viewer.primitives import FixBCShape
-from compas_fea2.UI.viewer.primitives import PinBCShape
-from compas_fea2.UI.viewer.primitives import RollerBCShape
-
-from .drawer import draw_field_contour
-from .drawer import draw_field_vectors
-
-HERE = os.path.dirname(__file__)
-CONFIG = os.path.join(HERE, "config.json")
-
-color_palette = {
-    "faces": Color.from_hex("#e8e5d4"),
-    "edges": Color.from_hex("#4554ba"),
-    "nodes": Color.black,
-}
+from compas_fea2.UI.viewer.scene import FEA2ModelObject
+from compas_fea2.UI.viewer.scene import FEA2DisplacementFieldResultsObject
+from compas_fea2.UI.viewer.scene import FEA2StepObject
 
 
-class FEA2Viewer:
+def toggle_nodes():
+    viewer = FEA2Viewer()
+    if viewer.nodes:
+        for obj in viewer.nodes.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_supports():
+    viewer = FEA2Viewer()
+    if viewer.supports:
+        for obj in viewer.supports.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_blocks():
+    viewer = FEA2Viewer()
+    if viewer.blocks:
+        for obj in viewer.blocks.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_blockfaces():
+    viewer = FEA2Viewer()
+    if viewer.blocks:
+        for obj in viewer.blocks.descendants:
+            obj.show_faces = not obj.show_faces
+    viewer.renderer.update()
+
+
+def toggle_interfaces():
+    viewer = FEA2Viewer()
+    if viewer.interfaces:
+        for obj in viewer.interfaces.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_compression():
+    viewer = FEA2Viewer()
+    if viewer.compressionforces:
+        for obj in viewer.compressionforces.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_tension():
+    viewer = FEA2Viewer()
+    if viewer.tensionforces:
+        for obj in viewer.tensionforces.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_friction():
+    viewer = FEA2Viewer()
+    if viewer.frictionforces:
+        for obj in viewer.frictionforces.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def toggle_resultants():
+    viewer = FEA2Viewer()
+    if viewer.resultantforces:
+        for obj in viewer.resultantforces.descendants:
+            obj.is_visible = not obj.is_visible
+    viewer.renderer.update()
+
+
+def scale_compression(value):
+    if value <= 50:
+        values = list(range(1, 51))
+        values = remap_values(values, target_min=1, target_max=100)
+        scale = values[value - 1] / 100
+    else:
+        value = value - 50
+        values = list(range(0, 50))
+        values = remap_values(values, target_min=1, target_max=100)
+        scale = values[value - 1]
+
+    viewer = FEA2Viewer()
+    if viewer.compressionforces:
+        for obj, line in zip(viewer.compressionforces.descendants, viewer._compressionforces):
+            obj.geometry.start = line.midpoint - line.vector * 0.5 * scale
+            obj.geometry.end = line.midpoint + line.vector * 0.5 * scale
+            obj.update()
+    viewer.renderer.update()
+
+
+class FEA2Viewer(Viewer):
     """Viewer for FEA2 models.
 
     Parameters
@@ -42,344 +115,81 @@ class FEA2Viewer:
     """
 
     def __init__(self, center=[1, 1, 1], scale_model=1000, **kwargs):
-        self.viewer = Viewer(**kwargs)
-        self.viewer.renderer.camera.target = [i * scale_model for i in center]
-        self.viewer.config.vectorsize = 0.5
+        super().__init__(**kwargs)
+        self.renderer.camera.target = [i * scale_model for i in center]
+        self.config.vectorsize = 0.2
         V1 = np.array([0, 0, 0])
-        V2 = np.array(self.viewer.renderer.camera.target)
+        V2 = np.array(self.renderer.camera.target)
         delta = V2 - V1
         length = np.linalg.norm(delta)
         distance = length * 3
         unitSlope = delta / length
         new_position = V1 + unitSlope * distance
-        self.viewer.renderer.camera.position = new_position.tolist()
-        self.viewer.renderer.camera.near *= 1
-        self.viewer.renderer.camera.far *= 10000
-        self.viewer.renderer.camera.scale *= scale_model
+        self.renderer.camera.position = new_position.tolist()
+        self.renderer.camera.near *= 1
+        self.renderer.camera.far *= 10000
+        self.renderer.camera.scale *= scale_model
 
+        self.model: GroupObject = None
+        self.nodes: GroupObject = None
+        self.displacements: GroupObject = None
+        self.step: GroupObject = None
 
-class FEA2ModelObject(GroupObject):
-    """Model object for visualization.
+        self.ui.sidedock.show = True
+        self.ui.sidedock.add(Button(text="Toggle Nodes", action=toggle_nodes))
+        self.ui.sidedock.add(Button(text="Toggle Supports", action=toggle_supports))
+        self.ui.sidedock.add(Button(text="Toggle Blocks", action=toggle_blocks))
+        self.ui.sidedock.add(Button(text="Toggle Block Faces", action=toggle_blockfaces))
+        self.ui.sidedock.add(Button(text="Toggle Interfaces", action=toggle_interfaces))
+        self.ui.sidedock.add(Button(text="Toggle Compression", action=toggle_compression))
+        self.ui.sidedock.add(Button(text="Toggle Tension", action=toggle_tension))
+        self.ui.sidedock.add(Button(text="Toggle Friction", action=toggle_friction))
+        self.ui.sidedock.add(Button(text="Toggle Resultants", action=toggle_resultants))
 
-    Parameters
-    ----------
-    model : :class:`compas_fea2.model.Structure`
-        The model to visualize.
-    fast : bool
-        If True, the visualization will be faster.
-    show_bcs : bool
-        If True, the boundary conditions will be displayed.
-    show_parts : bool
-        If True, the parts will be displayed.
-    """
+    def add_parts(self, parts):
+        pass
 
-    def __init__(self, model, fast=False, show_bcs=True, show_parts=True, show_connectors=True, **kwargs):
-        model = kwargs.pop("item")
+    def add_model(self, model, fast=True, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+        register_scene_objects()
+        register(model.__class__.__base__, FEA2ModelObject, context="Viewer")
+        self.model = self.scene.add(model, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
-        face_color = kwargs.get("face_color", color_palette["faces"])
-        line_color = kwargs.get("line_color", color_palette["edges"])
-        show_faces = kwargs.get("show_faces", True)
-        show_lines = kwargs.get("show_lines", False)
-        show_nodes = kwargs.get("show_nodes", False)
-        opacity = kwargs.get("opacity", 1.0)
-        part_meshes = []
-        if show_parts:
-            # DRAW PARTS
-            for part in model.parts:
-                # DRAW NODES
-                for node in part.nodes:
-                    if show_nodes:
-                        part_meshes.append(
-                            (
-                                node.point,
-                                {
-                                    "pointcolor": Color.grey(),
-                                    "pointsize": 10,
-                                    "opacity": 0.5,
-                                    "name": node.name,
-                                },
-                            )
-                        )
+    def add_displacement_field(self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+        register_scene_objects()
+        register(field.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
+        self.displacements = self.scene.add(
+            field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+        )
 
-                # DRAW ELEMENTS
-                if not fast:
-                    for element in part.elements:
-                        part_meshes.append(
-                            (
-                                element.outermesh,
-                                {
-                                    "show_faces": show_faces,
-                                    "show_lines": show_lines,
-                                    "show_points": False,
-                                    "facecolor": face_color,
-                                    "linecolor": line_color,
-                                    "opacity": opacity,
-                                    "name": element.name,
-                                },
-                            )
-                        )
-                else:
-                    collection = []
-                    for element in part.elements:
-                        # if part._discretized_boundary_mesh:
-                        collection.append(
-                            element.outermesh
-                            # (
-                            #     # part._boundary_mesh,
-                            #     part._discretized_boundary_mesh,
-                            #     {
-                            #         "show_faces": show_faces,
-                            #         "show_lines": show_lines,
-                            #         "show_points": show_points,
-                            #         "linecolor": line_color,
-                            #         "facecolor": face_color,
-                            #         "opacity": opacity,
-                            #         "name": part.name,
-                            #     },
-                            # )
-                        )
-                    part_meshes.append((Collection(collection), {"name": "elements"}))
+    def add_mode_shape(self, mode_shape, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+        register_scene_objects()
+        register(mode_shape.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
+        self.displacements = self.scene.add(
+            mode_shape, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+        )
 
-        # DRAW BOUNDARY CONDITIONS
-        bcs_meshes = []
-        if show_bcs:
-            if model.bcs:
-                for bc, nodes in model.bcs.items():
-                    for node in nodes:
-                        if isinstance(bc, PinnedBC):
-                            shape = PinBCShape(node.xyz, scale=show_bcs).shape
-                        if isinstance(bc, FixedBC):
-                            shape = FixBCShape(node.xyz, scale=show_bcs).shape
-                        if isinstance(bc, (RollerBCX, RollerBCY, RollerBCZ)):
-                            shape = RollerBCShape(node.xyz, scale=show_bcs).shape
-                        bcs_meshes.append(
-                            (
-                                shape,
-                                {
-                                    "show_faces": show_faces,
-                                    "facecolor": Color.red(),
-                                    "linecolor": Color.red(),
-                                    "show_points": False,
-                                    "opacity": 0.5,
-                                    "name": bc.name,
-                                },
-                            )
-                        )
+    def add_step(self, step, show_loads=1):
+        register_scene_objects()
+        register(step.__class__, FEA2StepObject, context="Viewer")
+        self.step = self.scene.add(step, step=step, scale_factor=show_loads)
 
-        # DRAW INTERFACES
-        # DRAW CONSTRAINTS
-        # DRAW CONNECTORS
-        connectors_meshes = []
-        if show_connectors:
-            for connector in model.connectors:
-                connectors_meshes.append(
-                    (
-                        connector.nodes[0].point,
-                        {
-                            "pointcolor": Color.red(),
-                            "pointsize": 50,
-                            "opacity": 0.2,
-                            "name": connector.name,
-                        },
-                    )
-                )
+    def add_nodes(self, nodes):
 
-        parts = (part_meshes, {"name": "parts"})
-        interfaces = ([], {"name": "interfaces"})
-        connectors = (connectors_meshes, {"name": "connectors"})
-        bcs = (bcs_meshes, {"name": "bcs"})
-        super().__init__(item=[parts, interfaces, bcs, connectors], name="Model", **kwargs)
-
-
-class FEA2StepObject(GroupObject):
-    """Step object for visualization.
-
-    Parameters
-    ----------
-    step : :class:`compas_fea2.problem.steps.Step`
-        The step to visualize.
-    scale_factor : float
-        The scale factor for the visualization.
-
-    """
-
-    def __init__(self, step, scale_factor, **kwargs):
-        step = kwargs.pop("item")
-
-        # DRAW PATTERNS
-        patterns = []
-        for pattern in step.patterns:
-            pattern_forces = []
-            for node, load in pattern.node_load:
-                x = load.x or 0
-                y = load.y or 0
-                z = load.z or 0
-                pattern_forces.append(
-                    (
-                        Vector(x * scale_factor, y * scale_factor, z * scale_factor),  # .to_mesh(anchor=node.point)
-                        {
-                            "anchor": node.point,
-                            "linecolor": Color.purple(),
-                            "linewidth": 4,
-                        },
-                    )
-                )
-            patterns.append(
+        self.nodes = []
+        for node in nodes:
+            self.nodes.append(
                 (
-                    pattern_forces,
+                    node.point,
                     {
-                        "name": f"PATTERN-{pattern.name}",
+                        # "pointcolor": Color.grey(),
+                        "pointßsize": 10,
+                        "opacity": 0.5,
+                        "name": node.name,
                     },
                 )
             )
 
-        super().__init__(item=patterns, name=f"STEP-{step.name}", componets=None, **kwargs)
-
-
-class FEA2StressFieldResultsObject(GroupObject):
-    """StressFieldResults object for visualization.
-
-    Parameters
-    ----------
-    field : :class:`compas_fea2.results.Field`
-        The field to visualize.
-    step : :class:`compas_fea2.problem.steps.Step`
-        The step to visualize.
-    scale_factor : float
-        The scale factor for the visualization.
-    components : list
-        The components to visualize.
-
-    """
-
-    def __init__(self, field, step, scale_factor, components=None, **kwargs):
-        field = kwargs.pop("item")
-
-        field_locations = list(field.locations(step))
-
-        if not components:
-            components = [0, 1, 2]
-        names = {0: "min", 1: "mid", 2: "max"}
-        colors = {0: Color.blue(), 1: Color.yellow(), 2: Color.red()}
-
-        collections = []
-        for component in components:
-            field_results = [v[component] for v in field.principal_components_vectors(step)]
-            lines, _ = draw_field_vectors(field_locations, field_results, scale_factor, translate=-0.5)
-            collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
-
-        super().__init__(item=collections, name=f"RESULTS-{field.name}", **kwargs)
-
-
-class FEA2DisplacementFieldResultsObject(GroupObject):
-    """DisplacementFieldResults object for visualization.
-
-    Parameters
-    ----------
-    field : :class:`compas_fea2.results.Field`
-        The field to visualize.
-    step : :class:`compas_fea2.problem.steps.Step`
-        The step to visualize.
-    scale_factor : float
-        The scale factor for the visualization.
-    components : list
-        The components to visualize.
-
-    """
-
-    def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
-        # FIXME: component is not used
-
-        field = kwargs.pop("item")
-        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-
-        group_elements = []
-        if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
-            # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
-            for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
-
-        if show_contour:
-            from compas_fea2.model.elements import BeamElement
-
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
-            min_value = min(field_results)
-            max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
-
-            # DRAW CONTOURS ON 2D and 3D ELEMENTS
-            for part, vertexcolor in part_vertexcolor.items():
-                group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-            # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
-                for element in part.elements:
-                    vertexcolor = {}
-                    if isinstance(element, BeamElement):
-                        for c, n in enumerate(element.nodes):
-                            v = field_results[field_locations.index(n)]
-                            for p in range(len(element.section._shape.points)):
-                                vertexcolor[p + c * len(element.section._shape.points)] = cmap(v, minval=min_value, maxval=max_value)
-                        # vertexcolor = {c: Color.red() for c in range(2*len(element.section._shape.points))}
-                        group_elements.append((element.outermesh, {"name": element.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-        super().__init__(item=group_elements, name=f"RESULTS-{field.name}", **kwargs)
-
-
-class FEA2ReactionFieldResultsObject(GroupObject):
-    """DisplacementFieldResults object for visualization.
-
-    Parameters
-    ----------
-    field : :class:`compas_fea2.results.Field`
-        The field to visualize.
-    step : :class:`compas_fea2.problem.steps.Step`
-        The step to visualize.
-    scale_factor : float
-        The scale factor for the visualization.
-    components : list
-        The components to visualize.
-
-    """
-
-    def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
-        # FIXME: component is not used
-
-        field = kwargs.pop("item")
-        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        cmap = None
-
-        group_elements = []
-        if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
-            for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"REACT-{component}", "linecolor": c, "linewidth": 3}))
-
-        if show_contour:
-            from compas_fea2.model.elements import BeamElement
-
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
-            min_value = min(field_results)
-            max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
-
-            # DRAW CONTOURS ON 2D and 3D ELEMENTS
-            for part, vertexcolor in part_vertexcolor.items():
-                group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-            # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
-                for element in part.elements:
-                    vertexcolor = {}
-                    if isinstance(element, BeamElement):
-                        for c, n in enumerate(element.nodes):
-                            v = field_results[field_locations.index(n)]
-                            for p in range(len(element.section._shape.points)):
-                                vertexcolor[p + c * len(element.section._shape.points)] = cmap(v, minval=min_value, maxval=max_value)
-                        # vertexcolor = {c: Color.red() for c in range(2*len(element.section._shape.points))}
-                        group_elements.append((element.outermesh, {"name": element.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-        super().__init__(item=group_elements, name=f"RESULTS-{field.name}", **kwargs)
+        self.scene.add(
+            self.nodes,
+            name="Nodes",
+        )

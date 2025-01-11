@@ -1,9 +1,9 @@
 from .viewer import FEA2Viewer
-from .viewer import FEA2ModelObject
-from .viewer import FEA2StepObject
-from .viewer import FEA2StressFieldResultsObject
-from .viewer import FEA2DisplacementFieldResultsObject
-from .viewer import FEA2ReactionFieldResultsObject
+from .scene import FEA2ModelObject
+from .scene import FEA2StepObject
+from .scene import FEA2StressFieldResultsObject
+from .scene import FEA2DisplacementFieldResultsObject
+from .scene import FEA2ReactionFieldResultsObject
 
 from .primitives import (
     _BCShape,

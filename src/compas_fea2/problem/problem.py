@@ -16,10 +16,6 @@ from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.problem.steps import StaticStep
 from compas_fea2.problem.steps import Step
-from compas_fea2.results import DisplacementFieldResults
-from compas_fea2.results import ReactionFieldResults
-from compas_fea2.results import StressFieldResults
-from compas_fea2.results import ModalShape
 from compas_fea2.results.database import ResultsDatabase
 
 from compas_fea2.UI.viewer import FEA2Viewer
@@ -106,27 +102,7 @@ class Problem(FEAData):
 
     @property
     def results_db(self):
-        if os.path.exists(self.path_db):
-            return ResultsDatabase(self.path_db)
-
-    @property
-    def displacement_field(self):
-        return DisplacementFieldResults(problem=self)
-
-    @property
-    def reaction_field(self):
-        return ReactionFieldResults(problem=self)
-
-    @property
-    def temperature_field(self):
-        raise NotImplementedError
-
-    @property
-    def stress_field(self):
-        return StressFieldResults(problem=self)
-
-    def modal_shape(self, mode):
-        return ModalShape(problem=self, mode=mode)
+        return ResultsDatabase(self)
 
     @property
     def steps_order(self):
@@ -635,14 +611,14 @@ Analysis folder path : {self.path or "N/A"}
         if not step:
             step = self.steps_order[-1]
 
-        if not step.problem.displacement_field:
+        if not step.displacement_field:
             raise ValueError("No displacement field results available for this step")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.add_model(self.model, fast=fast, show_parts=False, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.add_displacement_field(step.problem.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_displacement_field(step.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contours=show_contours, **kwargs)
         if show_loads:
-            self.add_step(step, show_loads=show_loads)
+            viewer.add_step(step, show_loads=show_loads)
         viewer.show()
         viewer.scene.clear()
 

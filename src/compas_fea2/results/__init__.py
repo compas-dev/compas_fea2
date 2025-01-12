@@ -11,7 +11,6 @@ from .results import (
     MembraneStressResult,
     ShellStressResult,
     SolidStressResult,
-    ModalAnalysisResult,
 )
 
 from .fields import (
@@ -20,6 +19,10 @@ from .fields import (
     VelocityFieldResults,
     StressFieldResults,
     ReactionFieldResults,
+)
+
+from .modal import (
+    ModalAnalysisResults,
     ModalShape,
 )
 
@@ -38,6 +41,6 @@ __all__ = [
     "VelocityFieldResults",
     "ReactionFieldResults",
     "StressFieldResults",
-    "ModalAnalysisResult",
+    "ModalAnalysisResults",
     "ModalShape",
 ]

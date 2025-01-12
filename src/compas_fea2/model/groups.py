@@ -6,8 +6,6 @@ from typing import Iterable
 
 from compas_fea2.base import FEAData
 
-# TODO change lists to sets
-
 
 class _Group(FEAData):
     """Base class for all groups.

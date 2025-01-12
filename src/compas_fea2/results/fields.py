@@ -54,27 +54,30 @@ class FieldResults(FEAData):
 
     Notes
     -----
-    FieldResults are registered to a :class:`compas_fea2.problem.Problem`.
+    FieldResults are registered to a :class:`compas_fea2.problem.Step`.
 
     """
 
-    def __init__(self, problem, field_name, *args, **kwargs):
+    def __init__(self, step, field_name, *args, **kwargs):
         super(FieldResults, self).__init__(*args, **kwargs)
-        self._registration = problem
+        self._registration = step
         self._field_name = field_name
-        self._table = self.problem.results_db.get_table(field_name)
-        self._components_names = None
+        self._table = step.problem.results_db.get_table(field_name)
+        self._componets_names = None
         self._invariants_names = None
-        self._results_class = None
-        self._results_func = None
+        self._restuls_func = None
+
+    @property
+    def step(self):
+        return self._registration
+
+    @property
+    def problem(self):
+        return self.step.problem
 
     @property
     def field_name(self):
         return self._field_name
-
-    @property
-    def problem(self):
-        return self._registration
 
     @property
     def model(self):
@@ -85,82 +88,10 @@ class FieldResults(FEAData):
         return self.problem.results_db
 
     @property
-    def components_names(self):
-        return self._components_names
+    def results(self):
+        return NotImplementedError()
 
-    @property
-    def invariants_names(self):
-        return self._invariants_names
-
-    def _get_db_results(self, members, steps, **kwargs):
-        """Get the results for the given members and steps in the database
-        format.
-
-        Parameters
-        ----------
-        members : _type_
-            The FieldResults object containing the field results data.
-        steps : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        if not isinstance(members, Iterable):
-            members = [members]
-        if not isinstance(steps, Iterable):
-            steps = [steps]
-
-        members_keys = set([member.input_key for member in members])
-        parts_names = set([member.part.name for member in members])
-        steps_names = set([step.name for step in steps])
-
-        if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "input_key"] + self._components_names_3d
-            field_name = self._field_name_3d
-        elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "input_key"] + self._components_names_2d
-            field_name = self._field_name_2d
-        else:
-            columns = ["step", "part", "input_key"] + self._components_names
-            field_name = self._field_name
-
-        filters = {"input_key": members_keys, "part": parts_names, "step": steps_names}
-
-        if kwargs.get("mode", None):
-            filters["mode"] = set([kwargs['mode'] for member in members])
-
-        results_set = self.rdb.get_rows(field_name, columns, filters)
-        return results_set
-
-    def _to_result(self, results_set):
-        """Convert a set of results in database format to the appropriate
-        result object.
-
-        Parameters
-        ----------
-        results_set : _type_
-            _description_
-
-        Returns
-        -------
-        dic
-            Dictiorany grouping the results per Step.
-        """
-        results = {}
-        for r in results_set:
-            step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step, [])
-            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
-            if not part:
-                raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, self._results_func)(r[2])
-            results[step].append(self._results_class(m, *r[3:]))
-        return results
-
-    def get_results(self, members, steps, **kwargs):
+    def _get_results_from_db(self, members, columns, filters=None, **kwargs):
         """Get the results for the given members and steps.
 
         Parameters
@@ -175,10 +106,39 @@ class FieldResults(FEAData):
         _type_
             _description_
         """
-        results_set = self._get_db_results(members, steps, **kwargs)
-        return self._to_result(results_set)
+        if not isinstance(members, Iterable):
+            members = [members]
 
-    def get_max_result(self, component, step, **kwargs):
+        members_keys = set([member.input_key for member in members])
+        parts_names = set([member.part.name for member in members])
+        columns = ["step", "part", "input_key"] + self._components_names
+        if not filters:
+            filters = {"input_key": members_keys, "part": parts_names, "step": [self.step.name]}
+        # if kwargs.get("mode", None):
+        #     filters["mode"] = set([kwargs["mode"] for member in members])
+
+        results_set = self.rdb.get_rows(self._field_name, columns, filters)
+
+        return self.rdb.to_result(results_set, self._results_class, self._restuls_func)
+
+    def get_result_at(self, location):
+        """Get the result for a given member and step.
+
+        Parameters
+        ----------
+        member : _type_
+            _description_
+        step : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return self._get_results_from_db(location, self.step)[self.step][0]
+
+    def get_max_result(self, component):
         """Get the result where a component is maximum for a given step.
 
         Parameters
@@ -193,14 +153,14 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [self.step.name]}, self.results_columns)
+        return self.rdb.to_result(results_set)[self.step][0]
 
-    def get_min_result(self, component, step, **kwargs):
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
+    def get_min_result(self, component):
+        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [self.step.name]}, self.results_columns)
+        return self.rdb.to_result(results_set, self._results_class)[self.step][0]
 
-    def get_max_component(self, component, step, **kwargs):
+    def get_max_component(self, component):
         """Get the result where a component is maximum for a given step.
 
         Parameters
@@ -215,9 +175,9 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appriate Result object.
         """
-        return self.get_max_result(component, step).vector[component - 1]
+        return self.get_max_result(component, self.step).vector[component - 1]
 
-    def get_min_component(self, component, step, **kwargs):
+    def get_min_component(self, component):
         """Get the result where a component is minimum for a given step.
 
         Parameters
@@ -232,9 +192,9 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appropriate Result object.
         """
-        return self.get_min_result(component, step).vector[component - 1]
+        return self.get_min_result(component, self.step).vector[component - 1]
 
-    def get_limits_component(self, component, step, **kwargs):
+    def get_limits_component(self, component):
         """Get the result objects with the min and max value of a given
         component in a step.
 
@@ -250,40 +210,16 @@ class FieldResults(FEAData):
         list
             A list containing the result objects with the minimum and maximum value of the given component in the step.
         """
-        return [self.get_min_result(component, step), self.get_max_result(component, step)]
+        return [self.get_min_result(component, self.step), self.get_max_result(component, self.step)]
 
-    def get_limits_absolute(self, step, **kwargs):
+    def get_limits_absolute(self):
         limits = []
         for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
-        return [self._to_result(limit)[step][0] for limit in limits]
+            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [self.step.name]}, self.results_columns))
+        return [self.rdb.to_result(limit)[self.step][0] for limit in limits]
 
-    def get_results_at_point(self, point, distance, plane=None, steps=None, **kwargs):
-        """Get the displacement of the model around a location (point).
-
-        Parameters
-        ----------
-        point : [float]
-            The coordinates of the point.
-        steps : _type_, optional
-            _description_, by default None
-
-        Returns
-        -------
-        dict
-            Dictionary with {step: result}
-
-        """
-        nodes = self.model.find_nodes_around_point(point, distance, plane)
-        if not nodes:
-            print(f"WARNING: No nodes found at {point} within {distance}")
-        else:
-            results = []
-            steps = steps or self.problem.steps
-            results = self.get_results(nodes, steps)
-            return results
-
-    def locations(self, step=None, point=False, **kwargs):
+    @property
+    def locations(self):
         """Return the locations where the field is defined.
 
         Parameters
@@ -296,14 +232,11 @@ class FieldResults(FEAData):
         :class:`compas.geometry.Point`
             The location where the field is defined.
         """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            if point:
-                yield r.node.point
-            else:
-                yield r.node
+        for r in self.results:
+            yield r.node
 
-    def vectors(self, step=None, **kwargs):
+    @property
+    def points(self):
         """Return the locations where the field is defined.
 
         Parameters
@@ -316,11 +249,27 @@ class FieldResults(FEAData):
         :class:`compas.geometry.Point`
             The location where the field is defined.
         """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
+        for r in self.results:
+            yield r.node.point
+
+    @property
+    def vectors(self):
+        """Return the locations where the field is defined.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem.steps.Step`, optional
+            The analysis step, by default None
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        for r in self.results:
             yield r.vector
 
-    def component(self, step=None, component=None, **kwargs):
+    def component(self, dof=None):
         """Return the locations where the field is defined.
 
         Parameters
@@ -333,12 +282,11 @@ class FieldResults(FEAData):
         :class:`compas.geometry.Point`
             The location where the field is defined.
         """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            if component is None:
+        for r in self.results:
+            if dof is None:
                 yield r.vector.magnitude
             else:
-                yield r.vector[component]
+                yield r.vector[dof]
 
 
 class DisplacementFieldResults(FieldResults):
@@ -361,49 +309,17 @@ class DisplacementFieldResults(FieldResults):
         The function used to find nodes by key.
     """
 
-    def __init__(self, problem, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="u", *args, **kwargs)
+    def __init__(self, step, *args, **kwargs):
+        super(DisplacementFieldResults, self).__init__(step=step, field_name="u", *args, **kwargs)
         self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
+        self._restuls_func = "find_node_by_inputkey"
 
-    def results(self, step):
+    @property
+    def results(self):
         nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
-
-
-class ModalShape(FieldResults):
-    """Displacement field results.
-
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
-    """
-
-    def __init__(self, problem, mode, *args, **kwargs):
-        super(ModalShape, self).__init__(problem=problem, field_name="eigenvectors", *args, **kwargs)
-        self._components_names = ["dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
-        self.mode = mode
-
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step, mode=self.mode)[step]
+        return self._get_results_from_db(nodes, step=self.step, columns=self._components_names)[self.step]
 
 
 class AccelerationFieldResults(FieldResults):
@@ -426,16 +342,17 @@ class AccelerationFieldResults(FieldResults):
         The function used to find nodes by key.
     """
 
-    def __init__(self, problem, *args, **kwargs):
-        super(AccelerationFieldResults, self).__init__(problem=problem, field_name="a", *args, **kwargs)
+    def __init__(self, step, *args, **kwargs):
+        super(AccelerationFieldResults, self).__init__(problem=step, field_name="a", *args, **kwargs)
         self._components_names = ["ax", "ay", "az", "axx", "ayy", "azz"]
         self._invariants_names = ["magnitude"]
         self._results_class = AccelerationResult
-        self._results_func = "find_node_by_key"
+        self._restuls_func = "find_node_by_inputkey"
 
-    def results(self, step):
+    @property
+    def results(self):
         nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
+        return self._get_results_from_db(nodes, step=self.step, columns=self._components_names)[self.step]
 
 
 class VelocityFieldResults(FieldResults):
@@ -458,16 +375,17 @@ class VelocityFieldResults(FieldResults):
         The function used to find nodes by key.
     """
 
-    def __init__(self, problem, *args, **kwargs):
-        super(VelocityFieldResults, self).__init__(problem=problem, field_name="v", *args, **kwargs)
+    def __init__(self, step, *args, **kwargs):
+        super(VelocityFieldResults, self).__init__(problem=step, field_name="v", *args, **kwargs)
         self._components_names = ["vx", "vy", "vz", "vxx", "vyy", "vzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = VelocityResult
-        self._results_func = "find_node_by_key"
+        self._restuls_func = "find_node_by_inputkey"
 
-    def results(self, step):
+    @property
+    def results(self):
         nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
+        return self._get_results_from_db(nodes, step=self.step, columns=self._components_names)[self.step]
 
 
 class ReactionFieldResults(FieldResults):
@@ -479,16 +397,17 @@ class ReactionFieldResults(FieldResults):
         The Problem where the Step is registered.
     """
 
-    def __init__(self, problem, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(problem=problem, field_name="rf", *args, **kwargs)
+    def __init__(self, step, *args, **kwargs):
+        super(ReactionFieldResults, self).__init__(step=step, field_name="rf", *args, **kwargs)
         self._components_names = ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"]
         self._invariants_names = ["magnitude"]
         self._results_class = ReactionResult
-        self._results_func = "find_node_by_key"
+        self._restuls_func = "find_node_by_inputkey"
 
-    def results(self, step):
+    @property
+    def results(self):
         nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
+        return self._get_results_from_db(nodes, step=self.step, columns=self._components_names)[self.step]
 
 
 class StressFieldResults(FEAData):
@@ -509,7 +428,7 @@ class StressFieldResults(FEAData):
         self._field_name_3d = "s3d"
         self._results_class_2d = ShellStressResult
         self._results_class_3d = SolidStressResult
-        self._results_func = "find_element_by_key"
+        self._restuls_func = "find_element_by_inputkey"
 
     @property
     def field_name(self):

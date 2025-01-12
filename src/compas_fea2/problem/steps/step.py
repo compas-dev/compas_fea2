@@ -7,6 +7,10 @@ from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import _PrescribedField
 from compas_fea2.problem.loads import Load
 
+from compas_fea2.results import DisplacementFieldResults
+from compas_fea2.results import ReactionFieldResults
+from compas_fea2.results import StressFieldResults
+
 # ==============================================================================
 #                                Base Steps
 # ==============================================================================
@@ -106,10 +110,10 @@ class Step(FEAData):
                     factored_load = factor * load
 
                     node.loads.setdefault(self, {}).setdefault(combination, {})[pattern] = factored_load
-                    if node.total_load:
-                        node.total_load += factored_load
+                    if node._total_load:
+                        node._total_load += factored_load
                     else:
-                        node.total_load = factored_load
+                        node._total_load = factored_load
 
     @property
     def history_outputs(self):
@@ -169,6 +173,21 @@ class Step(FEAData):
     # ==========================================================================
     #                             Results methods
     # ==========================================================================
+    @property
+    def displacement_field(self):
+        return DisplacementFieldResults(self)
+
+    @property
+    def reaction_field(self):
+        return ReactionFieldResults(self)
+
+    @property
+    def temperature_field(self):
+        raise NotImplementedError
+
+    @property
+    def stress_field(self):
+        return StressFieldResults(self)
 
 
 # ==============================================================================

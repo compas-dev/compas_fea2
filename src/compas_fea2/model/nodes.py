@@ -93,9 +93,7 @@ class Node(FEAData):
         self._is_reference = False
 
         self._loads = {}
-        self.total_load = None
-        self._displacements = {}
-        self._results = {}
+        self._total_load = None
 
         self._connected_elements = []
 
@@ -234,3 +232,11 @@ class Node(FEAData):
     @property
     def connected_elements(self):
         return self._connected_elements
+
+    def displacement(self, step):
+        if step.displacement_field:
+            return step.displacement_field.get_result_at(location=self)
+
+    def reaction(self, step):
+        if step.reaction_field:
+            return step.reaction_field.get_result_at(location=self)

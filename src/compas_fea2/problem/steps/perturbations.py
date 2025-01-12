@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from .step import Step
+from compas_fea2.results import ModalAnalysisResults
+from compas_fea2.results import ModalShape
 
 
 class _Perturbation(Step):
@@ -36,6 +38,22 @@ class ModalAnalysis(_Perturbation):
     def __init__(self, modes=1, **kwargs):
         super(ModalAnalysis, self).__init__(**kwargs)
         self.modes = modes
+
+    @property
+    def results(self):
+        return [ModalAnalysisResults(problem=self) for mode in range(self.modes)]
+
+    def frequencies(self):
+        return [ModalAnalysisResults(problem=self) for mode in range(self.modes)]
+
+    @property
+    def shapes(self):
+        return [ModalShape(step=self, mode=mode) for mode in range(self.modes)]
+
+    def shape(self, mode):
+        if mode > self.modes:
+            raise ValueError("Mode number exceeds the number of modes.")
+        return ModalShape(problem=self, mode=mode)
 
 
 class ComplexEigenValue(_Perturbation):

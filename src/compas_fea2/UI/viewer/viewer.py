@@ -145,6 +145,7 @@ class FEA2Viewer(Viewer):
         self.ui.sidedock.add(Button(text="Toggle Tension", action=toggle_tension))
         self.ui.sidedock.add(Button(text="Toggle Friction", action=toggle_friction))
         self.ui.sidedock.add(Button(text="Toggle Resultants", action=toggle_resultants))
+        register_scene_objects()
 
     def add_parts(self, parts):
         pass
@@ -154,22 +155,31 @@ class FEA2Viewer(Viewer):
         register(model.__class__.__base__, FEA2ModelObject, context="Viewer")
         self.model = self.scene.add(model, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
-    def add_displacement_field(self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
-        register_scene_objects()
+    def add_displacement_field(
+        self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=True, show_contours=False, **kwargs
+    ):
         register(field.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
         self.displacements = self.scene.add(
-            field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+            field,
+            step=step,
+            component=component,
+            fast=fast,
+            show_parts=show_parts,
+            opacity=opacity,
+            show_bcs=show_bcs,
+            show_loads=show_loads,
+            show_vectors=show_vectors,
+            show_contours=show_contours,
+            **kwargs,
         )
 
     def add_mode_shape(self, mode_shape, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
-        register_scene_objects()
         register(mode_shape.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
         self.displacements = self.scene.add(
             mode_shape, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
         )
 
     def add_step(self, step, show_loads=1):
-        register_scene_objects()
         register(step.__class__, FEA2StepObject, context="Viewer")
         self.step = self.scene.add(step, step=step, scale_factor=show_loads)
 

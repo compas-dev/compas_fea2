@@ -1,10 +1,11 @@
 import sqlite3
+from compas_fea2.base import FEAData
 
 
-class ResultsDatabase:
+class ResultsDatabase(FEAData):
     """sqlite3 wrapper class to access the SQLite database."""
 
-    def __init__(self, db_uri):
+    def __init__(self, problem, **kwargs):
         """
         Initialize DataRetriever with the database URI.
 
@@ -13,9 +14,19 @@ class ResultsDatabase:
         db_uri : str
             The database URI.
         """
-        self.db_uri = db_uri
+        super(ResultsDatabase, self).__init__(**kwargs)
+        self._registration = problem
+        self.db_uri = problem.path_db
         self.connection = self.db_connection()
         self.cursor = self.connection.cursor()
+
+    @property
+    def problem(self):
+        return self._registration
+
+    @property
+    def model(self):
+        return self.problem.model
 
     def db_connection(self):
         """
@@ -55,14 +66,43 @@ class ResultsDatabase:
     # =========================================================================
     @property
     def table_names(self):
+        """
+        Get the names of all tables in the database.
+
+        Returns
+        -------
+        list
+            A list of table names.
+        """
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         return [row[0] for row in self.cursor.fetchall()]
 
     @property
     def fields(self):
+        """
+        Get the names of all fields in the database, excluding the 'fields' table.
+
+        Returns
+        -------
+        list
+            A list of field names.
+        """
         return [c for c in self.table_names if c != "fields"]
 
     def column_names(self, table_name):
+        """
+        Get the names of all columns in a given table.
+
+        Parameters
+        ----------
+        table_name : str
+            The name of the table.
+
+        Returns
+        -------
+        list
+            A list of column names.
+        """
         self.cursor.execute(f"PRAGMA table_info({table_name});")
         return [row[1] for row in self.cursor.fetchall()]
 
@@ -74,16 +114,16 @@ class ResultsDatabase:
         table_name : str
             The name of the table.
 
-        Return
-        ------
-        str
-            The table name.
+        Returns
+        -------
+        list of tuples
+            The table data.
         """
-        return table_name
+        query = f"SELECT * FROM {table_name}"
+        return self.execute_query(query)
 
     def get_column_values(self, table_name, column_name):
-        """Get all the rows in a given table that match the filtering criteria
-        and return the values for each column.
+        """Get all the values in a given column from a table.
 
         Parameters
         ----------
@@ -95,13 +135,13 @@ class ResultsDatabase:
         Returns
         -------
         list
-            The column values.
+            A list of values from the specified column.
         """
         query = f"SELECT {column_name} FROM {table_name}"
         return self.execute_query(query)
 
     def get_column_unique_values(self, table_name, column_name):
-        """Get all the values in a column and remove duplicates.
+        """Get all the unique values in a given column from a table.
 
         Parameters
         ----------
@@ -131,10 +171,10 @@ class ResultsDatabase:
         filters : dict
             Filtering criteria as {"column_name":[admissible values]}
 
-        Return
-        ------
+        Returns
+        -------
         list of lists
-            list with each row as a list
+            List with each row as a list.
         """
         filter_conditions = " AND ".join([f"{k} IN ({','.join(['?' for _ in v])})" for k, v in filters.items()])
         query = f"SELECT {', '.join(columns_names)} FROM {table_name} WHERE {filter_conditions}"
@@ -172,3 +212,34 @@ class ResultsDatabase:
         query = f"SELECT {', '.join(columns_names)} FROM {table_name} WHERE {filter_conditions} ORDER BY {func}({column_name}) DESC LIMIT 1"
         params = [item for sublist in filters.values() for item in sublist]
         return self.execute_query(query, params)
+
+    # =========================================================================
+    #                       FEA2 Methods
+    # =========================================================================
+
+    def to_result(self, results_set, results_class, results_func):
+        """Convert a set of results in the database to the appropriate
+        result object.
+
+        Parameters
+        ----------
+        results_set : list of tuples
+            The set of results retrieved from the database.
+        results_class : class
+            The class to instantiate for each result.
+
+        Returns
+        -------
+        dict
+            Dictionary grouping the results per Step.
+        """
+        results = {}
+        for r in results_set:
+            step = self.problem.find_step_by_name(r[0])
+            results.setdefault(step, [])
+            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
+            if not part:
+                raise ValueError(f"Part {r[1]} not in model")
+            m = getattr(part, results_func)(r[2])
+            results[step].append(results_class(m, *r[3:]))
+        return results

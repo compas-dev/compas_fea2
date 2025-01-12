@@ -297,7 +297,7 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
 
         group_elements = []
         if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
+            vectors, colors = draw_field_vectors([n.point for n in field.locations], list(field.vectors), show_vectors, translate=0, cmap=cmap)
             # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
             for v, c in zip(vectors, colors):
                 group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
@@ -305,8 +305,8 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
         if show_contour:
             from compas_fea2.model.elements import BeamElement
 
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
+            field_locations = list(field.locations)
+            field_results = list(field.component(component))
             min_value = min(field_results)
             max_value = max(field_results)
             part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)

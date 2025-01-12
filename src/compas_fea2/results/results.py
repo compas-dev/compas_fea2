@@ -122,6 +122,7 @@ class NodeResult(Result):
         self._xx = xx
         self._yy = yy
         self._zz = zz
+        self._results_func = "find_node_by_inputkey"
 
     @property
     def node(self):
@@ -224,16 +225,24 @@ class ReactionResult(NodeResult):
         super(ReactionResult, self).__init__(node, "rf", x, y, z, xx, yy, zz, **kwargs)
 
 
-class Element1DResult(Result):
+class ElementResult(Result):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
         super(Element1DResult, self).__init__(**kwargs)
         self._registration = element
+        self._results_func = "find_element_by_inputkey"
 
     @property
     def element(self):
         return self._registration
+
+
+class Element1DResult(ElementResult):
+    """Element1DResult object."""
+
+    def __init__(self, element, **kwargs):
+        super(Element1DResult, self).__init__(element, **kwargs)
 
 
 class SectionForcesResult(Element1DResult):
@@ -292,16 +301,11 @@ class SectionForcesResult(Element1DResult):
         return self.location
 
 
-class Element2DResult(Result):
+class Element2DResult(ElementResult):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(**kwargs)
-        self._registration = element
-
-    @property
-    def element(self):
-        return self._registration
+        super(Element2DResult, self).__init__(element, **kwargs)
 
 
 class StressResult(Element2DResult):
@@ -903,16 +907,11 @@ class ShellStressResult(MembraneStressResult):
         return unit_direction.T @ tensors[side] @ unit_direction
 
 
-class Element3DResult(Result):
+class Element3DResult(ElementResult):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(**kwargs)
-        self._registration = element
-
-    @property
-    def element(self):
-        return self._registration
+        super(Element2DResult, self).__init__(element, **kwargs)
 
 
 # TODO: double inheritance StressResult and Element3DResult
@@ -928,92 +927,3 @@ class StrainResult(Result):
 
 class EnergyResult(Result):
     pass
-
-
-class ModalAnalysisResult(Result):
-    def __init__(self, mode, eigenvalue, eigenvector, **kwargs):
-        super(ModalAnalysisResult, self).__init__(mode, **kwargs)
-        self._mode = mode
-        self._eigenvalue = eigenvalue
-        self._eigenvector = eigenvector
-
-    @property
-    def mode(self):
-        return self._mode
-
-    @property
-    def eigenvalue(self):
-        return self._eigenvalue
-
-    @property
-    def frequency(self):
-        return self._eigenvalue
-
-    @property
-    def omega(self):
-        return np.sqrt(self._eigenvalue)
-
-    @property
-    def period(self):
-        return 2 * np.pi / self.omega
-
-    @property
-    def eigenvector(self):
-        return self._eigenvector
-
-    def _normalize_eigenvector(self):
-        """
-        Normalize the eigenvector to obtain the mode shape.
-        Mode shapes are typically scaled so the maximum displacement is 1.
-        """
-        max_val = np.max(np.abs(self._eigenvector))
-        return self._eigenvector / max_val if max_val != 0 else self._eigenvector
-
-    def participation_factor(self, mass_matrix):
-        """
-        Calculate the modal participation factor.
-        :param mass_matrix: Global mass matrix.
-        :return: Participation factor.
-        """
-        if len(self.eigenvector) != len(mass_matrix):
-            raise ValueError("Eigenvector length must match the mass matrix size")
-        return np.dot(self.eigenvector.T, np.dot(mass_matrix, self.eigenvector))
-
-    def modal_contribution(self, force_vector):
-        """
-        Calculate the contribution of this mode to the global response for a given force vector.
-        :param force_vector: External force vector.
-        :return: Modal contribution.
-        """
-        return np.dot(self.eigenvector, force_vector) / self.eigenvalue
-
-    def to_dict(self):
-        """
-        Export the modal analysis result as a dictionary.
-        """
-        return {
-            "mode": self.mode,
-            "eigenvalue": self.eigenvalue,
-            "frequency": self.frequency,
-            "omega": self.omega,
-            "period": self.period,
-            "eigenvector": self.eigenvector.tolist(),
-            "mode_shape": self.mode_shape.tolist(),
-        }
-
-    def to_json(self, filepath):
-        import json
-
-        with open(filepath, "w") as f:
-            json.dump(self.to_dict(), f, indent=4)
-
-    def to_csv(self, filepath):
-        import csv
-
-        with open(filepath, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["Mode", "Eigenvalue", "Frequency", "Omega", "Period", "Eigenvector", "Mode Shape"])
-            writer.writerow([self.mode, self.eigenvalue, self.frequency, self.omega, self.period, ", ".join(map(str, self.eigenvector)), ", ".join(map(str, self.mode_shape))])
-
-    def __repr__(self):
-        return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, " f"frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"

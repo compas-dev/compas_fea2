@@ -8,6 +8,7 @@ from compas.scene import register_scene_objects
 
 from compas_fea2.UI.viewer.scene import FEA2ModelObject
 from compas_fea2.UI.viewer.scene import FEA2DisplacementFieldResultsObject
+from compas_fea2.UI.viewer.scene import FEA2ReactionFieldResultsObject
 from compas_fea2.UI.viewer.scene import FEA2StepObject
 
 
@@ -158,6 +159,13 @@ class FEA2Viewer(Viewer):
         register_scene_objects()
         register(field.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
         self.displacements = self.scene.add(
+            field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+        )
+
+    def add_reaction_field(self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+        register_scene_objects()
+        register(field.__class__.__base__, FEA2ReactionFieldResultsObject, context="Viewer")
+        self.reactions = self.scene.add(
             field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
         )
 

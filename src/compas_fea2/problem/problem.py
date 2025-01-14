@@ -615,7 +615,7 @@ Analysis folder path : {self.path or "N/A"}
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
         viewer.add_model(self.model, fast=True, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.viewer.show()
+        viewer.show()
 
     def show_displacements(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
         """Display the displacement field results for a given step.
@@ -639,14 +639,14 @@ Analysis folder path : {self.path or "N/A"}
             raise ValueError("No displacement field results available for this step")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.add_model(self.model, fast=fast, show_parts=False, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
         viewer.add_displacement_field(step.problem.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
         if show_loads:
-            self.add_step(step, show_loads=show_loads)
+            viewer.add_step(step, show_loads=show_loads)
         viewer.show()
         viewer.scene.clear()
 
-    def show_reactions(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
+    def show_reactions(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
         """Display the reaction field results for a given step.
 
         Parameters
@@ -664,38 +664,20 @@ Analysis folder path : {self.path or "N/A"}
         scale_results : _type_, optional
             _description_, by default 1
         """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2ReactionFieldResultsObject
-        from compas_fea2.UI.viewer import FEA2StepObject
-        from compas_fea2.UI.viewer import FEA2Viewer
 
         if not step:
             step = self.steps_order[-1]
 
         if not step.problem.reaction_field:
-            raise ValueError("No reaction field results available for this step")
+            raise ValueError("No displacement field results available for this step")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
-
-        register_scene_objects()  # This has to be called before registering the model object
-
-        register(self.model.__class__, FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
-        register(step.problem.reaction_field.__class__, FEA2ReactionFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(
-            step.problem.reaction_field, field=step.problem.reaction_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs
-        )
-
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_reaction_field(step.problem.reaction_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
         if show_loads:
-            register(step.__class__, FEA2StepObject, context="Viewer")
-            viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-
-        viewer.viewer.show()
+            viewer.add_step(step, show_loads=show_loads)
+        viewer.show()
+        viewer.scene.clear()
 
     def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
         from compas.scene import register

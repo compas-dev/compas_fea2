@@ -346,18 +346,18 @@ class FEA2ReactionFieldResultsObject(GroupObject):
 
     """
 
-    def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
+    def __init__(self, step, component, show_vectors=1, show_contour=False, **kwargs):
         # FIXME: component is not used
 
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        cmap = None
 
         group_elements = []
         if show_vectors:
             vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
+            # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
             for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"REACT-{component}", "linecolor": c, "linewidth": 3}))
+                group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
 
         if show_contour:
             from compas_fea2.model.elements import BeamElement

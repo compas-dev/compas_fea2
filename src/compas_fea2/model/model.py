@@ -1209,8 +1209,8 @@ Initial Conditions
         register(self.__class__, FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self, model=self, opacity=0.5, show_bcs=show_bcs, kwargs=kwargs)
-        viewer.viewer.show()
+        viewer.scene.add(self, model=self, opacity=0.5, show_bcs=show_bcs, kwargs=kwargs)
+        viewer.show()
 
     @problem_method
     def show_displacements(self, problem, *args, **kwargs):

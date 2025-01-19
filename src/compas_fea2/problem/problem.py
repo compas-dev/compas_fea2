@@ -5,8 +5,6 @@ from __future__ import print_function
 import os
 from pathlib import Path
 
-from compas.colors import Color
-from compas.colors import ColorMap
 from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import centroid_points_weighted
@@ -718,16 +716,16 @@ Analysis folder path : {self.path or "N/A"}
         if show_original:
             viewer.add_model(self.model, show_parts=True, fast=True, opacity=show_original, show_bcs=False, **kwargs)
 
-        shape = step.problem.modal_shape(mode)
+        shape = step.mode_shape(mode)
         if show_vectors:
-            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
 
         # TODO create a copy of the model first
-        for displacement in shape.results(step):
+        for displacement in shape.results:
             vector = displacement.vector.scaled(scale_results)
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
         if show_contour:
-            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
         viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
         viewer.show()

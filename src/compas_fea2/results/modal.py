@@ -1,15 +1,41 @@
 from compas_fea2.base import FEAData
 from .fields import FieldResults
-from .fields import DisplacementResult
-from .results import Result
+
+# from .results import Result
 import numpy as np
 
-# from typing import Iterable
 
+class ModalAnalysisResult(FEAData):
+    """Modal analysis result.
 
-class ModalAnalysisResult(Result):
-    def __init__(self, mode, eigenvalue, eigenvector, **kwargs):
-        super(ModalAnalysisResult, self).__init__(mode, **kwargs)
+    Parameters
+    ----------
+    mode : int
+        Mode number.
+    eigenvalue : float
+        Eigenvalue.
+    eigenvector : list
+        List of DisplacementResult objects.
+
+    Attributes
+    ----------
+    mode : int
+        Mode number.
+    eigenvalue : float
+        Eigenvalue.
+    frequency : float
+        Frequency of the mode.
+    omega : float
+        Angular frequency of the mode.
+    period : float
+        Period of the mode.
+    eigenvector : list
+        List of DisplacementResult objects.
+    """
+
+    def __init__(self, *, step, mode, eigenvalue, eigenvector, **kwargs):
+        super(ModalAnalysisResult, self).__init__(**kwargs)
+        self.step = step
         self._mode = mode
         self._eigenvalue = eigenvalue
         self._eigenvector = eigenvector
@@ -24,7 +50,7 @@ class ModalAnalysisResult(Result):
 
     @property
     def frequency(self):
-        return self._eigenvalue
+        return self.omega / (2 * np.pi)
 
     @property
     def omega(self):
@@ -32,11 +58,15 @@ class ModalAnalysisResult(Result):
 
     @property
     def period(self):
-        return 2 * np.pi / self.omega
+        return 1 / self.frequency
 
     @property
     def eigenvector(self):
         return self._eigenvector
+
+    @property
+    def shape(self):
+        return ModalShape(step=self.step, results=self._eigenvector)
 
     def _normalize_eigenvector(self):
         """
@@ -96,100 +126,45 @@ class ModalAnalysisResult(Result):
         return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, " f"frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"
 
 
-class ModalAnalysisResults(FEAData):
-    def __init__(self, step, **kwargs):
-        super(ModalAnalysisResults, self).__init__(**kwargs)
-        self._registration = step
-        self._eigenvalues = None
-        self._eigenvectors = None
-        self._eigenvalues_table = step.problem.results_db.get_table("eigenvalues")
-        self._eigenvalues_table = step.problem.results_db.get_table("eigenvectors")
-        self._components_names = ["dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"]
-
-    @property
-    def step(self):
-        return self._registration
-
-    @property
-    def problem(self):
-        return self.step.problem
-
-    @property
-    def model(self):
-        return self.problem.model
-
-    @property
-    def rdb(self):
-        return self.problem.results_db
-
-    @property
-    def components_names(self):
-        return self._components_names
-
-    def get_results(self, mode, members, steps, field_name, results_func, results_class, **kwargs):
-        """Get the results for the given members and steps.
-
-        Parameters
-        ----------
-        members : _type_
-            _description_
-        steps : _type_
-            _description_
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        members_keys = set([member.input_key for member in members])
-        parts_names = set([member.part.name for member in members])
-        steps_names = set([step.name for step in steps])
-
-        columns = ["step", "part", "input_key"] + self._components_names
-        filters = {"input_key": members_keys, "part": parts_names, "step": steps_names, "mode": set([mode for _ in members])}
-
-        results_set = self.rdb.get_rows(field_name, columns, filters)
-
-        results = {}
-        for r in results_set:
-            step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step, [])
-            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
-            if not part:
-                raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, results_func)(r[2])
-            results[step].append(results_class(m, *r[3:]))
-        return self._to_result(results_set)
-
-
 class ModalShape(FieldResults):
-    """Displacement field results.
+    """ModalShape result applied as Displacement field.
 
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
+    Parameters
     ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
+    step : :class:`compas_fea2.problem.Step`
+        The analysis step
+    results : list
+        List of DisplcementResult objects.
     """
 
-    def __init__(self, step, mode, *args, **kwargs):
-        super(ModalShape, self).__init__(step=step, field_name="eigenvectors", *args, **kwargs)
-        self._components_names = ["dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
-        self.mode = mode
+    def __init__(self, step, results, *args, **kwargs):
+        super(ModalShape, self).__init__(step=step, field_name=None, *args, **kwargs)
+        self._results = results
 
-    def results(self, step):
-        nodes = self.model.nodes
-        return self._get_results_from_db(nodes, step=step, mode=self.mode)[step]
+    @property
+    def results(self):
+        return self._results
+
+    def _get_results_from_db(self, members=None, columns=None, filters=None, **kwargs):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_result_at(self, location):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_max_result(self, component):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_min_result(self, component):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_max_component(self, component):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_min_component(self, component):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_limits_component(self, component):
+        raise NotImplementedError("this method is not applicable for ModalShape results")
+
+    def get_limits_absolute(self):
+        raise NotImplementedError("this method is not applicable for ModalShape results")

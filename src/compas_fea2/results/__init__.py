@@ -22,7 +22,7 @@ from .fields import (
 )
 
 from .modal import (
-    ModalAnalysisResults,
+    ModalAnalysisResult,
     ModalShape,
 )
 
@@ -41,6 +41,7 @@ __all__ = [
     "VelocityFieldResults",
     "ReactionFieldResults",
     "StressFieldResults",
-    "ModalAnalysisResults",
+    "SectionForcesFieldResults",
+    "ModalAnalysisResult",
     "ModalShape",
 ]

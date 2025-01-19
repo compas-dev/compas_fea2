@@ -2,8 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from itertools import chain
-
 from compas_fea2.base import FEAData
 
 
@@ -144,7 +142,7 @@ class DisplacementFieldOutput(_NodeFieldOutput):
             "table_name": "u",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-                ("input_key", "INTEGER"),
+                ("key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
                 ("ux", "REAL"),
@@ -174,7 +172,7 @@ class AccelerationFieldOutput(_NodeFieldOutput):
             "table_name": "a",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-                ("input_key", "INTEGER"),
+                ("key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
                 ("ax", "REAL"),
@@ -204,7 +202,7 @@ class VelocityFieldOutput(_NodeFieldOutput):
             "table_name": "v",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-                ("input_key", "INTEGER"),
+                ("key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
                 ("vx", "REAL"),
@@ -234,7 +232,7 @@ class ReactionFieldOutput(_NodeFieldOutput):
             "table_name": "rf",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-                ("input_key", "INTEGER"),
+                ("key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
                 ("rfx", "REAL"),
@@ -263,7 +261,7 @@ class Stress2DFieldOutput(_ElementFieldOutput):
             "table_name": "s2d",
             "columns": [
                 ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-                ("input_key", "INTEGER"),
+                ("key", "INTEGER"),
                 ("step", "TEXT"),
                 ("part", "TEXT"),
                 ("s11", "REAL"),

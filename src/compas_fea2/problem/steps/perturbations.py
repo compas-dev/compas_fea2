@@ -3,8 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 from .step import Step
-from compas_fea2.results import ModalAnalysisResults
-from compas_fea2.results import ModalShape
+from compas_fea2.results import ModalAnalysisResult
+from compas_fea2.results import DisplacementResult
 
 
 class _Perturbation(Step):
@@ -40,20 +40,61 @@ class ModalAnalysis(_Perturbation):
         self.modes = modes
 
     @property
-    def results(self):
-        return [ModalAnalysisResults(problem=self) for mode in range(self.modes)]
+    def rdb(self):
+        return self.problem.results_db
 
+    def _get_results_from_db(self, mode, **kwargs):
+        """Get the results for the given members and steps.
+
+        Parameters
+        ----------
+        members : _type_
+            _description_
+        steps : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        filters = {}
+        filters["step"] = [self.name]
+        filters["mode"] = [mode]
+
+        # Get the eigenvalue
+        eigenvalue = self.rdb.get_rows("eigenvalues", ["lambda"], filters)[0][0]
+
+        # Get the eiginvectors
+        results_set = self.rdb.get_rows("eigenvectors", ["step", "part", "key", "dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"], filters)
+        eigenvector = self.rdb.to_result(results_set, DisplacementResult, "find_node_by_key")[self]
+
+        return eigenvalue, eigenvector
+
+    @property
+    def results(self):
+        for mode in range(self.modes):
+            yield self.mode_result(mode + 1)
+
+    @property
     def frequencies(self):
-        return [ModalAnalysisResults(problem=self) for mode in range(self.modes)]
+        for mode in range(self.modes):
+            yield self.mode_frequency(mode + 1)
 
     @property
     def shapes(self):
-        return [ModalShape(step=self, mode=mode) for mode in range(self.modes)]
+        for mode in range(self.modes):
+            yield self.mode_shape(mode + 1)
 
-    def shape(self, mode):
-        if mode > self.modes:
-            raise ValueError("Mode number exceeds the number of modes.")
-        return ModalShape(problem=self, mode=mode)
+    def mode_shape(self, mode):
+        return self.mode_result(mode).shape
+
+    def mode_frequency(self, mode):
+        return self.mode_result(mode).frequency
+
+    def mode_result(self, mode):
+        eigenvalue, eigenvector = self._get_results_from_db(mode)
+        return ModalAnalysisResult(step=self, mode=mode, eigenvalue=eigenvalue, eigenvector=eigenvector)
 
 
 class ComplexEigenValue(_Perturbation):

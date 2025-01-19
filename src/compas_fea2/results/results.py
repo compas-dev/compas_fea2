@@ -122,7 +122,7 @@ class NodeResult(Result):
         self._xx = xx
         self._yy = yy
         self._zz = zz
-        self._results_func = "find_node_by_inputkey"
+        self._results_func = "find_node_by_key"
 
     @property
     def node(self):
@@ -225,90 +225,241 @@ class ReactionResult(NodeResult):
         super(ReactionResult, self).__init__(node, "rf", x, y, z, xx, yy, zz, **kwargs)
 
 
+# ---------------------------------------------------------------------------------------------
+# Element Results
+# ---------------------------------------------------------------------------------------------
+
+
 class ElementResult(Result):
     """Element1DResult object."""
 
     def __init__(self, element, **kwargs):
-        super(Element1DResult, self).__init__(**kwargs)
+        super(ElementResult, self).__init__(**kwargs)
         self._registration = element
-        self._results_func = "find_element_by_inputkey"
+        self._results_func = "find_element_by_key"
 
     @property
     def element(self):
         return self._registration
 
 
-class Element1DResult(ElementResult):
-    """Element1DResult object."""
-
-    def __init__(self, element, **kwargs):
-        super(Element1DResult, self).__init__(element, **kwargs)
-
-
-class SectionForcesResult(Element1DResult):
-    """DisplacementResult object.
+class SectionForcesResult(ElementResult):
+    """SectionForcesResult object.
 
     Parameters
     ----------
-    node : :class:`compas_fea2.model.Node`
-        The location of the result.
-    rf1 : float
-        The x component of the reaction vector.
-    rf2 : float
-        The y component of the reaction vector.
-    rf3 : float
-        The z component of the reaction vector.
+    element : :class:`compas_fea2.model.Element`
+        The element to which the result is associated.
+    Fx_1, Fy_1, Fz_1 : float
+        Components of the force vector at the first end of the element.
+    Mx_1, My_1, Mz_1 : float
+        Components of the moment vector at the first end of the element.
+    Fx_2, Fy_2, Fz_2 : float
+        Components of the force vector at the second end of the element.
+    Mx_2, My_2, Mz_2 : float
+        Components of the moment vector at the second end of the element.
 
     Attributes
     ----------
-    location : :class:`compas_fea2.model.Node` `
-        The location of the result.
-    node : :class:`compas_fea2.model.Node`
-        The location of the result.
-    components : dict
-        A dictionary with {"component name": component value} for each component of the result.
-    invariants : dict
-        A dictionary with {"invariant name": invariant value} for each invariant of the result.
-    rf1 : float
-        The x component of the reaction vector.
-    rf2 : float
-        The y component of the reaction vector.
-    rf3 : float
-        The z component of the reaction vector.
-    vector : :class:`compas.geometry.Vector`
-        The displacement vector.
-    magnitude : float
-        The absolute value of the displacement.
+    end_1 : :class:`compas_fea2.model.Node`
+        The first end node of the element.
+    end_2 : :class:`compas_fea2.model.Node`
+        The second end node of the element.
+    force_vector_1 : :class:`compas.geometry.Vector`
+        The force vector at the first end of the element.
+    moment_vector_1 : :class:`compas.geometry.Vector`
+        The moment vector at the first end of the element.
+    force_vector_2 : :class:`compas.geometry.Vector`
+        The force vector at the second end of the element.
+    moment_vector_2 : :class:`compas.geometry.Vector`
+        The moment vector at the second end of the element.
+    forces : dict
+        Dictionary containing force vectors for both ends of the element.
+    moments : dict
+        Dictionary containing moment vectors for both ends of the element.
+    net_force : :class:`compas.geometry.Vector`
+        The net force vector across the element.
+    net_moment : :class:`compas.geometry.Vector`
+        The net moment vector across the element.
 
     Notes
     -----
-    SectionForcesResults are registered to a :class:`compas_fea2.model._Element
+    SectionForcesResults are registered to a :class:`compas_fea2.model._Element`.
+
+    Methods
+    -------
+    to_dict()
+        Export the section forces and moments to a dictionary.
     """
 
-    def __init__(self, element, **kwargs):
+    def __init__(self, element, Fx_1, Fy_1, Fz_1, Mx_1, My_1, Mz_1, Fx_2, Fy_2, Fz_2, Mx_2, My_2, Mz_2, **kwargs):
         super(SectionForcesResult, self).__init__(element, **kwargs)
 
-    @property
-    def forces_vector(self):
-        pass
+        self._end_1 = element.nodes[0]
+        self._force_vector_1 = Vector(Fx_1, Fy_1, Fz_1)
+        self._moment_vector_1 = Vector(Mx_1, My_1, Mz_1)
+
+        self._end_2 = element.nodes[1]
+        self._force_vector_2 = Vector(Fx_2, Fy_2, Fz_2)
+        self._moment_vector_2 = Vector(Mx_2, My_2, Mz_2)
+
+    def __repr__(self):
+        """String representation of the SectionForcesResult."""
+        return (
+            f"SectionForcesResult(\n"
+            f"  Element: {self.element},\n"
+            f"  End 1 Force: {self.force_vector_1}, Moment: {self.moment_vector_1},\n"
+            f"  End 2 Force: {self.force_vector_2}, Moment: {self.moment_vector_2},\n"
+            f"  Net Force: {self.net_force}, Net Moment: {self.net_moment}\n"
+            f")"
+        )
 
     @property
-    def moments_vector(self):
-        pass
+    def end_1(self):
+        """Returns the first end node of the element."""
+        return self._end_1
 
     @property
-    def element(self):
-        return self.location
+    def end_2(self):
+        """Returns the second end node of the element."""
+        return self._end_2
+
+    @property
+    def force_vector_1(self):
+        """Returns the force vector at the first end of the element."""
+        return self._force_vector_1
+
+    @property
+    def moment_vector_1(self):
+        """Returns the moment vector at the first end of the element."""
+        return self._moment_vector_1
+
+    @property
+    def force_vector_2(self):
+        """Returns the force vector at the second end of the element."""
+        return self._force_vector_2
+
+    @property
+    def moment_vector_2(self):
+        """Returns the moment vector at the second end of the element."""
+        return self._moment_vector_2
+
+    @property
+    def forces(self):
+        """Returns a dictionary of force vectors for both ends."""
+        return {
+            self.end_1: self.force_vector_1,
+            self.end_2: self.force_vector_2,
+        }
+
+    @property
+    def moments(self):
+        """Returns a dictionary of moment vectors for both ends."""
+        return {
+            self.end_1: self.moment_vector_1,
+            self.end_2: self.moment_vector_2,
+        }
+
+    @property
+    def net_force(self):
+        """Returns the net force vector across the element."""
+        return self.force_vector_2 + self.force_vector_1
+
+    @property
+    def net_moment(self):
+        """Returns the net moment vector across the element."""
+        return self.moment_vector_2 + self.moment_vector_1
+
+    def plot_stress_distribution(self, end="end_1", nx=100, ny=100):
+        """
+        Plot the axial stress distribution along the element.
+
+        Parameters
+        ----------
+        location : str, optional
+            The end of the element ('end_1' or 'end_2'). Default is 'end_1'.
+        nx : int, optional
+            Number of points to plot along the element. Default is 100.
+        """
+        force_vector = self.force_vector_1 if end == "end_1" else self.force_vector_2
+        moment_vector = self.moment_vector_1 if end == "end_1" else self.moment_vector_2
+        N = force_vector.z  # Axial force
+        Vx = force_vector.x  # Shear force in x-direction
+        Vy = force_vector.y  # Shear force in y-direction
+        Mx = moment_vector.x  # Bending moment about x-axis
+        My = moment_vector.y  # Bending moment about y-axis
+
+        self.element.section.plot_stress_distribution(N, Vx, Vy, Mx, My, nx=nx, ny=ny)
+
+    def sectional_analysis_summary(self, end="end_1"):
+        """
+        Generate a summary of sectional analysis for the specified end.
+
+        Parameters
+        ----------
+        location : str, optional
+            The end of the element ('end_1' or 'end_2'). Default is 'end_1'.
+
+        Returns
+        -------
+        dict
+            A dictionary summarizing the results of the sectional analysis.
+        """
+        return None
+        return {
+            "normal_stress": self.compute_normal_stress(end),
+            "shear_stress": self.compute_shear_stress(end),
+            "utilization": self.compute_utilization(end),
+            "interaction_check": self.check_interaction(end),
+        }
+
+    def to_dict(self):
+        """Export the section forces and moments to a dictionary."""
+        return {
+            "element": self.element,
+            "end_1": {
+                "force": self.force_vector_1,
+                "moment": self.moment_vector_1,
+            },
+            "end_2": {
+                "force": self.force_vector_2,
+                "moment": self.moment_vector_2,
+            },
+            "net_force": self.net_force,
+            "net_moment": self.net_moment,
+        }
+
+    def to_json(self, file_path):
+        """Export the result to a JSON file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the JSON file.
+        """
+        import json
+
+        with open(file_path, "w") as f:
+            json.dump(self.to_dict(), f, indent=4)
+
+    def to_csv(self, file_path):
+        """Export the result to a CSV file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the CSV file.
+        """
+        import csv
+
+        with open(file_path, mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["End", "Fx", "Fy", "Fz", "Mx", "My", "Mz"])
+            writer.writerow(["End 1", self.force_vector_1.x, self.force_vector_1.y, self.force_vector_1.z, self.moment_vector_1.x, self.moment_vector_1.y, self.moment_vector_1.z])
+            writer.writerow(["End 2", self.force_vector_2.x, self.force_vector_2.y, self.force_vector_2.z, self.moment_vector_2.x, self.moment_vector_2.y, self.moment_vector_2.z])
 
 
-class Element2DResult(ElementResult):
-    """Element1DResult object."""
-
-    def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(element, **kwargs)
-
-
-class StressResult(Element2DResult):
+class StressResult(ElementResult):
     """StressResult object.
 
     Parameters
@@ -389,7 +540,6 @@ class StressResult(Element2DResult):
 
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
-        self._title = None
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
         self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
@@ -426,10 +576,6 @@ class StressResult(Element2DResult):
                     strain_tensor[i, j] = (1 + v) * s[i, j] / E
 
         return strain_tensor
-
-    @property
-    def element(self):
-        return self.location
 
     @property
     # First invariant
@@ -717,13 +863,13 @@ class StressResult(Element2DResult):
 
 
 class MembraneStressResult(StressResult):
-    def __init__(self, element, *, s11, s12, s22, **kwargs):
+    def __init__(self, element, s11, s12, s22, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
         self._title = "s2d"
 
 
 class ShellStressResult(MembraneStressResult):
-    def __init__(self, element, *, s11, s12, s22, m11, m22, m12, **kwargs):
+    def __init__(self, element, s11, s12, s22, m11, m22, m12, **kwargs):
         super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
         self._title = "s2d"
         self._local_bending_moments = np.array([[m11, m12, 0], [m12, m22, 0], [0, 0, 0]])
@@ -907,16 +1053,9 @@ class ShellStressResult(MembraneStressResult):
         return unit_direction.T @ tensors[side] @ unit_direction
 
 
-class Element3DResult(ElementResult):
-    """Element1DResult object."""
-
-    def __init__(self, element, **kwargs):
-        super(Element2DResult, self).__init__(element, **kwargs)
-
-
 # TODO: double inheritance StressResult and Element3DResult
 class SolidStressResult(StressResult):
-    def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
+    def __init__(self, element, s11, s12, s13, s22, s23, s33, **kwargs):
         super(SolidStressResult, self).__init__(element=element, s11=s11, s12=s12, s13=s13, s22=s22, s23=s23, s33=s33, **kwargs)
         self._title = "s3d"
 

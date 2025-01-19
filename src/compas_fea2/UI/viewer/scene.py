@@ -254,10 +254,10 @@ class FEA2StressFieldResultsObject(GroupObject):
 
     """
 
-    def __init__(self, step, scale_factor=1, components=None, **kwargs):
+    def __init__(self, model, scale_factor=1, components=None, **kwargs):
         field = kwargs.pop("item")
 
-        field_locations = list(field.locations(step))
+        field_locations = [e.reference_point for e in field.locations]
 
         if not components:
             components = [0, 1, 2]
@@ -266,7 +266,7 @@ class FEA2StressFieldResultsObject(GroupObject):
 
         collections = []
         for component in components:
-            field_results = [v[component] for v in field.principal_components_vectors(step)]
+            field_results = [v[component] for v in field.principal_components_vectors]
             lines, _ = draw_field_vectors(field_locations, field_results, scale_factor, translate=-0.5)
             collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
 
@@ -290,7 +290,7 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
     """
 
     # FIXME: component is not used
-    def __init__(self, step, component=None, show_vectors=1, show_contour=False, **kwargs):
+    def __init__(self, model, component=None, show_vectors=1, show_contour=False, **kwargs):
 
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
@@ -309,14 +309,14 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
             field_results = list(field.component(component))
             min_value = min(field_results)
             max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
+            part_vertexcolor = draw_field_contour(model, field_locations, field_results, min_value, max_value, cmap)
 
             # DRAW CONTOURS ON 2D and 3D ELEMENTS
             for part, vertexcolor in part_vertexcolor.items():
                 group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
 
             # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
+            for part in model.parts:
                 for element in part.elements:
                     vertexcolor = {}
                     if isinstance(element, BeamElement):
@@ -346,34 +346,32 @@ class FEA2ReactionFieldResultsObject(GroupObject):
 
     """
 
-    def __init__(self, field, step, component, show_vectors=1, show_contour=False, **kwargs):
-        # FIXME: component is not used
-
+    def __init__(self, model, component, show_vectors=1, show_contour=False, **kwargs):
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-        cmap = None
 
         group_elements = []
         if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
+            vectors, colors = draw_field_vectors([n.point for n in field.locations], list(field.vectors), show_vectors, translate=0, cmap=cmap)
+            # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
             for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"REACT-{component}", "linecolor": c, "linewidth": 3}))
+                group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
 
         if show_contour:
             from compas_fea2.model.elements import BeamElement
 
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
+            field_locations = list(field.locations)
+            field_results = list(field.component(component))
             min_value = min(field_results)
             max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
+            part_vertexcolor = draw_field_contour(model, field_locations, field_results, min_value, max_value, cmap)
 
             # DRAW CONTOURS ON 2D and 3D ELEMENTS
             for part, vertexcolor in part_vertexcolor.items():
                 group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
 
             # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
+            for part in model.parts:
                 for element in part.elements:
                     vertexcolor = {}
                     if isinstance(element, BeamElement):

@@ -38,11 +38,11 @@ from .steps import (
 )
 
 from .outputs import (
-    FieldOutput,
     DisplacementFieldOutput,
     AccelerationFieldOutput,
     VelocityFieldOutput,
     Stress2DFieldOutput,
+    SectionForcesFieldOutput,
     # StrainFieldOutput,
     ReactionFieldOutput,
     HistoryOutput,
@@ -87,4 +87,5 @@ __all__ = [
     "VelocityFieldOutput",
     "Stress2DFieldOutput",
     "ReactionFieldOutput",
+    "SectionForcesFieldOutput",
 ]

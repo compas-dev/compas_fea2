@@ -275,50 +275,41 @@ class Stress2DFieldOutput(_ElementFieldOutput):
         }
 
 
-class FieldOutput(_Output):
-    """FieldOutput object for specification of the fields (stresses, displacements,
-    etc..) to output from the analysis.
+class SectionForcesFieldOutput(_ElementFieldOutput):
+    """SectionForcesFieldOutput object for requesting the section forces at the elements from the analysis."""
 
-    Parameters
-    ----------
-    nodes_outputs : list
-        list of node fields to output
-    elements_outputs : list
-        list of elements fields to output
+    def __init__(self, **kwargs):
+        super(SectionForcesFieldOutput, self).__init__(
+            "sf", ["Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2"], ["magnitude"], **kwargs
+        )
 
-    Attributes
-    ----------
-    name : str
-        Automatically generated id. You can change the name if you want a more
-        human readable input file.
-    nodes_outputs : list
-        list of node fields to output
-    elements_outputs : list
-        list of elements fields to output
-
-    """
-
-    def __init__(self, node_outputs=None, element_outputs=None, contact_outputs=None, **kwargs):
-        super(FieldOutput, self).__init__(**kwargs)
-        self._node_outputs = node_outputs
-        self._element_outputs = element_outputs
-        self._contact_outputs = contact_outputs
-
-    @property
-    def node_outputs(self):
-        return self._node_outputs
-
-    @property
-    def element_outputs(self):
-        return self._element_outputs
-
-    @property
-    def contact_outputs(self):
-        return self._contact_outputs
-
-    @property
-    def outputs(self):
-        return chain(self.node_outputs, self.element_outputs, self.contact_outputs)
+    @classmethod
+    def get_sqltable_schema(cls):
+        """
+        Return a dict describing the table name and each column
+        (column_name, column_type, constraints).
+        """
+        return {
+            "table_name": "sf",
+            "columns": [
+                ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+                ("key", "INTEGER"),
+                ("step", "TEXT"),
+                ("part", "TEXT"),
+                ("Fx_1", "REAL"),
+                ("Fy_1", "REAL"),
+                ("Fz_1", "REAL"),
+                ("Mx_1", "REAL"),
+                ("My_1", "REAL"),
+                ("Mz_1", "REAL"),
+                ("Fx_2", "REAL"),
+                ("Fy_2", "REAL"),
+                ("Fz_2", "REAL"),
+                ("Mx_2", "REAL"),
+                ("My_2", "REAL"),
+                ("Mz_2", "REAL"),
+            ],
+        }
 
 
 class HistoryOutput(_Output):

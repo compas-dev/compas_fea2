@@ -281,6 +281,28 @@ class _Element1D(_Element):
     def volume(self):
         return self.section.A * self.length
 
+    def plot_section(self):
+        self.section.plot()
+
+    def plot_stress_distribution(self, step, end="end_1", nx=100, ny=100, *args, **kwargs):
+        if not hasattr(step, "section_forces_field"):
+            raise ValueError("The step does not have a section_forces_field")
+        r = step.section_forces_field.get_element_forces(self)
+        r.plot_stress_distribution(*args, **kwargs)
+
+    def section_forces_result(self, step):
+        if not hasattr(step, "section_forces_field"):
+            raise ValueError("The step does not have a section_forces_field")
+        return step.section_forces_field.get_result_at(self)
+
+    def forces(self, step):
+        r = self.section_forces_result(step)
+        return r.forces
+
+    def moments(self, step):
+        r = self.section_forces_result(step)
+        return r.moments
+
 
 class BeamElement(_Element1D):
     """A 1D element that resists axial, shear, bending and torsion.

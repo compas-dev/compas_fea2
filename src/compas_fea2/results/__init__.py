@@ -19,6 +19,7 @@ from .fields import (
     VelocityFieldResults,
     StressFieldResults,
     ReactionFieldResults,
+    SectionForcesFieldResults,
 )
 
 from .modal import (

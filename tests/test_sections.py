@@ -1,11 +1,12 @@
 import unittest
 from compas_fea2.model.sections import RectangularSection, CircularSection, ISection
-from compas_fea2.model.materials.steel import Steel
+from compas_fea2.model.materials.material import _Material
 
 
 class TestSections(unittest.TestCase):
+
     def setUp(self):
-        self.material = Steel.S355()
+        self.material = _Material(name="Steel")
 
     def test_rectangular_section(self):
         section = RectangularSection(w=100, h=50, material=self.material)

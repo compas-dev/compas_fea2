@@ -515,6 +515,150 @@ Analysis folder path : {self.path or "N/A"}
         viewer.show()
         viewer.scene.clear()
 
+    def show_deformed(self, step=None, opacity=1, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
+        """Display the structure in its deformed configuration.
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem._Step`, optional
+            The Step of the analysis, by default None. If not provided, the last
+            step is used.
+
+        Returns
+        -------
+        None
+
+        """
+        if not step:
+            step = self.steps_order[-1]
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+
+        if show_original:
+            viewer.add_model(self.model, fast=True, opacity=show_original, show_bcs=False, **kwargs)
+        # TODO create a copy of the model first
+        displacements = step.displacement_field
+        for displacement in displacements.results:
+            vector = displacement.vector.scaled(scale_results)
+            displacement.node.xyz = sum_vectors([Vector(*displacement.node.xyz), vector])
+        viewer.add_model(self.model, fast=True, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        if show_loads:
+            viewer.add_step(step, show_loads=show_loads)
+        viewer.show()
+
+    def show_displacements(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
+        """Display the displacement field results for a given step.
+
+        Parameters
+        ----------
+        step : _type_, optional
+            _description_, by default None
+        scale_model : int, optional
+            _description_, by default 1
+        show_loads : bool, optional
+            _description_, by default True
+        component : _type_, optional
+            _description_, by default
+
+        """
+        if not step:
+            step = self.steps_order[-1]
+
+        if not step.displacement_field:
+            raise ValueError("No displacement field results available for this step")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_displacement_field(step.displacement_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contours=show_contours, **kwargs)
+        if show_loads:
+            viewer.add_step(step, show_loads=show_loads)
+        viewer.show()
+        viewer.scene.clear()
+
+    def show_reactions(self, fast=True, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
+        """Display the reaction field results for a given step.
+
+        Parameters
+        ----------
+        step : _type_, optional
+            _description_, by default None
+        scale_model : int, optional
+            _description_, by default 1
+        show_bcs : bool, optional
+            _description_, by default True
+        component : _type_, optional
+            _description_, by default
+        translate : _type_, optional
+            _description_, by default -1
+        scale_results : _type_, optional
+            _description_, by default 1
+        """
+        if not step:
+            step = self.steps_order[-1]
+
+        if not step.reaction_field:
+            raise ValueError("No reaction field results available for this step")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_reaction_field(step.reaction_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contours=show_contours, **kwargs)
+
+        if show_loads:
+            viewer.add_step(step, show_loads=show_loads)
+        viewer.show()
+        viewer.scene.clear()
+
+    def show_stress_contour(self, fast=True, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
+        if not step:
+            step = self.steps_order[-1]
+
+        if not step.stress_field:
+            raise ValueError("No reaction field results available for this step")
+
+        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.add_stress_field(step.stress_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contours=show_contours, **kwargs)
+
+        if show_loads:
+            viewer.add_step(step, show_loads=show_loads)
+        viewer.show()
+        viewer.scene.clear()
+
+        # from compas.scene import register
+        # from compas.scene import register_scene_objects
+
+        # from compas_fea2.UI.viewer import FEA2ModelObject
+        # from compas_fea2.UI.viewer import FEA2Viewer
+
+        # register_scene_objects()  # This has to be called before registering the model object
+        # register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
+
+        # viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
+        # viewer.viewer.scene.add(self.model, model=self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
+
+        # if not step:
+        #     step = self.steps_order[-1]
+        # field_locations = list(self.stress_field.locations(step, point=True))
+        # field_results = list(getattr(self.stress_field, stresstype)(step))
+
+        # # # Get values
+        # min_value = high or min(field_results)
+        # max_value = low or max(field_results)
+        # cmap = cmap or ColorMap.from_palette("hawaii")
+        # points = []
+        # for n, v in zip(field_locations, field_results):
+        #     if kwargs.get("bound", None):
+        #         if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
+        #             color = Color.red()
+        #         else:
+        #             color = cmap(v, minval=min_value, maxval=max_value)
+        #     else:
+        #         color = cmap(v, minval=min_value, maxval=max_value)
+        #     points.append((n, {"pointcolor": color, "pointsize": 20}))
+
+        # viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
+        # viewer.viewer.show()
+
     def show_principal_stress_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, **kwargs):
         """Display the principal stress results for a given step.
 
@@ -546,166 +690,20 @@ Analysis folder path : {self.path or "N/A"}
             step = self.steps_order[-1]
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
 
         register_scene_objects()  # This has to be called before registering the model object
 
         register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
-        register(self.stress_field.__class__.__bases__[-1], FEA2StressFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(self.stress_field, field=self.stress_field, step=step, scale_factor=scale_results, components=components, **kwargs)
+        register(step.stress_field.__class__.__bases__[-1], FEA2StressFieldResultsObject, context="Viewer")
+        viewer.scene.add(step.stress_field, field=step.stress_field, step=step, scale_factor=scale_results, components=components, **kwargs)
 
         if show_loads:
             register(step.__class__, FEA2StepObject, context="Viewer")
-            viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
+            viewer.scene.add(step, step=step, scale_factor=show_loads)
 
-        viewer.viewer.show()
-
-    def show_deformed(self, step=None, opacity=1, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
-        """Display the structure in its deformed configuration.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem._Step`, optional
-            The Step of the analysis, by default None. If not provided, the last
-            step is used.
-
-        Returns
-        -------
-        None
-
-        """
-        if not step:
-            step = self.steps_order[-1]
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-
-        if show_original:
-            viewer.add_model(self.model, fast=True, opacity=show_original, show_bcs=False, **kwargs)
-        # TODO create a copy of the model first
-        displacements = step.problem.displacement_field
-        for displacement in displacements.results(step):
-            vector = displacement.vector.scaled(scale_results)
-            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-        viewer.add_model(self.model, fast=True, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.viewer.show()
-
-    def show_displacements(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
-        """Display the displacement field results for a given step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        scale_model : int, optional
-            _description_, by default 1
-        show_loads : bool, optional
-            _description_, by default True
-        component : _type_, optional
-            _description_, by default
-
-        """
-        if not step:
-            step = self.steps_order[-1]
-
-        if not step.displacement_field:
-            raise ValueError("No displacement field results available for this step")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.add_displacement_field(step.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contours=show_contours, **kwargs)
-        if show_loads:
-            viewer.add_step(step, show_loads=show_loads)
         viewer.show()
-        viewer.scene.clear()
-
-    def show_reactions(self, step=None, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contours=False, **kwargs):
-        """Display the reaction field results for a given step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        scale_model : int, optional
-            _description_, by default 1
-        show_bcs : bool, optional
-            _description_, by default True
-        component : _type_, optional
-            _description_, by default
-        translate : _type_, optional
-            _description_, by default -1
-        scale_results : _type_, optional
-            _description_, by default 1
-        """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2ReactionFieldResultsObject
-        from compas_fea2.UI.viewer import FEA2StepObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        if not step:
-            step = self.steps_order[-1]
-
-        if not step.problem.reaction_field:
-            raise ValueError("No reaction field results available for this step")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
-
-        register_scene_objects()  # This has to be called before registering the model object
-
-        register(self.model.__class__, FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
-        register(step.problem.reaction_field.__class__, FEA2ReactionFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(
-            step.problem.reaction_field, field=step.problem.reaction_field, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs
-        )
-
-        if show_loads:
-            register(step.__class__, FEA2StepObject, context="Viewer")
-            viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-
-        viewer.viewer.show()
-
-    def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        register_scene_objects()  # This has to be called before registering the model object
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
-
-        if not step:
-            step = self.steps_order[-1]
-        field_locations = list(self.stress_field.locations(step, point=True))
-        field_results = list(getattr(self.stress_field, stresstype)(step))
-
-        # # Get values
-        min_value = high or min(field_results)
-        max_value = low or max(field_results)
-        cmap = cmap or ColorMap.from_palette("hawaii")
-        points = []
-        for n, v in zip(field_locations, field_results):
-            if kwargs.get("bound", None):
-                if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
-                    color = Color.red()
-                else:
-                    color = cmap(v, minval=min_value, maxval=max_value)
-            else:
-                color = cmap(v, minval=min_value, maxval=max_value)
-            points.append((n, {"pointcolor": color, "pointsize": 20}))
-
-        viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
-        viewer.viewer.show()
 
     def show_mode_shape(
         self, step, mode, fast=True, opacity=1, scale_results=1, scale_model=1.0, show_bcs=True, show_original=0.25, show_contour=False, show_vectors=False, **kwargs

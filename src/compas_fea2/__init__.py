@@ -11,15 +11,6 @@ __email__ = "francesco.ranaudo@gmail.com"
 __version__ = "0.3.1"
 
 
-HERE = os.path.dirname(__file__)
-
-HOME = os.path.abspath(os.path.join(HERE, "../../"))
-DATA = os.path.abspath(os.path.join(HOME, "data"))
-UMAT = os.path.abspath(os.path.join(DATA, "umat"))
-DOCS = os.path.abspath(os.path.join(HOME, "docs"))
-TEMP = os.path.abspath(os.path.join(HOME, "temp"))
-
-
 def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3, part_nodes_limit=100000):
     """Create a default environment file if it doesn't exist and loads its variables.
 
@@ -52,18 +43,6 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
                 )
             )
     load_dotenv(env_path)
-
-
-if not load_dotenv():
-    init_fea2()
-
-VERBOSE = os.getenv("VERBOSE").lower() == "true"
-POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
-GLOBAL_TOLERANCE = float(os.getenv("GLOBAL_TOLERANCE"))
-PRECISION = int(os.getenv("PRECISION"))
-PART_NODES_LIMIT = int(os.getenv("PART_NODES_LIMIT"))
-BACKEND = None
-BACKENDS = defaultdict(dict)
 
 
 def set_precision(precision):
@@ -110,5 +89,24 @@ def set_backend(plugin):
 def _get_backend_implementation(cls):
     return BACKENDS[BACKEND].get(cls)
 
+
+HERE = os.path.dirname(__file__)
+
+HOME = os.path.abspath(os.path.join(HERE, "../../"))
+DATA = os.path.abspath(os.path.join(HOME, "data"))
+UMAT = os.path.abspath(os.path.join(DATA, "umat"))
+DOCS = os.path.abspath(os.path.join(HOME, "docs"))
+TEMP = os.path.abspath(os.path.join(HOME, "temp"))
+
+if not load_dotenv():
+    init_fea2()
+
+VERBOSE = os.getenv("VERBOSE").lower() == "true"
+POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
+GLOBAL_TOLERANCE = float(os.getenv("GLOBAL_TOLERANCE"))
+PRECISION = int(os.getenv("PRECISION"))
+PART_NODES_LIMIT = int(os.getenv("PART_NODES_LIMIT"))
+BACKEND = None
+BACKENDS = defaultdict(dict)
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

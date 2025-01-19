@@ -4,6 +4,7 @@ from compas_fea2.model.shapes import Rectangle, Circle, IShape, Shape
 
 
 class TestShapes(unittest.TestCase):
+
     def test_rectangle(self):
         rect = Rectangle(w=100, h=50)
         self.assertEqual(rect.w, 100)
@@ -12,9 +13,9 @@ class TestShapes(unittest.TestCase):
         self.assertIsInstance(rect.centroid, Point)
 
     def test_circle(self):
-        circle = Circle(radius=10, segments=70)
+        circle = Circle(radius=10)
         self.assertEqual(circle.radius, 10)
-        self.assertAlmostEqual(circle.A, 314.159, places=0)
+        self.assertAlmostEqual(circle.A, 314.159, places=3)
         self.assertIsInstance(circle.centroid, Point)
 
     def test_ishape(self):

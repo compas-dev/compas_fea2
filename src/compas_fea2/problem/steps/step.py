@@ -9,7 +9,7 @@ from compas_fea2.problem.loads import Load
 
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
-from compas_fea2.results import StressFieldResults
+from compas_fea2.results import Stress2DFieldResults
 from compas_fea2.results import SectionForcesFieldResults
 
 # ==============================================================================
@@ -187,8 +187,8 @@ class Step(FEAData):
         raise NotImplementedError
 
     @property
-    def stress_field(self):
-        return StressFieldResults(self)
+    def stress2D_field(self):
+        return Stress2DFieldResults(self)
 
     @property
     def section_forces_field(self):

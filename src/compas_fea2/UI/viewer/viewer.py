@@ -9,7 +9,7 @@ from compas.scene import register_scene_objects
 from compas_fea2.UI.viewer.scene import FEA2ModelObject
 from compas_fea2.UI.viewer.scene import FEA2DisplacementFieldResultsObject
 from compas_fea2.UI.viewer.scene import FEA2ReactionFieldResultsObject
-from compas_fea2.UI.viewer.scene import FEA2StressFieldResultsObject
+from compas_fea2.UI.viewer.scene import FEA2Stress2DFieldResultsObject
 from compas_fea2.UI.viewer.scene import FEA2StepObject
 
 
@@ -194,10 +194,10 @@ class FEA2Viewer(Viewer):
             **kwargs,
         )
 
-    def add_stress_field(
-        self, field, model, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=True, show_contours=False, **kwargs
+    def add_stress2D_field(
+        self, field, model, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=1, show_contours=False, plane="mid", **kwargs
     ):
-        register(field.__class__.__base__, FEA2StressFieldResultsObject, context="Viewer")
+        register(field.__class__.__base__, FEA2Stress2DFieldResultsObject, context="Viewer")
         self.stresses = self.scene.add(
             field,
             model=model,
@@ -209,6 +209,7 @@ class FEA2Viewer(Viewer):
             show_loads=show_loads,
             show_vectors=show_vectors,
             show_contours=show_contours,
+            plane=plane,
             **kwargs,
         )
 

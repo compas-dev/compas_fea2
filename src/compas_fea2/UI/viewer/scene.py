@@ -238,7 +238,7 @@ class FEA2StepObject(GroupObject):
         super().__init__(item=patterns, name=f"STEP-{step.name}", componets=None, **kwargs)
 
 
-class FEA2StressFieldResultsObject(GroupObject):
+class FEA2Stress2DFieldResultsObject(GroupObject):
     """StressFieldResults object for visualization.
 
     Parameters
@@ -254,7 +254,7 @@ class FEA2StressFieldResultsObject(GroupObject):
 
     """
 
-    def __init__(self, model, scale_factor=1, components=None, **kwargs):
+    def __init__(self, model, components=None, show_vectors=1, plane="mid", show_contour=False, **kwargs):
         field = kwargs.pop("item")
 
         field_locations = [e.reference_point for e in field.locations]
@@ -265,12 +265,16 @@ class FEA2StressFieldResultsObject(GroupObject):
         colors = {0: Color.blue(), 1: Color.yellow(), 2: Color.red()}
 
         collections = []
-        for component in components:
-            field_results = [v[component] for v in field.principal_components_vectors]
-            lines, _ = draw_field_vectors(field_locations, field_results, scale_factor, translate=-0.5)
-            collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
+        if show_vectors:
+            for component in components:
+                field_results = [v[component] for v in field.principal_components_vectors(plane)]
+                lines, _ = draw_field_vectors(field_locations, field_results, show_vectors, translate=-0.5)
+                collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
 
-        super().__init__(item=collections, name=f"RESULTS-{field.name}", **kwargs)
+        if show_contour:
+            raise NotImplementedError("Contour visualization not implemented for stress fields.")
+
+        super().__init__(item=collections, name=f"STRESS-{field.name}", **kwargs)
 
 
 class FEA2DisplacementFieldResultsObject(GroupObject):

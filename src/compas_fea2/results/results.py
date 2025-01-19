@@ -868,189 +868,58 @@ class MembraneStressResult(StressResult):
         self._title = "s2d"
 
 
-class ShellStressResult(MembraneStressResult):
-    def __init__(self, element, s11, s12, s22, m11, m22, m12, **kwargs):
-        super(ShellStressResult, self).__init__(element, s11=s11, s12=s12, s22=s22, **kwargs)
+class ShellStressResult(Result):
+    """
+    ShellStressResult object.
+
+    Parameters
+    ----------
+    element : :class:`compas_fea2.model._Element`
+        The location of the result.
+    s11 : float
+        The 11 component of the stress tensor in local coordinates (in-plane axial).
+    s22 : float
+        The 22 component of the stress tensor in local coordinates (in-plane axial).
+    s12 : float
+        The 12 component of the stress tensor in local coordinates (in-plane shear).
+
+    sb11 : float
+        The 11 component of the stress tensor in local coordinates due to bending on the top face.
+    sb22 : float
+        The 22 component of the stress tensor in local coordinates due to bending on the top face.
+    t12 : float
+
+    """
+
+    def __init__(self, element, s11, s22, s12, sb11, sb22, sb12, tq1, tq2, **kwargs):
+        super(ShellStressResult, self).__init__(**kwargs)
         self._title = "s2d"
-        self._local_bending_moments = np.array([[m11, m12, 0], [m12, m22, 0], [0, 0, 0]])
-        self._local_stress_top = self.local_stress_membrane + 6 / self.element.section.t**2 * self._local_bending_moments
-        self._local_stress_bottom = self.local_stress_membrane - 6 / self.element.section.t**2 * self._local_bending_moments
+        self._registration = element
+        self._components = {}
+        self._invariants = {}
+        self._mid_plane_stress_result = MembraneStressResult(element, s11=s11, s12=s12, s22=s22)
+        self._top_plane_stress_result = MembraneStressResult(element, s11=s11 + sb11, s12=s12, s22=s22 + sb22)
+        self._bottom_plane_stress_result = MembraneStressResult(element, s11=s11 - sb11, s12=s12, s22=s22 - sb22)
 
-        # self._global_stress_membrane = self.transform_stress_tensor(self.local_stress_membrane, Frame.worldXY())
-        self._global_stress_top = self.transform_stress_tensor(self.local_stress_top, Frame.worldXY())
-        self._global_stress_bottom = self.transform_stress_tensor(self.local_stress_bottom, Frame.worldXY())
+    @property
+    def mid_plane_stress_result(self):
+        return self._mid_plane_stress_result
 
-        self._stress_components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
-        self._bending_components = {
-            f"M{i+1}{j+1}": self._local_bending_moments[i][j] for j in range(len(self._local_bending_moments[0])) for i in range(len(self._local_bending_moments))
+    @property
+    def top_plane_stress_result(self):
+        return self._top_plane_stress_result
+
+    @property
+    def bottom_plane_stress_result(self):
+        return self._bottom_plane_stress_result
+
+    def plane_results(self, plane):
+        results = {
+            "mid": self.mid_plane_stress_result,
+            "top": self.top_plane_stress_result,
+            "bottom": self.bottom_plane_stress_result,
         }
-
-    @property
-    def local_stress_membrane(self):
-        return self._local_stress
-
-    @property
-    def local_stress_bottom(self):
-        return self._local_stress_bottom
-
-    @property
-    def local_stress_top(self):
-        return self._local_stress_top
-
-    @property
-    def global_stress_membrane(self):
-        return self._global_stress  # self._global_stress_membrane
-
-    @property
-    def global_stress_top(self):
-        return self._global_stress_top
-
-    @property
-    def global_stress_bottom(self):
-        return self._global_stress_bottom
-
-    @property
-    def hydrostatic_stress_top(self):
-        return self.I1_top / len(self.global_stress_top)
-
-    @property
-    def hydrostatic_stress_bottom(self):
-        return self.I1_bottom / len(self.global_stress_bottom)
-
-    @property
-    def deviatoric_stress_top(self):
-        return self.global_stress_top - np.eye(len(self.global_stress_top)) * self.hydrostatic_stress_top
-
-    @property
-    def deviatoric_stress_bottom(self):
-        return self.global_stress_bottom - np.eye(len(self.global_stress_bottom)) * self.hydrostatic_stress_bottom
-
-    @property
-    # First invariant
-    def I1_top(self):
-        return np.trace(self.global_stress_top)
-
-    @property
-    # First invariant
-    def I1_bottom(self):
-        return np.trace(self.global_stress_bottom)
-
-    @property
-    # Second invariant
-    def I2_top(self):
-        return 0.5 * (self.I1_top**2 - np.trace(np.dot(self.global_stress_top, self.global_stress_top)))
-
-    @property
-    # Second invariant
-    def I2_bottom(self):
-        return 0.5 * (self.I2_bottom**2 - np.trace(np.dot(self.global_stress_bottom, self.global_stress_bottom)))
-
-    @property
-    # Third invariant
-    def I3_top(self):
-        return np.linalg.det(self.global_stress_top)
-
-    @property
-    # Third invariant
-    def I3_bottom(self):
-        return np.linalg.det(self.global_stress_bottom)
-
-    @property
-    # Second invariant of the deviatoric stress tensor: J2
-    def J2_top(self):
-        return 0.5 * np.trace(np.dot(self.deviatoric_stress_top, self.deviatoric_stress_top))
-
-    @property
-    # Second invariant of the deviatoric stress tensor: J2
-    def J2_bottom(self):
-        return 0.5 * np.trace(np.dot(self.deviatoric_stress_bottom, self.deviatoric_stress_bottom))
-
-    @property
-    # Third invariant of the deviatoric stress tensor: J3
-    def J3_top(self):
-        return np.linalg.det(self.deviatoric_stress_top)
-
-    @property
-    # Third invariant of the deviatoric stress tensor: J3
-    def J3_bottom(self):
-        return np.linalg.det(self.deviatoric_stress_bottom)
-
-    @property
-    def principal_stresses_values(self):
-        eigenvalues = np.linalg.eigvalsh(self.global_stress[:2, :2])
-        sorted_indices = np.argsort(eigenvalues)
-        return eigenvalues[sorted_indices]
-
-    @property
-    def principal_stresses_values_top(self):
-        eigenvalues = np.linalg.eigvalsh(self.global_stress_top[:2, :2])
-        sorted_indices = np.argsort(eigenvalues)
-        return eigenvalues[sorted_indices]
-
-    @property
-    def principal_stresses_values_bottom(self):
-        eigenvalues = np.linalg.eigvalsh(self.global_stress_bottom[:2, :2])
-        sorted_indices = np.argsort(eigenvalues)
-        return eigenvalues[sorted_indices]
-
-    @property
-    def principal_stresses_vectors(self):
-        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress[:2, :2])
-        # Sort the eigenvalues/vectors from low to high
-        sorted_indices = np.argsort(eigenvalues)
-        eigenvectors = eigenvectors[:, sorted_indices]
-        eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
-
-    @property
-    def principal_stresses_vectors_top(self):
-        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress_top[:2, :2])
-        # Sort the eigenvalues/vectors from low to high
-        sorted_indices = np.argsort(eigenvalues)
-        eigenvectors = eigenvectors[:, sorted_indices]
-        eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
-
-    @property
-    def principal_stresses_vectors_bottom(self):
-        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress_bottom[:2, :2])
-        # Sort the eigenvalues/vectors from low to high
-        sorted_indices = np.argsort(eigenvalues)
-        eigenvectors = eigenvectors[:, sorted_indices]
-        eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
-
-    @property
-    def principal_stresses_top(self):
-        return zip(self.principal_stresses_values_top, self.principal_stresses_vectors_top)
-
-    @property
-    def principal_stresses_bottom(self):
-        return zip(self.principal_stresses_values_bottom, self.principal_stresses_vectors_bottom)
-
-    @property
-    def von_mises_stress_top(self):
-        return np.sqrt(self.J2_top * 3)
-
-    @classmethod
-    def from_components(cls, location, components):
-        stress_components = {k.lower(): v for k, v in components.items() if k in ("S11", "S22", "S12")}
-        bending_components = {k.lower(): v for k, v in components.items() if k in ("M11", "M22", "M12")}
-        return cls(location, **stress_components, **bending_components)
-
-    def membrane_stress(self, frame):
-        return self.transform_stress_tensor(self.local_stress_membrane, frame)
-
-    def top_stress(self, frame):
-        return self.transform_stress_tensor(self.local_stress_top, frame)
-
-    def bottom_stress(self, frame):
-        return self.transform_stress_tensor(self.local_stress_bottom, frame)
-
-    def stress_along_direction(self, direction, side="mid"):
-        tensors = {"mid": self.global_stress_bottom, "top": self.global_stress_top, "bottom": self.global_stress_bottom}
-        unit_direction = np.array(direction) / np.linalg.norm(direction)
-        return unit_direction.T @ tensors[side] @ unit_direction
+        return results[plane]
 
 
 # TODO: double inheritance StressResult and Element3DResult

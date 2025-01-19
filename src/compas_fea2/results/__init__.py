@@ -17,7 +17,7 @@ from .fields import (
     DisplacementFieldResults,
     AccelerationFieldResults,
     VelocityFieldResults,
-    StressFieldResults,
+    Stress2DFieldResults,
     ReactionFieldResults,
     SectionForcesFieldResults,
 )
@@ -41,7 +41,7 @@ __all__ = [
     "AccelerationFieldResults",
     "VelocityFieldResults",
     "ReactionFieldResults",
-    "StressFieldResults",
+    "Stress2DFieldResults",
     "SectionForcesFieldResults",
     "ModalAnalysisResult",
     "ModalShape",

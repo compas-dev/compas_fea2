@@ -249,7 +249,7 @@ class Stress2DFieldOutput(_ElementFieldOutput):
     """StressFieldOutput object for requesting the stresses at the elements from the analysis."""
 
     def __init__(self, **kwargs):
-        super(Stress2DFieldOutput, self).__init__("s2d", ["s11", "s22", "s12", "m11", "m22", "m12"], ["von_mises"], **kwargs)
+        super(Stress2DFieldOutput, self).__init__("s2d", ["s11", "s22", "s12", "sb11", "sb22", "sb12", "tq1", "tq2"], ["von_mises"], **kwargs)
 
     @classmethod
     def get_sqltable_schema(cls):
@@ -267,10 +267,11 @@ class Stress2DFieldOutput(_ElementFieldOutput):
                 ("s11", "REAL"),
                 ("s22", "REAL"),
                 ("s12", "REAL"),
-                ("m11", "REAL"),
-                ("m22", "REAL"),
-                ("m12", "REAL"),
-                # ("von_mises", "REAL"),
+                ("sb11", "REAL"),
+                ("sb22", "REAL"),
+                ("sb12", "REAL"),
+                ("tq1", "REAL"),
+                ("tq2", "REAL"),
             ],
         }
 

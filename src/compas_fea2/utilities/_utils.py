@@ -7,8 +7,45 @@ import os
 import subprocess
 from functools import wraps
 from time import perf_counter
+from typing import Generator, Optional
+import threading
+import sys
+import time
 
 from compas_fea2 import VERBOSE
+
+
+def with_spinner(message="Running"):
+    """Decorator to add a spinner animation to a function."""
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            stop_event = threading.Event()
+            spinner_thread = threading.Thread(target=spinner_animation, args=(message, stop_event))
+            spinner_thread.start()
+            try:
+                result = func(*args, **kwargs)
+                return result
+            finally:
+                stop_event.set()
+                spinner_thread.join()
+
+        return wrapper
+
+    return decorator
+
+
+def spinner_animation(message, stop_event):
+    """Spinner animation for indicating progress."""
+    spinner = "|/-\\"
+    idx = 0
+    while not stop_event.is_set():
+        sys.stdout.write(f"\r{message} {spinner[idx % len(spinner)]}")
+        sys.stdout.flush()
+        time.sleep(0.2)  # Adjust for speed
+        idx += 1
+    sys.stdout.write("\rDone!               \n")  # Clear the line when done
 
 
 def timer(_func=None, *, message=None):
@@ -34,52 +71,49 @@ def timer(_func=None, *, message=None):
         return decorator_timer(_func)
 
 
-def launch_process(cmd_args, cwd, verbose=False, **kwargs):
-    """Open a subprocess and print the output.
+def launch_process(cmd_args: list[str], cwd: Optional[str] = None, verbose: bool = False, **kwargs) -> Generator[bytes, None, None]:
+    """Open a subprocess and yield its output line by line.
 
     Parameters
     ----------
     cmd_args : list[str]
-        problem object.
-    cwd : str
-        path where to start the subprocess
-    output : bool, optional
-        print the output of the subprocess, by default `False`.
+        List of command arguments to execute.
+    cwd : str, optional
+        Path where to start the subprocess, by default None.
+    verbose : bool, optional
+        Print the output of the subprocess, by default `False`.
 
-    Returns
-    -------
-    None
+    Yields
+    ------
+    bytes
+        Output lines from the subprocess.
 
+    Raises
+    ------
+    FileNotFoundError
+        If the command executable is not found.
+    subprocess.CalledProcessError
+        If the subprocess exits with a non-zero return code.
     """
-    # p = Popen(cmd_args, stdout=PIPE, stderr=PIPE, cwd=cwd, shell=True, env=os.environ)
-    # while True:
-    #     line = p.stdout.readline()
-    #     if not line:
-    #         break
-    #     line = line.strip().decode()
-    #     if verbose:
-    #         yield line
-
-    # stdout, stderr = p.communicate()
-    # return stdout.decode(), stderr.decode()
     try:
-        p = subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd, shell=True, env=os.environ)
+        env = os.environ.copy()
+        with subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd, shell=True, env=env, **kwargs) as process:
+            assert process.stdout is not None
+            for line in process.stdout:
+                if verbose:
+                    print(line.decode().strip())
+                yield line
 
-        while True:
-            line = p.stdout.readline()
-            if not line:
-                break
-            yield line
-
-        p.wait()
-
-        if p.returncode != 0:
-            raise subprocess.CalledProcessError(p.returncode, cmd_args)
+            process.wait()
+            if process.returncode != 0:
+                raise subprocess.CalledProcessError(process.returncode, cmd_args)
 
     except FileNotFoundError as e:
-        print(f"Error: {e}")
+        print(f"Error: Command not found - {e}")
+        raise
     except subprocess.CalledProcessError as e:
         print(f"Error: Command '{cmd_args}' failed with return code {e.returncode}")
+        raise
 
 
 class extend_docstring:

@@ -105,11 +105,10 @@ class Result(FEAData):
 
         fields.extend(predefined_fields)
 
-        dummy = cls(None)
-        for comp in dummy.components_names:
+        for comp in cls._components_names:
             fields.append((comp, "REAL"))
         return {
-            "table_name": dummy.field_name,
+            "table_name": cls._field_name,
             "columns": fields,
         }
 
@@ -348,14 +347,12 @@ class SectionForcesResult(ElementResult):
     _components_names = ["Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2"]
     _invariants_names = ["magnitude"]
 
-    def __init__(self, element, Fx_1, Fy_1, Fz_1, Mx_1, My_1, Mz_1, Fx_2, Fy_2, Fz_2, Mx_2, My_2, Mz_2, **kwargs):
+    def __init__(self, element, Fx_1=0, Fy_1=0, Fz_1=0, Mx_1=0, My_1=0, Mz_1=0, Fx_2=0, Fy_2=0, Fz_2=0, Mx_2=0, My_2=0, Mz_2=0, **kwargs):
         super(SectionForcesResult, self).__init__(element, **kwargs)
 
-        self._end_1 = element.nodes[0]
         self._force_vector_1 = Vector(Fx_1, Fy_1, Fz_1)
         self._moment_vector_1 = Vector(Mx_1, My_1, Mz_1)
 
-        self._end_2 = element.nodes[1]
         self._force_vector_2 = Vector(Fx_2, Fy_2, Fz_2)
         self._moment_vector_2 = Vector(Mx_2, My_2, Mz_2)
 
@@ -373,12 +370,12 @@ class SectionForcesResult(ElementResult):
     @property
     def end_1(self):
         """Returns the first end node of the element."""
-        return self._end_1
+        return self.element.nodes[0]
 
     @property
     def end_2(self):
         """Returns the second end node of the element."""
-        return self._end_2
+        return self.element.nodes[1]
 
     @property
     def force_vector_1(self):

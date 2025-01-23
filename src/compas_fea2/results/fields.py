@@ -55,13 +55,14 @@ class FieldResults(FEAData):
     FieldResults are registered to a :class:`compas_fea2.problem.Step`.
     """
 
-    def __init__(self, step, field_name, *args, **kwargs):
+    def __init__(self, step, results_cls, *args, **kwargs):
         super(FieldResults, self).__init__(*args, **kwargs)
         self._registration = step
-        self._field_name = field_name
-        self._components_names = None
-        self._invariants_names = None
-        self._results_func = None
+        self._results_cls = results_cls
+        self._field_name = results_cls._field_name
+        self._components_names = results_cls._components_names
+        self._invariants_names = results_cls._invariants_names
+        self._results_func = results_cls._results_func
 
     @property
     def step(self):
@@ -117,7 +118,7 @@ class FieldResults(FEAData):
 
         results_set = self.rdb.get_rows(self._field_name, ["step", "part", "key"] + self._components_names, filters)
 
-        return self.rdb.to_result(results_set, self._results_class, self._results_func)
+        return self.rdb.to_result(results_set, self._results_cls, self._results_func)
 
     def get_result_at(self, location):
         """Get the result for a given location.
@@ -308,11 +309,7 @@ class DisplacementFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(step=step, field_name="u", *args, **kwargs)
-        self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
+        super(DisplacementFieldResults, self).__init__(step=step, results_cls=DisplacementResult, *args, **kwargs)
 
 
 class AccelerationFieldResults(FieldResults):
@@ -338,11 +335,7 @@ class AccelerationFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(AccelerationFieldResults, self).__init__(step=step, field_name="a", *args, **kwargs)
-        self._components_names = ["ax", "ay", "az", "axx", "ayy", "azz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = AccelerationResult
-        self._results_func = "find_node_by_key"
+        super(AccelerationFieldResults, self).__init__(step=step, results_cls=AccelerationResult, *args, **kwargs)
 
 
 class VelocityFieldResults(FieldResults):
@@ -368,11 +361,7 @@ class VelocityFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(VelocityFieldResults, self).__init__(step=step, field_name="v", *args, **kwargs)
-        self._components_names = ["vx", "vy", "vz", "vxx", "vyy", "vzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = VelocityResult
-        self._results_func = "find_node_by_key"
+        super(VelocityFieldResults, self).__init__(step=step, results_cls=VelocityResult, *args, **kwargs)
 
 
 class ReactionFieldResults(FieldResults):
@@ -398,11 +387,7 @@ class ReactionFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(step=step, field_name="rf", *args, **kwargs)
-        self._components_names = ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = ReactionResult
-        self._results_func = "find_node_by_key"
+        super(ReactionFieldResults, self).__init__(step=step, results_cls=ReactionResult, *args, **kwargs)
 
 
 # ------------------------------------------------------------------------------
@@ -433,11 +418,7 @@ class SectionForcesFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(SectionForcesFieldResults, self).__init__(step=step, field_name="sf", *args, **kwargs)
-        self._components_names = ["Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = SectionForcesResult
-        self._results_func = "find_element_by_key"
+        super(SectionForcesFieldResults, self).__init__(step=step, results_cls=SectionForcesResult, *args, **kwargs)
 
     def get_element_forces(self, element):
         """Get the section forces for a given element.
@@ -580,6 +561,7 @@ class SectionForcesFieldResults(FieldResults):
 # ------------------------------------------------------------------------------
 
 
+# TODO Change to PlaneStressResults
 class Stress2DFieldResults(FieldResults):
     """Stress field results for 2D elements.
 
@@ -601,10 +583,7 @@ class Stress2DFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(Stress2DFieldResults, self).__init__(step=step, field_name="s2d", *args, **kwargs)
-        self._components_names = ["s11", "s22", "s12", "sb11", "sb12", "sb22", "tq1", "tq2"]
-        self._results_class = ShellStressResult
-        self._results_func = "find_element_by_key"
+        super(Stress2DFieldResults, self).__init__(step=step, results_cls=ShellStressResult, *args, **kwargs)
 
     def global_stresses(self, plane="mid"):
         """Stress field in global coordinates.

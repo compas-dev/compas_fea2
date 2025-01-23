@@ -4,6 +4,8 @@ from __future__ import print_function
 
 from compas.geometry import Vector
 from compas.geometry import sum_vectors
+from compas.geometry import Point
+from compas.geometry import centroid_points_weighted
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
@@ -387,6 +389,68 @@ class GeneralStep(Step):
     # Combination
     # ==============================================================================
 
+    # =========================================================================
+    #                         Results methods - reactions
+    # =========================================================================
+    def get_total_reaction(self, step=None):
+        """Compute the total reaction vector
+
+        Parameters
+        ----------
+        step : :class:`compas_fea2.problem._Step`, optional
+            The analysis step, by default the last step.
+
+        Returns
+        -------
+        :class:`compas.geometry.Vector`
+            The resultant vector.
+        :class:`compas.geometry.Point`
+            The application point.
+        """
+        if not step:
+            step = self.steps_order[-1]
+        reactions = self.reaction_field
+        locations, vectors, vectors_lengths = [], [], []
+        for reaction in reactions.results(step):
+            locations.append(reaction.location.xyz)
+            vectors.append(reaction.vector)
+            vectors_lengths.append(reaction.vector.length)
+        return Vector(*sum_vectors(vectors)), Point(*centroid_points_weighted(locations, vectors_lengths))
+
+    def get_min_max_reactions(self, step=None):
+        """Get the minimum and maximum reaction values for the last step.
+
+        Parameters
+        ----------
+        step : _type_, optional
+            _description_, by default None
+        """
+        if not step:
+            step = self.steps_order[-1]
+        reactions = self.reaction_field
+        return reactions.get_limits_absolute(step)
+
+    def get_min_max_reactions_component(self, component, step=None):
+        """Get the minimum and maximum reaction values for the last step.
+
+        Parameters
+        ----------
+        component : _type_
+            _description_
+        step : _type_, optional
+            _description_, by default None
+        """
+        if not step:
+            step = self.steps_order[-1]
+        reactions = self.reaction_field
+        return reactions.get_limits_component(component, step)
+
+    # def get_total_moment(self, step=None):
+    #     if not step:
+    #         step = self.steps_order[-1]
+    #     vector, location = self.get_total_reaction(step)
+
+    #     return sum_vectors([reaction.vector for reaction in reactions.results])
     # ==============================================================================
     # Visualisation
     # ==============================================================================

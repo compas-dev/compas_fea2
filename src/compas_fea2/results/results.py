@@ -152,6 +152,30 @@ class NodeResult(Result):
         self._zz = zz
 
     @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def z(self):
+        return self._z
+
+    @property
+    def xx(self):
+        return self._xx
+
+    @property
+    def yy(self):
+        return self._yy
+
+    @property
+    def zz(self):
+        return self._zz
+
+    @property
     def field_name(self):
         return self._field_name
 
@@ -349,6 +373,18 @@ class SectionForcesResult(ElementResult):
 
     def __init__(self, element, Fx_1=0, Fy_1=0, Fz_1=0, Mx_1=0, My_1=0, Mz_1=0, Fx_2=0, Fy_2=0, Fz_2=0, Mx_2=0, My_2=0, Mz_2=0, **kwargs):
         super(SectionForcesResult, self).__init__(element, **kwargs)
+        self._Fx_1 = Fx_1
+        self._Fy_1 = Fy_1
+        self._Fz_1 = Fz_1
+        self._Mx_1 = Mx_1
+        self._My_1 = My_1
+        self._Mz_1 = Mz_1
+        self._Fx_1 = Fx_2
+        self._Fy_1 = Fy_2
+        self._Fz_1 = Fz_2
+        self._Mx_1 = Mx_2
+        self._My_1 = My_2
+        self._Mz_1 = Mz_2
 
         self._force_vector_1 = Vector(Fx_1, Fy_1, Fz_1)
         self._moment_vector_1 = Vector(Mx_1, My_1, Mz_1)
@@ -366,6 +402,54 @@ class SectionForcesResult(ElementResult):
             f"  Net Force: {self.net_force}, Net Moment: {self.net_moment}\n"
             f")"
         )
+
+    @property
+    def Fx_1(self):
+        return self._Fx_1
+
+    @property
+    def Fy_1(self):
+        return self._Fy_1
+
+    @property
+    def Fz_1(self):
+        return self._Fz_1
+
+    @property
+    def Mx_1(self):
+        return self._Mx_1
+
+    @property
+    def My_1(self):
+        return self._My_1
+
+    @property
+    def Mz_1(self):
+        return self._Mz_1
+
+    @property
+    def Fx_2(self):
+        return self._Fx_2
+
+    @property
+    def Fy_2(self):
+        return self._Fy_2
+
+    @property
+    def Fz_2(self):
+        return self._Fz_2
+
+    @property
+    def Mx_2(self):
+        return self._Mx_2
+
+    @property
+    def My_2(self):
+        return self._My_2
+
+    @property
+    def Mz_2(self):
+        return self._Mz_2
 
     @property
     def end_1(self):
@@ -598,8 +682,39 @@ class StressResult(ElementResult):
 
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
+        self._s11 = s11
+        self._s12 = s12
+        self._s13 = s13
+        self._s22 = s22
+        self._s23 = s23
+        self._s33 = s33
+
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
+
+    @property
+    def s11(self):
+        return self._s11
+
+    @property
+    def s12(self):
+        return self._s12
+
+    @property
+    def s13(self):
+        return self._s13
+
+    @property
+    def s22(self):
+        return self._s22
+
+    @property
+    def s23(self):
+        return self._s23
+
+    @property
+    def s33(self):
+        return self._s33
 
     @property
     def local_stress(self):
@@ -1082,10 +1197,51 @@ class ShellStressResult(Result):
 
     def __init__(self, element, s11=0, s22=0, s12=0, sb11=0, sb22=0, sb12=0, tq1=0, tq2=0, **kwargs):
         super(ShellStressResult, self).__init__(**kwargs)
+        self._s11 = s11
+        self._s22 = s22
+        self._s12 = s12
+        self._sb11 = sb11
+        self._sb22 = sb22
+        self._sb12 = sb12
+        self._tq1 = tq1
+        self._tq2 = tq2
+
         self._registration = element
         self._mid_plane_stress_result = MembraneStressResult(element, s11=s11, s12=s12, s22=s22)
         self._top_plane_stress_result = MembraneStressResult(element, s11=s11 + sb11, s12=s12, s22=s22 + sb22)
         self._bottom_plane_stress_result = MembraneStressResult(element, s11=s11 - sb11, s12=s12, s22=s22 - sb22)
+
+    @property
+    def s11(self):
+        return self._s11
+
+    @property
+    def s22(self):
+        return self._s22
+
+    @property
+    def s12(self):
+        return self._s12
+
+    @property
+    def sb11(self):
+        return self._sb11
+
+    @property
+    def sb22(self):
+        return self._sb22
+
+    @property
+    def sb12(self):
+        return self._sb12
+
+    @property
+    def tq1(self):
+        return self._tq1
+
+    @property
+    def tq2(self):
+        return self._tq2
 
     @property
     def mid_plane_stress_result(self):

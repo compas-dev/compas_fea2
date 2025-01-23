@@ -73,12 +73,12 @@ class FieldResults(FEAData):
         return self.step.problem
 
     @property
-    def field_name(self):
-        return self._field_name
-
-    @property
     def model(self):
         return self.problem.model
+
+    @property
+    def field_name(self):
+        return self._field_name
 
     @property
     def rdb(self):
@@ -86,9 +86,21 @@ class FieldResults(FEAData):
 
     @property
     def results(self):
-        return self._get_results_from_db(step=self.step, columns=self._components_names)[self.step]
+        return self._get_results_from_db(columns=self._components_names)[self.step]
 
-    def _get_results_from_db(self, members=None, columns=None, filters=None, **kwargs):
+    @property
+    def locations(self):
+        """Return the locations where the field is defined.
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
+        """
+        for r in self.results:
+            yield r.location
+
+    def _get_results_from_db(self, members=None, columns=None, filters=None, func=None, **kwargs):
         """Get the results for the given members and steps.
 
         Parameters
@@ -105,6 +117,9 @@ class FieldResults(FEAData):
         dict
             Dictionary of results.
         """
+        if not columns:
+            columns = self._components_names
+
         if not filters:
             filters = {}
 
@@ -116,9 +131,9 @@ class FieldResults(FEAData):
             filters["key"] = set([member.key for member in members])
             filters["part"] = set([member.part.name for member in members])
 
-        results_set = self.rdb.get_rows(self._field_name, ["step", "part", "key"] + self._components_names, filters)
+        results_set = self.rdb.get_rows(self._field_name, ["step", "part", "key"] + columns, filters, func)
 
-        return self.rdb.to_result(results_set, self._results_cls, self._results_func)
+        return self.rdb.to_result(results_set, self._results_cls)
 
     def get_result_at(self, location):
         """Get the result for a given location.
@@ -148,8 +163,8 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appropriate Result object.
         """
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [self.step.name]}, self.results_columns)
-        return self.rdb.to_result(results_set)[self.step][0]
+        func = ["DESC", component]
+        return self._get_results_from_db(columns=self._components_names, func=func)[self.step][0]
 
     def get_min_result(self, component):
         """Get the result where a component is minimum for a given step.
@@ -164,38 +179,8 @@ class FieldResults(FEAData):
         :class:`compas_fea2.results.Result`
             The appropriate Result object.
         """
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [self.step.name]}, self.results_columns)
-        return self.rdb.to_result(results_set, self._results_class)[self.step][0]
-
-    def get_max_component(self, component):
-        """Get the result where a component is maximum for a given step.
-
-        Parameters
-        ----------
-        component : int
-            The index of the component to retrieve.
-
-        Returns
-        -------
-        float
-            The maximum value of the component.
-        """
-        return self.get_max_result(component, self.step).vector[component - 1]
-
-    def get_min_component(self, component):
-        """Get the result where a component is minimum for a given step.
-
-        Parameters
-        ----------
-        component : int
-            The index of the component to retrieve.
-
-        Returns
-        -------
-        float
-            The minimum value of the component.
-        """
-        return self.get_min_result(component, self.step).vector[component - 1]
+        func = ["ASC", component]
+        return self._get_results_from_db(columns=self._components_names, func=func)[self.step][0]
 
     def get_limits_component(self, component):
         """Get the result objects with the min and max value of a given component in a step.
@@ -212,42 +197,62 @@ class FieldResults(FEAData):
         """
         return [self.get_min_result(component, self.step), self.get_max_result(component, self.step)]
 
-    def get_limits_absolute(self):
-        """Get the result objects with the absolute min and max value in a step.
+    def component_scalar(self, component):
+        """Return the value of selected component."""
+        for result in self.results:
+            yield getattr(result, component, None)
+
+    def filter_by_component(self, component, threshold=None):
+        """Filter results by a specific component, optionally using a threshold.
+
+        Parameters
+        ----------
+        componen : str
+            The name of the component to filter by (e.g., "Fx_1").
+        threshold : float, optional
+            A threshold value to filter results. Only results above this value are included.
 
         Returns
         -------
-        list
-            A list containing the result objects with the absolute minimum and maximum value in the step.
+        dict
+            A dictionary of filtered elements and their results.
         """
-        limits = []
-        for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [self.step.name]}, self.results_columns))
-        return [self.rdb.to_result(limit)[self.step][0] for limit in limits]
+        if component not in self._components_names:
+            raise ValueError(f"Component '{component}' is not valid. Choose from {self._components_names}.")
 
-    @property
-    def locations(self):
-        """Return the locations where the field is defined.
+        for result in self.results:
+            component_value = getattr(result, component, None)
+            if component_value is not None and (threshold is None or component_value >= threshold):
+                yield result
 
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        for r in self.results:
-            yield r.location
 
-    @property
-    def points(self):
-        """Return the locations where the field is defined.
+# ------------------------------------------------------------------------------
+# Node Field Results
+# ------------------------------------------------------------------------------
+class NodeFieldResults(FieldResults):
+    """Node field results.
 
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        for r in self.results:
-            yield r.location
+    This class handles the node field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the node components.
+    invariants_names : list of str
+        Names of the invariants of the node field.
+    results_class : class
+        The class used to instantiate the node results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, results_cls, *args, **kwargs):
+        super(NodeFieldResults, self).__init__(step=step, results_cls=results_cls, *args, **kwargs)
 
     @property
     def vectors(self):
@@ -261,32 +266,62 @@ class FieldResults(FEAData):
         for r in self.results:
             yield r.vector
 
-    def component(self, dof=None):
-        """Return the components where the field is defined.
-
-        Parameters
-        ----------
-        dof : int, optional
-            The degree of freedom to retrieve, by default None.
+    @property
+    def vectors_rotation(self):
+        """Return the vectors where the field is defined.
 
         Yields
         ------
-        float
-            The component value.
+        :class:`compas.geometry.Vector`
+            The vector where the field is defined.
         """
         for r in self.results:
-            if dof is None:
-                yield r.vector.magnitude
-            else:
-                yield r.vector[dof]
+            yield r.vector_rotation
+
+    def compute_resultant(self, sub_set=None):
+        """Compute the translation resultant, moment resultant, and location of the field.
+
+        Parameters
+        ----------
+        sub_set : list, optional
+            List of locations to filter the results. If None, all results are considered.
+
+        Returns
+        -------
+        tuple
+            The translation resultant as :class:`compas.geometry.Vector`, moment resultant as :class:`compas.geometry.Vector`, and location as a :class:`compas.geometry.Point`.
+        """
+        from compas.geometry import centroid_points_weighted, sum_vectors, cross_vectors, Point
+
+        results_subset = list(filter(lambda x: x.location in sub_set, self.results)) if sub_set else self.results
+        vectors = [r.vector for r in results_subset]
+        locations = [r.location.xyz for r in results_subset]
+        resultant_location = Point(*centroid_points_weighted(locations, [v.length for v in vectors]))
+        resultant_vector = sum_vectors(vectors)
+        moment_vector = sum_vectors(cross_vectors(Vector(*loc) - resultant_location, vec) for loc, vec in zip(locations, vectors))
+
+        return resultant_vector, moment_vector, resultant_location
+
+    def components_vectors(self, components):
+        """Return a vector representing the given components."""
+        for vector in self.vectors:
+            v_copy = vector.copy()
+            for c in ["x", "y", "z"]:
+                if c not in components:
+                    setattr(v_copy, c, 0)
+            yield v_copy
+
+    def components_vectors_rotation(self, components):
+        """Return a vector representing the given components."""
+        for vector in self.results.vectors_rotation:
+            v_copy = vector.copy()
+            for c in ["x", "y", "z"]:
+                if c not in components:
+                    setattr(v_copy, c, 0)
+            yield v_copy
 
 
-# ------------------------------------------------------------------------------
-# Node Field Results
-# ------------------------------------------------------------------------------
-
-
-class DisplacementFieldResults(FieldResults):
+class DisplacementFieldResults(NodeFieldResults):
     """Displacement field results.
 
     This class handles the displacement field results from a finite element analysis.
@@ -312,7 +347,7 @@ class DisplacementFieldResults(FieldResults):
         super(DisplacementFieldResults, self).__init__(step=step, results_cls=DisplacementResult, *args, **kwargs)
 
 
-class AccelerationFieldResults(FieldResults):
+class AccelerationFieldResults(NodeFieldResults):
     """Acceleration field results.
 
     This class handles the acceleration field results from a finite element analysis.
@@ -338,7 +373,7 @@ class AccelerationFieldResults(FieldResults):
         super(AccelerationFieldResults, self).__init__(step=step, results_cls=AccelerationResult, *args, **kwargs)
 
 
-class VelocityFieldResults(FieldResults):
+class VelocityFieldResults(NodeFieldResults):
     """Velocity field results.
 
     This class handles the velocity field results from a finite element analysis.
@@ -364,7 +399,7 @@ class VelocityFieldResults(FieldResults):
         super(VelocityFieldResults, self).__init__(step=step, results_cls=VelocityResult, *args, **kwargs)
 
 
-class ReactionFieldResults(FieldResults):
+class ReactionFieldResults(NodeFieldResults):
     """Reaction field results.
 
     This class handles the reaction field results from a finite element analysis.
@@ -451,42 +486,6 @@ class SectionForcesFieldResults(FieldResults):
         for element in elements:
             yield self.get_element_forces(element)
 
-    def get_all_section_forces(self):
-        """Retrieve section forces for all elements in the field.
-
-        Returns
-        -------
-        dict
-            A dictionary mapping elements to their section forces.
-        """
-        return {element: self.get_result_at(element) for element in self.elements}
-
-    def filter_by_component(self, component_name, threshold=None):
-        """Filter results by a specific component, optionally using a threshold.
-
-        Parameters
-        ----------
-        component_name : str
-            The name of the component to filter by (e.g., "Fx_1").
-        threshold : float, optional
-            A threshold value to filter results. Only results above this value are included.
-
-        Returns
-        -------
-        dict
-            A dictionary of filtered elements and their results.
-        """
-        if component_name not in self._components_names:
-            raise ValueError(f"Component '{component_name}' is not valid. Choose from {self._components_names}.")
-
-        filtered_results = {}
-        for element, result in self.get_all_section_forces().items():
-            component_value = getattr(result, component_name, None)
-            if component_value is not None and (threshold is None or component_value >= threshold):
-                filtered_results[element] = result
-
-        return filtered_results
-
     def export_to_dict(self):
         """Export all field results to a dictionary.
 
@@ -495,30 +494,7 @@ class SectionForcesFieldResults(FieldResults):
         dict
             A dictionary containing all section force results.
         """
-        results_dict = {}
-        for element, result in self.get_all_section_forces().items():
-            results_dict[element] = {
-                "forces": {
-                    "Fx_1": result.force_vector_1.x,
-                    "Fy_1": result.force_vector_1.y,
-                    "Fz_1": result.force_vector_1.z,
-                    "Fx_2": result.force_vector_2.x,
-                    "Fy_2": result.force_vector_2.y,
-                    "Fz_2": result.force_vector_2.z,
-                },
-                "moments": {
-                    "Mx_1": result.moment_vector_1.x,
-                    "My_1": result.moment_vector_1.y,
-                    "Mz_1": result.moment_vector_1.z,
-                    "Mx_2": result.moment_vector_2.x,
-                    "My_2": result.moment_vector_2.y,
-                    "Mz_2": result.moment_vector_2.z,
-                },
-                "invariants": {
-                    "magnitude": result.net_force.length,
-                },
-            }
-        return results_dict
+        raise NotImplementedError()
 
     def export_to_csv(self, file_path):
         """Export all field results to a CSV file.
@@ -528,32 +504,7 @@ class SectionForcesFieldResults(FieldResults):
         file_path : str
             Path to the CSV file.
         """
-        import csv
-
-        with open(file_path, mode="w", newline="") as csvfile:
-            writer = csv.writer(csvfile)
-            # Write headers
-            writer.writerow(["Element", "Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2", "Magnitude"])
-            # Write results
-            for element, result in self.get_all_section_forces().items():
-                writer.writerow(
-                    [
-                        element,
-                        result.force_vector_1.x,
-                        result.force_vector_1.y,
-                        result.force_vector_1.z,
-                        result.moment_vector_1.x,
-                        result.moment_vector_1.y,
-                        result.moment_vector_1.z,
-                        result.force_vector_2.x,
-                        result.force_vector_2.y,
-                        result.force_vector_2.z,
-                        result.moment_vector_2.x,
-                        result.moment_vector_2.y,
-                        result.moment_vector_2.z,
-                        result.net_force.length,
-                    ]
-                )
+        raise NotImplementedError()
 
 
 # ------------------------------------------------------------------------------

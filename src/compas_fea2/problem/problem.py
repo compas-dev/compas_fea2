@@ -5,11 +5,6 @@ from __future__ import print_function
 import os
 from pathlib import Path
 
-from compas.geometry import Point
-from compas.geometry import Vector
-from compas.geometry import centroid_points_weighted
-from compas.geometry import sum_vectors
-
 from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.problem.steps import StaticStep
@@ -345,7 +340,11 @@ Analysis folder path : {self.path or "N/A"}
             path.mkdir(parents=True)
         return self.input_file.write_to_file(path)
 
-    def _check_analysis_path(self, path):
+    def _check_analysis_path(
+        self,
+        path,
+        erase_data=False,
+    ):
         """Check the analysis path and adds the correct folder structure.
 
         Parameters
@@ -361,11 +360,30 @@ Analysis folder path : {self.path or "N/A"}
         """
         self.model.path = path
         self.path = self.model.path.joinpath(self.name)
-        if not os.path.exists(self.path):
+        if os.path.exists(self.path):
+            # Check if the folder is an FEA2 results folder
+            is_fea2_folder = any(fname.endswith("-results.db") for fname in os.listdir(self.path))
+            if is_fea2_folder:
+                if not erase_data:
+                    user_input = input(f"The directory {self.path} already exists and contains FEA2 results. Do you want to delete its contents? (y/n): ")
+                    asw = user_input.lower()
+                else:
+                    asw = "y"
+                if asw == "y":
+                    for root, dirs, files in os.walk(self.path):
+                        for file in files:
+                            os.remove(os.path.join(root, file))
+                        for dir in dirs:
+                            os.rmdir(os.path.join(root, dir))
+                else:
+                    print(f"WARNING: The directory {self.path} already exists and contains FEA2 results. Duplicated results expected.")
+            else:
+                print(f"The directory {self.path} is not recognized as an FEA2 results folder. No files were deleted.")
+        else:
             os.makedirs(self.path)
         return self.path
 
-    def analyse(self, path=None, *args, **kwargs):
+    def analyse(self, path=None, erase_data=False, *args, **kwargs):
         """Analyse the problem in the selected backend.
 
         Raises
@@ -376,11 +394,11 @@ Analysis folder path : {self.path or "N/A"}
         """
         raise NotImplementedError("this function is not available for the selected backend")
 
-    def analyze(self, path=None, *args, **kwargs):
+    def analyze(self, path=None, erase_data=False, *args, **kwargs):
         """American spelling of the analyse method"""
         self.analyse(path=path, *args, **kwargs)
 
-    def analyse_and_extract(self, path=None, *args, **kwargs):
+    def analyse_and_extract(self, path=None, erase_data=False, *args, **kwargs):
         """Analyse the problem in the selected backend and extract the results
         from the native database system to SQLite.
 
@@ -422,69 +440,6 @@ Analysis folder path : {self.path or "N/A"}
     # =========================================================================
     #                         Results methods - general
     # =========================================================================
-
-    # =========================================================================
-    #                         Results methods - reactions
-    # =========================================================================
-    def get_total_reaction(self, step=None):
-        """Compute the total reaction vector
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem._Step`, optional
-            The analysis step, by default the last step.
-
-        Returns
-        -------
-        :class:`compas.geometry.Vector`
-            The resultant vector.
-        :class:`compas.geometry.Point`
-            The application point.
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        locations, vectors, vectors_lengths = [], [], []
-        for reaction in reactions.results(step):
-            locations.append(reaction.location.xyz)
-            vectors.append(reaction.vector)
-            vectors_lengths.append(reaction.vector.length)
-        return Vector(*sum_vectors(vectors)), Point(*centroid_points_weighted(locations, vectors_lengths))
-
-    def get_min_max_reactions(self, step=None):
-        """Get the minimum and maximum reaction values for the last step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        return reactions.get_limits_absolute(step)
-
-    def get_min_max_reactions_component(self, component, step=None):
-        """Get the minimum and maximum reaction values for the last step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_, optional
-            _description_, by default None
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        return reactions.get_limits_component(component, step)
-
-    # def get_total_moment(self, step=None):
-    #     if not step:
-    #         step = self.steps_order[-1]
-    #     vector, location = self.get_total_reaction(step)
-
-    #     return sum_vectors([reaction.vector for reaction in reactions.results])
 
     # =========================================================================
     #                         Results methods - displacements

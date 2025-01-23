@@ -7,12 +7,12 @@ class ResultsDatabase(FEAData):
 
     def __init__(self, problem, **kwargs):
         """
-        Initialize DataRetriever with the database URI.
+        Initialize ResultsDatabase with the database URI.
 
         Parameters
         ----------
-        db_uri : str
-            The database URI.
+        problem : object
+            The problem instance containing the database path.
         """
         super(ResultsDatabase, self).__init__(**kwargs)
         self._registration = problem
@@ -28,19 +28,27 @@ class ResultsDatabase(FEAData):
     def model(self):
         return self.problem.model
 
-    def db_connection(self):
+    def db_connection(self, remove=False):
         """
         Create and return a connection to the SQLite database.
 
+        Parameters
+        ----------
+        remove : bool, optional
+            If True, remove the existing database before creating a new connection.
+
         Returns
         -------
-        connection : Connection
+        sqlite3.Connection
             The database connection.
         """
+        if remove:
+            self._check_and_delete_existing_db()
         return sqlite3.connect(self.db_uri)
 
     def execute_query(self, query, params=None):
-        """Execute a previously-defined query.
+        """
+        Execute a previously-defined query.
 
         Parameters
         ----------
@@ -107,7 +115,8 @@ class ResultsDatabase(FEAData):
         return [row[1] for row in self.cursor.fetchall()]
 
     def get_table(self, table_name):
-        """Get a table from the database.
+        """
+        Get a table from the database.
 
         Parameters
         ----------
@@ -123,7 +132,8 @@ class ResultsDatabase(FEAData):
         return self.execute_query(query)
 
     def get_column_values(self, table_name, column_name):
-        """Get all the values in a given column from a table.
+        """
+        Get all the values in a given column from a table.
 
         Parameters
         ----------
@@ -141,7 +151,8 @@ class ResultsDatabase(FEAData):
         return self.execute_query(query)
 
     def get_column_unique_values(self, table_name, column_name):
-        """Get all the unique values in a given column from a table.
+        """
+        Get all the unique values in a given column from a table.
 
         Parameters
         ----------
@@ -157,8 +168,9 @@ class ResultsDatabase(FEAData):
         """
         return set(self.get_column_values(table_name, column_name))
 
-    def get_rows(self, table_name, columns_names, filters):
-        """Get all the rows in a given table that match the filtering criteria
+    def get_rows(self, table_name, columns_names, filters, func=None):
+        """
+        Get all the rows in a given table that match the filtering criteria
         and return the values for each column.
 
         Parameters
@@ -170,6 +182,8 @@ class ResultsDatabase(FEAData):
             order.
         filters : dict
             Filtering criteria as {"column_name":[admissible values]}
+        func : str, optional
+            SQL function to apply to the columns. Default is None.
 
         Returns
         -------
@@ -177,39 +191,10 @@ class ResultsDatabase(FEAData):
             List with each row as a list.
         """
         filter_conditions = " AND ".join([f"{k} IN ({','.join(['?' for _ in v])})" for k, v in filters.items()])
-        query = f"SELECT {', '.join(columns_names)} FROM {table_name} WHERE {filter_conditions}"
-        params = [item for sublist in filters.values() for item in sublist]
-        return self.execute_query(query, params)
-
-    def get_func_row(self, table_name, column_name, func, filters, columns_names):
-        """Get all the rows in a given table that match the filtering criteria
-        and apply a function to it.
-
-        Currently supported functions:
-
-            - MAX:
-
-        Parameters
-        ----------
-        table_name : str
-            The name of the table.
-        column_name : str
-            The name of the column.
-        func : str
-            The function to apply (e.g., "MAX").
-        filters : dict
-            Filtering criteria as {"column_name":[admissible values]}
-        columns_names : list
-            Name of each column to retrieve. The results are output in the same
-            order.
-
-        Returns
-        -------
-        list
-            The result row.
-        """
-        filter_conditions = " AND ".join([f"{k} IN ({','.join(['?' for _ in v])})}}" for k, v in filters.items()])
-        query = f"SELECT {', '.join(columns_names)} FROM {table_name} WHERE {filter_conditions} ORDER BY {func}({column_name}) DESC LIMIT 1"
+        if not func:
+            query = f"SELECT {', '.join(columns_names)} FROM {table_name} WHERE {filter_conditions}"
+        else:
+            query = f"SELECT {', '.join(columns_names)}  FROM {table_name} WHERE {filter_conditions} ORDER BY ({func[1]}) {func[0]} LIMIT 1"
         params = [item for sublist in filters.values() for item in sublist]
         return self.execute_query(query, params)
 
@@ -217,8 +202,9 @@ class ResultsDatabase(FEAData):
     #                       FEA2 Methods
     # =========================================================================
 
-    def to_result(self, results_set, results_class, results_func):
-        """Convert a set of results in the database to the appropriate
+    def to_result(self, results_set, results_cls):
+        """
+        Convert a set of results in the database to the appropriate
         result object.
 
         Parameters
@@ -227,6 +213,8 @@ class ResultsDatabase(FEAData):
             The set of results retrieved from the database.
         results_class : class
             The class to instantiate for each result.
+        results_func : str
+            The function to call on the part to get the member.
 
         Returns
         -------
@@ -240,10 +228,10 @@ class ResultsDatabase(FEAData):
             part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
             if not part:
                 raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, results_func)(r[2])
+            m = getattr(part, results_cls._results_func)(r[2])
             if not m:
                 raise ValueError(f"Member {r[2]} not in part {part.name}")
-            results[step].append(results_class(m, *r[3:]))
+            results[step].append(results_cls(m, *r[3:]))
         return results
 
     @staticmethod
@@ -255,11 +243,11 @@ class ResultsDatabase(FEAData):
         Parameters
         ----------
         output_cls : _Output subclass
-            A class like NodeOutput that implements `get_table_schema()`
+            A class like NodeOutput that implements `get_table_schema()`.
         connection : sqlite3.Connection
-            SQLite3 connection object
+            SQLite3 connection object.
         results : list of tuples
-            Data to be inserted into the table
+            Data to be inserted into the table.
         """
         cursor = connection.cursor()
 

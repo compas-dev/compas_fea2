@@ -11,7 +11,7 @@ from .drawer import draw_field_contour
 from .drawer import draw_field_vectors
 
 from compas_viewer.scene import Collection
-from compas_viewer.scene import GroupObject
+from compas_viewer.scene import GroupObject, BufferGeometry
 from compas_fea2.model.bcs import FixedBC
 from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import RollerBCX

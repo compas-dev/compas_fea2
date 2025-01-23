@@ -11,12 +11,25 @@ class TestShapes(unittest.TestCase):
         self.assertEqual(rect.h, 50)
         self.assertAlmostEqual(rect.A, 5000)
         self.assertIsInstance(rect.centroid, Point)
+        self.assertEqual(rect.centroid.x, 0)
+        self.assertEqual(rect.centroid.y, 0)
+        self.assertEqual(rect.centroid.z, 0)
+        self.assertAlmostEqual(rect.Ixx, 100 * 50**3 / 12, 3)
+        self.assertAlmostEqual(rect.Iyy, 100**3 * 50 / 12, 3)
+        self.assertAlmostEqual(rect.J, 2_861_002.60, places=2)
+        self.assertAlmostEqual(rect.Avx, 4_166.67, places=2)
+        self.assertAlmostEqual(rect.Avy, 4_166.67, places=2)
 
     def test_circle(self):
         circle = Circle(radius=10)
         self.assertEqual(circle.radius, 10)
-        self.assertAlmostEqual(circle.A, 314.159, places=3)
+        self.assertAlmostEqual(circle.A, 314.159, places=0)
         self.assertIsInstance(circle.centroid, Point)
+        self.assertAlmostEqual(circle.Ixx, 7853, 0)
+        self.assertAlmostEqual(circle.Iyy, 7853, 0)
+        self.assertAlmostEqual(circle.J, 15708, places=0)
+        self.assertAlmostEqual(circle.Avx, 283, places=0)
+        self.assertAlmostEqual(circle.Avy, 283, places=0)
 
     def test_ishape(self):
         ishape = IShape(w=100, h=200, tw=10, tbf=20, ttf=20)

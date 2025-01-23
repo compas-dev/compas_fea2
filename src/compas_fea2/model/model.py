@@ -34,6 +34,7 @@ from compas_fea2.model.parts import _Part
 from compas_fea2.utilities._utils import get_docstring
 from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
+from compas_fea2.UI import FEA2Viewer
 
 
 class Model(FEAData):
@@ -1119,12 +1120,12 @@ Initial Conditions
 
     # @get_docstring(Problem)
     @problem_method
-    def analyse(self, problems=None, *args, **kwargs):
+    def analyse(self, problems=None, path=None, *args, **kwargs):
         pass
 
     # @get_docstring(Problem)
     @problem_method
-    def analyze(self, problems=None, *args, **kwargs):
+    def analyze(self, problems=None, path=None, *args, **kwargs):
         pass
 
     # @get_docstring(Problem)
@@ -1140,12 +1141,12 @@ Initial Conditions
     # @get_docstring(Problem)
     @problem_method
     def analyse_and_store(self, problems=None, memory_only=False, *args, **kwargs):
-        pass
+        raise NotImplementedError()
 
     # @get_docstring(Problem)
     @problem_method
     def store_results_in_model(self, problems=None, *args, **kwargs):
-        pass
+        raise NotImplementedError()
 
     # ==============================================================================
     # Results methods
@@ -1188,29 +1189,28 @@ Initial Conditions
     # Viewer
     # ==============================================================================
 
-    def show(self, scale_model=1.0, show_bcs=1.0, **kwargs):
+    def show(self, fast=True, scale_model=1.0, show_parts=True, show_bcs=1.0, show_loads=1.0, **kwargs):
         """Visualise the model in the viewer.
 
         Parameters
         ----------
         scale_model : float, optional
+            Scale factor for the model, by default 1.0
         show_bcs : float, optional
-        kwargs : dict, optional
-            Additional keyword arguments for the viewer.
+            Scale factor for the boundary conditions, by default 1.0
+        show_loads : float, optional
+            Scale factor for the loads, by default 1.0
 
         """
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        register_scene_objects()  # This has to be called before registering the model object
-        register(self.__class__, FEA2ModelObject, context="Viewer")
 
         viewer = FEA2Viewer(center=self.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self, model=self, opacity=0.5, show_bcs=show_bcs, kwargs=kwargs)
-        viewer.viewer.show()
+        viewer.config.vectorsize = 0.2
+        viewer.add_model(self, show_parts=show_parts, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
+        # if show_loads:
+        #     register(step.__class__, FEA2StepObject, context="Viewer")
+        #     viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
+        viewer.show()
+        viewer.scene.clear()
 
     @problem_method
     def show_displacements(self, problem, *args, **kwargs):

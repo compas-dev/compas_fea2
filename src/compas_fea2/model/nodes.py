@@ -206,14 +206,6 @@ class Node(FEAData):
         return self._bc
 
     @property
-    def loads(self):
-        return self._loads
-
-    @property
-    def displacements(self):
-        return self._displacements
-
-    @property
     def on_boundary(self):
         return self._on_boundary
 
@@ -233,6 +225,12 @@ class Node(FEAData):
     def connected_elements(self):
         return self._connected_elements
 
+    @property
+    def loads(self):
+        problems = self.model.problems
+        steps = [problem.step for problem in problems]
+        return {step: self.loads(step) for step in steps}
+
     def displacement(self, step):
         if step.displacement_field:
             return step.displacement_field.get_result_at(location=self)
@@ -240,3 +238,15 @@ class Node(FEAData):
     def reaction(self, step):
         if step.reaction_field:
             return step.reaction_field.get_result_at(location=self)
+
+    @property
+    def displacements(self):
+        problems = self.model.problems
+        steps = [problem.step for problem in problems]
+        return {step: self.displacement(step) for step in steps}
+
+    @property
+    def reactions(self):
+        problems = self.model.problems
+        steps = [problem.step for problem in problems]
+        return {step: self.reaction(step) for step in steps}

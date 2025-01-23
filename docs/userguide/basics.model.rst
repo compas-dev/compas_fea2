@@ -39,15 +39,6 @@ Besides coordinates, nodes have many other (optional) attributes.
 >>>
 >>> node.dof
 {'x': True, 'y': True, 'z': True, 'xx': True, 'yy': True, 'zz': True}
->>> node.loads
-{}
->>> node.displacements
-{}
-
-Nodes also have a container for storing calculation results.
-
->>> node.results
-{}
 
 
 Elements

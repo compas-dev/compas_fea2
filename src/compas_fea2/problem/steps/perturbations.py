@@ -2,9 +2,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas.geometry import Vector
+from compas.geometry import sum_vectors
+
 from .step import Step
 from compas_fea2.results import ModalAnalysisResult
 from compas_fea2.results import DisplacementResult
+from compas_fea2.UI import FEA2Viewer
 
 
 class _Perturbation(Step):
@@ -95,6 +99,48 @@ class ModalAnalysis(_Perturbation):
     def mode_result(self, mode):
         eigenvalue, eigenvector = self._get_results_from_db(mode)
         return ModalAnalysisResult(step=self, mode=mode, eigenvalue=eigenvalue, eigenvector=eigenvector)
+
+    def show_mode_shape(self, mode, fast=True, opacity=1, scale_results=1, show_bcs=True, show_original=0.25, show_contour=False, show_vectors=False, **kwargs):
+        """Show the mode shape of a given mode.
+
+        Parameters
+        ----------
+        mode : int
+            The mode to show.
+        fast : bool, optional
+            Show the mode shape fast, by default True
+        opacity : float, optional
+            Opacity of the model, by default 1
+        scale_results : float, optional
+            Scale the results, by default 1
+        show_bcs : bool, optional
+            Show the boundary conditions, by default True
+        show_original : float, optional
+            Show the original model, by default 0.25
+        show_contour : bool, optional
+            Show the contour, by default False
+        show_vectors : bool, optional
+            Show the vectors, by default False
+
+        """
+        viewer = FEA2Viewer(center=self.model.center, scale_model=1)
+
+        if show_original:
+            viewer.add_model(self.model, show_parts=True, fast=True, opacity=show_original, show_bcs=False, **kwargs)
+
+        shape = self.mode_shape(mode)
+        if show_vectors:
+            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+
+        # TODO create a copy of the model first
+        for displacement in shape.results:
+            vector = displacement.vector.scaled(scale_results)
+            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
+
+        if show_contour:
+            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+        viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
+        viewer.show()
 
 
 class ComplexEigenValue(_Perturbation):

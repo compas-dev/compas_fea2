@@ -5,7 +5,7 @@ from compas.geometry import Frame, Transformation, Vector
 
 from compas_fea2.base import FEAData
 
-from .results import (
+from .results import (  # noqa: F401
     AccelerationResult,
     DisplacementResult,
     ReactionResult,

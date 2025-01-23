@@ -241,5 +241,42 @@ class ResultsDatabase(FEAData):
             if not part:
                 raise ValueError(f"Part {r[1]} not in model")
             m = getattr(part, results_func)(r[2])
+            if not m:
+                raise ValueError(f"Member {r[2]} not in part {part.name}")
             results[step].append(results_class(m, *r[3:]))
         return results
+
+    @staticmethod
+    def create_table_for_output_class(output_cls, connection, results):
+        """
+        Reads the table schema from `output_cls.get_table_schema()`
+        and creates the table in the given database.
+
+        Parameters
+        ----------
+        output_cls : _Output subclass
+            A class like NodeOutput that implements `get_table_schema()`
+        connection : sqlite3.Connection
+            SQLite3 connection object
+        results : list of tuples
+            Data to be inserted into the table
+        """
+        cursor = connection.cursor()
+
+        schema = output_cls.sqltable_schema
+        table_name = schema["table_name"]
+        columns_info = schema["columns"]
+
+        # Build CREATE TABLE statement:
+        columns_sql_str = ", ".join([f"{col_name} {col_def}" for col_name, col_def in columns_info])
+        create_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql_str})"
+        cursor.execute(create_sql)
+        connection.commit()
+
+        # Insert data into the table:
+        insert_columns = [col_name for col_name, col_def in columns_info if "PRIMARY KEY" not in col_def.upper()]
+        col_names_str = ", ".join(insert_columns)
+        placeholders_str = ", ".join(["?"] * len(insert_columns))
+        sql = f"INSERT INTO {table_name} ({col_names_str}) VALUES ({placeholders_str})"
+        cursor.executemany(sql, results)
+        connection.commit()

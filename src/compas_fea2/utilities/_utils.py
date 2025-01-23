@@ -54,11 +54,11 @@ def timer(_func=None, *, message=None):
     def decorator_timer(func):
         @wraps(func)
         def wrapper_timer(*args, **kwargs):
+            start_time = perf_counter()  # 1
             value = func(*args, **kwargs)
+            end_time = perf_counter()  # 2
+            run_time = end_time - start_time  # 3
             if VERBOSE:
-                start_time = perf_counter()  # 1
-                end_time = perf_counter()  # 2
-                run_time = end_time - start_time  # 3
                 m = message or "Finished {!r} in".format(func.__name__)
                 print("{} {:.4f} secs".format(m, run_time))
             return value
@@ -198,7 +198,7 @@ def step_method(f):
     def wrapper(*args, **kwargs):
         func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
-        res = [vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1::], **kwargs))]
+        res = [vars for step in self_obj.steps if (vars := getattr(step, func_name)(*args[1:], **kwargs))]
         res = list(itertools.chain.from_iterable(res))
         return res
 
@@ -229,44 +229,6 @@ def problem_method(f):
         return res
 
     return wrapper
-
-
-# def problem_method(f):
-#     """Run a problem level method. In this way it is possible to bring to the
-#     model level some of the functions of the problems.
-
-#     Parameters
-#     ----------
-#     method : str
-#         name of the method to call.
-
-#     Returns
-#     -------
-#     [var]
-#         List results of the method per each problem in the model.
-#     """
-
-#     @wraps(f)
-#     def wrapper(*args, **kwargs):
-#         func_name = f.__qualname__.split(".")[-1]
-#         self_obj = args[0]
-#         problems = kwargs.setdefault("problems", self_obj.problems)
-#         if not problems:
-#             raise ValueError("No problems found in the model")
-#         if not isinstance(problems, Iterable):
-#             problems = [problems]
-#         vars = []
-#         for problem in problems:
-#             if problem.model != self_obj:
-#                 raise ValueError("{} is not registered to this model".format(problem))
-#             if "steps" in kwargs:
-#                 kwargs.setdefault("steps", self_obj.steps)
-#             var = getattr(problem, func_name)(*args[1::], **kwargs)
-#             if var:
-#                 vars.append(var)
-#         return vars
-
-#     return wrapper
 
 
 def to_dimensionless(func):

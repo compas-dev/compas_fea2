@@ -48,13 +48,6 @@ class Shape(Polygon, FEAData):
         # Transformation from local frame to world XY
         self._T = Transformation.from_frame_to_frame(self._frame, Frame.worldXY())
 
-        # Optional advanced FEA properties
-        self._J = None  # Torsional constant
-        self._g0 = None  # Shear modulus in the x-y plane
-        self._gw = None  # Shear modulus in the x-z plane
-        self._Avx = None  # Shear area in the x-direction
-        self._Avy = None  # Shear area in the y-direction
-
     def __str__(self) -> str:
         return f"""
     type:               {self.__class__.__name__}
@@ -128,7 +121,7 @@ class Shape(Polygon, FEAData):
     @cached_property
     def inertia_xy(self) -> Tuple[float, float, float]:
         """
-        (Ixx, Iyy, Ixy) about the centroid in the local x-y plane.
+        (Ixx, Iyy, Ixy) about the centroid in the local x-y plane (units: length^4).
 
         Formula reference (polygon second moments):
           - NASA: https://www.grc.nasa.gov/www/k-12/airplane/areas.html
@@ -199,7 +192,7 @@ class Shape(Polygon, FEAData):
         theta = 0.5 * atan2(-Ixy, diff)
         # principal values
         radius = math.sqrt(diff**2 + Ixy**2)
-        I1 = avg + radius
+        I1 = avg + radius  # TODO: check this
         I2 = avg - radius
         return (I1, I2, theta)
 
@@ -243,27 +236,17 @@ class Shape(Polygon, FEAData):
     @property
     def Avx(self) -> Optional[float]:
         """Shear area in the x-direction (if defined)."""
-        return self._Avx
+        raise NotImplementedError()
 
     @property
     def Avy(self) -> Optional[float]:
         """Shear area in the y-direction (if defined)."""
-        return self._Avy
+        raise NotImplementedError()
 
     @property
-    def g0(self) -> Optional[float]:
-        """Shear modulus in the x-y plane (if defined)."""
-        return self._g0
-
-    @property
-    def gw(self) -> Optional[float]:
-        """Shear modulus in the x-z plane (if defined)."""
-        return self._gw
-
-    @property
-    def J(self) -> Optional[float]:
-        """Torsional constant (if defined)."""
-        return self._J
+    def J(self):
+        """Torsional constant (polar moment of inertia)."""
+        raise NotImplementedError()
 
     # --------------------------------------------------------------------------
     # Methods
@@ -416,10 +399,8 @@ class Shape(Polygon, FEAData):
                 f"Theta (deg): {math.degrees(theta):.2f}"
             )
 
-        # Place the text to the right of the bounding box.
-        # For a little margin, we add ~10% of the bounding-box width.
         text_x = max_x + 0.1 * (max_x - min_x)
-        text_y = max_y  # near the top of the shape
+        text_y = max_y
 
         ax.text(text_x, text_y, txt, fontsize=9, verticalalignment="top", bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8), color="#333333")
 
@@ -449,6 +430,137 @@ class Shape(Polygon, FEAData):
 # ------------------------------------------------------------------------------
 
 
+class Circle(Shape):
+    """
+    A circular cross section defined by a radius and segmented approximation.
+    """
+
+    def __init__(self, radius: float, segments: int = 360, frame: Optional[Frame] = None):
+        self._radius = radius
+        self._segments = segments
+        pts = self._set_points()
+        super().__init__(pts, frame=frame)
+
+    def _set_points(self) -> List[Point]:
+        thetas = np.linspace(0, 2 * pi, self._segments, endpoint=False)
+        return [Point(self._radius * math.cos(t), self._radius * math.sin(t), 0.0) for t in thetas]
+
+    @property
+    def radius(self) -> float:
+        return self._radius
+
+    @radius.setter
+    def radius(self, val: float):
+        self._radius = val
+        self.points = self._set_points()
+
+    @property
+    def segments(self) -> int:
+        return self._segments
+
+    @property
+    def diameter(self) -> float:
+        return 2 * self._radius
+
+    @property
+    def circumference(self) -> float:
+        return 2 * pi * self._radius
+
+    @property
+    def J(self) -> float:
+        """Polar moment of inertia for a circular cross-section."""
+        return pi * self._radius**4 / 2
+
+    @property
+    def Avx(self) -> float:
+        """Shear area in the x-direction."""
+        return 9 / 10 * self.area
+
+    @property
+    def Avy(self) -> float:
+        """Shear area in the y-direction."""
+        return 9 / 10 * self.area
+
+
+class Ellipse(Shape):
+    """
+    An elliptical cross section defined by two principal radii (radius_a, radius_b).
+    """
+
+    def __init__(self, radius_a: float, radius_b: float, segments: int = 32, frame: Optional[Frame] = None):
+        self._radius_a = radius_a
+        self._radius_b = radius_b
+        self._segments = segments
+        pts = self._set_points()
+        super().__init__(pts, frame=frame)
+
+    def _set_points(self) -> List[Point]:
+        thetas = np.linspace(0, 2 * pi, self._segments, endpoint=False)
+        return [Point(self._radius_a * math.cos(t), self._radius_b * math.sin(t), 0.0) for t in thetas]
+
+    @property
+    def radius_a(self) -> float:
+        return self._radius_a
+
+    @radius_a.setter
+    def radius_a(self, val: float):
+        self._radius_a = val
+        self.points = self._set_points()
+
+    @property
+    def radius_b(self) -> float:
+        return self._radius_b
+
+    @radius_b.setter
+    def radius_b(self, val: float):
+        self._radius_b = val
+        self.points = self._set_points()
+
+    @property
+    def segments(self) -> int:
+        return self._segments
+
+    @property
+    def J(self) -> float:
+        return pi * self._radius_a * self._radius_b**3 / 2
+
+    def _calculate_shear_area(self):
+        """
+        Calculate the shear area (A_s) of a solid elliptical cross-section along x and y axes.
+
+        Parameters:
+            a (float): Semi-major axis of the ellipse (longer radius).
+            b (float): Semi-minor axis of the ellipse (shorter radius).
+
+        Returns:
+            tuple: Shear area along x-axis (A_s,x) and y-axis (A_s,y).
+        """
+        # Total area of the ellipse
+
+        # Shear coefficients
+        kappa_x = (4 / 3) * (self._radius_b**2 / (self._radius_a**2 + self._radius_b**2))
+        kappa_y = (4 / 3) * (self._radius_a**2 / (self._radius_a**2 + self._radius_b**2))
+
+        # Shear areas
+        A_s_x = kappa_x * self.A
+        A_s_y = kappa_y * self.A
+        return A_s_x, A_s_y
+
+    @property
+    def Avx(self) -> float:
+        return self._calculate_shear_area()[0]
+
+    @property
+    def Avy(self) -> float:
+        return self._calculate_shear_area()[1]
+
+    @property
+    def circumference(self) -> float:
+        a = self._radius_a
+        b = self._radius_b
+        return pi * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b)))
+
+
 class Rectangle(Shape):
     """
     Rectangle shape specified by width (w) and height (h).
@@ -464,15 +576,6 @@ class Rectangle(Shape):
             Point(-w / 2, h / 2, 0.0),
         ]
         super().__init__(pts, frame=frame)
-        # Example placeholders for shear area, torsional const, etc.
-        self._Avy = 0.833 * self.area  # from approximate formulas
-        self._Avx = 0.833 * self.area
-        l1 = max(w, h)
-        l2 = min(w, h)
-        # example approximate formula for J
-        self._J = (l1 * (l2**3)) * (0.33333 - 0.21 * (l2 / l1) * (1 - (l2**4) / (l2 * l1**4)))
-        self._g0 = 0  # placeholders
-        self._gw = 0
 
     @property
     def w(self) -> float:
@@ -481,6 +584,30 @@ class Rectangle(Shape):
     @property
     def h(self) -> float:
         return self._h
+
+    @property
+    def J(self):
+        """Torsional constant (polar moment of inertia).
+        Roark's Formulas for stress & Strain, 7th Edition, Warren C. Young & Richard G. Budynas
+        """
+        a = self.w
+        b = self.h
+        if b > a:
+            b = self.w
+            a = self.h
+        term1 = 16 / 3
+        term2 = 3.36 * (b / a) * (1 - (b**4) / (12 * a**4))
+        J = (a * b**3 / 16) * (term1 - term2)
+
+        return J
+
+    @property
+    def Avx(self) -> float:
+        return 5 / 6 * self.area
+
+    @property
+    def Avy(self) -> float:
+        return 5 / 6 * self.area
 
 
 class Rhombus(Shape):
@@ -649,6 +776,10 @@ class IShape(Shape):
         return self._tw
 
     @property
+    def hw(self) -> float:
+        return self.h - self.tbf - self.ttf
+
+    @property
     def tbf(self) -> float:
         return self._tbf
 
@@ -657,12 +788,54 @@ class IShape(Shape):
         return self._ttf
 
     @property
+    def atf(self) -> float:
+        return self._ttf * self.w
+
+    @property
+    def abf(self) -> float:
+        return self._tbf * self.w
+
+    @property
+    def aw(self) -> float:
+        return self._tw * self.hw
+
+    @property
     def J(self) -> float:
         """
         Torsional constant approximation for an I-beam cross-section.
         (Very rough formula.)
         """
         return (1.0 / 3.0) * (self.w * (self.tbf**3 + self.ttf**3) + (self.h - self.tbf - self.ttf) * self.tw**3)
+
+    def shear_area_I_beam_axes(self):
+        """
+        Calculate the shear area (A_s) of an I-beam cross-section along x- and y-axes,
+        allowing for different flange thicknesses.
+
+        Returns:
+            tuple: Shear area along x-axis (A_s,x) and y-axis (A_s,y).
+        """
+        # Web area
+
+        # Shear coefficients
+        kappa_web = 1
+        kappa_flange = 1 / 3
+
+        # Shear area along x-axis
+        A_s_x = kappa_web * self.aw + kappa_flange * self.abf + kappa_flange * self.atf
+
+        # Shear area along y-axis (primarily web contribution)
+        A_s_y = self.aw
+
+        return A_s_x, A_s_y
+
+    @property
+    def Avx(self) -> float:
+        return self.shear_area_I_beam_axes()[0]
+
+    @property
+    def Avy(self) -> float:
+        return self.shear_area_I_beam_axes()[1]
 
 
 class LShape(Shape):
@@ -828,66 +1001,6 @@ class Star(Shape):
     @c.setter
     def c(self, val: float):
         self._c = val
-        self.points = self._set_points()
-
-
-class Circle(Shape):
-    """
-    A circular cross section defined by a radius and segmented approximation.
-    """
-
-    def __init__(self, radius: float, segments: int = 360, frame: Optional[Frame] = None):
-        self._radius = radius
-        self._segments = segments
-        pts = self._set_points()
-        super().__init__(pts, frame=frame)
-
-    def _set_points(self) -> List[Point]:
-        thetas = np.linspace(0, 2 * pi, self._segments, endpoint=False)
-        return [Point(self._radius * math.cos(t), self._radius * math.sin(t), 0.0) for t in thetas]
-
-    @property
-    def radius(self) -> float:
-        return self._radius
-
-    @radius.setter
-    def radius(self, val: float):
-        self._radius = val
-        self.points = self._set_points()
-
-
-class Ellipse(Shape):
-    """
-    An elliptical cross section defined by two principal radii (radius_a, radius_b).
-    """
-
-    def __init__(self, radius_a: float, radius_b: float, segments: int = 32, frame: Optional[Frame] = None):
-        self._radius_a = radius_a
-        self._radius_b = radius_b
-        self._segments = segments
-        pts = self._set_points()
-        super().__init__(pts, frame=frame)
-
-    def _set_points(self) -> List[Point]:
-        thetas = np.linspace(0, 2 * pi, self._segments, endpoint=False)
-        return [Point(self._radius_a * math.cos(t), self._radius_b * math.sin(t), 0.0) for t in thetas]
-
-    @property
-    def radius_a(self) -> float:
-        return self._radius_a
-
-    @radius_a.setter
-    def radius_a(self, val: float):
-        self._radius_a = val
-        self.points = self._set_points()
-
-    @property
-    def radius_b(self) -> float:
-        return self._radius_b
-
-    @radius_b.setter
-    def radius_b(self, val: float):
-        self._radius_b = val
         self.points = self._set_points()
 
 

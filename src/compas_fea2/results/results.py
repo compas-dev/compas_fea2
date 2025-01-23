@@ -2,7 +2,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
 import numpy as np
 from compas.geometry import Frame
 from compas.geometry import Transformation
@@ -36,16 +39,22 @@ class Result(FEAData):
 
     """
 
+    _field_name = ""  # name of the field
+    _results_func = ""  # function to find the location
+    _components_names = []  # names of the components
+    _invariants_names = []  # names of the invariants
+
     def __init__(self, **kwargs):
         super(Result, self).__init__(**kwargs)
-        self._title = None
+        self._field_name = self.__class__._field_name
+        self._results_func = self.__class__._results_func
+        self._components_names = self.__class__._components_names
+        self._invariants_names = self.__class__._invariants_names
         self._registration = None
-        self._components = {}
-        self._invariants = {}
 
     @property
-    def title(self):
-        return self._title
+    def field_name(self):
+        return self._field_name
 
     @property
     def location(self):
@@ -57,14 +66,15 @@ class Result(FEAData):
 
     @property
     def components(self):
-        return self._components
+        return {component: getattr(self, component) for component in self._components_names}
+
+    @property
+    def components_names(self):
+        return self._components_names
 
     @property
     def invariants(self):
         return self._invariants
-
-    def to_file(self, *args, **kwargs):
-        raise NotImplementedError("this function is not available for the selected backend")
 
     def safety_factor(self, component, allowable):
         """Compute the safety factor (absolute ration value/limit) of the displacement.
@@ -82,6 +92,26 @@ class Result(FEAData):
             The safety factor. Values higher than 1 are not safe.
         """
         return abs(self.vector[component] / allowable) if self.vector[component] != 0 else 1
+
+    @classmethod
+    def sqltable_schema(cls):
+        fields = []
+        predefined_fields = [
+            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+            ("key", "INTEGER"),
+            ("step", "TEXT"),
+            ("part", "TEXT"),
+        ]
+
+        fields.extend(predefined_fields)
+
+        dummy = cls(None)
+        for comp in dummy.components_names:
+            fields.append((comp, "REAL"))
+        return {
+            "table_name": dummy.field_name,
+            "columns": fields,
+        }
 
 
 class NodeResult(Result):
@@ -112,25 +142,23 @@ class NodeResult(Result):
     NodeResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, title, x=None, y=None, z=None, xx=None, yy=None, zz=None, **kwargs):
+    def __init__(self, node, x=None, y=None, z=None, xx=None, yy=None, zz=None, **kwargs):
         super(NodeResult, self).__init__(**kwargs)
         self._registration = node
-        self._title = title
         self._x = x
         self._y = y
         self._z = z
         self._xx = xx
         self._yy = yy
         self._zz = zz
-        self._results_func = "find_node_by_key"
+
+    @property
+    def field_name(self):
+        return self._field_name
 
     @property
     def node(self):
         return self._registration
-
-    @property
-    def components(self):
-        return {self._title + component: getattr(self, component) for component in ["x", "y", "z", "xx", "yy", "zz"]}
 
     @property
     def vector(self):
@@ -144,6 +172,10 @@ class NodeResult(Result):
     def magnitude(self):
         return self.vector.length
 
+    @property
+    def magnitude_rotation(self):
+        return self.vector_rotation.length
+
 
 class DisplacementResult(NodeResult):
     """DisplacementResult object.
@@ -153,8 +185,13 @@ class DisplacementResult(NodeResult):
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
 
+    _field_name = "u"
+    _results_func = "find_node_by_key"
+    _components_names = ["x", "y", "z", "xx", "yy", "zz"]
+    _invariants_names = ["magnitude"]
+
     def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
-        super(DisplacementResult, self).__init__(node, "u", x, y, z, xx, yy, zz, **kwargs)
+        super(DisplacementResult, self).__init__(node, x, y, z, xx, yy, zz, **kwargs)
 
 
 class AccelerationResult(NodeResult):
@@ -165,8 +202,13 @@ class AccelerationResult(NodeResult):
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
 
+    _field_name = "a"
+    _results_func = "find_node_by_key"
+    _components_names = ["x", "y", "z", "xx", "yy", "zz"]
+    _invariants_names = ["magnitude"]
+
     def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
-        super(AccelerationResult, self).__init__(node, "a", x, y, z, xx, yy, zz, **kwargs)
+        super(AccelerationResult, self).__init__(node, x, y, z, xx, yy, zz, **kwargs)
 
 
 class VelocityResult(NodeResult):
@@ -177,8 +219,13 @@ class VelocityResult(NodeResult):
     DisplacementResults are registered to a :class:`compas_fea2.model.Node`
     """
 
+    _field_name = "v"
+    _results_func = "find_node_by_key"
+    _components_names = ["x", "y", "z", "xx", "yy", "zz"]
+    _invariants_names = ["magnitude"]
+
     def __init__(self, node, x=0.0, y=0.0, z=0.0, xx=0.0, yy=0.0, zz=0.0, **kwargs):
-        super(VelocityResult, self).__init__(node, "v", x, y, z, xx, yy, zz, **kwargs)
+        super(VelocityResult, self).__init__(node, x, y, z, xx, yy, zz, **kwargs)
 
 
 class ReactionResult(NodeResult):
@@ -221,8 +268,13 @@ class ReactionResult(NodeResult):
     ReactionResults are registered to a :class:`compas_fea2.model.Node`
     """
 
-    def __init__(self, node, x, y, z, xx, yy, zz, **kwargs):
-        super(ReactionResult, self).__init__(node, "rf", x, y, z, xx, yy, zz, **kwargs)
+    _field_name = "rf"
+    _results_func = "find_node_by_key"
+    _components_names = ["x", "y", "z", "xx", "yy", "zz"]
+    _invariants_names = ["magnitude"]
+
+    def __init__(self, node, x=0, y=0, z=0, xx=0, yy=0, zz=0, **kwargs):
+        super(ReactionResult, self).__init__(node, x, y, z, xx, yy, zz, **kwargs)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -236,7 +288,6 @@ class ElementResult(Result):
     def __init__(self, element, **kwargs):
         super(ElementResult, self).__init__(**kwargs)
         self._registration = element
-        self._results_func = "find_element_by_key"
 
     @property
     def element(self):
@@ -291,6 +342,11 @@ class SectionForcesResult(ElementResult):
     to_dict()
         Export the section forces and moments to a dictionary.
     """
+
+    _field_name = "sf"
+    _results_func = "find_element_by_key"
+    _components_names = ["Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2"]
+    _invariants_names = ["magnitude"]
 
     def __init__(self, element, Fx_1, Fy_1, Fz_1, Mx_1, My_1, Mz_1, Fx_2, Fy_2, Fz_2, Mx_2, My_2, Mz_2, **kwargs):
         super(SectionForcesResult, self).__init__(element, **kwargs)
@@ -538,10 +594,14 @@ class StressResult(ElementResult):
     StressResults are registered to a :class:`compas_fea2.model._Element
     """
 
+    _field_name = "s"
+    _results_func = "find_element_by_key"
+    _components_names = ["s11", "s22", "s12", "s13", "s22", "s23", "s33"]
+    _invariants_names = ["magnitude"]
+
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
         super(StressResult, self).__init__(element, **kwargs)
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
-        self._global_stress = self.transform_stress_tensor(self._local_stress, Frame.worldXY())
         self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
 
     @property
@@ -552,7 +612,7 @@ class StressResult(ElementResult):
     @property
     def global_stress(self):
         # In global coordinates
-        return self._global_stress
+        return self.transform_stress_tensor(self._local_stress, Frame.worldXY())
 
     @property
     def global_strain(self):
@@ -683,7 +743,7 @@ class StressResult(ElementResult):
         e = self.global_strain  # Strain tensor
 
         # For isotropic materials, using the formula: U = 1/2 * stress : strain
-        U = 0.5 * np.tensile(s, e)
+        U = 0.5 * np.tensordot(s, e)
 
         return U
 
@@ -739,8 +799,8 @@ class StressResult(ElementResult):
 
     def compute_mohr_circle_2d(self):
         # Ensure the stress tensor is 2D
-        if self.global_stress.shape != (2, 2):
-            raise ValueError("The stress tensor must be 2D for Mohr's Circle.")
+        # if self.global_stress.shape != (2, 2):
+        #     raise ValueError("The stress tensor must be 2D for Mohr's Circle.")
 
         # Calculate the center and radius of the Mohr's Circle
         sigma_x, sigma_y, tau_xy = self.global_stress[0, 0], self.global_stress[1, 1], self.global_stress[0, 1]
@@ -753,13 +813,13 @@ class StressResult(ElementResult):
         y = radius * np.sin(theta)
         return x, y, center, radius, sigma_x, sigma_y, tau_xy
 
-    def draw_mohr_circle_2d(self):
+    def draw_mohr_circle_2d(self, show=True):
         """
         Draws the three Mohr's circles for a 3D stress state.
         """
         x, y, center, radius, sigma_x, sigma_y, tau_xy = self.compute_mohr_circle_2d()
         # Plotting
-        plt.figure(figsize=(8, 8))
+        fig = plt.figure(figsize=(8, 8))
         plt.plot(x, y, label="Mohr's Circle")
 
         # Plotting the principal stresses
@@ -781,12 +841,22 @@ class StressResult(ElementResult):
         plt.title("Mohr's Circle")
         plt.axis("equal")
         plt.legend()
-        plt.show()
+        # Show the plot
+        if show:
+            plt.show()
+        else:
+            # Save plot as base64
+            buffer = BytesIO()
+            plt.savefig(buffer, format="png", bbox_inches="tight")
+            plt.close(fig)
+            buffer.seek(0)
+            return base64.b64encode(buffer.read()).decode("utf-8")
 
-    def draw_mohr_circles_3d(self):
+    def draw_mohr_circles_3d(self, show=True):
         """
         Draws the three Mohr's circles for a 3D stress state.
         """
+
         circles = self.compute_mohrs_circles_3d()
 
         # Create a figure and axis for the plot
@@ -815,8 +885,6 @@ class StressResult(ElementResult):
         plt.legend()
         plt.grid(True)
         plt.axis("equal")
-
-        # Show the plot
         plt.show()
 
     # =========================================================================
@@ -861,9 +929,128 @@ class StressResult(ElementResult):
         # Delta_sigma = E * alpha * Delta_T
         return self.location.section.material.E * self.location.section.material.expansion * temperature_change
 
+    def generate_html_report(self, file_path):
+        """
+        Generates an HTML report summarizing the stress results, including Mohr's Circles and yield criteria.
+
+        Warning
+        -------
+        This method is a work in progress and may not be fully functional yet.
+
+        Parameters
+        ----------
+        file_path : str
+            The path where the HTML report will be saved.
+
+        """
+
+        mohr_circle_image = self.draw_mohr_circle_2d(show=False)
+
+        # Generate Yield Criteria Placeholder (for simplicity, add descriptions)
+        yield_criteria_description = (
+            "Yield criteria such as Tresca and von Mises are used to assess material failure under combined stresses. "
+            "The von Mises stress for this result is {:.4f}, and the Tresca stress is {:.4f}.".format(self.von_mises_stress, self.tresca_stress)
+        )
+
+        # HTML Content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Stress Result Report</title>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    padding: 0;
+                    background-color: #f8f9fa;
+                    color: #333;
+                }}
+                h1, h2 {{
+                    color: #2c3e50;
+                }}
+                table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                    background-color: white;
+                }}
+                table, th, td {{
+                    border: 1px solid #ccc;
+                }}
+                th, td {{
+                    padding: 8px;
+                    text-align: center;
+                }}
+                th {{
+                    background-color: #ecf0f1;
+                    font-weight: bold;
+                }}
+                .image-container {{
+                    text-align: center;
+                    margin: 20px 0;
+                }}
+                .description {{
+                    margin: 20px 0;
+                    padding: 10px;
+                    background-color: #eaf2f8;
+                    border-left: 4px solid #3498db;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Stress Result Report</h1>
+            <h2>Element Information</h2>
+            <p><strong>Element ID:</strong> {self.element.id if hasattr(self.element, 'id') else 'N/A'}</p>
+            <p><strong>Frame:</strong> {self.element.frame if hasattr(self.element, 'frame') else 'N/A'}</p>
+            
+            <h2>Stress Tensor</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Value</th>
+                </tr>
+                {''.join([f"<tr><td>{key}</td><td>{value:.4f}</td></tr>" for key, value in self._components.items()])}
+            </table>
+
+            <h2>Principal Stresses</h2>
+            <table>
+                <tr>
+                    <th>Principal Stress</th>
+                    <th>Value</th>
+                </tr>
+                {''.join([f"<tr><td>Principal Stress {i+1}</td><td>{value:.4f}</td></tr>" for i, value in enumerate(self.principal_stresses_values)])}
+            </table>
+
+            <h2>Von Mises Stress</h2>
+            <p>{self.von_mises_stress:.4f}</p>
+
+            <h2>Hydrostatic Stress</h2>
+            <p>{self.hydrostatic_stress:.4f}</p>
+
+            <h2>Octahedral Stresses</h2>
+            <p><strong>Normal Stress:</strong> {self.octahedral_stresses[0]:.4f}</p>
+            <p><strong>Shear Stress:</strong> {self.octahedral_stresses[1]:.4f}</p>
+
+            <h2>Mohr's Circle</h2>
+            <div class="image-container">
+                <img src="data:image/png;base64,{mohr_circle_image}" alt="Mohr's Circle" style="max-width: 100%; height: auto;" />
+            </div>
+
+            <h2>Yield Criteria</h2>
+            <div class="description">{yield_criteria_description}</div>
+        </body>
+        </html>
+        """
+
+        # Save the HTML file
+        with open(os.path.join(file_path, self.element.name + ".html"), "w") as file:
+            file.write(html_content)
+
 
 class MembraneStressResult(StressResult):
-    def __init__(self, element, s11, s12, s22, **kwargs):
+    def __init__(self, element, s11=0, s12=0, s22=0, **kwargs):
         super(MembraneStressResult, self).__init__(element, s11=s11, s12=s12, s13=0, s22=s22, s23=0, s33=0, **kwargs)
         self._title = "s2d"
 
@@ -891,12 +1078,14 @@ class ShellStressResult(Result):
 
     """
 
-    def __init__(self, element, s11, s22, s12, sb11, sb22, sb12, tq1, tq2, **kwargs):
+    _field_name = "s2d"
+    _results_func = "find_element_by_key"
+    _components_names = ["s11", "s22", "s12", "sb11", "sb22", "sb12", "tq1", "tq2"]
+    _invariants_names = ["magnitude"]
+
+    def __init__(self, element, s11=0, s22=0, s12=0, sb11=0, sb22=0, sb12=0, tq1=0, tq2=0, **kwargs):
         super(ShellStressResult, self).__init__(**kwargs)
-        self._title = "s2d"
         self._registration = element
-        self._components = {}
-        self._invariants = {}
         self._mid_plane_stress_result = MembraneStressResult(element, s11=s11, s12=s12, s22=s22)
         self._top_plane_stress_result = MembraneStressResult(element, s11=s11 + sb11, s12=s12, s22=s22 + sb22)
         self._bottom_plane_stress_result = MembraneStressResult(element, s11=s11 - sb11, s12=s12, s22=s22 - sb22)
@@ -920,6 +1109,9 @@ class ShellStressResult(Result):
             "bottom": self.bottom_plane_stress_result,
         }
         return results[plane]
+
+    def generate_html_report(self, file_path, plane="mid"):
+        self.plane_results(plane).generate_html_report(file_path)
 
 
 # TODO: double inheritance StressResult and Element3DResult

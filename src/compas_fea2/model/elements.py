@@ -475,6 +475,11 @@ class _Element2D(_Element):
         """
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
+    def stress_results(self, step):
+        if not hasattr(step, "stress2D_field"):
+            raise ValueError("The step does not have a stress2D_field")
+        return step.stress2D_field.get_result_at(self)
+
 
 class ShellElement(_Element2D):
     """A 2D element that resists axial, shear, bending and torsion.

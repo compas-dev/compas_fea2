@@ -28,8 +28,6 @@ def from_shape(shape, material, **kwargs):
         "Avx": shape.Avx,
         "Avy": shape.Avy,
         "J": shape.J,
-        "g0": shape.g0,
-        "gw": shape.gw,
         "material": material,
         **kwargs,
     }
@@ -252,7 +250,7 @@ class BeamSection(_Section):
         The shape of the section.
     """
 
-    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, **kwargs):
+    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, material, **kwargs):
         super(BeamSection, self).__init__(material=material, **kwargs)
         self.A = A
         self.Ixx = Ixx
@@ -261,8 +259,6 @@ class BeamSection(_Section):
         self.Avx = Avx
         self.Avy = Avy
         self.J = J
-        self.g0 = g0
-        self.gw = gw
 
     def __str__(self):
         return """

@@ -1,19 +1,19 @@
 from typing import Iterable
 
 import numpy as np
-from compas.geometry import Frame, Transformation, Vector
+from compas.geometry import Frame
+from compas.geometry import Transformation
+from compas.geometry import Vector
 
 from compas_fea2.base import FEAData
 
-from .results import (  # noqa: F401
-    AccelerationResult,
-    DisplacementResult,
-    ReactionResult,
-    ShellStressResult,
-    SolidStressResult,
-    VelocityResult,
-    SectionForcesResult,
-)
+from .results import AccelerationResult  # noqa: F401
+from .results import DisplacementResult  # noqa: F401
+from .results import ReactionResult  # noqa: F401
+from .results import SectionForcesResult  # noqa: F401
+from .results import ShellStressResult  # noqa: F401
+from .results import SolidStressResult  # noqa: F401
+from .results import VelocityResult  # noqa: F401
 
 
 class FieldResults(FEAData):
@@ -87,6 +87,10 @@ class FieldResults(FEAData):
     @property
     def results(self):
         return self._get_results_from_db(columns=self._components_names)[self.step]
+    
+    @property
+    def results_sorted(self):
+        return sorted(self.results, key=lambda x: x.key)
 
     @property
     def locations(self):
@@ -148,7 +152,7 @@ class FieldResults(FEAData):
         object
             The result at the given location.
         """
-        return self._get_results_from_db(location, self.step)[self.step][0]
+        return self._get_results_from_db(members=location, columns=self._components_names)[self.step][0]
 
     def get_max_result(self, component):
         """Get the result where a component is maximum for a given step.
@@ -291,7 +295,10 @@ class NodeFieldResults(FieldResults):
         tuple
             The translation resultant as :class:`compas.geometry.Vector`, moment resultant as :class:`compas.geometry.Vector`, and location as a :class:`compas.geometry.Point`.
         """
-        from compas.geometry import centroid_points_weighted, sum_vectors, cross_vectors, Point
+        from compas.geometry import Point
+        from compas.geometry import centroid_points_weighted
+        from compas.geometry import cross_vectors
+        from compas.geometry import sum_vectors
 
         results_subset = list(filter(lambda x: x.location in sub_set, self.results)) if sub_set else self.results
         vectors = [r.vector for r in results_subset]

@@ -1,7 +1,6 @@
 from compas.colors import Color
 from compas.colors import ColorMap
 from compas.geometry import Line
-from compas.geometry import Vector
 
 
 def draw_field_vectors(locations, vectors, scale_results, translate=0, high=None, low=None, cmap=None, **kwargs):

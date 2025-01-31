@@ -1,18 +1,15 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import os
-import matplotlib.pyplot as plt
 import base64
+import os
 from io import BytesIO
+
+import matplotlib.pyplot as plt
 import numpy as np
 from compas.geometry import Frame
 from compas.geometry import Transformation
 from compas.geometry import Vector
 
 from compas_fea2.base import FEAData
-from compas_fea2.model import ElasticIsotropic
+from compas_fea2.model.materials.material import ElasticIsotropic
 
 
 class Result(FEAData):
@@ -41,6 +38,7 @@ class Result(FEAData):
 
     _field_name = ""  # name of the field
     _results_func = ""  # function to find the location
+    _results_func_output = ""  # function to find the location
     _components_names = []  # names of the components
     _invariants_names = []  # names of the invariants
 
@@ -48,6 +46,7 @@ class Result(FEAData):
         super(Result, self).__init__(**kwargs)
         self._field_name = self.__class__._field_name
         self._results_func = self.__class__._results_func
+        self._results_func_output = self.__class__._results_func_output
         self._components_names = self.__class__._components_names
         self._invariants_names = self.__class__._invariants_names
         self._registration = None
@@ -210,6 +209,7 @@ class DisplacementResult(NodeResult):
 
     _field_name = "u"
     _results_func = "find_node_by_key"
+    _results_func_output = "find_node_by_inputkey"
     _components_names = ["x", "y", "z", "xx", "yy", "zz"]
     _invariants_names = ["magnitude"]
 
@@ -227,6 +227,7 @@ class AccelerationResult(NodeResult):
 
     _field_name = "a"
     _results_func = "find_node_by_key"
+    _results_func_output = "find_node_by_inputkey"
     _components_names = ["x", "y", "z", "xx", "yy", "zz"]
     _invariants_names = ["magnitude"]
 
@@ -244,6 +245,7 @@ class VelocityResult(NodeResult):
 
     _field_name = "v"
     _results_func = "find_node_by_key"
+    _results_func_output = "find_node_by_inputkey"
     _components_names = ["x", "y", "z", "xx", "yy", "zz"]
     _invariants_names = ["magnitude"]
 
@@ -293,6 +295,7 @@ class ReactionResult(NodeResult):
 
     _field_name = "rf"
     _results_func = "find_node_by_key"
+    _results_func_output = "find_node_by_inputkey"
     _components_names = ["x", "y", "z", "xx", "yy", "zz"]
     _invariants_names = ["magnitude"]
 
@@ -368,6 +371,7 @@ class SectionForcesResult(ElementResult):
 
     _field_name = "sf"
     _results_func = "find_element_by_key"
+    _results_func_output = "find_element_by_inputkey"
     _components_names = ["Fx_1", "Fy_1", "Fz_1", "Mx_1", "My_1", "Mz_1", "Fx_2", "Fy_2", "Fz_2", "Mx_2", "My_2", "Mz_2"]
     _invariants_names = ["magnitude"]
 
@@ -677,6 +681,7 @@ class StressResult(ElementResult):
 
     _field_name = "s"
     _results_func = "find_element_by_key"
+    _results_func_output = "find_element_by_inputkey"
     _components_names = ["s11", "s22", "s12", "s13", "s22", "s23", "s33"]
     _invariants_names = ["magnitude"]
 
@@ -1192,6 +1197,7 @@ class ShellStressResult(Result):
 
     _field_name = "s2d"
     _results_func = "find_element_by_key"
+    _results_func_output = "find_element_by_inputkey"
     _components_names = ["s11", "s22", "s12", "sb11", "sb22", "sb12", "tq1", "tq2"]
     _invariants_names = ["magnitude"]
 

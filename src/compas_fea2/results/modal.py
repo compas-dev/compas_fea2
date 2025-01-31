@@ -1,8 +1,9 @@
-from compas_fea2.base import FEAData
-from .fields import FieldResults
-
 # from .results import Result
 import numpy as np
+
+from compas_fea2.base import FEAData
+
+from .fields import NodeFieldResults
 
 
 class ModalAnalysisResult(FEAData):
@@ -32,6 +33,11 @@ class ModalAnalysisResult(FEAData):
     eigenvector : list
         List of DisplacementResult objects.
     """
+
+    _field_name = "eigen"
+    _results_func = "find_node_by_key"
+    _components_names = ["x", "y", "z", "xx", "yy", "zz"]
+    _invariants_names = ["magnitude"]
 
     def __init__(self, *, step, mode, eigenvalue, eigenvector, **kwargs):
         super(ModalAnalysisResult, self).__init__(**kwargs)
@@ -126,7 +132,7 @@ class ModalAnalysisResult(FEAData):
         return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, " f"frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"
 
 
-class ModalShape(FieldResults):
+class ModalShape(NodeFieldResults):
     """ModalShape result applied as Displacement field.
 
     Parameters
@@ -138,7 +144,7 @@ class ModalShape(FieldResults):
     """
 
     def __init__(self, step, results, *args, **kwargs):
-        super(ModalShape, self).__init__(step=step, field_name=None, *args, **kwargs)
+        super(ModalShape, self).__init__(step=step, results_cls=ModalAnalysisResult, *args, **kwargs)
         self._results = results
 
     @property

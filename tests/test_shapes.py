@@ -4,7 +4,6 @@ from compas_fea2.model.shapes import Rectangle, Circle, IShape, Shape
 
 
 class TestShapes(unittest.TestCase):
-
     def test_rectangle(self):
         rect = Rectangle(w=100, h=50)
         self.assertEqual(rect.w, 100)

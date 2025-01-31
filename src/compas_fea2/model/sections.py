@@ -1,25 +1,20 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from math import pi
 from math import sqrt
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.patches import Polygon as mplPolygon
 from matplotlib.path import Path
 
 from compas_fea2 import units
 from compas_fea2.base import FEAData
-
-from .materials.material import _Material
-from .shapes import Circle
-from .shapes import IShape
-from .shapes import Rectangle
-from .shapes import LShape
+from compas_fea2.model.shapes import Circle
+from compas_fea2.model.shapes import IShape
+from compas_fea2.model.shapes import LShape
+from compas_fea2.model.shapes import Rectangle
 
 
-def from_shape(shape, material, **kwargs):
+def from_shape(shape, material: "_Material", **kwargs) -> dict:  # noqa: F821
     return {
         "A": shape.A,
         "Ixx": shape.Ixx,
@@ -59,31 +54,31 @@ class _Section(FEAData):
     to elements in different Parts.
     """
 
-    def __init__(self, *, material, **kwargs):
-        super(_Section, self).__init__(**kwargs)
+    def __init__(self, *, material: "_Material", **kwargs):  # noqa: F821
+        super().__init__(**kwargs)
         self._material = material
 
-    def __str__(self):
-        return """
-Section {}
---------{}
-model    : {!r}
-key      : {}
-material : {!r}
-""".format(
-            self.name, "-" * len(self.name), self.model, self.key, self.material
-        )
+    def __str__(self) -> str:
+        return f"""
+Section {self.name}
+{'-' * len(self.name)}
+model    : {self.model!r}
+key      : {self.key}
+material : {self.material!r}
+"""
 
     @property
     def model(self):
         return self._registration
 
     @property
-    def material(self):
+    def material(self) -> "_Material":  # noqa: F821
         return self._material
 
     @material.setter
-    def material(self, value):
+    def material(self, value: "_Material"):  # noqa: F821
+        from compas_fea2.model.materials import _Material
+
         if value:
             if not isinstance(value, _Material):
                 raise ValueError("Material must be of type `compas_fea2.model._Material`.")
@@ -114,19 +109,17 @@ class MassSection(FEAData):
         Point mass value.
     """
 
-    def __init__(self, mass, **kwargs):
-        super(MassSection, self).__init__(**kwargs)
+    def __init__(self, mass: float, **kwargs):
+        super().__init__(**kwargs)
         self.mass = mass
 
-    def __str__(self):
-        return """
-Mass Section  {}
---------{}
-model    : {!r}
-mass     : {}
-""".format(
-            self.name, "-" * len(self.name), self.model, self.mass
-        )
+    def __str__(self) -> str:
+        return f"""
+Mass Section  {self.name}
+{'-' * len(self.name)}
+model    : {self.model!r}
+mass     : {self.mass}
+"""
 
 
 class SpringSection(FEAData):
@@ -159,31 +152,29 @@ class SpringSection(FEAData):
     to elements in different Parts.
     """
 
-    def __init__(self, axial, lateral, rotational, **kwargs):
-        super(SpringSection, self).__init__(**kwargs)
+    def __init__(self, axial: float, lateral: float, rotational: float, **kwargs):
+        super().__init__(**kwargs)
         self.axial = axial
         self.lateral = lateral
         self.rotational = rotational
 
-    def __str__(self):
-        return """
+    def __str__(self) -> str:
+        return f"""
 Spring Section
 --------------
-Key                     : {}
-axial stiffness         : {}
-lateral stiffness       : {}
-rotational stiffness    : {}
-""".format(
-            self.key, self.axial, self.lateral, self.rotational
-        )
+Key                     : {self.key}
+axial stiffness         : {self.axial}
+lateral stiffness       : {self.lateral}
+rotational stiffness    : {self.rotational}
+"""
 
     @property
     def model(self):
         return self._registration
 
     @property
-    def stiffness(self):
-        return {"Axial": self._axial, "Lateral": self._lateral, "Rotational": self._rotational}
+    def stiffness(self) -> dict:
+        return {"Axial": self.axial, "Lateral": self.lateral, "Rotational": self.rotational}
 
 
 # ==============================================================================
@@ -250,8 +241,8 @@ class BeamSection(_Section):
         The shape of the section.
     """
 
-    def __init__(self, *, A, Ixx, Iyy, Ixy, Avx, Avy, J, material, **kwargs):
-        super(BeamSection, self).__init__(material=material, **kwargs)
+    def __init__(self, *, A: float, Ixx: float, Iyy: float, Ixy: float, Avx: float, Avy: float, J: float, material: "_Material", **kwargs):  # noqa: F821
+        super().__init__(material=material, **kwargs)
         self.A = A
         self.Ixx = Ixx
         self.Iyy = Iyy
@@ -260,40 +251,26 @@ class BeamSection(_Section):
         self.Avy = Avy
         self.J = J
 
-    def __str__(self):
-        return """
-{}
-{}
-name     : {}
-material : {!r}
+    def __str__(self) -> str:
+        return f"""
+{self.__class__.__name__}
+{'-' * len(self.__class__.__name__)}
+name     : {self.name}
+material : {self.material!r}
 
-A   : {:~.4g}
-Ixx : {:~.4g}
-Iyy : {:~.4g}
-Ixy : {:~.4g}
-Avx : {:~.2g}
-Avy : {:~.2g}
-J   : {}
-g0  : {}
-gw  : {}
-""".format(
-            self.__class__.__name__,
-            len(self.__class__.__name__) * "-",
-            self.name,
-            self.material,
-            (self.A * units["m**2"]),
-            (self.Ixx * units["m**4"]),
-            (self.Iyy * units["m**4"]),
-            (self.Ixy * units["m**4"]),
-            (self.Avx * units["m**2"]),
-            (self.Avy * units["m**2"]),
-            self.J,
-            self.g0,
-            self.gw,
-        )
+A   : {self.A * units["m**2"]:.4g}
+Ixx : {self.Ixx * units["m**4"]:.4g}
+Iyy : {self.Iyy * units["m**4"]:.4g}
+Ixy : {self.Ixy * units["m**4"]:.4g}
+Avx : {self.Avx * units["m**2"]:.2g}
+Avy : {self.Avy * units["m**2"]:.2g}
+J   : {self.J}
+g0  : {self.g0}
+gw  : {self.gw}
+"""
 
     @classmethod
-    def from_shape(cls, shape, material, **kwargs):
+    def from_shape(cls, shape, material: "_Material", **kwargs):  # noqa: F821
         section = cls(**from_shape(shape, material, **kwargs))
         section._shape = shape
         return section
@@ -305,7 +282,7 @@ gw  : {}
     def plot(self):
         self.shape.plot()
 
-    def compute_stress(self, N=0.0, Mx=0.0, My=0.0, Vx=0.0, Vy=0.0, x=0.0, y=0.0):
+    def compute_stress(self, N: float = 0.0, Mx: float = 0.0, My: float = 0.0, Vx: float = 0.0, Vy: float = 0.0, x: float = 0.0, y: float = 0.0) -> tuple:
         """
         Compute normal and shear stresses at a given point.
 
@@ -336,7 +313,7 @@ gw  : {}
         tau_y = Vy / self.Avy if self.Avy else Vy / self.A
         return sigma, tau_x, tau_y
 
-    def compute_stress_distribution(self, N=0.0, Mx=0.0, My=0.0, Vx=0.0, Vy=0.0, nx=50, ny=50):
+    def compute_stress_distribution(self, N: float = 0.0, Mx: float = 0.0, My: float = 0.0, Vx: float = 0.0, Vy: float = 0.0, nx: int = 50, ny: int = 50) -> tuple:
         """
         Compute stress distribution over the section.
 
@@ -389,7 +366,7 @@ gw  : {}
 
         return grid_x, grid_y, grid_sigma, grid_tau_x, grid_tau_y
 
-    def compute_neutral_axis(self, N=0.0, Mx=0.0, My=0.0):
+    def compute_neutral_axis(self, N: float = 0.0, Mx: float = 0.0, My: float = 0.0) -> tuple:
         """
         Compute the neutral axis slope and intercept for the section.
 
@@ -434,7 +411,9 @@ gw  : {}
 
         return slope, intercept
 
-    def plot_stress_distribution(self, N=0.0, Mx=0.0, My=0.0, Vx=0.0, Vy=0.0, nx=50, ny=50, cmap="coolwarm", show_tau=True):
+    def plot_stress_distribution(
+        self, N: float = 0.0, Mx: float = 0.0, My: float = 0.0, Vx: float = 0.0, Vy: float = 0.0, nx: int = 50, ny: int = 50, cmap: str = "coolwarm", show_tau: bool = True
+    ):
         """
         Visualize normal stress (\u03c3) and optionally shear stresses (\u03c4_x, \u03c4_y) with the neutral axis.
 
@@ -554,7 +533,9 @@ gw  : {}
             plt.tight_layout()
             plt.show()
 
-    def plot_section_with_stress(self, N=0.0, Mx=0.0, My=0.0, Vx=0.0, Vy=0.0, direction=(1, 0), point=None, nx=50, ny=50):
+    def plot_section_with_stress(
+        self, N: float = 0.0, Mx: float = 0.0, My: float = 0.0, Vx: float = 0.0, Vy: float = 0.0, direction: tuple = (1, 0), point: tuple = None, nx: int = 50, ny: int = 50
+    ):
         """
         Plot the section and overlay the stress distribution along a general direction.
 
@@ -692,10 +673,9 @@ class GenericBeamSection(BeamSection):
         Additional keyword arguments.
     """
 
-    def __init__(self, A, Ixx, Iyy, Ixy, Avx, Avy, J, g0, gw, material, **kwargs):
-        super(GenericBeamSection, self).__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
-
-        self._shape = Circle(radius=sqrt(self.A) / pi)
+    def __init__(self, A: float, Ixx: float, Iyy: float, Ixy: float, Avx: float, Avy: float, J: float, g0: float, gw: float, material: "_Material", **kwargs):  # noqa: F821
+        super().__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
+        self._shape = Circle(radius=sqrt(A / pi))
 
 
 class AngleSection(BeamSection):

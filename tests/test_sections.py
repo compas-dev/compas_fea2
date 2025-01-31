@@ -4,7 +4,6 @@ from compas_fea2.model.materials.steel import Steel
 
 
 class TestSections(unittest.TestCase):
-
     def setUp(self):
         self.material = Steel.S355()
 

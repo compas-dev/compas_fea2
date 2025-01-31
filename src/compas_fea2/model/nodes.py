@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from compas.geometry import Point
 from compas.tolerance import TOL
@@ -74,11 +74,11 @@ class Node(FEAData):
 
     """
 
-    def __init__(self, xyz, mass=None, temperature=None, **kwargs):
-        super(Node, self).__init__(**kwargs)
+    def __init__(self, xyz: List[float], mass: Optional[float] = None, temperature: Optional[float] = None, **kwargs):
+        super().__init__(**kwargs)
         self._key = None
 
-        self.xyz = xyz
+        self._xyz = xyz
         self._x = xyz[0]
         self._y = xyz[1]
         self._z = xyz[2]
@@ -86,7 +86,7 @@ class Node(FEAData):
         self._bc = None
         self._dof = {"x": True, "y": True, "z": True, "xx": True, "yy": True, "zz": True}
 
-        self._mass = mass if isinstance(mass, tuple) else tuple([mass] * 3)
+        self._mass = mass if isinstance(mass, list) else list([mass] * 6)
         self._temperature = temperature
 
         self._on_boundary = None
@@ -98,7 +98,7 @@ class Node(FEAData):
         self._connected_elements = []
 
     @classmethod
-    def from_compas_point(cls, point, mass=None, temperature=None):
+    def from_compas_point(cls, point: Point, mass: Optional[float] = None, temperature: Optional[float] = None) -> "Node":
         """Create a Node from a :class:`compas.geometry.Point`.
 
         Parameters
@@ -131,19 +131,19 @@ class Node(FEAData):
         return cls(xyz=[point.x, point.y, point.z], mass=mass, temperature=temperature)
 
     @property
-    def part(self):
+    def part(self) -> "_Part":  # noqa: F821
         return self._registration
 
     @property
-    def model(self):
+    def model(self) -> "Model":  # noqa: F821
         return self.part._registration
 
     @property
-    def xyz(self):
+    def xyz(self) -> List[float]:
         return [self._x, self._y, self._z]
 
     @xyz.setter
-    def xyz(self, value):
+    def xyz(self, value: List[float]):
         if len(value) != 3:
             raise ValueError("Provide a 3 element tuple or list")
         self._x = value[0]
@@ -151,51 +151,51 @@ class Node(FEAData):
         self._z = value[2]
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self._x
 
     @x.setter
-    def x(self, value):
+    def x(self, value: float):
         self._x = float(value)
 
     @property
-    def y(self):
+    def y(self) -> float:
         return self._y
 
     @y.setter
-    def y(self, value):
+    def y(self, value: float):
         self._y = float(value)
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self._z
 
     @z.setter
-    def z(self, value):
+    def z(self, value: float):
         self._z = float(value)
 
     @property
-    def mass(self):
+    def mass(self) -> List[float]:
         return self._mass
 
     @mass.setter
-    def mass(self, value):
-        self._mass = value if isinstance(value, tuple) else tuple([value] * 3)
+    def mass(self, value: float):
+        self._mass = value if isinstance(value, list) else list([value] * 6)
 
     @property
-    def temperature(self):
+    def temperature(self) -> float:
         return self._temperature
 
     @temperature.setter
-    def temperature(self, value):
+    def temperature(self, value: float):
         self._temperature = value
 
     @property
-    def gkey(self):
+    def gkey(self) -> str:
         return TOL.geometric_key(self.xyz, precision=compas_fea2.PRECISION)
 
     @property
-    def dof(self):
+    def dof(self) -> Dict[str, bool]:
         if self.bc:
             return {attr: not bool(getattr(self.bc, attr)) for attr in ["x", "y", "z", "xx", "yy", "zz"]}
         else:
@@ -206,11 +206,11 @@ class Node(FEAData):
         return self._bc
 
     @property
-    def on_boundary(self):
+    def on_boundary(self) -> Optional[bool]:
         return self._on_boundary
 
     @property
-    def is_reference(self):
+    def is_reference(self) -> bool:
         return self._is_reference
 
     @property
@@ -218,11 +218,11 @@ class Node(FEAData):
         return self._results
 
     @property
-    def point(self):
+    def point(self) -> Point:
         return Point(*self.xyz)
 
     @property
-    def connected_elements(self):
+    def connected_elements(self) -> List:
         return self._connected_elements
 
     @property
@@ -240,13 +240,13 @@ class Node(FEAData):
             return step.reaction_field.get_result_at(location=self)
 
     @property
-    def displacements(self):
+    def displacements(self) -> Dict:
         problems = self.model.problems
         steps = [problem.step for problem in problems]
         return {step: self.displacement(step) for step in steps}
 
     @property
-    def reactions(self):
+    def reactions(self) -> Dict:
         problems = self.model.problems
         steps = [problem.step for problem in problems]
         return {step: self.reaction(step) for step in steps}

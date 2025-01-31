@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas_fea2.base import FEAData
 
 
@@ -10,7 +6,7 @@ class _Material(FEAData):
 
     Parameters
     ----------
-    denisty : float
+    density : float
         Density of the material.
     expansion : float, optional
         Thermal expansion coefficient, by default None.
@@ -41,21 +37,21 @@ class _Material(FEAData):
 
     """
 
-    def __init__(self, density, expansion=None, **kwargs):
-        super(_Material, self).__init__(**kwargs)
+    def __init__(self, density: float, expansion: float = None, **kwargs):
+        super().__init__(**kwargs)
         self.density = density
         self.expansion = expansion
         self._key = None
 
     @property
-    def key(self):
+    def key(self) -> int:
         return self._key
 
     @property
     def model(self):
         return self._registration
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """
 {}
 {}
@@ -66,7 +62,7 @@ expansion   : {}
             self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion
         )
 
-    def __html__(self):
+    def __html__(self) -> str:
         return """<html>
 <head></head>
 <body><p>Hello World!</p></body>
@@ -123,8 +119,8 @@ class ElasticOrthotropic(_Material):
         Shear modulus Gzx in z-x directions.
     """
 
-    def __init__(self, Ex, Ey, Ez, vxy, vyz, vzx, Gxy, Gyz, Gzx, density, expansion=None, **kwargs):
-        super(ElasticOrthotropic, self).__init__(density=density, expansion=expansion, **kwargs)
+    def __init__(self, Ex: float, Ey: float, Ez: float, vxy: float, vyz: float, vzx: float, Gxy: float, Gyz: float, Gzx: float, density: float, expansion: float = None, **kwargs):
+        super().__init__(density=density, expansion=expansion, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
         self.Ez = Ez
@@ -135,7 +131,7 @@ class ElasticOrthotropic(_Material):
         self.Gyz = Gyz
         self.Gzx = Gzx
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """
 {}
 {}
@@ -192,12 +188,12 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, E, v, density, expansion=None, **kwargs):
-        super(ElasticIsotropic, self).__init__(density=density, expansion=expansion, **kwargs)
+    def __init__(self, E: float, v: float, density: float, expansion: float = None, **kwargs):
+        super().__init__(density=density, expansion=expansion, **kwargs)
         self.E = E
         self.v = v
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """
 ElasticIsotropic Material
 -------------------------
@@ -213,14 +209,14 @@ G : {}
         )
 
     @property
-    def G(self):
+    def G(self) -> float:
         return 0.5 * self.E / (1 + self.v)
 
 
 class Stiff(_Material):
     """Elastic, very stiff and massless material."""
 
-    def __init__(self, *, density, expansion=None, name=None, **kwargs):
+    def __init__(self, *, density: float, expansion: float = None, name: str = None, **kwargs):
         raise NotImplementedError()
 
 
@@ -254,11 +250,11 @@ class ElasticPlastic(ElasticIsotropic):
         in the form of strain/stress value pairs.
     """
 
-    def __init__(self, *, E, v, density, strain_stress, expansion=None, **kwargs):
-        super(ElasticPlastic, self).__init__(E=E, v=v, density=density, expansion=expansion, **kwargs)
+    def __init__(self, *, E: float, v: float, density: float, strain_stress: list[tuple[float, float]], expansion: float = None, **kwargs):
+        super().__init__(E=E, v=v, density=density, expansion=expansion, **kwargs)
         self.strain_stress = strain_stress
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """
 ElasticPlastic Material
 -----------------------
@@ -282,11 +278,11 @@ strain_stress : {}
 
 
 class UserMaterial(FEAData):
-    """User Defined Material. Tho implement this type of material, a
+    """User Defined Material. To implement this type of material, a
     separate subroutine is required
 
     """
 
     def __init__(self, **kwargs):
-        super(UserMaterial, self).__init__(self, **kwargs)
+        super().__init__(**kwargs)
         raise NotImplementedError("This class is not available for the selected backend plugin")

@@ -6,7 +6,6 @@ from compas_fea2.problem.patterns import AreaLoadPattern
 from compas_fea2.problem.patterns import LineLoadPattern
 from compas_fea2.problem.patterns import NodeLoadPattern
 from compas_fea2.problem.patterns import PointLoadPattern
-from compas_fea2.problem.patterns import VolumeLoadPattern
 
 from .step import GeneralStep
 
@@ -277,10 +276,18 @@ class StaticStep(GeneralStep):
         model!
 
         """
-        raise NotImplementedError()
-        from compas_fea2.problem import GravityLoad
+        from compas_fea2.problem import ConcentratedLoad
 
-        return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
+        for part in parts:
+            part.compute_nodal_masses()
+            for node in part.nodes:
+                self.add_load_pattern(
+                    NodeLoadPattern(load=ConcentratedLoad(x=node.mass[0] * g * x, y=node.mass[1] * g * y, z=node.mass[2] * g * z), nodes=[node], load_case=load_case, **kwargs)
+                )
+
+        # from compas_fea2.problem import GravityLoad
+
+        # return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
 
     # =========================================================================
     #                           Fields methods

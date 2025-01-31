@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from typing import Dict
 
 from compas_fea2.base import FEAData
 
@@ -16,15 +14,15 @@ The `axes` parameter is WIP. Currently only global axes can be used.
 Parameters
 ----------
 name : str, optional
-    Uniqe identifier. If not provided it is automatically generated. Set a
+    Unique identifier. If not provided it is automatically generated. Set a
     name if you want a more human-readable input file.
 axes : str, optional
-    The refernce axes.
+    The reference axes.
 
 Attributes
 ----------
 name : str
-    Uniqe identifier.
+    Unique identifier.
 x : bool
     Restrain translations along the x axis.
 y : bool
@@ -40,7 +38,7 @@ zz : bool
 components : dict
     Dictionary with component-value pairs summarizing the boundary condition.
 axes : str
-    The refernce axes.
+    The reference axes.
 """
 
 
@@ -49,8 +47,8 @@ class _BoundaryCondition(FEAData):
 
     __doc__ += docs
 
-    def __init__(self, axes="global", **kwargs):
-        super(_BoundaryCondition, self).__init__(**kwargs)
+    def __init__(self, axes: str = "global", **kwargs):
+        super().__init__(**kwargs)
         self._axes = axes
         self._x = False
         self._y = False
@@ -60,44 +58,44 @@ class _BoundaryCondition(FEAData):
         self._zz = False
 
     @property
-    def x(self):
+    def x(self) -> bool:
         return self._x
 
     @property
-    def y(self):
+    def y(self) -> bool:
         return self._y
 
     @property
-    def z(self):
+    def z(self) -> bool:
         return self._z
 
     @property
-    def xx(self):
+    def xx(self) -> bool:
         return self._xx
 
     @property
-    def yy(self):
+    def yy(self) -> bool:
         return self._yy
 
     @property
-    def zz(self):
+    def zz(self) -> bool:
         return self._zz
 
     @property
-    def axes(self):
+    def axes(self) -> str:
         return self._axes
 
     @axes.setter
-    def axes(self, value):
+    def axes(self, value: str):
         self._axes = value
 
     @property
-    def components(self):
+    def components(self) -> Dict[str, bool]:
         return {c: getattr(self, c) for c in ["x", "y", "z", "xx", "yy", "zz"]}
 
 
 class GeneralBC(_BoundaryCondition):
-    """Costumized boundary condition."""
+    """Customized boundary condition."""
 
     __doc__ += docs
     __doc__ += """
@@ -117,8 +115,8 @@ zz : bool
     Restrain rotations around the z axis.
     """
 
-    def __init__(self, x=False, y=False, z=False, xx=False, yy=False, zz=False, **kwargs):
-        super(GeneralBC, self).__init__(**kwargs)
+    def __init__(self, x: bool = False, y: bool = False, z: bool = False, xx: bool = False, yy: bool = False, zz: bool = False, **kwargs):
+        super().__init__(**kwargs)
         self._x = x
         self._y = y
         self._z = z
@@ -133,7 +131,7 @@ class FixedBC(_BoundaryCondition):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(FixedBC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = True
         self._y = True
         self._z = True
@@ -143,36 +141,36 @@ class FixedBC(_BoundaryCondition):
 
 
 class FixedBCX(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition  along and around Z"""
+    """A fixed nodal displacement boundary condition along and around X."""
 
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(FixedBC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = True
         self._xx = True
 
 
 class FixedBCY(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition along and around Y"""
+    """A fixed nodal displacement boundary condition along and around Y."""
 
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(FixedBC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._y = True
         self._yy = True
 
 
 class FixedBCZ(_BoundaryCondition):
-    """A fixed nodal displacement boundary condition along and around Z"""
+    """A fixed nodal displacement boundary condition along and around Z."""
 
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(FixedBC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._z = True
-        self._z = True
+        self._zz = True
 
 
 class PinnedBC(_BoundaryCondition):
@@ -181,7 +179,7 @@ class PinnedBC(_BoundaryCondition):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(PinnedBC, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = True
         self._y = True
         self._z = True
@@ -193,7 +191,7 @@ class ClampBCXX(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(ClampBCXX, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._xx = True
 
 
@@ -203,7 +201,7 @@ class ClampBCYY(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(ClampBCYY, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._yy = True
 
 
@@ -213,7 +211,7 @@ class ClampBCZZ(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(ClampBCZZ, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._zz = True
 
 
@@ -223,7 +221,7 @@ class RollerBCX(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCX, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = False
 
 
@@ -233,7 +231,7 @@ class RollerBCY(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCY, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._y = False
 
 
@@ -243,7 +241,7 @@ class RollerBCZ(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCZ, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._z = False
 
 
@@ -253,7 +251,7 @@ class RollerBCXY(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCXY, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = False
         self._y = False
 
@@ -264,7 +262,7 @@ class RollerBCYZ(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCYZ, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._y = False
         self._z = False
 
@@ -275,6 +273,6 @@ class RollerBCXZ(PinnedBC):
     __doc__ += docs
 
     def __init__(self, **kwargs):
-        super(RollerBCXZ, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._x = False
         self._z = False

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas_fea2.base import FEAData
 
 
@@ -9,11 +5,10 @@ class _Constraint(FEAData):
     """Base class for constraints.
 
     A constraint removes degree of freedom of nodes in the model.
-
     """
 
-    def __init__(self, **kwargs):
-        super(_Constraint, self).__init__(**kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
 
 # ------------------------------------------------------------------------------
@@ -22,22 +17,26 @@ class _Constraint(FEAData):
 
 
 class _MultiPointConstraint(_Constraint):
-    """A MultiPointContrstaint (MPC) links a node (master) to other nodes (slaves) in the model.
+    """A MultiPointConstraint (MPC) links a node (master) to other nodes (slaves) in the model.
 
     Parameters
     ----------
+    constraint_type : str
+        Type of the constraint.
     master : :class:`compas_fea2.model.Node`
-        Node that act as master.
-    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        Node that acts as master.
+    slaves : List[:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
         List or Group of nodes that act as slaves.
     tol : float
         Constraint tolerance, distance limit between master and slaves.
 
     Attributes
     ----------
+    constraint_type : str
+        Type of the constraint.
     master : :class:`compas_fea2.model.Node`
-        Node that act as master.
-    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        Node that acts as master.
+    slaves : List[:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
         List or Group of nodes that act as slaves.
     tol : float
         Constraint tolerance, distance limit between master and slaves.
@@ -48,8 +47,8 @@ class _MultiPointConstraint(_Constraint):
 
     """
 
-    def __init__(self, constraint_type, **kwargs):
-        super(_MultiPointConstraint, self).__init__(**kwargs)
+    def __init__(self, constraint_type: str, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.constraint_type = constraint_type
 
 
@@ -63,13 +62,13 @@ class BeamMPC(_MultiPointConstraint):
 
 # TODO check!
 class _SurfaceConstraint(_Constraint):
-    """A SurfaceContrstaint links a surface (master) to another surface (slave) in the model.
+    """A SurfaceConstraint links a surface (master) to another surface (slave) in the model.
 
     Parameters
     ----------
     master : :class:`compas_fea2.model.Node`
-        Node that act as master.
-    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        Node that acts as master.
+    slaves : List[:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
         List or Group of nodes that act as slaves.
     tol : float
         Constraint tolerance, distance limit between master and slaves.
@@ -77,8 +76,8 @@ class _SurfaceConstraint(_Constraint):
     Attributes
     ----------
     master : :class:`compas_fea2.model.Node`
-        Node that act as master.
-    slaves : [:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
+        Node that acts as master.
+    slaves : List[:class:`compas_fea2.model.Node`] | :class:`compas_fea2.model.NodesGroup`
         List or Group of nodes that act as slaves.
     tol : float
         Constraint tolerance, distance limit between master and slaves.

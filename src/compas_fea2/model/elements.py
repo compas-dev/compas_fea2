@@ -1,13 +1,14 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from operator import itemgetter
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 from compas.datastructures import Mesh
 from compas.geometry import Frame
 from compas.geometry import Line
 from compas.geometry import Plane
+from compas.geometry import Point
 from compas.geometry import Polygon
 from compas.geometry import Polyhedron
 from compas.geometry import Vector
@@ -37,7 +38,7 @@ class _Element(FEAData):
     nodes : list[:class:`compas_fea2.model.Node`]
         Nodes to which the element is connected.
     nodes_key : str, read-only
-        Identifier based on the conntected nodes.
+        Identifier based on the connected nodes.
     section : :class:`compas_fea2.model._Section`
         Section object.
     implementation : str
@@ -45,7 +46,7 @@ class _Element(FEAData):
     part : :class:`compas_fea2.model.DeformablePart` | None
         The parent part.
     on_boundary : bool | None
-        `True` it the element has a face on the boundary mesh of the part, `False`
+        `True` if the element has a face on the boundary mesh of the part, `False`
         otherwise, by default `None`.
     part : :class:`compas_fea2.model._Part`, read-only
         The Part where the element is assigned.
@@ -71,10 +72,8 @@ class _Element(FEAData):
 
     """
 
-    # FIXME frame and orientations are a bit different concepts. find a way to unify them
-
-    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
-        super(_Element, self).__init__(**kwargs)
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(**kwargs)
         self._nodes = self._check_nodes(nodes)
         self._registration = nodes[0]._registration
         self._section = section
@@ -89,99 +88,96 @@ class _Element(FEAData):
         self._shape = None
 
     @property
-    def part(self):
+    def part(self) -> "_Part":  # noqa: F821
         return self._registration
 
     @property
-    def model(self):
+    def model(self) -> "Model":  # noqa: F821
         return self.part.model
 
     @property
-    def nodes(self):
+    def nodes(self) -> List["Node"]:  # noqa: F821
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value):
+    def nodes(self, value: List["Node"]):  # noqa: F821
         self._nodes = self._check_nodes(value)
 
     @property
-    def nodes_key(self):
-        return "-".join(sorted([str(node.key) for node in self.nodes], key=int))
+    def nodes_key(self) -> str:
+        return [n.key for n in self.nodes]
 
     @property
-    def nodes_inputkey(self):
+    def nodes_inputkey(self) -> str:
         return "-".join(sorted([str(node.input_key) for node in self.nodes], key=int))
 
     @property
-    def points(self):
+    def points(self) -> List["Point"]:
         return [node.point for node in self.nodes]
 
     @property
-    def section(self):
+    def section(self) -> "_Section":  # noqa: F821
         return self._section
 
     @section.setter
-    def section(self, value):
+    def section(self, value: "_Section"):  # noqa: F821
         if self.part:
             self.part.add_section(value)
         self._section = value
 
     @property
-    def frame(self):
+    def frame(self) -> Optional[Frame]:
         return self._frame
 
     @property
-    def implementation(self):
+    def implementation(self) -> Optional[str]:
         return self._implementation
 
     @property
-    def on_boundary(self):
+    def on_boundary(self) -> Optional[bool]:
         return self._on_boundary
 
     @on_boundary.setter
-    def on_boundary(self, value):
+    def on_boundary(self, value: bool):
         self._on_boundary = value
 
-    def _check_nodes(self, nodes):
+    def _check_nodes(self, nodes: List["Node"]) -> List["Node"]:  # noqa: F821
         if len(set([node._registration for node in nodes])) != 1:
             raise ValueError("At least one of node is registered to a different part or not registered")
         return nodes
 
     @property
-    def area(self):
+    def area(self) -> float:
         raise NotImplementedError()
 
     @property
-    def volume(self):
+    def volume(self) -> float:
         raise NotImplementedError()
 
     @property
-    def results_format(self):
+    def results_format(self) -> Dict:
         raise NotImplementedError()
 
     @property
-    def reference_point(self):
+    def reference_point(self) -> "Point":
         raise NotImplementedError()
 
     @property
-    def rigid(self):
+    def rigid(self) -> bool:
         return self._rigid
 
     @property
-    def weight(self):
+    def mass(self) -> float:
         return self.volume * self.section.material.density
 
+    def weight(self, g: float) -> float:
+        return self.mass * g
+
     @property
-    def shape(self):
-        return self._shape
+    def nodal_mass(self) -> List[float]:
+        return [self.mass / len(self.nodes)] * 3
 
 
-# ==============================================================================
-# 0D elements
-# ==============================================================================
-
-
-# TODO: remove. This is how abaqus does it but it is better to define the mass as a property of the nodes.
 class MassElement(_Element):
     """A 0D element for concentrated point mass."""
 
@@ -189,8 +185,8 @@ class MassElement(_Element):
 class _Element0D(_Element):
     """Element with 1 dimension."""
 
-    def __init__(self, nodes, frame, implementation=None, rigid=False, **kwargs):
-        super(_Element0D, self).__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
+    def __init__(self, nodes: List["Node"], frame: Frame, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
 
 
@@ -204,8 +200,8 @@ class SpringElement(_Element0D):
 
     """
 
-    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
-        super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
 
 class LinkElement(_Element0D):
@@ -217,13 +213,10 @@ class LinkElement(_Element0D):
     use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
     """
 
-    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
-        super(_Element0D, self).__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
 
-# ==============================================================================
-# 1D elements
-# ==============================================================================
 class _Element1D(_Element):
     """Element with 1 dimension.
 
@@ -251,17 +244,16 @@ class _Element1D(_Element):
         The volume of the element.
     """
 
-    def __init__(self, nodes, section, frame=None, implementation=None, rigid=False, **kwargs):
-        super(_Element1D, self).__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
+    def __init__(self, nodes: List["Node"], section: "_Section", frame: Optional[Frame] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame if isinstance(frame, Frame) else Frame(nodes[0].point, Vector(*frame), Vector.from_start_end(nodes[0].point, nodes[-1].point))
         self._curve = Line(nodes[0].point, nodes[-1].point)
 
     @property
-    def outermesh(self):
+    def outermesh(self) -> Mesh:
         self._frame.point = self.nodes[0].point
         self._shape_i = self.section._shape.oriented(self._frame, check_planarity=False)
         self._shape_j = self._shape_i.translated(Vector.from_start_end(self.nodes[0].point, self.nodes[-1].point), check_planarity=False)
-        # create the outer mesh using the section information
         p = self._shape_i.points
         n = len(p)
         self._outermesh = Mesh.from_vertices_and_faces(
@@ -270,36 +262,40 @@ class _Element1D(_Element):
         return self._outermesh
 
     @property
-    def frame(self):
+    def frame(self) -> Frame:
         return self._frame
 
     @property
-    def length(self):
+    def shape(self) -> Optional["Shape"]:  # noqa: F821
+        return self._shape
+
+    @property
+    def length(self) -> float:
         return distance_point_point(*[node.point for node in self.nodes])
 
     @property
-    def volume(self):
+    def volume(self) -> float:
         return self.section.A * self.length
 
     def plot_section(self):
         self.section.plot()
 
-    def plot_stress_distribution(self, step, end="end_1", nx=100, ny=100, *args, **kwargs):
+    def plot_stress_distribution(self, step: "_Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         r = step.section_forces_field.get_element_forces(self)
         r.plot_stress_distribution(*args, **kwargs)
 
-    def section_forces_result(self, step):
+    def section_forces_result(self, step: "_Step") -> "Result":  # noqa: F821
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         return step.section_forces_field.get_result_at(self)
 
-    def forces(self, step):
+    def forces(self, step: "_Step") -> "Result":  # noqa: F821
         r = self.section_forces_result(step)
         return r.forces
 
-    def moments(self, step):
+    def moments(self, step: "_Step") -> "Result":  # noqa: F821
         r = self.section_forces_result(step)
         return r.moments
 
@@ -318,9 +314,8 @@ class BeamElement(_Element1D):
 class TrussElement(_Element1D):
     """A 1D element that resists axial loads."""
 
-    def __init__(self, nodes, section, implementation=None, rigid=False, **kwargs):
-        # TODO remove frame
-        super(TrussElement, self).__init__(nodes, section, frame=[1, 1, 1], implementation=implementation, rigid=rigid, **kwargs)
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(nodes, section, frame=[1, 1, 1], implementation=implementation, rigid=rigid, **kwargs)
 
 
 class StrutElement(TrussElement):
@@ -329,11 +324,6 @@ class StrutElement(TrussElement):
 
 class TieElement(TrussElement):
     """A truss element that resists axial tensile loads."""
-
-
-# ==============================================================================
-# 2D elements
-# ==============================================================================
 
 
 class Face(FEAData):
@@ -367,8 +357,8 @@ class Face(FEAData):
 
     """
 
-    def __init__(self, nodes, tag, element=None, **kwargs):
-        super(Face, self).__init__(**kwargs)
+    def __init__(self, nodes: List["Node"], tag: str, element: Optional["_Element"] = None, **kwargs):  # noqa: F821
+        super().__init__(**kwargs)
         self._nodes = nodes
         self._tag = tag
         self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
@@ -376,32 +366,36 @@ class Face(FEAData):
         self._centroid = centroid_points([node.xyz for node in nodes])
 
     @property
-    def nodes(self):
+    def nodes(self) -> List["Node"]:  # noqa: F821
         return self._nodes
 
     @property
-    def tag(self):
+    def tag(self) -> str:
         return self._tag
 
     @property
-    def plane(self):
+    def plane(self) -> Plane:
         return self._plane
 
     @property
-    def element(self):
+    def element(self) -> Optional["_Element"]:
         return self._registration
 
     @property
-    def polygon(self):
+    def polygon(self) -> Polygon:
         return Polygon([n.xyz for n in self.nodes])
 
     @property
-    def area(self):
+    def area(self) -> float:
         return self.polygon.area
 
     @property
-    def centroid(self):
+    def centroid(self) -> "Point":
         return self._centroid
+
+    @property
+    def nodes_key(self) -> List:
+        return [n.key for n in self.nodes]
 
 
 class _Element2D(_Element):
@@ -418,8 +412,8 @@ class _Element2D(_Element):
         {'s1': (0,1,2), ...}
     """
 
-    def __init__(self, nodes, section=None, implementation=None, rigid=False, **kwargs):
-        super(_Element2D, self).__init__(
+    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,
@@ -431,35 +425,35 @@ class _Element2D(_Element):
         self._face_indices = None
 
     @property
-    def nodes(self):
+    def nodes(self) -> List["Node"]:  # noqa: F821
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value):
+    def nodes(self, value: List["Node"]):  # noqa: F821
         self._nodes = self._check_nodes(value)
         self._faces = self._construct_faces(self._face_indices)
 
     @property
-    def face_indices(self):
+    def face_indices(self) -> Optional[Dict[str, Tuple[int]]]:
         return self._face_indices
 
     @property
-    def faces(self):
+    def faces(self) -> Optional[List[Face]]:
         return self._faces
 
     @property
-    def volume(self):
+    def volume(self) -> float:
         return self._faces[0].area * self.section.t
 
     @property
-    def reference_point(self):
+    def reference_point(self) -> "Point":
         return centroid_points([face.centroid for face in self.faces])
 
     @property
-    def outermesh(self):
+    def outermesh(self) -> Mesh:
         return Mesh.from_vertices_and_faces(self.points, list(self._face_indices.values()))
 
-    def _construct_faces(self, face_indices):
+    def _construct_faces(self, face_indices: Dict[str, Tuple[int]]) -> List[Face]:
         """Construct the face-nodes dictionary.
 
         Parameters
@@ -475,7 +469,7 @@ class _Element2D(_Element):
         """
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
-    def stress_results(self, step):
+    def stress_results(self, step: "_Step") -> "Result":  # noqa: F821
         if not hasattr(step, "stress2D_field"):
             raise ValueError("The step does not have a stress2D_field")
         return step.stress2D_field.get_result_at(self)
@@ -489,8 +483,8 @@ class ShellElement(_Element2D):
 
     """
 
-    def __init__(self, nodes, section=None, implementation=None, rigid=False, **kwargs):
-        super(ShellElement, self).__init__(
+    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+        super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,
@@ -516,14 +510,6 @@ class MembraneElement(_Element2D):
     """
 
 
-# ==============================================================================
-# 3D elements
-# ==============================================================================
-
-
-# TODO add picture with node lables convention
-
-
 class _Element3D(_Element):
     """A 3D element that resists axial, shear, bending and torsion.
     Solid (continuum) elements can be used for linear analysis
@@ -535,8 +521,8 @@ class _Element3D(_Element):
 
     """
 
-    def __init__(self, nodes, section, implementation=None, **kwargs):
-        super(_Element3D, self).__init__(
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+        super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,
@@ -547,31 +533,31 @@ class _Element3D(_Element):
         self._frame = Frame.worldXY()
 
     @property
-    def frame(self):
+    def frame(self) -> Frame:
         return self._frame
 
     @property
-    def nodes(self):
+    def nodes(self) -> List["Node"]:  # noqa: F821
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value):
+    def nodes(self, value: List["Node"]):  # noqa: F821
         self._nodes = value
         self._faces = self._construct_faces(self._face_indices)
 
     @property
-    def face_indices(self):
+    def face_indices(self) -> Optional[Dict[str, Tuple[int]]]:
         return self._face_indices
 
     @property
-    def faces(self):
+    def faces(self) -> Optional[List[Face]]:
         return self._faces
 
     @property
-    def reference_point(self):
+    def reference_point(self) -> "Point":
         return centroid_points([face.centroid for face in self.faces])
 
-    def _construct_faces(self, face_indices):
+    def _construct_faces(self, face_indices: Dict[str, Tuple[int]]) -> List[Face]:
         """Construct the face-nodes dictionary.
 
         Parameters
@@ -589,18 +575,18 @@ class _Element3D(_Element):
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
     @property
-    def area(self):
+    def area(self) -> float:
         return self._area
 
     @classmethod
-    def from_polyhedron(cls, polyhedron, section, implementation=None, **kwargs):
+    def from_polyhedron(cls, polyhedron: Polyhedron, section: "_Section", implementation: Optional[str] = None, **kwargs) -> "_Element3D":  # noqa: F821
         from compas_fea2.model import Node
 
         element = cls([Node(vertex) for vertex in polyhedron.vertices], section, implementation, **kwargs)
         return element
 
     @property
-    def outermesh(self):
+    def outermesh(self) -> Mesh:
         return Polyhedron(self.points, list(self._face_indices.values())).to_mesh()
 
 
@@ -620,8 +606,8 @@ class TetrahedronElement(_Element3D):
 
     """
 
-    def __init__(self, *, nodes, section, implementation=None, **kwargs):
-        super(TetrahedronElement, self).__init__(
+    def __init__(self, *, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+        super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,
@@ -640,9 +626,8 @@ class TetrahedronElement(_Element3D):
                     seen.add((v, u))
                     yield u, v
 
-    # TODO use compas funcitons to compute differences and det
     @property
-    def volume(self):
+    def volume(self) -> float:
         """The volume property."""
 
         def determinant_3x3(m):
@@ -674,8 +659,8 @@ class PentahedronElement(_Element3D):
 class HexahedronElement(_Element3D):
     """A Solid cuboid element with 6 faces (extruded rectangle)."""
 
-    def __init__(self, nodes, section, implementation=None, **kwargs):
-        super(HexahedronElement, self).__init__(
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+        super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,

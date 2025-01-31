@@ -2,6 +2,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from compas_fea2.units import UnitRegistry
+from compas_fea2.units import units as u
+
 from .material import ElasticIsotropic
 
 
@@ -47,15 +50,15 @@ class Steel(ElasticIsotropic):
         Parameters for modelling the compression side of the stress-strain curve.
     """
 
-    def __init__(self, *, fy, fu, eu, E, v, density, **kwargs):
+    def __init__(self, *, E, v, density, fy, fu, eu, **kwargs):
         super(Steel, self).__init__(E=E, v=v, density=density, **kwargs)
 
         fu = fu or fy
 
-        E *= 10**9
-        fu *= 10**6
-        fy *= 10**6
-        eu *= 0.01
+        # E *= 10**9
+        # fu *= 10**6
+        # fy *= 10**6
+        # eu *= 0.01
 
         ep = eu - fy / E
         f = [fy, fu]
@@ -100,7 +103,7 @@ ep : {:.2f}
 
     # TODO check values and make unit independent
     @classmethod
-    def S355(cls):
+    def S355(cls, units=None):
         """Steel S355.
 
         Returns
@@ -108,4 +111,9 @@ ep : {:.2f}
         :class:`compas_fea2.model.material.Steel`
             The precompiled steel material.
         """
-        return cls(fy=355, fu=None, eu=20, E=210, v=0.3, density=7850, name=None)
+        if not units:
+            units = u(system="SI_mm")
+        elif not isinstance(units, UnitRegistry):
+            units = u(system=units)
+
+        return cls(fy=355 * units.MPa, fu=None, eu=20, E=210 * units.GPa, v=0.3, density=7850 * units("kg/m**3"), name=None)

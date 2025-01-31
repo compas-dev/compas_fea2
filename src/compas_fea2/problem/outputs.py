@@ -3,15 +3,13 @@ from __future__ import division
 from __future__ import print_function
 
 from compas_fea2.base import FEAData
-from compas_fea2.results.results import (
-    DisplacementResult,
-    SectionForcesResult,
-    ReactionResult,
-    VelocityResult,
-    AccelerationResult,
-    ShellStressResult,
-)
 from compas_fea2.results.database import ResultsDatabase
+from compas_fea2.results.results import AccelerationResult
+from compas_fea2.results.results import DisplacementResult
+from compas_fea2.results.results import ReactionResult
+from compas_fea2.results.results import SectionForcesResult
+from compas_fea2.results.results import ShellStressResult
+from compas_fea2.results.results import VelocityResult
 
 
 class _Output(FEAData):
@@ -43,6 +41,10 @@ class _Output(FEAData):
     @property
     def results_func(self):
         return self._results_cls._results_func
+
+    @property
+    def results_func_output(self):
+        return self._results_cls._results_func_output
 
     @property
     def field_name(self):

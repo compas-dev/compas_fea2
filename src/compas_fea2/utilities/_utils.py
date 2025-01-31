@@ -5,12 +5,13 @@ from __future__ import print_function
 import itertools
 import os
 import subprocess
+import sys
+import threading
+import time
 from functools import wraps
 from time import perf_counter
-from typing import Generator, Optional
-import threading
-import sys
-import time
+from typing import Generator
+from typing import Optional
 
 from compas_fea2 import VERBOSE
 
@@ -168,13 +169,17 @@ def part_method(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        func_name = f.__qualname__.split(".")[-1]
-        self_obj = args[0]
-        res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
-        if isinstance(res[0], list):
-            res = list(itertools.chain.from_iterable(res))
-        # res = list(itertools.chain.from_iterable(res))
-        return res
+        try:
+            func_name = f.__qualname__.split(".")[-1]
+            self_obj = args[0]
+            res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
+            if isinstance(res[0], list):
+                res = list(itertools.chain.from_iterable(res))
+            # res = list(itertools.chain.from_iterable(res))
+            return res
+        except Exception as e:
+            print(f"An error occurred in part_method: {e}")
+            raise
 
     return wrapper
 

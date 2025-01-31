@@ -1,6 +1,7 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 from compas_fea2.base import FEAData
 from compas_fea2.model.groups import _Group
@@ -15,10 +16,10 @@ class Connector(FEAData):
 
     Parameters
     ----------
-    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
         For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
-    section : :class:`compas_fea2.model.sections.ConnectorSection`
+    section : compas_fea2.model.sections.ConnectorSection
         The section containing the mechanical properties of the connector.
 
     Notes
@@ -27,14 +28,14 @@ class Connector(FEAData):
 
     """
 
-    def __init__(self, nodes, **kwargs):
-        super(Connector, self).__init__(**kwargs)
-        self._key = None
-        self._nodes = None
+    def __init__(self, nodes: Union[List[Node], _Group], **kwargs):
+        super().__init__(**kwargs)
+        self._key: Optional[str] = None
+        self._nodes: Optional[List[Node]] = None
         self.nodes = nodes
 
     @property
-    def nodes(self):
+    def nodes(self) -> List[Node]:
         return self._nodes
 
     @property
@@ -42,7 +43,7 @@ class Connector(FEAData):
         return self._registration
 
     @nodes.setter
-    def nodes(self, nodes):
+    def nodes(self, nodes: Union[List[Node], _Group]):
         if isinstance(nodes, _Group):
             nodes = nodes._members
         if isinstance(nodes, Node):
@@ -64,41 +65,41 @@ class RigidLinkConnector(Connector):
 
     Parameters
     ----------
-    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
         For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
     dofs : str
         The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
     """
 
-    def __init__(self, nodes, dofs="beam", **kwargs):
-        super(RigidLinkConnector, self).__init__(nodes, **kwargs)
-        self._dofs = dofs
+    def __init__(self, nodes: Union[List[Node], _Group], dofs: str = "beam", **kwargs):
+        super().__init__(nodes, **kwargs)
+        self._dofs: str = dofs
 
     @property
-    def dofs(self):
+    def dofs(self) -> str:
         return self._dofs
 
 
 class SpringConnector(Connector):
     """Spring connector."""
 
-    def __init__(self, nodes, section, yielding=None, failure=None, **kwargs):
-        super(SpringConnector, self).__init__(nodes, **kwargs)
+    def __init__(self, nodes: Union[List[Node], _Group], section, yielding: Optional[Dict[str, float]] = None, failure: Optional[Dict[str, float]] = None, **kwargs):
+        super().__init__(nodes, **kwargs)
         self._section = section
-        self._yielding = yielding
-        self._failure = failure
+        self._yielding: Optional[Dict[str, float]] = yielding
+        self._failure: Optional[Dict[str, float]] = failure
 
     @property
     def section(self):
         return self._section
 
     @property
-    def yielding(self):
+    def yielding(self) -> Optional[Dict[str, float]]:
         return self._yielding
 
     @yielding.setter
-    def yielding(self, value):
+    def yielding(self, value: Dict[str, float]):
         try:
             value["c"]
             value["t"]
@@ -107,11 +108,11 @@ class SpringConnector(Connector):
         self._yielding = value
 
     @property
-    def failure(self):
+    def failure(self) -> Optional[Dict[str, float]]:
         return self._failure
 
     @failure.setter
-    def failure(self, value):
+    def failure(self, value: Dict[str, float]):
         try:
             value["c"]
             value["t"]
@@ -123,8 +124,8 @@ class SpringConnector(Connector):
 class ZeroLengthConnector(Connector):
     """Zero length connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, **kwargs):
-        super(ZeroLengthConnector, self).__init__(nodes, **kwargs)
+    def __init__(self, nodes: Union[List[Node], _Group], direction, **kwargs):
+        super().__init__(nodes, **kwargs)
         self._direction = direction
 
     @property
@@ -135,28 +136,31 @@ class ZeroLengthConnector(Connector):
 class ZeroLengthSpringConnector(ZeroLengthConnector):
     """Spring connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, section, yielding=None, failure=None, **kwargs):
+    def __init__(self, nodes: Union[List[Node], _Group], direction, section, yielding: Optional[Dict[str, float]] = None, failure: Optional[Dict[str, float]] = None, **kwargs):
         # SpringConnector.__init__(self, nodes=nodes, section=section, yielding=yielding, failure=failure)
-        ZeroLengthConnector.__init__(self, nodes, direction, **kwargs)
+        super().__init__(nodes, direction, **kwargs)
+        self._section = section
+        self._yielding = yielding
+        self._failure = failure
 
 
 class ZeroLengthContactConnector(ZeroLengthConnector):
     """Contact connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, Kn, Kt, mu, **kwargs):
-        super(ZeroLengthContactConnector, self).__init__(nodes, direction, **kwargs)
-        self._Kn = Kn
-        self._Kt = Kt
-        self._mu = mu
+    def __init__(self, nodes: Union[List[Node], _Group], direction, Kn: float, Kt: float, mu: float, **kwargs):
+        super().__init__(nodes, direction, **kwargs)
+        self._Kn: float = Kn
+        self._Kt: float = Kt
+        self._mu: float = mu
 
     @property
-    def Kn(self):
+    def Kn(self) -> float:
         return self._Kn
 
     @property
-    def Kt(self):
+    def Kt(self) -> float:
         return self._Kt
 
     @property
-    def mu(self):
+    def mu(self) -> float:
         return self._mu

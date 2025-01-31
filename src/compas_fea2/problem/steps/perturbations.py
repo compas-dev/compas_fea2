@@ -5,10 +5,11 @@ from __future__ import print_function
 from compas.geometry import Vector
 from compas.geometry import sum_vectors
 
-from .step import Step
-from compas_fea2.results import ModalAnalysisResult
 from compas_fea2.results import DisplacementResult
+from compas_fea2.results import ModalAnalysisResult
 from compas_fea2.UI import FEA2Viewer
+
+from .step import Step
 
 
 class _Perturbation(Step):
@@ -70,8 +71,8 @@ class ModalAnalysis(_Perturbation):
         eigenvalue = self.rdb.get_rows("eigenvalues", ["lambda"], filters)[0][0]
 
         # Get the eiginvectors
-        results_set = self.rdb.get_rows("eigenvectors", ["step", "part", "key", "dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"], filters)
-        eigenvector = self.rdb.to_result(results_set, DisplacementResult, "find_node_by_key")[self]
+        results_set = self.rdb.get_rows("eigenvectors", ["step", "part", "key", "x", "y", "z", "xx", "yy", "zz"], filters)
+        eigenvector = self.rdb.to_result(results_set, DisplacementResult)[self]
 
         return eigenvalue, eigenvector
 
@@ -130,7 +131,7 @@ class ModalAnalysis(_Perturbation):
 
         shape = self.mode_shape(mode)
         if show_vectors:
-            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+            viewer.add_mode_shape(shape, fast=fast, show_parts=False, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
 
         # TODO create a copy of the model first
         for displacement in shape.results:
@@ -138,7 +139,7 @@ class ModalAnalysis(_Perturbation):
             displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
 
         if show_contour:
-            viewer.add_mode_shape(shape, fast=fast, model=self.model, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
+            viewer.add_mode_shape(shape, fast=fast, component=None, show_vectors=False, show_contour=show_contour, **kwargs)
         viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
         viewer.show()
 

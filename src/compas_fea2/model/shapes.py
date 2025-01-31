@@ -1,22 +1,25 @@
 import math
-from math import atan2, degrees, pi, sqrt
 from functools import cached_property
-from typing import List, Optional, Tuple
+from math import atan2
+from math import degrees
+from math import pi
+from math import sqrt
+from typing import List
+from typing import Optional
+from typing import Tuple
+
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon as MplPolygon
-from matplotlib.lines import Line2D
-from compas.geometry import Point
-
 import numpy as np
-
 from compas.datastructures import Mesh
-from compas.geometry import (
-    Frame,
-    Polygon,
-    Rotation,
-    Transformation,
-    Translation,
-)
+from compas.geometry import Frame
+from compas.geometry import Point
+from compas.geometry import Polygon
+from compas.geometry import Rotation
+from compas.geometry import Transformation
+from compas.geometry import Translation
+from matplotlib.lines import Line2D
+from matplotlib.patches import Polygon as MplPolygon
+
 from compas_fea2.base import FEAData
 
 

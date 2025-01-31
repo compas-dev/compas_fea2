@@ -2,16 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas.scene import SceneObject  # noqa: F401
 from compas.colors import Color
 from compas.colors import ColorMap
 from compas.geometry import Vector
-
-from .drawer import draw_field_contour
-from .drawer import draw_field_vectors
-
+from compas.scene import SceneObject  # noqa: F401
+from compas_viewer.scene import BufferGeometry  # noqa: F401
 from compas_viewer.scene import Collection
-from compas_viewer.scene import GroupObject, BufferGeometry  # noqa: F401
+from compas_viewer.scene import GroupObject  # noqa: F401
+
 from compas_fea2.model.bcs import FixedBC
 from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import RollerBCX
@@ -20,6 +18,9 @@ from compas_fea2.model.bcs import RollerBCZ
 from compas_fea2.UI.viewer.primitives import FixBCShape
 from compas_fea2.UI.viewer.primitives import PinBCShape
 from compas_fea2.UI.viewer.primitives import RollerBCShape
+
+from .drawer import draw_field_contour
+from .drawer import draw_field_vectors
 
 color_palette = {
     "faces": Color.from_hex("#e8e5d4"),
@@ -294,7 +295,6 @@ class FEA2NodeFieldResultsObject(GroupObject):
     """
 
     def __init__(self, components=None, show_vectors=1, show_contour=False, **kwargs):
-
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
         components = components or ["x", "y", "z"]

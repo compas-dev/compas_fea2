@@ -1,15 +1,15 @@
 import numpy as np
 from compas.itertools import remap_values
-from compas_viewer.components import Button
-from compas_viewer.viewer import Viewer
-from compas_viewer.scene import GroupObject
 from compas.scene import register
 from compas.scene import register_scene_objects
+from compas_viewer.components import Button
+from compas_viewer.scene import GroupObject
+from compas_viewer.viewer import Viewer
 
 from compas_fea2.UI.viewer.scene import FEA2ModelObject
 from compas_fea2.UI.viewer.scene import FEA2NodeFieldResultsObject
-from compas_fea2.UI.viewer.scene import FEA2Stress2DFieldResultsObject
 from compas_fea2.UI.viewer.scene import FEA2StepObject
+from compas_fea2.UI.viewer.scene import FEA2Stress2DFieldResultsObject
 
 
 def toggle_nodes():
@@ -211,18 +211,15 @@ class FEA2Viewer(Viewer):
             **kwargs,
         )
 
-    def add_mode_shape(self, mode_shape, model, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+    def add_mode_shape(self, mode_shape, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
         register(mode_shape.__class__.__base__, FEA2NodeFieldResultsObject, context="Viewer")
-        self.displacements = self.scene.add(
-            mode_shape, model=model, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
-        )
+        self.displacements = self.scene.add(mode_shape, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
     def add_step(self, step, show_loads=1):
         register(step.__class__, FEA2StepObject, context="Viewer")
         self.step = self.scene.add(step, step=step, scale_factor=show_loads)
 
     def add_nodes(self, nodes):
-
         self.nodes = []
         for node in nodes:
             self.nodes.append(

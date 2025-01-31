@@ -2,21 +2,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas.geometry import Vector
-from compas.geometry import sum_vectors
 from compas.geometry import Point
+from compas.geometry import Vector
 from compas.geometry import centroid_points_weighted
+from compas.geometry import sum_vectors
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import _PrescribedField
 from compas_fea2.problem.loads import Load
-
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
-from compas_fea2.results import Stress2DFieldResults
 from compas_fea2.results import SectionForcesFieldResults
-
+from compas_fea2.results import Stress2DFieldResults
 from compas_fea2.UI import FEA2Viewer
 
 # ==============================================================================
@@ -337,7 +335,7 @@ class GeneralStep(Step):
     # ==============================================================================
     # Patterns
     # ==============================================================================
-    def add_load_pattern(self, load_pattern):
+    def add_load_pattern(self, load_pattern, *kwargs):
         """Add a general :class:`compas_fea2.problem.patterns.Pattern` to the Step.
 
         Parameters
@@ -540,7 +538,6 @@ class GeneralStep(Step):
         viewer.scene.clear()
 
     def show_stress(self, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contour=False, plane="mid", **kwargs):
-
         if not self.stress2D_field:
             raise ValueError("No reaction field results available for this step")
 

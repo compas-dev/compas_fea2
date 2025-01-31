@@ -4,6 +4,9 @@ from __future__ import print_function
 
 from math import log
 
+from compas_fea2.units import UnitRegistry
+from compas_fea2.units import units as u
+
 from .material import _Material
 
 
@@ -45,9 +48,9 @@ class Concrete(_Material):
     The concrete model is based on Eurocode 2 up to fck=90 MPa.
     """
 
-    def __init__(self, *, fck, v=0.2, density=2400, fr=None, **kwargs):
+    def __init__(self, *, fck, E=None, v=None, density=None, fr=None, units=None, **kwargs):
         super(Concrete, self).__init__(density=density, **kwargs)
-
+        # FIXME: units!
         de = 0.0001
         fcm = fck + 8
         Ecm = 22 * 10**3 * (fcm / 10) ** 0.3
@@ -58,24 +61,22 @@ class Concrete(_Material):
         e = [i * de for i in range(int(ecu1 / de) + 1)]
         ec = [ei - e[1] for ei in e[1:]]
         fctm = 0.3 * fck ** (2 / 3) if fck <= 50 else 2.12 * log(1 + fcm / 10)
-        f = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1) ** 2) / (1 + (k - 2) * (ei / ec1)) for ei in e]
-
-        E = f[1] / e[1]
+        fc = [10**6 * fcm * (k * (ei / ec1) - (ei / ec1) ** 2) / (1 + (k - 2) * (ei / ec1)) for ei in ec]
         ft = [1.0, 0.0]
         et = [0.0, 0.001]
         fr = fr or [1.16, fctm / fcm]
 
         self.fck = fck * 10**6
-        self.E = E
-        self.v = v
-        self.fc = f
-        self.ec = ec
-        self.ft = ft
-        self.et = et
-        self.fr = fr
-        # TODO these necessary if we have the above?
+        self.fc = kwargs.get("fc", fc)
+        self.E = E or self.fc[1] / e[1]
+        self.v = v or 0.17
+        self.ec = kwargs.get("ec", fc)
+        self.ft = kwargs.get("ft", fc)
+        self.et = kwargs.get("et", fc)
+        self.fr = kwargs.get("fr", fr)
+
         self.tension = {"f": ft, "e": et}
-        self.compression = {"f": f[1:], "e": ec}
+        self.compression = {"f": self.fc[1:], "e": self.ec}
 
     @property
     def G(self):
@@ -96,6 +97,16 @@ fr  : {}
 """.format(
             self.name, self.density, self.E, self.v, self.G, self.fck, self.fr
         )
+
+    # FIXME: this is only working for the basic material properties.
+    @classmethod
+    def C20_25(cls, units, **kwargs):
+        if not units:
+            units = u.get_default_units()
+        elif not isinstance(units, UnitRegistry):
+            units = u.get_units(units)
+
+        return cls(fck=25 * units.MPa, E=30 * units.GPa, v=0.17, density=2400 * units("kg/m**3"), name="C20/25", **kwargs)
 
 
 class ConcreteSmearedCrack(_Material):

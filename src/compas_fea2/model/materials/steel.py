@@ -101,6 +101,32 @@ ep : {:.2f}
             self.ep,
         )
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "fy": self.fy,
+                "fu": self.fu,
+                "eu": self.eu,
+                "ep": self.ep,
+                "tension": self.tension,
+                "compression": self.compression,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            E=data["E"],
+            v=data["v"],
+            density=data["density"],
+            fy=data["fy"],
+            fu=data["fu"],
+            eu=data["eu"],
+        )
+
     # TODO check values and make unit independent
     @classmethod
     def S355(cls, units=None):

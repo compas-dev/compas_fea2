@@ -1,0 +1,30 @@
+{
+    "dtype": "compas_fea2.model/Model",
+    "data": {
+        "description": null,
+        "author": null,
+        "parts": [
+            {
+                "name": "DP_5271063680",
+                "nodes": [],
+                "elements": [],
+                "sections": [],
+                "materials": [],
+                "releases": [],
+                "nodesgroups": [],
+                "elementsgroups": [],
+                "facesgroups": []
+            }
+        ],
+        "bcs": {},
+        "ics": {},
+        "constraints": [],
+        "partgroups": [],
+        "materials": [],
+        "sections": [],
+        "problems": [],
+        "path": null
+    },
+    "name": "M_5269925536",
+    "guid": "932b3ee0-7cec-4b6c-a8e8-b37a573c2676"
+}

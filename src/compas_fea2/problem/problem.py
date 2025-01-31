@@ -498,3 +498,22 @@ Analysis folder path : {self.path or "N/A"}
 
         viewer.show()
         viewer.scene.clear()
+
+    def __data__(self) -> dict:
+        """Returns a dictionary representation of the Problem object."""
+        return {
+            "description": self.description,
+            "steps": [step.__data__() for step in self.steps],
+            "path": str(self.path),
+            "path_db": str(self.path_db),
+        }
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Problem":
+        """Creates a Problem object from a dictionary representation."""
+        problem = cls(description=data.get("description"))
+        problem.path = data.get("path")
+        problem._path_db = data.get("path_db")
+        problem._steps = set(Step.__from_data__(step_data) for step_data in data.get("steps", []))
+        problem._steps_order = list(problem._steps)
+        return problem

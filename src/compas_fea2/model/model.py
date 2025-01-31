@@ -107,8 +107,61 @@ class Model(FEAData):
         self._top_plane = None
         self._volume = None
 
+    @property
     def __data__(self):
-        return None
+        return {
+            "description": self.description,
+            "author": self.author,
+            "parts": [part.__data__ for part in self.parts],
+            "bcs": {bc.__data__: [node.__data__ for node in nodes] for bc, nodes in self.bcs.items()},
+            "ics": {ic.__data__: [node.__data__ for node in nodes] for ic, nodes in self.ics.items()},
+            "constraints": [constraint.__data__ for constraint in self.constraints],
+            "partgroups": [group.__data__ for group in self.partgroups],
+            "materials": [material.__data__ for material in self.materials],
+            "sections": [section.__data__ for section in self.sections],
+            "problems": [problem.__data__ for problem in self.problems],
+            "path": str(self.path) if self.path else None,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        """Create a Model instance from a data dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary.
+
+        Returns
+        -------
+        Model
+            The created Model instance.
+        """
+        model = cls(description=data.get("description"), author=data.get("author"))
+        part_classes = {cls.__name__: cls for cls in _Part.__subclasses__()}
+        for part in data.get("parts", []):
+            model.add_part(part_classes[part["class"]].__from_data__(part))
+
+        bc_classes = {cls.__name__: cls for cls in _BoundaryCondition.__subclasses__()}
+        for bc_data, nodes_data in data.get("bcs", {}).items():
+            model._bcs[bc_classes[bc_data["class"]].__from_data__(bc_data)] = [Node.__from_data__(node_data) for node_data in nodes_data]
+
+        ic_classes = {cls.__name__: cls for cls in _InitialCondition.__subclasses__()}
+        for ic_data, nodes_data in data.get("ics", {}).items():
+            model._ics[ic_classes[ic_data["class"]].__from_data__(ic_data)] = [Node.__from_data__(node_data) for node_data in nodes_data]
+
+        constraint_classes = {cls.__name__: cls for cls in _Constraint.__subclasses__()}
+        for constraint_data in data.get("constraints", []):
+            model._constraints.add(constraint_classes[constraint_data["class"]].__from_data__(constraint_data))
+
+        group_classes = {cls.__name__: cls for cls in PartsGroup.__subclasses__()}
+        for group_data in data.get("partgroups", []):
+            model._partsgroups.add(group_classes[group_data["class"]].__from_data__(group_data))
+
+        problem_classes = {cls.__name__: cls for cls in Problem.__subclasses__()}
+        model._problems = {problem_classes[problem_data["class"]].__from_data__(problem_data) for problem_data in data.get("problems", [])}
+        model._path = Path(data.get("path")) if data.get("path") else None
+        return model
 
     @property
     def parts(self) -> Set[_Part]:
@@ -277,8 +330,8 @@ class Model(FEAData):
     #                       De-constructor methods
     # =========================================================================
 
-    def to_json(self):
-        raise NotImplementedError()
+    # def to_json(self):
+    #     raise NotImplementedError()
 
     def to_cfm(self, path: Union[str, Path]):
         """Exports the Model object to a .cfm file using Pickle.

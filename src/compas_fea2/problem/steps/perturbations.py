@@ -26,6 +26,17 @@ class _Perturbation(Step):
     def __init__(self, **kwargs):
         super(_Perturbation, self).__init__(**kwargs)
 
+    def __data__(self):
+        data = super(_Perturbation, self).__data__()
+        data.update({
+            'type': self.__class__.__name__,
+        })
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
+
 
 class ModalAnalysis(_Perturbation):
     """Perform a modal analysis of the Model from the resulting state after an
@@ -143,6 +154,17 @@ class ModalAnalysis(_Perturbation):
         viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
         viewer.show()
 
+    def __data__(self):
+        data = super(ModalAnalysis, self).__data__()
+        data.update({
+            'modes': self.modes,
+        })
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(modes=data['modes'], **data)
+
 
 class ComplexEigenValue(_Perturbation):
     """"""
@@ -150,6 +172,13 @@ class ComplexEigenValue(_Perturbation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         raise NotImplementedError
+
+    def __data__(self):
+        return super(ComplexEigenValue, self).__data__()
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
 
 
 class BucklingAnalysis(_Perturbation):
@@ -184,6 +213,26 @@ class BucklingAnalysis(_Perturbation):
             algorithhm="Subspace",
         )
 
+    def __data__(self):
+        data = super(BucklingAnalysis, self).__data__()
+        data.update({
+            'modes': self._modes,
+            'vectors': self._vectors,
+            'iterations': self._iterations,
+            'algorithm': self._algorithm,
+        })
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            modes=data['_modes'],
+            vectors=data['_vectors'],
+            iterations=data['_iterations'],
+            algorithm=data['_algorithm'],
+            **data
+        )
+
 
 class LinearStaticPerturbation(_Perturbation):
     """"""
@@ -191,6 +240,13 @@ class LinearStaticPerturbation(_Perturbation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         raise NotImplementedError
+
+    def __data__(self):
+        return super(LinearStaticPerturbation, self).__data__()
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
 
 
 class StedyStateDynamic(_Perturbation):
@@ -200,6 +256,13 @@ class StedyStateDynamic(_Perturbation):
         super().__init__(**kwargs)
         raise NotImplementedError
 
+    def __data__(self):
+        return super(StedyStateDynamic, self).__data__()
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
+
 
 class SubstructureGeneration(_Perturbation):
     """"""
@@ -207,3 +270,10 @@ class SubstructureGeneration(_Perturbation):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         raise NotImplementedError
+
+    def __data__(self):
+        return super(SubstructureGeneration, self).__data__()
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)

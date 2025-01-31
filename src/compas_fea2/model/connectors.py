@@ -31,8 +31,21 @@ class Connector(FEAData):
     def __init__(self, nodes: Union[List[Node], _Group], **kwargs):
         super().__init__(**kwargs)
         self._key: Optional[str] = None
-        self._nodes: Optional[List[Node]] = None
-        self.nodes = nodes
+        self._nodes: Optional[List[Node]] = nodes
+
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "nodes": [node.__data__ for node in self._nodes],
+        }
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from compas_fea2.model.nodes import Node
+
+        nodes = [Node.__from_data__(node, model) for node in data["nodes"]]
+        return cls(nodes=nodes)
 
     @property
     def nodes(self) -> List[Node]:
@@ -77,6 +90,18 @@ class RigidLinkConnector(Connector):
         self._dofs: str = dofs
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"dofs": self._dofs})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._dofs = data["dofs"]
+        return instance
+
+    @property
     def dofs(self) -> str:
         return self._dofs
 
@@ -89,6 +114,29 @@ class SpringConnector(Connector):
         self._section = section
         self._yielding: Optional[Dict[str, float]] = yielding
         self._failure: Optional[Dict[str, float]] = failure
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "section": self._section,
+                "yielding": self._yielding,
+                "failure": self._failure,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from importlib import import_module
+
+        instance = super().__from_data__(data, model)
+        cls_section = import_module(".".join(data["section"]["class"].split(".")[:-1]))
+        instance._section = cls_section.__from_data__(data["section"])
+        instance._yielding = data["yielding"]
+        instance._failure = data["failure"]
+        return instance
 
     @property
     def section(self):
@@ -129,6 +177,18 @@ class ZeroLengthConnector(Connector):
         self._direction = direction
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"direction": self._direction})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._direction = data["direction"]
+        return instance
+
+    @property
     def direction(self):
         return self._direction
 
@@ -142,6 +202,29 @@ class ZeroLengthSpringConnector(ZeroLengthConnector):
         self._section = section
         self._yielding = yielding
         self._failure = failure
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "section": self._section,
+                "yielding": self._yielding,
+                "failure": self._failure,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from importlib import import_module
+
+        instance = super().__from_data__(data, model)
+        cls_section = import_module(".".join(data["section"]["class"].split(".")[:-1]))
+        instance._section = cls_section.__from_data__(data["section"])
+        instance._yielding = data["yielding"]
+        instance._failure = data["failure"]
+        return instance
 
 
 class ZeroLengthContactConnector(ZeroLengthConnector):
@@ -164,3 +247,23 @@ class ZeroLengthContactConnector(ZeroLengthConnector):
     @property
     def mu(self) -> float:
         return self._mu
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "Kn": self._Kn,
+                "Kt": self._Kt,
+                "mu": self._mu,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._Kn = data["Kn"]
+        instance._Kt = data["Kt"]
+        instance._mu = data["mu"]
+        return instance

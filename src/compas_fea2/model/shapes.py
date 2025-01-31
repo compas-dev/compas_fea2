@@ -58,6 +58,22 @@ class Shape(Polygon, FEAData):
     number of edges:    {len(self._points)}  # (closed polygon)
         """
 
+    @property
+    def __data__(self) -> dict:
+        """Return a dictionary representation of the shape."""
+        return {
+            "class": self.__class__.__name__,
+            "points": [point.__data__ for point in self.points],
+            "frame": self.frame.__data__,
+        }
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Shape":
+        """Create a shape instance from a dictionary representation."""
+        points = [Point.__from_data__(pt) for pt in data["points"]]
+        frame = Frame.__from_data__(data["frame"])
+        return cls(points, frame)
+
     # --------------------------------------------------------------------------
     # Properties
     # --------------------------------------------------------------------------
@@ -484,6 +500,22 @@ class Circle(Shape):
         """Shear area in the y-direction."""
         return 9 / 10 * self.area
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "radius": self._radius,
+                "segments": self._segments,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Circle":
+        instance = cls(data["radius"], data["segments"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Ellipse(Shape):
     """
@@ -563,6 +595,23 @@ class Ellipse(Shape):
         b = self._radius_b
         return pi * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b)))
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "radius_a": self._radius_a,
+                "radius_b": self._radius_b,
+                "segments": self._segments,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Ellipse":
+        instance = cls(data["radius_a"], data["radius_b"], data["segments"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Rectangle(Shape):
     """
@@ -612,6 +661,22 @@ class Rectangle(Shape):
     def Avy(self) -> float:
         return 5 / 6 * self.area
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "w": self._w,
+                "h": self._h,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Rectangle":
+        instance = cls(data["w"], data["h"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Rhombus(Shape):
     """
@@ -637,6 +702,22 @@ class Rhombus(Shape):
     @property
     def b(self) -> float:
         return self._b
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "a": self._a,
+                "b": self._b,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Rhombus":
+        instance = cls(data["a"], data["b"], Frame.__from_data__(data["frame"]))
+        return instance
 
 
 class UShape(Shape):
@@ -684,6 +765,26 @@ class UShape(Shape):
     def t3(self) -> float:
         return self._t3
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "a": self._a,
+                "b": self._b,
+                "t1": self._t1,
+                "t2": self._t2,
+                "t3": self._t3,
+                "direction": self._direction,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "UShape":
+        instance = cls(data["a"], data["b"], data["t1"], data["t2"], data["t3"], data["direction"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class TShape(Shape):
     """
@@ -724,6 +825,25 @@ class TShape(Shape):
     @property
     def t2(self) -> float:
         return self._t2
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "a": self._a,
+                "b": self._b,
+                "t1": self._t1,
+                "t2": self._t2,
+                "direction": self._direction,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "TShape":
+        instance = cls(data["a"], data["b"], data["t1"], data["t2"], data["direction"], Frame.__from_data__(data["frame"]))
+        return instance
 
 
 class IShape(Shape):
@@ -840,6 +960,26 @@ class IShape(Shape):
     def Avy(self) -> float:
         return self.shear_area_I_beam_axes()[1]
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "w": self._w,
+                "h": self._h,
+                "tw": self._tw,
+                "tbf": self._tbf,
+                "ttf": self._ttf,
+                "direction": self._direction,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "IShape":
+        instance = cls(data["w"], data["h"], data["tw"], data["tbf"], data["ttf"], data["direction"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class LShape(Shape):
     """
@@ -879,6 +1019,25 @@ class LShape(Shape):
     def t2(self) -> float:
         return self._t2
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "a": self._a,
+                "b": self._b,
+                "t1": self._t1,
+                "t2": self._t2,
+                "direction": self._direction,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "LShape":
+        instance = cls(data["a"], data["b"], data["t1"], data["t2"], data["direction"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class CShape(Shape):
     """
@@ -906,6 +1065,24 @@ class CShape(Shape):
             Point(0, h, 0),
         ]
         super().__init__(pts, frame=frame)
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "height": self._height,
+                "flange_width": self._flange_width,
+                "web_thickness": self._web_thickness,
+                "flange_thickness": self._flange_thickness,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "CShape":
+        instance = cls(data["height"], data["flange_width"], data["web_thickness"], data["flange_thickness"], Frame.__from_data__(data["frame"]))
+        return instance
 
 
 class CustomI(Shape):
@@ -953,6 +1130,34 @@ class CustomI(Shape):
             Point(-hbf - shift_x, bottom_flange_thickness - shift_y, 0),
         ]
         super().__init__(pts, frame=frame)
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "height": self._height,
+                "top_flange_width": self._top_flange_width,
+                "bottom_flange_width": self._bottom_flange_width,
+                "web_thickness": self._web_thickness,
+                "top_flange_thickness": self._top_flange_thickness,
+                "bottom_flange_thickness": self._bottom_flange_thickness,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "CustomI":
+        instance = cls(
+            data["height"],
+            data["top_flange_width"],
+            data["bottom_flange_width"],
+            data["web_thickness"],
+            data["top_flange_thickness"],
+            data["bottom_flange_thickness"],
+            Frame.__from_data__(data["frame"]),
+        )
+        return instance
 
 
 class Star(Shape):
@@ -1006,6 +1211,23 @@ class Star(Shape):
         self._c = val
         self.points = self._set_points()
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "a": self._a,
+                "b": self._b,
+                "c": self._c,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Star":
+        instance = cls(data["a"], data["b"], data["c"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Hexagon(Shape):
     """
@@ -1036,6 +1258,21 @@ class Hexagon(Shape):
         self._side_length = val
         self.points = self._set_points()
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "side_length": self._side_length,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Hexagon":
+        instance = cls(data["side_length"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Pentagon(Shape):
     """
@@ -1057,6 +1294,21 @@ class Pentagon(Shape):
             )
             for i in range(5)
         ]
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "circumradius": self._circumradius,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Pentagon":
+        instance = cls(data["circumradius"], Frame.__from_data__(data["frame"]))
+        return instance
 
 
 class Octagon(Shape):
@@ -1080,6 +1332,21 @@ class Octagon(Shape):
             for i in range(8)
         ]
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "circumradius": self._circumradius,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Octagon":
+        instance = cls(data["circumradius"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Triangle(Shape):
     """
@@ -1101,6 +1368,21 @@ class Triangle(Shape):
             )
             for i in range(3)
         ]
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "circumradius": self._circumradius,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Triangle":
+        instance = cls(data["circumradius"], Frame.__from_data__(data["frame"]))
+        return instance
 
 
 class Parallelogram(Shape):
@@ -1125,6 +1407,23 @@ class Parallelogram(Shape):
             Point(dx, dy, 0.0),
         ]
 
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "width": self._width,
+                "height": self._height,
+                "angle": self._angle,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Parallelogram":
+        instance = cls(data["width"], data["height"], data["angle"], Frame.__from_data__(data["frame"]))
+        return instance
+
 
 class Trapezoid(Shape):
     """
@@ -1146,3 +1445,20 @@ class Trapezoid(Shape):
             Point(self._bottom_width, self._height, 0.0),
             Point(0.0, self._height, 0.0),
         ]
+
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
+        data.update(
+            {
+                "top_width": self._top_width,
+                "bottom_width": self._bottom_width,
+                "height": self._height,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Trapezoid":
+        instance = cls(data["top_width"], data["bottom_width"], data["height"], Frame.__from_data__(data["frame"]))
+        return instance

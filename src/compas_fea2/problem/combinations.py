@@ -50,6 +50,16 @@ class LoadCombination(FEAData):
     def Fire(cls):
         return cls(factors={"DL": 1, "SDL": 1, "LL": 0.3}, name="Fire")
 
+    def __data__(self):
+        return {
+            'factors': self.factors,
+            'name': self.name,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(factors=data['factors'], name=data.get('name'))
+
     # BUG: Rewrite. this is not general and does not account for different loads types
     @property
     def node_load(self):

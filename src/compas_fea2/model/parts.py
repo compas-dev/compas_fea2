@@ -1,5 +1,6 @@
 from math import pi
 from math import sqrt
+from importlib import import_module
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -112,8 +113,51 @@ class _Part(FEAData):
         self._discretized_boundary_mesh = None
         self._bounding_box = None
 
-        self._volume = None
-        self._weight = None
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "nodes": [node.__data__ for node in self.nodes],
+            "gkey_node": {key: node.__data__ for key, node in self.gkey_node.items()},
+            "materials": [material.__data__ for material in self.materials],
+            "sections": [section.__data__ for section in self.sections],
+            "elements": [element.__data__ for element in self.elements],
+            # "releases": [release.__data__ for release in self.releases],
+            "nodesgroups": [group.__data__ for group in self.nodesgroups],
+            "elementsgroups": [group.__data__ for group in self.elementsgroups],
+            "facesgroups": [group.__data__ for group in self.facesgroups],
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        """Create a part instance from a data dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary.
+
+        Returns
+        -------
+        _Part
+            The part instance.
+        """
+        part = cls()
+
+        # Import module once instead of inside the loop
+        model_module = import_module("compas_fea2.model")
+
+        elements = []  # Preallocate list for bulk adding
+
+        for element_data in data.get("elements", []):
+            element_cls_name = element_data.pop("class")
+            element_cls = getattr(model_module, element_cls_name)  # Retrieve class reference
+            elements.append(element_cls.__from_data__(element_data))  # Deserialize element
+
+        # Use a bulk-add method instead of looping `add_element`
+        part.add_elements_bulk(elements) if hasattr(part, "add_elements_bulk") else [part.add_element(e) for e in elements]
+
+        return part
 
     @property
     def nodes(self) -> Set[Node]:
@@ -568,6 +612,7 @@ class _Part(FEAData):
         part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
 
         del gmshModel
+        print("Part created.")
 
         return part
 
@@ -1490,21 +1535,18 @@ class DeformablePart(_Part):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._materials: Set[_Material] = set()
-        self._sections: Set[_Section] = set()
-        self._releases: Set[_BeamEndRelease] = set()
 
     @property
     def materials(self) -> Set[_Material]:
-        return self._materials
+        return set(section.material for section in self.sections if section.material)
 
     @property
     def sections(self) -> Set[_Section]:
-        return self._sections
+        return set(element.section for element in self.elements if element.section)
 
     @property
     def releases(self) -> Set[_BeamEndRelease]:
-        return self._releases
+        pass
 
     # =========================================================================
     #                       Constructor methods
@@ -1782,6 +1824,38 @@ class RigidPart(_Part):
     def __init__(self, reference_point: Optional[Node] = None, **kwargs):
         super().__init__(**kwargs)
         self._reference_point = reference_point
+
+    @property
+    def __data__(self):
+        data = super().__data__()
+        data.update(
+            {
+                "class": self.__class__.__name__,
+                "reference_point": self.reference_point.__data__ if self.reference_point else None,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        """Create a part instance from a data dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary.
+
+        Returns
+        -------
+        _Part
+            The part instance.
+        """
+        from compas_fea2.model import Node
+
+        part = cls(reference_point=Node.__from_data__(data["reference_point"]))
+        for element_data in data.get("elements", []):
+            part.add_element(_Element.__from_data__(element_data))
+        return part
 
     @property
     def reference_point(self) -> Optional[Node]:

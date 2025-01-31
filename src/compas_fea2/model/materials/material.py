@@ -41,7 +41,6 @@ class _Material(FEAData):
         super().__init__(**kwargs)
         self.density = density
         self.expansion = expansion
-        self._key = None
 
     @property
     def key(self) -> int:
@@ -50,6 +49,21 @@ class _Material(FEAData):
     @property
     def model(self):
         return self._registration
+
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__,
+            "density": self.density,
+            "expansion": self.expansion,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            density=data["density"],
+            expansion=data["expansion"],
+        )
 
     def __str__(self) -> str:
         return """
@@ -131,6 +145,40 @@ class ElasticOrthotropic(_Material):
         self.Gyz = Gyz
         self.Gzx = Gzx
 
+    @property
+    def __data__(self):
+        data = super().__data__()
+        data.update(
+            {
+                "Ex": self.Ex,
+                "Ey": self.Ey,
+                "Ez": self.Ez,
+                "vxy": self.vxy,
+                "vyz": self.vyz,
+                "vzx": self.vzx,
+                "Gxy": self.Gxy,
+                "Gyz": self.Gyz,
+                "Gzx": self.Gzx,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            Ex=data["Ex"],
+            Ey=data["Ey"],
+            Ez=data["Ez"],
+            vxy=data["vxy"],
+            vyz=data["vyz"],
+            vzx=data["vzx"],
+            Gxy=data["Gxy"],
+            Gyz=data["Gyz"],
+            Gzx=data["Gzx"],
+            density=data["density"],
+            expansion=data["expansion"],
+        )
+
     def __str__(self) -> str:
         return """
 {}
@@ -193,6 +241,21 @@ class ElasticIsotropic(_Material):
         self.E = E
         self.v = v
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "E": self.E,
+                "v": self.v,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(data["E"], data["v"], data["density"], data["expansion"])
+
     def __str__(self) -> str:
         return """
 ElasticIsotropic Material
@@ -253,6 +316,26 @@ class ElasticPlastic(ElasticIsotropic):
     def __init__(self, *, E: float, v: float, density: float, strain_stress: list[tuple[float, float]], expansion: float = None, **kwargs):
         super().__init__(E=E, v=v, density=density, expansion=expansion, **kwargs)
         self.strain_stress = strain_stress
+
+    @property
+    def __data__(self):
+        data = super().__data__()
+        data.update(
+            {
+                "strain_stress": self.strain_stress,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            E=data["E"],
+            v=data["v"],
+            density=data["density"],
+            strain_stress=data["strain_stress"],
+            expansion=data["expansion"],
+        )
 
     def __str__(self) -> str:
         return """

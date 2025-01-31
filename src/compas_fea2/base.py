@@ -6,6 +6,7 @@ import importlib
 import uuid
 from abc import abstractmethod
 from typing import Iterable
+from copy import deepcopy
 
 from compas.data import Data
 
@@ -69,7 +70,7 @@ class FEAData(Data, metaclass=DimensionlessMeta):
 
     def __init__(self, name=None, **kwargs):
         self.uid = uuid.uuid4()
-        super().__init__(name=name, **kwargs)
+        super().__init__()
         self._name = name or "".join([c for c in type(self).__name__ if c.isupper()]) + "_" + str(id(self))
         self._registration = None
         self._key = None
@@ -142,5 +143,28 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         obj = getattr(importlib.import_module(".".join([*module_info[:-1]])), "_" + name)
         return obj(**kwargs)
 
-    def data(self):
-        pass
+    def copy(self, cls=None, copy_guid=False, copy_name=False):  # type: (...) -> D
+        """Make an independent copy of the data object.
+
+        Parameters
+        ----------
+        cls : Type[:class:`compas.data.Data`], optional
+            The type of data object to return.
+            Defaults to the type of the current data object.
+        copy_guid : bool, optional
+            If True, the copy will have the same guid as the original.
+
+        Returns
+        -------
+        :class:`compas.data.Data`
+            An independent copy of this object.
+
+        """
+        if not cls:
+            cls = type(self)
+        obj = cls.__from_data__(deepcopy(self.__data__))
+        if copy_name and self._name is not None:
+            obj._name = self.name
+        if copy_guid:
+            obj._guid = self.guid
+        return obj  # type: ignore

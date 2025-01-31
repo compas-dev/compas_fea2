@@ -92,6 +92,29 @@ class StaticStep(GeneralStep):
             **kwargs,
         )
 
+    def __data__(self):
+        return {
+            'max_increments': self.max_increments,
+            'initial_inc_size': self.initial_inc_size,
+            'min_inc_size': self.min_inc_size,
+            'time': self.time,
+            'nlgeom': self.nlgeom,
+            'modify': self.modify,
+            # Add other attributes as needed
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            max_increments=data['max_increments'],
+            initial_inc_size=data['initial_inc_size'],
+            min_inc_size=data['min_inc_size'],
+            time=data['time'],
+            nlgeom=data['nlgeom'],
+            modify=data['modify'],
+            # Add other attributes as needed
+        )
+
     def add_node_pattern(self, nodes, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
         ``Step`` at specific points.

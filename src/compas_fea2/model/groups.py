@@ -27,6 +27,16 @@ class _Group(FEAData):
         super(_Group, self).__init__(**kwargs)
         self._members = set() if not members else self._check_members(members)
 
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        raise NotImplementedError("This method must be implemented in the subclass")
+
     def __str__(self):
         return """
 {}
@@ -128,6 +138,18 @@ class NodesGroup(_Group):
         super(NodesGroup, self).__init__(members=nodes, **kwargs)
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"nodes": [node.__data__ for node in self.nodes]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model.nodes import Node
+
+        return cls(nodes=[Node.__from_data__(node) for node in data["nodes"]])
+
+    @property
     def part(self):
         return self._registration
 
@@ -196,6 +218,20 @@ class ElementsGroup(_Group):
 
     def __init__(self, elements, **kwargs):
         super(ElementsGroup, self).__init__(members=elements, **kwargs)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"elements": [element.__data__ for element in self.elements]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from importlib import import_module
+
+        elements_module = import_module("compas_fea2.model.elements")
+        elements = [getattr(elements_module, [element_data]["class"]).__from_data__(element_data) for element_data in data["elements"]]
+        return cls(elements=elements)
 
     @property
     def part(self):
@@ -278,6 +314,18 @@ class FacesGroup(_Group):
         super(FacesGroup, self).__init__(members=faces, **kwargs)
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"faces": list(self.faces)})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        obj = cls(faces=set(data["faces"]))
+        obj._registration = data["registration"]
+        return obj
+
+    @property
     def part(self):
         return self._registration
 
@@ -357,6 +405,20 @@ class PartsGroup(_Group):
 
     def __init__(self, *, parts, **kwargs):
         super(PartsGroup, self).__init__(members=parts, **kwargs)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"parts": [part.__data__ for part in self.parts]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model import _Part
+
+        part_classes = {cls.__name__: cls for cls in _Part.__subclasses__()}
+        parts = [part_classes[part_data["class"]].__from_data__(part_data) for part_data in data["parts"]]
+        return cls(parts=parts)
 
     @property
     def model(self):

@@ -1,4 +1,6 @@
 from operator import itemgetter
+from importlib import import_module
+
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -86,6 +88,25 @@ class _Element(FEAData):
         self._rigid = rigid
         self._reference_point = None
         self._shape = None
+
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__,
+            "nodes": [node.__data__ for node in self.nodes],
+            "section": self.section.__data__,
+            "implementation": self.implementation,
+            "rigid": self.rigid,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+
+        nodes = [data["nodes"]["class"].__from_data__(node_data) for node_data in data["nodes"]]
+        # sections_module = import_module("compas_fea2.model.sections")
+        section_cls = getattr(sections_module, data["section"]["class"])
+        section = section_cls.__from_data__(data["section"])
+        return cls(nodes, section, implementation=data.get("implementation"), rigid=data.get("rigid"))
 
     @property
     def part(self) -> "_Part":  # noqa: F821
@@ -181,6 +202,16 @@ class _Element(FEAData):
 class MassElement(_Element):
     """A 0D element for concentrated point mass."""
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        element = super().__from_data__(data)
+        return element
+
 
 class _Element0D(_Element):
     """Element with 1 dimension."""
@@ -188,6 +219,12 @@ class _Element0D(_Element):
     def __init__(self, nodes: List["Node"], frame: Frame, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
         super().__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
+
+    @property
+    def __data__(self):
+        data = super().__data__()
+        data["frame"] = self.frame.__data__
+        return data
 
 
 class SpringElement(_Element0D):
@@ -246,8 +283,34 @@ class _Element1D(_Element):
 
     def __init__(self, nodes: List["Node"], section: "_Section", frame: Optional[Frame] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
         super().__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
+        if not frame:
+            raise ValueError("Frame is required for 1D elements")
         self._frame = frame if isinstance(frame, Frame) else Frame(nodes[0].point, Vector(*frame), Vector.from_start_end(nodes[0].point, nodes[-1].point))
-        self._curve = Line(nodes[0].point, nodes[-1].point)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data["frame"] = self.frame.__data__
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model import Node
+        from compas.geometry import Frame
+
+        from importlib import import_module
+
+        section_module = import_module("compas_fea2.model.sections")
+        section_class = [getattr(section_module, section_data["class"]).__from_data__(section_data) for section_data in data["section"]]
+
+        nodes = [Node.__from_data__(node_data) for node_data in data["nodes"]]
+        section = section_class.__from_data__(data["section"])
+        frame = Frame.__from_data__(data["frame"])
+        return cls(nodes=nodes, section=section, frame=frame, implementation=data.get("implementation"), rigid=data.get("rigid"))
+
+    @property
+    def curve(self) -> Line:
+        return Line(self.nodes[0].point, self.nodes[-1].point)
 
     @property
     def outermesh(self) -> Mesh:
@@ -364,6 +427,26 @@ class Face(FEAData):
         self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
         self._registration = element
         self._centroid = centroid_points([node.xyz for node in nodes])
+
+    @property
+    def __data__(self):
+        return {
+            "nodes": [node.__data__ for node in self.nodes],
+            "tag": self.tag,
+            "element": self.element.__data__ if self.element else None,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model import Node
+        from importlib import import_module
+
+        elements_module = import_module("compas_fea2.model.elements")
+        element_cls = getattr(elements_module, data["elements"]["class"])
+
+        nodes = [Node.__from_data__(node_data) for node_data in data["nodes"]]
+        element = element_cls[data["element"]["class"]].__from_data__(data["element"])
+        return cls(nodes, data["tag"], element=element)
 
     @property
     def nodes(self) -> List["Node"]:  # noqa: F821

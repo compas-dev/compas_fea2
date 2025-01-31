@@ -58,6 +58,22 @@ class _Section(FEAData):
         super().__init__(**kwargs)
         self._material = material
 
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "material": self.material.__data__,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        from importlib import import_module
+
+        m = import_module("compas_fea2.model")
+        mat_cls = getattr(m, data["material"]["class"])
+        material = mat_cls.__from_data__(data["material"])
+        return cls(material=material)
+
     def __str__(self) -> str:
         return f"""
 Section {self.name}
@@ -121,6 +137,17 @@ model    : {self.model!r}
 mass     : {self.mass}
 """
 
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "mass": self.mass,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(mass=data["mass"], **data)
+
 
 class SpringSection(FEAData):
     """
@@ -157,6 +184,19 @@ class SpringSection(FEAData):
         self.axial = axial
         self.lateral = lateral
         self.rotational = rotational
+
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "axial": self.axial,
+            "lateral": self.lateral,
+            "rotational": self.rotational,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(axial=data["axial"], lateral=data["lateral"], rotational=data["rotational"])
 
     def __str__(self) -> str:
         return f"""
@@ -250,6 +290,27 @@ class BeamSection(_Section):
         self.Avx = Avx
         self.Avy = Avy
         self.J = J
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "A": self.A,
+                "Ixx": self.Ixx,
+                "Iyy": self.Iyy,
+                "Ixy": self.Ixy,
+                "Avx": self.Avx,
+                "Avy": self.Avy,
+                "J": self.J,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        section = super().__from_data__(data.pop("material"))
+        return section(**data)
 
     def __str__(self) -> str:
         return f"""
@@ -677,6 +738,17 @@ class GenericBeamSection(BeamSection):
         super().__init__(A=A, Ixx=Ixx, Iyy=Iyy, Ixy=Ixy, Avx=Avx, Avy=Avy, J=J, g0=g0, gw=gw, material=material, **kwargs)
         self._shape = Circle(radius=sqrt(A / pi))
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "g0": self.g0,
+                "gw": self.gw,
+            }
+        )
+        return data
+
 
 class AngleSection(BeamSection):
     """
@@ -736,6 +808,19 @@ class AngleSection(BeamSection):
     def __init__(self, w, h, t1, t2, material, **kwargs):
         self._shape = LShape(w, h, t1, t2)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "w": self._shape.w,
+                "h": self._shape.h,
+                "t1": self._shape.t1,
+                "t2": self._shape.t2,
+            }
+        )
+        return data
 
 
 # FIXME: implement 'from_shape' method
@@ -831,6 +916,19 @@ class BoxSection(BeamSection):
             **kwargs,
         )
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "w": self.w,
+                "h": self.h,
+                "tw": self.tw,
+                "tf": self.tf,
+            }
+        )
+        return data
+
 
 class CircularSection(BeamSection):
     """
@@ -874,6 +972,16 @@ class CircularSection(BeamSection):
     def __init__(self, r, material, **kwargs):
         self._shape = Circle(r, 360)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "r": self._shape.radius,
+            }
+        )
+        return data
 
 
 # FIXME: implement 'from_shape' method
@@ -927,6 +1035,17 @@ class HexSection(BeamSection):
 
     def __init__(self, r, t, material, **kwargs):
         raise NotImplementedError("This section is not available for the selected backend")
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "r": self.r,
+                "t": self.t,
+            }
+        )
+        return data
 
 
 class ISection(BeamSection):
@@ -987,6 +1106,20 @@ class ISection(BeamSection):
     def __init__(self, w, h, tw, tbf, ttf, material, **kwargs):
         self._shape = IShape(w, h, tw, tbf, ttf)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "w": self._shape.w,
+                "h": self._shape.h,
+                "tw": self._shape.tw,
+                "tbf": self._shape.tbf,
+                "ttf": self._shape.ttf,
+            }
+        )
+        return data
 
     @classmethod
     def IPE80(cls, material, **kwargs):
@@ -1408,6 +1541,17 @@ class PipeSection(BeamSection):
             **kwargs,
         )
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "r": self.r,
+                "t": self.t,
+            }
+        )
+        return data
+
 
 class RectangularSection(BeamSection):
     """
@@ -1455,6 +1599,17 @@ class RectangularSection(BeamSection):
     def __init__(self, w, h, material, **kwargs):
         self._shape = Rectangle(w, h)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "w": self._shape.w,
+                "h": self._shape.h,
+            }
+        )
+        return data
 
 
 class TrapezoidalSection(BeamSection):
@@ -1539,6 +1694,18 @@ class TrapezoidalSection(BeamSection):
             **kwargs,
         )
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "w1": self.w1,
+                "w2": self.w2,
+                "h": self.h,
+            }
+        )
+        return data
+
 
 # ==============================================================================
 # 1D - no cross-section
@@ -1605,6 +1772,16 @@ class TrussSection(BeamSection):
             **kwargs,
         )
         self._shape = Circle(radius=sqrt(A) / pi, segments=16)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "A": self.A,
+            }
+        )
+        return data
 
 
 class StrutSection(TrussSection):
@@ -1719,6 +1896,16 @@ class ShellSection(_Section):
         super(ShellSection, self).__init__(material=material, **kwargs)
         self.t = t
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "t": self.t,
+            }
+        )
+        return data
+
 
 class MembraneSection(_Section):
     """
@@ -1744,6 +1931,16 @@ class MembraneSection(_Section):
     def __init__(self, t, material, **kwargs):
         super(MembraneSection, self).__init__(material=material, **kwargs)
         self.t = t
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "t": self.t,
+            }
+        )
+        return data
 
 
 # ==============================================================================

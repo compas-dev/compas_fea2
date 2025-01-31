@@ -199,6 +199,31 @@ class Step(FEAData):
     def section_forces_field(self):
         return SectionForcesFieldResults(self)
 
+    def __data__(self):
+        return {
+            'name': self.name,
+            'field_outputs': list(self._field_outputs),
+            'history_outputs': list(self._history_outputs),
+            'results': self._results,
+            'key': self._key,
+            'patterns': list(self._patterns),
+            'load_cases': list(self._load_cases),
+            'combination': self._combination,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        obj = cls()
+        obj.name = data['name']
+        obj._field_outputs = set(data['field_outputs'])
+        obj._history_outputs = set(data['history_outputs'])
+        obj._results = data['results']
+        obj._key = data['key']
+        obj._patterns = set(data['patterns'])
+        obj._load_cases = set(data['load_cases'])
+        obj._combination = data['combination']
+        return obj
+
 
 # ==============================================================================
 #                                General Steps
@@ -551,3 +576,36 @@ class GeneralStep(Step):
             viewer.add_step(self, show_loads=show_loads)
         viewer.show()
         viewer.scene.clear()
+
+    def __data__(self):
+        data = super(GeneralStep, self).__data__()
+        data.update({
+            'max_increments': self._max_increments,
+            'initial_inc_size': self._initial_inc_size,
+            'min_inc_size': self._min_inc_size,
+            'time': self._time,
+            'nlgeom': self._nlgeom,
+            'modify': self._modify,
+            'restart': self._restart,
+        })
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        obj = cls(
+            max_increments=data['max_increments'],
+            initial_inc_size=data['initial_inc_size'],
+            min_inc_size=data['min_inc_size'],
+            time=data['time'],
+            nlgeom=data['nlgeom'],
+            modify=data['modify'],
+            restart=data['restart'],
+        )
+        obj._field_outputs = set(data['field_outputs'])
+        obj._history_outputs = set(data['history_outputs'])
+        obj._results = data['results']
+        obj._key = data['key']
+        obj._patterns = set(data['patterns'])
+        obj._load_cases = set(data['load_cases'])
+        obj._combination = data['combination']
+        return obj

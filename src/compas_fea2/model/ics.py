@@ -18,6 +18,16 @@ class _InitialCondition(FEAData):
     def __init__(self, **kwargs):
         super(_InitialCondition, self).__init__(**kwargs)
 
+    @property
+    def __data__(self):
+        return {
+            "type": self.__class__.__base__.__name__,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
+
 
 # FIXME this is not really a field in the sense that it is only applied to 1 node/element
 class InitialTemperatureField(_InitialCondition):
@@ -51,6 +61,21 @@ class InitialTemperatureField(_InitialCondition):
     @temperature.setter
     def temperature(self, value):
         self._t = value
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "temperature": self._t,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        temperature = data.pop("temperature")
+        return cls(temperature, **data)
 
 
 class InitialStressField(_InitialCondition):
@@ -86,3 +111,18 @@ class InitialStressField(_InitialCondition):
         if not isinstance(value, tuple) or len(value) != 3:
             raise TypeError("you must provide a tuple with 3 elements")
         self._s = value
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "stress": self._s,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        stress = data.pop("stress")
+        return cls(stress, **data)

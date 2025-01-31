@@ -74,6 +74,34 @@ class _BeamEndRelease(FEAData):
             raise TypeError("the location can be either `start` or `end`")
         self._location = value
 
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "element": self._element,
+            "location": self._location,
+            "n": self.n,
+            "v1": self.v1,
+            "v2": self.v2,
+            "m1": self.m1,
+            "m2": self.m2,
+            "t": self.t,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        obj = cls(
+            n=data["n"],
+            v1=data["v1"],
+            v2=data["v2"],
+            m1=data["m1"],
+            m2=data["m2"],
+            t=data["t"],
+        )
+        obj._element = data["element"]
+        obj._location = data["location"]
+        return obj
+
 
 class BeamEndPinRelease(_BeamEndRelease):
     """Assign a pin end release to a `compas_fea2.model.BeamElement`.

@@ -10,6 +10,16 @@ class _Constraint(FEAData):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
+
 
 # ------------------------------------------------------------------------------
 # MPC
@@ -51,6 +61,21 @@ class _MultiPointConstraint(_Constraint):
         super().__init__(**kwargs)
         self.constraint_type = constraint_type
 
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "constraint_type": self.constraint_type,
+                # ...other attributes...
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(constraint_type=data["constraint_type"], **data)
+
 
 class TieMPC(_MultiPointConstraint):
     """Tie MPC that constraints axial translations."""
@@ -83,6 +108,16 @@ class _SurfaceConstraint(_Constraint):
         Constraint tolerance, distance limit between master and slaves.
 
     """
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        # ...update data with specific attributes...
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(**data)
 
 
 class TieConstraint(_SurfaceConstraint):

@@ -93,6 +93,31 @@ class _BoundaryCondition(FEAData):
     def components(self) -> Dict[str, bool]:
         return {c: getattr(self, c) for c in ["x", "y", "z", "xx", "yy", "zz"]}
 
+    @property
+    def __data__(self) -> Dict[str, any]:
+        return {
+            "class": self.__class__.__base__.__name__,
+            "axes": self._axes,
+            "x": self._x,
+            "y": self._y,
+            "z": self._z,
+            "xx": self._xx,
+            "yy": self._yy,
+            "zz": self._zz,
+        }
+
+    @classmethod
+    def __from_data__(cls, data: Dict[str, any]):
+        return cls(
+            axes=data.get("axes", "global"),
+            x=data.get("x", False),
+            y=data.get("y", False),
+            z=data.get("z", False),
+            xx=data.get("xx", False),
+            yy=data.get("yy", False),
+            zz=data.get("zz", False),
+        )
+
 
 class GeneralBC(_BoundaryCondition):
     """Customized boundary condition."""

@@ -38,7 +38,6 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
                         "POINT_OVERLAP={}".format(point_overlap),
                         "GLOBAL_TOLERANCE={}".format(global_tolerance),
                         "PRECISION={}".format(precision),
-                        "PART_NODES_LIMIT={}".format(part_nodes_limit),
                     ]
                 )
             )
@@ -105,7 +104,6 @@ VERBOSE = os.getenv("VERBOSE").lower() == "true"
 POINT_OVERLAP = os.getenv("POINT_OVERLAP").lower() == "true"
 GLOBAL_TOLERANCE = float(os.getenv("GLOBAL_TOLERANCE"))
 PRECISION = int(os.getenv("PRECISION"))
-PART_NODES_LIMIT = int(os.getenv("PART_NODES_LIMIT"))
 BACKEND = None
 BACKENDS = defaultdict(dict)
 

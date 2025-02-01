@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional
 from typing import Set
 from typing import Union
-from typing import Dict
 
 from compas.geometry import Box
 from compas.geometry import Plane
@@ -21,7 +20,6 @@ from compas.geometry import Transformation
 from pint import UnitRegistry
 
 import compas_fea2
-from compas_fea2 import PART_NODES_LIMIT
 from compas_fea2.base import FEAData
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.connectors import Connector
@@ -487,7 +485,7 @@ class Model(FEAData):
         """
         return [self.add_part(part) for part in parts]
 
-    def copy_part(self, part: _Part) -> _Part:
+    def copy_part(self, part: _Part, transformation: Transformation) -> _Part:
         """Copy a part n times.
 
         Parameters
@@ -501,32 +499,8 @@ class Model(FEAData):
             The copied part.
 
         """
-        # new_part = part.copy()
-        data = part.__data__
-
-        new_part = part.__class__.__base__
-        for material in data.get("materials", []):
-            material_data = material.__data__
-            mat = new_part.add_material(material_data.pop("class").__from_data__(material_data))
-            mat.uid = material_data["uid"]
-
-        for section_data in data.get("sections", []):
-            if mat := new_part.find_material_by_uid(section_data["material"]["uid"]):
-                section_data.pop("material")
-                section = new_part.add_section(section_data.pop("class")(material=mat, **section_data))
-                section.uid = section_data["uid"]
-            else:
-                raise ValueError("Material not found")
-
-        for element_data in data.get("elements", []):
-            if sec := new_part.find_section_by_uid(element_data["section"]["uid"]):
-                element_data.pop("section")
-                nodes = [Node.__from_data__(node_data) for node_data in element_data.pop("nodes")]
-                element = element_data.pop("class")(nodes=nodes, section=sec, **element_data)
-                new_part.add_element(element, checks=False)
-            else:
-                raise ValueError("Section not found")
-
+        new_part = part.copy()
+        new_part.transform(transformation)
         return self.add_part(new_part)
 
     def array_parts(self, parts: list[_Part], n: int, transformation: Transformation) -> list[_Part]:

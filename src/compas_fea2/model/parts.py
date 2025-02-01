@@ -8,6 +8,9 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 import compas
 from compas.geometry import Box
 from compas.geometry import Frame
@@ -21,6 +24,7 @@ from compas.geometry import centroid_points, centroid_points_weighted
 from compas.geometry import distance_point_point_sqrd
 from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
+from compas.datastructures import Mesh
 from compas.tolerance import TOL
 from scipy.spatial import KDTree
 
@@ -97,6 +101,7 @@ class _Part(FEAData):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._graph = nx.DiGraph()
         self._nodes: Set[Node] = set()
         self._gkey_node: Dict[str, Node] = {}
         self._sections: Set[_Section] = set()
@@ -127,6 +132,8 @@ class _Part(FEAData):
             "nodesgroups": [group.__data__ for group in self.nodesgroups],
             "elementsgroups": [group.__data__ for group in self.elementsgroups],
             "facesgroups": [group.__data__ for group in self.facesgroups],
+            "boundary_mesh": self.boundary_mesh.__data__ if self.boundary_mesh else None,
+            "discretized_boundary_mesh": self.discretized_boundary_mesh.__data__ if self.discretized_boundary_mesh else None,
         }
 
     @classmethod
@@ -196,7 +203,13 @@ class _Part(FEAData):
             element = element_cls(nodes=nodes, section=section, **element_data)
             part.add_element(element, checks=False)
 
+        part._boundary_mesh = Mesh.__from_data__(data.get("boundary_mesh")) if data.get("boundary_mesh") else None
+        part._discretized_boundary_mesh = Mesh.__from_data__(data.get("discretized_boundary_mesh")) if data.get("discretized_boundary_mesh") else None
         return part
+
+    @property
+    def graph(self):
+        return self._graph
 
     @property
     def nodes(self) -> Set[Node]:
@@ -1312,6 +1325,54 @@ class _Part(FEAData):
                 node.mass = [a + b for a, b in zip(node.mass, element.nodal_mass[:3])] + [0.0, 0.0, 0.0]
         return [sum(node.mass[i] for node in self.nodes) for i in range(3)]
 
+    def visualize_node_connectivity(self):
+        """Visualizes nodes with color coding based on connectivity."""
+        degrees = {node: self.graph.degree(node) for node in self.graph.nodes}
+        pos = nx.spring_layout(self.graph)
+
+        node_colors = [degrees[node] for node in self.graph.nodes]
+
+        plt.figure(figsize=(8, 6))
+        nx.draw(self.graph, pos, with_labels=True, node_color=node_colors, cmap=plt.cm.Blues, node_size=2000)
+        plt.title("Node Connectivity Visualization")
+        plt.show()
+
+    def visualize_pyvis(self, filename="model_graph.html"):
+        from pyvis.network import Network
+
+        """Visualizes the Model-Part and Element-Node graph using Pyvis."""
+        net = Network(notebook=True, height="750px", width="100%", bgcolor="#222222", font_color="white")
+
+        # # Add all nodes from Model-Part Graph
+        # for node in self.model.graph.nodes:
+        #     node_type = self.model.graph.nodes[node].get("type", "unknown")
+
+        #     if node_type == "model":
+        #         net.add_node(str(node), label="Model", color="red", shape="box", size=30)
+        #     elif node_type == "part":
+        #         net.add_node(str(node), label=node.name, color="blue", shape="ellipse")
+
+        # # Add all edges from Model-Part Graph
+        # for src, dst, data in self.model.graph.edges(data=True):
+        #     net.add_edge(str(src), str(dst), color="gray", title=data.get("relation", ""))
+
+        # Add all nodes from Element-Node Graph
+        for node in self.graph.nodes:
+            node_type = self.graph.nodes[node].get("type", "unknown")
+
+            if node_type == "element":
+                net.add_node(str(node), label=node.name, color="yellow", shape="triangle")
+            elif node_type == "node":
+                net.add_node(str(node), label=node.name, color="green", shape="dot")
+
+        # # Add all edges from Element-Node Graph
+        # for src, dst, data in self.graph.edges(data=True):
+        #     net.add_edge(str(src), str(dst), color="lightgray", title=data.get("relation", ""))
+
+        # Save and Open
+        net.show(filename)
+        print(f"Graph saved as {filename} - Open in a browser to view.")
+
     # =========================================================================
     #                           Elements methods
     # =========================================================================
@@ -1412,6 +1473,11 @@ class _Part(FEAData):
         element._part_key = len(self.elements)
         self.elements.add(element)
         element._registration = self
+
+        self.graph.add_node(element, type="element")
+        for node in element.nodes:
+            self.graph.add_node(node, type="node")
+            self.graph.add_edge(element, node, relation="connects")
 
         if compas_fea2.VERBOSE:
             print(f"Element {element!r} registered to {self!r}.")

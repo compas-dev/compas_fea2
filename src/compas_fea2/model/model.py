@@ -2,10 +2,13 @@ import gc
 import importlib
 import os
 import pathlib
+from pathlib import Path
 import pickle
 from itertools import chain
 from itertools import groupby
-from pathlib import Path
+
+from compas.datastructures import Graph
+
 from typing import Optional
 from typing import Set
 from typing import Union
@@ -92,6 +95,7 @@ class Model(FEAData):
         self._units = None
         self._path = None
 
+        self._graph = Graph()
         self._parts: Set[_Part] = set()
         self._materials: Set[_Material] = set()
         self._sections: Set[_Section] = set()
@@ -183,6 +187,10 @@ class Model(FEAData):
     @property
     def parts(self) -> Set[_Part]:
         return self._parts
+
+    @property
+    def graph(self) -> Graph:
+        return self._graph
 
     @property
     def partgroups(self) -> Set[PartsGroup]:
@@ -466,6 +474,8 @@ class Model(FEAData):
 
         part._key = len(self._parts)
         self._parts.add(part)
+        self.graph.add_node(part, type="part")
+        self.graph.add_edge(self, part, relation="contains")
         return part
 
     def add_parts(self, parts: list[_Part]) -> list[_Part]:

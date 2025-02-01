@@ -78,6 +78,7 @@ class Node(FEAData):
     def __init__(self, xyz: List[float], mass: Optional[float] = None, temperature: Optional[float] = None, **kwargs):
         super().__init__(**kwargs)
         self._key = None
+        self._part_key = None
 
         self._xyz = xyz
         self._x = xyz[0]
@@ -102,6 +103,7 @@ class Node(FEAData):
     def __data__(self):
         return {
             "class": self.__class__.__base__,
+            "part_key": self._part_key,
             "uid": self.uid,
             "xyz": self.xyz,
             "mass": self._mass,
@@ -120,6 +122,7 @@ class Node(FEAData):
         node.uid = data.get("uid")
         node._on_boundary = data.get("on_boundary")
         node._is_reference = data.get("is_reference")
+        # node._part_key = data.get("part_key")
         return node
 
     @classmethod
@@ -158,6 +161,10 @@ class Node(FEAData):
     @property
     def part(self) -> "_Part":  # noqa: F821
         return self._registration
+
+    @property
+    def part_key(self) -> int:
+        return self._part_key
 
     @property
     def model(self) -> "Model":  # noqa: F821

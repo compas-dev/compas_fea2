@@ -144,35 +144,57 @@ class _Part(FEAData):
             The part instance.
         """
         part = cls()
-        part._ndm = data.get("ndm", None)
-        part._ndf = data.get("ndf", None)
+        part._ndm = data.get("ndm")
+        part._ndf = data.get("ndf")
 
-        uid_node = {node_data["uid"]: Node.__from_data__(node_data) for node_data in data.get("nodes", {})}
+        # Deserialize nodes
+        uid_node = {node_data["uid"]: Node.__from_data__(node_data) for node_data in data.get("nodes", [])}
 
+        # Deserialize materials
         for material_data in data.get("materials", []):
-            mat = part.add_material(material_data.pop("class").__from_data__(material_data))
+            material_cls = material_data.pop("class", None)
+            if not material_cls:
+                raise ValueError("Missing class information for material.")
+
+            mat = part.add_material(material_cls.__from_data__(material_data))
             mat.uid = material_data["uid"]
 
+        # Deserialize sections
         for section_data in data.get("sections", []):
-            if mat := part.find_material_by_uid(section_data["material"]["uid"]):
-                section_data.pop("material")
-                section = part.add_section(section_data.pop("class")(material=mat, **section_data))
-                section.uid = section_data["uid"]
-            else:
-                raise ValueError("Material not found")
+            material_data = section_data.pop("material", None)
+            if not material_data or "uid" not in material_data:
+                raise ValueError("Material UID is missing in section data.")
 
+            material = part.find_material_by_uid(material_data["uid"])
+            if not material:
+                raise ValueError(f"Material with UID {material_data['uid']} not found.")
+
+            section_cls = section_data.pop("class", None)
+            if not section_cls:
+                raise ValueError("Missing class information for section.")
+
+            section = part.add_section(section_cls(material=material, **section_data))
+            section.uid = section_data["uid"]
+
+        # Deserialize elements
         for element_data in data.get("elements", []):
-            if sec := part.find_section_by_uid(element_data["section"]["uid"]):
-                element_data.pop("section")
-                nodes = [uid_node[node_data["uid"]] for node_data in element_data.pop("nodes")]
-                for node in nodes:
-                    node._registration = part
-                element = element_data.pop("class")(nodes=nodes, section=sec, **element_data)
-                part.add_element(element, checks=False)
-            else:
-                raise ValueError("Section not found")
-        # for element in data.get("elements", []):
-        #     part.add_element(element.pop("class").__from_data__(element))
+            section_data = element_data.pop("section", None)
+            if not section_data or "uid" not in section_data:
+                raise ValueError("Section UID is missing in element data.")
+
+            section = part.find_section_by_uid(section_data["uid"])
+            if not section:
+                raise ValueError(f"Section with UID {section_data['uid']} not found.")
+
+            element_cls = element_data.pop("class", None)
+            if not element_cls:
+                raise ValueError("Missing class information for element.")
+
+            nodes = [uid_node[node_data["uid"]] for node_data in element_data.pop("nodes", [])]
+            for node in nodes:
+                node._registration = part
+            element = element_cls(nodes=nodes, section=section, **element_data)
+            part.add_element(element, checks=False)
 
         return part
 
@@ -289,12 +311,6 @@ class _Part(FEAData):
         for element in self.elements:
             element_types.setdefault(type(element), []).append(element)
         return element_types
-
-    def assign_keys(self, start=1):
-        [setattr(node, "_key", c) for c, node in enumerate(self.nodes, start)]
-        [setattr(element, "_key", c) for c, element in enumerate(self.elements, start)]
-        [setattr(section, "_key", c) for c, section in enumerate(self.sections, start)]
-        [setattr(material, "_key", c) for c, material in enumerate(self.materials, start)]
 
     def transform(self, transformation: Transformation) -> None:
         """Transform the part.
@@ -1172,25 +1188,20 @@ class _Part(FEAData):
         if not isinstance(node, Node):
             raise TypeError("{!r} is not a node.".format(node))
 
-        if compas_fea2.VERBOSE:
-            if self.contains_node(node):
-                print("NODE SKIPPED: Node {!r} already in part.".format(node))
-            return node
+        # if not compas_fea2.POINT_OVERLAP:
+        #     existing_node = self.find_nodes_around_point(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE)
+        #     if existing_node:
+        #         if compas_fea2.VERBOSE:
+        #             print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
+        #         return existing_node[0]
 
-        if not compas_fea2.POINT_OVERLAP:
-            existing_node = self.find_nodes_around_point(node.xyz, distance=compas_fea2.GLOBAL_TOLERANCE)
-            if existing_node:
-                if compas_fea2.VERBOSE:
-                    print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
-                return existing_node[0]
-
-        if self.model:
-            self._key = len(self.model.nodes)
-        self._nodes.add(node)
-        self._gkey_node[node.gkey] = node
-        node._registration = self
-        if compas_fea2.VERBOSE:
-            print("Node {!r} registered to {!r}.".format(node, self))
+        if node not in self._nodes:
+            node._part_key = len(self.nodes)
+            self._nodes.add(node)
+            self._gkey_node[node.gkey] = node
+            node._registration = self
+            if compas_fea2.VERBOSE:
+                print("Node {!r} registered to {!r}.".format(node, self))
         return node
 
     def add_nodes(self, nodes: List[Node]) -> List[Node]:
@@ -1395,7 +1406,10 @@ class _Part(FEAData):
         self.add_nodes(element.nodes)
         for node in element.nodes:
             node.connected_elements.add(element)
+
         self.add_section(element.section)
+
+        element._part_key = len(self.elements)
         self.elements.add(element)
         element._registration = self
 

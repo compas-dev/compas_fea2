@@ -230,7 +230,7 @@ class ElementsGroup(_Group):
         from importlib import import_module
 
         elements_module = import_module("compas_fea2.model.elements")
-        elements = [getattr(elements_module, [element_data]["class"]).__from_data__(element_data) for element_data in data["elements"]]
+        elements = [getattr(elements_module, element_data["class"]).__from_data__(element_data) for element_data in data["elements"]]
         return cls(elements=elements)
 
     @property

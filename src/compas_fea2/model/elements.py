@@ -1,5 +1,4 @@
 from operator import itemgetter
-from concurrent.futures import ThreadPoolExecutor
 
 from typing import Dict
 from typing import List
@@ -76,6 +75,7 @@ class _Element(FEAData):
 
     def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
         super().__init__(**kwargs)
+        self._part_key = None
         self._nodes = self._check_nodes(nodes)
         self._registration = nodes[0]._registration
         self._section = section
@@ -123,7 +123,7 @@ class _Element(FEAData):
 
     @property
     def nodes_key(self) -> str:
-        return [n.key for n in self.nodes]
+        return [n.part_key for n in self.nodes]
 
     @property
     def nodes_inputkey(self) -> str:
@@ -161,6 +161,10 @@ class _Element(FEAData):
         if len(set([node._registration for node in nodes])) != 1:
             raise ValueError("At least one of node is registered to a different part or not registered")
         return nodes
+
+    @property
+    def part_key(self) -> int:
+        return self._part_key
 
     @property
     def area(self) -> float:
@@ -465,7 +469,7 @@ class Face(FEAData):
 
     @property
     def nodes_key(self) -> List:
-        return [n.key for n in self.nodes]
+        return [n._part_key for n in self.nodes]
 
 
 class _Element2D(_Element):

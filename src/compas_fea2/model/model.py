@@ -377,9 +377,6 @@ class Model(FEAData):
     #                       De-constructor methods
     # =========================================================================
 
-    # def to_json(self):
-    #     raise NotImplementedError()
-
     def to_cfm(self, path: Union[str, Path]):
         """Exports the Model object to a .cfm file using Pickle.
 

@@ -96,7 +96,31 @@ class Node(FEAData):
         self._loads = {}
         self._total_load = None
 
-        self._connected_elements = []
+        self._connected_elements = set()
+
+    @property
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__,
+            "uid": self.uid,
+            "xyz": self.xyz,
+            "mass": self._mass,
+            "temperature": self._temperature,
+            "on_boundary": self._on_boundary,
+            "is_reference": self._is_reference,
+        }
+
+    @classmethod
+    def __from_data__(cls, data):
+        node = cls(
+            xyz=data["xyz"],
+            mass=data.get("mass"),
+            temperature=data.get("temperature"),
+        )
+        node.uid = data.get("uid")
+        node._on_boundary = data.get("on_boundary")
+        node._is_reference = data.get("is_reference")
+        return node
 
     @classmethod
     def from_compas_point(cls, point: Point, mass: Optional[float] = None, temperature: Optional[float] = None) -> "Node":
@@ -259,29 +283,3 @@ class Node(FEAData):
         problems = self.model.problems
         steps = [problem.step for problem in problems]
         return {step: self.reaction(step) for step in steps}
-
-    @property
-    def __data__(self):
-        return {
-            "class": self.__class__.__base__.__name__,
-            "xyz": self.xyz,
-            "mass": self._mass,
-            "temperature": self._temperature,
-            "on_boundary": self._on_boundary,
-            "is_reference": self._is_reference,
-            "dof": self._dof,
-            "connected_elements": [e.name for e in self._connected_elements],
-        }
-
-    @classmethod
-    def __from_data__(cls, data):
-        node = cls(
-            xyz=data["xyz"],
-            mass=data.get("mass"),
-            temperature=data.get("temperature"),
-        )
-        node._on_boundary = data.get("on_boundary")
-        node._is_reference = data.get("is_reference")
-        node._dof = data.get("dof", {"x": True, "y": True, "z": True, "xx": True, "yy": True, "zz": True})
-        node._connected_elements = data.get("connected_elements", [])
-        return node

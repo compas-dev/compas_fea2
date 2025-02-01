@@ -56,14 +56,19 @@ class _Material(FEAData):
             "class": self.__class__.__base__,
             "density": self.density,
             "expansion": self.expansion,
+            "name": self.name,
+            "uid": self.uid,
         }
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(
+        mat = cls(
             density=data["density"],
             expansion=data["expansion"],
         )
+        mat.uid = data["uid"]
+        mat.name = data["name"]
+        return mat
 
     def __str__(self) -> str:
         return """

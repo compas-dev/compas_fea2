@@ -61,17 +61,15 @@ class _Section(FEAData):
     @property
     def __data__(self):
         return {
-            "class": self.__class__.__base__.__name__,
+            "class": self.__class__.__base__,
             "material": self.material.__data__,
+            "name": self.name,
+            "uid": self.uid,
         }
 
     @classmethod
     def __from_data__(cls, data):
-        from importlib import import_module
-
-        m = import_module("compas_fea2.model")
-        mat_cls = getattr(m, data["material"]["class"])
-        material = mat_cls.__from_data__(data["material"])
+        material = data["material"].pop("class").__from_data__(data["material"])
         return cls(material=material)
 
     def __str__(self) -> str:
@@ -142,6 +140,7 @@ mass     : {self.mass}
         return {
             "class": self.__class__.__base__.__name__,
             "mass": self.mass,
+            "uid": self.uid,
         }
 
     @classmethod
@@ -192,11 +191,16 @@ class SpringSection(FEAData):
             "axial": self.axial,
             "lateral": self.lateral,
             "rotational": self.rotational,
+            "uid": self.uid,
+            "name": self.name,
         }
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(axial=data["axial"], lateral=data["lateral"], rotational=data["rotational"])
+        sec = cls(axial=data["axial"], lateral=data["lateral"], rotational=data["rotational"])
+        sec.uid = data["uid"]
+        sec.name = data["name"]
+        return sec
 
     def __str__(self) -> str:
         return f"""

@@ -1,5 +1,5 @@
 from operator import itemgetter
-from importlib import import_module
+from concurrent.futures import ThreadPoolExecutor
 
 from typing import Dict
 from typing import List
@@ -101,11 +101,8 @@ class _Element(FEAData):
 
     @classmethod
     def __from_data__(cls, data):
-
-        nodes = [data["nodes"]["class"].__from_data__(node_data) for node_data in data["nodes"]]
-        # sections_module = import_module("compas_fea2.model.sections")
-        section_cls = getattr(sections_module, data["section"]["class"])
-        section = section_cls.__from_data__(data["section"])
+        nodes = [node_data.pop("class").__from_data__(node_data) for node_data in data["nodes"]]
+        section = data["section"].pop("class").__from_data__(data["section"])
         return cls(nodes, section, implementation=data.get("implementation"), rigid=data.get("rigid"))
 
     @property
@@ -142,8 +139,6 @@ class _Element(FEAData):
 
     @section.setter
     def section(self, value: "_Section"):  # noqa: F821
-        if self.part:
-            self.part.add_section(value)
         self._section = value
 
     @property
@@ -295,16 +290,8 @@ class _Element1D(_Element):
 
     @classmethod
     def __from_data__(cls, data):
-        from compas_fea2.model import Node
-        from compas.geometry import Frame
-
-        from importlib import import_module
-
-        section_module = import_module("compas_fea2.model.sections")
-        section_class = [getattr(section_module, section_data["class"]).__from_data__(section_data) for section_data in data["section"]]
-
-        nodes = [Node.__from_data__(node_data) for node_data in data["nodes"]]
-        section = section_class.__from_data__(data["section"])
+        nodes = [node_data.pop("class").__from_data__(node_data) for node_data in data["nodes"]]
+        section = data["section"].pop("class").__from_data__(data["section"])
         frame = Frame.__from_data__(data["frame"])
         return cls(nodes=nodes, section=section, frame=frame, implementation=data.get("implementation"), rigid=data.get("rigid"))
 

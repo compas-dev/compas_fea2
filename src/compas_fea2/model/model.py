@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 from typing import Set
 from typing import Union
+from typing import Dict
 
 from compas.geometry import Box
 from compas.geometry import Plane
@@ -16,6 +17,7 @@ from compas.geometry import Point
 from compas.geometry import Polygon
 from compas.geometry import bounding_box
 from compas.geometry import centroid_points
+from compas.geometry import Transformation
 from pint import UnitRegistry
 
 import compas_fea2
@@ -90,22 +92,17 @@ class Model(FEAData):
         self._key = 0
         self._starting_key = 0
         self._units = None
+        self._path = None
+
         self._parts: Set[_Part] = set()
-        self._nodes = None
+        self._materials: Set[_Material] = set()
+        self._sections: Set[_Section] = set()
         self._bcs = {}
         self._ics = {}
         self._connectors: Set[Connector] = set()
         self._constraints: Set[_Constraint] = set()
         self._partsgroups: Set[PartsGroup] = set()
         self._problems: Set[Problem] = set()
-        self._results = {}
-        self._loads = {}
-        self._path = None
-        self._bounding_box = None
-        self._center = None
-        self._bottom_plane = None
-        self._top_plane = None
-        self._volume = None
 
     @property
     def __data__(self):
@@ -163,6 +160,28 @@ class Model(FEAData):
         model._path = Path(data.get("path")) if data.get("path") else None
         return model
 
+    @classmethod
+    def from_template(cls, template: str, **kwargs) -> "Model":
+        """Create a Model instance from a template.
+
+        Parameters
+        ----------
+        template : str
+            The name of the template.
+        **kwargs : dict
+            Additional keyword arguments.
+
+        Returns
+        -------
+        Model
+            The created Model instance.
+
+        """
+        raise NotImplementedError("This function is not available yet.")
+        module = importlib.import_module("compas_fea2.templates")
+        template = getattr(module, template)
+        return template(**kwargs)
+
     @property
     def parts(self) -> Set[_Part]:
         return self._parts
@@ -188,20 +207,24 @@ class Model(FEAData):
         return self._connectors
 
     @property
-    def materials(self) -> Set[_Material]:
-        materials = set()
-        for part in filter(lambda p: not isinstance(p, RigidPart), self.parts):
-            for material in part.materials:
-                materials.add(material)
+    def materials_dict(self) -> dict[Union[_Part, "Model"], list[_Material]]:
+        materials = {part: part.materials for part in filter(lambda p: not isinstance(p, RigidPart), self.parts)}
+        materials.update({self: list(self._materials)})
         return materials
 
     @property
-    def sections(self) -> Set[_Section]:
-        sections = set()
-        for part in filter(lambda p: not isinstance(p, RigidPart), self.parts):
-            for section in part.sections:
-                sections.add(section)
+    def materials(self) -> Set[_Material]:
+        return set(chain(*list(self.materials_dict.values())))
+
+    @property
+    def sections_dict(self) -> dict[Union[_Part, "Model"], list[_Section]]:
+        sections = {part: part.sections for part in filter(lambda p: not isinstance(p, RigidPart), self.parts)}
+        sections.update({self: list(self._sections)})
         return sections
+
+    @property
+    def sections(self) -> Set[_Section]:
+        return set(chain(*list(self.sections_dict.values())))
 
     @property
     def problems(self) -> Set[Problem]:
@@ -286,6 +309,32 @@ class Model(FEAData):
         if not isinstance(value, UnitRegistry):
             return ValueError("Pint UnitRegistry required")
         self._units = value
+
+    def assign_keys(self, start: int = None):
+        """Assign keys to the model and its parts.
+
+        Parameters
+        ----------
+        start : int
+            The starting key, by default None (the default starting key is used).
+
+        Returns
+        -------
+        None
+
+        """
+        start = start or self._starting_key
+        for i, material in enumerate(self.materials):
+            material._key = i + start
+
+        for i, section in enumerate(self.sections):
+            section._key = i + start
+
+        for i, node in enumerate(self.nodes):
+            node._key = i + start
+
+        for i, element in enumerate(self.elements):
+            element._key = i + start
 
     # =========================================================================
     #                       Constructor methods
@@ -416,28 +465,12 @@ class Model(FEAData):
         if not isinstance(part, _Part):
             raise TypeError("{!r} is not a part.".format(part))
 
-        if self.contains_part(part):
-            if compas_fea2.VERBOSE:
-                print("SKIPPED: DeformablePart {!r} is already in the model.".format(part))
-            return
-
-        if self.find_part_by_name(part.name):
-            raise ValueError("Duplicate name! The name '{}' is already in use.".format(part.name))
-
         part._registration = self
         if compas_fea2.VERBOSE:
             print("{!r} registered to {!r}.".format(part, self))
 
-        part._key = len(self._parts) * PART_NODES_LIMIT
+        part._key = len(self._parts)
         self._parts.add(part)
-
-        if not isinstance(part, RigidPart):
-            for material in part.materials:
-                material._registration = self
-
-            for section in part.sections:
-                section._registration = self
-
         return part
 
     def add_parts(self, parts: list[_Part]) -> list[_Part]:
@@ -453,6 +486,325 @@ class Model(FEAData):
 
         """
         return [self.add_part(part) for part in parts]
+
+    def copy_part(self, part: _Part) -> _Part:
+        """Copy a part n times.
+
+        Parameters
+        ----------
+        part : :class:`compas_fea2.model.DeformablePart`
+            The part to copy.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.DeformablePart`
+            The copied part.
+
+        """
+        # new_part = part.copy()
+        data = part.__data__
+
+        new_part = part.__class__.__base__
+        for material in data.get("materials", []):
+            material_data = material.__data__
+            mat = new_part.add_material(material_data.pop("class").__from_data__(material_data))
+            mat.uid = material_data["uid"]
+
+        for section_data in data.get("sections", []):
+            if mat := new_part.find_material_by_uid(section_data["material"]["uid"]):
+                section_data.pop("material")
+                section = new_part.add_section(section_data.pop("class")(material=mat, **section_data))
+                section.uid = section_data["uid"]
+            else:
+                raise ValueError("Material not found")
+
+        for element_data in data.get("elements", []):
+            if sec := new_part.find_section_by_uid(element_data["section"]["uid"]):
+                element_data.pop("section")
+                nodes = [Node.__from_data__(node_data) for node_data in element_data.pop("nodes")]
+                element = element_data.pop("class")(nodes=nodes, section=sec, **element_data)
+                new_part.add_element(element, checks=False)
+            else:
+                raise ValueError("Section not found")
+
+        return self.add_part(new_part)
+
+    def array_parts(self, parts: list[_Part], n: int, transformation: Transformation) -> list[_Part]:
+        """Array a part n times along an axis.
+
+        Parameters
+        ----------
+        parts : list[:class:`compas_fea2.model.DeformablePart`]
+            The part to array.
+        n : int
+            The number of times to array the part.
+        axis : str, optional
+            The axis along which to array the part, by default "x".
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.DeformablePart`]
+            The list of arrayed parts.
+
+        """
+
+        new_parts = []
+        for i in range(n):
+            for part in parts:
+                new_part = part.copy()
+                new_part.transform(transformation * i)
+                new_parts.append(new_part)
+        return new_parts
+
+    # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def add_material(self, material: _Material) -> _Material:
+        """Add a material to the model.
+
+        Parameters
+        ----------
+        material : :class:`compas_fea2.model.materials.Material`
+
+        Returns
+        -------
+        :class:`compas_fea2.model.materials.Material`
+
+        """
+        if not isinstance(material, _Material):
+            raise TypeError("{!r} is not a material.".format(material))
+        material._registration = self
+        self._key = len(self._materials)
+        self._materials.add(material)
+        return material
+
+    def add_materials(self, materials: list[_Material]) -> list[_Material]:
+        """Add multiple materials to the model.
+
+        Parameters
+        ----------
+        materials : list[:class:`compas_fea2.model.materials.Material`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.materials.Material`]
+
+        """
+        return [self.add_material(material) for material in materials]
+
+    def find_material_by_name(self, name: str) -> Optional[_Material]:
+        """Find a material by name.
+
+        Parameters
+        ----------
+        name : str
+            The name of the material.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.materials.Material`
+
+        """
+        for material in self.materials:
+            if material.name == name:
+                return material
+
+    def contains_material(self, material: _Material) -> bool:
+        """Verify that the model contains a specific material.
+
+        Parameters
+        ----------
+        material : :class:`compas_fea2.model.materials.Material`
+
+        Returns
+        -------
+        bool
+
+        """
+        return material in self.materials
+
+    def find_material_by_key(self, key: int) -> Optional[_Material]:
+        """Find a material by key.
+
+        Parameters
+        ----------
+        key : int
+            The key of the material.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.materials.Material`
+
+        """
+        for material in self.materials:
+            if material.key == key:
+                return material
+
+    def find_material_by_inputkey(self, key: int) -> Optional[_Material]:
+        """Find a material by input key.
+
+        Parameters
+        ----------
+        key : int
+            The input key of the material.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.materials.Material`
+
+        """
+        for material in self.materials:
+            if material.input_key == key:
+                return material
+
+    def find_materials_by_attribute(self, attr: str, value: Union[str, int, float], tolerance: float = 1) -> list[_Material]:
+        """Find materials by attribute.
+
+        Parameters
+        ----------
+        attr : str
+            The name of the attribute.
+        value : Union[str, int, float]
+            The value of the attribute.
+        tolerance : float, optional
+            The tolerance for the search, by default 1.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.materials.Material`]
+
+        """
+        materials = []
+        for material in self.materials:
+            if abs(getattr(material, attr) - value) < tolerance:
+                materials.append(material)
+        return materials
+
+    # =========================================================================
+    #                           Sections methods
+    # =========================================================================
+
+    def add_section(self, section: _Section) -> _Section:
+        """Add a section to the model.
+
+        Parameters
+        ----------
+        section : :class:`compas_fea2.model.sections.Section`
+
+        Returns
+        -------
+        :class:`compas_fea2.model.sections.Section`
+
+        """
+        if not isinstance(section, _Section):
+            raise TypeError("{!r} is not a section.".format(section))
+        self._materials.add(section.material)
+        section._registration = self
+        self._sections.add(section)
+        return section
+
+    def add_sections(self, sections: list[_Section]) -> list[_Section]:
+        """Add multiple sections to the model.
+
+        Parameters
+        ----------
+        sections : list[:class:`compas_fea2.model.sections.Section`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.sections.Section`]
+
+        """
+        return [self.add_section(section) for section in sections]
+
+    def find_section_by_name(self, name: str) -> Optional[_Section]:
+        """Find a section by name.
+
+        Parameters
+        ----------
+        name : str
+            The name of the section.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.sections.Section`
+
+        """
+        for section in self.sections:
+            if section.name == name:
+                return section
+
+    def contains_section(self, section: _Section) -> bool:
+        """Verify that the model contains a specific section.
+
+        Parameters
+        ----------
+        section : :class:`compas_fea2.model.sections.Section`
+
+        Returns
+        -------
+        bool
+
+        """
+        return section in self.sections
+
+    def find_section_by_key(self, key: int) -> Optional[_Section]:
+        """Find a section by key.
+
+        Parameters
+        ----------
+        key : int
+            The key of the section.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.sections.Section`
+
+        """
+        for section in self.sections:
+            if section.key == key:
+                return section
+
+    def find_section_by_inputkey(self, key: int) -> Optional[_Section]:
+        """Find a section by input key.
+
+        Parameters
+        ----------
+        key : int
+            The input key of the section.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.sections.Section`
+
+        """
+        for section in self.sections:
+            if section.input_key == key:
+                return section
+
+    def find_sections_by_attribute(self, attr: str, value: Union[str, int, float], tolerance: float = 1) -> list[_Section]:
+        """Find sections by attribute.
+
+        Parameters
+        ----------
+        attr : str
+            The name of the attribute.
+        value : Union[str, int, float]
+            The value of the attribute.
+        tolerance : float, optional
+            The tolerance for the search, by default 1.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.sections.Section`]
+
+        """
+        sections = []
+        for section in self.sections:
+            if abs(getattr(section, attr) - value) < tolerance:
+                sections.append(section)
+        return sections
 
     # =========================================================================
     #                           Nodes methods

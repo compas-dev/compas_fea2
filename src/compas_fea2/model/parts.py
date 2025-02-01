@@ -1,6 +1,5 @@
 from math import pi
 from math import sqrt
-from importlib import import_module
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -116,13 +115,15 @@ class _Part(FEAData):
     @property
     def __data__(self):
         return {
-            "class": self.__class__.__base__.__name__,
+            "class": self.__class__.__base__,
+            "ndm": self.ndm or None,
+            "ndf": self.ndf or None,
             "nodes": [node.__data__ for node in self.nodes],
             "gkey_node": {key: node.__data__ for key, node in self.gkey_node.items()},
             "materials": [material.__data__ for material in self.materials],
             "sections": [section.__data__ for section in self.sections],
             "elements": [element.__data__ for element in self.elements],
-            # "releases": [release.__data__ for release in self.releases],
+            "releases": [release.__data__ for release in self.releases],
             "nodesgroups": [group.__data__ for group in self.nodesgroups],
             "elementsgroups": [group.__data__ for group in self.elementsgroups],
             "facesgroups": [group.__data__ for group in self.facesgroups],
@@ -143,19 +144,35 @@ class _Part(FEAData):
             The part instance.
         """
         part = cls()
+        part._ndm = data.get("ndm", None)
+        part._ndf = data.get("ndf", None)
 
-        # Import module once instead of inside the loop
-        model_module = import_module("compas_fea2.model")
+        uid_node = {node_data["uid"]: Node.__from_data__(node_data) for node_data in data.get("nodes", {})}
 
-        elements = []  # Preallocate list for bulk adding
+        for material_data in data.get("materials", []):
+            mat = part.add_material(material_data.pop("class").__from_data__(material_data))
+            mat.uid = material_data["uid"]
+
+        for section_data in data.get("sections", []):
+            if mat := part.find_material_by_uid(section_data["material"]["uid"]):
+                section_data.pop("material")
+                section = part.add_section(section_data.pop("class")(material=mat, **section_data))
+                section.uid = section_data["uid"]
+            else:
+                raise ValueError("Material not found")
 
         for element_data in data.get("elements", []):
-            element_cls_name = element_data.pop("class")
-            element_cls = getattr(model_module, element_cls_name)  # Retrieve class reference
-            elements.append(element_cls.__from_data__(element_data))  # Deserialize element
-
-        # Use a bulk-add method instead of looping `add_element`
-        part.add_elements_bulk(elements) if hasattr(part, "add_elements_bulk") else [part.add_element(e) for e in elements]
+            if sec := part.find_section_by_uid(element_data["section"]["uid"]):
+                element_data.pop("section")
+                nodes = [uid_node[node_data["uid"]] for node_data in element_data.pop("nodes")]
+                for node in nodes:
+                    node._registration = part
+                element = element_data.pop("class")(nodes=nodes, section=sec, **element_data)
+                part.add_element(element, checks=False)
+            else:
+                raise ValueError("Section not found")
+        # for element in data.get("elements", []):
+        #     part.add_element(element.pop("class").__from_data__(element))
 
         return part
 
@@ -272,6 +289,12 @@ class _Part(FEAData):
         for element in self.elements:
             element_types.setdefault(type(element), []).append(element)
         return element_types
+
+    def assign_keys(self, start=1):
+        [setattr(node, "_key", c) for c, node in enumerate(self.nodes, start)]
+        [setattr(element, "_key", c) for c, element in enumerate(self.elements, start)]
+        [setattr(section, "_key", c) for c, section in enumerate(self.sections, start)]
+        [setattr(material, "_key", c) for c, material in enumerate(self.materials, start)]
 
     def transform(self, transformation: Transformation) -> None:
         """Transform the part.
@@ -617,8 +640,224 @@ class _Part(FEAData):
         return part
 
     # =========================================================================
+    #                           Materials methods
+    # =========================================================================
+
+    def find_materials_by_name(self, name: str) -> List[_Material]:
+        """Find all materials with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        List[_Material]
+        """
+        return [material for material in self.materials if material.name == name]
+
+    def find_material_by_uid(self, uid: str) -> Optional[_Material]:
+        """Find a material with a given unique identifier.
+
+        Parameters
+        ----------
+        uid : str
+
+        Returns
+        -------
+        Optional[_Material]
+        """
+        for material in self.materials:
+            if material.uid == uid:
+                return material
+        return None
+
+    def contains_material(self, material: _Material) -> bool:
+        """Verify that the part contains a specific material.
+
+        Parameters
+        ----------
+        material : _Material
+
+        Returns
+        -------
+        bool
+        """
+        return material in self.materials
+
+    def add_material(self, material: _Material) -> _Material:
+        """Add a material to the part so that it can be referenced in section and element definitions.
+
+        Parameters
+        ----------
+        material : _Material
+
+        Returns
+        -------
+        _Material
+
+        Raises
+        ------
+        TypeError
+            If the material is not a material.
+        """
+        if not isinstance(material, _Material):
+            raise TypeError(f"{material!r} is not a material.")
+
+        self._materials.add(material)
+        material._registration = self
+        return material
+
+    def add_materials(self, materials: List[_Material]) -> List[_Material]:
+        """Add multiple materials to the part.
+
+        Parameters
+        ----------
+        materials : List[_Material]
+
+        Returns
+        -------
+        List[_Material]
+        """
+        return [self.add_material(material) for material in materials]
+
+    def find_material_by_name(self, name: str) -> Optional[_Material]:
+        """Find a material with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        Optional[_Material]
+        """
+        for material in self.materials:
+            if material.name == name:
+                return material
+        return None
+
+    # =========================================================================
+    #                        Sections methods
+    # =========================================================================
+
+    def find_sections_by_name(self, name: str) -> List[_Section]:
+        """Find all sections with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        List[_Section]
+        """
+        return [section for section in self.sections if section.name == name]
+
+    def find_section_by_uid(self, uid: str) -> Optional[_Section]:
+        """Find a section with a given unique identifier.
+
+        Parameters
+        ----------
+        uid : str
+
+        Returns
+        -------
+        Optional[_Section]
+        """
+        for section in self.sections:
+            if section.uid == uid:
+                return section
+        return None
+
+    def contains_section(self, section: _Section) -> bool:
+        """Verify that the part contains a specific section.
+
+        Parameters
+        ----------
+        section : _Section
+
+        Returns
+        -------
+        bool
+        """
+        return section in self.sections
+
+    def add_section(self, section: _Section) -> _Section:
+        """Add a section to the part so that it can be referenced in element definitions.
+
+        Parameters
+        ----------
+        section : :class:`compas_fea2.model.Section`
+
+        Returns
+        -------
+        _Section
+
+        Raises
+        ------
+        TypeError
+            If the section is not a section.
+
+        """
+        if not isinstance(section, _Section):
+            raise TypeError("{!r} is not a section.".format(section))
+
+        self.add_material(section.material)
+        self._sections.add(section)
+        section._registration = self._registration
+        return section
+
+    def add_sections(self, sections: List[_Section]) -> List[_Section]:
+        """Add multiple sections to the part.
+
+        Parameters
+        ----------
+        sections : list[:class:`compas_fea2.model.Section`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Section`]
+        """
+        return [self.add_section(section) for section in sections]
+
+    def find_section_by_name(self, name: str) -> Optional[_Section]:
+        """Find a section with a given name.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        Optional[_Section]
+        """
+        for section in self.sections:
+            if section.name == name:
+                return section
+        return
+
+    # =========================================================================
     #                           Nodes methods
     # =========================================================================
+    def find_node_by_uid(self, uid: str) -> Optional[Node]:
+        """Retrieve a node in the part using its unique identifier.
+
+        Parameters
+        ----------
+        uid : str
+            The node's unique identifier.
+
+        Returns
+        -------
+        Optional[Node]
+            The corresponding node, or None if not found.
+
+        """
+        for node in self.nodes:
+            if node.uid == uid:
+                return node
+        return None
 
     def find_node_by_key(self, key: int) -> Optional[Node]:
         """Retrieve a node in the model using its key.
@@ -933,8 +1172,8 @@ class _Part(FEAData):
         if not isinstance(node, Node):
             raise TypeError("{!r} is not a node.".format(node))
 
-        if self.contains_node(node):
-            if compas_fea2.VERBOSE:
+        if compas_fea2.VERBOSE:
+            if self.contains_node(node):
                 print("NODE SKIPPED: Node {!r} already in part.".format(node))
             return node
 
@@ -945,7 +1184,8 @@ class _Part(FEAData):
                     print("NODE SKIPPED: Part {!r} has already a node at {}.".format(self, node.xyz))
                 return existing_node[0]
 
-        node._key = len(self._nodes)
+        if self.model:
+            self._key = len(self.model.nodes)
         self._nodes.add(node)
         self._gkey_node[node.gkey] = node
         node._registration = self
@@ -1127,13 +1367,16 @@ class _Part(FEAData):
         """
         return element in self.elements
 
-    def add_element(self, element: _Element) -> _Element:
+    def add_element(self, element: _Element, checks=True) -> _Element:
         """Add an element to the part.
 
         Parameters
         ----------
         element : _Element
             The element instance.
+        checks : bool, optional
+            Perform checks before adding the element, by default True.
+            Turned off during copy operations.
 
         Returns
         -------
@@ -1144,31 +1387,21 @@ class _Part(FEAData):
         TypeError
             If the element is not an instance of _Element.
         """
-        if not isinstance(element, _Element):
-            raise TypeError(f"{element!r} is not an element.")
-
-        if self.contains_element(element):
+        if checks and (not isinstance(element, _Element) or self.contains_element(element)):
             if compas_fea2.VERBOSE:
-                print(f"SKIPPED: Element {element!r} already in part.")
+                print(f"SKIPPED: {element!r} is not an element or already in part.")
             return element
 
         self.add_nodes(element.nodes)
-
         for node in element.nodes:
-            if element not in node.connected_elements:
-                node.connected_elements.append(element)
-
-        if hasattr(element, "section") and element.section:
-            self.add_section(element.section)
-
-        if hasattr(element.section, "material") and element.section.material:
-            self.add_material(element.section.material)
-
-        element._key = len(self.elements)
+            node.connected_elements.add(element)
+        self.add_section(element.section)
         self.elements.add(element)
         element._registration = self
+
         if compas_fea2.VERBOSE:
             print(f"Element {element!r} registered to {self!r}.")
+
         return element
 
     def add_elements(self, elements: List[_Element]) -> List[_Element]:
@@ -1538,15 +1771,17 @@ class DeformablePart(_Part):
 
     @property
     def materials(self) -> Set[_Material]:
+        return self._materials
         return set(section.material for section in self.sections if section.material)
 
     @property
     def sections(self) -> Set[_Section]:
+        return self._sections
         return set(element.section for element in self.elements if element.section)
 
     @property
     def releases(self) -> Set[_BeamEndRelease]:
-        pass
+        return self._releases
 
     # =========================================================================
     #                       Constructor methods
@@ -1632,152 +1867,6 @@ class DeformablePart(_Part):
             The part created from the boundary mesh.
         """
         return super().from_boundary_mesh(boundary_mesh, section=section, name=name, **kwargs)
-
-    # =========================================================================
-    #                           Materials methods
-    # =========================================================================
-
-    def find_materials_by_name(self, name: str) -> List[_Material]:
-        """Find all materials with a given name.
-
-        Parameters
-        ----------
-        name : str
-
-        Returns
-        -------
-        List[_Material]
-        """
-        return [material for material in self.materials if material.name == name]
-
-    def contains_material(self, material: _Material) -> bool:
-        """Verify that the part contains a specific material.
-
-        Parameters
-        ----------
-        material : _Material
-
-        Returns
-        -------
-        bool
-        """
-        return material in self.materials
-
-    def add_material(self, material: _Material) -> _Material:
-        """Add a material to the part so that it can be referenced in section and element definitions.
-
-        Parameters
-        ----------
-        material : _Material
-
-        Returns
-        -------
-        _Material
-
-        Raises
-        ------
-        TypeError
-            If the material is not a material.
-        """
-        if not isinstance(material, _Material):
-            raise TypeError(f"{material!r} is not a material.")
-
-        if self.contains_material(material):
-            if compas_fea2.VERBOSE:
-                print(f"SKIPPED: Material {material!r} already in part.")
-            return material
-
-        material._key = len(self._materials)
-        self._materials.add(material)
-        material._registration = self._registration
-        return material
-
-    def add_materials(self, materials: List[_Material]) -> List[_Material]:
-        """Add multiple materials to the part.
-
-        Parameters
-        ----------
-        materials : List[_Material]
-
-        Returns
-        -------
-        List[_Material]
-        """
-        return [self.add_material(material) for material in materials]
-
-    # =========================================================================
-    #                        Sections methods
-    # =========================================================================
-
-    def find_sections_by_name(self, name: str) -> List[_Section]:
-        """Find all sections with a given name.
-
-        Parameters
-        ----------
-        name : str
-
-        Returns
-        -------
-        List[_Section]
-        """
-        return [section for section in self.sections if section.name == name]
-
-    def contains_section(self, section: _Section) -> bool:
-        """Verify that the part contains a specific section.
-
-        Parameters
-        ----------
-        section : _Section
-
-        Returns
-        -------
-        bool
-        """
-        return section in self.sections
-
-    def add_section(self, section: _Section) -> _Section:
-        """Add a section to the part so that it can be referenced in element definitions.
-
-        Parameters
-        ----------
-        section : :class:`compas_fea2.model.Section`
-
-        Returns
-        -------
-        _Section
-
-        Raises
-        ------
-        TypeError
-            If the section is not a section.
-
-        """
-        if not isinstance(section, _Section):
-            raise TypeError("{!r} is not a section.".format(section))
-
-        if self.contains_section(section):
-            if compas_fea2.VERBOSE:
-                print("SKIPPED: Section {!r} already in part.".format(section))
-            return section
-
-        self.add_material(section.material)
-        section._key = len(self.sections)
-        self._sections.add(section)
-        section._registration = self._registration
-        return section
-
-    def add_sections(self, sections: List[_Section]) -> List[_Section]:
-        """Add multiple sections to the part.
-
-        Parameters
-        ----------
-        sections : list[:class:`compas_fea2.model.Section`]
-
-        Returns
-        -------
-        list[:class:`compas_fea2.model.Section`]
-        """
-        return [self.add_section(section) for section in sections]
 
     # =========================================================================
     #                           Releases methods

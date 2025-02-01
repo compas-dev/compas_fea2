@@ -415,6 +415,8 @@ Analysis folder path : {self.path or "N/A"}
             This method is implemented only at the backend level.
 
         """
+        # generate keys
+        self.model.assign_keys()
         raise NotImplementedError("this function is not available for the selected backend")
 
     def analyze(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):

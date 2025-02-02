@@ -471,6 +471,18 @@ class Face(FEAData):
     def nodes_key(self) -> List:
         return [n._part_key for n in self.nodes]
 
+    @property
+    def normal(self) -> Vector:
+        return self.plane.normal
+
+    @property
+    def points(self) -> List["Point"]:
+        return [node.point for node in self.nodes]
+
+    @property
+    def mesh(self) -> Mesh:
+        return Mesh.from_vertices_and_faces(self.points, [[c for c in range(len(self.points))]])
+
 
 class _Element2D(_Element):
     """Element with 2 dimensions."""

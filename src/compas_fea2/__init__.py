@@ -44,11 +44,6 @@ def init_fea2(verbose=False, point_overlap=True, global_tolerance=1, precision=3
     load_dotenv(env_path)
 
 
-def set_precision(precision):
-    global PRECISION
-    PRECISION = precision
-
-
 # pluggable function to be
 def _register_backend():
     """Create the class registry for the plugin.

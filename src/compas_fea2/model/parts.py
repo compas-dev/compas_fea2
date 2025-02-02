@@ -10,6 +10,9 @@ from typing import Union
 
 import networkx as nx
 import matplotlib.pyplot as plt
+import numpy as np
+from compas.topology import connected_components
+from collections import defaultdict
 
 import compas
 from compas.geometry import Box
@@ -220,8 +223,24 @@ class _Part(FEAData):
         return [node.xyz for node in self.nodes]
 
     @property
+    def points_sorted(self) -> List[List[float]]:
+        return [node.xyz for node in sorted(self.nodes, key=lambda x: x.part_key)]
+
+    @property
     def elements(self) -> Set[_Element]:
         return self._elements
+
+    @property
+    def elements_faces(self) -> List[List[List["Face"]]]:
+        return [face for element in self.elements for face in element.faces]
+
+    @property
+    def elements_faces_indices(self) -> List[List[List[float]]]:
+        return [face.nodes_key for face in self.elements_faces]
+
+    @property
+    def elements_connectivity(self) -> List[List[int]]:
+        return [element.nodes_key for element in self.elements]
 
     @property
     def sections(self) -> Set[_Section]:
@@ -260,7 +279,162 @@ class _Part(FEAData):
         return self._discretized_boundary_mesh
 
     @property
+    def outer_faces(self):
+        """Extract the outer faces of the part."""
+        face_count = defaultdict(int)
+        for tet in self.elements_connectivity:
+            faces = [
+                tuple(sorted([tet[0], tet[1], tet[2]])),
+                tuple(sorted([tet[0], tet[1], tet[3]])),
+                tuple(sorted([tet[0], tet[2], tet[3]])),
+                tuple(sorted([tet[1], tet[2], tet[3]])),
+            ]
+            for face in faces:
+                face_count[face] += 1
+        # Extract faces that appear only once (boundary faces)
+        outer_faces = np.array([face for face, count in face_count.items() if count == 1])
+        return outer_faces
+
+    @property
+    def outer_mesh(self):
+        """Extract the outer mesh of the part."""
+        unique_vertices, unique_indices = np.unique(self.outer_faces, return_inverse=True)
+        vertices = np.array(self.points_sorted)[unique_vertices]
+        faces = unique_indices.reshape(self.outer_faces.shape).tolist()
+        return Mesh.from_vertices_and_faces(vertices.tolist(), faces)
+
+    def extract_clustered_planes(self, tol: float = 1e-3, angle_tol: float = 2, verbose: bool = False):
+        """Extract unique planes from the part boundary mesh.
+
+        Parameters
+        ----------
+        tol : float, optional
+            Tolerance for geometric operations, by default 1e-3.
+        angle_tol : float, optional
+            Tolerance for normal vector comparison, by default 2.
+        verbose : bool, optional
+            If ``True`` print the extracted planes, by default False.
+
+        Returns
+        -------
+        list[:class:`compas.geometry.Plane`]
+        """
+        mesh = self.discretized_boundary_mesh.copy()
+        unique_planes = []
+        plane_data = []
+        for fkey in mesh.faces():
+            plane = mesh.face_plane(fkey)
+            normal = np.array(plane.normal)
+            offset = np.dot(normal, plane.point)
+            plane_data.append((normal, offset))
+
+        # Clusterize planes based on angular similarity
+        plane_normals = np.array([p[0] for p in plane_data])
+        plane_offsets = np.array([p[1] for p in plane_data])
+        cos_angle_tol = np.cos(np.radians(angle_tol))
+        for _, (normal, offset) in enumerate(zip(plane_normals, plane_offsets)):
+            is_unique = True
+            for existing_normal, existing_offset in unique_planes:
+                if np.abs(np.dot(normal, existing_normal)) > cos_angle_tol:
+                    if np.abs(offset - existing_offset) < tol:
+                        is_unique = False
+                        break
+            if is_unique:
+                unique_planes.append((normal, offset))
+
+        # Convert unique planes back to COMPAS
+        planes = []
+        for normal, offset in unique_planes:
+            normal_vec = Vector(*normal)
+            point = normal_vec * offset
+            planes.append(Plane(point, normal_vec))
+
+        if verbose:
+            num_unique_planes = len(unique_planes)
+            print(f"Minimum number of planes describing the geometry: {num_unique_planes}")
+            for i, (normal, offset) in enumerate(unique_planes, 1):
+                print(f"Plane {i}: Normal = {normal}, Offset = {offset}")
+
+        return planes
+
+    def extract_submeshes(self, planes: List[Plane], tol: float = 1e-3, normal_tol: float = 2, split=False):
+        """Extract submeshes from the part based on the planes provided.
+
+        Parameters
+        ----------
+        planes : list[:class:`compas.geometry.Plane`]
+            Planes to slice the part.
+        tol : float, optional
+            Tolerance for geometric operations, by default 1e-3.
+        normal_tol : float, optional
+            Tolerance for normal vector comparison, by default 2.
+        split : bool, optional
+            If ``True`` split each submesh into connected components, by default False.
+
+        Returns
+        -------
+        list[:class:`compas.datastructures.Mesh`]
+        """
+
+        def split_into_subsubmeshes(submeshes):
+            """Split each submesh into connected components."""
+            subsubmeshes = []
+
+            for mesh in submeshes:
+                mesh: Mesh
+                components = connected_components(mesh.adjacency)
+
+                for comp in components:
+                    faces = [fkey for fkey in mesh.faces() if set(mesh.face_vertices(fkey)).issubset(comp)]
+                    submesh = Mesh()
+
+                    vkey_map = {
+                        v: submesh.add_vertex(
+                            x=mesh.vertex_attribute(v, "x"),
+                            y=mesh.vertex_attribute(v, "y"),
+                            z=mesh.vertex_attribute(v, "z"),
+                        )
+                        for v in comp
+                    }
+
+                    for fkey in faces:
+                        submesh.add_face([vkey_map[v] for v in mesh.face_vertices(fkey)])
+
+                    subsubmeshes.append(submesh)
+
+            return subsubmeshes
+
+        mesh: Mesh = self.discretized_boundary_mesh
+        submeshes = [Mesh() for _ in planes]
+
+        # Step 1: Compute normalized plane and face normals
+        planes_normals = np.array([plane.normal for plane in planes])
+        faces_normals = np.array([mesh.face_normal(face) for face in mesh.faces()])
+        dot_products = np.dot(planes_normals, faces_normals.T)  # (num_planes, num_faces)
+        plane_indices, face_indices = np.where(abs(dot_products) >= (1 - normal_tol))
+
+        for face_idx in np.unique(face_indices):  # Loop over unique faces
+            face_vertices = mesh.face_vertices(face_idx)
+            face_coords = [mesh.vertex_coordinates(v) for v in face_vertices]
+
+            # Get all planes matching this face's normal
+            matching_planes = [planes[p_idx] for p_idx in plane_indices[face_indices == face_idx]]
+
+            # Step 5: Check if all vertices of the face lie on any of the matching planes
+            for plane in matching_planes:
+                if all(is_point_on_plane(coord, plane, tol) for coord in face_coords):
+                    face_mesh = Mesh.from_vertices_and_faces(face_coords, [[c for c in range(len(face_coords))]])
+                    submeshes[planes.index(plane)].join(face_mesh)
+                    break  # Assign to first valid plane
+        if split:
+            for submesh in submeshes:
+                submesh.weld(precision=2)
+            submeshes = split_into_subsubmeshes(submeshes)
+        return submeshes
+
+    @property
     def bounding_box(self) -> Optional[Box]:
+        # FIXME: add bounding box for lienar elements (bb of the section outer boundary)
         try:
             return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
         except Exception:
@@ -1548,10 +1722,10 @@ class _Part(FEAData):
         from compas.geometry import centroid_points
 
         if element.on_boundary is None:
-            if not self._discretized_boundary_mesh.centroid_face:
-                centroid_face = {}
-                for face in self._discretized_boundary_mesh.faces():
-                    centroid_face[TOL.geometric_key(self._discretized_boundary_mesh.face_centroid(face))] = face
+            # if not self._discretized_boundary_mesh.face_centroid:
+            #     centroid_face = {}
+            #     for face in self._discretized_boundary_mesh.faces():
+            #         centroid_face[TOL.geometric_key(self._discretized_boundary_mesh.face_centroid(face))] = face
             if isinstance(element, _Element3D):
                 if any(TOL.geometric_key(centroid_points([node.xyz for node in face.nodes])) in self._discretized_boundary_mesh.centroid_face for face in element.faces):
                     element.on_boundary = True
@@ -1585,12 +1759,38 @@ class _Part(FEAData):
         -----
         The search is limited to solid elements.
         """
+        # FIXME: review this method
         faces = []
         for element in filter(lambda x: isinstance(x, (_Element2D, _Element3D)) and self.is_element_on_boundary(x), self._elements):
             for face in element.faces:
                 if all(is_point_on_plane(node.xyz, plane) for node in face.nodes):
                     faces.append(face)
         return faces
+
+    def find_boundary_meshes(self, tol) -> List["compas.datastructures.Mesh"]:
+        """Find the boundary meshes of the part.
+
+        Returns
+        -------
+        list[:class:`compas.datastructures.Mesh`]
+            List with the boundary meshes.
+        """
+        planes = self.extract_clustered_planes(verbose=True)
+        submeshes = [Mesh() for _ in planes]
+        for element in self.elements:
+            for face in element.faces:
+                face_points = [node.xyz for node in face.nodes]
+                for i, plane in enumerate(planes):
+                    if all(is_point_on_plane(point, plane, tol=tol) for point in face_points):
+                        submeshes[i].join(face.mesh)
+                        break
+
+        print("Welding the boundary meshes...")
+        from compas_fea2 import PRECISION
+
+        for submesh in submeshes:
+            submesh.weld(PRECISION)
+        return submeshes
 
     # =========================================================================
     #                           Groups methods

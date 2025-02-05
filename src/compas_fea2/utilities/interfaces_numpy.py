@@ -6,125 +6,209 @@ from compas.geometry import Frame, centroid_points, cross_vectors, local_to_worl
 from compas_fea2.model.interfaces import Interface
 
 
-def mesh_mesh_interfaces(a, b, tmax=1e-6, amin=1e-1):
-    """Optimized face-face contact detection between two meshes."""
+def face_bounding_sphere(mesh, face):
+    """
+    Compute a bounding sphere for a given face:
+      center = average of face vertices
+      radius = max distance from center to any vertex
+    """
+    coords = mesh.face_coordinates(face)
+    if not coords:
+        return None, 0.0
+    center = np.mean(coords, axis=0)
+    radius = max(np.linalg.norm(c - center) for c in coords)
+    return center, radius
 
-    # -------------------------------------------------------------------------
-    # 1. Precompute data for B
-    # -------------------------------------------------------------------------
-    # (a) Store B's vertices once as a NumPy array
+
+def mesh_mesh_interfaces(a, b, tmax=1e-6, amin=1e-1):
+    """
+    Face-face contact detection between two meshes, using
+    broad-phase bounding spheres + narrow-phase 2D polygon intersection.
+
+    Parameters
+    ----------
+    a : Mesh (compas.datastructures.Mesh)
+    b : Mesh (compas.datastructures.Mesh)
+    tmax : float
+        Maximum allowable Z-deviation in the local frame.
+    amin : float
+        Minimum area for a valid intersection polygon.
+
+    Returns
+    -------
+    List[Interface]
+        A list of face-face intersection interfaces.
+    """
+
+    # ---------------------------------------------------------------------
+    # 1. Precompute B’s data once
+    # ---------------------------------------------------------------------
     b_xyz = np.array(b.vertices_attributes("xyz"), dtype=float).T
-    # (b) Map each vertex key to index
     k_i = {key: index for index, key in enumerate(b.vertices())}
-    # (c) Precompute face centers for B (used in KDTree)
-    face_centers_b = np.array([b.face_center(f) for f in b.faces()])
-    # (d) Build a KDTree from B’s face centers
+
+    # We also store face center for each face in B (for the KDTree)
+    faces_b = list(b.faces())
+    face_centers_b = []
+    face_radii_b = []
+    face_vertex_indices_b = []
+
+    for fb in faces_b:
+        centerB, radiusB = face_bounding_sphere(b, fb)
+        face_centers_b.append(centerB)  # bounding sphere center
+        face_radii_b.append(radiusB)
+
+        # Store the vertex indices for this face
+        face_vs = b.face_vertices(fb)
+        face_vertex_indices_b.append([k_i[vk] for vk in face_vs])
+
+    face_centers_b = np.array(face_centers_b)
+    face_radii_b = np.array(face_radii_b)
+
+    # Build a KDTree for B’s face centers
     if len(face_centers_b) == 0:
         print("No faces in mesh B. Exiting.")
         return []
-    tree = KDTree(face_centers_b)
-    # (e) Precompute face-to-vertex indices so we don’t call b.face_vertices(f1) repeatedly
-    b_face_vertex_indices = []
-    for f1 in b.faces():
-        vertex_keys = b.face_vertices(f1)
-        b_face_vertex_indices.append([k_i[vk] for vk in vertex_keys])
 
-    # -------------------------------------------------------------------------
-    # 2. Precompute frames for each face in A
-    # -------------------------------------------------------------------------
-    frames = {}
-    for face in a.faces():
-        xyz = np.array(a.face_coordinates(face))
-        # Face center & normal data
-        o = np.mean(xyz, axis=0)
-        w = np.array(a.face_normal(face))
+    # ---------------------------------------------------------------------
+    # 2. Precompute A’s bounding spheres & KDTree
+    # ---------------------------------------------------------------------
+    faces_a = list(a.faces())
+    face_centers_a = []
+    face_radii_a = []
+    frames_a = {}  # local 2D frames for each face in A (for narrow-phase)
 
-        # Compute longest edge direction for stable local frame
-        edge_vectors = xyz[1:] - xyz[:-1]
-        if len(edge_vectors) == 0:
-            continue  # Skip degenerate face
-        longest_edge = max(edge_vectors, key=lambda e: np.linalg.norm(e))
+    for fa in faces_a:
+        centerA, radiusA = face_bounding_sphere(a, fa)
+        face_centers_a.append(centerA)
+        face_radii_a.append(radiusA)
+
+        # Precompute stable local frame for face A
+        coordsA = np.array(a.face_coordinates(fa))
+        if coordsA.shape[0] < 2:
+            continue
+        w = np.array(a.face_normal(fa))
+        edge_vecs = coordsA[1:] - coordsA[:-1]
+        if len(edge_vecs) == 0:
+            continue
+        longest_edge = max(edge_vecs, key=lambda e: np.linalg.norm(e))
 
         u = longest_edge
         v = cross_vectors(w, u)
 
-        frames[face] = Frame(o, u, v)
+        frames_a[fa] = Frame(centerA, u, v)
 
+    face_centers_a = np.array(face_centers_a)
+    face_radii_a = np.array(face_radii_a)
+
+    # KDTree for A’s face centers
+    tree_a = KDTree(face_centers_a)
+
+    # ---------------------------------------------------------------------
+    # 3. Helper: 2D polygon from face in local frame
+    # ---------------------------------------------------------------------
+    def face_polygon_in_frame(mesh, face, frame):
+        """
+        Project a face into `frame`'s local XY, returning a shapely Polygon.
+        """
+        coords_3d = np.array(mesh.face_coordinates(face)).T
+        A = np.array([frame.xaxis, frame.yaxis, frame.zaxis], dtype=float).T
+        o = np.array(frame.point, dtype=float).reshape(-1, 1)
+
+        try:
+            rst = solve(A, coords_3d - o).T  # shape: (n,3), but z ~ 0
+        except np.linalg.LinAlgError:
+            return None
+        # If the Z-values are large, it might fail tmax
+        return Polygon(rst[:, :2])  # polygon in local 2D plane
+
+    # ---------------------------------------------------------------------
+    # 4. Narrow-phase intersection
+    # ---------------------------------------------------------------------
+    def intersect_faces(fa, fb):
+        """
+        Return an Interface if face fa intersects face fb, else None.
+        """
+        # bounding sphere overlap is already assumed; we do a final check for planarity + polygon intersection
+
+        # local frame of face A
+        fA_center, fA_radius = face_bounding_sphere(a, fa)
+        frameA = frames_a.get(fa)
+        if not frameA:
+            return None
+
+        # Build polygon for face A
+        pA = face_polygon_in_frame(a, fa, frameA)
+        if pA is None or pA.is_empty or pA.area < amin:
+            return None
+
+        # Transform all B vertices once for the frame of A:
+        # But we only need face fb’s vertices
+        # Instead, let's do a minimal local transform of face fb
+        coords_3d_b = np.array(b.face_coordinates(fb)).T
+        A_mat = np.array([frameA.xaxis, frameA.yaxis, frameA.zaxis], dtype=float).T
+        o_mat = np.array(frameA.point, dtype=float).reshape(-1, 1)
+
+        try:
+            rst_b = solve(A_mat, coords_3d_b - o_mat).T
+        except np.linalg.LinAlgError:
+            return None
+
+        # Check planarity threshold
+        if any(abs(z) > tmax for x, y, z in rst_b):
+            return None
+
+        pB = Polygon(rst_b[:, :2])
+        if pB.is_empty or pB.area < amin:
+            return None
+
+        if not pA.intersects(pB):
+            return None
+
+        intersection = pA.intersection(pB)
+        if intersection.is_empty:
+            return None
+        area = intersection.area
+        if area < amin:
+            return None
+
+        # Re-project intersection to 3D
+        coords_2d = list(intersection.exterior.coords)[:-1]  # exclude closing point
+        coords_2d_3 = [[x, y, 0.0] for x, y in coords_2d]
+
+        coords_3d = local_to_world_coordinates_numpy(Frame(o_mat.ravel(), A_mat[:, 0], A_mat[:, 1]), coords_2d_3).tolist()
+
+        return Interface(
+            size=area,
+            points=coords_3d,
+            frame=Frame(centroid_points(coords_3d), frameA.xaxis, frameA.yaxis),
+        )
+
+    # ---------------------------------------------------------------------
+    # 5. Broad-Phase + Narrow-Phase
+    # ---------------------------------------------------------------------
     interfaces = []
 
-    # -------------------------------------------------------------------------
-    # 3. Loop over faces in A, transform all of B’s vertices once per face
-    # -------------------------------------------------------------------------
-    for f0, frame in frames.items():
-        origin = frame.point
-        uvw = np.array([frame.xaxis, frame.yaxis, frame.zaxis])
-        A = uvw.astype(float)
-        o = np.array(origin, dtype=float).reshape((-1, 1))
+    # A. For each face in B, find overlapping faces in A
+    for idxB, fb in enumerate(faces_b):
+        centerB = face_centers_b[idxB]
+        radiusB = face_radii_b[idxB]
 
-        # 3a) Transform face A’s coordinates (check for singular)
-        a_xyz0 = np.array(a.face_coordinates(f0), dtype=float).T
-        try:
-            rst0 = solve(A.T, a_xyz0 - o).T
-        except np.linalg.LinAlgError:
-            # Skip if frame is degenerate
-            continue
+        # Search in A’s KDTree
+        candidate_indices = tree_a.query_ball_point(centerB, r=radiusB + np.max(face_radii_a))
 
-        p0 = Polygon(rst0.tolist())
+        for idxA in candidate_indices:
+            centerA = face_centers_a[idxA]
+            radiusA = face_radii_a[idxA]
 
-        # 3b) Transform **all** B vertices in one shot
-        try:
-            rst_b = solve(A.T, b_xyz - o).T  # shape: (N_b_vertices, 3)
-        except np.linalg.LinAlgError:
-            continue
+            # Check actual bounding sphere overlap
+            dist_centers = np.linalg.norm(centerB - centerA)
+            if dist_centers > (radiusA + radiusB):
+                continue  # No overlap in bounding sphere
 
-        # 3c) KD-tree to find nearby faces in B
-        #     Use bounding box diagonal around face in A
-        bbox_diag = np.linalg.norm(np.max(a_xyz0, axis=1) - np.min(a_xyz0, axis=1))
-        search_radius = bbox_diag * 1.0  # Adjust for your geometry
-        nearby_faces = tree.query_ball_point(a.face_center(f0), r=search_radius)
-        if not nearby_faces:
-            continue
-
-        # ---------------------------------------------------------------------
-        # 4. Check each nearby face in B
-        # ---------------------------------------------------------------------
-        for f1 in nearby_faces:
-            # 4a) Sub-index already-transformed coords for B’s face f1
-            indices_f1 = b_face_vertex_indices[f1]
-            rst1 = rst_b[indices_f1]
-
-            # 4b) Check planarity threshold
-            if any(abs(t) > tmax for r, s, t in rst1):
-                continue
-
-            # 4c) Construct shapely Polygon & check area
-            p1 = Polygon(rst1.tolist())
-            if p1.area < amin:
-                continue
-
-            # 4d) Intersection with face A
-            if not p0.intersects(p1):
-                continue
-
-            intersection = p0.intersection(p1)
-            if intersection.is_empty:
-                continue
-            area = intersection.area
-            if area < amin:
-                continue
-
-            # 4e) Build interface from intersection
-            coords_2d = list(intersection.exterior.coords)[:-1]  # remove closing coordinate
-            coords_2d_3 = [[xy[0], xy[1], 0.0] for xy in coords_2d]
-
-            # Re-project intersection to 3D
-            coords_3d = local_to_world_coordinates_numpy(Frame(o, A[0], A[1]), coords_2d_3).tolist()
-
-            new_interface = Interface(
-                size=area,
-                points=coords_3d,
-                frame=Frame(centroid_points(coords_3d), frame.xaxis, frame.yaxis),
-            )
-            interfaces.append(new_interface)
+            # Now do narrow-phase
+            fa = faces_a[idxA]
+            interface = intersect_faces(fa, fb)
+            if interface:
+                interfaces.append(interface)
 
     return interfaces

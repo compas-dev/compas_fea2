@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from compas.topology import connected_components
 from collections import defaultdict
+from itertools import groupby
 
 import compas
 from compas.geometry import Box
@@ -219,6 +220,10 @@ class _Part(FEAData):
         return self._nodes
 
     @property
+    def nodes_sorted(self) -> List[Node]:
+        return sorted(self.nodes, key=lambda x: x.part_key)
+
+    @property
     def points(self) -> List[List[float]]:
         return [node.xyz for node in self.nodes]
 
@@ -231,24 +236,64 @@ class _Part(FEAData):
         return self._elements
 
     @property
+    def elements_sorted(self) -> List[_Element]:
+        return sorted(self.elements, key=lambda x: x.part_key)
+
+    @property
+    def elements_grouped(self) -> Dict[int, List[_Element]]:
+        elements_group = groupby(self.elements, key=lambda x: x.__class__.__base__)
+        return {key: list(group) for key, group in elements_group}
+
+    @property
     def elements_faces(self) -> List[List[List["Face"]]]:
-        return [face for element in self.elements for face in element.faces]
+        return [face for face in element.faces]
+
+    @property
+    def elements_faces_grouped(self) -> Dict[int, List[List["Face"]]]:
+        return {key: [face for face in element.faces] for key, element in self.elements_grouped.items()}
 
     @property
     def elements_faces_indices(self) -> List[List[List[float]]]:
         return [face.nodes_key for face in self.elements_faces]
 
     @property
+    def elements_faces_indices_grouped(self) -> Dict[int, List[List[float]]]:
+        return {key: [face.nodes_key for face in element.faces] for key, element in self.elements_grouped.items()}
+
+    @property
     def elements_connectivity(self) -> List[List[int]]:
         return [element.nodes_key for element in self.elements]
+
+    @property
+    def elements_connectivity_grouped(self) -> Dict[int, List[List[float]]]:
+        elements_group = groupby(self.elements, key=lambda x: x.__class__.__base__)
+        return {key: [element.nodes_key for element in group] for key, group in elements_group}
 
     @property
     def sections(self) -> Set[_Section]:
         return self._sections
 
     @property
+    def sections_sorted(self) -> List[_Section]:
+        return sorted(self.sections, key=lambda x: x.part_key)
+
+    @property
+    def sections_grouped_by_element(self) -> Dict[int, List[_Section]]:
+        sections_group = groupby(self.sections, key=lambda x: x.element)
+        return {key: list(group) for key, group in sections_group}
+
+    @property
     def materials(self) -> Set[_Material]:
         return self._materials
+
+    @property
+    def materials_sorted(self) -> List[_Material]:
+        return sorted(self.materials, key=lambda x: x.part_key)
+
+    @property
+    def materials_grouped_by_section(self) -> Dict[int, List[_Material]]:
+        materials_group = groupby(self.materials, key=lambda x: x.section)
+        return {key: list(group) for key, group in materials_group}
 
     @property
     def releases(self) -> Set[_BeamEndRelease]:
@@ -281,6 +326,7 @@ class _Part(FEAData):
     @property
     def outer_faces(self):
         """Extract the outer faces of the part."""
+        # FIXME: extend to shell elements
         face_count = defaultdict(int)
         for tet in self.elements_connectivity:
             faces = [
@@ -1008,7 +1054,7 @@ class _Part(FEAData):
 
         self.add_material(section.material)
         self._sections.add(section)
-        section._registration = self._registration
+        section._registration = self
         return section
 
     def add_sections(self, sections: List[_Section]) -> List[_Section]:

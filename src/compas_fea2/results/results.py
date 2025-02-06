@@ -92,26 +92,6 @@ class Result(FEAData):
         """
         return abs(self.vector[component] / allowable) if self.vector[component] != 0 else 1
 
-    @classmethod
-    def sqltable_schema(cls):
-        fields = []
-        predefined_fields = [
-            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-            ("key", "INTEGER"),
-            ("step", "TEXT"),
-            ("part", "TEXT"),
-        ]
-
-        fields.extend(predefined_fields)
-
-        for comp in cls._components_names:
-            fields.append((comp, "REAL"))
-        return {
-            "table_name": cls._field_name,
-            "columns": fields,
-        }
-
-
 class NodeResult(Result):
     """NodeResult object.
 

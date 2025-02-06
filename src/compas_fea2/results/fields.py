@@ -14,6 +14,7 @@ from .results import SectionForcesResult  # noqa: F401
 from .results import ShellStressResult  # noqa: F401
 from .results import SolidStressResult  # noqa: F401
 from .results import VelocityResult  # noqa: F401
+from .database import ResultsDatabase  # noqa: F401
 
 
 class FieldResults(FEAData):
@@ -55,45 +56,63 @@ class FieldResults(FEAData):
     FieldResults are registered to a :class:`compas_fea2.problem.Step`.
     """
 
-    def __init__(self, step, results_cls, *args, **kwargs):
+    def __init__(self, step, *args, **kwargs):
         super(FieldResults, self).__init__(*args, **kwargs)
         self._registration = step
-        self._results_cls = results_cls
-        self._field_name = results_cls._field_name
-        self._components_names = results_cls._components_names
-        self._invariants_names = results_cls._invariants_names
-        self._results_func = results_cls._results_func
 
     @property
-    def step(self):
+    def sqltable_schema(self):
+        fields = []
+        predefined_fields = [
+            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+            ("key", "INTEGER"),
+            ("step", "TEXT"),
+            ("part", "TEXT"),
+        ]
+
+        fields.extend(predefined_fields)
+
+        for comp in self.components_names:
+            fields.append((comp, "REAL"))
+        return {
+            "table_name": self.field_name,
+            "columns": fields,
+        }
+
+    @property
+    def step(self) -> "Step":
         return self._registration
 
     @property
-    def problem(self):
+    def problem(self) -> "Problem":
         return self.step.problem
 
     @property
-    def model(self):
+    def model(self) -> "Model":
         return self.problem.model
 
     @property
-    def field_name(self):
-        return self._field_name
+    def field_name(self) -> str:
+        raise NotImplementedError("This method should be implemented in the subclass.")
 
     @property
-    def rdb(self):
+    def results_func(self) -> str:
+        raise NotImplementedError("This method should be implemented in the subclass.")
+
+    @property
+    def rdb(self) -> ResultsDatabase:
         return self.problem.results_db
 
     @property
-    def results(self):
-        return self._get_results_from_db(columns=self._components_names)[self.step]
-    
+    def results(self) -> list:
+        return self._get_results_from_db(columns=self.components_names)[self.step]
+
     @property
-    def results_sorted(self):
+    def results_sorted(self) -> list:
         return sorted(self.results, key=lambda x: x.key)
 
     @property
-    def locations(self):
+    def locations(self) -> Iterable:
         """Return the locations where the field is defined.
 
         Yields
@@ -122,7 +141,7 @@ class FieldResults(FEAData):
             Dictionary of results.
         """
         if not columns:
-            columns = self._components_names
+            columns = self.components_names
 
         if not filters:
             filters = {}
@@ -135,9 +154,9 @@ class FieldResults(FEAData):
             filters["key"] = set([member.key for member in members])
             filters["part"] = set([member.part.name for member in members])
 
-        results_set = self.rdb.get_rows(self._field_name, ["step", "part", "key"] + columns, filters, func)
+        results_set = self.rdb.get_rows(self.field_name, ["step", "part", "key"] + columns, filters, func)
 
-        return self.rdb.to_result(results_set, self._results_cls)
+        return self.rdb.to_result(results_set, results_func=self.results_func, field_name=self.field_name, **kwargs)
 
     def get_result_at(self, location):
         """Get the result for a given location.
@@ -152,7 +171,7 @@ class FieldResults(FEAData):
         object
             The result at the given location.
         """
-        return self._get_results_from_db(members=location, columns=self._components_names)[self.step][0]
+        return self._get_results_from_db(members=location, columns=self.components_names)[self.step][0]
 
     def get_max_result(self, component):
         """Get the result where a component is maximum for a given step.
@@ -168,7 +187,7 @@ class FieldResults(FEAData):
             The appropriate Result object.
         """
         func = ["DESC", component]
-        return self._get_results_from_db(columns=self._components_names, func=func)[self.step][0]
+        return self._get_results_from_db(columns=self.components_names, func=func)[self.step][0]
 
     def get_min_result(self, component):
         """Get the result where a component is minimum for a given step.
@@ -184,7 +203,7 @@ class FieldResults(FEAData):
             The appropriate Result object.
         """
         func = ["ASC", component]
-        return self._get_results_from_db(columns=self._components_names, func=func)[self.step][0]
+        return self._get_results_from_db(columns=self.components_names, func=func)[self.step][0]
 
     def get_limits_component(self, component):
         """Get the result objects with the min and max value of a given component in a step.
@@ -221,13 +240,19 @@ class FieldResults(FEAData):
         dict
             A dictionary of filtered elements and their results.
         """
-        if component not in self._components_names:
-            raise ValueError(f"Component '{component}' is not valid. Choose from {self._components_names}.")
+        if component not in self.components_names:
+            raise ValueError(f"Component '{component}' is not valid. Choose from {self.components_names}.")
 
         for result in self.results:
             component_value = getattr(result, component, None)
             if component_value is not None and (threshold is None or component_value >= threshold):
                 yield result
+
+    def create_sql_table(self, connection, results):
+        """
+        Delegate the table creation to the ResultsDatabase class.
+        """
+        ResultsDatabase.create_table_for_output_class(self, connection, results)
 
 
 # ------------------------------------------------------------------------------
@@ -255,8 +280,21 @@ class NodeFieldResults(FieldResults):
         The function used to find nodes by key.
     """
 
-    def __init__(self, step, results_cls, *args, **kwargs):
-        super(NodeFieldResults, self).__init__(step=step, results_cls=results_cls, *args, **kwargs)
+    def __init__(self, step, *args, **kwargs):
+        super(NodeFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_node_by_key"
+
+    @property
+    def components_names(self):
+        return ["x", "y", "z", "rx", "ry", "rz"]
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def results_func(self):
+        return self._results_func
 
     @property
     def vectors(self):
@@ -351,7 +389,8 @@ class DisplacementFieldResults(NodeFieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(step=step, results_cls=DisplacementResult, *args, **kwargs)
+        super(DisplacementFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "u"
 
 
 class AccelerationFieldResults(NodeFieldResults):
@@ -377,7 +416,8 @@ class AccelerationFieldResults(NodeFieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(AccelerationFieldResults, self).__init__(step=step, results_cls=AccelerationResult, *args, **kwargs)
+        super(AccelerationFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "a"
 
 
 class VelocityFieldResults(NodeFieldResults):
@@ -403,7 +443,8 @@ class VelocityFieldResults(NodeFieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(VelocityFieldResults, self).__init__(step=step, results_cls=VelocityResult, *args, **kwargs)
+        super(VelocityFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "v"
 
 
 class ReactionFieldResults(NodeFieldResults):
@@ -429,15 +470,25 @@ class ReactionFieldResults(NodeFieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(step=step, results_cls=ReactionResult, *args, **kwargs)
+        super(ReactionFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "rf"
 
 
 # ------------------------------------------------------------------------------
 # Section Forces Field Results
 # ------------------------------------------------------------------------------
+class ElementFieldResults(FieldResults):
+    """Element field results.
+
+    This class handles the element field results from a finite element analysis.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(ElementFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
 
 
-class SectionForcesFieldResults(FieldResults):
+class SectionForcesFieldResults(ElementFieldResults):
     """Section forces field results.
 
     This class handles the section forces field results from a finite element analysis.
@@ -460,7 +511,17 @@ class SectionForcesFieldResults(FieldResults):
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(SectionForcesFieldResults, self).__init__(step=step, results_cls=SectionForcesResult, *args, **kwargs)
+        super(SectionForcesFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
+        self._field_name = "sf"
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def results_func(self):
+        return self._results_func
 
     def get_element_forces(self, element):
         """Get the section forces for a given element.
@@ -519,8 +580,7 @@ class SectionForcesFieldResults(FieldResults):
 # ------------------------------------------------------------------------------
 
 
-# TODO Change to PlaneStressResults
-class Stress2DFieldResults(FieldResults):
+class StressFieldResults(ElementFieldResults):
     """Stress field results for 2D elements.
 
     This class handles the stress field results for 2D elements from a finite element analysis.
@@ -534,14 +594,26 @@ class Stress2DFieldResults(FieldResults):
     ----------
     components_names : list of str
         Names of the stress components.
-    results_class : class
-        The class used to instantiate the stress results.
     results_func : str
         The function used to find elements by key.
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(Stress2DFieldResults, self).__init__(step=step, results_cls=ShellStressResult, *args, **kwargs)
+        super(StressFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
+        self._field_name = "s"
+
+    @property
+    def components_names(self):
+        return ["sxx", "syy", "sxy", "szz", "syz", "szx"]
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def results_func(self):
+        return self._results_func
 
     def global_stresses(self, plane="mid"):
         """Stress field in global coordinates.

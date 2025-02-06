@@ -290,3 +290,11 @@ class Node(FEAData):
         problems = self.model.problems
         steps = [problem.step for problem in problems]
         return {step: self.reaction(step) for step in steps}
+
+    @property
+    def results_cls(self):
+        from compas_fea2.results import DisplacementResult
+
+        return {
+            "u": DisplacementResult,
+        }

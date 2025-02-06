@@ -203,7 +203,7 @@ class ResultsDatabase(FEAData):
     #                       FEA2 Methods
     # =========================================================================
 
-    def to_result(self, results_set, results_cls):
+    def to_result(self, results_set, results_func, field_name):
         """
         Convert a set of results in the database to the appropriate
         result object.
@@ -229,10 +229,10 @@ class ResultsDatabase(FEAData):
             part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
             if not part:
                 raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, results_cls._results_func)(r[2])
+            m = getattr(part, results_func)(r[2])
             if not m:
                 raise ValueError(f"Member {r[2]} not in part {part.name}")
-            results[step].append(results_cls(m, *r[3:]))
+            results[step].append(m.results_cls[field_name](m, *r[3:]))
         return results
 
     @staticmethod

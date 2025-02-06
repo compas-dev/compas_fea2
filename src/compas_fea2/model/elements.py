@@ -17,7 +17,12 @@ from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.itertools import pairwise
 
+import compas_fea2
 from compas_fea2.base import FEAData
+
+from compas_fea2.results import Result
+from compas_fea2.results import ShellStressResult
+from compas_fea2.results import SolidStressResult
 
 
 class _Element(FEAData):
@@ -112,6 +117,10 @@ class _Element(FEAData):
     @property
     def model(self) -> "Model":  # noqa: F821
         return self.part.model
+
+    @property
+    def results_cls(self) -> Result:
+        raise NotImplementedError("The results_cls property must be implemented in the subclass")
 
     @property
     def nodes(self) -> List["Node"]:  # noqa: F821
@@ -340,12 +349,12 @@ class _Element1D(_Element):
         r = step.section_forces_field.get_element_forces(self)
         r.plot_stress_distribution(*args, **kwargs)
 
-    def section_forces_result(self, step: "_Step") -> "Result":  # noqa: F821
+    def section_forces_result(self, step: "Step") -> "Result":  # noqa: F821
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         return step.section_forces_field.get_result_at(self)
 
-    def forces(self, step: "_Step") -> "Result":  # noqa: F821
+    def forces(self, step: "Step") -> "Result":  # noqa: F821
         r = self.section_forces_result(step)
         return r.forces
 
@@ -556,9 +565,9 @@ class _Element2D(_Element):
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
     def stress_results(self, step: "_Step") -> "Result":  # noqa: F821
-        if not hasattr(step, "stress2D_field"):
-            raise ValueError("The step does not have a stress2D_field")
-        return step.stress2D_field.get_result_at(self)
+        if not hasattr(step, "stress_field"):
+            raise ValueError("The step does not have a stress field")
+        return step.stress_field.get_result_at(self)
 
 
 class ShellElement(_Element2D):
@@ -580,6 +589,10 @@ class ShellElement(_Element2D):
 
         self._face_indices = {"SPOS": tuple(range(len(nodes))), "SNEG": tuple(range(len(nodes)))[::-1]}
         self._faces = self._construct_faces(self._face_indices)
+
+    @property
+    def results_cls(self) -> Result:
+        return {"s": ShellStressResult}
 
 
 class MembraneElement(_Element2D):
@@ -617,6 +630,10 @@ class _Element3D(_Element):
         self._face_indices = None
         self._faces = None
         self._frame = Frame.worldXY()
+
+    @property
+    def results_cls(self) -> Result:
+        return {"s": SolidStressResult}
 
     @property
     def frame(self) -> Frame:

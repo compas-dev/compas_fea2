@@ -14,7 +14,7 @@ from compas_fea2.problem.loads import Load
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import SectionForcesFieldResults
-from compas_fea2.results import Stress2DFieldResults
+from compas_fea2.results import StressFieldResults
 from compas_fea2.UI import FEA2Viewer
 
 # ==============================================================================
@@ -138,7 +138,7 @@ class Step(FEAData):
 
         Parameters
         ----------
-        output : :class:`compas_fea2.problem._Output`
+        output : :class:`compas_fea2.Results.FieldResults`
             The requested output.
 
         Returns
@@ -151,8 +151,8 @@ class Step(FEAData):
         TypeError
             if the output is not an instance of an :class:`compas_fea2.problem._Output`.
         """
-        output._registration = self
-        self._field_outputs.add(output)
+        # output._registration = self
+        self._field_outputs.add(output(self))
         return output
 
     def add_outputs(self, outputs):
@@ -192,8 +192,8 @@ class Step(FEAData):
         raise NotImplementedError
 
     @property
-    def stress2D_field(self):
-        return Stress2DFieldResults(self)
+    def stress_field(self):
+        return StressFieldResults(self)
 
     @property
     def section_forces_field(self):
@@ -201,27 +201,27 @@ class Step(FEAData):
 
     def __data__(self):
         return {
-            'name': self.name,
-            'field_outputs': list(self._field_outputs),
-            'history_outputs': list(self._history_outputs),
-            'results': self._results,
-            'key': self._key,
-            'patterns': list(self._patterns),
-            'load_cases': list(self._load_cases),
-            'combination': self._combination,
+            "name": self.name,
+            "field_outputs": list(self._field_outputs),
+            "history_outputs": list(self._history_outputs),
+            "results": self._results,
+            "key": self._key,
+            "patterns": list(self._patterns),
+            "load_cases": list(self._load_cases),
+            "combination": self._combination,
         }
 
     @classmethod
     def __from_data__(cls, data):
         obj = cls()
-        obj.name = data['name']
-        obj._field_outputs = set(data['field_outputs'])
-        obj._history_outputs = set(data['history_outputs'])
-        obj._results = data['results']
-        obj._key = data['key']
-        obj._patterns = set(data['patterns'])
-        obj._load_cases = set(data['load_cases'])
-        obj._combination = data['combination']
+        obj.name = data["name"]
+        obj._field_outputs = set(data["field_outputs"])
+        obj._history_outputs = set(data["history_outputs"])
+        obj._results = data["results"]
+        obj._key = data["key"]
+        obj._patterns = set(data["patterns"])
+        obj._load_cases = set(data["load_cases"])
+        obj._combination = data["combination"]
         return obj
 
 
@@ -563,13 +563,13 @@ class GeneralStep(Step):
         viewer.scene.clear()
 
     def show_stress(self, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contour=False, plane="mid", **kwargs):
-        if not self.stress2D_field:
+        if not self.stress_field:
             raise ValueError("No reaction field results available for this step")
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
         viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
         viewer.add_stress2D_field(
-            self.stress2D_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contour=show_contour, plane=plane, **kwargs
+            self.stress_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contour=show_contour, plane=plane, **kwargs
         )
 
         if show_loads:
@@ -579,33 +579,35 @@ class GeneralStep(Step):
 
     def __data__(self):
         data = super(GeneralStep, self).__data__()
-        data.update({
-            'max_increments': self._max_increments,
-            'initial_inc_size': self._initial_inc_size,
-            'min_inc_size': self._min_inc_size,
-            'time': self._time,
-            'nlgeom': self._nlgeom,
-            'modify': self._modify,
-            'restart': self._restart,
-        })
+        data.update(
+            {
+                "max_increments": self._max_increments,
+                "initial_inc_size": self._initial_inc_size,
+                "min_inc_size": self._min_inc_size,
+                "time": self._time,
+                "nlgeom": self._nlgeom,
+                "modify": self._modify,
+                "restart": self._restart,
+            }
+        )
         return data
 
     @classmethod
     def __from_data__(cls, data):
         obj = cls(
-            max_increments=data['max_increments'],
-            initial_inc_size=data['initial_inc_size'],
-            min_inc_size=data['min_inc_size'],
-            time=data['time'],
-            nlgeom=data['nlgeom'],
-            modify=data['modify'],
-            restart=data['restart'],
+            max_increments=data["max_increments"],
+            initial_inc_size=data["initial_inc_size"],
+            min_inc_size=data["min_inc_size"],
+            time=data["time"],
+            nlgeom=data["nlgeom"],
+            modify=data["modify"],
+            restart=data["restart"],
         )
-        obj._field_outputs = set(data['field_outputs'])
-        obj._history_outputs = set(data['history_outputs'])
-        obj._results = data['results']
-        obj._key = data['key']
-        obj._patterns = set(data['patterns'])
-        obj._load_cases = set(data['load_cases'])
-        obj._combination = data['combination']
+        obj._field_outputs = set(data["field_outputs"])
+        obj._history_outputs = set(data["history_outputs"])
+        obj._results = data["results"]
+        obj._key = data["key"]
+        obj._patterns = set(data["patterns"])
+        obj._load_cases = set(data["load_cases"])
+        obj._combination = data["combination"]
         return obj

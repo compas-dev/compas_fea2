@@ -26,37 +26,37 @@ class _Output(FEAData):
 
     """
 
-    def __init__(self, results_cls, **kwargs):
+    def __init__(self, field_results_cls, **kwargs):
         super(_Output, self).__init__(**kwargs)
-        self._results_cls = results_cls
+        self._field_results_cls = field_results_cls
 
     @property
-    def results_cls(self):
-        return self._results_cls
+    def field_results_cls(self):
+        return self._field_results_cls
 
     @property
     def sqltable_schema(self):
-        return self._results_cls.sqltable_schema()
+        return self._field_results_cls.sqltable_schema()
 
     @property
     def results_func(self):
-        return self._results_cls._results_func
+        return self._field_results_cls._results_func
 
     @property
     def results_func_output(self):
-        return self._results_cls._results_func_output
+        return self._field_results_cls._results_func_output
 
     @property
     def field_name(self):
-        return self.results_cls._field_name
+        return self.field_results_cls._field_name
 
     @property
     def components_names(self):
-        return self.results_cls._components_names
+        return self.field_results_cls._components_names
 
     @property
     def invariants_names(self):
-        return self.results_cls._invariants_names
+        return self.field_results_cls._invariants_names
 
     @property
     def step(self):
@@ -81,7 +81,7 @@ class _NodeFieldOutput(_Output):
     """NodeFieldOutput object for requesting the fields at the nodes from the analysis."""
 
     def __init__(self, results_cls, **kwargs):
-        super().__init__(results_cls=results_cls, **kwargs)
+        super().__init__(field_results_cls=results_cls, **kwargs)
 
 
 class DisplacementFieldOutput(_NodeFieldOutput):
@@ -120,14 +120,14 @@ class _ElementFieldOutput(_Output):
     """ElementFieldOutput object for requesting the fields at the elements from the analysis."""
 
     def __init__(self, results_cls, **kwargs):
-        super().__init__(results_cls=results_cls, **kwargs)
+        super().__init__(field_results_cls=results_cls, **kwargs)
 
 
-class Stress2DFieldOutput(_ElementFieldOutput):
+class StressFieldOutput(_ElementFieldOutput):
     """StressFieldOutput object for requesting the stresses at the elements from the analysis."""
 
     def __init__(self, **kwargs):
-        super(Stress2DFieldOutput, self).__init__(ShellStressResult, **kwargs)
+        super(StressFieldOutput, self).__init__(ShellStressResult, **kwargs)
 
 
 class SectionForcesFieldOutput(_ElementFieldOutput):

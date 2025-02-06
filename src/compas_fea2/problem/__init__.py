@@ -37,16 +37,6 @@ from .steps import (
     DirectCyclicStep,
 )
 
-from .outputs import (
-    DisplacementFieldOutput,
-    AccelerationFieldOutput,
-    VelocityFieldOutput,
-    Stress2DFieldOutput,
-    SectionForcesFieldOutput,
-    # StrainFieldOutput,
-    ReactionFieldOutput,
-    HistoryOutput,
-)
 
 __all__ = [
     "Problem",

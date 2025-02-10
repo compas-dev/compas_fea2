@@ -63,7 +63,7 @@ class Model(FEAData):
         Some description of the model.
     author : Optional[str]
         The name of the author of the model.
-    parts : Set[:class:`compas_fea2.model.DeformablePart`]
+    parts : Set[:class:`compas_fea2.model.Part`]
         The parts of the model.
     bcs : dict
         Dictionary with the boundary conditions of the model and the nodes where
@@ -280,12 +280,8 @@ class Model(FEAData):
 
     @property
     def bounding_box(self) -> Optional[Box]:
-        try:
-            bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
-            return Box.from_bounding_box(bb)
-        except Exception:
-            print("WARNING: bounding box not generated")
-            return None
+        bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
+        return Box.from_bounding_box(bb)
 
     @property
     def center(self) -> Point:
@@ -423,7 +419,7 @@ class Model(FEAData):
 
         Returns
         -------
-        :class:`compas_fea2.model.DeformablePart`
+        :class:`compas_fea2.model.Part`
 
         """
         for part in self.parts:
@@ -437,7 +433,7 @@ class Model(FEAData):
 
         Parameters
         ----------
-        part : :class:`compas_fea2.model.DeformablePart`
+        part : :class:`compas_fea2.model.Part`
 
         Returns
         -------
@@ -446,8 +442,26 @@ class Model(FEAData):
         """
         return part in self.parts
 
+    def add_new_part(self, **kwargs) -> _Part:
+        """Add a new Part to the Model.
+
+        Parameters
+        ----------
+        name : str
+            The name of the part.
+        **kwargs : dict
+            Additional keyword arguments.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Part`
+
+        """
+        part = _Part(**kwargs)
+        return self.add_part(part)
+
     def add_part(self, part: _Part) -> _Part:
-        """Adds a DeformablePart to the Model.
+        """Adds a Part to the Model.
 
         Parameters
         ----------
@@ -483,11 +497,11 @@ class Model(FEAData):
 
         Parameters
         ----------
-        parts : list[:class:`compas_fea2.model.DeformablePart`]
+        parts : list[:class:`compas_fea2.model.Part`]
 
         Returns
         -------
-        list[:class:`compas_fea2.model.DeformablePart`]
+        list[:class:`compas_fea2.model.Part`]
 
         """
         return [self.add_part(part) for part in parts]
@@ -497,12 +511,12 @@ class Model(FEAData):
 
         Parameters
         ----------
-        part : :class:`compas_fea2.model.DeformablePart`
+        part : :class:`compas_fea2.model._Part`
             The part to copy.
 
         Returns
         -------
-        :class:`compas_fea2.model.DeformablePart`
+        :class:`compas_fea2.model._Part`
             The copied part.
 
         """
@@ -515,7 +529,7 @@ class Model(FEAData):
 
         Parameters
         ----------
-        parts : list[:class:`compas_fea2.model.DeformablePart`]
+        parts : list[:class:`compas_fea2.model.Part`]
             The part to array.
         n : int
             The number of times to array the part.
@@ -524,7 +538,7 @@ class Model(FEAData):
 
         Returns
         -------
-        list[:class:`compas_fea2.model.DeformablePart`]
+        list[:class:`compas_fea2.model.Part`]
             The list of arrayed parts.
 
         """

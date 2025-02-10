@@ -1,19 +1,19 @@
 import unittest
 from compas_fea2.model.model import Model
-from compas_fea2.model.parts import DeformablePart
+from compas_fea2.model.parts import Part
 from compas_fea2.problem import Problem
 
 
 class TestModel(unittest.TestCase):
     def test_add_part(self):
         model = Model()
-        part = DeformablePart()
+        part = Part()
         model.add_part(part)
         self.assertIn(part, model.parts)
 
     def test_find_part_by_name(self):
         model = Model()
-        part = DeformablePart(name="test_part")
+        part = Part(name="test_part")
         model.add_part(part)
         found_part = model.find_part_by_name("test_part")
         self.assertEqual(found_part, part)

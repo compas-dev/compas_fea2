@@ -18,7 +18,7 @@ class _Group(FEAData):
 
     Attributes
     ----------
-    registration : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`
+    registration : :class:`compas_fea2.model.Part` | :class:`compas_fea2.model.Model`
         The parent object where the members of the Group belong.
 
     """
@@ -211,8 +211,8 @@ class ElementsGroup(_Group):
 
     Notes
     -----
-    ElementsGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as
-    its elements and can belong to only one DeformablePart.
+    ElementsGroups are registered to the same :class:`compas_fea2.model.Part` as
+    its elements and can belong to only one Part.
 
     """
 
@@ -305,7 +305,7 @@ class FacesGroup(_Group):
 
     Notes
     -----
-    FacesGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as the
+    FacesGroups are registered to the same :class:`compas_fea2.model.Part` as the
     elements of its faces.
 
     """
@@ -386,12 +386,12 @@ class PartsGroup(_Group):
     name : str, optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    parts : list[:class:`compas_fea2.model.DeformablePart`]
+    parts : list[:class:`compas_fea2.model.Part`]
         The parts belonging to the group.
 
     Attributes
     ----------
-    parts : list[:class:`compas_fea2.model.DeformablePart`]
+    parts : list[:class:`compas_fea2.model.Part`]
         The parts belonging to the group.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.

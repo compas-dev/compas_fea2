@@ -92,6 +92,7 @@ class Result(FEAData):
         """
         return abs(self.vector[component] / allowable) if self.vector[component] != 0 else 1
 
+
 class NodeResult(Result):
     """NodeResult object.
 
@@ -659,14 +660,14 @@ class StressResult(ElementResult):
     StressResults are registered to a :class:`compas_fea2.model._Element
     """
 
-    _field_name = "s"
-    _results_func = "find_element_by_key"
-    _results_func_output = "find_element_by_inputkey"
-    _components_names = ["s11", "s22", "s12", "s13", "s22", "s23", "s33"]
-    _invariants_names = ["magnitude"]
+    # _field_name = "s"
+    # _results_func = "find_element_by_key"
+    # _results_func_output = "find_element_by_inputkey"
+    # _components_names = ["s11", "s22", "s33", "s12", "s23", "s13"]
+    # _invariants_names = ["magnitude"]
 
     def __init__(self, element, *, s11, s12, s13, s22, s23, s33, **kwargs):
-        super(StressResult, self).__init__(element, **kwargs)
+        super().__init__(element, **kwargs)
         self._s11 = s11
         self._s12 = s12
         self._s13 = s13
@@ -674,8 +675,11 @@ class StressResult(ElementResult):
         self._s23 = s23
         self._s33 = s33
 
+        # Define stress tensor in local coordinates
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
-        self._components = {f"S{i+1}{j+1}": self._local_stress[i][j] for j in range(len(self._local_stress[0])) for i in range(len(self._local_stress))}
+
+        # Store individual components
+        self._components = {f"s{i+1}{j+1}": self._local_stress[i, j] for i in range(3) for j in range(3)}
 
     @property
     def s11(self):
@@ -702,16 +706,6 @@ class StressResult(ElementResult):
         return self._s33
 
     @property
-    def local_stress(self):
-        # In local coordinates
-        return self._local_stress
-
-    @property
-    def global_stress(self):
-        # In global coordinates
-        return self.transform_stress_tensor(self._local_stress, Frame.worldXY())
-
-    @property
     def global_strain(self):
         if not isinstance(self.location.section.material, ElasticIsotropic):
             raise NotImplementedError("This function is currently only available for Elastic Isotropic materials")
@@ -735,37 +729,49 @@ class StressResult(ElementResult):
         return strain_tensor
 
     @property
-    # First invariant
+    def local_stress(self):
+        """Stress tensor in local coordinates."""
+        return self._local_stress
+
+    @property
+    def global_stress(self):
+        """Stress tensor transformed to global coordinates."""
+        return self.transform_stress_tensor(self._local_stress, Frame.worldXY())
+
+    @property
     def I1(self):
+        """First invariant (trace of stress tensor)."""
         return np.trace(self.global_stress)
 
     @property
-    # Second invariant
     def I2(self):
+        """Second invariant of the stress tensor."""
         return 0.5 * (self.I1**2 - np.trace(np.dot(self.global_stress, self.global_stress)))
 
     @property
-    # Third invariant
     def I3(self):
+        """Third invariant (determinant of stress tensor)."""
         return np.linalg.det(self.global_stress)
 
     @property
-    # Second invariant of the deviatoric stress tensor: J2
     def J2(self):
+        """Second invariant of deviatoric stress tensor."""
         return 0.5 * np.trace(np.dot(self.deviatoric_stress, self.deviatoric_stress))
 
     @property
-    # Third invariant of the deviatoric stress tensor: J3
     def J3(self):
+        """Third invariant of deviatoric stress tensor."""
         return np.linalg.det(self.deviatoric_stress)
 
     @property
     def hydrostatic_stress(self):
-        return self.I1 / len(self.global_stress)
+        """Mean (hydrostatic) stress."""
+        return self.I1 / 3
 
     @property
     def deviatoric_stress(self):
-        return self.global_stress - np.eye(len(self.global_stress)) * self.hydrostatic_stress
+        """Deviatoric stress tensor."""
+        return self.global_stress - np.eye(3) * self.hydrostatic_stress
 
     @property
     # Octahedral normal and shear stresses
@@ -775,56 +781,84 @@ class StressResult(ElementResult):
         return sigma_oct, tau_oct
 
     @property
-    def principal_stresses_values(self):
-        eigenvalues = np.linalg.eigvalsh(self.global_stress)
-        sorted_indices = np.argsort(eigenvalues)
-        return eigenvalues[sorted_indices]
-
-    @property
     def principal_stresses(self):
         return zip(self.principal_stresses_values, self.principal_stresses_vectors)
 
     @property
     def smax(self):
-        return max(self.principal_stresses_values)
+        """Maximum principal stress."""
+        return self.principal_stresses_values[-1]
 
     @property
     def smin(self):
-        return min(self.principal_stresses_values)
+        """Minimum principal stress."""
+        return self.principal_stresses_values[0]
 
     @property
     def smid(self):
-        if len(self.principal_stresses_values) == 3:
-            return [x for x in self.principal_stresses_values if x != self.smin and x != self.smax]
-        else:
-            return None
+        """Middle principal stress (works for both 2D & 3D)."""
+        return np.median(self.principal_stresses_values)
+
+    @property
+    def principal_stresses_values(self):
+        """Sorted principal stresses (eigenvalues of stress tensor)."""
+        eigvals = np.linalg.eigvalsh(self.global_stress)
+        return np.sort(eigvals)  # Ensures correct order
 
     @property
     def principal_stresses_vectors(self):
-        eigenvalues, eigenvectors = np.linalg.eig(self.global_stress)
-        # Sort the eigenvalues/vectors from low to high
-        sorted_indices = np.argsort(eigenvalues)
-        eigenvectors = eigenvectors[:, sorted_indices]
-        eigenvalues = eigenvalues[sorted_indices]
-        return [Vector(*eigenvectors[:, i].tolist()) * abs(eigenvalues[i]) for i in range(len(eigenvalues))]
+        """Sorted eigenvectors of the stress tensor."""
+        eigvals, eigvecs = np.linalg.eigh(self.global_stress)
+        sorted_indices = np.argsort(eigvals)
+        sorted_eigvecs = eigvecs[:, sorted_indices]
+
+        # Ensure consistent orientation using reference vector
+        ref_vector = np.array([1.0, 0.0, 0.0])
+        alignment_check = np.einsum("ij,j->i", sorted_eigvecs, ref_vector)
+        flip_mask = alignment_check < 0
+        sorted_eigvecs[:, flip_mask] *= -1
+
+        return [Vector(*sorted_eigvecs[:, i]) * abs(eigvals[sorted_indices][i]) for i in range(3)]
 
     @property
     def von_mises_stress(self):
-        return np.sqrt(self.J2 * 3)
+        """Von Mises stress."""
+        return np.sqrt(3 * self.J2)
 
     @property
     def tresca_stress(self):
+        """Tresca stress (max absolute shear stress)."""
         return max(abs(self.principal_stresses_values - np.roll(self.principal_stresses_values, -1)))
 
     @property
     def safety_factor_max(self, allowable_stress):
-        # Simple safety factor analysis based on maximum principal stress
-        return abs(allowable_stress / self.smax) if self.smax != 0 else 1
+        """Maximum safety factor based on principal stress."""
+        return abs(allowable_stress / self.smax) if self.smax != 0 else np.inf
 
     @property
     def safety_factor_min(self, allowable_stress):
-        # Simple safety factor analysis based on maximum principal stress
-        return abs(allowable_stress / self.smin) if self.smin != 0 else 1
+        """Minimum safety factor based on principal stress."""
+        return abs(allowable_stress / self.smin) if self.smin != 0 else np.inf
+
+    def transform_stress_tensor(self, tensor, new_frame):
+        """
+        Transforms the stress tensor to a new reference frame.
+
+        Parameters:
+        -----------
+        new_frame : `compas.geometry.Frame`
+            The new reference frame.
+
+        Returns:
+        --------
+        np.ndarray
+            Transformed stress tensor.
+        """
+        R = Transformation.from_change_of_basis(self.element.frame, new_frame)
+        R_matrix = np.array(R.matrix)[:3, :3]
+
+        # Efficient transformation using einsum
+        return np.einsum("ij,jk,lk->il", R_matrix, tensor, R_matrix)
 
     @property
     def strain_energy_density(self):
@@ -843,26 +877,6 @@ class StressResult(ElementResult):
         U = 0.5 * np.tensordot(s, e)
 
         return U
-
-    def transform_stress_tensor(self, tensor, new_frame):
-        """
-        Transforms the stress tensor to a new frame using the provided 3x3 rotation matrix.
-        This function works for both 2D and 3D stress tensors.
-
-        Parameters:
-        -----------
-        new_frame : `class`:"compas.geometry.Frame"
-            The new refernce Frame
-
-        Returns:
-        numpy array
-            Transformed stress tensor as a numpy array of the same dimension as the input.
-        """
-
-        R = Transformation.from_change_of_basis(self.element.frame, new_frame)
-        R_matrix = np.array(R.matrix)[:3, :3]
-
-        return R_matrix @ tensor @ R_matrix.T
 
     def stress_along_direction(self, direction):
         """

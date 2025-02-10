@@ -1,9 +1,127 @@
 import sqlite3
-
+import h5py
+import numpy as np
+import json
 from compas_fea2.base import FEAData
 
 
 class ResultsDatabase(FEAData):
+
+    def __init__(self, problem, **kwargs):
+        super().__init__(**kwargs)
+        self._registration = problem
+
+    @property
+    def problem(self):
+        return self._registration
+
+    @property
+    def model(self):
+        return self.problem.model
+
+    @classmethod
+    def sqlite(cls, problem, **kwargs):
+        return SQLiteResultsDatabase(problem, **kwargs)
+
+    @classmethod
+    def hdf5(cls, problem, **kwargs):
+        return HDF5ResultsDatabase(problem, **kwargs)
+
+    @classmethod
+    def json(cls, problem, **kwargs):
+        return JSONResultsDatabase(problem, **kwargs)
+
+
+class JSONResultsDatabase(ResultsDatabase):
+    def __init__(self, problem, **kwargs):
+        super().__init__(problem=problem, **kwargs)
+
+
+class HDF5ResultsDatabase(ResultsDatabase):
+    """HDF5 wrapper class to store and access FEA results."""
+
+    def __init__(self, problem, **kwargs):
+        super().__init__(problem, **kwargs)
+
+    def save_to_hdf5(self, key, data):
+        """Save data to the HDF5 database."""
+        with h5py.File(self.db_path, "a") as hdf5_file:
+            group = hdf5_file.require_group(key)
+            for k, v in data.items():
+                if isinstance(v, (int, float, np.ndarray)):
+                    group.create_dataset(k, data=np.array(v))
+                elif isinstance(v, list) and all(isinstance(i, (int, float)) for i in v):
+                    group.create_dataset(k, data=np.array(v, dtype="f8"))
+                elif isinstance(v, list) and all(isinstance(i, FEAData) for i in v):
+                    sub_group = group.require_group(k)
+                    for i, obj in enumerate(v):
+                        obj.save_to_hdf5(self.db_path, f"{key}/{k}/element_{i}")
+                elif isinstance(v, dict):
+                    group.attrs[k] = json.dumps(v)
+                elif isinstance(v, str):
+                    group.attrs[k] = v
+                else:
+                    print(f"⚠️ Warning: Skipping {k} (Unsupported type {type(v)})")
+
+    def load_from_hdf5(self, key):
+        """Load data from the HDF5 database."""
+        data = {}
+        with h5py.File(self.db_path, "r") as hdf5_file:
+            if key not in hdf5_file:
+                raise KeyError(f"Key '{key}' not found in HDF5 database.")
+            group = hdf5_file[key]
+            for k in group.keys():
+                if k.startswith("element_"):
+                    data.setdefault("elements", {})[int(k.split("_")[-1])] = self.load_from_hdf5(f"{key}/{k}")
+                else:
+                    dataset = group[k][:]
+                    data[k] = dataset.tolist() if dataset.shape != () else dataset.item()
+            for k, v in group.attrs.items():
+                if isinstance(v, str) and (v.startswith("[") or v.startswith("{")):
+                    try:
+                        data[k] = json.loads(v)
+                    except json.JSONDecodeError:
+                        data[k] = v
+                else:
+                    data[k] = v
+        return data
+
+    def extract_field(self, field_name):
+        """Extract a specific field group from the HDF5 database."""
+        with h5py.File(self.db_path, "r") as hdf5_file:
+            if field_name in hdf5_file:
+                return {key: hdf5_file[field_name][key][:] for key in hdf5_file[field_name].keys()}
+            else:
+                raise KeyError(f"Field '{field_name}' not found in HDF5 database.")
+
+    def get_max_value(self, field_name):
+        """Get the maximum value of a specific field."""
+        with h5py.File(self.db_path, "r") as hdf5_file:
+            if field_name in hdf5_file:
+                return max([np.max(hdf5_file[field_name][key][:]) for key in hdf5_file[field_name].keys()])
+            else:
+                raise KeyError(f"Field '{field_name}' not found in HDF5 database.")
+
+    def get_results_at_element(self, element_id):
+        """Retrieve results for a specific element."""
+        with h5py.File(self.db_path, "r") as hdf5_file:
+            element_key = f"elements/element_{element_id}"
+            if element_key in hdf5_file:
+                return {key: hdf5_file[element_key][key][:] for key in hdf5_file[element_key].keys()}
+            else:
+                raise KeyError(f"Element '{element_id}' not found in HDF5 database.")
+
+    def get_results_at_node(self, node_id):
+        """Retrieve results for a specific node."""
+        with h5py.File(self.db_path, "r") as hdf5_file:
+            node_key = f"nodes/node_{node_id}"
+            if node_key in hdf5_file:
+                return {key: hdf5_file[node_key][key][:] for key in hdf5_file[node_key].keys()}
+            else:
+                raise KeyError(f"Node '{node_id}' not found in HDF5 database.")
+
+
+class SQLiteResultsDatabase(ResultsDatabase):
     """sqlite3 wrapper class to access the SQLite database."""
 
     def __init__(self, problem, **kwargs):
@@ -15,19 +133,11 @@ class ResultsDatabase(FEAData):
         problem : object
             The problem instance containing the database path.
         """
-        super(ResultsDatabase, self).__init__(**kwargs)
-        self._registration = problem
+        super().__init__(problem=problem, **kwargs)
+
         self.db_uri = problem.path_db
         self.connection = self.db_connection()
         self.cursor = self.connection.cursor()
-
-    @property
-    def problem(self):
-        return self._registration
-
-    @property
-    def model(self):
-        return self.problem.model
 
     def db_connection(self, remove=False):
         """
@@ -224,19 +334,18 @@ class ResultsDatabase(FEAData):
         """
         results = {}
         for r in results_set:
-            step = self.problem.find_step_by_name(r[0])
+            step = self.problem.find_step_by_name(r.pop("step"))
             results.setdefault(step, [])
-            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
+            part = self.model.find_part_by_name(r.pop("part")) or self.model.find_part_by_name(r.pop("part"), casefold=True)
             if not part:
-                raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, results_func)(r[2])
+                raise ValueError("Part not in model")
+            m = getattr(part, results_func)(r.pop("key"))
             if not m:
-                raise ValueError(f"Member {r[2]} not in part {part.name}")
-            results[step].append(m.results_cls[field_name](m, *r[3:]))
+                raise ValueError(f"Member not in part {part.name}")
+            results[step].append(m.results_cls[field_name](m, **r))
         return results
 
-    @staticmethod
-    def create_table_for_output_class(output_cls, connection, results):
+    def create_table_for_output_class(self, output_cls, results):
         """
         Reads the table schema from `output_cls.get_table_schema()`
         and creates the table in the given database.
@@ -250,7 +359,7 @@ class ResultsDatabase(FEAData):
         results : list of tuples
             Data to be inserted into the table.
         """
-        cursor = connection.cursor()
+        cursor = self.connection.cursor()
 
         schema = output_cls.sqltable_schema
         table_name = schema["table_name"]
@@ -260,7 +369,7 @@ class ResultsDatabase(FEAData):
         columns_sql_str = ", ".join([f"{col_name} {col_def}" for col_name, col_def in columns_info])
         create_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns_sql_str})"
         cursor.execute(create_sql)
-        connection.commit()
+        self.connection.commit()
 
         # Insert data into the table:
         insert_columns = [col_name for col_name, col_def in columns_info if "PRIMARY KEY" not in col_def.upper()]
@@ -268,4 +377,4 @@ class ResultsDatabase(FEAData):
         placeholders_str = ", ".join(["?"] * len(insert_columns))
         sql = f"INSERT INTO {table_name} ({col_names_str}) VALUES ({placeholders_str})"
         cursor.executemany(sql, results)
-        connection.commit()
+        self.connection.commit()

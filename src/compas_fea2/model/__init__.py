@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from .model import Model
 from .parts import (
-    DeformablePart,
+    Part,
     RigidPart,
 )
 from .nodes import Node
@@ -114,9 +114,13 @@ from .ics import (
     InitialStressField,
 )
 
+from .interfaces import (
+    Interface,
+)
+
 __all__ = [
     "Model",
-    "DeformablePart",
+    "Part",
     "RigidPart",
     "Node",
     "_Element",

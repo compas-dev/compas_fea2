@@ -76,7 +76,7 @@ class FEA2ModelObject(GroupObject):
         line_color = kwargs.get("line_color", color_palette["edges"])
         show_faces = kwargs.get("show_faces", True)
         show_lines = kwargs.get("show_lines", False)
-        show_nodes = kwargs.get("show_nodes", False)
+        show_nodes = kwargs.get("show_nodes", True)
         opacity = kwargs.get("opacity", 1.0)
         part_meshes = []
         if show_parts:

@@ -1,5 +1,5 @@
 from compas_fea2.model import Model
-from compas_fea2.model import DeformablePart
+from compas_fea2.model import Part
 from compas_fea2.model import Node
 from compas_fea2.model import BeamElement
 from compas_fea2.model import RectangularSection
@@ -8,7 +8,7 @@ from compas_fea2.model import Steel
 
 n1 = Node(xyz=[0, 0, 0])
 n2 = Node(xyz=[1, 0, 0])
-p1 = DeformablePart()
+p1 = Part()
 mdl1 = Model()
 
 mat = Steel.S355()

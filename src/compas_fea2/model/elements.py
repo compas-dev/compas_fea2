@@ -49,7 +49,7 @@ class _Element(FEAData):
         Section object.
     implementation : str
         The name of the backend model implementation of the element.
-    part : :class:`compas_fea2.model.DeformablePart` | None
+    part : :class:`compas_fea2.model.Part` | None
         The parent part.
     on_boundary : bool | None
         `True` if the element has a face on the boundary mesh of the part, `False`
@@ -206,6 +206,10 @@ class _Element(FEAData):
     def nodal_mass(self) -> List[float]:
         return [self.mass / len(self.nodes)] * 3
 
+    @property
+    def ndim(self) -> int:
+        return self._ndim
+
 
 class MassElement(_Element):
     """A 0D element for concentrated point mass."""
@@ -227,6 +231,7 @@ class _Element0D(_Element):
     def __init__(self, nodes: List["Node"], frame: Frame, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
         super().__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
+        self._ndim = 0
 
     @property
     def __data__(self):
@@ -294,6 +299,7 @@ class _Element1D(_Element):
         if not frame:
             raise ValueError("Frame is required for 1D elements")
         self._frame = frame if isinstance(frame, Frame) else Frame(nodes[0].point, Vector(*frame), Vector.from_start_end(nodes[0].point, nodes[-1].point))
+        self._ndim = 1
 
     @property
     def __data__(self):
@@ -518,6 +524,7 @@ class _Element2D(_Element):
 
         self._faces = None
         self._face_indices = None
+        self._ndim = 2
 
     @property
     def nodes(self) -> List["Node"]:  # noqa: F821
@@ -630,6 +637,7 @@ class _Element3D(_Element):
         self._face_indices = None
         self._faces = None
         self._frame = Frame.worldXY()
+        self._ndim = 3
 
     @property
     def results_cls(self) -> Result:
@@ -657,8 +665,22 @@ class _Element3D(_Element):
         return self._faces
 
     @property
+    def edges(self):
+        seen = set()
+        for _, face in self._faces.itmes():
+            for u, v in pairwise(face + face[:1]):
+                if (u, v) not in seen:
+                    seen.add((u, v))
+                    seen.add((v, u))
+                    yield u, v
+
+    @property
+    def centroid(self) -> "Point":
+        return centroid_points([node.point for node in self.nodes])
+
+    @property
     def reference_point(self) -> "Point":
-        return centroid_points([face.centroid for face in self.faces])
+        return self._reference_point or self.centroid
 
     def _construct_faces(self, face_indices: Dict[str, Tuple[int]]) -> List[Face]:
         """Construct the face-nodes dictionary.

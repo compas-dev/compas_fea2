@@ -7,12 +7,15 @@ import uuid
 from abc import abstractmethod
 from typing import Iterable
 from copy import deepcopy
+import numpy as np
+import h5py
 
 from compas.data import Data
 
 import compas_fea2
 
 from .utilities._utils import to_dimensionless
+import json
 
 
 class DimensionlessMeta(type):
@@ -143,7 +146,10 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         obj = getattr(importlib.import_module(".".join([*module_info[:-1]])), "_" + name)
         return obj(**kwargs)
 
-    def copy(self, cls=None, copy_guid=False, copy_name=False):  # type: (...) -> D
+    # ==========================================================================
+    # Copy and Serialization
+    # ==========================================================================
+    def copy(self, cls=None, copy_guid=False, copy_name=False):
         """Make an independent copy of the data object.
 
         Parameters
@@ -168,3 +174,74 @@ class FEAData(Data, metaclass=DimensionlessMeta):
         if copy_guid:
             obj._guid = self.guid
         return obj  # type: ignore
+
+    def to_hdf5(self, hdf5_path, group_name, mode="w"):
+        """
+        Save the object to an HDF5 file using the __data__ property.
+        """
+        with h5py.File(hdf5_path, mode) as hdf5_file:  # "a" mode to append data
+            group = hdf5_file.require_group(f"{group_name}/{self.uid}")  # Create a group for this object
+
+            for key, value in self.to_hdf5_data().items():
+                if isinstance(value, (list, np.ndarray)):
+                    group.create_dataset(key, data=value)
+                else:
+                    group.attrs[key] = json.dumps(value)
+                
+
+    @classmethod
+    def from_hdf5(
+        cls,
+        hdf5_path,
+        group_name,
+        uid,
+    ):
+        """
+        Load an object from an HDF5 file using the __data__ property.
+        """
+        with h5py.File(hdf5_path, "r") as hdf5_file:
+            group = hdf5_file[f"{group_name}/{uid}"]
+            data = {}
+
+            # Load datasets (numerical values)
+            for key in group.keys():
+                dataset = group[key][:]
+                data[key] = dataset.tolist() if dataset.shape != () else dataset.item()
+
+            # Load attributes (strings, dictionaries, JSON lists)
+            for key, value in group.attrs.items():
+                if isinstance(value, str):
+                    # Convert "None" back to NoneType
+                    if value == "None":
+                        data[key] = None
+                    # Convert JSON back to Python objects
+                    elif value.startswith("[") or value.startswith("{"):
+                        try:
+                            data[key] = json.loads(value)
+                        except json.JSONDecodeError:
+                            data[key] = value  # Keep it as a string if JSON parsing fails
+                    else:
+                        data[key] = value
+                else:
+                    data[key] = value
+
+        if not hasattr(cls, "__from_data__"):
+            raise NotImplementedError(f"{cls.__name__} does not implement the '__from_data__' method.")
+        return cls.__from_data__(data)
+
+    def to_json(self, filepath, pretty=False, compact=False, minimal=False):
+        """Convert an object to its native data representation and save it to a JSON file.
+
+        Parameters
+        ----------
+        filepath : str
+            The path to the JSON file.
+        pretty : bool, optional
+            If True, format the output with newlines and indentation.
+        compact : bool, optional
+            If True, format the output without any whitespace.
+        minimal : bool, optional
+            If True, exclude the GUID from the JSON output.
+
+        """
+        json.dump(self.__data__, open(filepath, "w"), indent=4)

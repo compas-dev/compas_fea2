@@ -76,6 +76,7 @@ class Problem(FEAData):
         self._path_db = None
         self._steps = set()
         self._steps_order = []  # TODO make steps a list
+        self._rdb = None
 
     @property
     def model(self) -> "Model":  # noqa: F821
@@ -99,8 +100,14 @@ class Problem(FEAData):
         return self._path_db
 
     @property
-    def results_db(self) -> ResultsDatabase:
-        return ResultsDatabase(self)
+    def rdb(self) -> ResultsDatabase:
+        return self._rdb or ResultsDatabase.sqlite(self)
+
+    @rdb.setter
+    def rdb(self, value: str):
+        if not hasattr(ResultsDatabase, value):
+            raise ValueError("Invalid ResultsDatabase option")
+        self._rdb = getattr(ResultsDatabase, value)(self)
 
     @property
     def steps_order(self) -> List[Step]:
@@ -389,7 +396,9 @@ Analysis folder path : {self.path or "N/A"}
                     print(f"WARNING: The directory {self.path} already exists and contains FEA2 results. " "Duplicated results expected.")
             else:
                 # Folder exists but is not an FEA2 results folder
-                if erase_data:
+                if erase_data and erase_data == "armageddon":
+                    _delete_folder_contents(self.path)
+                else:
                     user_input = (
                         input(f"ATTENTION! The directory {self.path} already exists and might NOT be a FEA2 results folder. " "Do you want to DELETE its contents? (y/N): ")
                         .strip()
@@ -422,6 +431,26 @@ Analysis folder path : {self.path or "N/A"}
     def analyze(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):
         """American spelling of the analyse method"""
         self.analyse(path=path, *args, **kwargs)
+
+    def extract_results(self, path: Optional[Union[Path, str]] = None, erase_data: Optional[Union[bool, str]] = False, *args, **kwargs):
+        """Extract the results from the native database system to SQLite.
+
+        Parameters
+        ----------
+        path : :class:`pathlib.Path`
+            Path to the folder where the results are saved.
+        erase_data : bool, optional
+            If True, automatically erase the folder's contents if it is recognized as an FEA2 results folder. Default is False.
+            Pass "armageddon" to erase all contents of the folder without checking.
+
+        Raises
+        ------
+        NotImplementedError
+            This method is implemented only at the backend level.
+        """
+        if path:
+            self.path = path
+        raise NotImplementedError("this function is not available for the selected backend")
 
     def analyse_and_extract(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):
         """Analyse the problem in the selected backend and extract the results

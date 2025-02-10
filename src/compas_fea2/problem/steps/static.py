@@ -94,24 +94,24 @@ class StaticStep(GeneralStep):
 
     def __data__(self):
         return {
-            'max_increments': self.max_increments,
-            'initial_inc_size': self.initial_inc_size,
-            'min_inc_size': self.min_inc_size,
-            'time': self.time,
-            'nlgeom': self.nlgeom,
-            'modify': self.modify,
+            "max_increments": self.max_increments,
+            "initial_inc_size": self.initial_inc_size,
+            "min_inc_size": self.min_inc_size,
+            "time": self.time,
+            "nlgeom": self.nlgeom,
+            "modify": self.modify,
             # Add other attributes as needed
         }
 
     @classmethod
     def __from_data__(cls, data):
         return cls(
-            max_increments=data['max_increments'],
-            initial_inc_size=data['initial_inc_size'],
-            min_inc_size=data['min_inc_size'],
-            time=data['time'],
-            nlgeom=data['nlgeom'],
-            modify=data['modify'],
+            max_increments=data["max_increments"],
+            initial_inc_size=data["initial_inc_size"],
+            min_inc_size=data["min_inc_size"],
+            time=data["time"],
+            nlgeom=data["nlgeom"],
+            modify=data["modify"],
             # Add other attributes as needed
         )
 
@@ -197,7 +197,7 @@ class StaticStep(GeneralStep):
         name : str
             name of the point load
         part : str
-            name of the :class:`compas_fea2.problem.DeformablePart` where the load is applied
+            name of the :class:`compas_fea2.problem.Part` where the load is applied
         where : int or list(int), obj
             It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
             applied.
@@ -238,7 +238,7 @@ class StaticStep(GeneralStep):
         name : str
             name of the point load
         part : str
-            name of the :class:`compas_fea2.problem.DeformablePart` where the load is applied
+            name of the :class:`compas_fea2.problem.Part` where the load is applied
         where : int or list(int), obj
             It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
             applied.
@@ -297,16 +297,16 @@ class StaticStep(GeneralStep):
         --------
         Be careful to assign a value of *g* consistent with the units in your
         model!
-
         """
-        from compas_fea2.problem import ConcentratedLoad
+        pass
+        # from compas_fea2.problem import ConcentratedLoad
 
-        for part in parts:
-            part.compute_nodal_masses()
-            for node in part.nodes:
-                self.add_load_pattern(
-                    NodeLoadPattern(load=ConcentratedLoad(x=node.mass[0] * g * x, y=node.mass[1] * g * y, z=node.mass[2] * g * z), nodes=[node], load_case=load_case, **kwargs)
-                )
+        # for part in parts:
+        #     part.compute_nodal_masses()
+        #     for node in part.nodes:
+        #         self.add_load_pattern(
+        #             NodeLoadPattern(load=ConcentratedLoad(x=node.mass[0] * g * x, y=node.mass[1] * g * y, z=node.mass[2] * g * z), nodes=[node], load_case=load_case, **kwargs)
+        #         )
 
         # from compas_fea2.problem import GravityLoad
 

@@ -14,6 +14,8 @@ import numpy as np
 from compas.topology import connected_components
 from collections import defaultdict
 from itertools import groupby
+import h5py
+import json
 
 import compas
 from compas.geometry import Box
@@ -105,6 +107,8 @@ class _Part(FEAData):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._ndm = None
+        self._ndf = None
         self._graph = nx.DiGraph()
         self._nodes: Set[Node] = set()
         self._gkey_node: Dict[str, Node] = {}
@@ -119,14 +123,13 @@ class _Part(FEAData):
 
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
-        self._bounding_box = None
 
     @property
     def __data__(self):
         return {
             "class": self.__class__.__base__,
-            "ndm": self.ndm or None,
-            "ndf": self.ndf or None,
+            "ndm": self._ndm or None,
+            "ndf": self._ndf or None,
             "nodes": [node.__data__ for node in self.nodes],
             "gkey_node": {key: node.__data__ for key, node in self.gkey_node.items()},
             "materials": [material.__data__ for material in self.materials],
@@ -136,9 +139,11 @@ class _Part(FEAData):
             "nodesgroups": [group.__data__ for group in self.nodesgroups],
             "elementsgroups": [group.__data__ for group in self.elementsgroups],
             "facesgroups": [group.__data__ for group in self.facesgroups],
-            "boundary_mesh": self.boundary_mesh.__data__ if self.boundary_mesh else None,
-            "discretized_boundary_mesh": self.discretized_boundary_mesh.__data__ if self.discretized_boundary_mesh else None,
         }
+
+    def to_hdf5_data(self, hdf5_file, mode="a"):
+        group = hdf5_file.require_group(f"model/{"parts"}/{self.uid}")  # Create a group for this object
+        group.attrs["class"] = str(self.__data__["class"])
 
     @classmethod
     def __from_data__(cls, data):
@@ -246,7 +251,7 @@ class _Part(FEAData):
 
     @property
     def elements_faces(self) -> List[List[List["Face"]]]:
-        return [face for face in element.faces]
+        return [face for element in self.elements for face in element.faces]
 
     @property
     def elements_faces_grouped(self) -> Dict[int, List[List["Face"]]]:
@@ -268,6 +273,10 @@ class _Part(FEAData):
     def elements_connectivity_grouped(self) -> Dict[int, List[List[float]]]:
         elements_group = groupby(self.elements, key=lambda x: x.__class__.__base__)
         return {key: [element.nodes_key for element in group] for key, group in elements_group}
+
+    @property
+    def elements_centroids(self) -> List[List[float]]:
+        return [element.centroid for element in self.elements]
 
     @property
     def sections(self) -> Set[_Section]:
@@ -479,13 +488,17 @@ class _Part(FEAData):
         return submeshes
 
     @property
+    def all_interfaces(self):
+        from compas_fea2.model.interfaces import Interface
+
+        planes = self.extract_clustered_planes(tol=1, angle_tol=2)
+        submeshes = self.extract_submeshes(planes, tol=1, normal_tol=2, split=True)
+        return [Interface(mesh=mesh) for mesh in submeshes]
+
+    @property
     def bounding_box(self) -> Optional[Box]:
         # FIXME: add bounding box for lienar elements (bb of the section outer boundary)
-        try:
-            return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
-        except Exception:
-            print("WARNING: BoundingBox not generated")
-            return None
+        return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
 
     @property
     def center(self) -> Point:
@@ -630,7 +643,7 @@ class _Part(FEAData):
 
     @classmethod
     def shell_from_compas_mesh(cls, mesh, section: ShellSection, name: Optional[str] = None, **kwargs) -> "_Part":
-        """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
+        """Creates a Part object from a :class:`compas.datastructures.Mesh`.
 
         To each face of the mesh is assigned a :class:`compas_fea2.model.ShellElement`
         object. Currently, the same section is applied to all the elements.
@@ -638,7 +651,7 @@ class _Part(FEAData):
         Parameters
         ----------
         mesh : :class:`compas.datastructures.Mesh`
-            Mesh to convert to a DeformablePart.
+            Mesh to convert to a Part.
         section : :class:`compas_fea2.model.ShellSection`
             Shell section assigned to each face.
         name : str, optional
@@ -711,7 +724,7 @@ class _Part(FEAData):
         --------
         >>> mat = ElasticIsotropic(name="mat", E=29000, v=0.17, density=2.5e-9)
         >>> sec = SolidSection("mysec", mat)
-        >>> part = DeformablePart.from_gmsh("part_gmsh", gmshModel, sec)
+        >>> part = Part.from_gmsh("part_gmsh", gmshModel, sec)
 
         """
         import numpy as np
@@ -778,7 +791,7 @@ class _Part(FEAData):
         Parameters
         ----------
         boundary_mesh : :class:`compas.datastructures.Mesh`
-            Boundary envelope of the DeformablePart.
+            Boundary envelope of the Part.
         name : str, optional
             Name of the new Part.
         target_mesh_size : float, optional
@@ -825,7 +838,8 @@ class _Part(FEAData):
 
         part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
 
-        del gmshModel
+        if gmshModel:
+            del gmshModel
 
         return part
 
@@ -883,7 +897,8 @@ class _Part(FEAData):
 
         part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
 
-        del gmshModel
+        if gmshModel:
+            del gmshModel
         print("Part created.")
 
         return part
@@ -1413,7 +1428,7 @@ class _Part(FEAData):
 
         Examples
         --------
-        >>> part = DeformablePart()
+        >>> part = Part()
         >>> node = Node(xyz=(1.0, 2.0, 3.0))
         >>> part.add_node(node)
 
@@ -1451,7 +1466,7 @@ class _Part(FEAData):
 
         Examples
         --------
-        >>> part = DeformablePart()
+        >>> part = Part()
         >>> node1 = Node([1.0, 2.0, 3.0])
         >>> node2 = Node([3.0, 4.0, 5.0])
         >>> node3 = Node([3.0, 4.0, 5.0])
@@ -1497,7 +1512,7 @@ class _Part(FEAData):
             self.remove_node(node)
 
     def is_node_on_boundary(self, node: Node, precision: Optional[float] = None) -> bool:
-        """Check if a node is on the boundary mesh of the DeformablePart.
+        """Check if a node is on the boundary mesh of the Part.
 
         Parameters
         ----------
@@ -2076,7 +2091,7 @@ class _Part(FEAData):
         v.show()
 
 
-class DeformablePart(_Part):
+class Part(_Part):
     """Deformable part."""
 
     __doc__ += _Part.__doc__
@@ -2114,7 +2129,7 @@ class DeformablePart(_Part):
     # =========================================================================
     @classmethod
     def frame_from_compas_mesh(cls, mesh: "compas.datastructures.Mesh", section: "compas_fea2.model.BeamSection", name: Optional[str] = None, **kwargs) -> "_Part":
-        """Creates a DeformablePart object from a :class:`compas.datastructures.Mesh`.
+        """Creates a Part object from a :class:`compas.datastructures.Mesh`.
 
         To each edge of the mesh is assigned a :class:`compas_fea2.model.BeamElement`.
         Currently, the same section is applied to all the elements.
@@ -2122,7 +2137,7 @@ class DeformablePart(_Part):
         Parameters
         ----------
         mesh : :class:`compas.datastructures.Mesh`
-            Mesh to convert to a DeformablePart.
+            Mesh to convert to a Part.
         section : :class:`compas_fea2.model.BeamSection`
             Section to assign to the frame elements.
         name : str, optional
@@ -2181,7 +2196,7 @@ class DeformablePart(_Part):
         Parameters
         ----------
         boundary_mesh : :class:`compas.datastructures.Mesh`
-            Boundary envelope of the DeformablePart.
+            Boundary envelope of the Part.
         section : Union[compas_fea2.model.SolidSection, compas_fea2.model.ShellSection]
             Section to assign to the elements.
         name : str, optional

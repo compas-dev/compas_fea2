@@ -503,6 +503,12 @@ octave = 1 ; logbase: 2; logfactor: 1 = oct
 neper = 1 ; logbase: 2.71828182845904523536028747135266249775724709369995; logfactor: 0.5 = Np
 # neper = 1 ; logbase: eulers_number; logfactor: 0.5 = Np
 
+# Environmental
+kilogram_CO2e = [mass] = kgCO2e = kg_CO2e
+gram_CO2e = 1e-3 * kilogram_CO2e = gCO2e = g_CO2e
+tonne_CO2e = 1e3 * kilogram_CO2e = tCO2e = t_CO2e
+pound_CO2e = 0.45359237 * kilogram_CO2e = lbCO2e = lb_CO2e
+
 #### UNIT GROUPS ####
 # Mostly for length, area, volume, mass, force
 # (customary or specialized units)

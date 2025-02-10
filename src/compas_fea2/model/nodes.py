@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+import numpy as np
 
 from compas.geometry import Point
 from compas.tolerance import TOL
@@ -294,7 +295,9 @@ class Node(FEAData):
     @property
     def results_cls(self):
         from compas_fea2.results import DisplacementResult
+        from compas_fea2.results import ReactionResult
 
         return {
             "u": DisplacementResult,
+            "rf": ReactionResult,
         }

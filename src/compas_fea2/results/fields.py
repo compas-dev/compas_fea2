@@ -15,6 +15,7 @@ from .results import ShellStressResult  # noqa: F401
 from .results import SolidStressResult  # noqa: F401
 from .results import VelocityResult  # noqa: F401
 from .database import ResultsDatabase  # noqa: F401
+from itertools import groupby
 
 
 class FieldResults(FEAData):
@@ -101,7 +102,7 @@ class FieldResults(FEAData):
 
     @property
     def rdb(self) -> ResultsDatabase:
-        return self.problem.results_db
+        return self.problem.rdb
 
     @property
     def results(self) -> list:
@@ -154,7 +155,10 @@ class FieldResults(FEAData):
             filters["key"] = set([member.key for member in members])
             filters["part"] = set([member.part.name for member in members])
 
-        results_set = self.rdb.get_rows(self.field_name, ["step", "part", "key"] + columns, filters, func)
+        all_columns = ["step", "part", "key"] + columns
+
+        results_set = self.rdb.get_rows(self.field_name, all_columns, filters, func)
+        results_set = [{k: v for k, v in zip(all_columns, row)} for row in results_set]
 
         return self.rdb.to_result(results_set, results_func=self.results_func, field_name=self.field_name, **kwargs)
 
@@ -248,12 +252,6 @@ class FieldResults(FEAData):
             if component_value is not None and (threshold is None or component_value >= threshold):
                 yield result
 
-    def create_sql_table(self, connection, results):
-        """
-        Delegate the table creation to the ResultsDatabase class.
-        """
-        ResultsDatabase.create_table_for_output_class(self, connection, results)
-
 
 # ------------------------------------------------------------------------------
 # Node Field Results
@@ -345,7 +343,7 @@ class NodeFieldResults(FieldResults):
         resultant_vector = sum_vectors(vectors)
         moment_vector = sum_vectors(cross_vectors(Vector(*loc) - resultant_location, vec) for loc, vec in zip(locations, vectors))
 
-        return resultant_vector, moment_vector, resultant_location
+        return Vector(*resultant_vector), Vector(*moment_vector), resultant_location
 
     def components_vectors(self, components):
         """Return a vector representing the given components."""
@@ -581,31 +579,22 @@ class SectionForcesFieldResults(ElementFieldResults):
 
 
 class StressFieldResults(ElementFieldResults):
-    """Stress field results for 2D elements.
-
-    This class handles the stress field results for 2D elements from a finite element analysis.
-
-    Parameters
-    ----------
-    step : :class:`compas_fea2.problem._Step`
-        The analysis step where the results are defined.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the stress components.
-    results_func : str
-        The function used to find elements by key.
+    """
+    Generalized stress field results for both 2D and 3D elements.
+    Stress results are computed in the global coordinate system.
+    Operations on stress results are performed on the field level to improve efficiency.
     """
 
     def __init__(self, step, *args, **kwargs):
-        super(StressFieldResults, self).__init__(step=step, *args, **kwargs)
+        super().__init__(step=step, *args, **kwargs)
         self._results_func = "find_element_by_key"
         self._field_name = "s"
 
     @property
-    def components_names(self):
-        return ["sxx", "syy", "sxy", "szz", "syz", "szx"]
+    def grouped_results(self):
+        """Groups elements by their dimensionality (2D or 3D) correctly."""
+        sorted_results = sorted(self.results, key=lambda r: r.element.ndim)  # Ensure sorting before grouping
+        return {k: list(v) for k, v in groupby(sorted_results, key=lambda r: r.element.ndim)}
 
     @property
     def field_name(self):
@@ -615,87 +604,185 @@ class StressFieldResults(ElementFieldResults):
     def results_func(self):
         return self._results_func
 
+    @property
+    def components_names(self):
+        return ["s11", "s22", "s33", "s12", "s23", "s13"]
+
+    @property
+    def invariants_names(self):
+        return ["von_mises_stress", "principal_stress_min", "principal_stress_mid", "principal_stress_max"]
+
+    def get_component_value(self, component, **kwargs):
+        """Return the value of the selected component."""
+        if component not in self.components_names:
+            for result in self.results:
+                yield getattr(result, component, None)
+        else:
+            raise (ValueError(f"Component '{component}' is not valid. Choose from {self.components_names}."))
+
+    def get_invariant_value(self, invariant, **kwargs):
+        """Return the value of the selected invariant."""
+        if invariant not in self.invariants_names:
+            for result in self.results:
+                yield getattr(result, invariant, None)
+        else:
+            raise (ValueError(f"Invariant '{invariant}' is not valid. Choose from {self.invariants_names}."))
+
     def global_stresses(self, plane="mid"):
-        """Stress field in global coordinates.
-
-        Parameters
-        ----------
-        plane : str, optional
-            The plane to retrieve the stress field for, by default "mid".
-
-        Returns
-        -------
-        numpy.ndarray
-            The stress tensor defined at each location of the field in global coordinates.
-        """
-        n_locations = len(self.results)
+        """Compute stress tensors in the global coordinate system."""
         new_frame = Frame.worldXY()
+        transformed_tensors = []
 
-        # Initialize tensors and rotation_matrices arrays
-        tensors = np.zeros((n_locations, 3, 3))
-        rotation_matrices = np.zeros((n_locations, 3, 3))
+        grouped_results = self.grouped_results
 
-        from_change_of_basis = Transformation.from_change_of_basis
-        np_array = np.array
+        # Process 2D elements
+        if 2 in grouped_results:
+            results_2d = grouped_results[2]
+            local_stresses_2d = np.array([r.plane_results(plane).local_stress for r in results_2d])
 
-        for i, r in enumerate(self.results):
-            r = r.plane_results(plane)
-            tensors[i] = r.local_stress
-            rotation_matrices[i] = np_array(from_change_of_basis(r.element.frame, new_frame).matrix)[:3, :3]
+            # Zero out out-of-plane components
+            local_stresses_2d[:, 2, :] = 0.0
+            local_stresses_2d[:, :, 2] = 0.0
 
-        # Perform the tensor transformation using numpy's batch matrix multiplication
-        transformed_tensors = rotation_matrices @ tensors @ rotation_matrices.transpose(0, 2, 1)
+            # Compute transformation matrices
+            rotation_matrices_2d = np.array([Transformation.from_change_of_basis(r.element.frame, new_frame).matrix[:3, :3] for r in results_2d])
 
-        return transformed_tensors
+            # Apply tensor transformation
+            transformed_tensors.append(np.einsum("nij,njk,nlk->nil", rotation_matrices_2d, local_stresses_2d, rotation_matrices_2d))
 
-    def principal_components(self, plane):
-        """Compute the eigenvalues and eigenvectors of the stress field at each location.
+        # Process 3D elements
+        if 3 in grouped_results:
+            results_3d = grouped_results[3]
+            local_stresses_3d = np.array([r.local_stress for r in results_3d])
+            transformed_tensors.append(local_stresses_3d)
 
-        Parameters
-        ----------
-        plane : str
-            The plane to retrieve the principal components for.
+        if not transformed_tensors:
+            return np.empty((0, 3, 3))
+
+        return np.concatenate(transformed_tensors, axis=0)
+
+    def average_stress_at_nodes(self, component="von_mises_stress"):
+        """
+        Compute the nodal average of von Mises stress using efficient NumPy operations.
 
         Returns
         -------
-        tuple(numpy.ndarray, numpy.ndarray)
-            The eigenvalues and the eigenvectors, not ordered.
+        np.ndarray
+            (N_nodes,) array containing the averaged von Mises stress per node.
         """
-        return np.linalg.eig(self.global_stresses(plane))
+        # Compute von Mises stress at element level
+        element_von_mises = self.von_mises_stress()  # Shape: (N_elements,)
 
-    def principal_components_vectors(self, plane):
-        """Compute the principal components of the stress field at each location as vectors.
+        # Extract all node indices in a single operation
+        node_indices = np.array([n.key for e in self.results for n in e.element.nodes])  # Shape (N_total_entries,)
 
-        Parameters
-        ----------
-        plane : str
-            The plane to retrieve the principal components for.
+        # Repeat von Mises stress for each node in the corresponding element
+        repeated_von_mises = np.repeat(element_von_mises, repeats=[len(e.element.nodes) for e in self.results], axis=0)  # Shape (N_total_entries,)
 
-        Yields
-        ------
-        list(:class:`compas.geometry.Vector`)
-            List with the vectors corresponding to max, mid and min principal components.
+        # Get the number of unique nodes
+        max_node_index = node_indices.max() + 1
+
+        # Initialize accumulators for sum and count
+        nodal_stress_sum = np.zeros(max_node_index)  # Summed von Mises stresses
+        nodal_counts = np.zeros(max_node_index)  # Count occurrences per node
+
+        # Accumulate stresses and counts at each node
+        np.add.at(nodal_stress_sum, node_indices, repeated_von_mises)
+        np.add.at(nodal_counts, node_indices, 1)
+
+        # Prevent division by zero
+        nodal_counts[nodal_counts == 0] = 1
+
+        # Compute final nodal von Mises stress average
+        nodal_avg_von_mises = nodal_stress_sum / nodal_counts
+
+        return nodal_avg_von_mises  # Shape: (N_nodes,)
+
+    def average_stress_tensor_at_nodes(self):
         """
-        eigenvalues, eigenvectors = self.principal_components(plane=plane)
-        sorted_indices = np.argsort(eigenvalues, axis=1)
-        sorted_eigenvalues = np.take_along_axis(eigenvalues, sorted_indices, axis=1)
-        sorted_eigenvectors = np.take_along_axis(eigenvectors, sorted_indices[:, np.newaxis, :], axis=2)
-        for i in range(eigenvalues.shape[0]):
-            yield [Vector(*sorted_eigenvectors[i, :, j]) * sorted_eigenvalues[i, j] for j in range(eigenvalues.shape[1])]
+        Compute the nodal average of the full stress tensor.
 
-    def vonmieses(self, plane):
-        """Compute the von Mises stress field at each location.
-
-        Parameters
-        ----------
-        plane : str
-            The plane to retrieve the von Mises stress for.
-
-        Yields
-        ------
-        float
-            The von Mises stress at each location.
+        Returns
+        -------
+        np.ndarray
+            (N_nodes, 3, 3) array containing the averaged stress tensor per node.
         """
-        for r in self.plane_results:
-            r = r.plane_results(plane)
-            yield r.von_mises_stress
+        # Compute global stress tensor at the element level
+        element_stresses = self.global_stresses()  # Shape: (N_elements, 3, 3)
+
+        # Extract all node indices in a single operation
+        node_indices = np.array([n.key for e in self.results for n in e.element.nodes])  # Shape (N_total_entries,)
+
+        # Repeat stress tensors for each node in the corresponding element
+        repeated_stresses = np.repeat(element_stresses, repeats=[len(e.element.nodes) for e in self.results], axis=0)  # Shape (N_total_entries, 3, 3)
+
+        # Get the number of unique nodes
+        max_node_index = node_indices.max() + 1
+
+        # Initialize accumulators for sum and count
+        nodal_stress_sum = np.zeros((max_node_index, 3, 3))  # Summed stress tensors
+        nodal_counts = np.zeros((max_node_index, 1, 1))  # Count occurrences per node
+
+        # Accumulate stresses and counts at each node
+        np.add.at(nodal_stress_sum, node_indices, repeated_stresses)
+        np.add.at(nodal_counts, node_indices, 1)
+
+        # Prevent division by zero
+        nodal_counts[nodal_counts == 0] = 1
+
+        # Compute final nodal stress tensor average
+        nodal_avg_stress = nodal_stress_sum / nodal_counts
+
+        return nodal_avg_stress  # Shape: (N_nodes, 3, 3)
+
+    def von_mises_stress(self, plane="mid"):
+        """
+        Compute von Mises stress for 2D and 3D elements.
+
+        Returns
+        -------
+        np.ndarray
+            Von Mises stress values per element.
+        """
+        stress_tensors = self.global_stresses(plane)  # Shape: (N_elements, 3, 3)
+
+        # Extract stress components
+        S11, S22, S33 = stress_tensors[:, 0, 0], stress_tensors[:, 1, 1], stress_tensors[:, 2, 2]
+        S12, S23, S13 = stress_tensors[:, 0, 1], stress_tensors[:, 1, 2], stress_tensors[:, 0, 2]
+
+        # Compute von Mises stress
+        sigma_vm = np.sqrt(0.5 * ((S11 - S22) ** 2 + (S22 - S33) ** 2 + (S33 - S11) ** 2 + 6 * (S12**2 + S23**2 + S13**2)))
+
+        return sigma_vm
+
+    def principal_components(self, plane="mid"):
+        """
+        Compute sorted principal stresses and directions.
+
+        Returns
+        -------
+        tuple
+            (principal_stresses, principal_directions)
+            - `principal_stresses`: (N_elements, 3) array containing sorted principal stresses.
+            - `principal_directions`: (N_elements, 3, 3) array containing corresponding eigenvectors.
+        """
+        stress_tensors = self.global_stresses(plane)  # Shape: (N_elements, 3, 3)
+
+        # **✅ Ensure symmetry (avoiding numerical instability)**
+        stress_tensors = 0.5 * (stress_tensors + np.transpose(stress_tensors, (0, 2, 1)))
+
+        # **✅ Compute eigenvalues and eigenvectors (batch operation)**
+        eigvals, eigvecs = np.linalg.eigh(stress_tensors)
+
+        # **✅ Sort eigenvalues & corresponding eigenvectors (by absolute magnitude)**
+        sorted_indices = np.argsort(np.abs(eigvals), axis=1)  # Sort based on absolute value
+        sorted_eigvals = np.take_along_axis(eigvals, sorted_indices, axis=1)
+        sorted_eigvecs = np.take_along_axis(eigvecs, sorted_indices[:, :, None], axis=2)
+
+        # **✅ Ensure consistent orientation**
+        reference_vector = np.array([1.0, 0.0, 0.0])  # Arbitrary reference vector
+        alignment_check = np.einsum("nij,j->ni", sorted_eigvecs, reference_vector)  # Dot product with reference
+        flip_mask = alignment_check < 0  # Identify vectors needing flipping
+        sorted_eigvecs[flip_mask] *= -1  # Flip incorrectly oriented eigenvectors
+
+        return sorted_eigvals, sorted_eigvecs

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import itertools
 from typing import Iterable
 
@@ -25,7 +21,7 @@ class Pattern(FEAData):
     distribution : list
         List of :class:`compas_fea2.model.Node` or :class:`compas_fea2.model._Element`. The
         application in space of the load/displacement.
-    load_case : object, optional
+    load_case : str, optional
         The load case to which this pattern belongs.
     axes : str, optional
         Coordinate system for the load components. Default is "global".
@@ -48,21 +44,20 @@ class Pattern(FEAData):
 
     def __init__(
         self,
-        load,
+        loads,
         distribution,
         load_case=None,
         **kwargs,
     ):
         super(Pattern, self).__init__(**kwargs)
-        self._load = load
         self._distribution = distribution if isinstance(distribution, Iterable) else [distribution]
-        self._nodes = None
+        self._loads = loads if isinstance(loads, Iterable) else [loads * (1 / len(self._distribution))] * len(self._distribution)
         self.load_case = load_case
         self._registration = None
 
     @property
-    def load(self):
-        return self._load
+    def loads(self):
+        return self._loads
 
     @property
     def distribution(self):
@@ -70,7 +65,10 @@ class Pattern(FEAData):
 
     @property
     def step(self):
-        return self._registration
+        if self._registration:
+            return self._registration
+        else:
+            raise ValueError("Register the Pattern to a Step first.")
 
     @property
     def problem(self):
@@ -113,19 +111,20 @@ class NodeLoadPattern(Pattern):
     """
 
     def __init__(self, load, nodes, load_case=None, **kwargs):
-        super(NodeLoadPattern, self).__init__(load=load, distribution=nodes, load_case=load_case, **kwargs)
+        super(NodeLoadPattern, self).__init__(loads=load, distribution=nodes, load_case=load_case, **kwargs)
 
     @property
     def nodes(self):
         return self._distribution
 
     @property
-    def load(self):
-        return self._load
+    def loads(self):
+        return self._loads
 
     @property
     def node_load(self):
-        return zip(self.nodes, [self.load] * len(self.nodes))
+        """Return a list of tuples with the nodes and the assigned load."""
+        return zip(self.nodes, self.loads)
 
 
 class PointLoadPattern(NodeLoadPattern):
@@ -143,11 +142,12 @@ class PointLoadPattern(NodeLoadPattern):
         Tolerance for finding the closest nodes to the points.
     """
 
-    def __init__(self, load, points, load_case=None, tolerance=1, **kwargs):
-        super(PointLoadPattern, self).__init__(load, points, load_case, **kwargs)
+    def __init__(self, loads, points, load_case=None, tolerance=1, **kwargs):
         self._points = points
-        self.tolerance = tolerance
-        self._distribution = [self.model.find_closest_nodes_to_point(point, distance=self.tolerance)[0] for point in self.points]
+        self._tolerance = tolerance
+        # FIXME: this is not working, the patternhas no model!
+        distribution = [self.model.find_closest_nodes_to_point(point, distance=self._tolerance)[0] for point in self.points]
+        super().__init__(loads, distribution, load_case, **kwargs)
 
     @property
     def points(self):
@@ -196,7 +196,7 @@ class LineLoadPattern(Pattern):
 
     @property
     def node_load(self):
-        return zip(self.nodes, [self.load] * self.nodes)
+        return zip(self.nodes, [self.loads] * self.nodes)
 
 
 class AreaLoadPattern(Pattern):
@@ -217,7 +217,8 @@ class AreaLoadPattern(Pattern):
     def __init__(self, load, polygon, load_case=None, tolerance=1.05, **kwargs):
         if not isinstance(load, ConcentratedLoad):
             raise TypeError("For the moment AreaLoadPattern only supports ConcentratedLoad")
-        super(AreaLoadPattern, self).__init__(load=load, distribution=polygon, load_case=load_case, **kwargs)
+        compute_tributary_areas = False
+        super().__init__(loads=load, distribution=polygon, load_case=load_case, **kwargs)
         self.tolerance = tolerance
 
     @property
@@ -230,7 +231,7 @@ class AreaLoadPattern(Pattern):
 
     @property
     def node_load(self):
-        return zip(self.nodes, [self.load] * self.nodes)
+        return zip(self.nodes, [self.loads] * self.nodes)
 
 
 class VolumeLoadPattern(Pattern):
@@ -267,10 +268,27 @@ class VolumeLoadPattern(Pattern):
                 vol = element.volume
                 den = element.section.material.density
                 n_nodes = len(element.nodes)
-                load = ConcentratedLoad(**{k: v * vol * den / n_nodes if v else v for k, v in self.load.components.items()})
+                load = ConcentratedLoad(**{k: v * vol * den / n_nodes if v else v for k, v in self.loads.components.items()})
                 for node in element.nodes:
                     if node in nodes_loads:
                         nodes_loads[node] += load
                     else:
                         nodes_loads[node] = load
         return zip(list(nodes_loads.keys()), list(nodes_loads.values()))
+
+
+class GravityLoadPattern(Pattern):
+    """Volume distribution of a gravity load case.
+
+    Parameters
+    ----------
+    g : float
+        Value of gravitational acceleration.
+    parts : list
+        List of parts where the load is applied.
+    load_case : object, optional
+        The load case to which this pattern belongs.
+    """
+
+    def __init__(self, g=9.81, parts=None, load_case=None, **kwargs):
+        super(GravityLoadPattern, self).__init__(GravityLoad(g=g), parts, load_case, **kwargs)

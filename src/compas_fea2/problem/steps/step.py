@@ -360,7 +360,7 @@ class GeneralStep(Step):
     # ==============================================================================
     # Patterns
     # ==============================================================================
-    def add_load_pattern(self, load_pattern, *kwargs):
+    def add_pattern(self, pattern, *kwargs):
         """Add a general :class:`compas_fea2.problem.patterns.Pattern` to the Step.
 
         Parameters
@@ -375,29 +375,20 @@ class GeneralStep(Step):
         """
         from compas_fea2.problem.patterns import Pattern
 
-        if not isinstance(load_pattern, Pattern):
-            raise TypeError("{!r} is not a LoadPattern.".format(load_pattern))
+        if not isinstance(pattern, Pattern):
+            raise TypeError("{!r} is not a LoadPattern.".format(pattern))
 
-        # FIXME: ugly...
-        try:
-            if self.problem:
-                if self.model:
-                    if not list(load_pattern.distribution).pop().model == self.model:
-                        raise ValueError("The load pattern is not applied to a valid reagion of {!r}".format(self.model))
-        except Exception:
-            pass
+        self._patterns.add(pattern)
+        self._load_cases.add(pattern.load_case)
+        pattern._registration = self
+        return pattern
 
-        self._patterns.add(load_pattern)
-        self._load_cases.add(load_pattern.load_case)
-        load_pattern._registration = self
-        return load_pattern
-
-    def add_load_patterns(self, load_patterns):
+    def add_patterns(self, patterns):
         """Add multiple :class:`compas_fea2.problem.patterns.Pattern` to the Problem.
 
         Parameters
         ----------
-        load_patterns : list(:class:`compas_fea2.problem.patterns.Pattern`)
+        patterns : list(:class:`compas_fea2.problem.patterns.Pattern`)
             The load patterns to add to the Problem.
 
         Returns
@@ -405,8 +396,11 @@ class GeneralStep(Step):
         list(:class:`compas_fea2.problem.patterns.Pattern`)
 
         """
-        for load_pattern in load_patterns:
-            self.add_load_pattern(load_pattern)
+        from typing import Iterable
+
+        patterns = patterns if isinstance(patterns, Iterable) else [patterns]
+        for pattern in patterns:
+            self.add_pattern(pattern)
 
     # ==============================================================================
     # Combination
@@ -568,9 +562,7 @@ class GeneralStep(Step):
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
         viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.add_stress2D_field(
-            self.stress_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contour=show_contour, plane=plane, **kwargs
-        )
+        viewer.add_stress2D_field(self.stress_field, fast=fast, model=self.model, component=component, show_vectors=show_vectors, show_contour=show_contour, plane=plane, **kwargs)
 
         if show_loads:
             viewer.add_step(self, show_loads=show_loads)

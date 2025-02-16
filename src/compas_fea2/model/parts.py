@@ -681,30 +681,24 @@ class _Part(FEAData):
 
     @classmethod
     def from_gmsh(cls, gmshModel, section: Optional[Union[SolidSection, ShellSection]] = None, name: Optional[str] = None, **kwargs) -> "_Part":
-        """Create a Part object from a gmshModel object.
-
-        According to the `section` type provided, :class:`compas_fea2.model._Element2D` or
-        :class:`compas_fea2.model._Element3D` elements are created.
-        The same section is applied to all the elements.
+        """Create a Part object from a gmshModel object with support for C3D4 and C3D10 elements.
 
         Parameters
         ----------
         gmshModel : object
-            gmsh Model to convert. See [1]_.
+            Gmsh Model to convert.
         section : Union[SolidSection, ShellSection], optional
-            `compas_fea2` :class:`SolidSection` or :class:`ShellSection` sub-class
-            object to apply to the elements.
+            The section type (`SolidSection` or `ShellSection`).
         name : str, optional
             Name of the new part.
         split : bool, optional
-            If ``True`` create an additional node in the middle of the edges of the
-            elements to implement more refined element types. Check for example [2]_.
+            Feature under development.
         verbose : bool, optional
-            If ``True`` print a log, by default False.
+            If `True`, print logs.
+        rigid : bool, optional
+            If `True`, applies rigid constraints.
         check : bool, optional
-            If ``True`` performs sanity checks, by default False. This is a quite
-            resource-intense operation! Set to ``False`` for large models (>10000
-            nodes).
+            If `True`, performs sanity checks (resource-intensive).
 
         Returns
         -------
@@ -713,33 +707,27 @@ class _Part(FEAData):
 
         Notes
         -----
-        The gmshModel must have the right dimension corresponding to the section provided.
-
-        References
-        ----------
-        .. [1] https://gitlab.onelab.info/gmsh/gmsh/blob/gmsh_4_9_1/api/gmsh.py
-        .. [2] https://web.mit.edu/calculix_v2.7/CalculiX/ccx_2.7/doc/ccx/node33.html
-
-        Examples
-        --------
-        >>> mat = ElasticIsotropic(name="mat", E=29000, v=0.17, density=2.5e-9)
-        >>> sec = SolidSection("mysec", mat)
-        >>> part = Part.from_gmsh("part_gmsh", gmshModel, sec)
+        - Detects whether elements are C3D4 (4-node) or C3D10 (10-node) and assigns correctly.
+        - The `gmshModel` should have the correct dimensions for the given section.
 
         """
-        import numpy as np
-
         part = cls(name=name)
+
+        # gmshModel.set_option("Mesh.ElementOrder", 2)
+        # gmshModel.set_option("Mesh.Optimize", 1)
+        # gmshModel.set_option("Mesh.OptimizeNetgen", 1)
+        # gmshModel.set_option("Mesh.SecondOrderLinear", 0)
+        # gmshModel.set_option("Mesh.OptimizeNetgen", 1)
 
         gmshModel.heal()
         gmshModel.generate_mesh(3)
         model = gmshModel.model
 
-        # add nodes
+        # Add nodes
         node_coords = model.mesh.get_nodes()[1].reshape((-1, 3), order="C")
         fea2_nodes = np.array([part.add_node(Node(coords)) for coords in node_coords])
 
-        # add elements
+        # Get elements
         gmsh_elements = model.mesh.get_elements()
         dimension = 2 if isinstance(section, SolidSection) else 1
         ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
@@ -750,26 +738,35 @@ class _Part(FEAData):
 
         for ntags in ntags_per_element:
             if kwargs.get("split", False):
-                raise NotImplementedError("this feature is under development")
+                raise NotImplementedError("This feature is under development")
+
             element_nodes = fea2_nodes[ntags]
 
             if ntags.size == 3:
                 part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
+
             elif ntags.size == 4:
                 if isinstance(section, ShellSection):
                     part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
                 else:
                     part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
-                    part.ndf = 3  # FIXME try to move outside the loop
+                    part.ndf = 3  # FIXME: try to move outside the loop
+
+            elif ntags.size == 10:  # C3D10 tetrahedral element
+                part.add_element(TetrahedronElement(nodes=element_nodes, section=section))  # Automatically supports C3D10
+                part.ndf = 3
+
             elif ntags.size == 8:
                 part.add_element(HexahedronElement(nodes=element_nodes, section=section))
+
             else:
                 raise NotImplementedError(f"Element with {ntags.size} nodes not supported")
+
             if verbose:
-                print(f"element {ntags} added")
+                print(f"Element {ntags} added")
 
         if not part._boundary_mesh:
-            gmshModel.generate_mesh(2)  # FIXME Get the volumes without the mesh
+            gmshModel.generate_mesh(2)  # FIXME: Get the volumes without the mesh
             part._boundary_mesh = gmshModel.mesh_to_compas()
 
         if not part._discretized_boundary_mesh:
@@ -877,6 +874,43 @@ class _Part(FEAData):
 
         print("Creating the part from the step file...")
         gmshModel = MeshModel.from_step(step_file)
+
+        if mesh_size_at_vertices:
+            for vertex, target in mesh_size_at_vertices.items():
+                gmshModel.mesh_targetlength_at_vertex(vertex, target)
+
+        if target_point_mesh_size:
+            gmshModel.heal()
+            for point, target in target_point_mesh_size.items():
+                tag = gmshModel.model.occ.addPoint(*point, target)
+                gmshModel.model.occ.mesh.set_size([(0, tag)], target)
+
+        if meshsize_max:
+            gmshModel.heal()
+            gmshModel.options.mesh.meshsize_max = meshsize_max
+        if meshsize_min:
+            gmshModel.heal()
+            gmshModel.options.mesh.meshsize_min = meshsize_min
+
+        part = cls.from_gmsh(gmshModel=gmshModel, name=name, **kwargs)
+
+        if gmshModel:
+            del gmshModel
+        print("Part created.")
+
+        return part
+
+    @classmethod
+    def from_brep(cls, brep, name: Optional[str] = None, **kwargs) -> "_Part":
+        from compas_gmsh.models import MeshModel
+
+        mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
+        target_point_mesh_size = kwargs.get("target_point_mesh_size", None)
+        meshsize_max = kwargs.get("meshsize_max", None)
+        meshsize_min = kwargs.get("meshsize_min", None)
+
+        print("Creating the part from the step file...")
+        gmshModel = MeshModel.from_brep(brep)
 
         if mesh_size_at_vertices:
             for vertex, target in mesh_size_at_vertices.items():

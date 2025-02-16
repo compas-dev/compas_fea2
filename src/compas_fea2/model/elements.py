@@ -715,37 +715,83 @@ class _Element3D(_Element):
         return Polyhedron(self.points, list(self._face_indices.values())).to_mesh()
 
 
+from typing import List, Optional
+
+
 class TetrahedronElement(_Element3D):
-    """A Solid element with 4 faces.
+    """A Solid element with 4 or 10 nodes.
 
     Notes
     -----
-    The face labels are as follows:
+    This element can be either:
+    - C3D4: A 4-node tetrahedral element.
+    - C3D10: A 10-node tetrahedral element (with midside nodes).
 
+    Face labels (for the first 4 corner nodes) are:
     - S1: (0, 1, 2)
     - S2: (0, 1, 3)
     - S3: (1, 2, 3)
     - S4: (0, 2, 3)
 
-    where the number is the index of the the node in the nodes list
+    The C3D10 element includes 6 additional midside nodes:
+    - Edge (0,1) → Node 4
+    - Edge (1,2) → Node 5
+    - Edge (2,0) → Node 6
+    - Edge (0,3) → Node 7
+    - Edge (1,3) → Node 8
+    - Edge (2,3) → Node 9
 
+    Attributes
+    ----------
+    nodes : List["Node"]
+        The list of nodes defining the element.
     """
 
-    def __init__(self, *, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+    def __init__(self, *, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):
+        if len(nodes) not in {4, 10}:
+            raise ValueError("TetrahedronElement must have either 4 (C3D4) or 10 (C3D10) nodes.")
+
+        self.element_type = "C3D10" if len(nodes) == 10 else "C3D4"
+
         super().__init__(
             nodes=nodes,
             section=section,
             implementation=implementation,
             **kwargs,
         )
-        self._face_indices = {"s1": (0, 1, 2), "s2": (0, 1, 3), "s3": (1, 2, 3), "s4": (0, 2, 3)}
+
+        # Define the face indices for a tetrahedron (first four corner nodes)
+        self._face_indices = {
+            "s1": (0, 1, 2),
+            "s2": (0, 1, 3),
+            "s3": (1, 2, 3),
+            "s4": (0, 2, 3),
+        }
+
         self._faces = self._construct_faces(self._face_indices)
 
     @property
     def edges(self):
+        """Yields edges as (start_node, end_node), including midside nodes if present."""
         seen = set()
-        for _, face in self._faces.itmes():
-            for u, v in pairwise(face + face[:1]):
+        edges = [
+            (0, 1, 4),
+            (1, 2, 5),
+            (2, 0, 6),
+            (0, 3, 7),
+            (1, 3, 8),
+            (2, 3, 9),
+        ]
+
+        for edge in edges:
+            if self.element_type == "C3D10":
+                u, v, mid = edge
+                edge_pairs = [(u, mid), (mid, v)]  # Split each edge into two segments
+            else:
+                u, v = edge[:2]
+                edge_pairs = [(u, v)]
+
+            for u, v in edge_pairs:
                 if (u, v) not in seen:
                     seen.add((u, v))
                     seen.add((v, u))
@@ -753,7 +799,7 @@ class TetrahedronElement(_Element3D):
 
     @property
     def volume(self) -> float:
-        """The volume property."""
+        """Calculates the volume using the first four corner nodes (C3D4 basis)."""
 
         def determinant_3x3(m):
             return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1]) + m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1])
@@ -761,20 +807,9 @@ class TetrahedronElement(_Element3D):
         def subtract(a, b):
             return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
 
-        nodes_coord = [node.xyz for node in self.nodes]
+        nodes_coord = [node.xyz for node in self.nodes[:4]]  # Use only first 4 nodes
         a, b, c, d = nodes_coord
-        return (
-            abs(
-                determinant_3x3(
-                    (
-                        subtract(a, b),
-                        subtract(b, c),
-                        subtract(c, d),
-                    )
-                )
-            )
-            / 6.0
-        )
+        return abs(determinant_3x3((subtract(a, b), subtract(b, c), subtract(c, d)))) / 6.0
 
 
 class PentahedronElement(_Element3D):

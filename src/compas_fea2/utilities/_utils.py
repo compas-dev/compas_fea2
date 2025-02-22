@@ -169,17 +169,18 @@ def part_method(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        try:
-            func_name = f.__qualname__.split(".")[-1]
-            self_obj = args[0]
-            res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
-            if isinstance(res[0], list):
-                res = list(itertools.chain.from_iterable(res))
-            # res = list(itertools.chain.from_iterable(res))
+        func_name = f.__qualname__.split(".")[-1]
+        self_obj = args[0]
+        res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
+        if isinstance(res[0], list):
+            res = list(itertools.chain.from_iterable(res))
             return res
-        except Exception as e:
-            print(f"An error occurred in part_method: {e}")
-            raise
+        # if res is a Group
+        if "Group" in str(res[0].__class__):
+            combined_members = set.union(*(group._members for group in res))
+            return res[0].__class__(combined_members)
+        else:
+            return res
 
     return wrapper
 

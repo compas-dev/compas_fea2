@@ -822,22 +822,7 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_node_by_inputkey(self, input_key: int):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_nodes_by_name(self, name: str):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_nodes_around_point(self, point: Point, distance: float, plane: Optional[Plane] = None, single: bool = False):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_nodes_around_node(self, node: Node, distance: float):
+    def find_node_by_name(self, name: str):
         pass
 
     @get_docstring(_Part)
@@ -847,22 +832,12 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_by_attribute(self, attr: str, value: Union[str, int, float], tolerance: float = 1):
+    def find_nodes_on_plane(self, plane: Plane, tol: float = 1) -> NodesGroup:
         pass
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_on_plane(self, plane: Plane, tolerance: float = 1):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_nodes_in_polygon(self, polygon: Polygon, tolerance: float = 1.1):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_nodes_where(self, conditions: dict):
+    def find_nodes_in_polygon(self, polygon: Polygon, tol: float = 1.1):
         pass
 
     @get_docstring(_Part)
@@ -881,12 +856,7 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_element_by_inputkey(self, key: int):
-        pass
-
-    @get_docstring(_Part)
-    @part_method
-    def find_elements_by_name(self, name: str):
+    def find_element_by_name(self, name: str):
         pass
 
     # =========================================================================

@@ -207,7 +207,7 @@ class _Part(FEAData):
         return self._graph
 
     @property
-    def nodes(self) -> Set[Node]:
+    def nodes(self) -> NodesGroup:
         return NodesGroup(self._nodes)
 
     @property
@@ -215,16 +215,20 @@ class _Part(FEAData):
         return self.nodes.sorted_by(key=lambda x: x.part_key)
 
     @property
-    def points(self) -> List[List[float]]:
-        return [node.xyz for node in self.nodes]
+    def points(self) -> List[Point]:
+        return [node.point for node in self._nodes]
 
     @property
-    def points_sorted(self) -> List[List[float]]:
-        return [node.xyz for node in sorted(self.nodes, key=lambda x: x.part_key)]
+    def points_sorted(self) -> List[Point]:
+        return [node.point for node in self.nodes.sorted_by(key=lambda x: x.part_key)]
 
     @property
-    def elements(self) -> Set[_Element]:
+    def elements(self) -> ElementsGroup:
         return ElementsGroup(self._elements)
+
+    @property
+    def faces(self) -> FacesGroup:
+        return FacesGroup([face for element in self.elements for face in element.faces])
 
     @property
     def elements_sorted(self) -> List[_Element]:
@@ -238,6 +242,7 @@ class _Part(FEAData):
     @property
     def elements_faces(self) -> List[List[List["Face"]]]:
         face_group = FacesGroup([face for element in self.elements for face in element.faces])
+        face_group.group_by(key=lambda x: x.element)
         return face_group
 
     @property
@@ -1128,7 +1133,7 @@ class _Part(FEAData):
             The corresponding node, or None if not found.
 
         """
-        for node in self.nodes:
+        for node in self._nodes:
             if node.uid == uid:
                 return node
         return None
@@ -1147,32 +1152,14 @@ class _Part(FEAData):
             The corresponding node, or None if not found.
 
         """
-        for node in self.nodes:
+        for node in self._nodes:
             if node.key == key:
                 return node
+        print(f"No nodes found with key {key}")
         return None
 
-    def find_node_by_inputkey(self, input_key: int) -> Optional[Node]:
-        """Retrieve a node in the model using its input key.
-
-        Parameters
-        ----------
-        input_key : int
-            The node's input key.
-
-        Returns
-        -------
-        Optional[Node]
-            The corresponding node, or None if not found.
-
-        """
-        for node in self.nodes:
-            if node.input_key == input_key:
-                return node
-        return None
-
-    def find_nodes_by_name(self, name: str) -> List[Node]:
-        """Find all nodes with a given name.
+    def find_node_by_name(self, name: str) -> List[Node]:
+        """Find a node with a given name.
 
         Parameters
         ----------
@@ -1184,73 +1171,93 @@ class _Part(FEAData):
             List of nodes with the given name.
 
         """
-        return [node for node in self.nodes if node.name == name]
+        for node in self._nodes:
+            if node.name == name:
+                return node
+        print(f"No nodes found with name {name}")
+        return None
 
-    def find_nodes_around_point(
-        self, point: List[float], distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False, **kwargs
-    ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
-        """Find all nodes within a distance of a given geometrical location.
-
-        Parameters
-        ----------
-        point : List[float]
-            A geometrical location.
-        distance : float
-            Distance from the location.
-        plane : Optional[Plane], optional
-            Limit the search to one plane.
-        report : bool, optional
-            If True, return a dictionary with the node and its distance to the
-            point, otherwise, just the node. By default is False.
-        single : bool, optional
-            If True, return only the closest node, by default False.
-
-        Returns
-        -------
-        Union[List[Node], Dict[Node, float], Optional[Node]]
-            List of nodes, or dictionary with nodes and distances if report=True,
-            or the closest node if single=True.
-
-        """
-        d2 = distance**2
-        nodes = self.find_nodes_on_plane(plane) if plane else self.nodes
-        if report:
-            return {node: sqrt(distance_point_point_sqrd(node.xyz, point)) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
-        nodes = [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
-        if not nodes:
-            if compas_fea2.VERBOSE:
-                print(f"No nodes found at {point}")
-            return [] if not single else None
-        return nodes[0] if single else nodes
-
-    def find_nodes_around_node(
-        self, node: Node, distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False
-    ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
-        """Find all nodes around a given node (excluding the node itself).
+    def find_nodes_on_plane(self, plane: Plane, tol: float = 1.0) -> List[Node]:
+        """Find all nodes on a given plane.
 
         Parameters
         ----------
-        node : Node
-            The given node.
-        distance : float
-            Search radius.
-        plane : Optional[Plane], optional
-            Limit the search to one plane.
-        report : bool, optional
-            If True, return a dictionary with the node and its distance to the point, otherwise, just the node. By default is False.
-        single : bool, optional
-            If True, return only the closest node, by default False.
+        plane : Plane
+            The plane.
+        tol : float, optional
+            Tolerance for the search, by default 1.0.
 
         Returns
         -------
-        Union[List[Node], Dict[Node, float], Optional[Node]]
-            List of nodes, or dictionary with nodes and distances if report=True, or the closest node if single=True.
+        List[Node]
+            List of nodes on the given plane.
         """
-        nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=report, single=single)
-        if nodes and isinstance(nodes, Iterable):
-            if node in nodes:
-                del nodes[node]
-        return nodes
+        return self.nodes.create_subgroup(condition=lambda x: is_point_on_plane(x.point, plane, tol))
+
+    # def find_nodes_around_point(
+    #     self, point: List[float], distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False, **kwargs
+    # ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
+    #     """Find all nodes within a distance of a given geometrical location.
+
+    #     Parameters
+    #     ----------
+    #     point : List[float]
+    #         A geometrical location.
+    #     distance : float
+    #         Distance from the location.
+    #     plane : Optional[Plane], optional
+    #         Limit the search to one plane.
+    #     report : bool, optional
+    #         If True, return a dictionary with the node and its distance to the
+    #         point, otherwise, just the node. By default is False.
+    #     single : bool, optional
+    #         If True, return only the closest node, by default False.
+
+    #     Returns
+    #     -------
+    #     Union[List[Node], Dict[Node, float], Optional[Node]]
+    #         List of nodes, or dictionary with nodes and distances if report=True,
+    #         or the closest node if single=True.
+
+    #     """
+    #     d2 = distance**2
+    #     nodes = self.find_nodes_on_plane(plane) if plane else self.nodes
+    #     if report:
+    #         return {node: sqrt(distance_point_point_sqrd(node.xyz, point)) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
+    #     nodes = [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
+    #     if not nodes:
+    #         print(f"No nodes found at {point} within {distance}")
+    #         return None
+    #     return nodes[0] if single else NodesGroup(nodes)
+
+    # def find_nodes_around_node(
+    #     self, node: Node, distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False
+    # ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
+    #     """Find all nodes around a given node (excluding the node itself).
+
+    #     Parameters
+    #     ----------
+    #     node : Node
+    #         The given node.
+    #     distance : float
+    #         Search radius.
+    #     plane : Optional[Plane], optional
+    #         Limit the search to one plane.
+    #     report : bool, optional
+    #         If True, return a dictionary with the node and its distance to the point, otherwise, just the node. By default is False.
+    #     single : bool, optional
+    #         If True, return only the closest node, by default False.
+
+    #     Returns
+    #     -------
+    #     Union[List[Node], Dict[Node, float], Optional[Node]]
+    #         List of nodes, or dictionary with nodes and distances if report=True, or the closest node if single=True.
+    #     """
+    #     nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=report, single=single)
+    #     if nodes and isinstance(nodes, Iterable):
+    #         if node in nodes:
+    #             del nodes[node]
+    #     return nodes
 
     def find_closest_nodes_to_point(self, point: List[float], number_of_nodes: int = 1, report: bool = False) -> Union[List[Node], Dict[Node, float]]:
         """
@@ -1287,7 +1294,7 @@ class _Part(FEAData):
             # Return a dictionary with nodes and their distances
             return {node: distance for node, distance in zip(closest_nodes, distances)}
 
-        return closest_nodes
+        return NodesGroup(closest_nodes)
 
     def find_closest_nodes_to_node(self, node: Node, number_of_nodes: int = 1, report: Optional[bool] = False) -> List[Node]:
         """Find the n closest nodes around a given node (excluding the node itself).
@@ -1310,42 +1317,6 @@ class _Part(FEAData):
         """
         return self.find_closest_nodes_to_point(node.xyz, number_of_nodes, report=report)
 
-    def find_nodes_by_attribute(self, attr: str, value: float, tolerance: float = 0.001) -> List[Node]:
-        """Find all nodes with a given value for the given attribute.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute name.
-        value : float
-            Appropriate value for the given attribute.
-        tolerance : float, optional
-            Tolerance for numeric attributes, by default 0.001.
-
-        Returns
-        -------
-        List[Node]
-            List of nodes with the given attribute value.
-        """
-        return list(filter(lambda x: abs(getattr(x, attr) - value) <= tolerance, self.nodes))
-
-    def find_nodes_on_plane(self, plane: Plane, tolerance: float = 1.0) -> List[Node]:
-        """Find all nodes on a given plane.
-
-        Parameters
-        ----------
-        plane : Plane
-            The plane.
-        tolerance : float, optional
-            Tolerance for the search, by default 1.0.
-
-        Returns
-        -------
-        List[Node]
-            List of nodes on the given plane.
-        """
-        return list(filter(lambda x: is_point_on_plane(Point(*x.xyz), plane, tolerance), self.nodes))
-
     def find_nodes_in_polygon(self, polygon: "compas.geometry.Polygon", tolerance: float = 1.1) -> List[Node]:
         """Find the nodes of the part that are contained within a planar polygon.
 
@@ -1366,38 +1337,12 @@ class _Part(FEAData):
                 polygon.plane = Frame.from_points(*polygon.points[:3])
             except Exception:
                 polygon.plane = Frame.from_points(*polygon.points[-3:])
-
         S = Scale.from_factors([tolerance] * 3, polygon.frame)
         T = Transformation.from_frame_to_frame(Frame.from_plane(polygon.plane), Frame.worldXY())
-        nodes_on_plane = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
+        nodes_on_plane: NodesGroup = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
         polygon_xy = polygon.transformed(S)
         polygon_xy = polygon.transformed(T)
-        return list(filter(lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy), nodes_on_plane))
-
-    def find_nodes_where(self, conditions: List[str]) -> List[Node]:
-        """Find the nodes where some conditions are met.
-
-        Parameters
-        ----------
-        conditions : List[str]
-            List with the strings of the required conditions.
-
-        Returns
-        -------
-        List[Node]
-            List of nodes meeting the conditions.
-        """
-        import re
-
-        nodes = []
-        for condition in conditions:
-            part_nodes = self.nodes if not nodes else list(set.intersection(*nodes))
-            try:
-                eval(condition)
-            except NameError as ne:
-                var_name = re.findall(r"'([^']*)'", str(ne))[0]
-                nodes.append(set(filter(lambda n: eval(condition.replace(var_name, str(getattr(n, var_name)))), part_nodes)))
-        return list(set.intersection(*nodes))
+        return nodes_on_plane.create_subgroup(condition=lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy))
 
     def contains_node(self, node: Node) -> bool:
         """Verify that the part contains a given node.
@@ -1564,7 +1509,6 @@ class _Part(FEAData):
         for node in self.nodes:
             for i in range(len(node.mass)):
                 node.mass[i] = 0.0
-
         for element in self.elements:
             for node in element.nodes:
                 node.mass = [a + b for a, b in zip(node.mass, element.nodal_mass[:3])] + [0.0, 0.0, 0.0]
@@ -1639,25 +1583,7 @@ class _Part(FEAData):
                 return element
         return None
 
-    def find_element_by_inputkey(self, input_key: int) -> Optional[_Element]:
-        """Retrieve an element in the model using its input key.
-
-        Parameters
-        ----------
-        input_key : int
-            The element's input key.
-
-        Returns
-        -------
-        Optional[_Element]
-            The corresponding element, or None if not found.
-        """
-        for element in self.elements:
-            if element.input_key == input_key:
-                return element
-        return None
-
-    def find_elements_by_name(self, name: str) -> List[_Element]:
+    def find_element_by_name(self, name: str) -> List[_Element]:
         """Find all elements with a given name.
 
         Parameters
@@ -1669,7 +1595,10 @@ class _Part(FEAData):
         List[_Element]
             List of elements with the given name.
         """
-        return [element for element in self.elements if element.name == name]
+        for element in self.elements:
+            if element.key == name:
+                return element
+        return None
 
     def contains_element(self, element: _Element) -> bool:
         """Verify that the part contains a specific element.
@@ -1830,13 +1759,20 @@ class _Part(FEAData):
         -----
         The search is limited to solid elements.
         """
-        # FIXME: review this method
-        faces = []
-        for element in filter(lambda x: isinstance(x, (_Element2D, _Element3D)) and self.is_element_on_boundary(x), self._elements):
-            for face in element.faces:
-                if all(is_point_on_plane(node.xyz, plane) for node in face.nodes):
-                    faces.append(face)
-        return faces
+        elements_sub_group = self.elements.create_subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
+        faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
+        faces_group.create_subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
+        return faces_group
+
+    def find_boudary_faces(self) -> List["compas_fea2.model.Face"]:
+        """Find the boundary faces of the part.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Face`]
+            List with the boundary faces.
+        """
+        return self.faces.create_subgroup(condition=lambda x: all(node.on_boundary for node in x.nodes))
 
     def find_boundary_meshes(self, tol) -> List["compas.datastructures.Mesh"]:
         """Find the boundary meshes of the part.
@@ -1867,7 +1803,7 @@ class _Part(FEAData):
     #                           Groups methods
     # =========================================================================
 
-    def find_groups_by_name(self, name: str) -> List[Union[NodesGroup, ElementsGroup, FacesGroup]]:
+    def find_group_by_name(self, name: str) -> List[Union[NodesGroup, ElementsGroup, FacesGroup]]:
         """Find all groups with a given name.
 
         Parameters
@@ -1880,7 +1816,11 @@ class _Part(FEAData):
         List[Union[NodesGroup, ElementsGroup, FacesGroup]]
             List of groups with the given name.
         """
-        return [group for group in self.groups if group.name == name]
+        for group in self.groups:
+            if group.name == name:
+                return group
+        print(f"No groups found with name {name}")
+        return None
 
     def add_group(self, group: Union[NodesGroup, ElementsGroup, FacesGroup]) -> Union[NodesGroup, ElementsGroup, FacesGroup]:
         """Add a node or element group to the part.
@@ -1899,26 +1839,10 @@ class _Part(FEAData):
             If the group is not a node or element group.
 
         """
-
-        if isinstance(group, NodesGroup):
-            self.add_nodes(group.nodes)
-        elif isinstance(group, ElementsGroup):
-            self.add_elements(group.elements)
-
-        if self.contains_group(group):
-            if compas_fea2.VERBOSE:
-                print("SKIPPED: Group {!r} already in part.".format(group))
-            return group
-        if isinstance(group, NodesGroup):
-            self._nodesgroups.add(group)
-        elif isinstance(group, ElementsGroup):
-            self._elementsgroups.add(group)
-        elif isinstance(group, FacesGroup):
-            self._facesgroups.add(group)
-        else:
-            raise TypeError("{!r} is not a valid group.".format(group))
-        group._registration = self  # BUG wrong because the members of the group might have a different registration
-        return group
+        if self.__class__ not in group.__class__.allowed_registration:
+            raise TypeError(f"{group.__class__!r} cannot be registered to {self.__class__!r}.")
+        group._registration = self
+        self._groups.add(group)
 
     def add_groups(self, groups: List[Union[NodesGroup, ElementsGroup, FacesGroup]]) -> List[Union[NodesGroup, ElementsGroup, FacesGroup]]:
         """Add multiple groups to the part.
@@ -1954,7 +1878,7 @@ class _Part(FEAData):
             The nodes sorted by displacement (ascending).
 
         """
-        return sorted(self.nodes, key=lambda n: getattr(Vector(*n.results[step.problem][step].get("U", None)), component))
+        return self.nodes.sorted_by(lambda n: getattr(Vector(*n.results[step].get("U", None)), component))
 
     def get_max_displacement(self, problem: "Problem", step: Optional["_Step"] = None, component: str = "length") -> Tuple[Node, float]:  # noqa: F821
         """Retrieve the node with the maximum displacement

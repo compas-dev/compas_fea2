@@ -45,9 +45,8 @@ from .elements import _Element
 from .elements import _Element1D
 from .elements import _Element2D
 from .elements import _Element3D
-from .groups import ElementsGroup
-from .groups import FacesGroup
-from .groups import NodesGroup
+from .groups import ElementsGroup, FacesGroup, NodesGroup, MaterialsGroup, SectionsGroup
+
 from .materials.material import _Material
 from .nodes import Node
 from .releases import _BeamEndRelease
@@ -88,12 +87,6 @@ class _Part(FEAData):
         Dictionary with the elements of the part for each element type.
     element_count : int
         Number of elements in the part.
-    nodesgroups : Set[:class:`compas_fea2.model.NodesGroup`]
-        The groups of nodes belonging to the part.
-    elementsgroups : Set[:class:`compas_fea2.model.ElementsGroup`]
-        The groups of elements belonging to the part.
-    facesgroups : Set[:class:`compas_fea2.model.FacesGroup`]
-        The groups of element faces belonging to the part.
     boundary_mesh : :class:`compas.datastructures.Mesh`
         The outer boundary mesh enveloping the Part.
     discretized_boundary_mesh : :class:`compas.datastructures.Mesh`
@@ -117,10 +110,6 @@ class _Part(FEAData):
         self._elements: Set[_Element] = set()
         self._releases: Set[_BeamEndRelease] = set()
 
-        self._nodesgroups: Set[NodesGroup] = set()
-        self._elementsgroups: Set[ElementsGroup] = set()
-        self._facesgroups: Set[FacesGroup] = set()
-
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
 
@@ -136,9 +125,6 @@ class _Part(FEAData):
             "sections": [section.__data__ for section in self.sections],
             "elements": [element.__data__ for element in self.elements],
             "releases": [release.__data__ for release in self.releases],
-            "nodesgroups": [group.__data__ for group in self.nodesgroups],
-            "elementsgroups": [group.__data__ for group in self.elementsgroups],
-            "facesgroups": [group.__data__ for group in self.facesgroups],
         }
 
     def to_hdf5_data(self, hdf5_file, mode="a"):
@@ -222,11 +208,11 @@ class _Part(FEAData):
 
     @property
     def nodes(self) -> Set[Node]:
-        return self._nodes
+        return NodesGroup(self._nodes)
 
     @property
     def nodes_sorted(self) -> List[Node]:
-        return sorted(self.nodes, key=lambda x: x.part_key)
+        return self.nodes.sorted_by(key=lambda x: x.part_key)
 
     @property
     def points(self) -> List[List[float]]:
@@ -238,20 +224,21 @@ class _Part(FEAData):
 
     @property
     def elements(self) -> Set[_Element]:
-        return self._elements
+        return ElementsGroup(self._elements)
 
     @property
     def elements_sorted(self) -> List[_Element]:
-        return sorted(self.elements, key=lambda x: x.part_key)
+        return self.elments.sorted_by(key=lambda x: x.part_key)
 
     @property
     def elements_grouped(self) -> Dict[int, List[_Element]]:
-        elements_group = groupby(self.elements, key=lambda x: x.__class__.__base__)
-        return {key: list(group) for key, group in elements_group}
+        sub_groups = self.elements.group_by(key=lambda x: x.__class__.__base__)
+        return {key: group.members for key, group in sub_groups}
 
     @property
     def elements_faces(self) -> List[List[List["Face"]]]:
-        return [face for element in self.elements for face in element.faces]
+        face_group = FacesGroup([face for element in self.elements for face in element.faces])
+        return face_group
 
     @property
     def elements_faces_grouped(self) -> Dict[int, List[List["Face"]]]:
@@ -279,46 +266,34 @@ class _Part(FEAData):
         return [element.centroid for element in self.elements]
 
     @property
-    def sections(self) -> Set[_Section]:
-        return self._sections
+    def sections(self) -> SectionsGroup:
+        return SectionsGroup(self._sections)
 
     @property
     def sections_sorted(self) -> List[_Section]:
-        return sorted(self.sections, key=lambda x: x.part_key)
+        return self.sections.sorted_by(key=lambda x: x.part_key)
 
     @property
     def sections_grouped_by_element(self) -> Dict[int, List[_Section]]:
-        sections_group = groupby(self.sections, key=lambda x: x.element)
-        return {key: list(group) for key, group in sections_group}
+        sections_group = self.sections.group_by(key=lambda x: x.element)
+        return {key: group.members for key, group in sections_group}
 
     @property
-    def materials(self) -> Set[_Material]:
-        return self._materials
+    def materials(self) -> MaterialsGroup:
+        return MaterialsGroup(self._materials)
 
     @property
     def materials_sorted(self) -> List[_Material]:
-        return sorted(self.materials, key=lambda x: x.part_key)
+        return self.materials.sorted_by(key=lambda x: x.part_key)
 
     @property
     def materials_grouped_by_section(self) -> Dict[int, List[_Material]]:
-        materials_group = groupby(self.materials, key=lambda x: x.section)
-        return {key: list(group) for key, group in materials_group}
+        materials_group = self.materials.group_by(key=lambda x: x.section)
+        return {key: group.members for key, group in materials_group}
 
     @property
     def releases(self) -> Set[_BeamEndRelease]:
         return self._releases
-
-    @property
-    def nodesgroups(self) -> Set[NodesGroup]:
-        return self._nodesgroups
-
-    @property
-    def elementsgroups(self) -> Set[ElementsGroup]:
-        return self._elementsgroups
-
-    @property
-    def facesgroups(self) -> Set[FacesGroup]:
-        return self._facesgroups
 
     @property
     def gkey_node(self) -> Dict[str, Node]:
@@ -952,7 +927,8 @@ class _Part(FEAData):
         -------
         List[_Material]
         """
-        return [material for material in self.materials if material.name == name]
+        mg = MaterialsGroup(self.materials)
+        return mg.create_subgroup(condition=lambda x: x.name == name).materials
 
     def find_material_by_uid(self, uid: str) -> Optional[_Material]:
         """Find a material with a given unique identifier.
@@ -1740,7 +1716,7 @@ class _Part(FEAData):
         self.add_section(element.section)
 
         element._part_key = len(self.elements)
-        self.elements.add(element)
+        self._elements.add(element)
         element._registration = self
 
         self.graph.add_node(element, type="element")
@@ -1905,28 +1881,6 @@ class _Part(FEAData):
             List of groups with the given name.
         """
         return [group for group in self.groups if group.name == name]
-
-    def contains_group(self, group: Union[NodesGroup, ElementsGroup, FacesGroup]) -> bool:
-        """Verify that the part contains a specific group.
-
-        Parameters
-        ----------
-        group : Union[NodesGroup, ElementsGroup, FacesGroup]
-            The group to check.
-
-        Returns
-        -------
-        bool
-            True if the group is in the part, False otherwise.
-        """
-        if isinstance(group, NodesGroup):
-            return group in self._nodesgroups
-        elif isinstance(group, ElementsGroup):
-            return group in self._elementsgroups
-        elif isinstance(group, FacesGroup):
-            return group in self._facesgroups
-        else:
-            raise TypeError(f"{group!r} is not a valid Group")
 
     def add_group(self, group: Union[NodesGroup, ElementsGroup, FacesGroup]) -> Union[NodesGroup, ElementsGroup, FacesGroup]:
         """Add a node or element group to the part.

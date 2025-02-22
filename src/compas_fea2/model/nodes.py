@@ -1,7 +1,6 @@
 from typing import Dict
 from typing import List
 from typing import Optional
-import numpy as np
 
 from compas.geometry import Point
 from compas.tolerance import TOL

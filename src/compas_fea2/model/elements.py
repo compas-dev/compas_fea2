@@ -17,7 +17,6 @@ from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
 from compas.itertools import pairwise
 
-import compas_fea2
 from compas_fea2.base import FEAData
 
 from compas_fea2.results import Result

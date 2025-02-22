@@ -460,7 +460,7 @@ class Model(FEAData):
         part = _Part(**kwargs)
         return self.add_part(part)
 
-    def add_part(self, part: _Part) -> _Part:
+    def add_part(self, part: _Part = None, **kwargs) -> _Part:
         """Adds a Part to the Model.
 
         Parameters
@@ -479,6 +479,16 @@ class Model(FEAData):
             If a part with the same name already exists in the model.
 
         """
+        if not part:
+            if "rigig" in kwargs:
+                from compas_fea2.model.parts import RigidPart
+
+                part = RigidPart(**kwargs)
+            else:
+                from compas_fea2.model.parts import Part
+
+                part = Part(**kwargs)
+
         if not isinstance(part, _Part):
             raise TypeError("{!r} is not a part.".format(part))
 

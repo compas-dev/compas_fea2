@@ -521,6 +521,10 @@ class SectionForcesFieldResults(ElementFieldResults):
     def results_func(self):
         return self._results_func
 
+    @property
+    def components_names(self):
+        return ["Fx1", "Fy1", "Fz1", "Mx1", "My1", "Mz1", "Fx2", "Fy2", "Fz2", "Mx2", "My2", "Mz2"]
+
     def get_element_forces(self, element):
         """Get the section forces for a given element.
 

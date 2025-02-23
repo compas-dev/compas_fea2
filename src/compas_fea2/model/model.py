@@ -280,7 +280,10 @@ class Model(FEAData):
 
     @property
     def bounding_box(self) -> Optional[Box]:
-        bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
+        try:
+            bb = bounding_box(list(chain.from_iterable([part.bounding_box.points for part in self.parts if part.bounding_box])))
+        except Exception:
+            return None
         return Box.from_bounding_box(bb)
 
     @property
@@ -817,17 +820,17 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_node_by_key(self, key: int):
+    def find_node_by_key(self, key: int) -> Node:
         pass
 
     @get_docstring(_Part)
     @part_method
-    def find_node_by_name(self, name: str):
+    def find_node_by_name(self, name: str) -> Node:
         pass
 
     @get_docstring(_Part)
     @part_method
-    def find_closest_nodes_to_node(self, node: Node, distance: float, number_of_nodes: int = 1, plane: Optional[Plane] = None):
+    def find_closest_nodes_to_node(self, node: Node, distance: float, number_of_nodes: int = 1, plane: Optional[Plane] = None) -> NodesGroup:
         pass
 
     @get_docstring(_Part)
@@ -837,12 +840,12 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_nodes_in_polygon(self, polygon: Polygon, tol: float = 1.1):
+    def find_nodes_in_polygon(self, polygon: Polygon, tol: float = 1.1) -> NodesGroup:
         pass
 
     @get_docstring(_Part)
     @part_method
-    def contains_node(self, node: Node):
+    def contains_node(self, node: Node) -> Node:
         pass
 
     # =========================================================================
@@ -851,12 +854,12 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_element_by_key(self, key: int):
+    def find_element_by_key(self, key: int) -> _Element:
         pass
 
     @get_docstring(_Part)
     @part_method
-    def find_element_by_name(self, name: str):
+    def find_element_by_name(self, name: str) -> _Element:
         pass
 
     # =========================================================================

@@ -294,6 +294,7 @@ class BeamSection(_Section):
         self.Avx = Avx
         self.Avy = Avy
         self.J = J
+        
 
     @property
     def __data__(self):
@@ -1110,6 +1111,10 @@ class ISection(BeamSection):
     def __init__(self, w, h, tw, tbf, ttf, material, **kwargs):
         self._shape = IShape(w, h, tw, tbf, ttf)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+        
+    @property
+    def k(self):
+        return 0.3 + 0.1 * ((self.shape.abf+self.shape.atf) / self.shape.area)
 
     @property
     def __data__(self):
@@ -1603,6 +1608,7 @@ class RectangularSection(BeamSection):
     def __init__(self, w, h, material, **kwargs):
         self._shape = Rectangle(w, h)
         super().__init__(**from_shape(self._shape, material, **kwargs))
+        self.k = 5/6
 
     @property
     def __data__(self):

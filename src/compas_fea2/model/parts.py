@@ -933,7 +933,7 @@ class _Part(FEAData):
         List[_Material]
         """
         mg = MaterialsGroup(self.materials)
-        return mg.create_subgroup(condition=lambda x: x.name == name).materials
+        return mg.subgroup(condition=lambda x: x.name == name).materials
 
     def find_material_by_uid(self, uid: str) -> Optional[_Material]:
         """Find a material with a given unique identifier.
@@ -1192,81 +1192,16 @@ class _Part(FEAData):
         List[Node]
             List of nodes on the given plane.
         """
-        return self.nodes.create_subgroup(condition=lambda x: is_point_on_plane(x.point, plane, tol))
-
-    # def find_nodes_around_point(
-    #     self, point: List[float], distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False, **kwargs
-    # ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
-    #     """Find all nodes within a distance of a given geometrical location.
-
-    #     Parameters
-    #     ----------
-    #     point : List[float]
-    #         A geometrical location.
-    #     distance : float
-    #         Distance from the location.
-    #     plane : Optional[Plane], optional
-    #         Limit the search to one plane.
-    #     report : bool, optional
-    #         If True, return a dictionary with the node and its distance to the
-    #         point, otherwise, just the node. By default is False.
-    #     single : bool, optional
-    #         If True, return only the closest node, by default False.
-
-    #     Returns
-    #     -------
-    #     Union[List[Node], Dict[Node, float], Optional[Node]]
-    #         List of nodes, or dictionary with nodes and distances if report=True,
-    #         or the closest node if single=True.
-
-    #     """
-    #     d2 = distance**2
-    #     nodes = self.find_nodes_on_plane(plane) if plane else self.nodes
-    #     if report:
-    #         return {node: sqrt(distance_point_point_sqrd(node.xyz, point)) for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2}
-    #     nodes = [node for node in nodes if distance_point_point_sqrd(node.xyz, point) < d2]
-    #     if not nodes:
-    #         print(f"No nodes found at {point} within {distance}")
-    #         return None
-    #     return nodes[0] if single else NodesGroup(nodes)
-
-    # def find_nodes_around_node(
-    #     self, node: Node, distance: float, plane: Optional[Plane] = None, report: bool = False, single: bool = False
-    # ) -> Union[List[Node], Dict[Node, float], Optional[Node]]:
-    #     """Find all nodes around a given node (excluding the node itself).
-
-    #     Parameters
-    #     ----------
-    #     node : Node
-    #         The given node.
-    #     distance : float
-    #         Search radius.
-    #     plane : Optional[Plane], optional
-    #         Limit the search to one plane.
-    #     report : bool, optional
-    #         If True, return a dictionary with the node and its distance to the point, otherwise, just the node. By default is False.
-    #     single : bool, optional
-    #         If True, return only the closest node, by default False.
-
-    #     Returns
-    #     -------
-    #     Union[List[Node], Dict[Node, float], Optional[Node]]
-    #         List of nodes, or dictionary with nodes and distances if report=True, or the closest node if single=True.
-    #     """
-    #     nodes = self.find_nodes_around_point(node.xyz, distance, plane, report=report, single=single)
-    #     if nodes and isinstance(nodes, Iterable):
-    #         if node in nodes:
-    #             del nodes[node]
-    #     return nodes
+        return self.nodes.subgroup(condition=lambda x: is_point_on_plane(x.point, plane, tol))
 
     def find_closest_nodes_to_point(self, point: List[float], number_of_nodes: int = 1, report: bool = False) -> Union[List[Node], Dict[Node, float]]:
         """
-        Find the closest number_of_nodes nodes to a given point in the part.
+        Find the closest number_of_nodes nodes to a given point.
 
         Parameters
         ----------
-        point : List[float]
-            List of coordinates representing the point in x, y, z.
+        point : :class:`compas.geometry.Point` | List[float]
+            Point or List of coordinates representing the point in x, y, z.
         number_of_nodes : int
             The number of closest points to find.
         report : bool
@@ -1342,7 +1277,7 @@ class _Part(FEAData):
         nodes_on_plane: NodesGroup = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
         polygon_xy = polygon.transformed(S)
         polygon_xy = polygon.transformed(T)
-        return nodes_on_plane.create_subgroup(condition=lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy))
+        return nodes_on_plane.subgroup(condition=lambda x: is_point_in_polygon_xy(Point(*x.xyz).transformed(T), polygon_xy))
 
     def contains_node(self, node: Node) -> bool:
         """Verify that the part contains a given node.
@@ -1759,9 +1694,9 @@ class _Part(FEAData):
         -----
         The search is limited to solid elements.
         """
-        elements_sub_group = self.elements.create_subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
+        elements_sub_group = self.elements.subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
         faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
-        faces_group.create_subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
+        faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
         return faces_group
 
     def find_boudary_faces(self) -> List["compas_fea2.model.Face"]:
@@ -1772,7 +1707,7 @@ class _Part(FEAData):
         list[:class:`compas_fea2.model.Face`]
             List with the boundary faces.
         """
-        return self.faces.create_subgroup(condition=lambda x: all(node.on_boundary for node in x.nodes))
+        return self.faces.subgroup(condition=lambda x: all(node.on_boundary for node in x.nodes))
 
     def find_boundary_meshes(self, tol) -> List["compas.datastructures.Mesh"]:
         """Find the boundary meshes of the part.

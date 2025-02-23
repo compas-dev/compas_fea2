@@ -94,7 +94,7 @@ class _Group(FEAData):
         """
         return sorted(self._members, key=key, reverse=reverse)
 
-    def create_subgroup(self, condition: Callable[[T], bool], **kwargs) -> "_Group":
+    def subgroup(self, condition: Callable[[T], bool], **kwargs) -> "_Group":
         """
         Create a subgroup based on a given condition.
 
@@ -126,9 +126,12 @@ class _Group(FEAData):
         Dict[any, _Group]
             A dictionary where keys are the grouping values and values are `_Group` instances.
         """
-        sorted_members = sorted(self._members, key=key)
+        try:
+            sorted_members = sorted(self._members, key=key)
+        except TypeError:
+            sorted_members = sorted(self._members, key=lambda x: x.key)
         grouped_members = {k: set(v) for k, v in groupby(sorted_members, key=key)}
-        return {k: self.__class__(members=v, name=f"{self.name}_{k}") for k, v in grouped_members.items()}
+        return {k: self.__class__(v, name=f"{self.name}") for k, v in grouped_members.items()}
 
     def union(self, other: "_Group") -> "_Group":
         """

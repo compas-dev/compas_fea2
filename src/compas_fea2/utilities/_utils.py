@@ -172,11 +172,14 @@ def part_method(f):
         func_name = f.__qualname__.split(".")[-1]
         self_obj = args[0]
         res = [vars for part in self_obj.parts if (vars := getattr(part, func_name)(*args[1::], **kwargs))]
-        if isinstance(res[0], list):
+        if not res:
+            return res
+        # if res is a list of lists
+        elif isinstance(res[0], list):
             res = list(itertools.chain.from_iterable(res))
             return res
         # if res is a Group
-        if "Group" in str(res[0].__class__):
+        elif "Group" in str(res[0].__class__):
             combined_members = set.union(*(group._members for group in res))
             return res[0].__class__(combined_members)
         else:

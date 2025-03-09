@@ -82,7 +82,7 @@ class StaticStep(GeneralStep):
         modify=True,
         **kwargs,
     ):
-        super(StaticStep, self).__init__(
+        super().__init__(
             max_increments=max_increments,
             initial_inc_size=initial_inc_size,
             min_inc_size=min_inc_size,

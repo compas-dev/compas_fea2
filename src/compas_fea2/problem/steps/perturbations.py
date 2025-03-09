@@ -28,9 +28,11 @@ class _Perturbation(Step):
 
     def __data__(self):
         data = super(_Perturbation, self).__data__()
-        data.update({
-            'type': self.__class__.__name__,
-        })
+        data.update(
+            {
+                "type": self.__class__.__name__,
+            }
+        )
         return data
 
     @classmethod
@@ -57,7 +59,7 @@ class ModalAnalysis(_Perturbation):
 
     @property
     def rdb(self):
-        return self.problem.results_db
+        return self.problem.rdb
 
     def _get_results_from_db(self, mode, **kwargs):
         """Get the results for the given members and steps.
@@ -82,8 +84,10 @@ class ModalAnalysis(_Perturbation):
         eigenvalue = self.rdb.get_rows("eigenvalues", ["lambda"], filters)[0][0]
 
         # Get the eiginvectors
+        all_columns = ["step", "part", "key", "x", "y", "z", "xx", "yy", "zz"]
         results_set = self.rdb.get_rows("eigenvectors", ["step", "part", "key", "x", "y", "z", "xx", "yy", "zz"], filters)
-        eigenvector = self.rdb.to_result(results_set, DisplacementResult)[self]
+        results_set = [{k: v for k, v in zip(all_columns, row)} for row in results_set]
+        eigenvector = self.rdb.to_result(results_set, "find_node_by_key", "u")[self]
 
         return eigenvalue, eigenvector
 
@@ -156,14 +160,16 @@ class ModalAnalysis(_Perturbation):
 
     def __data__(self):
         data = super(ModalAnalysis, self).__data__()
-        data.update({
-            'modes': self.modes,
-        })
+        data.update(
+            {
+                "modes": self.modes,
+            }
+        )
         return data
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(modes=data['modes'], **data)
+        return cls(modes=data["modes"], **data)
 
 
 class ComplexEigenValue(_Perturbation):
@@ -215,23 +221,19 @@ class BucklingAnalysis(_Perturbation):
 
     def __data__(self):
         data = super(BucklingAnalysis, self).__data__()
-        data.update({
-            'modes': self._modes,
-            'vectors': self._vectors,
-            'iterations': self._iterations,
-            'algorithm': self._algorithm,
-        })
+        data.update(
+            {
+                "modes": self._modes,
+                "vectors": self._vectors,
+                "iterations": self._iterations,
+                "algorithm": self._algorithm,
+            }
+        )
         return data
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(
-            modes=data['_modes'],
-            vectors=data['_vectors'],
-            iterations=data['_iterations'],
-            algorithm=data['_algorithm'],
-            **data
-        )
+        return cls(modes=data["_modes"], vectors=data["_vectors"], iterations=data["_iterations"], algorithm=data["_algorithm"], **data)
 
 
 class LinearStaticPerturbation(_Perturbation):

@@ -114,6 +114,15 @@ from .interfaces import (
     Interface,
 )
 
+from .interactions import (
+    _Interaction,
+    Contact,
+    HardContactFrictionPenalty,
+    HardContactNoFriction,
+    LinearContactFrictionPenalty,
+    HardContactRough,
+)
+
 __all__ = [
     "Model",
     "Part",

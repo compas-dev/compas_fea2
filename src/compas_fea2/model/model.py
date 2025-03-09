@@ -26,6 +26,7 @@ import compas_fea2
 from compas_fea2.base import FEAData
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.connectors import Connector
+from compas_fea2.model.interfaces import Interface
 from compas_fea2.model.constraints import _Constraint
 from compas_fea2.model.elements import _Element
 from compas_fea2.model.groups import ElementsGroup
@@ -101,6 +102,7 @@ class Model(FEAData):
         self._sections: Set[_Section] = set()
         self._bcs = {}
         self._ics = {}
+        self._interfaces: Set[Interface] = set()
         self._connectors: Set[Connector] = set()
         self._constraints: Set[_Constraint] = set()
         self._partsgroups: Set[PartsGroup] = set()
@@ -277,6 +279,10 @@ class Model(FEAData):
         for part in self.parts:
             e += list(part.elements)
         return e
+
+    @property
+    def interfaces(self) -> Set[Interface]:
+        return self._interfaces
 
     @property
     def bounding_box(self) -> Optional[Box]:
@@ -1317,6 +1323,44 @@ class Model(FEAData):
         connector._registration = self
 
         return connector
+
+    # ==============================================================================
+    # Interfaces methods
+    # ==============================================================================
+    def add_interface(self, interface):
+        """Add a :class:`compas_fea2.model.Interface` to the model.
+
+        Parameters
+        ----------
+        interface : :class:`compas_fea2.model.Interface`
+            The interface object to add to the model.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Interface`
+
+        """
+        if not isinstance(interface, Interface):
+            raise TypeError("{!r} is not an Interface.".format(interface))
+        interface._key = len(self._interfaces)
+        self._interfaces.add(interface)
+        interface._registration = self
+
+        return interface
+
+    def add_interfaces(self, interfaces):
+        """Add multiple :class:`compas_fea2.model.Interface` objects to the model.
+
+        Parameters
+        ----------
+        interfaces : list[:class:`compas_fea2.model.Interface`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Interface`]
+
+        """
+        return [self.add_interface(interface) for interface in interfaces]
 
     # ==============================================================================
     # Summary

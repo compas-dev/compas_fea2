@@ -613,7 +613,14 @@ class _Part(FEAData):
         mass = kwargs.get("mass", None)
         for line in lines:
             frame = Frame(line.start, xaxis, line.vector)
-            nodes = [prt.find_nodes_around_point(list(p), 1, single=True) or Node(list(p), mass=mass) for p in [line.start, line.end]]
+
+            nodes = []
+            for p in [line.start, line.end]:
+                if g := prt.nodes.subgroup(condition=lambda node: node.point == p):
+                    nodes.append(list(g.nodes)[0])
+                else:
+                    nodes.append(Node(list(p), mass=mass))
+
             prt.add_nodes(nodes)
             element = getattr(compas_fea2.model, element_model)(nodes=nodes, section=section, frame=frame)
             if not isinstance(element, _Element1D):
@@ -1194,7 +1201,7 @@ class _Part(FEAData):
         """
         return self.nodes.subgroup(condition=lambda x: is_point_on_plane(x.point, plane, tol))
 
-    def find_closest_nodes_to_point(self, point: List[float], number_of_nodes: int = 1, report: bool = False) -> Union[List[Node], Dict[Node, float]]:
+    def find_closest_nodes_to_point(self, point: List[float], number_of_nodes: int = 1, report: bool = False, single: bool = False) -> Union[List[Node], Dict[Node, float]]:
         """
         Find the closest number_of_nodes nodes to a given point.
 
@@ -1213,17 +1220,25 @@ class _Part(FEAData):
             A list of the closest nodes, or a dictionary with nodes
             and distances if report=True.
         """
-        if number_of_nodes <= 0:
-            raise ValueError("The number of nodes to find must be greater than 0.")
         if number_of_nodes > len(self.nodes):
-            raise ValueError("The number of nodes to find exceeds the available nodes.")
+            if compas_fea2.VERBOSE:
+                print(f"The number of nodes to find exceeds the available nodes. Capped to {len(self.nodes)}")
+            number_of_nodes = len(self.nodes)
+        if number_of_nodes < 0:
+            raise ValueError("The number of nodes to find must be positive")
+
+        if number_of_nodes == 0:
+            return None
 
         tree = KDTree(self.points)
         distances, indices = tree.query(point, k=number_of_nodes)
         if number_of_nodes == 1:
-            distances = [distances]
-            indices = [indices]
-        closest_nodes = [list(self.nodes)[i] for i in indices]
+            if single:
+                return list(self.nodes)[indices]
+            else:
+                distances = [distances]
+                indices = [indices]
+                closest_nodes = [list(self.nodes)[i] for i in indices]
 
         if report:
             # Return a dictionary with nodes and their distances
@@ -1231,7 +1246,7 @@ class _Part(FEAData):
 
         return NodesGroup(closest_nodes)
 
-    def find_closest_nodes_to_node(self, node: Node, number_of_nodes: int = 1, report: Optional[bool] = False) -> List[Node]:
+    def find_closest_nodes_to_node(self, node: Node, number_of_nodes: int = 1, report: Optional[bool] = False, single: bool = False) -> List[Node]:
         """Find the n closest nodes around a given node (excluding the node itself).
 
         Parameters
@@ -1250,7 +1265,7 @@ class _Part(FEAData):
         List[Node]
             List of the closest nodes.
         """
-        return self.find_closest_nodes_to_point(node.xyz, number_of_nodes, report=report)
+        return self.find_closest_nodes_to_point(node.xyz, number_of_nodes, report=report, single=single)
 
     def find_nodes_in_polygon(self, polygon: "compas.geometry.Polygon", tolerance: float = 1.1) -> List[Node]:
         """Find the nodes of the part that are contained within a planar polygon.
@@ -1696,8 +1711,8 @@ class _Part(FEAData):
         """
         elements_sub_group = self.elements.subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
         faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
-        faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
-        return faces_group
+        faces_subgroup = faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
+        return faces_subgroup
 
     def find_boudary_faces(self) -> List["compas_fea2.model.Face"]:
         """Find the boundary faces of the part.

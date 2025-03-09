@@ -36,6 +36,11 @@ class JSONResultsDatabase(ResultsDatabase):
     def __init__(self, problem, **kwargs):
         super().__init__(problem=problem, **kwargs)
 
+    def get_results_set(self, filename, field):
+        with open(filename, "r") as f:
+            data = json.load(f)
+        return data[field]
+
 
 class HDF5ResultsDatabase(ResultsDatabase):
     """HDF5 wrapper class to store and access FEA results."""
@@ -336,12 +341,9 @@ class SQLiteResultsDatabase(ResultsDatabase):
         for r in results_set:
             step = self.problem.find_step_by_name(r.pop("step"))
             results.setdefault(step, [])
-            part = self.model.find_part_by_name(r.pop("part")) or self.model.find_part_by_name(r.pop("part"), casefold=True)
-            if not part:
-                raise ValueError("Part not in model")
-            m = getattr(part, results_func)(r.pop("key"))
+            m = getattr(self.model, results_func)(r.pop("key"))[0]
             if not m:
-                raise ValueError(f"Member not in part {part.name}")
+                raise ValueError(f"Member not in {self.model}")
             results[step].append(m.results_cls[field_name](m, **r))
         return results
 

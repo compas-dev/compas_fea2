@@ -146,6 +146,7 @@ class ModalShape(NodeFieldResults):
     def __init__(self, step, results, *args, **kwargs):
         super(ModalShape, self).__init__(step=step, results_cls=ModalAnalysisResult, *args, **kwargs)
         self._results = results
+        self._field_name = "eigen"
 
     @property
     def results(self):

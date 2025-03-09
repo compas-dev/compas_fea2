@@ -342,8 +342,8 @@ class GeneralStep(Step):
         return self._time
 
     @property
-    def nlgeometry(self):
-        return self.nlgeom
+    def nlgeom(self):
+        return self._nlgeom
 
     @property
     def modify(self):

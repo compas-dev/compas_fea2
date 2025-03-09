@@ -472,7 +472,7 @@ class FacesGroup(_Group):
 
     """
 
-    def __init__(self, *, faces, **kwargs):
+    def __init__(self, faces, **kwargs):
         super(FacesGroup, self).__init__(members=faces, **kwargs)
 
     @property

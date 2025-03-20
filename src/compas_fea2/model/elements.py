@@ -470,6 +470,14 @@ class Face(FEAData):
         return self._registration
 
     @property
+    def part(self) -> "_Part":
+        return self.element.part
+
+    @property
+    def model(self) -> "Model":
+        return self.element.model
+
+    @property
     def polygon(self) -> Polygon:
         return Polygon([n.xyz for n in self.nodes])
 

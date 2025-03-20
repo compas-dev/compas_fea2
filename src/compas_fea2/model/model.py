@@ -32,6 +32,7 @@ from compas_fea2.model.elements import _Element
 from compas_fea2.model.groups import ElementsGroup
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import PartsGroup
+from compas_fea2.model.groups import InterfacesGroup
 from compas_fea2.model.groups import _Group
 from compas_fea2.model.ics import _InitialCondition
 from compas_fea2.model.materials.material import _Material
@@ -235,6 +236,14 @@ class Model(FEAData):
         return set(chain(*list(self.sections_dict.values())))
 
     @property
+    def interfaces(self) -> Set[Interface]:
+        return InterfacesGroup(self._interfaces)
+
+    @property
+    def interactions(self) -> Set[Interface]:
+        return self.interfaces.group_by(lambda x: getattr(x, 'behavior'))
+
+    @property
     def problems(self) -> Set[Problem]:
         return self._problems
 
@@ -264,9 +273,10 @@ class Model(FEAData):
 
     @property
     def nodes(self) -> list[Node]:
-        n = []
-        for part in self.parts:
-            n += list(part.nodes)
+        groups = [part.nodes for part in self.parts]
+        n = groups.pop(0)
+        for nodes in groups:
+            n += nodes
         return n
 
     @property
@@ -279,10 +289,6 @@ class Model(FEAData):
         for part in self.parts:
             e += list(part.elements)
         return e
-
-    @property
-    def interfaces(self) -> Set[Interface]:
-        return self._interfaces
 
     @property
     def bounding_box(self) -> Optional[Box]:
@@ -1342,7 +1348,6 @@ class Model(FEAData):
         """
         if not isinstance(interface, Interface):
             raise TypeError("{!r} is not an Interface.".format(interface))
-        interface._key = len(self._interfaces)
         self._interfaces.add(interface)
         interface._registration = self
 

@@ -101,9 +101,7 @@ def launch_process(cmd_args: list[str], cwd: Optional[str] = None, verbose: bool
         with subprocess.Popen(cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd, shell=True, env=env, **kwargs) as process:
             assert process.stdout is not None
             for line in process.stdout:
-                if verbose:
-                    print(line.decode().strip())
-                yield line
+                yield line.decode().strip()
 
             process.wait()
             if process.returncode != 0:

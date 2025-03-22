@@ -88,9 +88,9 @@ class HardContactNoFriction(Contact):
         Slippage tollerance during contact.
     """
 
-    def __init__(self, mu, tolerance, **kwargs) -> None:
-        super(HardContactFrictionPenalty, self).__init__(normal="HARD", tangent=mu, **kwargs)
-        self.tolerance = tolerance
+    def __init__(self, tol, **kwargs) -> None:
+        super().__init__(normal="HARD", tangent=None, **kwargs)
+        self._tol = tol
 
 
 class HardContactFrictionPenalty(Contact):
@@ -115,17 +115,21 @@ class HardContactFrictionPenalty(Contact):
         Slippage tollerance during contact.
     """
 
-    def __init__(self, *, mu, tolerance, **kwargs) -> None:
+    def __init__(self, mu, tol, **kwargs) -> None:
         super(HardContactFrictionPenalty, self).__init__(normal="HARD", tangent=mu, **kwargs)
-        self._tolerance = tolerance
+        self._tol = tol
 
-        @property
-        def tolerance(self):
-            return self._tolerance
+    @property
+    def mu(self):
+        return self._tangent
 
-        @tolerance.setter
-        def tolerance(self, value):
-            self._tolerance = value
+    @property
+    def tol(self):
+        return self._tol
+
+    @tol.setter
+    def tol(self, value):
+        self._tol = value
 
 
 class LinearContactFrictionPenalty(Contact):

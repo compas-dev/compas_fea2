@@ -327,7 +327,7 @@ class Model(FEAData):
             return ValueError("Pint UnitRegistry required")
         self._units = value
 
-    def assign_keys(self, start: int = None):
+    def assign_keys(self, start: int = None, restart=False):
         """Assign keys to the model and its parts.
 
         Parameters
@@ -347,11 +347,19 @@ class Model(FEAData):
         for i, section in enumerate(self.sections):
             section._key = i + start
 
-        for i, node in enumerate(self.nodes):
-            node._key = i + start
+        if not restart:
+            for i, node in enumerate(self.nodes):
+                node._key = i + start
 
-        for i, element in enumerate(self.elements):
-            element._key = i + start
+            for i, element in enumerate(self.elements):
+                element._key = i + start
+        else:
+            for part in self.parts:
+                for i, node in enumerate(part.nodes):
+                    node._key = i + start
+
+                for i, element in enumerate(part.elements):
+                    element._key = i + start
 
     # =========================================================================
     #                       Constructor methods
@@ -675,7 +683,7 @@ class Model(FEAData):
 
         """
         for material in self.materials:
-            if material.input_key == key:
+            if material.key == key:
                 return material
 
     def find_materials_by_attribute(self, attr: str, value: Union[str, int, float], tolerance: float = 1) -> list[_Material]:
@@ -800,7 +808,7 @@ class Model(FEAData):
 
         """
         for section in self.sections:
-            if section.input_key == key:
+            if section.key == key:
                 return section
 
     def find_sections_by_attribute(self, attr: str, value: Union[str, int, float], tolerance: float = 1) -> list[_Section]:

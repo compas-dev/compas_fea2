@@ -82,16 +82,6 @@ class FEAData(Data, metaclass=DimensionlessMeta):
     def key(self):
         return self._key
 
-    @property
-    def input_key(self):
-        if self._key is None:
-            raise AttributeError(f"{self!r} does not have a key.")
-        if self._registration is None:
-            raise AttributeError(f"{self!r} is not registered to any part.")
-        # if self._registration._key is None:
-        #     raise AttributeError(f"{self._registration!r} is not registered to a model.")
-        return self._key  # + self._registration._key + self.model._starting_key
-
     def __repr__(self):
         return "{0}({1})".format(self.__class__.__name__, id(self))
 

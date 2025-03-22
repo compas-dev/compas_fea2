@@ -45,7 +45,7 @@ from .elements import _Element
 from .elements import _Element1D
 from .elements import _Element2D
 from .elements import _Element3D
-from .groups import ElementsGroup, FacesGroup, NodesGroup, MaterialsGroup, SectionsGroup
+from .groups import ElementsGroup, FacesGroup, NodesGroup, MaterialsGroup, SectionsGroup, _Group
 
 from .materials.material import _Material
 from .nodes import Node
@@ -109,6 +109,8 @@ class _Part(FEAData):
         self._materials: Set[_Material] = set()
         self._elements: Set[_Element] = set()
         self._releases: Set[_BeamEndRelease] = set()
+
+        self._groups: Set[_Group] = set()
 
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
@@ -538,6 +540,10 @@ class _Part(FEAData):
             element_types.setdefault(type(element), []).append(element)
         return element_types
 
+    @property
+    def groups(self) -> Set[_Group]:
+        return self._groups
+
     def transform(self, transformation: Transformation) -> None:
         """Transform the part.
 
@@ -736,15 +742,15 @@ class _Part(FEAData):
                 if isinstance(section, ShellSection):
                     part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
                 else:
-                    part.add_element(TetrahedronElement(nodes=element_nodes, section=section))
+                    part.add_element(TetrahedronElement(nodes=element_nodes, section=section, rigid=rigid))
                     part.ndf = 3  # FIXME: try to move outside the loop
 
             elif ntags.size == 10:  # C3D10 tetrahedral element
-                part.add_element(TetrahedronElement(nodes=element_nodes, section=section))  # Automatically supports C3D10
+                part.add_element(TetrahedronElement(nodes=element_nodes, section=section, rigid=rigid))  # Automatically supports C3D10
                 part.ndf = 3
 
             elif ntags.size == 8:
-                part.add_element(HexahedronElement(nodes=element_nodes, section=section))
+                part.add_element(HexahedronElement(nodes=element_nodes, section=section, rigid=rigid))
 
             else:
                 raise NotImplementedError(f"Element with {ntags.size} nodes not supported")
@@ -761,7 +767,7 @@ class _Part(FEAData):
 
         if rigid:
             point = part._discretized_boundary_mesh.centroid()
-            part.reference_point = Node(xyz=[point.x, point.y, point.z])
+            part.reference_point = Node(xyz=point)
 
         return part
 
@@ -1822,8 +1828,8 @@ class _Part(FEAData):
             If the group is not a node or element group.
 
         """
-        if self.__class__ not in group.__class__.allowed_registration:
-            raise TypeError(f"{group.__class__!r} cannot be registered to {self.__class__!r}.")
+        # if self.__class__ not in group.__class__.allowed_registration:
+        #     raise TypeError(f"{group.__class__!r} cannot be registered to {self.__class__!r}.")
         group._registration = self
         self._groups.add(group)
 

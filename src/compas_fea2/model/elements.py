@@ -137,7 +137,7 @@ class _Element(FEAData):
 
     @property
     def nodes_inputkey(self) -> str:
-        return "-".join(sorted([str(node.input_key) for node in self.nodes], key=int))
+        return "-".join(sorted([str(node.key) for node in self.nodes], key=int))
 
     @property
     def points(self) -> List["Point"]:

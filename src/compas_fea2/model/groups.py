@@ -126,10 +126,11 @@ class _Group(FEAData):
         Dict[any, _Group]
             A dictionary where keys are the grouping values and values are `_Group` instances.
         """
-        try:
-            sorted_members = sorted(self._members, key=key)
-        except TypeError:
-            sorted_members = sorted(self._members, key=lambda x: x.key)
+        sorted_members = self._members
+        # try:
+        #     sorted_members = sorted(self._members, key=key)
+        # except TypeError:
+        #     sorted_members = sorted(self._members, key=lambda x: x.key)
         grouped_members = {k: set(v) for k, v in groupby(sorted_members, key=key)}
         return {k: self.__class__(v, name=f"{self.name}") for k, v in grouped_members.items()}
 

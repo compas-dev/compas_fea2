@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import importlib
 import uuid
 from abc import abstractmethod
@@ -177,7 +173,6 @@ class FEAData(Data, metaclass=DimensionlessMeta):
                     group.create_dataset(key, data=value)
                 else:
                     group.attrs[key] = json.dumps(value)
-                
 
     @classmethod
     def from_hdf5(

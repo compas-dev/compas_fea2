@@ -472,6 +472,33 @@ class ReactionFieldResults(NodeFieldResults):
         self._field_name = "rf"
 
 
+class ContactForcesFieldResults(NodeFieldResults):
+    """Reaction field results.
+
+    This class handles the reaction field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the reaction components.
+    invariants_names : list of str
+        Names of the invariants of the reaction field.
+    results_class : class
+        The class used to instantiate the reaction results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super().__init__(step=step, *args, **kwargs)
+        self._field_name = "c"
+
+
 # ------------------------------------------------------------------------------
 # Section Forces Field Results
 # ------------------------------------------------------------------------------

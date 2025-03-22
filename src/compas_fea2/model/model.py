@@ -241,7 +241,7 @@ class Model(FEAData):
 
     @property
     def interactions(self) -> Set[Interface]:
-        return self.interfaces.group_by(lambda x: getattr(x, 'behavior'))
+        return self.interfaces.group_by(lambda x: getattr(x, "behavior"))
 
     @property
     def problems(self) -> Set[Problem]:
@@ -872,6 +872,15 @@ class Model(FEAData):
     @get_docstring(_Part)
     @part_method
     def find_element_by_name(self, name: str) -> _Element:
+        pass
+
+    # =========================================================================
+    #                           Faces methods
+    # =========================================================================
+
+    @get_docstring(_Part)
+    @part_method
+    def find_faces_in_polygon(self, key: int) -> Node:
         pass
 
     # =========================================================================

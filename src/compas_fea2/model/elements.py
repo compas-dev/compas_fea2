@@ -15,6 +15,8 @@ from compas.geometry import Polyhedron
 from compas.geometry import Vector
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
+
+
 from compas.itertools import pairwise
 
 from compas_fea2.base import FEAData
@@ -504,6 +506,12 @@ class Face(FEAData):
     @property
     def mesh(self) -> Mesh:
         return Mesh.from_vertices_and_faces(self.points, [[c for c in range(len(self.points))]])
+    
+    @property
+    def node_area(self) -> float:
+        mesh = self.mesh
+        vertex_area = [mesh.vertex_area(vertex) for vertex in mesh.vertices()]
+        return zip(self.nodes, vertex_area)
 
 
 class _Element2D(_Element):

@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from typing import Iterable
 
 from compas.geometry import Point
 from compas.geometry import Vector
@@ -9,13 +7,15 @@ from compas.geometry import sum_vectors
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
-from compas_fea2.problem.fields import _PrescribedField
 from compas_fea2.problem.loads import Load
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import SectionForcesFieldResults
 from compas_fea2.results import StressFieldResults
 from compas_fea2.UI import FEA2Viewer
+
+from compas_fea2.problem.fields import NodeLoadField
+from compas_fea2.problem.fields import PointLoadField
 
 # ==============================================================================
 #                                Base Steps
@@ -55,14 +55,15 @@ class Step(FEAData):
     Developer-only class.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, replace=False, **kwargs):
         super(Step, self).__init__(**kwargs)
+        self.replace = replace
         self._field_outputs = set()
         self._history_outputs = set()
         self._results = None
         self._key = None
 
-        self._patterns = set()
+        self._load_fields = set()
         self._load_cases = set()
         self._combination = None
 
@@ -83,8 +84,8 @@ class Step(FEAData):
         return self._load_cases
 
     @property
-    def load_patterns(self):
-        return self._patterns
+    def load_fields(self):
+        return self._load_fields
 
     @property
     def combination(self):
@@ -109,13 +110,13 @@ class Step(FEAData):
         # for case in combination.load_cases:
         #     if case not in self._load_cases:
         #         raise ValueError(f"{case} is not a valid load case.")
-        for pattern in self.load_patterns:
-            if pattern.load_case in combination.load_cases:
-                factor = combination.factors[pattern.load_case]
-                for node, load in pattern.node_load:
+        for field in self.load_fields:
+            if field.load_case in combination.load_cases:
+                factor = combination.factors[field.load_case]
+                for node, load in field.node_load:
                     factored_load = factor * load
 
-                    node.loads.setdefault(self, {}).setdefault(combination, {})[pattern] = factored_load
+                    node.loads.setdefault(self, {}).setdefault(combination, {})[field] = factored_load
                     if node._total_load:
                         node._total_load += factored_load
                     else:
@@ -129,10 +130,9 @@ class Step(FEAData):
     def results(self):
         return self._results
 
-    @property
-    def key(self):
-        return self._key
-
+    # ==========================================================================
+    #                             Field outputs
+    # ==========================================================================
     def add_output(self, output):
         """Request a field or history output.
 
@@ -206,7 +206,7 @@ class Step(FEAData):
             "history_outputs": list(self._history_outputs),
             "results": self._results,
             "key": self._key,
-            "patterns": list(self._patterns),
+            "patterns": list(self._load_fields),
             "load_cases": list(self._load_cases),
             "combination": self._combination,
         }
@@ -219,7 +219,7 @@ class Step(FEAData):
         obj._history_outputs = set(data["history_outputs"])
         obj._results = data["results"]
         obj._key = data["key"]
-        obj._patterns = set(data["patterns"])
+        obj._load_fields = set(data["load_fields"])
         obj._load_cases = set(data["load_cases"])
         obj._combination = data["combination"]
         return obj
@@ -306,24 +306,14 @@ class GeneralStep(Step):
         self._nlgeom = nlgeom
         self._modify = modify
         self._restart = restart
-        self._patterns = set()
-        self._load_cases = set()
-
-    @property
-    def patterns(self):
-        return self._patterns
 
     @property
     def displacements(self):
-        return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._patterns))
+        return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._load_fields))
 
     @property
-    def load_patterns(self):
-        return list(filter(lambda p: isinstance(p.load, Load), self._patterns))
-
-    @property
-    def fields(self):
-        return list(filter(lambda p: isinstance(p.load, _PrescribedField), self._patterns))
+    def loads(self):
+        return list(filter(lambda p: isinstance(p.load, Load), self._load_fields))
 
     @property
     def max_increments(self):
@@ -358,9 +348,9 @@ class GeneralStep(Step):
         self._restart = value
 
     # ==============================================================================
-    # Patterns
+    #                               Load Fields
     # ==============================================================================
-    def add_pattern(self, pattern, *kwargs):
+    def add_load_field(self, field, *kwargs):
         """Add a general :class:`compas_fea2.problem.patterns.Pattern` to the Step.
 
         Parameters
@@ -373,17 +363,17 @@ class GeneralStep(Step):
         :class:`compas_fea2.problem.patterns.Pattern`
 
         """
-        from compas_fea2.problem.patterns import Pattern
+        from compas_fea2.problem.fields import LoadField
 
-        if not isinstance(pattern, Pattern):
-            raise TypeError("{!r} is not a LoadPattern.".format(pattern))
+        if not isinstance(field, LoadField):
+            raise TypeError("{!r} is not a LoadPattern.".format(field))
 
-        self._patterns.add(pattern)
-        self._load_cases.add(pattern.load_case)
-        pattern._registration = self
-        return pattern
+        self._load_fields.add(field)
+        self._load_cases.add(field.load_case)
+        field._registration = self
+        return field
 
-    def add_patterns(self, patterns):
+    def add_load_fields(self, fields):
         """Add multiple :class:`compas_fea2.problem.patterns.Pattern` to the Problem.
 
         Parameters
@@ -396,14 +386,254 @@ class GeneralStep(Step):
         list(:class:`compas_fea2.problem.patterns.Pattern`)
 
         """
-        from typing import Iterable
+        fields = fields if isinstance(fields, Iterable) else [fields]
+        for field in fields:
+            self.add_load_field(field)
 
-        patterns = patterns if isinstance(patterns, Iterable) else [patterns]
-        for pattern in patterns:
-            self.add_pattern(pattern)
+    def add_uniform_node_load(self, nodes, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
+        ``Step`` at specific points.
+
+        Parameters
+        ----------
+        name : str
+            name of the point load
+        x : float, optional
+            x component (in global coordinates) of the point load, by default None
+        y : float, optional
+            y component (in global coordinates) of the point load, by default None
+        z : float, optional
+            z component (in global coordinates) of the point load, by default None
+        xx : float, optional
+            moment about the global x axis of the point load, by default None
+        yy : float, optional
+            moment about the global y axis of the point load, by default None
+        zz : float, optional
+            moment about the global z axis of the point load, by default None
+        axes : str, optional
+            'local' or 'global' axes, by default 'global'
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.PointLoad`
+
+        Warnings
+        --------
+        local axes are not supported yet
+
+        """
+        from compas_fea2.problem import ConcentratedLoad
+
+        return self.add_load_field(NodeLoadField(loads=ConcentratedLoad(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes), nodes=nodes, load_case=load_case, **kwargs))
+
+    def add_uniform_point_load(self, points, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
+        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
+        ``Step`` at specific points.
+
+        Parameters
+        ----------
+        name : str
+            name of the point load
+        x : float, optional
+            x component (in global coordinates) of the point load, by default None
+        y : float, optional
+            y component (in global coordinates) of the point load, by default None
+        z : float, optional
+            z component (in global coordinates) of the point load, by default None
+        xx : float, optional
+            moment about the global x axis of the point load, by default None
+        yy : float, optional
+            moment about the global y axis of the point load, by default None
+        zz : float, optional
+            moment about the global z axis of the point load, by default None
+        axes : str, optional
+            'local' or 'global' axes, by default 'global'
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.PointLoad`
+
+        Warnings
+        --------
+        local axes are not supported yet
+
+        """
+        return self.add_load_field(PointLoadField(points=points, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, **kwargs))
+
+    def add_prestress_load(self):
+        raise NotImplementedError
+
+    def add_line_load(self, polyline, load_case=None, discretization=10, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
+        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
+        ``Step`` along a prescribed path.
+
+        Parameters
+        ----------
+        name : str
+            name of the point load
+        part : str
+            name of the :class:`compas_fea2.problem.Part` where the load is applied
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
+            applied.
+        x : float, optional
+            x component (in global coordinates) of the point load, by default None
+        y : float, optional
+            y component (in global coordinates) of the point load, by default None
+        z : float, optional
+            z component (in global coordinates) of the point load, by default None
+        xx : float, optional
+            moment about the global x axis of the point load, by default None
+        yy : float, optional
+            moment about the global y axis of the point load, by default None
+        zz : float, optional
+            moment about the global z axis of the point load, by default None
+        axes : str, optional
+            'local' or 'global' axes, by default 'global'
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.PointLoad`
+
+        Warnings
+        --------
+        local axes are not supported yet
+
+        """
+        return self.add_load_field(
+            LineLoadField(polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs)
+        )
+
+    def add_area_load(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
+        ``Step`` along a prescribed path.
+
+        Parameters
+        ----------
+        name : str
+            name of the point load
+        part : str
+            name of the :class:`compas_fea2.problem.Part` where the load is applied
+        where : int or list(int), obj
+            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
+            applied.
+        x : float, optional
+            x component (in global coordinates) of the point load, by default None
+        y : float, optional
+            y component (in global coordinates) of the point load, by default None
+        z : float, optional
+            z component (in global coordinates) of the point load, by default None
+        xx : float, optional
+            moment about the global x axis of the point load, by default None
+        yy : float, optional
+            moment about the global y axis of the point load, by default None
+        zz : float, optional
+            moment about the global z axis of the point load, by default None
+        axes : str, optional
+            'local' or 'global' axes, by default 'global'
+
+        Returns
+        -------
+        :class:`compas_fea2.problem.PointLoad`
+
+        Warnings
+        --------
+        local axes are not supported yet
+
+        """
+        from compas_fea2.problem import ConcentratedLoad
+
+        loaded_faces = self.model.find_faces_in_polygon(polygon)
+        nodes = []
+        loads = []
+        components = {"x": x or 0, "y": y or 0, "z": z or 0, "xx": xx or 0, "yy": yy or 0, "zz": zz or 0}
+        for face in loaded_faces:
+            for node, area in face.node_area:
+                nodes.append(node)
+                factored_components = {k: v * area for k, v in components.items()}
+                loads.append(ConcentratedLoad(**factored_components))
+        load_field = NodeLoadField(loads=loads, nodes=nodes, load_case=load_case, **kwargs)
+        return self.add_load_field(load_field)
+
+    def add_gravity_load(self, parts=None, g=9.81, x=0.0, y=0.0, z=-1.0, load_case=None, **kwargs):
+        """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
+
+        Parameters
+        ----------
+        g : float, optional
+            acceleration of gravity, by default 9.81
+        x : float, optional
+            x component of the gravity direction vector (in global coordinates), by default 0.
+        y : [type], optional
+            y component of the gravity direction vector (in global coordinates), by default 0.
+        z : [type], optional
+            z component of the gravity direction vector (in global coordinates), by default -1.
+        distribution : [:class:`compas_fea2.model.PartsGroup`] | [:class:`compas_fea2.model.ElementsGroup`]
+            Group of parts or elements affected by gravity.
+
+        Notes
+        -----
+        The gravity field is applied to the whole model. To remove parts of the
+        model from the calculation of the gravity force, you can assign to them
+        a 0 mass material.
+
+        Warnings
+        --------
+        Be careful to assign a value of *g* consistent with the units in your
+        model!
+        """
+        # try:
+        #     from compas_fea2.problem import GravityLoad
+        #     gravity = GravityLoad(x=x, y=y, z=z, g=g, load_case=load_case, **kwargs)
+        # except ImportError:
+        from compas_fea2.problem import ConcentratedLoad
+
+        parts = parts or self.model.parts
+        nodes = []
+        loads = []
+        for part in parts:
+            part.compute_nodal_masses()
+            for node in part.nodes:
+                nodes.append(node)
+                loads.append(ConcentratedLoad(x=node.mass[0] * g * x, y=node.mass[1] * g * y, z=node.mass[2] * g * z))
+        load_field = NodeLoadField(loads=loads, nodes=nodes, load_case=load_case, **kwargs)
+        self.add_load_field(load_field)
+
+    def add_temperature_field(self, field, node):
+        raise NotImplementedError()
+        # if not isinstance(field, PrescribedTemperatureField):
+        #     raise TypeError("{!r} is not a PrescribedTemperatureField.".format(field))
+
+        # if not isinstance(node, Node):
+        #     raise TypeError("{!r} is not a Node.".format(node))
+
+        # node._temperature = field
+        # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
+        # return field
+
+    def add_displacement_field(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+        """Add a displacement at give nodes to the Step object.
+
+        Parameters
+        ----------
+        displacement : obj
+            :class:`compas_fea2.problem.GeneralDisplacement` object.
+
+        Returns
+        -------
+        None
+
+        """
+        raise NotImplementedError()
+        # if axes != "global":
+        #     raise NotImplementedError("local axes are not supported yet")
+        # displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, , **kwargs)
+        # if not isinstance(nodes, Iterable):
+        #     nodes = [nodes]
+        # return self.add_load_pattern(Pattern(value=displacement, distribution=nodes))
 
     # ==============================================================================
-    # Combination
+    #                             Combinations
     # ==============================================================================
 
     # =========================================================================
@@ -599,7 +829,7 @@ class GeneralStep(Step):
         obj._history_outputs = set(data["history_outputs"])
         obj._results = data["results"]
         obj._key = data["key"]
-        obj._patterns = set(data["patterns"])
+        obj._load_fields = set(data["patterns"])
         obj._load_cases = set(data["load_cases"])
         obj._combination = data["combination"]
         return obj

@@ -14,13 +14,7 @@ from .step import Step
 
 class _Perturbation(Step):
     """A perturbation is a change of the state of the structure after an analysis
-    step. Differently from Steps, perturbations' changes are not carried over to
-    the next step.
-
-    Parameters
-    ----------
-    Step : _type_
-        _description_
+    step. Perturbations' changes are not carried over to the next step.
     """
 
     def __init__(self, **kwargs):
@@ -46,10 +40,8 @@ class ModalAnalysis(_Perturbation):
 
     Parameters
     ----------
-    name : str
-        Name of the ModalStep.
     modes : int
-        Number of modes to analyse.
+        Number of modes.
 
     """
 
@@ -251,7 +243,7 @@ class LinearStaticPerturbation(_Perturbation):
         return cls(**data)
 
 
-class StedyStateDynamic(_Perturbation):
+class SteadyStateDynamic(_Perturbation):
     """"""
 
     def __init__(self, **kwargs):
@@ -259,7 +251,7 @@ class StedyStateDynamic(_Perturbation):
         raise NotImplementedError
 
     def __data__(self):
-        return super(StedyStateDynamic, self).__data__()
+        return super(SteadyStateDynamic, self).__data__()
 
     @classmethod
     def __from_data__(cls, data):

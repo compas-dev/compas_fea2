@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
@@ -20,7 +16,14 @@ from .fields import (
     PrescribedTemperatureField,
 )
 
-from .patterns import Pattern, NodeLoadPattern, PointLoadPattern, LineLoadPattern, AreaLoadPattern, VolumeLoadPattern
+from .fields import (
+    LoadField,
+    NodeLoadField,
+    PointLoadField,
+    # LineLoadField,
+    # PressureLoadField,
+    # VolumeLoadField,
+)
 from .combinations import LoadCombination
 
 from .steps import (
@@ -50,12 +53,12 @@ __all__ = [
     "HarmonicPointLoad",
     "HarmonicPressureLoad",
     "ThermalLoad",
-    "Pattern",
-    "NodeLoadPattern",
-    "PointLoadPattern",
-    "LineLoadPattern",
-    "AreaLoadPattern",
-    "VolumeLoadPattern",
+    "LoadField",
+    "NodeLoadField",
+    "PointLoadField",
+    "LineLoadField",
+    "PressureLoadField",
+    "VolumeLoadField",
     "_PrescribedField",
     "PrescribedTemperatureField",
     "LoadCombination",

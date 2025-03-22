@@ -1267,14 +1267,14 @@ class _Part(FEAData):
         """
         return self.find_closest_nodes_to_point(node.xyz, number_of_nodes, report=report, single=single)
 
-    def find_nodes_in_polygon(self, polygon: "compas.geometry.Polygon", tolerance: float = 1.1) -> List[Node]:
+    def find_nodes_in_polygon(self, polygon: "compas.geometry.Polygon", tol: float = 1.1) -> List[Node]:
         """Find the nodes of the part that are contained within a planar polygon.
 
         Parameters
         ----------
         polygon : compas.geometry.Polygon
             The polygon for the search.
-        tolerance : float, optional
+        tol : float, optional
             Tolerance for the search, by default 1.1.
 
         Returns
@@ -1287,7 +1287,7 @@ class _Part(FEAData):
                 polygon.plane = Frame.from_points(*polygon.points[:3])
             except Exception:
                 polygon.plane = Frame.from_points(*polygon.points[-3:])
-        S = Scale.from_factors([tolerance] * 3, polygon.frame)
+        S = Scale.from_factors([tol] * 3, polygon.frame)
         T = Transformation.from_frame_to_frame(Frame.from_plane(polygon.plane), Frame.worldXY())
         nodes_on_plane: NodesGroup = self.find_nodes_on_plane(Plane.from_frame(polygon.plane))
         polygon_xy = polygon.transformed(S)
@@ -1712,6 +1712,39 @@ class _Part(FEAData):
         elements_sub_group = self.elements.subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
         faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
         faces_subgroup = faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
+        return faces_subgroup
+
+    def find_faces_in_polygon(self, polygon: "compas.geometry.Polygon", tol: float = 1.1) -> List["compas_fea2.model.Face"]:
+        """Find the faces of the elements that are contained within a planar polygon.
+
+        Parameters
+        ----------
+        polygon : compas.geometry.Polygon
+            The polygon for the search.
+        tol : float, optional
+            Tolerance for the search, by default 1.1.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.FaceGroup`]
+            Subgroup of the faces within the polygon.
+        """
+        # filter elements with faces
+        elements_sub_group = self.elements.subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
+        faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
+        # find faces on the plane of the polygon
+        if not hasattr(polygon, "plane"):
+            try:
+                polygon.plane = Frame.from_points(*polygon.points[:3])
+            except Exception:
+                polygon.plane = Frame.from_points(*polygon.points[-3:])
+        faces_subgroup = faces_group.subgroup(condition=lambda face: all(is_point_on_plane(node.xyz, polygon.plane) for node in face.nodes))
+        # find faces within the polygon
+        S = Scale.from_factors([tol] * 3, polygon.frame)
+        T = Transformation.from_frame_to_frame(Frame.from_plane(polygon.plane), Frame.worldXY())
+        polygon_xy = polygon.transformed(S)
+        polygon_xy = polygon.transformed(T)
+        faces_subgroup.subgroup(condition=lambda face: all(is_point_in_polygon_xy(Point(*node.xyz).transformed(T), polygon_xy) for node in face.nodes))
         return faces_subgroup
 
     def find_boudary_faces(self) -> List["compas_fea2.model.Face"]:

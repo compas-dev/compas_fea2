@@ -7,7 +7,6 @@ from compas.geometry import sum_vectors
 
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
-from compas_fea2.problem.loads import Load
 from compas_fea2.problem.fields import DisplacementField
 
 from compas_fea2.results import DisplacementFieldResults
@@ -298,12 +297,12 @@ class GeneralStep(Step):
 
     """
 
-    def __init__(self, max_increments, initial_inc_size, min_inc_size, time, nlgeom=False, modify=False, restart=False, **kwargs):
+    def __init__(self, max_increments, initial_inc_size, min_inc_size, max_inc_size, time, nlgeom=False, modify=False, restart=False, **kwargs):
         super(GeneralStep, self).__init__(**kwargs)
-
         self._max_increments = max_increments
         self._initial_inc_size = initial_inc_size
         self._min_inc_size = min_inc_size
+        self._max_inc_size = max_inc_size
         self._time = time
         self._nlgeom = nlgeom
         self._modify = modify
@@ -328,6 +327,10 @@ class GeneralStep(Step):
     @property
     def min_inc_size(self):
         return self._min_inc_size
+
+    @property
+    def max_inc_size(self):
+        return self._max_inc_size
 
     @property
     def time(self):

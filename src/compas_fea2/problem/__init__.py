@@ -53,6 +53,7 @@ __all__ = [
     "HarmonicPressureLoad",
     "ThermalLoad",
     "LoadField",
+    "DisplacementField",
     "NodeLoadField",
     "PointLoadField",
     "LineLoadField",

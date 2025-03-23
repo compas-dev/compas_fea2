@@ -115,6 +115,8 @@ class _Part(FEAData):
         self._boundary_mesh = None
         self._discretized_boundary_mesh = None
 
+        self._reference_point = None
+
     @property
     def __data__(self):
         return {
@@ -203,6 +205,15 @@ class _Part(FEAData):
         part._boundary_mesh = Mesh.__from_data__(data.get("boundary_mesh")) if data.get("boundary_mesh") else None
         part._discretized_boundary_mesh = Mesh.__from_data__(data.get("discretized_boundary_mesh")) if data.get("discretized_boundary_mesh") else None
         return part
+
+    @property
+    def reference_point(self) -> Optional[Node]:
+        return self._reference_point
+
+    @reference_point.setter
+    def reference_point(self, value: Node):
+        self._reference_point = self.add_node(value)
+        value._is_reference = True
 
     @property
     def graph(self):
@@ -2187,15 +2198,6 @@ class RigidPart(_Part):
         for element_data in data.get("elements", []):
             part.add_element(_Element.__from_data__(element_data))
         return part
-
-    @property
-    def reference_point(self) -> Optional[Node]:
-        return self._reference_point
-
-    @reference_point.setter
-    def reference_point(self, value: Node):
-        self._reference_point = self.add_node(value)
-        value._is_reference = True
 
     @classmethod
     def from_gmsh(cls, gmshModel: object, name: Optional[str] = None, **kwargs) -> "_Part":

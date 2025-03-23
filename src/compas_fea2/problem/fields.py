@@ -97,6 +97,36 @@ class LoadField(FEAData):
     #         name=self.name or other.name,
     #     )
 
+class DisplacementField(LoadField):
+    """A distribution of a set of displacements over a set of nodes.
+
+    Parameters
+    ----------
+    displacement : object
+        The displacement to be applied.
+    nodes : list
+        List of nodes where the displacement is applied.
+    load_case : object, optional
+        The load case to which this pattern belongs.
+    """
+
+    def __init__(self, displacements, nodes, load_case=None, **kwargs):
+        nodes = nodes if isinstance(nodes, Iterable) else [nodes]
+        displacements = displacements if isinstance(displacements, Iterable) else [displacements] * len(nodes)
+        super(DisplacementField, self).__init__(loads=displacements, distribution=nodes, load_case=load_case, **kwargs)
+
+    @property
+    def nodes(self):
+        return self._distribution
+
+    @property
+    def displacements(self):
+        return self._loads
+
+    @property
+    def node_displacement(self):
+        """Return a list of tuples with the nodes and the assigned displacement."""
+        return zip(self.nodes, self.displacements)
 
 class NodeLoadField(LoadField):
     """A distribution of a set of concentrated loads over a set of nodes.

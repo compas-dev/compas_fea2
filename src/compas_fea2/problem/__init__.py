@@ -11,15 +11,14 @@ from .loads import (
     HarmonicPressureLoad,
     ThermalLoad,
 )
-from .fields import (
-    _PrescribedField,
-    PrescribedTemperatureField,
-)
 
 from .fields import (
     LoadField,
+    DisplacementField,
     NodeLoadField,
     PointLoadField,
+    _PrescribedField,
+    PrescribedTemperatureField,
     # LineLoadField,
     # PressureLoadField,
     # VolumeLoadField,

@@ -8,6 +8,8 @@ from compas.geometry import sum_vectors
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.loads import Load
+from compas_fea2.problem.fields import DisplacementField
+
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import SectionForcesFieldResults
@@ -309,11 +311,11 @@ class GeneralStep(Step):
 
     @property
     def displacements(self):
-        return list(filter(lambda p: isinstance(p.load, GeneralDisplacement), self._load_fields))
+        return list(filter(lambda p: isinstance(p, DisplacementField), self._load_fields))
 
     @property
     def loads(self):
-        return list(filter(lambda p: isinstance(p.load, Load), self._load_fields))
+        return list(filter(lambda p: not isinstance(p, DisplacementField), self._load_fields))
 
     @property
     def max_increments(self):
@@ -611,7 +613,7 @@ class GeneralStep(Step):
         # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
         # return field
 
-    def add_displacement_field(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
+    def add_uniform_displacement_field(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a displacement at give nodes to the Step object.
 
         Parameters
@@ -624,13 +626,10 @@ class GeneralStep(Step):
         None
 
         """
-        raise NotImplementedError()
-        # if axes != "global":
-        #     raise NotImplementedError("local axes are not supported yet")
-        # displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, , **kwargs)
-        # if not isinstance(nodes, Iterable):
-        #     nodes = [nodes]
-        # return self.add_load_pattern(Pattern(value=displacement, distribution=nodes))
+        from compas_fea2.problem import DisplacementField
+
+        displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, **kwargs)
+        return self.add_load_field(DisplacementField(displacement, nodes))
 
     # ==============================================================================
     #                             Combinations

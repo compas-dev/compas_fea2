@@ -1842,7 +1842,10 @@ class _Part(FEAData):
         # if self.__class__ not in group.__class__.allowed_registration:
         #     raise TypeError(f"{group.__class__!r} cannot be registered to {self.__class__!r}.")
         group._registration = self
+        group._part = self
+        group._model = self.model
         self._groups.add(group)
+        return group
 
     def add_groups(self, groups: List[Union[NodesGroup, ElementsGroup, FacesGroup]]) -> List[Union[NodesGroup, ElementsGroup, FacesGroup]]:
         """Add multiple groups to the part.

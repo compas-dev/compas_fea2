@@ -7,6 +7,7 @@ from compas_fea2.base import FEAData
 from compas_fea2.model.groups import _Group
 from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart
+from compas_fea2.model.groups import NodesGroup
 
 
 class Connector(FEAData):
@@ -19,8 +20,6 @@ class Connector(FEAData):
     nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
         For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
-    section : compas_fea2.model.sections.ConnectorSection
-        The section containing the mechanical properties of the connector.
 
     Notes
     -----
@@ -73,6 +72,74 @@ class Connector(FEAData):
         self._nodes = nodes
 
 
+class LinearConnector(Connector):
+    """Linear connector.
+
+    Parameters
+    ----------
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
+        The connected nodes. The nodes must be registered to different parts.
+        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
+    dofs : str
+        The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
+    """
+
+    def __init__(self, master, slave, section, **kwargs):
+        super().__init__(nodes=[master, slave], **kwargs)
+        if isinstance(master, _Group):
+            master = list(master._members)[0]
+        if isinstance(slave, _Group):
+            slave = list(slave._members)[0]
+        if master.part == slave.part:
+            raise ValueError("Nodes must belong to different parts")
+        self._master = master
+        self._slave = slave
+        self._section = section
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @property
+    def master(self):
+        return self._master
+
+    @master.setter
+    def master(self, value):
+        self._master = value
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
+
+    @property
+    def slave(self):
+        return self._slave
+
+    @slave.setter
+    def slave(self, value):
+        self._slave = value
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
+
+    @property
+    def section(self):
+        return self._section
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"dofs": self._dofs})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._dofs = data["dofs"]
+        return instance
+
+    @property
+    def dofs(self) -> str:
+        return self._dofs
+
+
 class RigidLinkConnector(Connector):
     """Rigid link connector.
 
@@ -80,7 +147,7 @@ class RigidLinkConnector(Connector):
     ----------
     nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
-        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
+        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.RigidElement`.
     dofs : str
         The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
     """

@@ -40,9 +40,10 @@ from .materials.timber import Timber
 from .sections import (
     _Section,
     MassSection,
+    SpringSection,
+    ConnectorSection,
     BeamSection,
     GenericBeamSection,
-    SpringSection,
     AngleSection,
     BoxSection,
     CircularSection,
@@ -67,6 +68,7 @@ from .constraints import (
 )
 from .connectors import (
     Connector,
+    LinearConnector,
     RigidLinkConnector,
     SpringConnector,
     ZeroLengthConnector,
@@ -157,6 +159,7 @@ __all__ = [
     "Timber",
     "_Section",
     "MassSection",
+    "ConnectorSection",
     "BeamSection",
     "GenericBeamSection",
     "SpringSection",
@@ -175,7 +178,6 @@ __all__ = [
     "StrutSection",
     "TieSection",
     "_Constraint",
-    "RigidLinkConnector",
     "_MultiPointConstraint",
     "TieMPC",
     "BeamMPC",
@@ -208,6 +210,7 @@ __all__ = [
     "InitialTemperatureField",
     "InitialStressField",
     "Connector",
+    "LinearConnector",
     "SpringConnector",
     "RigidLinkConnector",
     "ZeroLengthConnector",

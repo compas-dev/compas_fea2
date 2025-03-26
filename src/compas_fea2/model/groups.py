@@ -31,6 +31,8 @@ class _Group(FEAData):
     def __init__(self, members: Iterable[T] = None, **kwargs):
         super().__init__(**kwargs)
         self._members: Set[T] = set(members) if members else set()
+        self._part = None
+        self._model = None
 
     def __len__(self) -> int:
         """Return the number of members in the group."""
@@ -314,11 +316,11 @@ class NodesGroup(_Group):
 
     @property
     def part(self):
-        return self._registration
+        return self._part
 
     @property
     def model(self):
-        return self.part._registration
+        return self._model
 
     @property
     def nodes(self):

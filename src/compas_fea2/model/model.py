@@ -107,6 +107,7 @@ class Model(FEAData):
         self._connectors: Set[Connector] = set()
         self._constraints: Set[_Constraint] = set()
         self._partsgroups: Set[PartsGroup] = set()
+        self._groups: Set[_Group] = set()
         self._problems: Set[Problem] = set()
 
     @property
@@ -194,6 +195,10 @@ class Model(FEAData):
     @property
     def graph(self) -> Graph:
         return self._graph
+
+    @property
+    def groups(self) -> Set[_Group]:
+        return self._groups
 
     @property
     def partgroups(self) -> Set[PartsGroup]:
@@ -346,6 +351,9 @@ class Model(FEAData):
 
         for i, section in enumerate(self.sections):
             section._key = i + start
+
+        for i, connector in enumerate(self.connectors):
+            connector._key = i + start
 
         if not restart:
             for i, node in enumerate(self.nodes):
@@ -894,6 +902,37 @@ class Model(FEAData):
     # =========================================================================
     #                           Groups methods
     # =========================================================================
+    def add_group(self, group: _Group) -> _Group:
+        """Add a group to the model.
+
+        Parameters
+        ----------
+        group : :class:`compas_fea2.model.groups._Group`
+
+        Returns
+        -------
+        :class:`compas_fea2.model.groups._Group`
+
+        """
+        if not isinstance(group, _Group):
+            raise TypeError("{!r} is not a group.".format(group))
+        self._model = self
+        self._registration = self
+        self._groups.add(group)
+        return group
+
+    def add_groups(self, groups: list[_Group]) -> list[_Group]:
+        """Add multiple groups to the model.
+
+        Parameters
+        ----------
+        groups : list[:class:`compas_fea2.model.groups._Group`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.groups._Group`]
+        """
+        return [self.add_group(group) for group in groups]
 
     def add_parts_group(self, group: PartsGroup) -> PartsGroup:
         """Add a PartsGroup object to the Model.
@@ -912,7 +951,7 @@ class Model(FEAData):
         if not isinstance(group, PartsGroup):
             raise TypeError("Only PartsGroups can be added to a model")
         self.partgroups.add(group)
-        group._registration = self  # FIXME wrong because the members of the group might have a different registation
+        group._registration = self
         return group
 
     def add_parts_groups(self, groups: list[PartsGroup]) -> list[PartsGroup]:
@@ -1341,11 +1380,24 @@ class Model(FEAData):
         """
         if not isinstance(connector, Connector):
             raise TypeError("{!r} is not a Connector.".format(connector))
-        connector._key = len(self._connectors)
         self._connectors.add(connector)
         connector._registration = self
-
+        self.add_group(connector.nodes)
         return connector
+
+    def add_connectors(self, connectors):
+        """Add multiple :class:`compas_fea2.model.Connector` objects to the model.
+
+        Parameters
+        ----------
+        connectors : list[:class:`compas_fea2.model.Connector`]
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Connector`]
+
+        """
+        return [self.add_connector(connector) for connector in connectors]
 
     # ==============================================================================
     # Interfaces methods

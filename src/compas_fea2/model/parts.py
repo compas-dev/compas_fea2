@@ -129,6 +129,7 @@ class _Part(FEAData):
             "sections": [section.__data__ for section in self.sections],
             "elements": [element.__data__ for element in self.elements],
             "releases": [release.__data__ for release in self.releases],
+            "reference_point": self.reference_point.__data__ if self.reference_point else None,
         }
 
     def to_hdf5_data(self, hdf5_file, mode="a"):
@@ -204,6 +205,8 @@ class _Part(FEAData):
 
         part._boundary_mesh = Mesh.__from_data__(data.get("boundary_mesh")) if data.get("boundary_mesh") else None
         part._discretized_boundary_mesh = Mesh.__from_data__(data.get("discretized_boundary_mesh")) if data.get("discretized_boundary_mesh") else None
+        if rp:= data.get("reference_point"):
+            part.reference_point = Node.__from_data__(rp)
         return part
 
     @property
@@ -2169,7 +2172,7 @@ class RigidPart(_Part):
 
     @property
     def __data__(self):
-        data = super().__data__()
+        data = super().__data__
         data.update(
             {
                 "class": self.__class__.__name__,

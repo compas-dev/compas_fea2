@@ -1712,7 +1712,7 @@ class _Part(FEAData):
     #                           Faces methods
     # =========================================================================
 
-    def find_faces_on_plane(self, plane: Plane) -> List["compas_fea2.model.Face"]:
+    def find_faces_on_plane(self, plane: Plane, tol: float=1) -> List["compas_fea2.model.Face"]:
         """Find the faces of the elements that belong to a given plane, if any.
 
         Parameters
@@ -1731,7 +1731,7 @@ class _Part(FEAData):
         """
         elements_sub_group = self.elements.subgroup(condition=lambda x: isinstance(x, (_Element2D, _Element3D)))
         faces_group = FacesGroup([face for element in elements_sub_group for face in element.faces])
-        faces_subgroup = faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane) for node in x.nodes))
+        faces_subgroup = faces_group.subgroup(condition=lambda x: all(is_point_on_plane(node.xyz, plane, tol=tol) for node in x.nodes))
         return faces_subgroup
 
     def find_faces_in_polygon(self, polygon: "compas.geometry.Polygon", tol: float = 1.1) -> List["compas_fea2.model.Face"]:

@@ -5,3 +5,5 @@ Click
 matplotlib
 pint
 python-dotenv
+h5py
+matplotlib

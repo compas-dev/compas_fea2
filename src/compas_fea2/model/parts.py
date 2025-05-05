@@ -1250,7 +1250,7 @@ class _Part(FEAData):
         if number_of_nodes == 0:
             return None
 
-        tree = KDTree(self.points)
+        tree = KDTree([n.xyz for n in self.nodes])
         distances, indices = tree.query(point, k=number_of_nodes)
         if number_of_nodes == 1:
             if single:
@@ -1259,6 +1259,8 @@ class _Part(FEAData):
                 distances = [distances]
                 indices = [indices]
                 closest_nodes = [list(self.nodes)[i] for i in indices]
+
+        closest_nodes = [list(self.nodes)[i] for i in indices]  # Ensure closest_nodes is initialized
 
         if report:
             # Return a dictionary with nodes and their distances

@@ -18,7 +18,7 @@ Parts
 .. autosummary::
     :toctree: generated/
 
-    DeformablePart
+    Part
     RigidPart
 
 Nodes

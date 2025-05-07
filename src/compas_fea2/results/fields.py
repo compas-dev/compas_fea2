@@ -1,32 +1,32 @@
+from itertools import groupby
 from typing import Iterable
 
 import numpy as np
 from compas.geometry import Frame
-from compas.geometry import Point
 from compas.geometry import Transformation
 from compas.geometry import Vector
 
 from compas_fea2.base import FEAData
-from compas_fea2.model import _Element2D
-from compas_fea2.model import _Element3D
 
-from .results import AccelerationResult
-from .results import DisplacementResult
-from .results import ReactionResult
-from .results import ShellStressResult
-from .results import SolidStressResult
-from .results import VelocityResult
+from .database import ResultsDatabase  # noqa: F401
+from .results import AccelerationResult  # noqa: F401
+from .results import DisplacementResult  # noqa: F401
+from .results import ReactionResult  # noqa: F401
+from .results import SectionForcesResult  # noqa: F401
+from .results import ShellStressResult  # noqa: F401
+from .results import SolidStressResult  # noqa: F401
+from .results import VelocityResult  # noqa: F401
 
 
 class FieldResults(FEAData):
     """FieldResults object. This is a collection of Result objects that define a field.
 
-    The objects uses SQLite queries to efficiently retrieve the results from the results database.
+    The objects use SQLite queries to efficiently retrieve the results from the results database.
 
-    The field results are defined over multiple steps
+    The field results are defined over multiple steps.
 
-    You can use FieldResults to visualise a field over a part or the model, or to compute
-    global quantiies, such as maximum or minimum values.
+    You can use FieldResults to visualize a field over a part or the model, or to compute
+    global quantities, such as maximum or minimum values.
 
     Parameters
     ----------
@@ -43,10 +43,10 @@ class FieldResults(FEAData):
         The analysis step where the results are defined.
     problem : :class:`compas_fea2.problem.Problem`
         The Problem where the Step is registered.
-    model : :class:`compas_fea2.problem.Model
+    model : :class:`compas_fea2.problem.Model`
         The Model where the Step is registered.
     db_connection : :class:`sqlite3.Connection` | None
-        Connection object or None
+        Connection object or None.
     components : dict
         A dictionary with {"component name": component value} for each component of the result.
     invariants : dict
@@ -54,754 +54,776 @@ class FieldResults(FEAData):
 
     Notes
     -----
-    FieldResults are registered to a :class:`compas_fea2.problem.Problem`.
-
+    FieldResults are registered to a :class:`compas_fea2.problem.Step`.
     """
 
-    def __init__(self, problem, field_name, *args, **kwargs):
+    def __init__(self, step, *args, **kwargs):
         super(FieldResults, self).__init__(*args, **kwargs)
-        self._registration = problem
-        self._field_name = field_name
-        self._table = self.problem.results_db.get_table(field_name)
-        self._components_names = None
-        self._invariants_names = None
-        self._results_class = None
-        self._results_func = None
+        self._registration = step
 
     @property
-    def field_name(self):
-        return self._field_name
+    def sqltable_schema(self):
+        fields = []
+        predefined_fields = [
+            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+            ("key", "INTEGER"),
+            ("step", "TEXT"),
+            ("part", "TEXT"),
+        ]
+
+        fields.extend(predefined_fields)
+
+        for comp in self.components_names:
+            fields.append((comp, "REAL"))
+        return {
+            "table_name": self.field_name,
+            "columns": fields,
+        }
 
     @property
-    def problem(self):
+    def step(self) -> "_Step":  # noqa: F821
         return self._registration
 
     @property
-    def model(self):
+    def problem(self) -> "Problem":  # noqa: F821
+        return self.step.problem
+
+    @property
+    def model(self) -> "Model":  # noqa: F821
         return self.problem.model
 
     @property
-    def rdb(self):
-        return self.problem.results_db
+    def field_name(self) -> str:
+        raise NotImplementedError("This method should be implemented in the subclass.")
 
     @property
-    def components_names(self):
-        return self._components_names
+    def results_func(self) -> str:
+        raise NotImplementedError("This method should be implemented in the subclass.")
 
     @property
-    def invariants_names(self):
-        return self._invariants_names
+    def rdb(self) -> ResultsDatabase:
+        return self.problem.rdb
 
-    def _get_db_results(self, members, steps, **kwargs):
-        """Get the results for the given members and steps in the database
-        format.
+    @property
+    def results(self) -> list:
+        return self._get_results_from_db(columns=self.components_names)[self.step]
 
-        Parameters
-        ----------
-        members : _type_
-            The FieldResults object containing the field results data.
-        steps : _type_
-            _description_
+    @property
+    def results_sorted(self) -> list:
+        return sorted(self.results, key=lambda x: x.key)
 
-        Returns
-        -------
-        _type_
-            _description_
+    @property
+    def locations(self) -> Iterable:
+        """Return the locations where the field is defined.
+
+        Yields
+        ------
+        :class:`compas.geometry.Point`
+            The location where the field is defined.
         """
-        if not isinstance(members, Iterable):
-            members = [members]
-        if not isinstance(steps, Iterable):
-            steps = [steps]
+        for r in self.results:
+            yield r.location
 
-        members_keys = set([member.input_key for member in members])
-        parts_names = set([member.part.name for member in members])
-        steps_names = set([step.name for step in steps])
-
-        if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "input_key"] + self._components_names_3d
-            field_name = self._field_name_3d
-        elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "input_key"] + self._components_names_2d
-            field_name = self._field_name_2d
-        else:
-            columns = ["step", "part", "input_key"] + self._components_names
-            field_name = self._field_name
-
-        filters = {"input_key": members_keys, "part": parts_names, "step": steps_names}
-
-        if kwargs.get("mode", None):
-            filters["mode"] = set([kwargs['mode'] for member in members])
-
-        results_set = self.rdb.get_rows(field_name, columns, filters)
-        return results_set
-
-    def _to_result(self, results_set):
-        """Convert a set of results in database format to the appropriate
-        result object.
-
-        Parameters
-        ----------
-        results_set : _type_
-            _description_
-
-        Returns
-        -------
-        dic
-            Dictiorany grouping the results per Step.
-        """
-        results = {}
-        for r in results_set:
-            step = self.problem.find_step_by_name(r[0])
-            results.setdefault(step, [])
-            part = self.model.find_part_by_name(r[1]) or self.model.find_part_by_name(r[1], casefold=True)
-            if not part:
-                raise ValueError(f"Part {r[1]} not in model")
-            m = getattr(part, self._results_func)(r[2])
-            results[step].append(self._results_class(m, *r[3:]))
-        return results
-
-    def get_results(self, members, steps, **kwargs):
+    def _get_results_from_db(self, members=None, columns=None, filters=None, func=None, **kwargs):
         """Get the results for the given members and steps.
 
         Parameters
         ----------
-        members : _type_
-            _description_
-        steps : _type_
-            _description_
+        members : list, optional
+            List of members to filter results.
+        columns : list, optional
+            List of columns to retrieve.
+        filters : dict, optional
+            Dictionary of filters to apply.
 
         Returns
         -------
-        _type_
-            _description_
+        dict
+            Dictionary of results.
         """
-        results_set = self._get_db_results(members, steps, **kwargs)
-        return self._to_result(results_set)
+        if not columns:
+            columns = self.components_names
 
-    def get_max_result(self, component, step, **kwargs):
+        if not filters:
+            filters = {}
+
+        filters["step"] = [self.step.name]
+
+        if members:
+            if not isinstance(members, Iterable):
+                members = [members]
+            filters["key"] = set([member.key for member in members])
+            filters["part"] = set([member.part.name for member in members])
+
+        all_columns = ["step", "part", "key"] + columns
+
+        results_set = self.rdb.get_rows(self.field_name, all_columns, filters, func)
+        results_set = [{k: v for k, v in zip(all_columns, row)} for row in results_set]
+
+        return self.rdb.to_result(results_set, results_func=self.results_func, field_name=self.field_name, **kwargs)
+
+    def get_result_at(self, location):
+        """Get the result for a given location.
+
+        Parameters
+        ----------
+        location : object
+            The location to retrieve the result for.
+
+        Returns
+        -------
+        object
+            The result at the given location.
+        """
+        return self._get_results_from_db(members=location, columns=self.components_names)[self.step][0]
+
+    def get_max_result(self, component):
         """Get the result where a component is maximum for a given step.
 
         Parameters
         ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        :class:`compas_fea2.results.Result`
-            The appriate Result object.
-        """
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
-
-    def get_min_result(self, component, step, **kwargs):
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
-        return self._to_result(results_set)[step][0]
-
-    def get_max_component(self, component, step, **kwargs):
-        """Get the result where a component is maximum for a given step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        :class:`compas_fea2.results.Result`
-            The appriate Result object.
-        """
-        return self.get_max_result(component, step).vector[component - 1]
-
-    def get_min_component(self, component, step, **kwargs):
-        """Get the result where a component is minimum for a given step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
+        component : str
+            The component to retrieve the maximum result for.
 
         Returns
         -------
         :class:`compas_fea2.results.Result`
             The appropriate Result object.
         """
-        return self.get_min_result(component, step).vector[component - 1]
+        func = ["DESC", component]
+        return self._get_results_from_db(columns=self.components_names, func=func)[self.step][0]
 
-    def get_limits_component(self, component, step, **kwargs):
-        """Get the result objects with the min and max value of a given
-        component in a step.
+    def get_min_result(self, component):
+        """Get the result where a component is minimum for a given step.
+
+        Parameters
+        ----------
+        component : str
+            The component to retrieve the minimum result for.
+
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The appropriate Result object.
+        """
+        func = ["ASC", component]
+        return self._get_results_from_db(columns=self.components_names, func=func)[self.step][0]
+
+    def get_limits_component(self, component):
+        """Get the result objects with the min and max value of a given component in a step.
 
         Parameters
         ----------
         component : int
-            The index of the component to retrieve (e.g., 0 for the first component).
-        step : :class:`compas_fea2.problem.Step`
-            The analysis step where the results are defined.
+            The index of the component to retrieve.
 
         Returns
         -------
         list
             A list containing the result objects with the minimum and maximum value of the given component in the step.
         """
-        return [self.get_min_result(component, step), self.get_max_result(component, step)]
+        return [self.get_min_result(component, self.step), self.get_max_result(component, self.step)]
 
-    def get_limits_absolute(self, step, **kwargs):
-        limits = []
-        for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
-        return [self._to_result(limit)[step][0] for limit in limits]
+    def component_scalar(self, component):
+        """Return the value of selected component."""
+        for result in self.results:
+            yield getattr(result, component, None)
 
-    def get_results_at_point(self, point, distance, plane=None, steps=None, **kwargs):
-        """Get the displacement of the model around a location (point).
+    def filter_by_component(self, component, threshold=None):
+        """Filter results by a specific component, optionally using a threshold.
 
         Parameters
         ----------
-        point : [float]
-            The coordinates of the point.
-        steps : _type_, optional
-            _description_, by default None
+        componen : str
+            The name of the component to filter by (e.g., "Fx_1").
+        threshold : float, optional
+            A threshold value to filter results. Only results above this value are included.
 
         Returns
         -------
         dict
-            Dictionary with {step: result}
-
+            A dictionary of filtered elements and their results.
         """
-        nodes = self.model.find_nodes_around_point(point, distance, plane)
-        if not nodes:
-            print(f"WARNING: No nodes found at {point} within {distance}")
-        else:
-            results = []
-            steps = steps or self.problem.steps
-            results = self.get_results(nodes, steps)
-            return results
+        if component not in self.components_names:
+            raise ValueError(f"Component '{component}' is not valid. Choose from {self.components_names}.")
 
-    def locations(self, step=None, point=False, **kwargs):
-        """Return the locations where the field is defined.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step, by default None
-
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            if point:
-                yield r.node.point
-            else:
-                yield r.node
-
-    def vectors(self, step=None, **kwargs):
-        """Return the locations where the field is defined.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step, by default None
-
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            yield r.vector
-
-    def component(self, step=None, component=None, **kwargs):
-        """Return the locations where the field is defined.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step, by default None
-
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            if component is None:
-                yield r.vector.magnitude
-            else:
-                yield r.vector[component]
+        for result in self.results:
+            component_value = getattr(result, component, None)
+            if component_value is not None and (threshold is None or component_value >= threshold):
+                yield result
 
 
-class DisplacementFieldResults(FieldResults):
-    """Displacement field results.
+# ------------------------------------------------------------------------------
+# Node Field Results
+# ------------------------------------------------------------------------------
+class NodeFieldResults(FieldResults):
+    """Node field results.
 
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
-    """
-
-    def __init__(self, problem, *args, **kwargs):
-        super(DisplacementFieldResults, self).__init__(problem=problem, field_name="u", *args, **kwargs)
-        self._components_names = ["ux", "uy", "uz", "uxx", "uyy", "uzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
-
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
-
-
-class ModalShape(FieldResults):
-    """Displacement field results.
-
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
-    """
-
-    def __init__(self, problem, mode, *args, **kwargs):
-        super(ModalShape, self).__init__(problem=problem, field_name="eigenvectors", *args, **kwargs)
-        self._components_names = ["dof_1", "dof_2", "dof_3", "dof_4", "dof_5", "dof_6"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = DisplacementResult
-        self._results_func = "find_node_by_key"
-        self.mode = mode
-
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step, mode=self.mode)[step]
-
-
-class AccelerationFieldResults(FieldResults):
-    """Displacement field results.
-
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
-    """
-
-    def __init__(self, problem, *args, **kwargs):
-        super(AccelerationFieldResults, self).__init__(problem=problem, field_name="a", *args, **kwargs)
-        self._components_names = ["ax", "ay", "az", "axx", "ayy", "azz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = AccelerationResult
-        self._results_func = "find_node_by_key"
-
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
-
-
-class VelocityFieldResults(FieldResults):
-    """Displacement field results.
-
-    This class handles the displacement field results from a finite element analysis.
-
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
-
-    Attributes
-    ----------
-    components_names : list of str
-        Names of the displacement components.
-    invariants_names : list of str
-        Names of the invariants of the displacement field.
-    results_class : class
-        The class used to instantiate the displacement results.
-    results_func : str
-        The function used to find nodes by key.
-    """
-
-    def __init__(self, problem, *args, **kwargs):
-        super(VelocityFieldResults, self).__init__(problem=problem, field_name="v", *args, **kwargs)
-        self._components_names = ["vx", "vy", "vz", "vxx", "vyy", "vzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = VelocityResult
-        self._results_func = "find_node_by_key"
-
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
-
-
-class ReactionFieldResults(FieldResults):
-    """Reaction field.
+    This class handles the node field results from a finite element analysis.
 
     Parameters
     ----------
-    problem : :class:`compas_fea2.problem.Problem`
-        The Problem where the Step is registered.
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the node components.
+    invariants_names : list of str
+        Names of the invariants of the node field.
+    results_class : class
+        The class used to instantiate the node results.
+    results_func : str
+        The function used to find nodes by key.
     """
 
-    def __init__(self, problem, *args, **kwargs):
-        super(ReactionFieldResults, self).__init__(problem=problem, field_name="rf", *args, **kwargs)
-        self._components_names = ["rfx", "rfy", "rfz", "rfxx", "rfyy", "rfzz"]
-        self._invariants_names = ["magnitude"]
-        self._results_class = ReactionResult
+    def __init__(self, step, *args, **kwargs):
+        super(NodeFieldResults, self).__init__(step=step, *args, **kwargs)
         self._results_func = "find_node_by_key"
 
-    def results(self, step):
-        nodes = self.model.nodes
-        return self.get_results(nodes, steps=step)[step]
-
-
-class StressFieldResults(FEAData):
-    """_summary_
-
-    Parameters
-    ----------
-    FieldResults : _type_
-        _description_
-    """
-
-    def __init__(self, problem, *args, **kwargs):
-        super(StressFieldResults, self).__init__(*args, **kwargs)
-        self._registration = problem
-        self._components_names_2d = ["s11", "s22", "s12", "m11", "m22", "m12"]
-        self._components_names_3d = ["s11", "s22", "s23", "s12", "s13", "s33"]
-        self._field_name_2d = "s2d"
-        self._field_name_3d = "s3d"
-        self._results_class_2d = ShellStressResult
-        self._results_class_3d = SolidStressResult
-        self._results_func = "find_element_by_key"
+    @property
+    def components_names(self):
+        return ["x", "y", "z", "rx", "ry", "rz"]
 
     @property
     def field_name(self):
         return self._field_name
 
     @property
-    def problem(self):
-        return self._registration
+    def results_func(self):
+        return self._results_func
 
     @property
-    def model(self):
-        return self.problem.model
+    def vectors(self):
+        """Return the vectors where the field is defined.
+
+        Yields
+        ------
+        :class:`compas.geometry.Vector`
+            The vector where the field is defined.
+        """
+        for r in self.results:
+            yield r.vector
 
     @property
-    def rdb(self):
-        return self.problem.results_db
+    def vectors_rotation(self):
+        """Return the vectors where the field is defined.
+
+        Yields
+        ------
+        :class:`compas.geometry.Vector`
+            The vector where the field is defined.
+        """
+        for r in self.results:
+            yield r.vector_rotation
+
+    def compute_resultant(self, sub_set=None):
+        """Compute the translation resultant, moment resultant, and location of the field.
+
+        Parameters
+        ----------
+        sub_set : list, optional
+            List of locations to filter the results. If None, all results are considered.
+
+        Returns
+        -------
+        tuple
+            The translation resultant as :class:`compas.geometry.Vector`,
+            moment resultant as :class:`compas.geometry.Vector`,
+            and location as a :class:`compas.geometry.Point`.
+        """
+        from compas.geometry import Point
+        from compas.geometry import centroid_points_weighted
+        from compas.geometry import cross_vectors
+        from compas.geometry import sum_vectors
+
+        results_subset = list(filter(lambda x: x.location in sub_set, self.results)) if sub_set else self.results
+        vectors = [r.vector for r in results_subset]
+        locations = [r.location.xyz for r in results_subset]
+        resultant_location = Point(*centroid_points_weighted(locations, [v.length for v in vectors]))
+        resultant_vector = sum_vectors(vectors)
+        moment_vector = sum_vectors(cross_vectors(Vector(*loc) - resultant_location, vec) for loc, vec in zip(locations, vectors))
+
+        return Vector(*resultant_vector), Vector(*moment_vector), resultant_location
+
+    def components_vectors(self, components):
+        """Return a vector representing the given components."""
+        for vector in self.vectors:
+            v_copy = vector.copy()
+            for c in ["x", "y", "z"]:
+                if c not in components:
+                    setattr(v_copy, c, 0)
+            yield v_copy
+
+    def components_vectors_rotation(self, components):
+        """Return a vector representing the given components."""
+        for vector in self.results.vectors_rotation:
+            v_copy = vector.copy()
+            for c in ["x", "y", "z"]:
+                if c not in components:
+                    setattr(v_copy, c, 0)
+            yield v_copy
+
+
+class DisplacementFieldResults(NodeFieldResults):
+    """Displacement field results.
+
+    This class handles the displacement field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the displacement components.
+    invariants_names : list of str
+        Names of the invariants of the displacement field.
+    results_class : class
+        The class used to instantiate the displacement results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(DisplacementFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "u"
+
+
+class AccelerationFieldResults(NodeFieldResults):
+    """Acceleration field results.
+
+    This class handles the acceleration field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the acceleration components.
+    invariants_names : list of str
+        Names of the invariants of the acceleration field.
+    results_class : class
+        The class used to instantiate the acceleration results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(AccelerationFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "a"
+
+
+class VelocityFieldResults(NodeFieldResults):
+    """Velocity field results.
+
+    This class handles the velocity field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the velocity components.
+    invariants_names : list of str
+        Names of the invariants of the velocity field.
+    results_class : class
+        The class used to instantiate the velocity results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(VelocityFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "v"
+
+
+class ReactionFieldResults(NodeFieldResults):
+    """Reaction field results.
+
+    This class handles the reaction field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the reaction components.
+    invariants_names : list of str
+        Names of the invariants of the reaction field.
+    results_class : class
+        The class used to instantiate the reaction results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(ReactionFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._field_name = "rf"
+
+
+class ContactForcesFieldResults(NodeFieldResults):
+    """Reaction field results.
+
+    This class handles the reaction field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the reaction components.
+    invariants_names : list of str
+        Names of the invariants of the reaction field.
+    results_class : class
+        The class used to instantiate the reaction results.
+    results_func : str
+        The function used to find nodes by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super().__init__(step=step, *args, **kwargs)
+        self._field_name = "c"
+
+
+# ------------------------------------------------------------------------------
+# Section Forces Field Results
+# ------------------------------------------------------------------------------
+class ElementFieldResults(FieldResults):
+    """Element field results.
+
+    This class handles the element field results from a finite element analysis.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(ElementFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
+
+
+class SectionForcesFieldResults(ElementFieldResults):
+    """Section forces field results.
+
+    This class handles the section forces field results from a finite element analysis.
+
+    Parameters
+    ----------
+    step : :class:`compas_fea2.problem._Step`
+        The analysis step where the results are defined.
+
+    Attributes
+    ----------
+    components_names : list of str
+        Names of the section forces components.
+    invariants_names : list of str
+        Names of the invariants of the section forces field.
+    results_class : class
+        The class used to instantiate the section forces results.
+    results_func : str
+        The function used to find elements by key.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super(SectionForcesFieldResults, self).__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
+        self._field_name = "sf"
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def results_func(self):
+        return self._results_func
 
     @property
     def components_names(self):
-        return self._components_names
+        return ["Fx1", "Fy1", "Fz1", "Mx1", "My1", "Mz1", "Fx2", "Fy2", "Fz2", "Mx2", "My2", "Mz2"]
 
-    @property
-    def invariants_names(self):
-        return self._invariants_names
-
-    def _get_results_from_db(self, members, steps):
-        """Get the results for the given members and steps in the database
-        format.
+    def get_element_forces(self, element):
+        """Get the section forces for a given element.
 
         Parameters
         ----------
-        members : _type_
-            _description_
-        steps : _type_
-            _description_
+        element : object
+            The element to retrieve the section forces for.
 
         Returns
         -------
-        _type_
-            _description_
+        object
+            The section forces result for the specified element.
         """
-        if not isinstance(members, Iterable):
-            members = [members]
-        if not isinstance(steps, Iterable):
-            steps = [steps]
+        return self.get_result_at(element)
 
-        members_keys = {}
-        parts_names = {}
-        for member in members:
-            members_keys[member.input_key] = member
-            parts_names[member.part.name] = member.part
-        steps_names = {step.name: step for step in steps}
-
-        if isinstance(members[0], _Element3D):
-            columns = ["step", "part", "input_key"] + self._components_names_3d
-            field_name = self._field_name_3d
-        elif isinstance(members[0], _Element2D):
-            columns = ["step", "part", "input_key"] + self._components_names_2d
-            field_name = self._field_name_2d
-        else:
-            raise ValueError("Not an element")
-
-        results_set = self.rdb.get_rows(field_name, columns, {"input_key": members_keys, "part": parts_names, "step": steps_names})
-        return self._to_fea2_results(results_set, members_keys, steps_names)
-
-    def _to_fea2_results(self, results_set, members_keys, steps_names):
-        """Convert a set of results from database format to the appropriate
-        result object.
+    def get_elements_forces(self, elements):
+        """Get the section forces for a list of elements.
 
         Parameters
         ----------
-        results_set : _type_
-            _description_
+        elements : list
+            The elements to retrieve the section forces for.
 
-        Returns
-        -------
-        dic
-            Dictiorany grouping the results per Step.
+        Yields
+        ------
+        object
+            The section forces result for each element.
         """
-        results = {}
+        for element in elements:
+            yield self.get_element_forces(element)
 
-        for r in results_set:
-            step = steps_names[r[0]]
-            m = members_keys[r[2]]
-            results.setdefault(step, [])
-            if isinstance(m, _Element3D):
-                cls = self._results_class_3d
-                columns = self._components_names_3d
-            else:
-                cls = self._results_class_2d
-                columns = self._components_names_2d
-            values = {k.lower(): v for k, v in zip(columns, r[3:])}
-            results[step].append(cls(m, **values))
-        return results
-
-    def get_max_component(self, component, step):
-        """Get the result where a component is maximum for a given step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        :class:`compas_fea2.results.Result`
-            The appriate Result object.
-        """
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MAX", {"step": [step.name]}, self.results_columns)
-        return self._to_fea2_results(results_set)[step][0]
-
-    def get_min_component(self, component, step):
-        results_set = self.rdb.get_func_row(self.field_name, self.field_name + str(component), "MIN", {"step": [step.name]}, self.results_columns)
-        return self._to_fea2_results(results_set)[step][0]
-
-    def get_limits_component(self, component, step):
-        """Get the result objects with the min and max value of a given
-        component in a step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_
-            _description_
-
-        Returns
-        -------
-        list(:class:`compas_fea2.results.StressResults)
-            _description_
-        """
-        return [self.get_min_component(component, step), self.get_max_component(component, step)]
-
-    def get_limits_absolute(self, step):
-        limits = []
-        for func in ["MIN", "MAX"]:
-            limits.append(self.rdb.get_func_row(self.field_name, "magnitude", func, {"step": [step.name]}, self.results_columns))
-        return [self._to_fea2_results(limit)[step][0] for limit in limits]
-
-    def get_results_at_point(self, point, distance, plane=None, steps=None):
-        """Get the displacement of the model around a location (point).
-
-        Parameters
-        ----------
-        point : [float]
-            The coordinates of the point.
-        steps : _type_, optional
-            _description_, by default None
+    def export_to_dict(self):
+        """Export all field results to a dictionary.
 
         Returns
         -------
         dict
-            Dictionary with {'part':..; 'node':..; 'vector':...}
-
+            A dictionary containing all section force results.
         """
-        nodes = self.model.find_nodes_around_point(point, distance, plane)
-        results = []
-        for step in steps:
-            results.append(self.get_results(nodes, steps)[step])
+        raise NotImplementedError()
 
-    def results(self, step=None):
-        """Return the stress results for the given analysis Step.
-        If the step is not specified, the last step is used.
+    def export_to_csv(self, file_path):
+        """Export all field results to a CSV file.
 
         Parameters
         ----------
-        step : :class:`compas_fea2.problem.steps.Step, optional
-            The analysis step. By default, the last step is used.
-
-        Returns
-        -------
-        list(:class:`compas_fea2.results.StressResult`)
-            A list with al the results of the field for the analysis step.
+        file_path : str
+            Path to the CSV file.
         """
-        step or self.problem.steps_order[-1]
-        return self._get_results_from_db(self.model.elements, steps=step)[step]
-
-    def locations(self, step=None, point=False):
-        """Return the locations where the field is defined.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step, by default None
-
-        Yields
-        ------
-        :class:`compas.geometry.Point`
-            The location where the field is defined.
-        """
-        step = step or self.problem.steps_order[-1]
-        for s in self.results(step):
-            if point:
-                yield Point(*s.reference_point)
-            else:
-                yield s.reference_point
-
-    def global_stresses(self, step=None):
-        """Stress field in global coordinates
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step, by default None
+        raise NotImplementedError()
 
 
-        Returns
-        -------
-        numpy array
-            The stress tensor defined at each location of the field in
-            global coordinates.
-        """
-        step = step or self.problem.steps_order[-1]
-        results = self.results(step)
-        n_locations = len(results)
+# ------------------------------------------------------------------------------
+# Stress Field Results
+# ------------------------------------------------------------------------------
+
+
+class StressFieldResults(ElementFieldResults):
+    """
+    Generalized stress field results for both 2D and 3D elements.
+    Stress results are computed in the global coordinate system.
+    Operations on stress results are performed on the field level to improve efficiency.
+    """
+
+    def __init__(self, step, *args, **kwargs):
+        super().__init__(step=step, *args, **kwargs)
+        self._results_func = "find_element_by_key"
+        self._field_name = "s"
+
+    @property
+    def grouped_results(self):
+        """Groups elements by their dimensionality (2D or 3D) correctly."""
+        sorted_results = sorted(self.results, key=lambda r: r.element.ndim)  # Ensure sorting before grouping
+        return {k: list(v) for k, v in groupby(sorted_results, key=lambda r: r.element.ndim)}
+
+    @property
+    def field_name(self):
+        return self._field_name
+
+    @property
+    def results_func(self):
+        return self._results_func
+
+    @property
+    def components_names(self):
+        return ["s11", "s22", "s33", "s12", "s23", "s13"]
+
+    @property
+    def invariants_names(self):
+        return ["von_mises_stress", "principal_stress_min", "principal_stress_mid", "principal_stress_max"]
+
+    def get_component_value(self, component, **kwargs):
+        """Return the value of the selected component."""
+        if component not in self.components_names:
+            for result in self.results:
+                yield getattr(result, component, None)
+        else:
+            raise (ValueError(f"Component '{component}' is not valid. Choose from {self.components_names}."))
+
+    def get_invariant_value(self, invariant, **kwargs):
+        """Return the value of the selected invariant."""
+        if invariant not in self.invariants_names:
+            for result in self.results:
+                yield getattr(result, invariant, None)
+        else:
+            raise (ValueError(f"Invariant '{invariant}' is not valid. Choose from {self.invariants_names}."))
+
+    def global_stresses(self, plane="mid"):
+        """Compute stress tensors in the global coordinate system."""
         new_frame = Frame.worldXY()
+        transformed_tensors = []
 
-        # Initialize tensors and rotation_matrices arrays
-        tensors = np.zeros((n_locations, 3, 3))
-        rotation_matrices = np.zeros((n_locations, 3, 3))
+        grouped_results = self.grouped_results
 
-        from_change_of_basis = Transformation.from_change_of_basis
-        np_array = np.array
+        # Process 2D elements
+        if 2 in grouped_results:
+            results_2d = grouped_results[2]
+            local_stresses_2d = np.array([r.plane_results(plane).local_stress for r in results_2d])
 
-        for i, r in enumerate(results):
-            tensors[i] = r.local_stress
-            rotation_matrices[i] = np_array(from_change_of_basis(r.element.frame, new_frame).matrix)[:3, :3]
+            # Zero out out-of-plane components
+            local_stresses_2d[:, 2, :] = 0.0
+            local_stresses_2d[:, :, 2] = 0.0
 
-        # Perform the tensor transformation using numpy's batch matrix multiplication
-        transformed_tensors = rotation_matrices @ tensors @ rotation_matrices.transpose(0, 2, 1)
+            # Compute transformation matrices
+            rotation_matrices_2d = np.array([Transformation.from_change_of_basis(r.element.frame, new_frame).matrix[:3, :3] for r in results_2d])
 
-        return transformed_tensors
+            # Apply tensor transformation
+            transformed_tensors.append(
+                np.einsum(
+                    "nij,njk,nlk->nil",
+                    rotation_matrices_2d,
+                    local_stresses_2d,
+                    rotation_matrices_2d,
+                )
+            )
 
-    def principal_components(self, step=None):
-        """Compute the eigenvalues and eigenvetors of the stress field at each location.
+        # Process 3D elements
+        if 3 in grouped_results:
+            results_3d = grouped_results[3]
+            local_stresses_3d = np.array([r.local_stress for r in results_3d])
+            transformed_tensors.append(local_stresses_3d)
 
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step in which the stress filed is defined. If not
-            provided, the last analysis step is used.
+        if not transformed_tensors:
+            return np.empty((0, 3, 3))
+
+        return np.concatenate(transformed_tensors, axis=0)
+
+    def average_stress_at_nodes(self, component="von_mises_stress"):
+        """
+        Compute the nodal average of von Mises stress using efficient NumPy operations.
 
         Returns
         -------
-        touple(np.array, np.array)
-            The eigenvalues and the eigenvectors, not ordered.
+        np.ndarray
+            (N_nodes,) array containing the averaged von Mises stress per node.
         """
-        step = step or self.problem.steps_order[-1]
-        return np.linalg.eig(self.global_stresses(step))
+        # Compute von Mises stress at element level
+        element_von_mises = self.von_mises_stress()  # Shape: (N_elements,)
 
-    def principal_components_vectors(self, step=None):
-        """Compute the principal components of the stress field at each location
-        as vectors.
+        # Extract all node indices in a single operation
+        node_indices = np.array([n.key for e in self.results for n in e.element.nodes])  # Shape (N_total_entries,)
 
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step in which the stress filed is defined. If not
-            provided, the last analysis step is used.
+        # Repeat von Mises stress for each node in the corresponding element
+        node_counts = [len(e.element.nodes) for e in self.results]
+        repeated_von_mises = np.repeat(element_von_mises, repeats=node_counts, axis=0)  # Shape (N_total_entries,)
 
+        # Get the number of unique nodes
+        max_node_index = node_indices.max() + 1
 
-        Yields
-        ------
-        list(:class:`compas.geometry.Vector)
-            list with the vectors corresponding to max, mid and min principal componets.
+        # Initialize accumulators for sum and count
+        nodal_stress_sum = np.zeros(max_node_index)  # Summed von Mises stresses
+        nodal_counts = np.zeros(max_node_index)  # Count occurrences per node
+
+        # Accumulate stresses and counts at each node
+        np.add.at(nodal_stress_sum, node_indices, repeated_von_mises)
+        np.add.at(nodal_counts, node_indices, 1)
+
+        # Prevent division by zero
+        nodal_counts[nodal_counts == 0] = 1
+
+        # Compute final nodal von Mises stress average
+        nodal_avg_von_mises = nodal_stress_sum / nodal_counts
+
+        return nodal_avg_von_mises  # Shape: (N_nodes,)
+
+    def average_stress_tensor_at_nodes(self):
         """
-        step = step or self.problem.steps_order[-1]
-        eigenvalues, eigenvectors = self.principal_components(step)
-        sorted_indices = np.argsort(eigenvalues, axis=1)
-        sorted_eigenvalues = np.take_along_axis(eigenvalues, sorted_indices, axis=1)
-        sorted_eigenvectors = np.take_along_axis(eigenvectors, sorted_indices[:, np.newaxis, :], axis=2)
-        for i in range(eigenvalues.shape[0]):
-            yield [Vector(*sorted_eigenvectors[i, :, j]) * sorted_eigenvalues[i, j] for j in range(eigenvalues.shape[1])]
+        Compute the nodal average of the full stress tensor.
 
-    def vonmieses(self, step=None):
-        """Compute the principal components of the stress field at each location
-        as vectors.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem.steps.Step`, optional
-            The analysis step in which the stress filed is defined. If not
-            provided, the last analysis step is used.
-
-
-        Yields
-        ------
-        list(:class:`compas.geometry.Vector)
-            list with the vectors corresponding to max, mid and min principal componets.
+        Returns
+        -------
+        np.ndarray
+            (N_nodes, 3, 3) array containing the averaged stress tensor per node.
         """
-        step = step or self.problem.steps_order[-1]
-        for r in self.results(step):
-            yield r.von_mises_stress
+        # Compute global stress tensor at the element level
+        element_stresses = self.global_stresses()  # Shape: (N_elements, 3, 3)
+
+        # Extract all node indices in a single operation
+        node_indices = np.array([n.key for e in self.results for n in e.element.nodes])  # Shape (N_total_entries,)
+
+        # Repeat stress tensors for each node in the corresponding element
+        repeated_stresses = np.repeat(element_stresses, repeats=[len(e.element.nodes) for e in self.results], axis=0)  # Shape (N_total_entries, 3, 3)
+
+        # Get the number of unique nodes
+        max_node_index = node_indices.max() + 1
+
+        # Initialize accumulators for sum and count
+        nodal_stress_sum = np.zeros((max_node_index, 3, 3))  # Summed stress tensors
+        nodal_counts = np.zeros((max_node_index, 1, 1))  # Count occurrences per node
+
+        # Accumulate stresses and counts at each node
+        np.add.at(nodal_stress_sum, node_indices, repeated_stresses)
+        np.add.at(nodal_counts, node_indices, 1)
+
+        # Prevent division by zero
+        nodal_counts[nodal_counts == 0] = 1
+
+        # Compute final nodal stress tensor average
+        nodal_avg_stress = nodal_stress_sum / nodal_counts
+
+        return nodal_avg_stress  # Shape: (N_nodes, 3, 3)
+
+    def von_mises_stress(self, plane="mid"):
+        """
+        Compute von Mises stress for 2D and 3D elements.
+
+        Returns
+        -------
+        np.ndarray
+            Von Mises stress values per element.
+        """
+        stress_tensors = self.global_stresses(plane)  # Shape: (N_elements, 3, 3)
+
+        # Extract stress components
+        S11, S22, S33 = stress_tensors[:, 0, 0], stress_tensors[:, 1, 1], stress_tensors[:, 2, 2]
+        S12, S23, S13 = stress_tensors[:, 0, 1], stress_tensors[:, 1, 2], stress_tensors[:, 0, 2]
+
+        # Compute von Mises stress
+        sigma_vm = np.sqrt(0.5 * ((S11 - S22) ** 2 + (S22 - S33) ** 2 + (S33 - S11) ** 2 + 6 * (S12**2 + S23**2 + S13**2)))
+
+        return sigma_vm
+
+    def principal_components(self, plane="mid"):
+        """
+        Compute sorted principal stresses and directions.
+
+        Returns
+        -------
+        tuple
+            (principal_stresses, principal_directions)
+            - `principal_stresses`: (N_elements, 3) array containing sorted principal stresses.
+            - `principal_directions`: (N_elements, 3, 3) array containing corresponding eigenvectors.
+        """
+        stress_tensors = self.global_stresses(plane)  # Shape: (N_elements, 3, 3)
+
+        # Ensure symmetry (avoiding numerical instability)**
+        stress_tensors = 0.5 * (stress_tensors + np.transpose(stress_tensors, (0, 2, 1)))
+
+        # Compute eigenvalues and eigenvectors (batch operation)**
+        eigvals, eigvecs = np.linalg.eigh(stress_tensors)
+
+        # Sort eigenvalues & corresponding eigenvectors (by absolute magnitude)**
+        sorted_indices = np.argsort(np.abs(eigvals), axis=1)  # Sort based on absolute value
+        sorted_eigvals = np.take_along_axis(eigvals, sorted_indices, axis=1)
+        sorted_eigvecs = np.take_along_axis(eigvecs, sorted_indices[:, :, None], axis=2)
+
+        # Ensure consistent orientation**
+        reference_vector = np.array([1.0, 0.0, 0.0])  # Arbitrary reference vector
+        alignment_check = np.einsum("nij,j->ni", sorted_eigvecs, reference_vector)  # Dot product with reference
+        flip_mask = alignment_check < 0  # Identify vectors needing flipping
+        sorted_eigvecs[flip_mask] *= -1  # Flip incorrectly oriented eigenvectors
+
+        return sorted_eigvals, sorted_eigvecs

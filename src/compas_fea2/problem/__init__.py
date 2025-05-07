@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .problem import Problem
 from .displacements import GeneralDisplacement
 from .loads import (
@@ -15,12 +11,15 @@ from .loads import (
     HarmonicPressureLoad,
     ThermalLoad,
 )
+
 from .fields import (
+    LoadField,
+    DisplacementField,
+    NodeLoadField,
+    PointLoadField,
     _PrescribedField,
     PrescribedTemperatureField,
 )
-
-from .patterns import Pattern, NodeLoadPattern, PointLoadPattern, LineLoadPattern, AreaLoadPattern, VolumeLoadPattern
 from .combinations import LoadCombination
 
 from .steps import (
@@ -37,16 +36,6 @@ from .steps import (
     DirectCyclicStep,
 )
 
-from .outputs import (
-    FieldOutput,
-    DisplacementFieldOutput,
-    AccelerationFieldOutput,
-    VelocityFieldOutput,
-    Stress2DFieldOutput,
-    # StrainFieldOutput,
-    ReactionFieldOutput,
-    HistoryOutput,
-)
 
 __all__ = [
     "Problem",
@@ -60,12 +49,13 @@ __all__ = [
     "HarmonicPointLoad",
     "HarmonicPressureLoad",
     "ThermalLoad",
-    "Pattern",
-    "NodeLoadPattern",
-    "PointLoadPattern",
-    "LineLoadPattern",
-    "AreaLoadPattern",
-    "VolumeLoadPattern",
+    "LoadField",
+    "DisplacementField",
+    "NodeLoadField",
+    "PointLoadField",
+    "LineLoadField",
+    "PressureLoadField",
+    "VolumeLoadField",
     "_PrescribedField",
     "PrescribedTemperatureField",
     "LoadCombination",
@@ -87,4 +77,5 @@ __all__ = [
     "VelocityFieldOutput",
     "Stress2DFieldOutput",
     "ReactionFieldOutput",
+    "SectionForcesFieldOutput",
 ]

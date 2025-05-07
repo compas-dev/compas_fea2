@@ -1,8 +1,10 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 from compas_fea2.base import FEAData
+from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import _Group
 from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart
@@ -15,11 +17,9 @@ class Connector(FEAData):
 
     Parameters
     ----------
-    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
         For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
-    section : :class:`compas_fea2.model.sections.ConnectorSection`
-        The section containing the mechanical properties of the connector.
 
     Notes
     -----
@@ -27,14 +27,27 @@ class Connector(FEAData):
 
     """
 
-    def __init__(self, nodes, **kwargs):
-        super(Connector, self).__init__(**kwargs)
-        self._key = None
-        self._nodes = None
-        self.nodes = nodes
+    def __init__(self, nodes: Union[List[Node], _Group], **kwargs):
+        super().__init__(**kwargs)
+        self._key: Optional[str] = None
+        self._nodes: Optional[List[Node]] = nodes
 
     @property
-    def nodes(self):
+    def __data__(self):
+        return {
+            "class": self.__class__.__base__.__name__,
+            "nodes": [node.__data__ for node in self._nodes],
+        }
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from compas_fea2.model.nodes import Node
+
+        nodes = [Node.__from_data__(node, model) for node in data["nodes"]]
+        return cls(nodes=nodes)
+
+    @property
+    def nodes(self) -> List[Node]:
         return self._nodes
 
     @property
@@ -42,7 +55,7 @@ class Connector(FEAData):
         return self._registration
 
     @nodes.setter
-    def nodes(self, nodes):
+    def nodes(self, nodes: Union[List[Node], _Group]):
         if isinstance(nodes, _Group):
             nodes = nodes._members
         if isinstance(nodes, Node):
@@ -59,46 +72,149 @@ class Connector(FEAData):
         self._nodes = nodes
 
 
-class RigidLinkConnector(Connector):
-    """Rigid link connector.
+class LinearConnector(Connector):
+    """Linear connector.
 
     Parameters
     ----------
-    nodes : list, :class:`compas_fea2.model.groups.NodeGroup`
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
         The connected nodes. The nodes must be registered to different parts.
         For connecting nodes in the same part, check :class:`compas_fea2.model.elements.SpringElement`.
     dofs : str
         The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
     """
 
-    def __init__(self, nodes, dofs="beam", **kwargs):
-        super(RigidLinkConnector, self).__init__(nodes, **kwargs)
-        self._dofs = dofs
+    def __init__(self, master, slave, section, **kwargs):
+        super().__init__(nodes=[master, slave], **kwargs)
+        if isinstance(master, _Group):
+            master = list(master._members)[0]
+        if isinstance(slave, _Group):
+            slave = list(slave._members)[0]
+        if master.part == slave.part:
+            raise ValueError("Nodes must belong to different parts")
+        self._master = master
+        self._slave = slave
+        self._section = section
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
 
     @property
-    def dofs(self):
-        return self._dofs
+    def nodes(self):
+        return self._nodes
 
+    @property
+    def master(self):
+        return self._master
 
-class SpringConnector(Connector):
-    """Spring connector."""
+    @master.setter
+    def master(self, value):
+        self._master = value
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
 
-    def __init__(self, nodes, section, yielding=None, failure=None, **kwargs):
-        super(SpringConnector, self).__init__(nodes, **kwargs)
-        self._section = section
-        self._yielding = yielding
-        self._failure = failure
+    @property
+    def slave(self):
+        return self._slave
+
+    @slave.setter
+    def slave(self, value):
+        self._slave = value
+        self._nodes = NodesGroup(nodes=[self.master, self.slave])
 
     @property
     def section(self):
         return self._section
 
     @property
-    def yielding(self):
+    def __data__(self):
+        data = super().__data__
+        data.update({"dofs": self._dofs})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._dofs = data["dofs"]
+        return instance
+
+    @property
+    def dofs(self) -> str:
+        return self._dofs
+
+
+class RigidLinkConnector(Connector):
+    """Rigid link connector.
+
+    Parameters
+    ----------
+    nodes : list[Node] | compas_fea2.model.groups.NodeGroup
+        The connected nodes. The nodes must be registered to different parts.
+        For connecting nodes in the same part, check :class:`compas_fea2.model.elements.RigidElement`.
+    dofs : str
+        The degrees of freedom to be connected. Options are 'beam', 'bar', or a list of integers.
+    """
+
+    def __init__(self, nodes: Union[List[Node], _Group], dofs: str = "beam", **kwargs):
+        super().__init__(nodes, **kwargs)
+        self._dofs: str = dofs
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"dofs": self._dofs})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._dofs = data["dofs"]
+        return instance
+
+    @property
+    def dofs(self) -> str:
+        return self._dofs
+
+
+class SpringConnector(Connector):
+    """Spring connector."""
+
+    def __init__(self, nodes: Union[List[Node], _Group], section, yielding: Optional[Dict[str, float]] = None, failure: Optional[Dict[str, float]] = None, **kwargs):
+        super().__init__(nodes, **kwargs)
+        self._section = section
+        self._yielding: Optional[Dict[str, float]] = yielding
+        self._failure: Optional[Dict[str, float]] = failure
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "section": self._section,
+                "yielding": self._yielding,
+                "failure": self._failure,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from importlib import import_module
+
+        instance = super().__from_data__(data, model)
+        cls_section = import_module(".".join(data["section"]["class"].split(".")[:-1]))
+        instance._section = cls_section.__from_data__(data["section"])
+        instance._yielding = data["yielding"]
+        instance._failure = data["failure"]
+        return instance
+
+    @property
+    def section(self):
+        return self._section
+
+    @property
+    def yielding(self) -> Optional[Dict[str, float]]:
         return self._yielding
 
     @yielding.setter
-    def yielding(self, value):
+    def yielding(self, value: Dict[str, float]):
         try:
             value["c"]
             value["t"]
@@ -107,11 +223,11 @@ class SpringConnector(Connector):
         self._yielding = value
 
     @property
-    def failure(self):
+    def failure(self) -> Optional[Dict[str, float]]:
         return self._failure
 
     @failure.setter
-    def failure(self, value):
+    def failure(self, value: Dict[str, float]):
         try:
             value["c"]
             value["t"]
@@ -123,9 +239,21 @@ class SpringConnector(Connector):
 class ZeroLengthConnector(Connector):
     """Zero length connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, **kwargs):
-        super(ZeroLengthConnector, self).__init__(nodes, **kwargs)
+    def __init__(self, nodes: Union[List[Node], _Group], direction, **kwargs):
+        super().__init__(nodes, **kwargs)
         self._direction = direction
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"direction": self._direction})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._direction = data["direction"]
+        return instance
 
     @property
     def direction(self):
@@ -135,28 +263,74 @@ class ZeroLengthConnector(Connector):
 class ZeroLengthSpringConnector(ZeroLengthConnector):
     """Spring connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, section, yielding=None, failure=None, **kwargs):
+    def __init__(self, nodes: Union[List[Node], _Group], direction, section, yielding: Optional[Dict[str, float]] = None, failure: Optional[Dict[str, float]] = None, **kwargs):
         # SpringConnector.__init__(self, nodes=nodes, section=section, yielding=yielding, failure=failure)
-        ZeroLengthConnector.__init__(self, nodes, direction, **kwargs)
+        super().__init__(nodes, direction, **kwargs)
+        self._section = section
+        self._yielding = yielding
+        self._failure = failure
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "section": self._section,
+                "yielding": self._yielding,
+                "failure": self._failure,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        from importlib import import_module
+
+        instance = super().__from_data__(data, model)
+        cls_section = import_module(".".join(data["section"]["class"].split(".")[:-1]))
+        instance._section = cls_section.__from_data__(data["section"])
+        instance._yielding = data["yielding"]
+        instance._failure = data["failure"]
+        return instance
 
 
 class ZeroLengthContactConnector(ZeroLengthConnector):
     """Contact connector connecting overlapping nodes."""
 
-    def __init__(self, nodes, direction, Kn, Kt, mu, **kwargs):
-        super(ZeroLengthContactConnector, self).__init__(nodes, direction, **kwargs)
-        self._Kn = Kn
-        self._Kt = Kt
-        self._mu = mu
+    def __init__(self, nodes: Union[List[Node], _Group], direction, Kn: float, Kt: float, mu: float, **kwargs):
+        super().__init__(nodes, direction, **kwargs)
+        self._Kn: float = Kn
+        self._Kt: float = Kt
+        self._mu: float = mu
 
     @property
-    def Kn(self):
+    def Kn(self) -> float:
         return self._Kn
 
     @property
-    def Kt(self):
+    def Kt(self) -> float:
         return self._Kt
 
     @property
-    def mu(self):
+    def mu(self) -> float:
         return self._mu
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update(
+            {
+                "Kn": self._Kn,
+                "Kt": self._Kt,
+                "mu": self._mu,
+            }
+        )
+        return data
+
+    @classmethod
+    def __from_data__(cls, data, model):
+        instance = super().__from_data__(data, model)
+        instance._Kn = data["Kn"]
+        instance._Kt = data["Kt"]
+        instance._mu = data["mu"]
+        return instance

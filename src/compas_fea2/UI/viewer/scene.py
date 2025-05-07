@@ -2,16 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from compas.scene import SceneObject  # noqa: F401
 from compas.colors import Color
 from compas.colors import ColorMap
 from compas.geometry import Vector
-
-from .drawer import draw_field_contour
-from .drawer import draw_field_vectors
-
+from compas.scene import SceneObject  # noqa: F401
+from compas_viewer.scene import BufferGeometry  # noqa: F401
 from compas_viewer.scene import Collection
-from compas_viewer.scene import GroupObject
+from compas_viewer.scene import GroupObject  # noqa: F401
+
 from compas_fea2.model.bcs import FixedBC
 from compas_fea2.model.bcs import PinnedBC
 from compas_fea2.model.bcs import RollerBCX
@@ -20,6 +18,9 @@ from compas_fea2.model.bcs import RollerBCZ
 from compas_fea2.UI.viewer.primitives import FixBCShape
 from compas_fea2.UI.viewer.primitives import PinBCShape
 from compas_fea2.UI.viewer.primitives import RollerBCShape
+
+from .drawer import draw_field_contour
+from .drawer import draw_field_vectors
 
 color_palette = {
     "faces": Color.from_hex("#e8e5d4"),
@@ -75,7 +76,7 @@ class FEA2ModelObject(GroupObject):
         line_color = kwargs.get("line_color", color_palette["edges"])
         show_faces = kwargs.get("show_faces", True)
         show_lines = kwargs.get("show_lines", False)
-        show_nodes = kwargs.get("show_nodes", False)
+        show_nodes = kwargs.get("show_nodes", True)
         opacity = kwargs.get("opacity", 1.0)
         part_meshes = []
         if show_parts:
@@ -238,7 +239,7 @@ class FEA2StepObject(GroupObject):
         super().__init__(item=patterns, name=f"STEP-{step.name}", componets=None, **kwargs)
 
 
-class FEA2StressFieldResultsObject(GroupObject):
+class FEA2Stress2DFieldResultsObject(GroupObject):
     """StressFieldResults object for visualization.
 
     Parameters
@@ -254,10 +255,10 @@ class FEA2StressFieldResultsObject(GroupObject):
 
     """
 
-    def __init__(self, step, scale_factor=1, components=None, **kwargs):
+    def __init__(self, model, components=None, show_vectors=1, plane="mid", show_contour=False, **kwargs):
         field = kwargs.pop("item")
 
-        field_locations = list(field.locations(step))
+        field_locations = [e.reference_point for e in field.locations]
 
         if not components:
             components = [0, 1, 2]
@@ -265,15 +266,19 @@ class FEA2StressFieldResultsObject(GroupObject):
         colors = {0: Color.blue(), 1: Color.yellow(), 2: Color.red()}
 
         collections = []
-        for component in components:
-            field_results = [v[component] for v in field.principal_components_vectors(step)]
-            lines, _ = draw_field_vectors(field_locations, field_results, scale_factor, translate=-0.5)
-            collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
+        if show_vectors:
+            for component in components:
+                field_results = [v[component] for v in field.principal_components_vectors(plane)]
+                lines, _ = draw_field_vectors(field_locations, field_results, show_vectors, translate=-0.5)
+                collections.append((Collection(lines), {"name": f"PS-{names[component]}", "linecolor": colors[component], "linewidth": 3}))
 
-        super().__init__(item=collections, name=f"RESULTS-{field.name}", **kwargs)
+        if show_contour:
+            raise NotImplementedError("Contour visualization not implemented for stress fields.")
+
+        super().__init__(item=collections, name=f"STRESS-{field.name}", **kwargs)
 
 
-class FEA2DisplacementFieldResultsObject(GroupObject):
+class FEA2NodeFieldResultsObject(GroupObject):
     """DisplacementFieldResults object for visualization.
 
     Parameters
@@ -289,91 +294,33 @@ class FEA2DisplacementFieldResultsObject(GroupObject):
 
     """
 
-    # FIXME: component is not used
-    def __init__(self, step, component=None, show_vectors=1, show_contour=False, **kwargs):
-
+    def __init__(self, components=None, show_vectors=1, show_contour=False, **kwargs):
         field = kwargs.pop("item")
         cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
+        components = components or ["x", "y", "z"]
 
         group_elements = []
         if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
-            # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
+            vectors, colors = draw_field_vectors([n.point for n in field.locations], list(field.components_vectors(components)), show_vectors, translate=0, cmap=cmap)
+
             for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
+                group_elements.append((v, {"name": f"DISP-{''.join(components)}", "linecolor": c, "linewidth": 3}))
 
         if show_contour:
             from compas_fea2.model.elements import BeamElement
 
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
+            field_locations = list(field.locations)
+            field_results = [v.length for v in field.components_vectors(components)]
             min_value = min(field_results)
             max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
+            part_vertexcolor = draw_field_contour(field.model, field_locations, field_results, min_value, max_value, cmap)
 
             # DRAW CONTOURS ON 2D and 3D ELEMENTS
             for part, vertexcolor in part_vertexcolor.items():
                 group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
 
             # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
-                for element in part.elements:
-                    vertexcolor = {}
-                    if isinstance(element, BeamElement):
-                        for c, n in enumerate(element.nodes):
-                            v = field_results[field_locations.index(n)]
-                            for p in range(len(element.section._shape.points)):
-                                vertexcolor[p + c * len(element.section._shape.points)] = cmap(v, minval=min_value, maxval=max_value)
-                        # vertexcolor = {c: Color.red() for c in range(2*len(element.section._shape.points))}
-                        group_elements.append((element.outermesh, {"name": element.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-        super().__init__(item=group_elements, name=f"RESULTS-{field.name}", **kwargs)
-
-
-class FEA2ReactionFieldResultsObject(GroupObject):
-    """DisplacementFieldResults object for visualization.
-
-    Parameters
-    ----------
-    field : :class:`compas_fea2.results.Field`
-        The field to visualize.
-    step : :class:`compas_fea2.problem.steps.Step`
-        The step to visualize.
-    scale_factor : float
-        The scale factor for the visualization.
-    components : list
-        The components to visualize.
-
-    """
-
-    def __init__(self, step, component, show_vectors=1, show_contour=False, **kwargs):
-        # FIXME: component is not used
-
-        field = kwargs.pop("item")
-        cmap = kwargs.get("cmap", ColorMap.from_palette("hawaii"))
-
-        group_elements = []
-        if show_vectors:
-            vectors, colors = draw_field_vectors([n.point for n in field.locations(step)], list(field.vectors(step)), show_vectors, translate=0, cmap=cmap)
-            # group_elements.append((Collection(vectors), {"name": f"DISP-{component}", "linecolors": colors, "linewidth": 3}))
-            for v, c in zip(vectors, colors):
-                group_elements.append((v, {"name": f"DISP-{component}", "linecolor": c, "linewidth": 3}))
-
-        if show_contour:
-            from compas_fea2.model.elements import BeamElement
-
-            field_locations = list(field.locations(step))
-            field_results = list(field.component(step, component))
-            min_value = min(field_results)
-            max_value = max(field_results)
-            part_vertexcolor = draw_field_contour(step.model, field_locations, field_results, min_value, max_value, cmap)
-
-            # DRAW CONTOURS ON 2D and 3D ELEMENTS
-            for part, vertexcolor in part_vertexcolor.items():
-                group_elements.append((part._discretized_boundary_mesh, {"name": part.name, "vertexcolor": vertexcolor, "use_vertexcolors": True}))
-
-            # DRAW CONTOURS ON 1D ELEMENTS
-            for part in step.model.parts:
+            for part in field.model.parts:
                 for element in part.elements:
                     vertexcolor = {}
                     if isinstance(element, BeamElement):

@@ -1,105 +1,285 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
+import logging
+from importlib import import_module
+from itertools import groupby
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import Iterable
+from typing import List
+from typing import Set
+from typing import TypeVar
 
 from compas_fea2.base import FEAData
 
-# TODO change lists to sets
+# Define a generic type for members
+T = TypeVar("T")
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class _Group(FEAData):
-    """Base class for all groups.
+    """
+    Base class for all groups.
 
     Parameters
     ----------
-    members : set, optional
-        Set with the members belonging to the group. These can be either node,
-        elements, faces or parts. By default ``None``.
+    members : Iterable, optional
+        An iterable containing members belonging to the group.
+        Members can be nodes, elements, faces, or parts. Default is None.
 
     Attributes
     ----------
-    registration : :class:`compas_fea2.model.DeformablePart` | :class:`compas_fea2.model.Model`
-        The parent object where the members of the Group belong.
-
+    _members : Set[T]
+        The set of members belonging to the group.
     """
 
-    def __init__(self, members=None, **kwargs):
-        super(_Group, self).__init__(**kwargs)
-        self._members = set() if not members else self._check_members(members)
+    def __init__(self, members: Iterable[T] = None, **kwargs):
+        super().__init__(**kwargs)
+        self._members: Set[T] = set(members) if members else set()
+        self._part = None
+        self._model = None
 
-    def __str__(self):
-        return """
-{}
-{}
-name            : {}
-# of members    : {}
-""".format(
-            self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, len(self._members)
-        )
+    def __len__(self) -> int:
+        """Return the number of members in the group."""
+        return len(self._members)
 
-    def _check_member(self, member):
-        if not isinstance(self, FacesGroup):
-            if member._registration != self._registration:
-                raise ValueError("{} is registered to a different object".format(member))
-        return member
+    def __contains__(self, item: T) -> bool:
+        """Check if an item is in the group."""
+        return item in self._members
 
-    def _check_members(self, members):
-        if not members or not isinstance(members, Iterable):
-            raise ValueError("{} must be a not empty iterable".format(members))
-        # FIXME combine in more pythonic way
-        if isinstance(self, FacesGroup):
-            if len(set([member.element._registration for member in members])) != 1:
-                raise ValueError("At least one of the members to add is registered to a different object or not registered")
-            if self._registration:
-                if list(members).pop().element._registration != self._registration:
-                    raise ValueError("At least one of the members to add is registered to a different object than the group")
-            else:
-                self._registration = list(members).pop().element._registration
-        else:
-            if len(set([member._registration for member in members])) != 1:
-                raise ValueError("At least one of the members to add is registered to a different object or not registered")
-            if self._registration:
-                if list(members).pop()._registration != self._registration:
-                    raise ValueError("At least one of the members to add is registered to a different object than the group")
-            else:
-                self._registration = list(members).pop()._registration
-        return members
+    def __iter__(self):
+        """Return an iterator over the members."""
+        return iter(self._members)
 
-    def _add_member(self, member):
-        """Add a member to the group.
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: {len(self._members)} members>"
 
-        Parameters
-        ----------
-        member : var
-            The member to add. This depends on the specific group type.
+    def __add__(self, other: "_Group") -> "_Group":
+        """Create a new group containing all members from this group and another group."""
+        if not isinstance(other, _Group):
+            raise TypeError("Can only add another _Group instance.")
+        return self.__class__(self._members | other._members)
+
+    def __sub__(self, other: "_Group") -> "_Group":
+        """Create a new group containing members that are in this group but not in another."""
+        if not isinstance(other, _Group):
+            raise TypeError("Can only subtract another _Group instance.")
+        return self.__class__(self._members - other._members)
+
+    @property
+    def members(self) -> Set[T]:
+        """Return the members of the group."""
+        return self._members
+
+    @property
+    def sorted(self) -> List[T]:
+        """
+        Return the members of the group sorted in ascending order.
 
         Returns
         -------
-        var
-            The memeber.
+        List[T]
+            A sorted list of group members.
         """
-        self._members.add(self._check_member(member))
-        return member
+        return sorted(self._members, key=lambda x: x.key)
 
-    def _add_members(self, members):
-        """Add multiple members to the group.
+    def sorted_by(self, key: Callable[[T], any], reverse: bool = False) -> List[T]:
+        """
+        Return the members of the group sorted based on a custom key function.
 
         Parameters
         ----------
-        members : [var]
-            The members to add. These depend on the specific group type.
+        key : Callable[[T], any]
+            A function that extracts a key from a member for sorting.
+        reverse : bool, optional
+            Whether to sort in descending order. Default is False.
 
         Returns
         -------
-        [var]
-            The memebers.
+        List[T]
+            A sorted list of group members based on the key function.
         """
-        self._check_members(members)
-        for member in members:
-            self.members.add(member)
-        return members
+        return sorted(self._members, key=key, reverse=reverse)
+
+    def subgroup(self, condition: Callable[[T], bool], **kwargs) -> "_Group":
+        """
+        Create a subgroup based on a given condition.
+
+        Parameters
+        ----------
+        condition : Callable[[T], bool]
+            A function that takes a member as input and returns True if the member
+            should be included in the subgroup.
+
+        Returns
+        -------
+        _Group
+            A new group containing the members that satisfy the condition.
+        """
+        filtered_members = set(filter(condition, self._members))
+        return self.__class__(filtered_members, **kwargs)
+
+    def group_by(self, key: Callable[[T], any]) -> Dict[any, "_Group"]:
+        """
+        Group members into multiple subgroups based on a key function.
+
+        Parameters
+        ----------
+        key : Callable[[T], any]
+            A function that extracts a key from a member for grouping.
+
+        Returns
+        -------
+        Dict[any, _Group]
+            A dictionary where keys are the grouping values and values are `_Group` instances.
+        """
+        sorted_members = self._members
+        # try:
+        #     sorted_members = sorted(self._members, key=key)
+        # except TypeError:
+        #     sorted_members = sorted(self._members, key=lambda x: x.key)
+        grouped_members = {k: set(v) for k, v in groupby(sorted_members, key=key)}
+        return {k: self.__class__(v, name=f"{self.name}") for k, v in grouped_members.items()}
+
+    def union(self, other: "_Group") -> "_Group":
+        """
+        Create a new group containing all members from this group and another group.
+
+        Parameters
+        ----------
+        other : _Group
+            Another group whose members should be combined with this group.
+
+        Returns
+        -------
+        _Group
+            A new group containing all members from both groups.
+        """
+        if not isinstance(other, _Group):
+            raise TypeError("Can only perform union with another _Group instance.")
+        return self.__class__(self._members | other._members)
+
+    def intersection(self, other: "_Group") -> "_Group":
+        """
+        Create a new group containing only members that are present in both groups.
+
+        Parameters
+        ----------
+        other : _Group
+            Another group to find common members with.
+
+        Returns
+        -------
+        _Group
+            A new group containing only members found in both groups.
+        """
+        if not isinstance(other, _Group):
+            raise TypeError("Can only perform intersection with another _Group instance.")
+        return self.__class__(self._members & other._members)
+
+    def difference(self, other: "_Group") -> "_Group":
+        """
+        Create a new group containing members that are in this group but not in another.
+
+        Parameters
+        ----------
+        other : _Group
+            Another group whose members should be removed from this group.
+
+        Returns
+        -------
+        _Group
+            A new group containing members unique to this group.
+        """
+        if not isinstance(other, _Group):
+            raise TypeError("Can only perform difference with another _Group instance.")
+        return self.__class__(self._members - other._members)
+
+    def add_member(self, member: T) -> None:
+        """
+        Add a member to the group.
+
+        Parameters
+        ----------
+        member : T
+            The member to add.
+        """
+        self._members.add(member)
+
+    def add_members(self, members: Iterable[T]) -> None:
+        """
+        Add multiple members to the group.
+
+        Parameters
+        ----------
+        members : Iterable[T]
+            The members to add.
+        """
+        self._members.update(members)
+
+    def remove_member(self, member: T) -> None:
+        """
+        Remove a member from the group.
+
+        Parameters
+        ----------
+        member : T
+            The member to remove.
+
+        Raises
+        ------
+        KeyError
+            If the member is not found in the group.
+        """
+        try:
+            self._members.remove(member)
+        except KeyError:
+            logger.warning(f"Member {member} not found in the group.")
+
+    def remove_members(self, members: Iterable[T]) -> None:
+        """
+        Remove multiple members from the group.
+
+        Parameters
+        ----------
+        members : Iterable[T]
+            The members to remove.
+        """
+        self._members.difference_update(members)
+
+    def serialize(self) -> Dict[str, Any]:
+        """
+        Serialize the group to a dictionary.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary representation of the group.
+        """
+        return {"members": list(self._members)}
+
+    @classmethod
+    def deserialize(cls, data: Dict[str, Any]) -> "_Group":
+        """
+        Deserialize a dictionary to create a `_Group` instance.
+
+        Parameters
+        ----------
+        data : Dict[str, Any]
+            A dictionary representation of the group.
+
+        Returns
+        -------
+        _Group
+            A `_Group` instance with the deserialized members.
+        """
+        return cls(set(data.get("members", [])))
+
+    def clear(self) -> None:
+        """Remove all members from the group."""
+        self._members.clear()
 
 
 class NodesGroup(_Group):
@@ -130,19 +310,32 @@ class NodesGroup(_Group):
         super(NodesGroup, self).__init__(members=nodes, **kwargs)
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"nodes": [node.__data__ for node in self.nodes]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model.nodes import Node
+
+        return cls(nodes=[Node.__from_data__(node) for node in data["nodes"]])
+
+    @property
     def part(self):
-        return self._registration
+        return self._part
 
     @property
     def model(self):
-        return self.part._registration
+        return self._model
 
     @property
     def nodes(self):
         return self._members
 
     def add_node(self, node):
-        """Add a node to the group.
+        """
+        Add a node to the group.
 
         Parameters
         ----------
@@ -157,7 +350,8 @@ class NodesGroup(_Group):
         return self._add_member(node)
 
     def add_nodes(self, nodes):
-        """Add multiple nodes to the group.
+        """
+        Add multiple nodes to the group.
 
         Parameters
         ----------
@@ -191,13 +385,25 @@ class ElementsGroup(_Group):
 
     Notes
     -----
-    ElementsGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as
-    its elements and can belong to only one DeformablePart.
+    ElementsGroups are registered to the same :class:`compas_fea2.model.Part` as
+    its elements and can belong to only one Part.
 
     """
 
     def __init__(self, elements, **kwargs):
         super(ElementsGroup, self).__init__(members=elements, **kwargs)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"elements": [element.__data__ for element in self.elements]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        elements_module = import_module("compas_fea2.model.elements")
+        elements = [getattr(elements_module, element_data["class"]).__from_data__(element_data) for element_data in data["elements"]]
+        return cls(elements=elements)
 
     @property
     def part(self):
@@ -212,7 +418,8 @@ class ElementsGroup(_Group):
         return self._members
 
     def add_element(self, element):
-        """Add an element to the group.
+        """
+        Add an element to the group.
 
         Parameters
         ----------
@@ -223,12 +430,12 @@ class ElementsGroup(_Group):
         -------
         :class:`compas_fea2.model.Element`
             The element added.
-
         """
         return self._add_member(element)
 
     def add_elements(self, elements):
-        """Add multiple elements to the group.
+        """
+        Add multiple elements to the group.
 
         Parameters
         ----------
@@ -239,7 +446,6 @@ class ElementsGroup(_Group):
         -------
         [:class:`compas_fea2.model.Element`]
             The elements added.
-
         """
         return self._add_members(elements)
 
@@ -271,13 +477,25 @@ class FacesGroup(_Group):
 
     Notes
     -----
-    FacesGroups are registered to the same :class:`compas_fea2.model.DeformablePart` as the
+    FacesGroups are registered to the same :class:`compas_fea2.model.Part` as the
     elements of its faces.
 
     """
 
-    def __init__(self, *, faces, **kwargs):
+    def __init__(self, faces, **kwargs):
         super(FacesGroup, self).__init__(members=faces, **kwargs)
+
+    @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"faces": list(self.faces)})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        obj = cls(faces=set(data["faces"]))
+        obj._registration = data["registration"]
+        return obj
 
     @property
     def part(self):
@@ -300,7 +518,8 @@ class FacesGroup(_Group):
         return nodes_set
 
     def add_face(self, face):
-        """Add a face to the group.
+        """
+        Add a face to the group.
 
         Parameters
         ----------
@@ -310,13 +529,13 @@ class FacesGroup(_Group):
         Returns
         -------
         :class:`compas_fea2.model.Face`
-            The element added.
-
+            The face added.
         """
         return self._add_member(face)
 
     def add_faces(self, faces):
-        """Add multiple faces to the group.
+        """
+        Add multiple faces to the group.
 
         Parameters
         ----------
@@ -327,7 +546,6 @@ class FacesGroup(_Group):
         -------
         [:class:`compas_fea2.model.Face`]
             The faces added.
-
         """
         return self._add_members(faces)
 
@@ -340,12 +558,12 @@ class PartsGroup(_Group):
     name : str, optional
         Uniqe identifier. If not provided it is automatically generated. Set a
         name if you want a more human-readable input file.
-    parts : list[:class:`compas_fea2.model.DeformablePart`]
+    parts : list[:class:`compas_fea2.model.Part`]
         The parts belonging to the group.
 
     Attributes
     ----------
-    parts : list[:class:`compas_fea2.model.DeformablePart`]
+    parts : list[:class:`compas_fea2.model.Part`]
         The parts belonging to the group.
     model : :class:`compas_fea2.model.Model`
         The model where the group is registered, by default `None`.
@@ -361,6 +579,20 @@ class PartsGroup(_Group):
         super(PartsGroup, self).__init__(members=parts, **kwargs)
 
     @property
+    def __data__(self):
+        data = super().__data__
+        data.update({"parts": [part.__data__ for part in self.parts]})
+        return data
+
+    @classmethod
+    def __from_data__(cls, data):
+        from compas_fea2.model import _Part
+
+        part_classes = {cls.__name__: cls for cls in _Part.__subclasses__()}
+        parts = [part_classes[part_data["class"]].__from_data__(part_data) for part_data in data["parts"]]
+        return cls(parts=parts)
+
+    @property
     def model(self):
         return self.part._registration
 
@@ -369,7 +601,169 @@ class PartsGroup(_Group):
         return self._members
 
     def add_part(self, part):
+        """
+        Add a part to the group.
+
+        Parameters
+        ----------
+        part : :class:`compas_fea2.model.Part`
+            The part to add.
+
+        Returns
+        -------
+        :class:`compas_fea2.model.Part`
+            The part added.
+        """
         return self._add_member(part)
 
     def add_parts(self, parts):
+        """
+        Add multiple parts to the group.
+
+        Parameters
+        ----------
+        parts : [:class:`compas_fea2.model.Part`]
+            The parts to add.
+
+        Returns
+        -------
+        [:class:`compas_fea2.model.Part`]
+            The parts added.
+        """
         return self._add_members(parts)
+
+
+class SectionsGroup(_Group):
+    """Base class for sections groups."""
+
+    def __init__(self, sections, **kwargs):
+        super(SectionsGroup, self).__init__(members=sections, **kwargs)
+
+    @property
+    def sections(self):
+        return self._members
+
+    def add_section(self, section):
+        return self._add_member(section)
+
+    def add_sections(self, sections):
+        return self._add_members(sections)
+
+
+class MaterialsGroup(_Group):
+    """Base class for materials groups."""
+
+    def __init__(self, materials, **kwargs):
+        super(MaterialsGroup, self).__init__(members=materials, **kwargs)
+
+    @property
+    def materials(self):
+        return self._members
+
+    def add_material(self, material):
+        return self._add_member(material)
+
+    def add_materials(self, materials):
+        return self._add_members(materials)
+
+
+class InterfacesGroup(_Group):
+    """Base class for interfaces groups."""
+
+    def __init__(self, interfaces, **kwargs):
+        super(InterfacesGroup, self).__init__(members=interfaces, **kwargs)
+
+    @property
+    def interfaces(self):
+        return self._members
+
+    def add_interface(self, interface):
+        return self._add_member(interface)
+
+    def add_interfaces(self, interfaces):
+        return self._add_members(interfaces)
+
+
+class BCsGroup(_Group):
+    """Base class for boundary conditions groups."""
+
+    def __init__(self, bcs, **kwargs):
+        super(BCsGroup, self).__init__(members=bcs, **kwargs)
+
+    @property
+    def bcs(self):
+        return self._members
+
+    def add_bc(self, bc):
+        return self._add_member(bc)
+
+    def add_bcs(self, bcs):
+        return self._add_members(bcs)
+
+
+class ConnectorsGroup(_Group):
+    """Base class for connectors groups."""
+
+    def __init__(self, connectors, **kwargs):
+        super(ConnectorsGroup, self).__init__(members=connectors, **kwargs)
+
+    @property
+    def connectors(self):
+        return self._members
+
+    def add_connector(self, connector):
+        return self._add_member(connector)
+
+    def add_connectors(self, connectors):
+        return self._add_members(connectors)
+
+
+class ConstraintsGroup(_Group):
+    """Base class for constraints groups."""
+
+    def __init__(self, constraints, **kwargs):
+        super(ConstraintsGroup, self).__init__(members=constraints, **kwargs)
+
+    @property
+    def constraints(self):
+        return self._members
+
+    def add_constraint(self, constraint):
+        return self._add_member(constraint)
+
+    def add_constraints(self, constraints):
+        return self._add_members(constraints)
+
+
+class ICsGroup(_Group):
+    """Base class for initial conditions groups."""
+
+    def __init__(self, ics, **kwargs):
+        super(ICsGroup, self).__init__(members=ics, **kwargs)
+
+    @property
+    def ics(self):
+        return self._members
+
+    def add_ic(self, ic):
+        return self._add_member(ic)
+
+    def add_ics(self, ics):
+        return self._add_members(ics)
+
+
+class ReleasesGroup(_Group):
+    """Base class for releases groups."""
+
+    def __init__(self, releases, **kwargs):
+        super(ReleasesGroup, self).__init__(members=releases, **kwargs)
+
+    @property
+    def releases(self):
+        return self._members
+
+    def add_release(self, release):
+        return self._add_member(release)
+
+    def add_releases(self, releases):
+        return self._add_members(releases)

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas_fea2.base import FEAData
 
 # TODO: make units independent using the utilities function
@@ -216,6 +212,26 @@ class GravityLoad(Load):
     @property
     def g(self):
         return self._g
+
+    @property
+    def vector(self):
+        return [self.g * self.x, self.g * self.y, self.g * self.z]
+
+    @property
+    def components(self):
+        components = {i: self.vector[j] for j, i in enumerate(["x", "y", "z"])}
+        components.update({i: 0 for i in ["xx", "yy", "zz"]})
+        return components
+
+    def __mul__(self, factor):
+        if isinstance(factor, (float, int)):
+            new_components = {k: (getattr(self, k) or 0) * factor for k in ["x", "y", "z"]}
+            return GravityLoad(self.g, **new_components)
+        else:
+            raise NotImplementedError
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
 
 class PrestressLoad(Load):

@@ -1,17 +1,13 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .results import (
     Result,
     DisplacementResult,
     AccelerationResult,
     VelocityResult,
+    ReactionResult,
     StressResult,
     MembraneStressResult,
     ShellStressResult,
     SolidStressResult,
-    ModalAnalysisResult,
 )
 
 from .fields import (
@@ -20,6 +16,12 @@ from .fields import (
     VelocityFieldResults,
     StressFieldResults,
     ReactionFieldResults,
+    SectionForcesFieldResults,
+    ContactForcesFieldResults,
+)
+
+from .modal import (
+    ModalAnalysisResult,
     ModalShape,
 )
 
@@ -29,6 +31,7 @@ __all__ = [
     "DisplacementResult",
     "AccelerationResult",
     "VelocityResult",
+    "ReactionResult",
     "StressResult",
     "MembraneStressResult",
     "ShellStressResult",
@@ -38,6 +41,8 @@ __all__ = [
     "VelocityFieldResults",
     "ReactionFieldResults",
     "StressFieldResults",
+    "ContactForcesFieldResults",
+    "SectionForcesFieldResults",
     "ModalAnalysisResult",
     "ModalShape",
 ]

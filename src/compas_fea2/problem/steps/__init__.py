@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .step import (
     Step,
     GeneralStep,
@@ -27,7 +23,7 @@ from .perturbations import (
     ComplexEigenValue,
     BucklingAnalysis,
     LinearStaticPerturbation,
-    StedyStateDynamic,
+    SteadyStateDynamic,
     SubstructureGeneration,
 )
 
@@ -40,7 +36,7 @@ __all__ = [
     "StaticStep",
     "StaticRiksStep",
     "LinearStaticPerturbation",
-    "StedyStateDynamic",
+    "SteadyStateDynamic",
     "SubstructureGeneration",
     "BucklingAnalysis",
     "DynamicStep",

@@ -1,5 +1,5 @@
 import unittest
-from compas_fea2.model.parts import DeformablePart, RigidPart
+from compas_fea2.model.parts import Part, RigidPart
 from compas_fea2.model import Node, BeamElement
 from compas_fea2.model import Steel
 from compas_fea2.model import RectangularSection
@@ -7,13 +7,13 @@ from compas_fea2.model import RectangularSection
 
 class TestPart(unittest.TestCase):
     def test_add_node(self):
-        part = DeformablePart()
+        part = Part()
         node = Node([0, 0, 0])
         part.add_node(node)
         self.assertIn(node, part.nodes)
 
     def test_add_element(self):
-        part = DeformablePart()
+        part = Part()
         node1 = Node([0, 0, 0])
         node2 = Node([1, 0, 0])
         part.add_node(node1)
@@ -23,16 +23,14 @@ class TestPart(unittest.TestCase):
         part.add_element(element)
         self.assertIn(element, part.elements)
 
-
-class TestDeformablePart(unittest.TestCase):
     def test_add_material(self):
-        part = DeformablePart()
+        part = Part()
         material = Steel.S355()
         part.add_material(material)
         self.assertIn(material, part.materials)
 
     def test_add_section(self):
-        part = DeformablePart()
+        part = Part()
         material = Steel.S355()
         section = RectangularSection(w=1, h=1, material=material)
         part.add_section(section)

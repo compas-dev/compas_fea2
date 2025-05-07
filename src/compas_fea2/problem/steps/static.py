@@ -1,13 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from compas_fea2.problem.patterns import AreaLoadPattern
-from compas_fea2.problem.patterns import LineLoadPattern
-from compas_fea2.problem.patterns import NodeLoadPattern
-from compas_fea2.problem.patterns import PointLoadPattern
-from compas_fea2.problem.patterns import VolumeLoadPattern
-
 from .step import GeneralStep
 
 
@@ -66,8 +56,6 @@ class StaticStep(GeneralStep):
         ones defined in the present step, otherwise the loads are added.
     loads : dict
         Dictionary of the loads assigned to each part in the model in the step.
-    gravity : :class:`compas_fea2.problem.GravityLoad`
-        Gravity load to assing to the whole model.
     displacements : dict
         Dictionary of the displacements assigned to each part in the model in the step.
 
@@ -78,249 +66,45 @@ class StaticStep(GeneralStep):
         max_increments=100,
         initial_inc_size=1,
         min_inc_size=0.00001,
+        max_inc_size=1,
         time=1,
         nlgeom=False,
         modify=True,
         **kwargs,
     ):
-        super(StaticStep, self).__init__(
+        super().__init__(
             max_increments=max_increments,
             initial_inc_size=initial_inc_size,
             min_inc_size=min_inc_size,
+            max_inc_size=max_inc_size,
             time=time,
             nlgeom=nlgeom,
             modify=modify,
             **kwargs,
         )
 
-    def add_node_pattern(self, nodes, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
-        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
-        ``Step`` at specific points.
+    def __data__(self):
+        return {
+            "max_increments": self.max_increments,
+            "initial_inc_size": self.initial_inc_size,
+            "min_inc_size": self.min_inc_size,
+            "time": self.time,
+            "nlgeom": self.nlgeom,
+            "modify": self.modify,
+            # Add other attributes as needed
+        }
 
-        Parameters
-        ----------
-        name : str
-            name of the point load
-        x : float, optional
-            x component (in global coordinates) of the point load, by default None
-        y : float, optional
-            y component (in global coordinates) of the point load, by default None
-        z : float, optional
-            z component (in global coordinates) of the point load, by default None
-        xx : float, optional
-            moment about the global x axis of the point load, by default None
-        yy : float, optional
-            moment about the global y axis of the point load, by default None
-        zz : float, optional
-            moment about the global z axis of the point load, by default None
-        axes : str, optional
-            'local' or 'global' axes, by default 'global'
-
-        Returns
-        -------
-        :class:`compas_fea2.problem.PointLoad`
-
-        Warnings
-        --------
-        local axes are not supported yet
-
-        """
-        from compas_fea2.problem import ConcentratedLoad
-
-        return self.add_load_pattern(NodeLoadPattern(load=ConcentratedLoad(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes), nodes=nodes, load_case=load_case, **kwargs))
-
-    def add_point_pattern(self, points, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
-        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
-        ``Step`` at specific points.
-
-        Parameters
-        ----------
-        name : str
-            name of the point load
-        x : float, optional
-            x component (in global coordinates) of the point load, by default None
-        y : float, optional
-            y component (in global coordinates) of the point load, by default None
-        z : float, optional
-            z component (in global coordinates) of the point load, by default None
-        xx : float, optional
-            moment about the global x axis of the point load, by default None
-        yy : float, optional
-            moment about the global y axis of the point load, by default None
-        zz : float, optional
-            moment about the global z axis of the point load, by default None
-        axes : str, optional
-            'local' or 'global' axes, by default 'global'
-
-        Returns
-        -------
-        :class:`compas_fea2.problem.PointLoad`
-
-        Warnings
-        --------
-        local axes are not supported yet
-
-        """
-        return self.add_load_pattern(PointLoadPattern(points=points, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, **kwargs))
-
-    def add_prestress_load(self):
-        raise NotImplementedError
-
-    def add_line_load(self, polyline, load_case=None, discretization=10, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", tolerance=None, **kwargs):
-        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
-        ``Step`` along a prescribed path.
-
-        Parameters
-        ----------
-        name : str
-            name of the point load
-        part : str
-            name of the :class:`compas_fea2.problem.DeformablePart` where the load is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
-            applied.
-        x : float, optional
-            x component (in global coordinates) of the point load, by default None
-        y : float, optional
-            y component (in global coordinates) of the point load, by default None
-        z : float, optional
-            z component (in global coordinates) of the point load, by default None
-        xx : float, optional
-            moment about the global x axis of the point load, by default None
-        yy : float, optional
-            moment about the global y axis of the point load, by default None
-        zz : float, optional
-            moment about the global z axis of the point load, by default None
-        axes : str, optional
-            'local' or 'global' axes, by default 'global'
-
-        Returns
-        -------
-        :class:`compas_fea2.problem.PointLoad`
-
-        Warnings
-        --------
-        local axes are not supported yet
-
-        """
-        return self.add_load_pattern(
-            LineLoadPattern(polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs)
+    @classmethod
+    def __from_data__(cls, data):
+        return cls(
+            max_increments=data["max_increments"],
+            initial_inc_size=data["initial_inc_size"],
+            min_inc_size=data["min_inc_size"],
+            time=data["time"],
+            nlgeom=data["nlgeom"],
+            modify=data["modify"],
+            # Add other attributes as needed
         )
-
-    def add_areaload_pattern(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
-        """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
-        ``Step`` along a prescribed path.
-
-        Parameters
-        ----------
-        name : str
-            name of the point load
-        part : str
-            name of the :class:`compas_fea2.problem.DeformablePart` where the load is applied
-        where : int or list(int), obj
-            It can be either a key or a list of keys, or a NodesGroup of the nodes where the load is
-            applied.
-        x : float, optional
-            x component (in global coordinates) of the point load, by default None
-        y : float, optional
-            y component (in global coordinates) of the point load, by default None
-        z : float, optional
-            z component (in global coordinates) of the point load, by default None
-        xx : float, optional
-            moment about the global x axis of the point load, by default None
-        yy : float, optional
-            moment about the global y axis of the point load, by default None
-        zz : float, optional
-            moment about the global z axis of the point load, by default None
-        axes : str, optional
-            'local' or 'global' axes, by default 'global'
-
-        Returns
-        -------
-        :class:`compas_fea2.problem.PointLoad`
-
-        Warnings
-        --------
-        local axes are not supported yet
-
-        """
-        return self.add_load_pattern(AreaLoadPattern(polygon=polygon, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, **kwargs))
-
-    def add_tributary_load(self):
-        raise NotImplementedError
-
-    def add_gravity_load_pattern(self, parts, g=9.81, x=0.0, y=0.0, z=-1.0, load_case=None, **kwargs):
-        """Add a :class:`compas_fea2.problem.GravityLoad` load to the ``Step``
-
-        Parameters
-        ----------
-        g : float, optional
-            acceleration of gravity, by default 9.81
-        x : float, optional
-            x component of the gravity direction vector (in global coordinates), by default 0.
-        y : [type], optional
-            y component of the gravity direction vector (in global coordinates), by default 0.
-        z : [type], optional
-            z component of the gravity direction vector (in global coordinates), by default -1.
-        distribution : [:class:`compas_fea2.model.PartsGroup`] | [:class:`compas_fea2.model.ElementsGroup`]
-            Group of parts or elements affected by gravity.
-
-        Notes
-        -----
-        The gravity field is applied to the whole model. To remove parts of the
-        model from the calculation of the gravity force, you can assign to them
-        a 0 mass material.
-
-        Warnings
-        --------
-        Be careful to assign a value of *g* consistent with the units in your
-        model!
-
-        """
-        raise NotImplementedError()
-        from compas_fea2.problem import GravityLoad
-
-        return self.add_load_pattern(VolumeLoadPattern(load=GravityLoad(g=g, x=x, y=y, z=z, **kwargs), parts=parts, load_case=load_case, **kwargs))
-
-    # =========================================================================
-    #                           Fields methods
-    # =========================================================================
-    # FIXME change to pattern
-    def add_temperature_pattern(self, field, node):
-        raise NotImplementedError()
-        # if not isinstance(field, PrescribedTemperatureField):
-        #     raise TypeError("{!r} is not a PrescribedTemperatureField.".format(field))
-
-        # if not isinstance(node, Node):
-        #     raise TypeError("{!r} is not a Node.".format(node))
-
-        # node._temperature = field
-        # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
-        # return field
-
-    # =========================================================================
-    #                           Displacements methods
-    # =========================================================================
-    def add_displacement(self, nodes, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
-        """Add a displacement at give nodes to the Step object.
-
-        Parameters
-        ----------
-        displacement : obj
-            :class:`compas_fea2.problem.GeneralDisplacement` object.
-
-        Returns
-        -------
-        None
-
-        """
-        raise NotImplementedError()
-        # if axes != "global":
-        #     raise NotImplementedError("local axes are not supported yet")
-        # displacement = GeneralDisplacement(x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, axes=axes, , **kwargs)
-        # if not isinstance(nodes, Iterable):
-        #     nodes = [nodes]
-        # return self.add_load_pattern(Pattern(value=displacement, distribution=nodes))
 
 
 class StaticRiksStep(StaticStep):

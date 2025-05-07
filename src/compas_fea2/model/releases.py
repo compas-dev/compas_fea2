@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-import compas_fea2.model
 from compas_fea2.base import FEAData
 
 
@@ -45,7 +42,7 @@ class _BeamEndRelease(FEAData):
 
     def __init__(self, n: bool = False, v1: bool = False, v2: bool = False, m1: bool = False, m2: bool = False, t: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self._element: compas_fea2.model.BeamElement | None = None
+        self._element: "BeamElement | None"  # type: ignore
         self._location: str | None = None
         self.n: bool = n
         self.v1: bool = v1
@@ -55,12 +52,12 @@ class _BeamEndRelease(FEAData):
         self.t: bool = t
 
     @property
-    def element(self) -> compas_fea2.model.BeamElement | None:
+    def element(self) -> "BeamElement | None":  # type: ignore
         return self._element
 
     @element.setter
-    def element(self, value: compas_fea2.model.BeamElement):
-        if not isinstance(value, compas_fea2.model.BeamElement):
+    def element(self, value: "BeamElement"):  # type: ignore
+        if not isinstance(value, "BeamElement"):  # type: ignore
             raise TypeError(f"{value!r} is not a beam element.")
         self._element = value
 

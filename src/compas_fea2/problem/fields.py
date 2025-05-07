@@ -1,9 +1,6 @@
-import itertools
 from typing import Iterable
 
 from compas_fea2.base import FEAData
-from compas_fea2.problem.loads import ConcentratedLoad
-from compas_fea2.problem.loads import PressureLoad
 from compas_fea2.problem.loads import GravityLoad
 
 # TODO implement __*__ magic method for combination
@@ -97,6 +94,7 @@ class LoadField(FEAData):
     #         name=self.name or other.name,
     #     )
 
+
 class DisplacementField(LoadField):
     """A distribution of a set of displacements over a set of nodes.
 
@@ -127,6 +125,7 @@ class DisplacementField(LoadField):
     def node_displacement(self):
         """Return a list of tuples with the nodes and the assigned displacement."""
         return zip(self.nodes, self.displacements)
+
 
 class NodeLoadField(LoadField):
     """A distribution of a set of concentrated loads over a set of nodes.
@@ -188,128 +187,6 @@ class PointLoadField(NodeLoadField):
     @property
     def nodes(self):
         return self._distribution
-
-
-# class LineLoadField(LoadField):
-#     """A distribution of a concentrated load over a given polyline.
-
-#     Parameters
-#     ----------
-#     load : object
-#         The load to be applied.
-#     polyline : object
-#         The polyline along which the load is distributed.
-#     load_case : object, optional
-#         The load case to which this pattern belongs.
-#     tolerance : float, optional
-#         Tolerance for finding the closest nodes to the polyline.
-#     discretization : int, optional
-#         Number of segments to divide the polyline into.
-#     """
-
-#     def __init__(self, loads, polyline, load_case=None, tolerance=1, discretization=10, **kwargs):
-#         if not isinstance(loads, ConcentratedLoad):
-#             raise TypeError("LineLoadPattern only supports ConcentratedLoad")
-#         super(LineLoadField, self).__init__(loads, polyline, load_case, **kwargs)
-#         self.tolerance = tolerance
-#         self.discretization = discretization
-
-#     @property
-#     def polyline(self):
-#         return self._distribution
-
-#     @property
-#     def points(self):
-#         return self.polyline.divide_polyline(self.discretization)
-
-#     @property
-#     def nodes(self):
-#         return [self.model.find_closest_nodes_to_point(point, distance=self.distance)[0] for point in self.points]
-
-#     @property
-#     def node_load(self):
-#         return zip(self.nodes, [self.loads] * self.nodes)
-
-
-# class PressureLoadField(LoadField):
-#     """A distribution of a pressure load over a region defined by a polygon.
-#     The loads are distributed over the nodes within the region using their tributary area.
-
-#     Parameters
-#     ----------
-#     load : object
-#         The load to be applied.
-#     polygon : object
-#         The polygon defining the area where the load is distributed.
-#     planar : bool, optional
-#         If True, only the nodes in the same plane of the polygon are considered. Default is False.
-#     load_case : object, optional
-#         The load case to which this pattern belongs.
-#     tolerance : float, optional
-#         Tolerance for finding the nodes within the polygon.
-#     """
-
-#     def __init__(self, pressure, polygon, planar=False, load_case=None, tolerance=1.05, **kwargs):
-#         if not isinstance(pressure, PressureLoad):
-#             raise TypeError("For the moment PressureLoadField only supports PressureLoad")
-
-#         super().__init__(loads=pressure, distribution=polygon, load_case=load_case, **kwargs)
-#         self.tolerance = tolerance
-
-#     @property
-#     def polygon(self):
-#         return self._distribution
-
-#     @property
-#     def nodes(self):
-#         return self.model.find_nodes_in_polygon(self.polygon, tolerance=self.tolerance)
-
-#     @property
-#     def node_load(self):
-#         return zip(self.nodes, [self.loads] * self.nodes)
-
-
-# class VolumeLoadField(LoadField):
-#     """Distribution of a load case (e.g., gravity load).
-
-#     Parameters
-#     ----------
-#     load : object
-#         The load to be applied.
-#     parts : list
-#         List of parts where the load is applied.
-#     load_case : object, optional
-#         The load case to which this pattern belongs.
-#     """
-
-#     def __init__(self, load, parts, load_case=None, **kwargs):
-#         if not isinstance(load, GravityLoad):
-#             raise TypeError("For the moment VolumeLoadPattern only supports ConcentratedLoad")
-#         super(VolumeLoadField, self).__init__(load, parts, load_case, **kwargs)
-
-#     @property
-#     def parts(self):
-#         return self._distribution
-
-#     @property
-#     def nodes(self):
-#         return list(set(itertools.chain.from_iterable(self.parts)))
-
-#     @property
-#     def node_load(self):
-#         nodes_loads = {}
-#         for part in self.parts:
-#             for element in part.elements:
-#                 vol = element.volume
-#                 den = element.section.material.density
-#                 n_nodes = len(element.nodes)
-#                 load = ConcentratedLoad(**{k: v * vol * den / n_nodes if v else v for k, v in self.loads.components.items()})
-#                 for node in element.nodes:
-#                     if node in nodes_loads:
-#                         nodes_loads[node] += load
-#                     else:
-#                         nodes_loads[node] = load
-#         return zip(list(nodes_loads.keys()), list(nodes_loads.values()))
 
 
 class GravityLoadField(LoadField):

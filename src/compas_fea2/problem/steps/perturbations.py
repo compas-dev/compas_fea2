@@ -1,11 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas.geometry import Vector
 from compas.geometry import sum_vectors
 
-from compas_fea2.results import DisplacementResult
 from compas_fea2.results import ModalAnalysisResult
 from compas_fea2.UI import FEA2Viewer
 

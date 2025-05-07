@@ -1,3 +1,4 @@
+from itertools import groupby
 from typing import Iterable
 
 import numpy as np
@@ -7,6 +8,7 @@ from compas.geometry import Vector
 
 from compas_fea2.base import FEAData
 
+from .database import ResultsDatabase  # noqa: F401
 from .results import AccelerationResult  # noqa: F401
 from .results import DisplacementResult  # noqa: F401
 from .results import ReactionResult  # noqa: F401
@@ -14,8 +16,6 @@ from .results import SectionForcesResult  # noqa: F401
 from .results import ShellStressResult  # noqa: F401
 from .results import SolidStressResult  # noqa: F401
 from .results import VelocityResult  # noqa: F401
-from .database import ResultsDatabase  # noqa: F401
-from itertools import groupby
 
 
 class FieldResults(FEAData):
@@ -81,15 +81,15 @@ class FieldResults(FEAData):
         }
 
     @property
-    def step(self) -> "Step":
+    def step(self) -> "_Step":  # noqa: F821
         return self._registration
 
     @property
-    def problem(self) -> "Problem":
+    def problem(self) -> "Problem":  # noqa: F821
         return self.step.problem
 
     @property
-    def model(self) -> "Model":
+    def model(self) -> "Model":  # noqa: F821
         return self.problem.model
 
     @property
@@ -329,7 +329,9 @@ class NodeFieldResults(FieldResults):
         Returns
         -------
         tuple
-            The translation resultant as :class:`compas.geometry.Vector`, moment resultant as :class:`compas.geometry.Vector`, and location as a :class:`compas.geometry.Point`.
+            The translation resultant as :class:`compas.geometry.Vector`,
+            moment resultant as :class:`compas.geometry.Vector`,
+            and location as a :class:`compas.geometry.Point`.
         """
         from compas.geometry import Point
         from compas.geometry import centroid_points_weighted
@@ -679,7 +681,14 @@ class StressFieldResults(ElementFieldResults):
             rotation_matrices_2d = np.array([Transformation.from_change_of_basis(r.element.frame, new_frame).matrix[:3, :3] for r in results_2d])
 
             # Apply tensor transformation
-            transformed_tensors.append(np.einsum("nij,njk,nlk->nil", rotation_matrices_2d, local_stresses_2d, rotation_matrices_2d))
+            transformed_tensors.append(
+                np.einsum(
+                    "nij,njk,nlk->nil",
+                    rotation_matrices_2d,
+                    local_stresses_2d,
+                    rotation_matrices_2d,
+                )
+            )
 
         # Process 3D elements
         if 3 in grouped_results:
@@ -708,7 +717,8 @@ class StressFieldResults(ElementFieldResults):
         node_indices = np.array([n.key for e in self.results for n in e.element.nodes])  # Shape (N_total_entries,)
 
         # Repeat von Mises stress for each node in the corresponding element
-        repeated_von_mises = np.repeat(element_von_mises, repeats=[len(e.element.nodes) for e in self.results], axis=0)  # Shape (N_total_entries,)
+        node_counts = [len(e.element.nodes) for e in self.results]
+        repeated_von_mises = np.repeat(element_von_mises, repeats=node_counts, axis=0)  # Shape (N_total_entries,)
 
         # Get the number of unique nodes
         max_node_index = node_indices.max() + 1
@@ -799,18 +809,18 @@ class StressFieldResults(ElementFieldResults):
         """
         stress_tensors = self.global_stresses(plane)  # Shape: (N_elements, 3, 3)
 
-        # **✅ Ensure symmetry (avoiding numerical instability)**
+        # Ensure symmetry (avoiding numerical instability)**
         stress_tensors = 0.5 * (stress_tensors + np.transpose(stress_tensors, (0, 2, 1)))
 
-        # **✅ Compute eigenvalues and eigenvectors (batch operation)**
+        # Compute eigenvalues and eigenvectors (batch operation)**
         eigvals, eigvecs = np.linalg.eigh(stress_tensors)
 
-        # **✅ Sort eigenvalues & corresponding eigenvectors (by absolute magnitude)**
+        # Sort eigenvalues & corresponding eigenvectors (by absolute magnitude)**
         sorted_indices = np.argsort(np.abs(eigvals), axis=1)  # Sort based on absolute value
         sorted_eigvals = np.take_along_axis(eigvals, sorted_indices, axis=1)
         sorted_eigvecs = np.take_along_axis(eigvecs, sorted_indices[:, :, None], axis=2)
 
-        # **✅ Ensure consistent orientation**
+        # Ensure consistent orientation**
         reference_vector = np.array([1.0, 0.0, 0.0])  # Arbitrary reference vector
         alignment_check = np.einsum("nij,j->ni", sorted_eigvecs, reference_vector)  # Dot product with reference
         flip_mask = alignment_check < 0  # Identify vectors needing flipping

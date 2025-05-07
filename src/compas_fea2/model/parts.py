@@ -1,5 +1,6 @@
+from collections import defaultdict
+from itertools import groupby
 from math import pi
-from math import sqrt
 from typing import Dict
 from typing import Iterable
 from typing import List
@@ -8,16 +9,11 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
-import networkx as nx
-import matplotlib.pyplot as plt
-import numpy as np
-from compas.topology import connected_components
-from collections import defaultdict
-from itertools import groupby
-import h5py
-import json
-
 import compas
+import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
+from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Frame
 from compas.geometry import Plane
@@ -26,12 +22,12 @@ from compas.geometry import Scale
 from compas.geometry import Transformation
 from compas.geometry import Vector
 from compas.geometry import bounding_box
-from compas.geometry import centroid_points, centroid_points_weighted
-from compas.geometry import distance_point_point_sqrd
+from compas.geometry import centroid_points
+from compas.geometry import centroid_points_weighted
 from compas.geometry import is_point_in_polygon_xy
 from compas.geometry import is_point_on_plane
-from compas.datastructures import Mesh
 from compas.tolerance import TOL
+from compas.topology import connected_components
 from scipy.spatial import KDTree
 
 import compas_fea2
@@ -45,8 +41,12 @@ from .elements import _Element
 from .elements import _Element1D
 from .elements import _Element2D
 from .elements import _Element3D
-from .groups import ElementsGroup, FacesGroup, NodesGroup, MaterialsGroup, SectionsGroup, _Group
-
+from .groups import ElementsGroup
+from .groups import FacesGroup
+from .groups import MaterialsGroup
+from .groups import NodesGroup
+from .groups import SectionsGroup
+from .groups import _Group
 from .materials.material import _Material
 from .nodes import Node
 from .releases import _BeamEndRelease
@@ -133,7 +133,7 @@ class _Part(FEAData):
         }
 
     def to_hdf5_data(self, hdf5_file, mode="a"):
-        group = hdf5_file.require_group(f"model/{"parts"}/{self.uid}")  # Create a group for this object
+        group = hdf5_file.require_group(f"model/{'parts'}/{self.uid}")  # Create a group for this object
         group.attrs["class"] = str(self.__data__["class"])
 
     @classmethod
@@ -204,8 +204,11 @@ class _Part(FEAData):
             part.add_element(element, checks=False)
 
         part._boundary_mesh = Mesh.__from_data__(data.get("boundary_mesh")) if data.get("boundary_mesh") else None
-        part._discretized_boundary_mesh = Mesh.__from_data__(data.get("discretized_boundary_mesh")) if data.get("discretized_boundary_mesh") else None
-        if rp:= data.get("reference_point"):
+        if data.get("discretized_boundary_mesh"):
+            part._discretized_boundary_mesh = Mesh.__from_data__(data.get("discretized_boundary_mesh"))
+        else:
+            part._discretized_boundary_mesh = None
+        if rp := data.get("reference_point"):
             part.reference_point = Node.__from_data__(rp)
         return part
 
@@ -256,13 +259,13 @@ class _Part(FEAData):
         return {key: group.members for key, group in sub_groups}
 
     @property
-    def elements_faces(self) -> List[List[List["Face"]]]:
+    def elements_faces(self) -> List[List[List["Face"]]]:  # noqa: F821
         face_group = FacesGroup([face for element in self.elements for face in element.faces])
         face_group.group_by(key=lambda x: x.element)
         return face_group
 
     @property
-    def elements_faces_grouped(self) -> Dict[int, List[List["Face"]]]:
+    def elements_faces_grouped(self) -> Dict[int, List[List["Face"]]]:  # noqa: F821
         return {key: [face for face in element.faces] for key, element in self.elements_grouped.items()}
 
     @property
@@ -493,7 +496,7 @@ class _Part(FEAData):
 
     @property
     def bounding_box(self) -> Optional[Box]:
-        # FIXME: add bounding box for lienar elements (bb of the section outer boundary)
+        # FIXME: add bounding box for linear elements (bb of the section outer boundary)
         return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
 
     @property
@@ -505,7 +508,9 @@ class _Part(FEAData):
     def centroid(self) -> Point:
         """The geometric center of the part."""
         self.compute_nodal_masses()
-        return centroid_points_weighted([node.point for node in self.nodes], [sum(node.mass) / len(node.mass) for node in self.nodes])
+        points = [node.point for node in self.nodes]
+        weights = [sum(node.mass) / len(node.mass) for node in self.nodes]
+        return centroid_points_weighted(points, weights)
 
     @property
     def bottom_plane(self) -> Plane:
@@ -583,6 +588,17 @@ class _Part(FEAData):
         return part
 
     def elements_by_dimension(self, dimension: int = 1) -> Iterable[_Element]:
+        """Get elements by dimension.
+        Parameters
+        ----------
+        dimension : int
+            The dimension of the elements to get. 1 for 1D, 2 for 2D, and 3 for 3D.
+        Returns
+        -------
+        Iterable[:class:`compas_fea2.model._Element`]
+            The elements of the specified dimension.
+        """
+        
         if dimension == 1:
             return filter(lambda x: isinstance(x, _Element1D), self.elements)
         elif dimension == 2:
@@ -737,7 +753,8 @@ class _Part(FEAData):
         # Get elements
         gmsh_elements = model.mesh.get_elements()
         dimension = 2 if isinstance(section, SolidSection) else 1
-        ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))  # gmsh keys start from 1
+        # gmsh keys start from 1
+        ntags_per_element = np.split(gmsh_elements[2][dimension] - 1, len(gmsh_elements[1][dimension]))
 
         verbose = kwargs.get("verbose", False)
         rigid = kwargs.get("rigid", False)
@@ -750,17 +767,31 @@ class _Part(FEAData):
             element_nodes = fea2_nodes[ntags]
 
             if ntags.size == 3:
-                part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
+                part.add_element(
+                    ShellElement(
+                        nodes=element_nodes,
+                        section=section,
+                        rigid=rigid,
+                        implementation=implementation,
+                    )
+                )
 
             elif ntags.size == 4:
                 if isinstance(section, ShellSection):
-                    part.add_element(ShellElement(nodes=element_nodes, section=section, rigid=rigid, implementation=implementation))
+                    part.add_element(
+                        ShellElement(
+                            nodes=element_nodes,
+                            section=section,
+                            rigid=rigid,
+                            implementation=implementation,
+                        )
+                    )
                 else:
                     part.add_element(TetrahedronElement(nodes=element_nodes, section=section, rigid=rigid))
-                    part.ndf = 3  # FIXME: try to move outside the loop
+                    part.ndf = 3  # FIXME: move outside the loop
 
             elif ntags.size == 10:  # C3D10 tetrahedral element
-                part.add_element(TetrahedronElement(nodes=element_nodes, section=section, rigid=rigid))  # Automatically supports C3D10
+                part.add_element(TetrahedronElement(nodes=element_nodes, section=section, rigid=rigid))
                 part.ndf = 3
 
             elif ntags.size == 8:
@@ -773,7 +804,7 @@ class _Part(FEAData):
                 print(f"Element {ntags} added")
 
         if not part._boundary_mesh:
-            gmshModel.generate_mesh(2)  # FIXME: Get the volumes without the mesh
+            gmshModel.generate_mesh(2)
             part._boundary_mesh = gmshModel.mesh_to_compas()
 
         if not part._discretized_boundary_mesh:
@@ -909,6 +940,26 @@ class _Part(FEAData):
 
     @classmethod
     def from_brep(cls, brep, name: Optional[str] = None, **kwargs) -> "_Part":
+        """Create a Part object from a BREP file.
+        Parameters
+        ---------- 
+        brep : str
+            Path to the BREP file.
+        name : str, optional
+            Name of the new Part.
+        mesh_size_at_vertices : dict, optional
+            Dictionary of vertex keys and target mesh sizes, by default None.
+        target_point_mesh_size : dict, optional
+            Dictionary of point coordinates and target mesh sizes, by default None.
+        meshsize_max : float, optional
+            Maximum mesh size, by default None.
+        meshsize_min : float, optional
+            Minimum mesh size, by default None.
+        Returns
+        -------
+        _Part
+            The part.
+        """
         from compas_gmsh.models import MeshModel
 
         mesh_size_at_vertices = kwargs.get("mesh_size_at_vertices", None)
@@ -1499,6 +1550,19 @@ class _Part(FEAData):
         plt.show()
 
     def visualize_pyvis(self, filename="model_graph.html"):
+        """Visualizes the Model-Part and Element-Node graph using Pyvis.
+        The graph is saved as an HTML file, which can be opened in a web browser.  
+        
+        Warnings
+        --------
+        The Pyvis library must be installed to use this function. This function
+        is currently under development and may not work as expected.
+
+        Parameters
+        ----------
+        filename : str, optional
+            The name of the HTML file to save the graph, by default "model_graph.html".
+        """
         from pyvis.network import Network
 
         """Visualizes the Model-Part and Element-Node graph using Pyvis."""
@@ -1704,7 +1768,9 @@ class _Part(FEAData):
                 else:
                     element.on_boundary = False
             elif isinstance(element, _Element2D):
-                if TOL.geometric_key(centroid_points([node.xyz for node in element.nodes])) in self._discretized_boundary_mesh.centroid_face:
+                centroid = centroid_points([node.xyz for node in element.nodes])
+                geometric_key = TOL.geometric_key(centroid)
+                if geometric_key in self._discretized_boundary_mesh.centroid_face:
                     element.on_boundary = True
                 else:
                     element.on_boundary = False
@@ -1714,7 +1780,7 @@ class _Part(FEAData):
     #                           Faces methods
     # =========================================================================
 
-    def find_faces_on_plane(self, plane: Plane, tol: float=1) -> List["compas_fea2.model.Face"]:
+    def find_faces_on_plane(self, plane: Plane, tol: float = 1) -> List["compas_fea2.model.Face"]:
         """Find the faces of the elements that belong to a given plane, if any.
 
         Parameters
@@ -1827,12 +1893,13 @@ class _Part(FEAData):
         print(f"No groups found with name {name}")
         return None
 
-    def add_group(self, group: Union[NodesGroup, ElementsGroup, FacesGroup]) -> Union[NodesGroup, ElementsGroup, FacesGroup]:
+    def add_group(self, group: Union[NodesGroup, ElementsGroup, FacesGroup]) -> _Group:
         """Add a node or element group to the part.
 
         Parameters
         ----------
-        group : :class:`compas_fea2.model.NodesGroup` | :class:`compas_fea2.model.ElementsGroup` | :class:`compas_fea2.model.FacesGroup`
+        group : :class:`compas_fea2.model.NodesGroup` | :class:`compas_fea2.model.ElementsGroup` |
+                :class:`compas_fea2.model.FacesGroup`
 
         Returns
         -------
@@ -1852,7 +1919,7 @@ class _Part(FEAData):
         self._groups.add(group)
         return group
 
-    def add_groups(self, groups: List[Union[NodesGroup, ElementsGroup, FacesGroup]]) -> List[Union[NodesGroup, ElementsGroup, FacesGroup]]:
+    def add_groups(self, groups: List[Union[NodesGroup, ElementsGroup, FacesGroup]]) -> List[Union[_Group]]:
         """Add multiple groups to the part.
 
         Parameters
@@ -1888,7 +1955,12 @@ class _Part(FEAData):
         """
         return self.nodes.sorted_by(lambda n: getattr(Vector(*n.results[step].get("U", None)), component))
 
-    def get_max_displacement(self, problem: "Problem", step: Optional["_Step"] = None, component: str = "length") -> Tuple[Node, float]:  # noqa: F821
+    def get_max_displacement(
+        self,
+        problem: "Problem",  # noqa: F821
+        step: Optional["_Step"] = None,  # noqa: F821
+        component: str = "length",
+    ) -> Tuple[Node, float]:
         """Retrieve the node with the maximum displacement
 
         Parameters
@@ -1912,7 +1984,12 @@ class _Part(FEAData):
         displacement = getattr(Vector(*node.results[problem][step].get("U", None)), component)
         return node, displacement
 
-    def get_min_displacement(self, problem: "Problem", step: Optional["_Step"] = None, component: str = "length") -> Tuple[Node, float]:  # noqa: F821
+    def get_min_displacement(
+        self,
+        problem: "Problem",  # noqa: F821
+        step: Optional["_Step"] = None,  # noqa: F821
+        component: str = "length",
+    ) -> Tuple[Node, float]:  # noqa: F821
         """Retrieve the node with the minimum displacement
 
         Parameters
@@ -2227,7 +2304,7 @@ class RigidPart(_Part):
         return super().from_gmsh(gmshModel, name=name, **kwargs)
 
     @classmethod
-    def from_boundary_mesh(cls, boundary_mesh: "compas.datastructures.Mesh", name: Optional[str] = None, **kwargs) -> "_Part":
+    def from_boundary_mesh(cls, boundary_mesh: "compas.datastructures.Mesh", name: Optional[str] = None, **kwargs) -> _Part:
         """Create a RigidPart object from a 3-dimensional :class:`compas.datastructures.Mesh`
         object representing the boundary envelope of the Part.
 
@@ -2249,7 +2326,7 @@ class RigidPart(_Part):
     # =========================================================================
     #                        Elements methods
     # =========================================================================
-    # TODO this can be removed and the checks on the rigid part can be done in _part
+    # TODO: this can be moved to _Part
 
     def add_element(self, element: _Element) -> _Element:
         # type: (_Element) -> _Element

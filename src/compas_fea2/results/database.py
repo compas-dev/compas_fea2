@@ -1,12 +1,13 @@
+import json
 import sqlite3
+
 import h5py
 import numpy as np
-import json
+
 from compas_fea2.base import FEAData
 
 
 class ResultsDatabase(FEAData):
-
     def __init__(self, problem, **kwargs):
         super().__init__(**kwargs)
         self._registration = problem
@@ -37,6 +38,7 @@ class JSONResultsDatabase(ResultsDatabase):
         super().__init__(problem=problem, **kwargs)
 
     def get_results_set(self, filename, field):
+        """Get a set of results from a JSON file."""
         with open(filename, "r") as f:
             data = json.load(f)
         return data[field]
@@ -58,7 +60,7 @@ class HDF5ResultsDatabase(ResultsDatabase):
                 elif isinstance(v, list) and all(isinstance(i, (int, float)) for i in v):
                     group.create_dataset(k, data=np.array(v, dtype="f8"))
                 elif isinstance(v, list) and all(isinstance(i, FEAData) for i in v):
-                    sub_group = group.require_group(k)
+                    # sub_group = group.require_group(k)
                     for i, obj in enumerate(v):
                         obj.save_to_hdf5(self.db_path, f"{key}/{k}/element_{i}")
                 elif isinstance(v, dict):
@@ -66,7 +68,7 @@ class HDF5ResultsDatabase(ResultsDatabase):
                 elif isinstance(v, str):
                     group.attrs[k] = v
                 else:
-                    print(f"⚠️ Warning: Skipping {k} (Unsupported type {type(v)})")
+                    print(f"Warning: Skipping {k} (Unsupported type {type(v)})")
 
     def load_from_hdf5(self, key):
         """Load data from the HDF5 database."""

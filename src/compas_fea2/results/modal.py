@@ -129,7 +129,7 @@ class ModalAnalysisResult(FEAData):
             writer.writerow([self.mode, self.eigenvalue, self.frequency, self.omega, self.period, ", ".join(map(str, self.eigenvector)), ", ".join(map(str, self.mode_shape))])
 
     def __repr__(self):
-        return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, " f"frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"
+        return f"ModalAnalysisResult(mode={self.mode}, eigenvalue={self.eigenvalue:.4f}, frequency={self.frequency:.4f} Hz, period={self.period:.4f} s)"
 
 
 class ModalShape(NodeFieldResults):

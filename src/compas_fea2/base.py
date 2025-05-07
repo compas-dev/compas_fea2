@@ -1,17 +1,17 @@
 import importlib
+import json
 import uuid
 from abc import abstractmethod
-from typing import Iterable
 from copy import deepcopy
-import numpy as np
-import h5py
+from typing import Iterable
 
+import h5py
+import numpy as np
 from compas.data import Data
 
 import compas_fea2
 
 from .utilities._utils import to_dimensionless
-import json
 
 
 class DimensionlessMeta(type):

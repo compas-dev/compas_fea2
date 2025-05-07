@@ -1,7 +1,14 @@
-from typing import Callable, Iterable, TypeVar, Set, Dict, Any, List
+import logging
 from importlib import import_module
 from itertools import groupby
-import logging
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Set
+from typing import TypeVar
+
 from compas_fea2.base import FEAData
 
 # Define a generic type for members

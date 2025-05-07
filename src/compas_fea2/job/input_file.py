@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
 from compas_fea2 import VERBOSE
@@ -77,8 +73,9 @@ class InputFile(FEAData):
 
 
 class ParametersFile(InputFile):
-    """"""
+    """Input file object for Optimizations.
+    """
 
-    def __init__(self, name=None, **kwargs):
-        super(ParametersFile, self).__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super(ParametersFile, self).__init__(**kwargs)
         raise NotImplementedError()

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import shutil
 from pathlib import Path
@@ -386,21 +382,21 @@ Analysis folder path : {self.path or "N/A"}
 
             if is_fea2_folder:
                 if not erase_data:
-                    user_input = input(f"The directory {self.path} already exists and contains FEA2 results. " "Do you want to delete its contents? (Y/n): ").strip().lower()
+                    user_input = input(f"The directory {self.path} already exists and contains FEA2 results. Do you want to delete its contents? (Y/n): ").strip().lower()
                     erase_data = user_input in ["y", "yes", ""]
 
                 if erase_data:
                     _delete_folder_contents(self.path)
                     print(f"All contents of {self.path} have been deleted.")
                 else:
-                    print(f"WARNING: The directory {self.path} already exists and contains FEA2 results. " "Duplicated results expected.")
+                    print(f"WARNING: The directory {self.path} already exists and contains FEA2 results. Duplicated results expected.")
             else:
                 # Folder exists but is not an FEA2 results folder
                 if erase_data and erase_data == "armageddon":
                     _delete_folder_contents(self.path)
                 else:
                     user_input = (
-                        input(f"ATTENTION! The directory {self.path} already exists and might NOT be a FEA2 results folder. " "Do you want to DELETE its contents? (y/N): ")
+                        input(f"ATTENTION! The directory {self.path} already exists and might NOT be a FEA2 results folder. Do you want to DELETE its contents? (y/N): ")
                         .strip()
                         .lower()
                     )
@@ -408,7 +404,7 @@ Analysis folder path : {self.path or "N/A"}
                         _delete_folder_contents(self.path)
                         print(f"All contents of {self.path} have been deleted.")
                     else:
-                        raise ValueError(f"The directory {self.path} exists but is not recognized as a valid FEA2 results folder, " "and its contents were not cleared.")
+                        raise ValueError(f"The directory {self.path} exists but is not recognized as a valid FEA2 results folder, and its contents were not cleared.")
         else:
             # Create the directory if it does not exist
             self.path.mkdir(parents=True, exist_ok=True)

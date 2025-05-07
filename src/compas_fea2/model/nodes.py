@@ -3,11 +3,11 @@ from typing import List
 from typing import Optional
 
 from compas.geometry import Point
+from compas.geometry import transform_points
 from compas.tolerance import TOL
 
 import compas_fea2
 from compas_fea2.base import FEAData
-from compas.geometry import transform_points
 
 
 class Node(FEAData):
@@ -264,18 +264,62 @@ class Node(FEAData):
     #     return {step: step.loads(step) for step in steps}
 
     def transform(self, transformation):
+        """Transform the node using a transformation matrix.
+        
+        Parameters
+        ----------
+        transformation : list
+            A 4x4 transformation matrix.
+        """
         self.xyz = transform_points([self.xyz], transformation)[0]
 
     def transformed(self, transformation):
+        """Return a copy of the node transformed by a transformation matrix.
+        
+        Parameters
+        ----------
+        transformation : list
+            A 4x4 transformation matrix.
+            
+        Returns
+        -------
+        :class:`compas_fea2.model.Node`
+            A new node object with the transformed coordinates.
+        """
         node = self.copy()
         node.transform(transformation)
         return node
 
     def displacement(self, step):
+        """Get the displacement of the node at a given step.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The step for which to get the displacement.
+            
+        Returns
+        -------
+        :class:`compas_fea2.results.DisplacementResult`
+            The displacement result at the node for the given step.
+        """
         if step.displacement_field:
             return step.displacement_field.get_result_at(location=self)
 
     def reaction(self, step):
+        """Get the reaction of the node at a given step.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The step for which to get the reaction.
+        
+        Returns
+        -------
+        :class:`compas_fea2.results.ReactionResult`
+            The reaction result at the node for the given step.
+        """
+        
         if step.reaction_field:
             return step.reaction_field.get_result_at(location=self)
 

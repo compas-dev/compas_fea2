@@ -209,6 +209,7 @@ __all__ = [
     "_InitialCondition",
     "InitialTemperatureField",
     "InitialStressField",
+    "Interface",
     "Connector",
     "LinearConnector",
     "SpringConnector",
@@ -216,4 +217,10 @@ __all__ = [
     "ZeroLengthConnector",
     "ZeroLengthContactConnector",
     "ZeroLengthSpringConnector",
+    "_Interaction",
+    "Contact",
+    "HardContactFrictionPenalty",
+    "HardContactNoFriction",
+    "LinearContactFrictionPenalty",
+    "HardContactRough",
 ]

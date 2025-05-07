@@ -1,5 +1,4 @@
 from operator import itemgetter
-
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -15,12 +14,9 @@ from compas.geometry import Polyhedron
 from compas.geometry import Vector
 from compas.geometry import centroid_points
 from compas.geometry import distance_point_point
-
-
 from compas.itertools import pairwise
 
 from compas_fea2.base import FEAData
-
 from compas_fea2.results import Result
 from compas_fea2.results import ShellStressResult
 from compas_fea2.results import SolidStressResult
@@ -351,21 +347,74 @@ class _Element1D(_Element):
         self.section.plot()
 
     def plot_stress_distribution(self, step: "_Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
+        """ Plot the stress distribution along the element.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The step to which the element belongs.
+        end : str
+            The end of the element to plot the stress distribution. Can be 'start' or 'end'.
+        nx : int
+            Number of points along the x axis.
+        ny : int
+            Number of points along the y axis.
+        *args : list
+            Additional arguments to pass to the plot function.
+        **kwargs : dict
+            Additional keyword arguments to pass to the plot function.
+        """
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         r = step.section_forces_field.get_element_forces(self)
         r.plot_stress_distribution(*args, **kwargs)
 
     def section_forces_result(self, step: "Step") -> "Result":  # noqa: F821
+        """Get the section forces result for the element.
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The analysis step.
+        
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The section forces result for the element.
+        """
+        
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         return step.section_forces_field.get_result_at(self)
 
     def forces(self, step: "Step") -> "Result":  # noqa: F821
+        """Get the forces result for the element.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The analysis step.
+        
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The forces result for the element.     
+        """
         r = self.section_forces_result(step)
         return r.forces
 
     def moments(self, step: "_Step") -> "Result":  # noqa: F821
+        """ Get the moments result for the element.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The analysis step.
+            
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The moments result for the element.
+        """
         r = self.section_forces_result(step)
         return r.moments
 
@@ -445,8 +494,9 @@ class Face(FEAData):
 
     @classmethod
     def __from_data__(cls, data):
-        from compas_fea2.model import Node
         from importlib import import_module
+
+        from compas_fea2.model import Node
 
         elements_module = import_module("compas_fea2.model.elements")
         element_cls = getattr(elements_module, data["elements"]["class"])
@@ -472,11 +522,11 @@ class Face(FEAData):
         return self._registration
 
     @property
-    def part(self) -> "_Part":
+    def part(self) -> "_Part":  # noqa: F821
         return self.element.part
 
     @property
-    def model(self) -> "Model":
+    def model(self) -> "Model":  # noqa: F821
         return self.element.model
 
     @property
@@ -506,7 +556,7 @@ class Face(FEAData):
     @property
     def mesh(self) -> Mesh:
         return Mesh.from_vertices_and_faces(self.points, [[c for c in range(len(self.points))]])
-    
+
     @property
     def node_area(self) -> float:
         mesh = self.mesh
@@ -587,6 +637,18 @@ class _Element2D(_Element):
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
     def stress_results(self, step: "_Step") -> "Result":  # noqa: F821
+        """Get the stress results for the element.
+        
+        Parameters
+        ----------
+        step : :class:`compas_fea2.model.Step`
+            The analysis step.
+            
+        Returns
+        -------
+        :class:`compas_fea2.results.Result`
+            The stress results for the element.
+        """
         if not hasattr(step, "stress_field"):
             raise ValueError("The step does not have a stress field")
         return step.stress_field.get_result_at(self)
@@ -730,9 +792,6 @@ class _Element3D(_Element):
         return Polyhedron(self.points, list(self._face_indices.values())).to_mesh()
 
 
-from typing import List, Optional
-
-
 class TetrahedronElement(_Element3D):
     """A Solid element with 4 or 10 nodes.
 
@@ -762,7 +821,13 @@ class TetrahedronElement(_Element3D):
         The list of nodes defining the element.
     """
 
-    def __init__(self, *, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        nodes: List["Node"],  # noqa: F821
+        section: "_Section",  # noqa: F821
+        implementation: Optional[str] = None,
+        **kwargs,
+    ):
         if len(nodes) not in {4, 10}:
             raise ValueError("TetrahedronElement must have either 4 (C3D4) or 10 (C3D10) nodes.")
 

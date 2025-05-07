@@ -45,13 +45,13 @@ class LoadCombination(FEAData):
 
     def __data__(self):
         return {
-            'factors': self.factors,
-            'name': self.name,
+            "factors": self.factors,
+            "name": self.name,
         }
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(factors=data['factors'], name=data.get('name'))
+        return cls(factors=data["factors"], name=data.get("name"))
 
     # BUG: Rewrite. this is not general and does not account for different loads types
     @property

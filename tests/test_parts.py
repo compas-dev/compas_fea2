@@ -23,8 +23,6 @@ class TestPart(unittest.TestCase):
         part.add_element(element)
         self.assertIn(element, part.elements)
 
-
-class TestPart(unittest.TestCase):
     def test_add_material(self):
         part = Part()
         material = Steel.S355()

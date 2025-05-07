@@ -8,15 +8,13 @@ from compas.geometry import sum_vectors
 from compas_fea2.base import FEAData
 from compas_fea2.problem.displacements import GeneralDisplacement
 from compas_fea2.problem.fields import DisplacementField
-
+from compas_fea2.problem.fields import NodeLoadField
+from compas_fea2.problem.fields import PointLoadField
 from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import SectionForcesFieldResults
 from compas_fea2.results import StressFieldResults
 from compas_fea2.UI import FEA2Viewer
-
-from compas_fea2.problem.fields import NodeLoadField
-from compas_fea2.problem.fields import PointLoadField
 
 # ==============================================================================
 #                                Base Steps
@@ -505,9 +503,7 @@ class GeneralStep(Step):
         local axes are not supported yet
 
         """
-        return self.add_load_field(
-            LineLoadField(polyline=polyline, x=x, y=y, z=z, xx=xx, yy=yy, zz=zz, load_case=load_case, axes=axes, tolerance=tolerance, discretization=discretization, **kwargs)
-        )
+        raise NotImplementedError("Line loads are not implemented yet.")
 
     def add_area_load(self, polygon, load_case=None, x=None, y=None, z=None, xx=None, yy=None, zz=None, axes="global", **kwargs):
         """Add a :class:`compas_fea2.problem.PointLoad` subclass object to the
@@ -605,13 +601,27 @@ class GeneralStep(Step):
         self.add_load_field(load_field)
 
     def add_temperature_field(self, field, node):
+        """Add a temperature field to the Step object.
+        
+        Parameters
+        ----------
+        field : :class:`compas_fea2.problem.fields.PrescribedTemperatureField`
+            The temperature field to add.
+        node : :class:`compas_fea2.model.Node`
+            The node to which the temperature field is applied.
+            
+        Returns
+        -------
+        :class:`compas_fea2.problem.fields.PrescribedTemperatureField`
+            The temperature field that was added.
+        """
         raise NotImplementedError()
         # if not isinstance(field, PrescribedTemperatureField):
         #     raise TypeError("{!r} is not a PrescribedTemperatureField.".format(field))
 
         # if not isinstance(node, Node):
         #     raise TypeError("{!r} is not a Node.".format(node))
-
+    
         # node._temperature = field
         # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
         # return field

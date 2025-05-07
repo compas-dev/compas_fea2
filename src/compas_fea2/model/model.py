@@ -2,39 +2,37 @@ import gc
 import importlib
 import os
 import pathlib
-from pathlib import Path
 import pickle
 from itertools import chain
 from itertools import groupby
-
-from compas.datastructures import Graph
-
+from pathlib import Path
 from typing import Optional
 from typing import Set
 from typing import Union
 
+from compas.datastructures import Graph
 from compas.geometry import Box
 from compas.geometry import Plane
 from compas.geometry import Point
 from compas.geometry import Polygon
+from compas.geometry import Transformation
 from compas.geometry import bounding_box
 from compas.geometry import centroid_points
-from compas.geometry import Transformation
 from pint import UnitRegistry
 
 import compas_fea2
 from compas_fea2.base import FEAData
 from compas_fea2.model.bcs import _BoundaryCondition
 from compas_fea2.model.connectors import Connector
-from compas_fea2.model.interfaces import Interface
 from compas_fea2.model.constraints import _Constraint
 from compas_fea2.model.elements import _Element
 from compas_fea2.model.groups import ElementsGroup
+from compas_fea2.model.groups import InterfacesGroup
 from compas_fea2.model.groups import NodesGroup
 from compas_fea2.model.groups import PartsGroup
-from compas_fea2.model.groups import InterfacesGroup
 from compas_fea2.model.groups import _Group
 from compas_fea2.model.ics import _InitialCondition
+from compas_fea2.model.interfaces import Interface
 from compas_fea2.model.materials.material import _Material
 from compas_fea2.model.nodes import Node
 from compas_fea2.model.parts import RigidPart

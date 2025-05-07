@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from compas_fea2.base import FEAData
 
 
@@ -78,23 +74,15 @@ class GeneralDisplacement(FEAData):
 
     def __data__(self):
         return {
-            'x': self.x,
-            'y': self.y,
-            'z': self.z,
-            'xx': self.xx,
-            'yy': self.yy,
-            'zz': self.zz,
-            'axes': self._axes,
+            "x": self.x,
+            "y": self.y,
+            "z": self.z,
+            "xx": self.xx,
+            "yy": self.yy,
+            "zz": self.zz,
+            "axes": self._axes,
         }
 
     @classmethod
     def __from_data__(cls, data):
-        return cls(
-            x=data['x'],
-            y=data['y'],
-            z=data['z'],
-            xx=data['xx'],
-            yy=data['yy'],
-            zz=data['zz'],
-            axes=data['axes']
-        )
+        return cls(x=data["x"], y=data["y"], z=data["z"], xx=data["xx"], yy=data["yy"], zz=data["zz"], axes=data["axes"])

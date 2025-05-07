@@ -679,7 +679,7 @@ class StressResult(ElementResult):
         self._local_stress = np.array([[s11, s12, s13], [s12, s22, s23], [s13, s23, s33]])
 
         # Store individual components
-        self._components = {f"s{i+1}{j+1}": self._local_stress[i, j] for i in range(3) for j in range(3)}
+        self._components = {f"s{i + 1}{j + 1}": self._local_stress[i, j] for i in range(3) for j in range(3)}
 
     @property
     def s11(self):
@@ -1113,8 +1113,8 @@ class StressResult(ElementResult):
         <body>
             <h1>Stress Result Report</h1>
             <h2>Element Information</h2>
-            <p><strong>Element ID:</strong> {self.element.id if hasattr(self.element, 'id') else 'N/A'}</p>
-            <p><strong>Frame:</strong> {self.element.frame if hasattr(self.element, 'frame') else 'N/A'}</p>
+            <p><strong>Element ID:</strong> {self.element.id if hasattr(self.element, "id") else "N/A"}</p>
+            <p><strong>Frame:</strong> {self.element.frame if hasattr(self.element, "frame") else "N/A"}</p>
             
             <h2>Stress Tensor</h2>
             <table>
@@ -1122,7 +1122,7 @@ class StressResult(ElementResult):
                     <th>Component</th>
                     <th>Value</th>
                 </tr>
-                {''.join([f"<tr><td>{key}</td><td>{value:.4f}</td></tr>" for key, value in self._components.items()])}
+                {"".join([f"<tr><td>{key}</td><td>{value:.4f}</td></tr>" for key, value in self._components.items()])}
             </table>
 
             <h2>Principal Stresses</h2>
@@ -1131,7 +1131,7 @@ class StressResult(ElementResult):
                     <th>Principal Stress</th>
                     <th>Value</th>
                 </tr>
-                {''.join([f"<tr><td>Principal Stress {i+1}</td><td>{value:.4f}</td></tr>" for i, value in enumerate(self.principal_stresses_values)])}
+                {"".join([f"<tr><td>Principal Stress {i + 1}</td><td>{value:.4f}</td></tr>" for i, value in enumerate(self.principal_stresses_values)])}
             </table>
 
             <h2>Von Mises Stress</h2>

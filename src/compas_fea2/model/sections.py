@@ -75,7 +75,7 @@ class _Section(FEAData):
     def __str__(self) -> str:
         return f"""
 Section {self.name}
-{'-' * len(self.name)}
+{"-" * len(self.name)}
 model    : {self.model!r}
 key      : {self.key}
 material : {self.material!r}
@@ -130,7 +130,7 @@ class MassSection(FEAData):
     def __str__(self) -> str:
         return f"""
 Mass Section  {self.name}
-{'-' * len(self.name)}
+{"-" * len(self.name)}
 model    : {self.model!r}
 mass     : {self.mass}
 """
@@ -347,7 +347,7 @@ class BeamSection(_Section):
     def __str__(self) -> str:
         return f"""
 {self.__class__.__name__}
-{'-' * len(self.__class__.__name__)}
+{"-" * len(self.__class__.__name__)}
 name     : {self.name}
 material : {self.material!r}
 

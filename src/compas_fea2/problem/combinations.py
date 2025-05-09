@@ -1,5 +1,5 @@
 from compas_fea2.base import FEAData
-
+import compas_fea2
 
 class LoadCombination(FEAData):
     """Load combination used to combine load fields together at each step.
@@ -56,7 +56,7 @@ class LoadCombination(FEAData):
     # BUG: Rewrite. this is not general and does not account for different loads types
     @property
     def node_load(self):
-        """Generator returning each node and the correponding total factored
+        """Generator returning each node and the corresponding total factored
         load of the combination.
 
         Returns
@@ -66,10 +66,12 @@ class LoadCombination(FEAData):
         """
         nodes_loads = {}
         for load_field in self.step.load_fields:
-            if load_field.load_case in self.factors:
-                for node, load in load_field.node_load:
-                    if node in nodes_loads:
-                        nodes_loads[node] += load * self.factors[load_field.load_case]
-                    else:
-                        nodes_loads[node] = load * self.factors[load_field.load_case]
+            if isinstance(load_field, compas_fea2.problem.LoadField):
+                if load_field.load_case in self.factors:
+                    for node in load_field.distribution :
+                        for load in load_field.loads:
+                            if node in nodes_loads:
+                                nodes_loads[node] += load * self.factors[load_field.load_case]
+                            else:
+                                nodes_loads[node] = load * self.factors[load_field.load_case]
         return zip(list(nodes_loads.keys()), list(nodes_loads.values()))

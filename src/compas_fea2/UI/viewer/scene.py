@@ -210,14 +210,14 @@ class FEA2StepObject(GroupObject):
         step = kwargs.pop("item")
 
         # DRAW PATTERNS
-        patterns = []
-        for pattern in step.patterns:
-            pattern_forces = []
-            for node, load in pattern.node_load:
+        loadfields = []
+        for load_field in step.load_fields:
+            loadfield_forces = []
+            for node, load in load_field.node_load:
                 x = load.x or 0
                 y = load.y or 0
                 z = load.z or 0
-                pattern_forces.append(
+                loadfield_forces.append(
                     (
                         Vector(x * scale_factor, y * scale_factor, z * scale_factor),  # .to_mesh(anchor=node.point)
                         {
@@ -227,16 +227,16 @@ class FEA2StepObject(GroupObject):
                         },
                     )
                 )
-            patterns.append(
+            loadfields.append(
                 (
-                    pattern_forces,
+                    loadfield_forces,
                     {
-                        "name": f"PATTERN-{pattern.name}",
+                        "name": f"LOADFIELD-{load_field.name}",
                     },
                 )
             )
 
-        super().__init__(item=patterns, name=f"STEP-{step.name}", componets=None, **kwargs)
+        super().__init__(item=loadfields, name=f"STEP-{step.name}", componets=None, **kwargs)
 
 
 class FEA2Stress2DFieldResultsObject(GroupObject):

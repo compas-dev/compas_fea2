@@ -135,6 +135,7 @@ class FEAData(Data, metaclass=DimensionlessMeta):
     # ==========================================================================
     # Copy and Serialization
     # ==========================================================================
+
     def copy(self, cls=None, copy_guid=False, copy_name=False):
         """Make an independent copy of the data object.
 

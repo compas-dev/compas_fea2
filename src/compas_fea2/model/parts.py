@@ -598,7 +598,7 @@ class _Part(FEAData):
         Iterable[:class:`compas_fea2.model._Element`]
             The elements of the specified dimension.
         """
-        
+
         if dimension == 1:
             return filter(lambda x: isinstance(x, _Element1D), self.elements)
         elif dimension == 2:
@@ -942,7 +942,7 @@ class _Part(FEAData):
     def from_brep(cls, brep, name: Optional[str] = None, **kwargs) -> "_Part":
         """Create a Part object from a BREP file.
         Parameters
-        ---------- 
+        ----------
         brep : str
             Path to the BREP file.
         name : str, optional
@@ -1551,8 +1551,8 @@ class _Part(FEAData):
 
     def visualize_pyvis(self, filename="model_graph.html"):
         """Visualizes the Model-Part and Element-Node graph using Pyvis.
-        The graph is saved as an HTML file, which can be opened in a web browser.  
-        
+        The graph is saved as an HTML file, which can be opened in a web browser.
+
         Warnings
         --------
         The Pyvis library must be installed to use this function. This function

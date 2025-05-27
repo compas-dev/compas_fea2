@@ -347,8 +347,8 @@ class _Element1D(_Element):
         self.section.plot()
 
     def plot_stress_distribution(self, step: "_Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
-        """ Plot the stress distribution along the element.
-        
+        """Plot the stress distribution along the element.
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -375,41 +375,41 @@ class _Element1D(_Element):
         ----------
         step : :class:`compas_fea2.model.Step`
             The analysis step.
-        
+
         Returns
         -------
         :class:`compas_fea2.results.Result`
             The section forces result for the element.
         """
-        
+
         if not hasattr(step, "section_forces_field"):
             raise ValueError("The step does not have a section_forces_field")
         return step.section_forces_field.get_result_at(self)
 
     def forces(self, step: "Step") -> "Result":  # noqa: F821
         """Get the forces result for the element.
-        
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
             The analysis step.
-        
+
         Returns
         -------
         :class:`compas_fea2.results.Result`
-            The forces result for the element.     
+            The forces result for the element.
         """
         r = self.section_forces_result(step)
         return r.forces
 
     def moments(self, step: "_Step") -> "Result":  # noqa: F821
-        """ Get the moments result for the element.
-        
+        """Get the moments result for the element.
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
             The analysis step.
-            
+
         Returns
         -------
         :class:`compas_fea2.results.Result`
@@ -638,12 +638,12 @@ class _Element2D(_Element):
 
     def stress_results(self, step: "_Step") -> "Result":  # noqa: F821
         """Get the stress results for the element.
-        
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
             The analysis step.
-            
+
         Returns
         -------
         :class:`compas_fea2.results.Result`

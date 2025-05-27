@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,12 +55,12 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_fea2.model.MembraneElement';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="MembraneElement.ToString" href="compas_fea2.model.MembraneElement.ToString.html" />
-    <link rel="prev" title="ShellElement.validate_data" href="compas_fea2.model.ShellElement.validate_data.html" />
+    <link rel="prev" title="ShellElement.weight" href="compas_fea2.model.ShellElement.weight.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -364,7 +364,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -434,14 +434,9 @@ document.write(`
      aria-label="Section Navigation">
   <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Model.html">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.DeformablePart.html">DeformablePart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Part.html">Part</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.RigidPart.html">RigidPart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Node.html">Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model._Element.html">_Element</a></li>
@@ -516,11 +511,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.PartsGroup.html">PartsGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Problem.html">Problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Step.html">Step</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralStep.html">GeneralStep</a></li>
@@ -537,9 +528,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Load.html">Load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.html">PrestressLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoad.html">NodeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.EdgeLoad.html">EdgeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FaceLoad.html">FaceLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GravityLoad.html">GravityLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.html">TributaryLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a></li>
@@ -547,17 +535,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.html">ThermalLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LoadCombination.html">LoadCombination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Pattern.html">Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoadPattern.html">NodeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PointLoadPattern.html">PointLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LineLoadPattern.html">LineLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.AreaLoadPattern.html">AreaLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.VolumeLoadPattern.html">VolumeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FieldOutput.html">FieldOutput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.html">HistoryOutput</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.Result.html">Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.DisplacementResult.html">DisplacementResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.StressResult.html">StressResult</a></li>
@@ -570,7 +555,6 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compas_fea2.units.html">Units</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -635,7 +619,7 @@ document.write(`
 <h1>MembraneElement</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_fea2.model.MembraneElement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">MembraneElement</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/b95cb87/src/compas_fea2/model/elements.py#L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">MembraneElement</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/c66240f/src/compas_fea2/model/elements.py#L682"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_Element2D</span></code></p>
 <p>A shell element that resists only axial loads.</p>
 <p class="rubric">Notes</p>
@@ -653,7 +637,7 @@ as a reinforcing layer in a continuum.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.copy.html#compas_fea2.model.MembraneElement.copy" title="compas_fea2.model.MembraneElement.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
 <td><p>Make an independent copy of the data object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.data.html#compas_fea2.model.MembraneElement.data" title="compas_fea2.model.MembraneElement.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.from_hdf5.html#compas_fea2.model.MembraneElement.from_hdf5" title="compas_fea2.model.MembraneElement.from_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.from_json.html#compas_fea2.model.MembraneElement.from_json" title="compas_fea2.model.MembraneElement.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
@@ -671,6 +655,12 @@ as a reinforcing layer in a continuum.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.sha256.html#compas_fea2.model.MembraneElement.sha256" title="compas_fea2.model.MembraneElement.sha256"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sha256</span></code></a></p></td>
 <td><p>Compute a hash of the data for comparison during version control using the sha256 algorithm.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.stress_results.html#compas_fea2.model.MembraneElement.stress_results" title="compas_fea2.model.MembraneElement.stress_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stress_results</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.to_hdf5.html#compas_fea2.model.MembraneElement.to_hdf5" title="compas_fea2.model.MembraneElement.to_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.to_json.html#compas_fea2.model.MembraneElement.to_json" title="compas_fea2.model.MembraneElement.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a></p></td>
 <td><p>Convert an object to its native data representation and save it to a JSON file.</p></td>
 </tr>
@@ -679,6 +669,9 @@ as a reinforcing layer in a continuum.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.validate_data.html#compas_fea2.model.MembraneElement.validate_data" title="compas_fea2.model.MembraneElement.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a></p></td>
 <td><p>Validate the data against the object's data schema.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.MembraneElement.weight.html#compas_fea2.model.MembraneElement.weight" title="compas_fea2.model.MembraneElement.weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>

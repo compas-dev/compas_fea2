@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,11 +55,11 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_fea2.model.ISection';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="ISection.ToString" href="compas_fea2.model.ISection.ToString.html" />
+    <link rel="next" title="ISection.HEA100" href="compas_fea2.model.ISection.HEA100.html" />
     <link rel="prev" title="HexSection.validate_data" href="compas_fea2.model.HexSection.validate_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -364,7 +364,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -434,14 +434,9 @@ document.write(`
      aria-label="Section Navigation">
   <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Model.html">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.DeformablePart.html">DeformablePart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Part.html">Part</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.RigidPart.html">RigidPart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Node.html">Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model._Element.html">_Element</a></li>
@@ -516,11 +511,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.PartsGroup.html">PartsGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Problem.html">Problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Step.html">Step</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralStep.html">GeneralStep</a></li>
@@ -537,9 +528,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Load.html">Load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.html">PrestressLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoad.html">NodeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.EdgeLoad.html">EdgeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FaceLoad.html">FaceLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GravityLoad.html">GravityLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.html">TributaryLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a></li>
@@ -547,17 +535,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.html">ThermalLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LoadCombination.html">LoadCombination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Pattern.html">Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoadPattern.html">NodeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PointLoadPattern.html">PointLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LineLoadPattern.html">LineLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.AreaLoadPattern.html">AreaLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.VolumeLoadPattern.html">VolumeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FieldOutput.html">FieldOutput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.html">HistoryOutput</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.Result.html">Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.DisplacementResult.html">DisplacementResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.StressResult.html">StressResult</a></li>
@@ -570,7 +555,6 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compas_fea2.units.html">Units</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -635,7 +619,7 @@ document.write(`
 <h1>ISection</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_fea2.model.ISection">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">ISection</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/b95cb87/src/compas_fea2/model/sections.py#L569"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">ISection</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/c66240f/src/compas_fea2/model/sections.py#L1083"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="compas_fea2.model.BeamSection.html#compas_fea2.model.BeamSection" title="compas_fea2.model.sections.BeamSection"><code class="xref py py-class docutils literal notranslate"><span class="pre">BeamSection</span></code></a></p>
 <p>Equal flanged I-section for beam elements.</p>
 <dl class="field-list">
@@ -647,75 +631,364 @@ document.write(`
 </dd>
 <dt><strong>tw</strong><span class="classifier">float</span></dt><dd><p>Web thickness.</p>
 </dd>
-<dt><strong>tf</strong><span class="classifier">float</span></dt><dd><p>Flange thickness.</p>
+<dt><strong>tbf</strong><span class="classifier">float</span></dt><dd><p>Bottom flange thickness.</p>
+</dd>
+<dt><strong>ttf</strong><span class="classifier">float</span></dt><dd><p>Top flange thickness.</p>
 </dd>
 <dt><strong>material</strong><span class="classifier"><a class="reference internal" href="compas_fea2.model._Material.html#compas_fea2.model._Material" title="compas_fea2.model._Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Material</span></code></a></span></dt><dd><p>The section material.</p>
 </dd>
-</dl>
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Currently you the thickness of the two flanges is the same.</p>
-<dl class="field-list">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
 <dt><strong>w</strong><span class="classifier">float</span></dt><dd><p>Width.</p>
 </dd>
 <dt><strong>h</strong><span class="classifier">float</span></dt><dd><p>Height.</p>
 </dd>
 <dt><strong>tw</strong><span class="classifier">float</span></dt><dd><p>Web thickness.</p>
 </dd>
-<dt><strong>tf</strong><span class="classifier">float</span></dt><dd><p>Flange thickness.</p>
+<dt><strong>tbf</strong><span class="classifier">float</span></dt><dd><p>Bottom flange thickness.</p>
 </dd>
-<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Cross section.</p>
+<dt><strong>ttf</strong><span class="classifier">float</span></dt><dd><p>Top flange thickness.</p>
 </dd>
-<dt><strong>Ixx</strong><span class="classifier">float</span></dt><dd><p>Inertia wrt XX.</p>
+<dt><strong>A</strong><span class="classifier">float</span></dt><dd><p>Cross section area.</p>
 </dd>
-<dt><strong>Iyy</strong><span class="classifier">float</span></dt><dd><p>Inertia wrt YY.</p>
+<dt><strong>Ixx</strong><span class="classifier">float</span></dt><dd><p>Inertia with respect to XX axis.</p>
 </dd>
-<dt><strong>Ixy</strong><span class="classifier">float</span></dt><dd><p>Inertia wrt XY.</p>
+<dt><strong>Iyy</strong><span class="classifier">float</span></dt><dd><p>Inertia with respect to YY axis.</p>
+</dd>
+<dt><strong>Ixy</strong><span class="classifier">float</span></dt><dd><p>Inertia with respect to XY axis.</p>
 </dd>
 <dt><strong>Avx</strong><span class="classifier">float</span></dt><dd><p>Shear area along x.</p>
 </dd>
-<dt><strong>Avy</strong><span class="classifier">float</span></dt><dd><p>Shear area along y</p>
+<dt><strong>Avy</strong><span class="classifier">float</span></dt><dd><p>Shear area along y.</p>
 </dd>
 <dt><strong>J</strong><span class="classifier">float</span></dt><dd><p>Torsion modulus.</p>
 </dd>
-<dt><strong>g0</strong><span class="classifier">float</span></dt><dd><p>???</p>
+<dt><strong>g0</strong><span class="classifier">float</span></dt><dd><p>Warping constant.</p>
 </dd>
-<dt><strong>gw</strong><span class="classifier">float</span></dt><dd><p>???</p>
+<dt><strong>gw</strong><span class="classifier">float</span></dt><dd><p>Warping constant.</p>
 </dd>
 <dt><strong>material</strong><span class="classifier"><a class="reference internal" href="compas_fea2.model._Material.html#compas_fea2.model._Material" title="compas_fea2.model._Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Material</span></code></a></span></dt><dd><p>The section material.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA100.html#compas_fea2.model.ISection.HEA100" title="compas_fea2.model.ISection.HEA100"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA100</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA1000.html#compas_fea2.model.ISection.HEA1000" title="compas_fea2.model.ISection.HEA1000"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA1000</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA120.html#compas_fea2.model.ISection.HEA120" title="compas_fea2.model.ISection.HEA120"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA120</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA140.html#compas_fea2.model.ISection.HEA140" title="compas_fea2.model.ISection.HEA140"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA140</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA160.html#compas_fea2.model.ISection.HEA160" title="compas_fea2.model.ISection.HEA160"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA160</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA180.html#compas_fea2.model.ISection.HEA180" title="compas_fea2.model.ISection.HEA180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA180</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA200.html#compas_fea2.model.ISection.HEA200" title="compas_fea2.model.ISection.HEA200"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA200</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA220.html#compas_fea2.model.ISection.HEA220" title="compas_fea2.model.ISection.HEA220"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA220</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA240.html#compas_fea2.model.ISection.HEA240" title="compas_fea2.model.ISection.HEA240"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA240</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA260.html#compas_fea2.model.ISection.HEA260" title="compas_fea2.model.ISection.HEA260"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA260</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA280.html#compas_fea2.model.ISection.HEA280" title="compas_fea2.model.ISection.HEA280"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA280</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA300.html#compas_fea2.model.ISection.HEA300" title="compas_fea2.model.ISection.HEA300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA300</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA320.html#compas_fea2.model.ISection.HEA320" title="compas_fea2.model.ISection.HEA320"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA320</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA340.html#compas_fea2.model.ISection.HEA340" title="compas_fea2.model.ISection.HEA340"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA340</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA360.html#compas_fea2.model.ISection.HEA360" title="compas_fea2.model.ISection.HEA360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA360</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA400.html#compas_fea2.model.ISection.HEA400" title="compas_fea2.model.ISection.HEA400"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA400</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA450.html#compas_fea2.model.ISection.HEA450" title="compas_fea2.model.ISection.HEA450"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA450</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA500.html#compas_fea2.model.ISection.HEA500" title="compas_fea2.model.ISection.HEA500"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA500</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA550.html#compas_fea2.model.ISection.HEA550" title="compas_fea2.model.ISection.HEA550"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA550</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA600.html#compas_fea2.model.ISection.HEA600" title="compas_fea2.model.ISection.HEA600"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA600</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA650.html#compas_fea2.model.ISection.HEA650" title="compas_fea2.model.ISection.HEA650"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA650</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA700.html#compas_fea2.model.ISection.HEA700" title="compas_fea2.model.ISection.HEA700"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA700</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA800.html#compas_fea2.model.ISection.HEA800" title="compas_fea2.model.ISection.HEA800"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA800</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEA900.html#compas_fea2.model.ISection.HEA900" title="compas_fea2.model.ISection.HEA900"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEA900</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB100.html#compas_fea2.model.ISection.HEB100" title="compas_fea2.model.ISection.HEB100"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB100</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB1000.html#compas_fea2.model.ISection.HEB1000" title="compas_fea2.model.ISection.HEB1000"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB1000</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB120.html#compas_fea2.model.ISection.HEB120" title="compas_fea2.model.ISection.HEB120"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB120</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB140.html#compas_fea2.model.ISection.HEB140" title="compas_fea2.model.ISection.HEB140"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB140</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB160.html#compas_fea2.model.ISection.HEB160" title="compas_fea2.model.ISection.HEB160"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB160</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB180.html#compas_fea2.model.ISection.HEB180" title="compas_fea2.model.ISection.HEB180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB180</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB200.html#compas_fea2.model.ISection.HEB200" title="compas_fea2.model.ISection.HEB200"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB200</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB220.html#compas_fea2.model.ISection.HEB220" title="compas_fea2.model.ISection.HEB220"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB220</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB240.html#compas_fea2.model.ISection.HEB240" title="compas_fea2.model.ISection.HEB240"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB240</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB260.html#compas_fea2.model.ISection.HEB260" title="compas_fea2.model.ISection.HEB260"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB260</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB280.html#compas_fea2.model.ISection.HEB280" title="compas_fea2.model.ISection.HEB280"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB280</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB300.html#compas_fea2.model.ISection.HEB300" title="compas_fea2.model.ISection.HEB300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB300</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB320.html#compas_fea2.model.ISection.HEB320" title="compas_fea2.model.ISection.HEB320"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB320</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB340.html#compas_fea2.model.ISection.HEB340" title="compas_fea2.model.ISection.HEB340"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB340</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB360.html#compas_fea2.model.ISection.HEB360" title="compas_fea2.model.ISection.HEB360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB360</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB400.html#compas_fea2.model.ISection.HEB400" title="compas_fea2.model.ISection.HEB400"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB400</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB450.html#compas_fea2.model.ISection.HEB450" title="compas_fea2.model.ISection.HEB450"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB450</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB500.html#compas_fea2.model.ISection.HEB500" title="compas_fea2.model.ISection.HEB500"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB500</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB550.html#compas_fea2.model.ISection.HEB550" title="compas_fea2.model.ISection.HEB550"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB550</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB600.html#compas_fea2.model.ISection.HEB600" title="compas_fea2.model.ISection.HEB600"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB600</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB650.html#compas_fea2.model.ISection.HEB650" title="compas_fea2.model.ISection.HEB650"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB650</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB700.html#compas_fea2.model.ISection.HEB700" title="compas_fea2.model.ISection.HEB700"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB700</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB800.html#compas_fea2.model.ISection.HEB800" title="compas_fea2.model.ISection.HEB800"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB800</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEB900.html#compas_fea2.model.ISection.HEB900" title="compas_fea2.model.ISection.HEB900"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEB900</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM100.html#compas_fea2.model.ISection.HEM100" title="compas_fea2.model.ISection.HEM100"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM100</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM1000.html#compas_fea2.model.ISection.HEM1000" title="compas_fea2.model.ISection.HEM1000"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM1000</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM120.html#compas_fea2.model.ISection.HEM120" title="compas_fea2.model.ISection.HEM120"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM120</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM140.html#compas_fea2.model.ISection.HEM140" title="compas_fea2.model.ISection.HEM140"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM140</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM160.html#compas_fea2.model.ISection.HEM160" title="compas_fea2.model.ISection.HEM160"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM160</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM180.html#compas_fea2.model.ISection.HEM180" title="compas_fea2.model.ISection.HEM180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM180</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM200.html#compas_fea2.model.ISection.HEM200" title="compas_fea2.model.ISection.HEM200"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM200</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM220.html#compas_fea2.model.ISection.HEM220" title="compas_fea2.model.ISection.HEM220"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM220</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM240.html#compas_fea2.model.ISection.HEM240" title="compas_fea2.model.ISection.HEM240"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM240</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM260.html#compas_fea2.model.ISection.HEM260" title="compas_fea2.model.ISection.HEM260"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM260</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM280.html#compas_fea2.model.ISection.HEM280" title="compas_fea2.model.ISection.HEM280"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM280</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM300.html#compas_fea2.model.ISection.HEM300" title="compas_fea2.model.ISection.HEM300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM300</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM320.html#compas_fea2.model.ISection.HEM320" title="compas_fea2.model.ISection.HEM320"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM320</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM340.html#compas_fea2.model.ISection.HEM340" title="compas_fea2.model.ISection.HEM340"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM340</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM360.html#compas_fea2.model.ISection.HEM360" title="compas_fea2.model.ISection.HEM360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM360</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM400.html#compas_fea2.model.ISection.HEM400" title="compas_fea2.model.ISection.HEM400"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM400</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM450.html#compas_fea2.model.ISection.HEM450" title="compas_fea2.model.ISection.HEM450"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM450</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM500.html#compas_fea2.model.ISection.HEM500" title="compas_fea2.model.ISection.HEM500"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM500</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM550.html#compas_fea2.model.ISection.HEM550" title="compas_fea2.model.ISection.HEM550"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM550</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM600.html#compas_fea2.model.ISection.HEM600" title="compas_fea2.model.ISection.HEM600"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM600</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM650.html#compas_fea2.model.ISection.HEM650" title="compas_fea2.model.ISection.HEM650"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM650</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM700.html#compas_fea2.model.ISection.HEM700" title="compas_fea2.model.ISection.HEM700"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM700</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM800.html#compas_fea2.model.ISection.HEM800" title="compas_fea2.model.ISection.HEM800"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM800</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.HEM900.html#compas_fea2.model.ISection.HEM900" title="compas_fea2.model.ISection.HEM900"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HEM900</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE100.html#compas_fea2.model.ISection.IPE100" title="compas_fea2.model.ISection.IPE100"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE100</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE120.html#compas_fea2.model.ISection.IPE120" title="compas_fea2.model.ISection.IPE120"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE120</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE140.html#compas_fea2.model.ISection.IPE140" title="compas_fea2.model.ISection.IPE140"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE140</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE160.html#compas_fea2.model.ISection.IPE160" title="compas_fea2.model.ISection.IPE160"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE160</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE180.html#compas_fea2.model.ISection.IPE180" title="compas_fea2.model.ISection.IPE180"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE180</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE200.html#compas_fea2.model.ISection.IPE200" title="compas_fea2.model.ISection.IPE200"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE200</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE220.html#compas_fea2.model.ISection.IPE220" title="compas_fea2.model.ISection.IPE220"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE220</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE240.html#compas_fea2.model.ISection.IPE240" title="compas_fea2.model.ISection.IPE240"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE240</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE270.html#compas_fea2.model.ISection.IPE270" title="compas_fea2.model.ISection.IPE270"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE270</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE300.html#compas_fea2.model.ISection.IPE300" title="compas_fea2.model.ISection.IPE300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE300</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE330.html#compas_fea2.model.ISection.IPE330" title="compas_fea2.model.ISection.IPE330"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE330</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE360.html#compas_fea2.model.ISection.IPE360" title="compas_fea2.model.ISection.IPE360"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE360</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE400.html#compas_fea2.model.ISection.IPE400" title="compas_fea2.model.ISection.IPE400"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE400</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.IPE80.html#compas_fea2.model.ISection.IPE80" title="compas_fea2.model.ISection.IPE80"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IPE80</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Inherited Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.ToString.html#compas_fea2.model.ISection.ToString" title="compas_fea2.model.ISection.ToString"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToString</span></code></a></p></td>
 <td><p>Converts the instance to a string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.copy.html#compas_fea2.model.ISection.copy" title="compas_fea2.model.ISection.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
-<td><p>Make an independent copy of the data object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.data.html#compas_fea2.model.ISection.data" title="compas_fea2.model.ISection.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.compute_neutral_axis.html#compas_fea2.model.ISection.compute_neutral_axis" title="compas_fea2.model.ISection.compute_neutral_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_neutral_axis</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_json.html#compas_fea2.model.ISection.from_json" title="compas_fea2.model.ISection.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.compute_stress.html#compas_fea2.model.ISection.compute_stress" title="compas_fea2.model.ISection.compute_stress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stress</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.compute_stress_distribution.html#compas_fea2.model.ISection.compute_stress_distribution" title="compas_fea2.model.ISection.compute_stress_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stress_distribution</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.copy.html#compas_fea2.model.ISection.copy" title="compas_fea2.model.ISection.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
+<td><p>Make an independent copy of the data object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_hdf5.html#compas_fea2.model.ISection.from_hdf5" title="compas_fea2.model.ISection.from_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_json.html#compas_fea2.model.ISection.from_json" title="compas_fea2.model.ISection.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
 <td><p>Construct an object of this type from a JSON file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_jsonstring.html#compas_fea2.model.ISection.from_jsonstring" title="compas_fea2.model.ISection.from_jsonstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_jsonstring</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_jsonstring.html#compas_fea2.model.ISection.from_jsonstring" title="compas_fea2.model.ISection.from_jsonstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_jsonstring</span></code></a></p></td>
 <td><p>Construct an object of this type from a JSON string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_name.html#compas_fea2.model.ISection.from_name" title="compas_fea2.model.ISection.from_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_name.html#compas_fea2.model.ISection.from_name" title="compas_fea2.model.ISection.from_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.from_shape.html#compas_fea2.model.ISection.from_shape" title="compas_fea2.model.ISection.from_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_shape</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.jobdata.html#compas_fea2.model.ISection.jobdata" title="compas_fea2.model.ISection.jobdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jobdata</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.sha256.html#compas_fea2.model.ISection.sha256" title="compas_fea2.model.ISection.sha256"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sha256</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.plot.html#compas_fea2.model.ISection.plot" title="compas_fea2.model.ISection.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.plot_section_with_stress.html#compas_fea2.model.ISection.plot_section_with_stress" title="compas_fea2.model.ISection.plot_section_with_stress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_section_with_stress</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.plot_stress_distribution.html#compas_fea2.model.ISection.plot_stress_distribution" title="compas_fea2.model.ISection.plot_stress_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_stress_distribution</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.sha256.html#compas_fea2.model.ISection.sha256" title="compas_fea2.model.ISection.sha256"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sha256</span></code></a></p></td>
 <td><p>Compute a hash of the data for comparison during version control using the sha256 algorithm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.ISection.to_hdf5.html#compas_fea2.model.ISection.to_hdf5" title="compas_fea2.model.ISection.to_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.ISection.to_json.html#compas_fea2.model.ISection.to_json" title="compas_fea2.model.ISection.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a></p></td>
 <td><p>Convert an object to its native data representation and save it to a JSON file.</p></td>

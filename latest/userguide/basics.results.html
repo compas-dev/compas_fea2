@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'userguide/basics.results';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -360,7 +360,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -509,6 +509,27 @@ document.write(`
                   
   <section id="results">
 <h1>Results</h1>
+<p>In compas_fea2, the results of a finite element analysis are organized in a structured manner to facilitate easy access and post-processing. The results are typically stored in a <cite>Results</cite> object, which contains various types of data depending on the analysis performed.</p>
+<p>Key components of the <cite>Results</cite> object include:
+- <strong>Nodal Results</strong>: Displacements, velocities, accelerations, and reaction forces at the nodes.
+- <strong>Element Results</strong>: Stresses, strains, and internal forces within the elements.
+- <strong>Global Results</strong>: Overall quantities such as total reaction forces and energy values.</p>
+<p>To access the results, you can use the following methods provided by the <cite>Results</cite> object:
+- <cite>get_nodal_displacements()</cite>: Returns the displacements at the nodes.
+- <cite>get_nodal_reactions()</cite>: Returns the reaction forces at the nodes.
+- <cite>get_element_stresses()</cite>: Returns the stresses within the elements.
+- <cite>get_element_strains()</cite>: Returns the strains within the elements.</p>
+<p>Example usage:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+# Assuming ‘results’ is an instance of the Results class
+nodal_displacements = results.get_nodal_displacements()
+nodal_reactions = results.get_nodal_reactions()
+element_stresses = results.get_element_stresses()
+element_strains = results.get_element_strains()</p>
+<p># Process or visualize the results as needed
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p>The <cite>Results</cite> object provides a convenient interface for accessing and manipulating the analysis results, enabling users to perform further analysis, visualization, or reporting.</p>
+<p>For more detailed information and examples, please refer to the official documentation and user guides.</p>
 </section>
 
 

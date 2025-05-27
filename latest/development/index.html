@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'development/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -208,7 +208,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -286,6 +286,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -359,7 +363,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -485,6 +489,134 @@ document.write(`
 <h1>Development</h1>
 <div class="toctree-wrapper compound">
 </div>
+<section id="getting-started-with-this-project">
+<h2>Getting started with this project</h2>
+<section id="setup-code-editor">
+<h3>Setup code editor</h3>
+<ol class="arabic">
+<li><p>Open project folder in VS Code</p></li>
+<li><p>Select python environment for the project</p>
+<blockquote>
+<div><p>All terminal commands in the following sections can be run from the VS Code integrated terminal.</p>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="first-steps-with-git">
+<h3>First steps with git</h3>
+<ol class="arabic simple">
+<li><p>Go to the <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">control</span></code> tab</p></li>
+<li><p>Make an initial commit with all newly created files</p></li>
+</ol>
+</section>
+<section id="first-steps-with-code">
+<h3>First steps with code</h3>
+<ol class="arabic">
+<li><p>Install the newly created project</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install it on Rhino</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="code-conventions">
+<h3>Code conventions</h3>
+<p>Code convention follows <a class="reference external" href="https://pep8.org/">PEP8</a> style guidelines and line length of 120 characters.</p>
+<ol class="arabic">
+<li><p>Check adherence to style guidelines</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>lint
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Format code automatically</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>format
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="documentation">
+<h3>Documentation</h3>
+<p>Documentation is generated automatically out of docstrings and <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">RST</a> files in this repository</p>
+<ol class="arabic">
+<li><p>Generate the docs</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>docs
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Check links in docs are valid</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>linkcheck
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Open docs in your browser (file explorer -&gt; <code class="docutils literal notranslate"><span class="pre">dist/docs/index.html</span></code>)</p></li>
+</ol>
+</section>
+<section id="testing">
+<h3>Testing</h3>
+<p>Tests are written using the <a class="reference external" href="https://docs.pytest.org/">pytest</a> framework</p>
+<ol class="arabic">
+<li><p>Run all tests from terminal</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span><span class="nb">test</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Or run them from VS Code from the <code class="docutils literal notranslate"><span class="pre">Testing</span></code> tab</p></li>
+</ol>
+</section>
+<section id="developing-grasshopper-components">
+<h3>Developing Grasshopper components</h3>
+<p>We use <a class="reference external" href="https://github.com/compas-dev/compas-actions.ghpython_components">Grasshopper Componentizer</a> to develop Python components that can be stored and edited on git.</p>
+<ol class="arabic">
+<li><p>Build components</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>build-ghuser-components
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Install components on Rhino</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>compas_rhino.install
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="publish-release">
+<h3>Publish release</h3>
+<p>Releases follow the <a class="reference external" href="https://semver.org/spec/v2.0.0.html">semver</a> versioning convention.</p>
+<ol class="arabic">
+<li><p>Create a new release</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>invoke<span class="w"> </span>release<span class="w"> </span>major
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+</section>
 </section>
 
 
@@ -499,6 +631,30 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started-with-this-project">Getting started with this project</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-code-editor">Setup code editor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-steps-with-git">First steps with git</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-steps-with-code">First steps with code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-conventions">Code conventions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developing-grasshopper-components">Developing Grasshopper components</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#publish-release">Publish release</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

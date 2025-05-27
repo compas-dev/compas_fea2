@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'userguide/gettingstarted.intro';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -360,7 +360,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -509,6 +509,25 @@ document.write(`
                   
   <section id="introduction">
 <h1>Introduction</h1>
+<p>Welcome to compas_fea2, a powerful and flexible framework for finite element analysis (FEA) in Python. This package is part of the COMPAS framework, an open-source initiative aimed at providing computational tools for research and collaboration in architecture, engineering, and digital fabrication.</p>
+<p>### What is Finite Element Analysis (FEA)?</p>
+<p>Finite Element Analysis (FEA) is a numerical method used to solve complex engineering problems. It involves breaking down a large system into smaller, simpler parts called finite elements. These elements are then analyzed individually, and their behavior is combined to understand the overall system’s response to various conditions such as loads, constraints, and environmental factors.</p>
+<p>### How compas_fea2 Works</p>
+<p>compas_fea2 simplifies the process of setting up, running, and post-processing FEA simulations. The package provides a high-level interface for defining models, applying loads and boundary conditions, selecting solvers, and retrieving results. It is designed to be modular and extensible, allowing users to customize and extend its functionality to meet specific needs.</p>
+<p>Key components of compas_fea2 include:
+- <strong>Model</strong>: Represents the finite element model, including nodes, elements, materials, and sections.
+- <strong>Problem</strong>: Defines the analysis problem, including the model, analysis type, boundary conditions, loads, and solver settings.
+- <strong>Solver</strong>: Executes the analysis and computes the results.
+- <strong>Results</strong>: Stores and provides access to the analysis results.</p>
+<p>### Possible Applications</p>
+<p>compas_fea2 can be used in a wide range of applications, including but not limited to:
+- <strong>Structural Analysis</strong>: Evaluate the strength, stability, and deformation of structures under various loads.
+- <strong>Modal Analysis</strong>: Determine the natural frequencies and mode shapes of structures.
+- <strong>Buckling Analysis</strong>: Assess the buckling behavior of structures under compressive loads.
+- <strong>Dynamic Analysis</strong>: Analyze the response of structures to dynamic loads such as earthquakes and wind.
+- <strong>Thermal Analysis</strong>: Study the thermal behavior of structures and materials.</p>
+<p>Whether you are an engineer, researcher, or student, compas_fea2 provides the tools you need to perform advanced FEA simulations efficiently and effectively.</p>
+<p>For more detailed information and examples, please refer to the official documentation and user guides.</p>
 </section>
 
 

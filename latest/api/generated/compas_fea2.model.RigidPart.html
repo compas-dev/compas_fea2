@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,12 +55,12 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_fea2.model.RigidPart';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="RigidPart.add_element" href="compas_fea2.model.RigidPart.add_element.html" />
-    <link rel="prev" title="DeformablePart.validate_data" href="compas_fea2.model.DeformablePart.validate_data.html" />
+    <link rel="prev" title="Part.visualize_pyvis" href="compas_fea2.model.Part.visualize_pyvis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -364,7 +364,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -434,14 +434,9 @@ document.write(`
      aria-label="Section Navigation">
   <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Model.html">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.DeformablePart.html">DeformablePart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Part.html">Part</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">RigidPart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Node.html">Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model._Element.html">_Element</a></li>
@@ -516,11 +511,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.PartsGroup.html">PartsGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Problem.html">Problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Step.html">Step</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralStep.html">GeneralStep</a></li>
@@ -537,9 +528,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Load.html">Load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.html">PrestressLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoad.html">NodeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.EdgeLoad.html">EdgeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FaceLoad.html">FaceLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GravityLoad.html">GravityLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.html">TributaryLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a></li>
@@ -547,17 +535,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.html">ThermalLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LoadCombination.html">LoadCombination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Pattern.html">Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoadPattern.html">NodeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PointLoadPattern.html">PointLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LineLoadPattern.html">LineLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.AreaLoadPattern.html">AreaLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.VolumeLoadPattern.html">VolumeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FieldOutput.html">FieldOutput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.html">HistoryOutput</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.Result.html">Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.DisplacementResult.html">DisplacementResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.StressResult.html">StressResult</a></li>
@@ -570,7 +555,6 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compas_fea2.units.html">Units</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -635,24 +619,20 @@ document.write(`
 <h1>RigidPart</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_fea2.model.RigidPart">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">RigidPart</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/b95cb87/src/compas_fea2/model/parts.py#L1635"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.model.</span></span><span class="sig-name descname"><span class="pre">RigidPart</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/c66240f/src/compas_fea2/model/parts.py#L2237"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_Part</span></code></p>
 <p>Rigid part.Base class for Parts.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>name</strong><span class="classifier">str, optional</span></dt><dd><p>Uniqe identifier. If not provided it is automatically generated. Set a
+<dt><strong>name</strong><span class="classifier">str, optional</span></dt><dd><p>Unique identifier. If not provided it is automatically generated. Set a
 name if you want a more human-readable input file.</p>
 </dd>
 </dl>
 </dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Parts are registered to a <a class="reference internal" href="compas_fea2.model.Model.html#compas_fea2.model.Model" title="compas_fea2.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.Model</span></code></a>.</p>
-<dl class="field-list">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Uniqe identifier. If not provided it is automatically generated. Set a
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Unique identifier. If not provided it is automatically generated. Set a
 name if you want a more human-readable input file.</p>
 </dd>
 <dt><strong>model</strong><span class="classifier"><a class="reference internal" href="compas_fea2.model.Model.html#compas_fea2.model.Model" title="compas_fea2.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.Model</span></code></a></span></dt><dd><p>The parent model of the part.</p>
@@ -661,7 +641,7 @@ name if you want a more human-readable input file.</p>
 </dd>
 <dt><strong>nodes_count</strong><span class="classifier">int</span></dt><dd><p>Number of nodes in the part.</p>
 </dd>
-<dt><strong>gkey_node</strong><span class="classifier">{gkey</span><span class="classifier"><a class="reference internal" href="compas_fea2.model.Node.html#compas_fea2.model.Node" title="compas_fea2.model.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.Node</span></code></a>}</span></dt><dd><p>Dictionary that associates each node and its geometric key}</p>
+<dt><strong>gkey_node</strong><span class="classifier">Dict[str, <a class="reference internal" href="compas_fea2.model.Node.html#compas_fea2.model.Node" title="compas_fea2.model.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.Node</span></code></a>]</span></dt><dd><p>Dictionary that associates each node and its geometric key.</p>
 </dd>
 <dt><strong>materials</strong><span class="classifier">Set[<a class="reference internal" href="compas_fea2.model._Material.html#compas_fea2.model._Material" title="compas_fea2.model._Material"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Material</span></code></a>]</span></dt><dd><p>The materials belonging to the part.</p>
 </dd>
@@ -669,15 +649,9 @@ name if you want a more human-readable input file.</p>
 </dd>
 <dt><strong>elements</strong><span class="classifier">Set[<a class="reference internal" href="compas_fea2.model._Element.html#compas_fea2.model._Element" title="compas_fea2.model._Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Element</span></code></a>]</span></dt><dd><p>The elements belonging to the part.</p>
 </dd>
-<dt><strong>element_types</strong><span class="classifier">{<a class="reference internal" href="compas_fea2.model._Element.html#compas_fea2.model._Element" title="compas_fea2.model._Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Element</span></code></a></span><span class="classifier">[<a class="reference internal" href="compas_fea2.model._Element.html#compas_fea2.model._Element" title="compas_fea2.model._Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Element</span></code></a>]]</span></dt><dd><p>Dictionary with the elements of the part for each element type.</p>
+<dt><strong>element_types</strong><span class="classifier">Dict[<a class="reference internal" href="compas_fea2.model._Element.html#compas_fea2.model._Element" title="compas_fea2.model._Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Element</span></code></a>, List[<a class="reference internal" href="compas_fea2.model._Element.html#compas_fea2.model._Element" title="compas_fea2.model._Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model._Element</span></code></a>]]</span></dt><dd><p>Dictionary with the elements of the part for each element type.</p>
 </dd>
-<dt><strong>element_count</strong><span class="classifier">int</span></dt><dd><p>Number of elements in the part</p>
-</dd>
-<dt><strong>nodesgroups</strong><span class="classifier">Set[<a class="reference internal" href="compas_fea2.model.NodesGroup.html#compas_fea2.model.NodesGroup" title="compas_fea2.model.NodesGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.NodesGroup</span></code></a>]</span></dt><dd><p>The groups of nodes belonging to the part.</p>
-</dd>
-<dt><strong>elementsgroups</strong><span class="classifier">Set[<a class="reference internal" href="compas_fea2.model.ElementsGroup.html#compas_fea2.model.ElementsGroup" title="compas_fea2.model.ElementsGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.ElementsGroup</span></code></a>]</span></dt><dd><p>The groups of elements belonging to the part.</p>
-</dd>
-<dt><strong>facesgroups</strong><span class="classifier">Set[<a class="reference internal" href="compas_fea2.model.FacesGroup.html#compas_fea2.model.FacesGroup" title="compas_fea2.model.FacesGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.FacesGroup</span></code></a>]</span></dt><dd><p>The groups of element faces belonging to the part.</p>
+<dt><strong>element_count</strong><span class="classifier">int</span></dt><dd><p>Number of elements in the part.</p>
 </dd>
 <dt><strong>boundary_mesh</strong><span class="classifier"><a class="reference external" href="https://compas.dev/compas/latest/api/compas.datastructures.Mesh.html#compas.datastructures.Mesh" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.datastructures.Mesh</span></code></a></span></dt><dd><p>The outer boundary mesh enveloping the Part.</p>
 </dd>
@@ -686,6 +660,8 @@ name if you want a more human-readable input file.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Parts are registered to a <a class="reference internal" href="compas_fea2.model.Model.html#compas_fea2.model.Model" title="compas_fea2.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas_fea2.model.Model</span></code></a>.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
@@ -715,31 +691,55 @@ name if you want a more human-readable input file.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_groups.html#compas_fea2.model.RigidPart.add_groups" title="compas_fea2.model.RigidPart.add_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_groups</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_material.html#compas_fea2.model.RigidPart.add_material" title="compas_fea2.model.RigidPart.add_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_material</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_materials.html#compas_fea2.model.RigidPart.add_materials" title="compas_fea2.model.RigidPart.add_materials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_materials</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_node.html#compas_fea2.model.RigidPart.add_node" title="compas_fea2.model.RigidPart.add_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_node</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_nodes.html#compas_fea2.model.RigidPart.add_nodes" title="compas_fea2.model.RigidPart.add_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_nodes</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_element.html#compas_fea2.model.RigidPart.contains_element" title="compas_fea2.model.RigidPart.contains_element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_element</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_section.html#compas_fea2.model.RigidPart.add_section" title="compas_fea2.model.RigidPart.add_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_section</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_group.html#compas_fea2.model.RigidPart.contains_group" title="compas_fea2.model.RigidPart.contains_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_group</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.add_sections.html#compas_fea2.model.RigidPart.add_sections" title="compas_fea2.model.RigidPart.add_sections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_sections</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_node.html#compas_fea2.model.RigidPart.contains_node" title="compas_fea2.model.RigidPart.contains_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_node</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.compute_nodal_masses.html#compas_fea2.model.RigidPart.compute_nodal_masses" title="compas_fea2.model.RigidPart.compute_nodal_masses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_nodal_masses</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_element.html#compas_fea2.model.RigidPart.contains_element" title="compas_fea2.model.RigidPart.contains_element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_element</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_material.html#compas_fea2.model.RigidPart.contains_material" title="compas_fea2.model.RigidPart.contains_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_material</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_node.html#compas_fea2.model.RigidPart.contains_node" title="compas_fea2.model.RigidPart.contains_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_node</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.contains_section.html#compas_fea2.model.RigidPart.contains_section" title="compas_fea2.model.RigidPart.contains_section"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_section</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.copy.html#compas_fea2.model.RigidPart.copy" title="compas_fea2.model.RigidPart.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
 <td><p>Make an independent copy of the data object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.data.html#compas_fea2.model.RigidPart.data" title="compas_fea2.model.RigidPart.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.elements_by_dimension.html#compas_fea2.model.RigidPart.elements_by_dimension" title="compas_fea2.model.RigidPart.elements_by_dimension"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements_by_dimension</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.elements_by_dimension.html#compas_fea2.model.RigidPart.elements_by_dimension" title="compas_fea2.model.RigidPart.elements_by_dimension"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements_by_dimension</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.extract_clustered_planes.html#compas_fea2.model.RigidPart.extract_clustered_planes" title="compas_fea2.model.RigidPart.extract_clustered_planes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_clustered_planes</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find.html#compas_fea2.model.RigidPart.find" title="compas_fea2.model.RigidPart.find"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.extract_submeshes.html#compas_fea2.model.RigidPart.extract_submeshes" title="compas_fea2.model.RigidPart.extract_submeshes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_submeshes</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_boudary_faces.html#compas_fea2.model.RigidPart.find_boudary_faces" title="compas_fea2.model.RigidPart.find_boudary_faces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boudary_faces</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_boundary_meshes.html#compas_fea2.model.RigidPart.find_boundary_meshes" title="compas_fea2.model.RigidPart.find_boundary_meshes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_boundary_meshes</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_closest_nodes_to_node.html#compas_fea2.model.RigidPart.find_closest_nodes_to_node" title="compas_fea2.model.RigidPart.find_closest_nodes_to_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_closest_nodes_to_node</span></code></a></p></td>
@@ -751,28 +751,34 @@ name if you want a more human-readable input file.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_element_by_key.html#compas_fea2.model.RigidPart.find_element_by_key" title="compas_fea2.model.RigidPart.find_element_by_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_element_by_key</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_elements_by_name.html#compas_fea2.model.RigidPart.find_elements_by_name" title="compas_fea2.model.RigidPart.find_elements_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_elements_by_name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_element_by_name.html#compas_fea2.model.RigidPart.find_element_by_name" title="compas_fea2.model.RigidPart.find_element_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_element_by_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_faces_on_plane.html#compas_fea2.model.RigidPart.find_faces_on_plane" title="compas_fea2.model.RigidPart.find_faces_on_plane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_faces_on_plane</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_faces_in_polygon.html#compas_fea2.model.RigidPart.find_faces_in_polygon" title="compas_fea2.model.RigidPart.find_faces_in_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_faces_in_polygon</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_groups_by_name.html#compas_fea2.model.RigidPart.find_groups_by_name" title="compas_fea2.model.RigidPart.find_groups_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_groups_by_name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_faces_on_plane.html#compas_fea2.model.RigidPart.find_faces_on_plane" title="compas_fea2.model.RigidPart.find_faces_on_plane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_faces_on_plane</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_group_by_name.html#compas_fea2.model.RigidPart.find_group_by_name" title="compas_fea2.model.RigidPart.find_group_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_group_by_name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_material_by_name.html#compas_fea2.model.RigidPart.find_material_by_name" title="compas_fea2.model.RigidPart.find_material_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_material_by_name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_material_by_uid.html#compas_fea2.model.RigidPart.find_material_by_uid" title="compas_fea2.model.RigidPart.find_material_by_uid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_material_by_uid</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_materials_by_name.html#compas_fea2.model.RigidPart.find_materials_by_name" title="compas_fea2.model.RigidPart.find_materials_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_materials_by_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_node_by_key.html#compas_fea2.model.RigidPart.find_node_by_key" title="compas_fea2.model.RigidPart.find_node_by_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_node_by_key</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_around_node.html#compas_fea2.model.RigidPart.find_nodes_around_node" title="compas_fea2.model.RigidPart.find_nodes_around_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_around_node</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_node_by_name.html#compas_fea2.model.RigidPart.find_node_by_name" title="compas_fea2.model.RigidPart.find_node_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_node_by_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_around_point.html#compas_fea2.model.RigidPart.find_nodes_around_point" title="compas_fea2.model.RigidPart.find_nodes_around_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_around_point</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_by_attribute.html#compas_fea2.model.RigidPart.find_nodes_by_attribute" title="compas_fea2.model.RigidPart.find_nodes_by_attribute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_by_attribute</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_by_name.html#compas_fea2.model.RigidPart.find_nodes_by_name" title="compas_fea2.model.RigidPart.find_nodes_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_by_name</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_node_by_uid.html#compas_fea2.model.RigidPart.find_node_by_uid" title="compas_fea2.model.RigidPart.find_node_by_uid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_node_by_uid</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_in_polygon.html#compas_fea2.model.RigidPart.find_nodes_in_polygon" title="compas_fea2.model.RigidPart.find_nodes_in_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_in_polygon</span></code></a></p></td>
@@ -781,10 +787,22 @@ name if you want a more human-readable input file.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_on_plane.html#compas_fea2.model.RigidPart.find_nodes_on_plane" title="compas_fea2.model.RigidPart.find_nodes_on_plane"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_on_plane</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_nodes_where.html#compas_fea2.model.RigidPart.find_nodes_where" title="compas_fea2.model.RigidPart.find_nodes_where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_nodes_where</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_section_by_name.html#compas_fea2.model.RigidPart.find_section_by_name" title="compas_fea2.model.RigidPart.find_section_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_section_by_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.from_compas_lines.html#compas_fea2.model.RigidPart.from_compas_lines" title="compas_fea2.model.RigidPart.from_compas_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_compas_lines</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_section_by_uid.html#compas_fea2.model.RigidPart.find_section_by_uid" title="compas_fea2.model.RigidPart.find_section_by_uid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_section_by_uid</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.find_sections_by_name.html#compas_fea2.model.RigidPart.find_sections_by_name" title="compas_fea2.model.RigidPart.find_sections_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_sections_by_name</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.from_brep.html#compas_fea2.model.RigidPart.from_brep" title="compas_fea2.model.RigidPart.from_brep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_brep</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.from_compas_lines.html#compas_fea2.model.RigidPart.from_compas_lines" title="compas_fea2.model.RigidPart.from_compas_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_compas_lines</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.from_hdf5.html#compas_fea2.model.RigidPart.from_hdf5" title="compas_fea2.model.RigidPart.from_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.from_json.html#compas_fea2.model.RigidPart.from_json" title="compas_fea2.model.RigidPart.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
@@ -841,14 +859,32 @@ name if you want a more human-readable input file.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.sorted_nodes_by_displacement.html#compas_fea2.model.RigidPart.sorted_nodes_by_displacement" title="compas_fea2.model.RigidPart.sorted_nodes_by_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorted_nodes_by_displacement</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.to_hdf5.html#compas_fea2.model.RigidPart.to_hdf5" title="compas_fea2.model.RigidPart.to_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.to_hdf5_data.html#compas_fea2.model.RigidPart.to_hdf5_data" title="compas_fea2.model.RigidPart.to_hdf5_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5_data</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.to_json.html#compas_fea2.model.RigidPart.to_json" title="compas_fea2.model.RigidPart.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a></p></td>
 <td><p>Convert an object to its native data representation and save it to a JSON file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.to_jsonstring.html#compas_fea2.model.RigidPart.to_jsonstring" title="compas_fea2.model.RigidPart.to_jsonstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_jsonstring</span></code></a></p></td>
 <td><p>Convert an object to its native data representation and save it to a JSON string.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.transform.html#compas_fea2.model.RigidPart.transform" title="compas_fea2.model.RigidPart.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.transformed.html#compas_fea2.model.RigidPart.transformed" title="compas_fea2.model.RigidPart.transformed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformed</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.validate_data.html#compas_fea2.model.RigidPart.validate_data" title="compas_fea2.model.RigidPart.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a></p></td>
 <td><p>Validate the data against the object's data schema.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.visualize_node_connectivity.html#compas_fea2.model.RigidPart.visualize_node_connectivity" title="compas_fea2.model.RigidPart.visualize_node_connectivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_node_connectivity</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.model.RigidPart.visualize_pyvis.html#compas_fea2.model.RigidPart.visualize_pyvis" title="compas_fea2.model.RigidPart.visualize_pyvis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_pyvis</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>

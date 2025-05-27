@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,7 +55,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'userguide/basics.problem';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -360,7 +360,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -509,6 +509,39 @@ document.write(`
                   
   <section id="problem">
 <h1>Problem</h1>
+<p>The <cite>Problem</cite> class in compas_fea2 is a central component for defining and managing finite element analysis problems. It encapsulates all the necessary information required to set up and solve an FEA problem, including the model, analysis type, boundary conditions, loads, and solver settings.</p>
+<p>Key attributes and methods of the <cite>Problem</cite> class include:
+- <strong>Attributes</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>model</cite>: The finite element model to be analyzed.</p></li>
+<li><p><cite>analysis_type</cite>: The type of analysis to be performed (e.g., static, modal, dynamic).</p></li>
+<li><p><cite>boundary_conditions</cite>: A list of boundary conditions applied to the model.</p></li>
+<li><p><cite>loads</cite>: A list of loads applied to the model.</p></li>
+<li><p><cite>solver_settings</cite>: Configuration settings for the FEA solver.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>Methods</strong>:
+- <cite>add_boundary_condition(bc)</cite>: Adds a boundary condition to the problem.
+- <cite>add_load(load)</cite>: Adds a load to the problem.
+- <cite>set_solver(solver)</cite>: Sets the solver to be used for the analysis.
+- <cite>solve()</cite>: Executes the analysis using the specified solver and settings.</p></li>
+</ul>
+<p>The <cite>Problem</cite> class provides a high-level interface for defining and managing FEA problems, making it easier for users to set up and run simulations without dealing with low-level details.</p>
+<p>Example usage:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+from compas_fea2 import Problem</p>
+<p># Create a new Problem instance
+problem = Problem(model=my_model, analysis_type=’static’)</p>
+<p># Add boundary conditions and loads
+problem.add_boundary_condition(my_boundary_condition)
+problem.add_load(my_load)</p>
+<p># Set the solver and solve the problem
+problem.set_solver(my_solver)
+problem.solve()
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p>For more detailed information and examples, please refer to the official documentation and user guides.</p>
 </section>
 
 

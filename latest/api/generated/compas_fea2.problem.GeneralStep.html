@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -55,11 +55,11 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_fea2.problem.GeneralStep';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_fea2/gh-pages/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.3';
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="GeneralStep.add_load_pattern" href="compas_fea2.problem.GeneralStep.add_load_pattern.html" />
+    <link rel="next" title="GeneralStep.add_area_load" href="compas_fea2.problem.GeneralStep.add_area_load.html" />
     <link rel="prev" title="Step.validate_data" href="compas_fea2.problem.Step.validate_data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -209,7 +209,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -364,7 +364,7 @@ document.write(`
 document.write(`
   <div class="version-switcher__container dropdown">
     <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
-      latest  <!-- this text may get changed later by javascript -->
+      0.3  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
     <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
@@ -434,14 +434,9 @@ document.write(`
      aria-label="Section Navigation">
   <!-- <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p> -->
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.model.html">model</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Model.html">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.DeformablePart.html">DeformablePart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Part.html">Part</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.RigidPart.html">RigidPart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.Node.html">Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model._Element.html">_Element</a></li>
@@ -516,11 +511,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.model.PartsGroup.html">PartsGroup</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.postprocess.html">postprocess</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.postprocess.principal_stresses.html">principal_stresses</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../compas_fea2.problem.html">problem</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Problem.html">Problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Step.html">Step</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">GeneralStep</a></li>
@@ -537,9 +528,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrescribedTemperatureField.html">PrescribedTemperatureField</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Load.html">Load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PrestressLoad.html">PrestressLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoad.html">NodeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.EdgeLoad.html">EdgeLoad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FaceLoad.html">FaceLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GravityLoad.html">GravityLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.TributaryLoad.html">TributaryLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HarmonicPointLoad.html">HarmonicPointLoad</a></li>
@@ -547,17 +535,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.ThermalLoad.html">ThermalLoad</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LoadCombination.html">LoadCombination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.GeneralDisplacement.html">GeneralDisplacement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.Pattern.html">Pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.NodeLoadPattern.html">NodeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.PointLoadPattern.html">PointLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.LineLoadPattern.html">LineLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.AreaLoadPattern.html">AreaLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.VolumeLoadPattern.html">VolumeLoadPattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.FieldOutput.html">FieldOutput</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_fea2.problem.HistoryOutput.html">HistoryOutput</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.job.html">job</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.InputFile.html">InputFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_fea2.job.ParametersFile.html">ParametersFile</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../compas_fea2.results.html">results</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.Result.html">Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.DisplacementResult.html">DisplacementResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_fea2.results.StressResult.html">StressResult</a></li>
@@ -570,7 +555,6 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compas_fea2.units.html">Units</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compas_fea2.utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -635,7 +619,7 @@ document.write(`
 <h1>GeneralStep</h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="compas_fea2.problem.GeneralStep">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.problem.</span></span><span class="sig-name descname"><span class="pre">GeneralStep</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/b95cb87/src/compas_fea2/problem/steps/step.py#L167"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">compas_fea2.problem.</span></span><span class="sig-name descname"><span class="pre">GeneralStep</span></span><a class="reference external" href="https://github.com/compas-dev/compas_fea2/blob/c66240f/src/compas_fea2/problem/steps/step.py#L233"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <a class="reference internal" href="compas_fea2.problem.Step.html#compas_fea2.problem.Step" title="compas_fea2.problem.steps.step.Step"><code class="xref py py-class docutils literal notranslate"><span class="pre">Step</span></code></a></p>
 <p>General Step object for use as a base class in a general static, dynamic
 or multiphysics analysis.</p>
@@ -706,10 +690,55 @@ ones defined in the present step, otherwise the loads are added.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_load_pattern.html#compas_fea2.problem.GeneralStep.add_load_pattern" title="compas_fea2.problem.GeneralStep.add_load_pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load_pattern</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_area_load.html#compas_fea2.problem.GeneralStep.add_area_load" title="compas_fea2.problem.GeneralStep.add_area_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_area_load</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_load_patterns.html#compas_fea2.problem.GeneralStep.add_load_patterns" title="compas_fea2.problem.GeneralStep.add_load_patterns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load_patterns</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_gravity_load.html#compas_fea2.problem.GeneralStep.add_gravity_load" title="compas_fea2.problem.GeneralStep.add_gravity_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_gravity_load</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_line_load.html#compas_fea2.problem.GeneralStep.add_line_load" title="compas_fea2.problem.GeneralStep.add_line_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_line_load</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_load_field.html#compas_fea2.problem.GeneralStep.add_load_field" title="compas_fea2.problem.GeneralStep.add_load_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load_field</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_load_fields.html#compas_fea2.problem.GeneralStep.add_load_fields" title="compas_fea2.problem.GeneralStep.add_load_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_load_fields</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_prestress_load.html#compas_fea2.problem.GeneralStep.add_prestress_load" title="compas_fea2.problem.GeneralStep.add_prestress_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_prestress_load</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_temperature_field.html#compas_fea2.problem.GeneralStep.add_temperature_field" title="compas_fea2.problem.GeneralStep.add_temperature_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_temperature_field</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_uniform_displacement_field.html#compas_fea2.problem.GeneralStep.add_uniform_displacement_field" title="compas_fea2.problem.GeneralStep.add_uniform_displacement_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_uniform_displacement_field</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_uniform_node_load.html#compas_fea2.problem.GeneralStep.add_uniform_node_load" title="compas_fea2.problem.GeneralStep.add_uniform_node_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_uniform_node_load</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_uniform_point_load.html#compas_fea2.problem.GeneralStep.add_uniform_point_load" title="compas_fea2.problem.GeneralStep.add_uniform_point_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_uniform_point_load</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.get_min_max_reactions.html#compas_fea2.problem.GeneralStep.get_min_max_reactions" title="compas_fea2.problem.GeneralStep.get_min_max_reactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_min_max_reactions</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.get_min_max_reactions_component.html#compas_fea2.problem.GeneralStep.get_min_max_reactions_component" title="compas_fea2.problem.GeneralStep.get_min_max_reactions_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_min_max_reactions_component</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.get_total_reaction.html#compas_fea2.problem.GeneralStep.get_total_reaction" title="compas_fea2.problem.GeneralStep.get_total_reaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_total_reaction</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.show_deformed.html#compas_fea2.problem.GeneralStep.show_deformed" title="compas_fea2.problem.GeneralStep.show_deformed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_deformed</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.show_displacements.html#compas_fea2.problem.GeneralStep.show_displacements" title="compas_fea2.problem.GeneralStep.show_displacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_displacements</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.show_reactions.html#compas_fea2.problem.GeneralStep.show_reactions" title="compas_fea2.problem.GeneralStep.show_reactions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_reactions</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.show_stress.html#compas_fea2.problem.GeneralStep.show_stress" title="compas_fea2.problem.GeneralStep.show_stress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_stress</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -723,26 +752,32 @@ ones defined in the present step, otherwise the loads are added.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_output.html#compas_fea2.problem.GeneralStep.add_output" title="compas_fea2.problem.GeneralStep.add_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_output</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.copy.html#compas_fea2.problem.GeneralStep.copy" title="compas_fea2.problem.GeneralStep.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.add_outputs.html#compas_fea2.problem.GeneralStep.add_outputs" title="compas_fea2.problem.GeneralStep.add_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_outputs</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.copy.html#compas_fea2.problem.GeneralStep.copy" title="compas_fea2.problem.GeneralStep.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></p></td>
 <td><p>Make an independent copy of the data object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.data.html#compas_fea2.problem.GeneralStep.data" title="compas_fea2.problem.GeneralStep.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_hdf5.html#compas_fea2.problem.GeneralStep.from_hdf5" title="compas_fea2.problem.GeneralStep.from_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_json.html#compas_fea2.problem.GeneralStep.from_json" title="compas_fea2.problem.GeneralStep.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_json.html#compas_fea2.problem.GeneralStep.from_json" title="compas_fea2.problem.GeneralStep.from_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code></a></p></td>
 <td><p>Construct an object of this type from a JSON file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_jsonstring.html#compas_fea2.problem.GeneralStep.from_jsonstring" title="compas_fea2.problem.GeneralStep.from_jsonstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_jsonstring</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_jsonstring.html#compas_fea2.problem.GeneralStep.from_jsonstring" title="compas_fea2.problem.GeneralStep.from_jsonstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_jsonstring</span></code></a></p></td>
 <td><p>Construct an object of this type from a JSON string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_name.html#compas_fea2.problem.GeneralStep.from_name" title="compas_fea2.problem.GeneralStep.from_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_name</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.from_name.html#compas_fea2.problem.GeneralStep.from_name" title="compas_fea2.problem.GeneralStep.from_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.jobdata.html#compas_fea2.problem.GeneralStep.jobdata" title="compas_fea2.problem.GeneralStep.jobdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jobdata</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.jobdata.html#compas_fea2.problem.GeneralStep.jobdata" title="compas_fea2.problem.GeneralStep.jobdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jobdata</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.sha256.html#compas_fea2.problem.GeneralStep.sha256" title="compas_fea2.problem.GeneralStep.sha256"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sha256</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.sha256.html#compas_fea2.problem.GeneralStep.sha256" title="compas_fea2.problem.GeneralStep.sha256"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sha256</span></code></a></p></td>
 <td><p>Compute a hash of the data for comparison during version control using the sha256 algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.to_hdf5.html#compas_fea2.problem.GeneralStep.to_hdf5" title="compas_fea2.problem.GeneralStep.to_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="compas_fea2.problem.GeneralStep.to_json.html#compas_fea2.problem.GeneralStep.to_json" title="compas_fea2.problem.GeneralStep.to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_json</span></code></a></p></td>
 <td><p>Convert an object to its native data representation and save it to a JSON file.</p></td>

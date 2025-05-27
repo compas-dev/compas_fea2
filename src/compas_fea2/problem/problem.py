@@ -318,7 +318,7 @@ Analysis folder path : {self.path or "N/A"}
     #                         Analysis methods
     # =========================================================================
     def write_input_file(self, path: Optional[Union[Path, str]] = None) -> InputFile:
-        # type: (Path |str) -> None
+        # type: (Path | str) -> None
         """Writes the input file.
 
         Parameters

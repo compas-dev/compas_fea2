@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from typing import Union
 
 from compas_fea2.base import FEAData
 
@@ -56,8 +57,8 @@ class _BeamEndRelease(FEAData):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self._element: "BeamElement | None" = None
-        self._location: str | None = None
+        self._element: Union["BeamElement", None] = None
+        self._location: Union[str, None] = None
         self.n: bool = n
         self.v1: bool = v1
         self.v2: bool = v2
@@ -66,7 +67,7 @@ class _BeamEndRelease(FEAData):
         self.t: bool = t
 
     @property
-    def element(self) -> "BeamElement | None":
+    def element(self) -> Union["BeamElement", None]:
         return self._element
 
     @element.setter
@@ -76,7 +77,7 @@ class _BeamEndRelease(FEAData):
         self._element = value
 
     @property
-    def location(self) -> str | None:
+    def location(self) -> Union[str, None]:
         return self._location
 
     @location.setter

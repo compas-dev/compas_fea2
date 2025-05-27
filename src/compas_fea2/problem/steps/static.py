@@ -83,6 +83,7 @@ class StaticStep(GeneralStep):
             **kwargs,
         )
 
+    @property
     def __data__(self):
         return {
             "max_increments": self.max_increments,

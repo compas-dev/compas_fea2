@@ -8,8 +8,9 @@ class QuasiStaticStep(GeneralStep):
         super(QuasiStaticStep, self).__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        data = super(QuasiStaticStep, self).__data__()
+        data = super().__data__
         # Add specific data for QuasiStaticStep
         return data
 
@@ -27,8 +28,9 @@ class DirectCyclicStep(GeneralStep):
         super(DirectCyclicStep, self).__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        data = super(DirectCyclicStep, self).__data__()
+        data = super().__data__
         # Add specific data for DirectCyclicStep
         return data
 

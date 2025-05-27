@@ -1,3 +1,5 @@
+from typing import Optional
+
 from compas_fea2.base import FEAData
 
 
@@ -37,14 +39,10 @@ class _Material(FEAData):
 
     """
 
-    def __init__(self, density: float, expansion: float = None, **kwargs):
+    def __init__(self, density: Optional[float] = None, expansion: Optional[float] = None, **kwargs):
         super().__init__(**kwargs)
         self.density = density
         self.expansion = expansion
-
-    @property
-    def key(self) -> int:
-        return self._key
 
     @property
     def model(self):
@@ -77,9 +75,7 @@ class _Material(FEAData):
 name        : {}
 density     : {}
 expansion   : {}
-""".format(
-            self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion
-        )
+""".format(self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion)
 
     def __html__(self) -> str:
         return """<html>
@@ -138,7 +134,21 @@ class ElasticOrthotropic(_Material):
         Shear modulus Gzx in z-x directions.
     """
 
-    def __init__(self, Ex: float, Ey: float, Ez: float, vxy: float, vyz: float, vzx: float, Gxy: float, Gyz: float, Gzx: float, density: float, expansion: float = None, **kwargs):
+    def __init__(
+        self,
+        Ex: float,
+        Ey: float,
+        Ez: float,
+        vxy: float,
+        vyz: float,
+        vzx: float,
+        Gxy: float,
+        Gyz: float,
+        Gzx: float,
+        density: float,
+        expansion: Optional[float] = None,
+        **kwargs,
+    ):
         super().__init__(density=density, expansion=expansion, **kwargs)
         self.Ex = Ex
         self.Ey = Ey
@@ -152,7 +162,7 @@ class ElasticOrthotropic(_Material):
 
     @property
     def __data__(self):
-        data = super().__data__()
+        data = super().__data__
         data.update(
             {
                 "Ex": self.Ex,
@@ -241,7 +251,7 @@ class ElasticIsotropic(_Material):
 
     """
 
-    def __init__(self, E: float, v: float, density: float, expansion: float = None, **kwargs):
+    def __init__(self, E: float, v: float, density: float, expansion: Optional[float] = None, **kwargs):
         super().__init__(density=density, expansion=expansion, **kwargs)
         self.E = E
         self.v = v
@@ -272,9 +282,7 @@ expansion   : {}
 E : {}
 v : {}
 G : {}
-""".format(
-            self.name, self.density, self.expansion, self.E, self.v, self.G
-        )
+""".format(self.name, self.density, self.expansion, self.E, self.v, self.G)
 
     @property
     def G(self) -> float:
@@ -284,7 +292,7 @@ G : {}
 class Stiff(_Material):
     """Elastic, very stiff and massless material."""
 
-    def __init__(self, *, density: float, expansion: float = None, name: str = None, **kwargs):
+    def __init__(self, *, density: float, expansion: Optional[float] = None, name: Optional[str] = None, **kwargs):
         raise NotImplementedError()
 
 
@@ -318,13 +326,13 @@ class ElasticPlastic(ElasticIsotropic):
         in the form of strain/stress value pairs.
     """
 
-    def __init__(self, *, E: float, v: float, density: float, strain_stress: list[tuple[float, float]], expansion: float = None, **kwargs):
+    def __init__(self, *, E: float, v: float, density: float, strain_stress: list[tuple[float, float]], expansion: Optional[float] = None, **kwargs):
         super().__init__(E=E, v=v, density=density, expansion=expansion, **kwargs)
         self.strain_stress = strain_stress
 
     @property
     def __data__(self):
-        data = super().__data__()
+        data = super().__data__
         data.update(
             {
                 "strain_stress": self.strain_stress,
@@ -355,9 +363,7 @@ v  : {}
 G  : {}
 
 strain_stress : {}
-""".format(
-            self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress
-        )
+""".format(self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress)
 
 
 # ==============================================================================

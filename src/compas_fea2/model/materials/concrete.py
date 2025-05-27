@@ -45,7 +45,7 @@ class Concrete(_Material):
     """
 
     def __init__(self, *, fck, E=None, v=None, density=None, fr=None, units=None, **kwargs):
-        super(Concrete, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         # Ensure small increment for stress-strain curve
         de = 0.0001
@@ -107,9 +107,7 @@ v   : {}
 G   : {}
 fck : {}
 fr  : {}
-""".format(
-            self.name, self.density, self.E, self.v, self.G, self.fck, self.fr
-        )
+""".format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
 
     @property
     def __data__(self):
@@ -140,9 +138,9 @@ fr  : {}
     @classmethod
     def C20_25(cls, units, **kwargs):
         if not units:
-            units = u.get_default_units()
+            units = u(system="SI_mm")
         elif not isinstance(units, UnitRegistry):
-            units = u.get_units(units)
+            units = u(units)
 
         return cls(fck=25 * units.MPa, E=30 * units.GPa, v=0.17, density=2400 * units("kg/m**3"), name="C20/25", **kwargs)
 
@@ -196,7 +194,7 @@ class ConcreteSmearedCrack(_Material):
     """
 
     def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], **kwargs):
-        super(ConcreteSmearedCrack, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v
@@ -228,9 +226,7 @@ ec : {}
 ft : {}
 et : {}
 fr : {}
-""".format(
-            self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr
-        )
+""".format(self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
 
     @property
     def __data__(self):
@@ -303,7 +299,7 @@ class ConcreteDamagedPlasticity(_Material):
     """
 
     def __init__(self, *, E, v, density, damage, hardening, stiffening, **kwargs):
-        super(ConcreteDamagedPlasticity, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v

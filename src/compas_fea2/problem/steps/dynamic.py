@@ -8,8 +8,9 @@ class DynamicStep(GeneralStep):
         super(DynamicStep, self).__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        data = super(DynamicStep, self).__data__()
+        data = super().__data__
         # Add DynamicStep specific data here
         return data
 

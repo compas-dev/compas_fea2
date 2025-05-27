@@ -44,6 +44,7 @@ class LoadCombination(FEAData):
     def Fire(cls):
         return cls(factors={"DL": 1, "SDL": 1, "LL": 0.3}, name="Fire")
 
+    @property
     def __data__(self):
         return {
             "factors": self.factors,

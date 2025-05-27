@@ -39,7 +39,6 @@ from compas_fea2.model.parts import RigidPart
 from compas_fea2.model.parts import _Part
 from compas_fea2.model.sections import _Section
 from compas_fea2.problem import Problem
-from compas_fea2.UI import FEA2Viewer
 from compas_fea2.utilities._utils import get_docstring
 from compas_fea2.utilities._utils import part_method
 from compas_fea2.utilities._utils import problem_method
@@ -1698,6 +1697,7 @@ Initial Conditions
             Scale factor for the loads, by default 1.0
 
         """
+        from compas_fea2.UI import FEA2Viewer
 
         viewer = FEA2Viewer(center=self.center, scale_model=scale_model)
         viewer.config.vectorsize = 0.2

@@ -10,7 +10,6 @@ from compas_fea2.job.input_file import InputFile
 from compas_fea2.problem.steps import StaticStep
 from compas_fea2.problem.steps import Step
 from compas_fea2.results.database import ResultsDatabase
-from compas_fea2.UI.viewer import FEA2Viewer
 
 
 class Problem(FEAData):
@@ -513,6 +512,8 @@ Analysis folder path : {self.path or "N/A"}
             Scale factor for the loads, by default 1.0
 
         """
+        from compas_fea2.UI.viewer import FEA2Viewer
+
         if not steps:
             steps = self.steps_order
 
@@ -526,6 +527,7 @@ Analysis folder path : {self.path or "N/A"}
         viewer.show()
         viewer.scene.clear()
 
+    @property
     def __data__(self) -> dict:
         """Returns a dictionary representation of the Problem object."""
         return {

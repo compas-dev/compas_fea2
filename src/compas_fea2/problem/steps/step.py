@@ -14,7 +14,6 @@ from compas_fea2.results import DisplacementFieldResults
 from compas_fea2.results import ReactionFieldResults
 from compas_fea2.results import SectionForcesFieldResults
 from compas_fea2.results import StressFieldResults
-from compas_fea2.UI import FEA2Viewer
 
 # ==============================================================================
 #                                Base Steps
@@ -178,6 +177,7 @@ class Step(FEAData):
     # ==========================================================================
     #                             Results methods
     # ==========================================================================
+
     @property
     def displacement_field(self):
         return DisplacementFieldResults(self)
@@ -198,6 +198,7 @@ class Step(FEAData):
     def section_forces_field(self):
         return SectionForcesFieldResults(self)
 
+    @property
     def __data__(self):
         return {
             "name": self.name,
@@ -353,6 +354,7 @@ class GeneralStep(Step):
     # ==============================================================================
     #                               Load Fields
     # ==============================================================================
+
     def add_load_field(self, field, *kwargs):
         """Add a general :class:`compas_fea2.problem.patterns.Pattern` to the Step.
 
@@ -651,6 +653,7 @@ class GeneralStep(Step):
     # =========================================================================
     #                         Results methods - reactions
     # =========================================================================
+
     def get_total_reaction(self, step=None):
         """Compute the total reaction vector
 
@@ -728,6 +731,8 @@ class GeneralStep(Step):
         None
 
         """
+        from compas_fea2.UI import FEA2Viewer
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
 
         if show_original:
@@ -757,6 +762,8 @@ class GeneralStep(Step):
             _description_, by default
 
         """
+        from compas_fea2.UI import FEA2Viewer
+
         if not self.displacement_field:
             raise ValueError("No displacement field results available for this step")
 
@@ -786,6 +793,8 @@ class GeneralStep(Step):
         scale_results : _type_, optional
             _description_, by default 1
         """
+        from compas_fea2.UI import FEA2Viewer
+
         if not self.reaction_field:
             raise ValueError("No reaction field results available for this step")
 
@@ -799,6 +808,8 @@ class GeneralStep(Step):
         viewer.scene.clear()
 
     def show_stress(self, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=1, show_contour=False, plane="mid", **kwargs):
+        from compas_fea2.UI import FEA2Viewer
+
         if not self.stress_field:
             raise ValueError("No reaction field results available for this step")
 
@@ -811,8 +822,9 @@ class GeneralStep(Step):
         viewer.show()
         viewer.scene.clear()
 
+    @property
     def __data__(self):
-        data = super(GeneralStep, self).__data__()
+        data = super().__data__
         data.update(
             {
                 "max_increments": self._max_increments,

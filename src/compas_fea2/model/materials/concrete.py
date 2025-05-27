@@ -107,7 +107,9 @@ v   : {}
 G   : {}
 fck : {}
 fr  : {}
-""".format(self.name, self.density, self.E, self.v, self.G, self.fck, self.fr)
+""".format(
+            self.name, self.density, self.E, self.v, self.G, self.fck, self.fr
+        )
 
     @property
     def __data__(self):
@@ -226,7 +228,9 @@ ec : {}
 ft : {}
 et : {}
 fr : {}
-""".format(self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr)
+""".format(
+            self.name, self.density, self.E, self.v, self.G, self.fc, self.ec, self.ft, self.et, self.fr
+        )
 
     @property
     def __data__(self):

@@ -12,7 +12,7 @@ class _InitialCondition(FEAData):
     """
 
     def __init__(self, **kwargs):
-        super(_InitialCondition, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     @property
     def __data__(self) -> dict:
@@ -47,7 +47,7 @@ class InitialTemperatureField(_InitialCondition):
     """
 
     def __init__(self, temperature, **kwargs):
-        super(InitialTemperatureField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._t = temperature
 
     @property
@@ -95,7 +95,7 @@ class InitialStressField(_InitialCondition):
     """
 
     def __init__(self, stress, **kwargs):
-        super(InitialStressField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._s = stress
 
     @property

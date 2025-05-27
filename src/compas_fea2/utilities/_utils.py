@@ -141,7 +141,9 @@ def get_docstring(cls):
         -------
         list of {}
 
-        """.format(doc_parts[1].split("-------\n")[1])
+        """.format(
+            doc_parts[1].split("-------\n")[1]
+        )
         func.__doc__ = doc_parts[0] + note
         return func
 

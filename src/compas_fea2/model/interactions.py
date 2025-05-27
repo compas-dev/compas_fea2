@@ -5,7 +5,7 @@ class _Interaction(FEAData):
     """Base class for all interactions."""
 
     def __init__(self, **kwargs):
-        super(_Interaction, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 # ------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ class Contact(_Interaction):
     """
 
     def __init__(self, *, normal, tangent, **kwargs):
-        super(Contact, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._tangent = tangent
         self._normal = normal
 
@@ -112,7 +112,7 @@ class HardContactFrictionPenalty(Contact):
     """
 
     def __init__(self, mu, tol, **kwargs) -> None:
-        super(HardContactFrictionPenalty, self).__init__(normal="HARD", tangent=mu, **kwargs)
+        super().__init__(normal="HARD", tangent=mu, **kwargs)
         self._tol = tol
 
     @property
@@ -153,7 +153,7 @@ class LinearContactFrictionPenalty(Contact):
     """
 
     def __init__(self, *, stiffness, mu, tolerance, **kwargs) -> None:
-        super(LinearContactFrictionPenalty, self).__init__(normal="Linear", tangent=mu, **kwargs)
+        super().__init__(normal="Linear", tangent=mu, **kwargs)
         self._tolerance = tolerance
         self._stiffness = stiffness
 
@@ -194,4 +194,4 @@ class HardContactRough(Contact):
     """
 
     def __init__(self, **kwargs) -> None:
-        super(HardContactRough, self).__init__(normal="HARD", tangent="ROUGH", **kwargs)
+        super().__init__(normal="HARD", tangent="ROUGH", **kwargs)

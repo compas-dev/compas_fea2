@@ -75,7 +75,9 @@ class _Material(FEAData):
 name        : {}
 density     : {}
 expansion   : {}
-""".format(self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion)
+""".format(
+            self.__class__.__name__, len(self.__class__.__name__) * "-", self.name, self.density, self.expansion
+        )
 
     def __html__(self) -> str:
         return """<html>
@@ -282,7 +284,9 @@ expansion   : {}
 E : {}
 v : {}
 G : {}
-""".format(self.name, self.density, self.expansion, self.E, self.v, self.G)
+""".format(
+            self.name, self.density, self.expansion, self.E, self.v, self.G
+        )
 
     @property
     def G(self) -> float:
@@ -363,7 +367,9 @@ v  : {}
 G  : {}
 
 strain_stress : {}
-""".format(self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress)
+""".format(
+            self.name, self.density, self.expansion, self.E, self.v, self.G, self.strain_stress
+        )
 
 
 # ==============================================================================

@@ -1,27 +1,15 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
+import shutil
 from pathlib import Path
-
-from compas.colors import Color
-from compas.colors import ColorMap
-from compas.geometry import Point
-from compas.geometry import Vector
-from compas.geometry import centroid_points_weighted
-from compas.geometry import sum_vectors
+from typing import List
+from typing import Optional
+from typing import Union
 
 from compas_fea2.base import FEAData
 from compas_fea2.job.input_file import InputFile
 from compas_fea2.problem.steps import StaticStep
 from compas_fea2.problem.steps import Step
-from compas_fea2.results import DisplacementFieldResults
-from compas_fea2.results import ReactionFieldResults
-from compas_fea2.results import StressFieldResults
-from compas_fea2.results import ModalShape
 from compas_fea2.results.database import ResultsDatabase
-
 from compas_fea2.UI.viewer import FEA2Viewer
 
 
@@ -52,6 +40,8 @@ class Problem(FEAData):
         list of analysis steps in the order they are applied.
     path : str, :class:`pathlib.Path`
         Path to the analysis folder where all the files will be saved.
+    path_db : str, :class:`pathlib.Path`
+        Path to the SQLite database where the results are stored.
     results : :class:`compas_fea2.results.Results`
         Results object with the analyisis results.
 
@@ -75,75 +65,66 @@ class Problem(FEAData):
 
     """
 
-    def __init__(self, description=None, **kwargs):
+    def __init__(self, description: Optional[str] = None, **kwargs):
         super(Problem, self).__init__(**kwargs)
         self.description = description
         self._path = None
         self._path_db = None
         self._steps = set()
         self._steps_order = []  # TODO make steps a list
+        self._rdb = None
 
     @property
-    def model(self):
+    def model(self) -> "Model":  # noqa: F821
         return self._registration
 
     @property
-    def steps(self):
+    def steps(self) -> set:
         return self._steps
 
     @property
-    def path(self):
+    def path(self) -> Path:
         return self._path
 
     @path.setter
-    def path(self, value):
+    def path(self, value: Union[str, Path]):
         self._path = value if isinstance(value, Path) else Path(value)
         self._path_db = os.path.join(self._path, "{}-results.db".format(self.name))
 
     @property
-    def path_db(self):
+    def path_db(self) -> str:
         return self._path_db
 
     @property
-    def results_db(self):
-        if os.path.exists(self.path_db):
-            return ResultsDatabase(self.path_db)
+    def rdb(self) -> ResultsDatabase:
+        return self._rdb or ResultsDatabase.sqlite(self)
+
+    @rdb.setter
+    def rdb(self, value: str):
+        if not hasattr(ResultsDatabase, value):
+            raise ValueError("Invalid ResultsDatabase option")
+        self._rdb = getattr(ResultsDatabase, value)(self)
 
     @property
-    def displacement_field(self):
-        return DisplacementFieldResults(problem=self)
-
-    @property
-    def reaction_field(self):
-        return ReactionFieldResults(problem=self)
-
-    @property
-    def temperature_field(self):
-        raise NotImplementedError
-
-    @property
-    def stress_field(self):
-        return StressFieldResults(problem=self)
-
-    def modal_shape(self, mode):
-        return ModalShape(problem=self, mode=mode)
-
-    @property
-    def steps_order(self):
+    def steps_order(self) -> List[Step]:
         return self._steps_order
 
     @steps_order.setter
-    def steps_order(self, value):
+    def steps_order(self, value: List[Step]):
         for step in value:
             if not self.is_step_in_problem(step, add=False):
                 raise ValueError("{!r} must be previously added to {!r}".format(step, self))
         self._steps_order = value
 
+    @property
+    def input_file(self) -> InputFile:
+        return InputFile(self)
+
     # =========================================================================
     #                           Step methods
     # =========================================================================
 
-    def find_step_by_name(self, name):
+    def find_step_by_name(self, name: str) -> Optional[Step]:
         # type: (str) -> Step
         """Find if there is a step with the given name in the problem.
 
@@ -160,7 +141,7 @@ class Problem(FEAData):
             if step.name == name:
                 return step
 
-    def is_step_in_problem(self, step, add=True):
+    def is_step_in_problem(self, step: Step, add: bool = True) -> Union[bool, Step]:
         """Check if a :class:`compas_fea2.problem._Step` is defined in the Problem.
 
         Parameters
@@ -192,7 +173,7 @@ class Problem(FEAData):
             return False
         return True
 
-    def add_step(self, step):
+    def add_step(self, step: Step) -> Step:
         # # type: (_Step) -> Step
         """Adds a :class:`compas_fea2.problem._Step` to the problem. The name of
         the Step must be unique
@@ -218,7 +199,7 @@ class Problem(FEAData):
         self._steps_order.append(step)
         return step
 
-    def add_static_step(self, step=None, **kwargs):
+    def add_static_step(self, **kwargs) -> Step:
         # # type: (_Step) -> Step
         """Adds a :class:`compas_fea2.problem._Step` to the problem. The name of
         the Step must be unique
@@ -234,14 +215,8 @@ class Problem(FEAData):
         -------
         :class:`compas_fea2.problem._Step`
         """
-        if step:
-            if not isinstance(step, StaticStep):
-                raise TypeError("You must provide a valid compas_fea2 Step object")
 
-            if self.find_step_by_name(step):
-                raise ValueError("There is already a step with the same name in the model.")
-        else:
-            step = StaticStep(**kwargs)
+        step = StaticStep(**kwargs)
 
         step._key = len(self._steps)
         self._steps.add(step)
@@ -249,7 +224,7 @@ class Problem(FEAData):
         self._steps_order.append(step)
         return step
 
-    def add_steps(self, steps):
+    def add_steps(self, steps: List[Step]) -> List[Step]:
         """Adds multiple :class:`compas_fea2.problem._Step` objects to the problem.
 
         Parameters
@@ -263,7 +238,7 @@ class Problem(FEAData):
         """
         return [self.add_step(step) for step in steps]
 
-    def define_steps_order(self, order):
+    def define_steps_order(self, order: List[Step]):
         """Defines the order in which the steps are applied during the analysis.
 
         Parameters
@@ -285,7 +260,7 @@ class Problem(FEAData):
                 raise TypeError("{} is not a step".format(step))
         self._steps_order = order
 
-    def add_linear_perturbation_step(self, lp_step, base_step):
+    def add_linear_perturbation_step(self, lp_step: "LinearPerturbation", base_step: str):  # noqa: F821
         """Add a linear perturbation step to a previously defined step.
 
         Parameters
@@ -304,15 +279,11 @@ class Problem(FEAData):
         """
         raise NotImplementedError
 
-    # =========================================================================
-    #                           Loads methods
-    # =========================================================================
-
     # ==============================================================================
     # Summary
     # ==============================================================================
 
-    def summary(self):
+    def summary(self) -> str:
         # type: () -> str
         """Prints a summary of the Problem object.
 
@@ -347,7 +318,7 @@ Analysis folder path : {self.path or "N/A"}
     # =========================================================================
     #                         Analysis methods
     # =========================================================================
-    def write_input_file(self, path=None):
+    def write_input_file(self, path: Optional[Union[Path, str]] = None) -> InputFile:
         # type: (Path |str) -> None
         """Writes the input file.
 
@@ -367,32 +338,80 @@ Analysis folder path : {self.path or "N/A"}
             path = Path(path)
         if not path.exists():
             path.mkdir(parents=True)
-        input_file = InputFile.from_problem(self)
-        input_file.write_to_file(path)
-        return input_file
+        return self.input_file.write_to_file(path)
 
-    def _check_analysis_path(self, path):
-        """Check the analysis path and adds the correct folder structure.
+    def _check_analysis_path(self, path: Path, erase_data: bool = False) -> Path:
+        """Check and prepare the analysis path, ensuring the correct folder structure.
 
         Parameters
         ----------
         path : :class:`pathlib.Path`
             Path where the input file will be saved.
+        erase_data : bool, optional
+            If True, automatically erase the folder's contents if it is recognized as an FEA2 results folder. Default is False.
 
         Returns
         -------
         :class:`pathlib.Path`
             Path where the input file will be saved.
 
+        Raises
+        ------
+        ValueError
+            If the folder is not a valid FEA2 results folder and `erase_data` is True but not confirmed by the user.
         """
-        if path:
-            self.model.path = path
-            self.path = self.model.path.joinpath(self.name)
-        if not self.path and not self.model.path:
-            raise AttributeError("You must provide a path for storing the model and the analysis results.")
+
+        def _delete_folder_contents(folder_path: Path):
+            """Helper method to delete all contents of a folder."""
+            for root, dirs, files in os.walk(folder_path):
+                for file in files:
+                    os.remove(Path(root) / file)
+                for dir in dirs:
+                    shutil.rmtree(Path(root) / dir)
+
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        # Prepare the main and analysis paths
+        self.model.path = path
+        self.path = self.model.path.joinpath(self.name)
+
+        if self.path.exists():
+            # Check if the folder contains FEA2 results
+            is_fea2_folder = any(fname.endswith("-results.db") for fname in os.listdir(self.path))
+
+            if is_fea2_folder:
+                if not erase_data:
+                    user_input = input(f"The directory {self.path} already exists and contains FEA2 results. Do you want to delete its contents? (Y/n): ").strip().lower()
+                    erase_data = user_input in ["y", "yes", ""]
+
+                if erase_data:
+                    _delete_folder_contents(self.path)
+                    print(f"All contents of {self.path} have been deleted.")
+                else:
+                    print(f"WARNING: The directory {self.path} already exists and contains FEA2 results. Duplicated results expected.")
+            else:
+                # Folder exists but is not an FEA2 results folder
+                if erase_data and erase_data == "armageddon":
+                    _delete_folder_contents(self.path)
+                else:
+                    user_input = (
+                        input(f"ATTENTION! The directory {self.path} already exists and might NOT be a FEA2 results folder. Do you want to DELETE its contents? (y/N): ")
+                        .strip()
+                        .lower()
+                    )
+                    if user_input in ["y", "yes"]:
+                        _delete_folder_contents(self.path)
+                        print(f"All contents of {self.path} have been deleted.")
+                    else:
+                        raise ValueError(f"The directory {self.path} exists but is not recognized as a valid FEA2 results folder, and its contents were not cleared.")
+        else:
+            # Create the directory if it does not exist
+            self.path.mkdir(parents=True, exist_ok=True)
+
         return self.path
 
-    def analyse(self, path=None, *args, **kwargs):
+    def analyse(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):
         """Analyse the problem in the selected backend.
 
         Raises
@@ -401,13 +420,35 @@ Analysis folder path : {self.path or "N/A"}
             This method is implemented only at the backend level.
 
         """
+        # generate keys
+        self.model.assign_keys()
         raise NotImplementedError("this function is not available for the selected backend")
 
-    def analyze(self, *args, **kwargs):
+    def analyze(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):
         """American spelling of the analyse method"""
-        self.analyse(*args, **kwargs)
+        self.analyse(path=path, *args, **kwargs)
 
-    def analyse_and_extract(self, path=None, *args, **kwargs):
+    def extract_results(self, path: Optional[Union[Path, str]] = None, erase_data: Optional[Union[bool, str]] = False, *args, **kwargs):
+        """Extract the results from the native database system to SQLite.
+
+        Parameters
+        ----------
+        path : :class:`pathlib.Path`
+            Path to the folder where the results are saved.
+        erase_data : bool, optional
+            If True, automatically erase the folder's contents if it is recognized as an FEA2 results folder. Default is False.
+            Pass "armageddon" to erase all contents of the folder without checking.
+
+        Raises
+        ------
+        NotImplementedError
+            This method is implemented only at the backend level.
+        """
+        if path:
+            self.path = path
+        raise NotImplementedError("this function is not available for the selected backend")
+
+    def analyse_and_extract(self, path: Optional[Union[Path, str]] = None, erase_data: bool = False, *args, **kwargs):
         """Analyse the problem in the selected backend and extract the results
         from the native database system to SQLite.
 
@@ -416,6 +457,8 @@ Analysis folder path : {self.path or "N/A"}
         NotImplementedError
             This method is implemented only at the backend level.
         """
+        if path:
+            self.path = path
         raise NotImplementedError("this function is not available for the selected backend")
 
     def restart_analysis(self, *args, **kwargs):
@@ -449,76 +492,15 @@ Analysis folder path : {self.path or "N/A"}
     # =========================================================================
 
     # =========================================================================
-    #                         Results methods - reactions
-    # =========================================================================
-    def get_total_reaction(self, step=None):
-        """Compute the total reaction vector
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem._Step`, optional
-            The analysis step, by default the last step.
-
-        Returns
-        -------
-        :class:`compas.geometry.Vector`
-            The resultant vector.
-        :class:`compas.geometry.Point`
-            The application point.
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        locations, vectors, vectors_lengths = [], [], []
-        for reaction in reactions.results(step):
-            locations.append(reaction.location.xyz)
-            vectors.append(reaction.vector)
-            vectors_lengths.append(reaction.vector.length)
-        return Vector(*sum_vectors(vectors)), Point(*centroid_points_weighted(locations, vectors_lengths))
-
-    def get_min_max_reactions(self, step=None):
-        """Get the minimum and maximum reaction values for the last step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        return reactions.get_limits_absolute(step)
-
-    def get_min_max_reactions_component(self, component, step=None):
-        """Get the minimum and maximum reaction values for the last step.
-
-        Parameters
-        ----------
-        component : _type_
-            _description_
-        step : _type_, optional
-            _description_, by default None
-        """
-        if not step:
-            step = self.steps_order[-1]
-        reactions = self.reaction_field
-        return reactions.get_limits_component(component, step)
-
-    # def get_total_moment(self, step=None):
-    #     if not step:
-    #         step = self.steps_order[-1]
-    #     vector, location = self.get_total_reaction(step)
-
-    #     return sum_vectors([reaction.vector for reaction in reactions.results])
-
-    # =========================================================================
     #                         Results methods - displacements
     # =========================================================================
 
     # =========================================================================
     #                         Viewer methods
     # =========================================================================
-    def show(self, fast=True, scale_model=1.0, show_parts=True, show_bcs=1.0, show_loads=1.0, **kwargs):
+    def show(
+        self, steps: Optional[List[Step]] = None, fast: bool = True, scale_model: float = 1.0, show_parts: bool = True, show_bcs: float = 1.0, show_loads: float = 1.0, **kwargs
+    ):
         """Visualise the model in the viewer.
 
         Parameters
@@ -531,209 +513,34 @@ Analysis folder path : {self.path or "N/A"}
             Scale factor for the loads, by default 1.0
 
         """
+        if not steps:
+            steps = self.steps_order
 
         viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
         viewer.config.vectorsize = 0.2
-        viewer.add_model(self.model, show_parts=show_parts, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        # if show_loads:
-        #     register(step.__class__, FEA2StepObject, context="Viewer")
-        #     viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-        viewer.show()
-        viewer.scene.clear()
+        viewer.add_model(self.model, show_parts=show_parts, opacity=0.5, show_bcs=show_bcs, **kwargs)
 
-    def show_principal_stress_vectors(self, step=None, components=None, scale_model=1, scale_results=1, show_loads=True, show_bcs=True, **kwargs):
-        """Display the principal stress results for a given step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        components : _type_, optional
-            _description_, by default None
-        scale_model : int, optional
-            _description_, by default 1
-        scale_results : int, optional
-            _description_, by default 1
-        show_loads : bool, optional
-            _description_, by default True
-        show_bcs : bool, optional
-            _description_, by default True
-        """
-
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2StepObject
-        from compas_fea2.UI.viewer import FEA2StressFieldResultsObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        if not step:
-            step = self.steps_order[-1]
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.config.vectorsize = 0.2
-
-        register_scene_objects()  # This has to be called before registering the model object
-
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-
-        register(self.stress_field.__class__.__bases__[-1], FEA2StressFieldResultsObject, context="Viewer")
-        viewer.viewer.scene.add(self.stress_field, field=self.stress_field, step=step, scale_factor=scale_results, components=components, **kwargs)
-
-        if show_loads:
-            register(step.__class__, FEA2StepObject, context="Viewer")
-            viewer.viewer.scene.add(step, step=step, scale_factor=show_loads)
-
-        viewer.viewer.show()
-
-    def show_deformed(self, step=None, opacity=1, show_bcs=1, scale_results=1, scale_model=1, show_loads=0.1, show_original=False, **kwargs):
-        """Display the structure in its deformed configuration.
-
-        Parameters
-        ----------
-        step : :class:`compas_fea2.problem._Step`, optional
-            The Step of the analysis, by default None. If not provided, the last
-            step is used.
-
-        Returns
-        -------
-        None
-
-        """
-        if not step:
-            step = self.steps_order[-1]
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-
-        if show_original:
-            viewer.add_model(self.model, fast=True, opacity=show_original, show_bcs=False, **kwargs)
-        # TODO create a copy of the model first
-        displacements = step.problem.displacement_field
-        for displacement in displacements.results(step):
-            vector = displacement.vector.scaled(scale_results)
-            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-        viewer.add_model(self.model, fast=True, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.show()
-
-    def show_displacements(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
-        """Display the displacement field results for a given step.
-
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        scale_model : int, optional
-            _description_, by default 1
-        show_loads : bool, optional
-            _description_, by default True
-        component : _type_, optional
-            _description_, by default
-
-        """
-        if not step:
-            step = self.steps_order[-1]
-
-        if not step.problem.displacement_field:
-            raise ValueError("No displacement field results available for this step")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.add_displacement_field(step.problem.displacement_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
-        if show_loads:
+        for step in steps:
             viewer.add_step(step, show_loads=show_loads)
+
         viewer.show()
         viewer.scene.clear()
 
-    def show_reactions(self, step=None, fast=True, show_bcs=1, scale_model=1, show_loads=0.1, component=None, show_vectors=True, show_contours=True, **kwargs):
-        """Display the reaction field results for a given step.
+    def __data__(self) -> dict:
+        """Returns a dictionary representation of the Problem object."""
+        return {
+            "description": self.description,
+            "steps": [step.__data__() for step in self.steps],
+            "path": str(self.path),
+            "path_db": str(self.path_db),
+        }
 
-        Parameters
-        ----------
-        step : _type_, optional
-            _description_, by default None
-        scale_model : int, optional
-            _description_, by default 1
-        show_bcs : bool, optional
-            _description_, by default True
-        component : _type_, optional
-            _description_, by default
-        translate : _type_, optional
-            _description_, by default -1
-        scale_results : _type_, optional
-            _description_, by default 1
-        """
-
-        if not step:
-            step = self.steps_order[-1]
-
-        if not step.problem.reaction_field:
-            raise ValueError("No displacement field results available for this step")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.add_model(self.model, fast=fast, show_parts=True, opacity=0.5, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
-        viewer.add_reaction_field(step.problem.reaction_field, fast=fast, step=step, component=component, show_vectors=show_vectors, show_contour=show_contours, **kwargs)
-        if show_loads:
-            viewer.add_step(step, show_loads=show_loads)
-        viewer.show()
-        viewer.scene.clear()
-
-    def show_stress_contour(self, step=None, stresstype="vonmieses", high=None, low=None, cmap=None, side=None, scale_model=1.0, show_bcs=True, **kwargs):
-        from compas.scene import register
-        from compas.scene import register_scene_objects
-
-        from compas_fea2.UI.viewer import FEA2ModelObject
-        from compas_fea2.UI.viewer import FEA2Viewer
-
-        register_scene_objects()  # This has to be called before registering the model object
-        register(self.model.__class__.__bases__[-1], FEA2ModelObject, context="Viewer")
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-        viewer.viewer.scene.add(self.model, model=self.model, opacity=0.3, show_bcs=show_bcs, show_parts=True)
-
-        if not step:
-            step = self.steps_order[-1]
-        field_locations = list(self.stress_field.locations(step, point=True))
-        field_results = list(getattr(self.stress_field, stresstype)(step))
-
-        # # Get values
-        min_value = high or min(field_results)
-        max_value = low or max(field_results)
-        cmap = cmap or ColorMap.from_palette("hawaii")
-        points = []
-        for n, v in zip(field_locations, field_results):
-            if kwargs.get("bound", None):
-                if v >= kwargs["bound"][1] or v <= kwargs["bound"][0]:
-                    color = Color.red()
-                else:
-                    color = cmap(v, minval=min_value, maxval=max_value)
-            else:
-                color = cmap(v, minval=min_value, maxval=max_value)
-            points.append((n, {"pointcolor": color, "pointsize": 20}))
-
-        viewer.viewer.scene.add(points, name=f"{stresstype} Contour")
-        viewer.viewer.show()
-
-    def show_mode_shape(
-        self, step, mode, fast=True, opacity=1, scale_results=1, scale_model=1.0, show_bcs=True, show_original=0.25, show_contour=False, show_vectors=False, **kwargs
-    ):
-
-        viewer = FEA2Viewer(center=self.model.center, scale_model=scale_model)
-
-        if show_original:
-            viewer.add_model(self.model, show_parts=True, fast=True, opacity=show_original, show_bcs=False, **kwargs)
-
-        shape = step.problem.modal_shape(mode)
-        if show_vectors:
-            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
-
-        # TODO create a copy of the model first
-        for displacement in shape.results(step):
-            vector = displacement.vector.scaled(scale_results)
-            displacement.node.xyz = sum_vectors([Vector(*displacement.location.xyz), vector])
-
-        if show_contour:
-            viewer.add_mode_shape(shape, fast=fast, step=step, component=None, show_vectors=show_vectors, show_contour=show_contour, **kwargs)
-        viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
-        viewer.show()
+    @classmethod
+    def __from_data__(cls, data: dict) -> "Problem":
+        """Creates a Problem object from a dictionary representation."""
+        problem = cls(description=data.get("description"))
+        problem.path = data.get("path")
+        problem._path_db = data.get("path_db")
+        problem._steps = set(Step.__from_data__(step_data) for step_data in data.get("steps", []))
+        problem._steps_order = list(problem._steps)
+        return problem

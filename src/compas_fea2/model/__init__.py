@@ -1,10 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from .model import Model
 from .parts import (
-    DeformablePart,
+    Part,
     RigidPart,
 )
 from .nodes import Node
@@ -44,9 +40,10 @@ from .materials.timber import Timber
 from .sections import (
     _Section,
     MassSection,
+    SpringSection,
+    ConnectorSection,
     BeamSection,
     GenericBeamSection,
-    SpringSection,
     AngleSection,
     BoxSection,
     CircularSection,
@@ -71,6 +68,7 @@ from .constraints import (
 )
 from .connectors import (
     Connector,
+    LinearConnector,
     RigidLinkConnector,
     SpringConnector,
     ZeroLengthConnector,
@@ -114,9 +112,22 @@ from .ics import (
     InitialStressField,
 )
 
+from .interfaces import (
+    Interface,
+)
+
+from .interactions import (
+    _Interaction,
+    Contact,
+    HardContactFrictionPenalty,
+    HardContactNoFriction,
+    LinearContactFrictionPenalty,
+    HardContactRough,
+)
+
 __all__ = [
     "Model",
-    "DeformablePart",
+    "Part",
     "RigidPart",
     "Node",
     "_Element",
@@ -148,6 +159,7 @@ __all__ = [
     "Timber",
     "_Section",
     "MassSection",
+    "ConnectorSection",
     "BeamSection",
     "GenericBeamSection",
     "SpringSection",
@@ -166,7 +178,6 @@ __all__ = [
     "StrutSection",
     "TieSection",
     "_Constraint",
-    "RigidLinkConnector",
     "_MultiPointConstraint",
     "TieMPC",
     "BeamMPC",
@@ -198,10 +209,18 @@ __all__ = [
     "_InitialCondition",
     "InitialTemperatureField",
     "InitialStressField",
+    "Interface",
     "Connector",
+    "LinearConnector",
     "SpringConnector",
     "RigidLinkConnector",
     "ZeroLengthConnector",
     "ZeroLengthContactConnector",
     "ZeroLengthSpringConnector",
+    "_Interaction",
+    "Contact",
+    "HardContactFrictionPenalty",
+    "HardContactNoFriction",
+    "LinearContactFrictionPenalty",
+    "HardContactRough",
 ]

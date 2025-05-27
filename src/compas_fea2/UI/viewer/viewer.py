@@ -1,15 +1,15 @@
 import numpy as np
 from compas.itertools import remap_values
-from compas_viewer.components import Button
-from compas_viewer.viewer import Viewer
-from compas_viewer.scene import GroupObject
 from compas.scene import register
 from compas.scene import register_scene_objects
+from compas_viewer.components import Button
+from compas_viewer.scene import GroupObject
+from compas_viewer.viewer import Viewer
 
 from compas_fea2.UI.viewer.scene import FEA2ModelObject
-from compas_fea2.UI.viewer.scene import FEA2DisplacementFieldResultsObject
-from compas_fea2.UI.viewer.scene import FEA2ReactionFieldResultsObject
+from compas_fea2.UI.viewer.scene import FEA2NodeFieldResultsObject
 from compas_fea2.UI.viewer.scene import FEA2StepObject
+from compas_fea2.UI.viewer.scene import FEA2Stress2DFieldResultsObject
 
 
 def toggle_nodes():
@@ -134,6 +134,7 @@ class FEA2Viewer(Viewer):
         self.model: GroupObject = None
         self.nodes: GroupObject = None
         self.displacements: GroupObject = None
+        self.reactions: GroupObject = None
         self.step: GroupObject = None
 
         self.ui.sidedock.show = True
@@ -146,6 +147,7 @@ class FEA2Viewer(Viewer):
         self.ui.sidedock.add(Button(text="Toggle Tension", action=toggle_tension))
         self.ui.sidedock.add(Button(text="Toggle Friction", action=toggle_friction))
         self.ui.sidedock.add(Button(text="Toggle Resultants", action=toggle_resultants))
+        register_scene_objects()
 
     def add_parts(self, parts):
         pass
@@ -155,34 +157,69 @@ class FEA2Viewer(Viewer):
         register(model.__class__.__base__, FEA2ModelObject, context="Viewer")
         self.model = self.scene.add(model, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
-    def add_displacement_field(self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
-        register_scene_objects()
-        register(field.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
+    def add_displacement_field(
+        self, field, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=True, show_contours=False, **kwargs
+    ):
+        register(field.__class__.__base__, FEA2NodeFieldResultsObject, context="Viewer")
         self.displacements = self.scene.add(
-            field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+            item=field,
+            component=component,
+            fast=fast,
+            show_parts=show_parts,
+            opacity=opacity,
+            show_bcs=show_bcs,
+            show_loads=show_loads,
+            show_vectors=show_vectors,
+            show_contours=show_contours,
+            **kwargs,
         )
 
-    def add_reaction_field(self, field, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
-        register_scene_objects()
-        register(field.__class__.__base__, FEA2ReactionFieldResultsObject, context="Viewer")
+    def add_reaction_field(
+        self, field, model, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=True, show_contours=False, **kwargs
+    ):
+        register(field.__class__.__base__, FEA2NodeFieldResultsObject, context="Viewer")
         self.reactions = self.scene.add(
-            field, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+            field,
+            model=model,
+            component=component,
+            fast=fast,
+            show_parts=show_parts,
+            opacity=opacity,
+            show_bcs=show_bcs,
+            show_loads=show_loads,
+            show_vectors=show_vectors,
+            show_contours=show_contours,
+            **kwargs,
         )
 
-    def add_mode_shape(self, mode_shape, step, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
-        register_scene_objects()
-        register(mode_shape.__class__.__base__, FEA2DisplacementFieldResultsObject, context="Viewer")
-        self.displacements = self.scene.add(
-            mode_shape, step=step, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs
+    def add_stress2D_field(
+        self, field, model, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, show_vectors=1, show_contours=False, plane="mid", **kwargs
+    ):
+        register(field.__class__.__base__, FEA2Stress2DFieldResultsObject, context="Viewer")
+        self.stresses = self.scene.add(
+            field,
+            model=model,
+            component=component,
+            fast=fast,
+            show_parts=show_parts,
+            opacity=opacity,
+            show_bcs=show_bcs,
+            show_loads=show_loads,
+            show_vectors=show_vectors,
+            show_contours=show_contours,
+            plane=plane,
+            **kwargs,
         )
+
+    def add_mode_shape(self, mode_shape, component=None, fast=False, show_parts=True, opacity=0.5, show_bcs=True, show_loads=True, **kwargs):
+        register(mode_shape.__class__.__base__, FEA2NodeFieldResultsObject, context="Viewer")
+        self.displacements = self.scene.add(mode_shape, component=component, fast=fast, show_parts=show_parts, opacity=opacity, show_bcs=show_bcs, show_loads=show_loads, **kwargs)
 
     def add_step(self, step, show_loads=1):
-        register_scene_objects()
         register(step.__class__, FEA2StepObject, context="Viewer")
         self.step = self.scene.add(step, step=step, scale_factor=show_loads)
 
     def add_nodes(self, nodes):
-
         self.nodes = []
         for node in nodes:
             self.nodes.append(

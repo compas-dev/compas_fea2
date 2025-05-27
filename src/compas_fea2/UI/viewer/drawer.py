@@ -3,7 +3,7 @@ from compas.colors import ColorMap
 from compas.geometry import Line
 
 
-def draw_field_vectors(field_locations, field_vectors, scale_results, translate=0, high=None, low=None, cmap=None, **kwargs):
+def draw_field_vectors(locations, vectors, scale_results, translate=0, high=None, low=None, cmap=None, **kwargs):
     """Display a given vector field.
 
     Parameters
@@ -17,25 +17,24 @@ def draw_field_vectors(field_locations, field_vectors, scale_results, translate=
     translate : float
         The translation factor for the results.
     """
-    vectors = []
     colors = []
-
+    lines = []
     if cmap:
-        lengths = [v.length for v in field_vectors]
+        lengths = [v.length for v in vectors]
         min_value = high or min(lengths)
         max_value = low or max(lengths)
     else:
-        colors = [Color.red()] * len(field_vectors)
+        colors = [Color.red()] * len(vectors)
 
-    for pt, vector in zip(list(field_locations), list(field_vectors)):
+    for pt, vector in zip(list(locations), list(vectors)):
         if vector.length == 0:
             continue
         else:
             v = vector.scaled(scale_results)
-            vectors.append(Line.from_point_and_vector(pt, v).translated(v * translate))
+            lines.append(Line.from_point_and_vector(pt, v).translated(v * translate))
             if cmap:
                 colors.append(cmap(vector.length, minval=min_value, maxval=max_value))
-    return vectors, colors
+    return lines, colors
 
 
 def draw_field_contour(model, field_locations, field_results, high=None, low=None, cmap=None, **kwargs):

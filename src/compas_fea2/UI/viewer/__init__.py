@@ -1,9 +1,8 @@
 from .viewer import FEA2Viewer
 from .scene import FEA2ModelObject
 from .scene import FEA2StepObject
-from .scene import FEA2StressFieldResultsObject
-from .scene import FEA2DisplacementFieldResultsObject
-from .scene import FEA2ReactionFieldResultsObject
+from .scene import FEA2Stress2DFieldResultsObject
+from .scene import FEA2NodeFieldResultsObject
 
 from .primitives import (
     _BCShape,
@@ -22,7 +21,6 @@ __all__ = [
     "ArrowShape",
     "FEA2ModelObject",
     "FEA2StepObject",
-    "FEA2StressFieldResultsObject",
-    "FEA2DisplacementFieldResultsObject",
-    "FEA2ReactionFieldResultsObject",
+    "FEA2Stress2DFieldResultsObject",
+    "FEA2NodeFieldResultsObject",
 ]

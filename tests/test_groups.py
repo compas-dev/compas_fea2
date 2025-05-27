@@ -1,6 +1,6 @@
 import unittest
 from compas_fea2.model.groups import NodesGroup, ElementsGroup, FacesGroup, PartsGroup
-from compas_fea2.model import Node, BeamElement, DeformablePart, ShellElement, ShellSection, Steel
+from compas_fea2.model import Node, BeamElement, Part, ShellElement, ShellSection, Steel
 
 
 class TestNodesGroup(unittest.TestCase):
@@ -37,7 +37,7 @@ class TestFacesGroup(unittest.TestCase):
 
 class TestPartsGroup(unittest.TestCase):
     def test_add_part(self):
-        part = DeformablePart()
+        part = Part()
         group = PartsGroup(parts=[part])
         self.assertIn(part, group.parts)
 

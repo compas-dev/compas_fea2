@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
 from compas_fea2 import VERBOSE
@@ -30,12 +26,15 @@ class InputFile(FEAData):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, problem, **kwargs):
         super(InputFile, self).__init__(**kwargs)
-        self._job_name = None
-        self._file_name = None
+        self._registration = problem
         self._extension = None
-        self._path = None
+        self.path = None
+
+    @property
+    def file_name(self):
+        return "{}.{}".format(self.problem._name, self._extension)
 
     @property
     def problem(self):
@@ -44,32 +43,6 @@ class InputFile(FEAData):
     @property
     def model(self):
         return self.problem._registration
-
-    @property
-    def path(self):
-        return self._path
-
-    @classmethod
-    def from_problem(cls, problem):
-        """Create an InputFile object from a :class:`compas_fea2.problem.Problem`
-
-        Parameters
-        ----------
-        problem : :class:`compas_fea2.problem.Problem`
-            Problem to be converted to InputFile.
-
-        Returns
-        -------
-        obj
-            InputFile for the analysis.
-
-        """
-        input_file = cls()
-        input_file._registration = problem
-        input_file._job_name = problem._name
-        input_file._file_name = "{}.{}".format(problem._name, input_file._extension)
-        input_file._path = problem.path.joinpath(input_file._file_name)
-        return input_file
 
     # ==============================================================================
     # General methods
@@ -92,16 +65,17 @@ class InputFile(FEAData):
         path = path or self.problem.path
         if not path:
             raise ValueError("A path to the folder for the input file must be provided")
-        file_path = os.path.join(path, self._file_name)
+        file_path = os.path.join(path, self.file_name)
         with open(file_path, "w") as f:
             f.writelines(self.jobdata())
         if VERBOSE:
-            print("Input file generated in: {}".format(file_path))
+            print("Input file generated in the following location: {}".format(file_path))
 
 
 class ParametersFile(InputFile):
-    """"""
+    """Input file object for Optimizations.
+    """
 
-    def __init__(self, name=None, **kwargs):
-        super(ParametersFile, self).__init__(name, **kwargs)
+    def __init__(self, **kwargs):
+        super(ParametersFile, self).__init__(**kwargs)
         raise NotImplementedError()

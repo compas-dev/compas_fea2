@@ -2,4 +2,4 @@
 Units
 ********************************************************************************
 
-compas_fe2 can use Pint for units consistency.
+compas_fea2 can use Pint for units consistency.

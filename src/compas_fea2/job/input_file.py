@@ -73,8 +73,7 @@ class InputFile(FEAData):
 
 
 class ParametersFile(InputFile):
-    """Input file object for Optimizations.
-    """
+    """Input file object for Optimizations."""
 
     def __init__(self, **kwargs):
         super(ParametersFile, self).__init__(**kwargs)

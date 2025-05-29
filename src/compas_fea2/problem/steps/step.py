@@ -602,14 +602,14 @@ class GeneralStep(Step):
 
     def add_temperature_field(self, field, node):
         """Add a temperature field to the Step object.
-        
+
         Parameters
         ----------
         field : :class:`compas_fea2.problem.fields.PrescribedTemperatureField`
             The temperature field to add.
         node : :class:`compas_fea2.model.Node`
             The node to which the temperature field is applied.
-            
+
         Returns
         -------
         :class:`compas_fea2.problem.fields.PrescribedTemperatureField`
@@ -621,7 +621,7 @@ class GeneralStep(Step):
 
         # if not isinstance(node, Node):
         #     raise TypeError("{!r} is not a Node.".format(node))
-    
+
         # node._temperature = field
         # self._fields.setdefault(node.part, {}).setdefault(field, set()).add(node)
         # return field

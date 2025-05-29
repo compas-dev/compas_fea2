@@ -57,7 +57,8 @@ class _BeamEndRelease(FEAData):
 
     @element.setter
     def element(self, value: "BeamElement"):  # type: ignore
-        if not isinstance(value, "BeamElement"):  # type: ignore
+        import compas_fea2
+        if not isinstance(value, compas_fea2.model.elements.BeamElement):
             raise TypeError(f"{value!r} is not a beam element.")
         self._element = value
 

@@ -265,7 +265,7 @@ class Node(FEAData):
 
     def transform(self, transformation):
         """Transform the node using a transformation matrix.
-        
+
         Parameters
         ----------
         transformation : list
@@ -275,12 +275,12 @@ class Node(FEAData):
 
     def transformed(self, transformation):
         """Return a copy of the node transformed by a transformation matrix.
-        
+
         Parameters
         ----------
         transformation : list
             A 4x4 transformation matrix.
-            
+
         Returns
         -------
         :class:`compas_fea2.model.Node`
@@ -292,12 +292,12 @@ class Node(FEAData):
 
     def displacement(self, step):
         """Get the displacement of the node at a given step.
-        
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
             The step for which to get the displacement.
-            
+
         Returns
         -------
         :class:`compas_fea2.results.DisplacementResult`
@@ -308,18 +308,18 @@ class Node(FEAData):
 
     def reaction(self, step):
         """Get the reaction of the node at a given step.
-        
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
             The step for which to get the reaction.
-        
+
         Returns
         -------
         :class:`compas_fea2.results.ReactionResult`
             The reaction result at the node for the given step.
         """
-        
+
         if step.reaction_field:
             return step.reaction_field.get_result_at(location=self)
 

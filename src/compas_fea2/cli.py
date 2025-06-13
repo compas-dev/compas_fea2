@@ -62,7 +62,7 @@ def change_setting(backend, setting, value):
             The new value for the setting.
 
     Example usage:\n
-        fea2 change-setting opensees exe "Applications/OpenSees3.5.0/bin/OpenSees"
+        fea2 change-setting opensees exe "Applications/OpenSees3.7.0/bin/OpenSees"
     """
     m = importlib.import_module("compas_fea2_" + backend.lower())
     env = os.path.join(m.HOME, "src", "compas_fea2_" + backend.lower(), ".env")

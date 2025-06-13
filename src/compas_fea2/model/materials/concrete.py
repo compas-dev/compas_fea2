@@ -1,8 +1,5 @@
 from math import log
 
-from compas_fea2.units import UnitRegistry
-from compas_fea2.units import units as u
-
 from .material import _Material
 
 
@@ -139,11 +136,6 @@ fr  : {}
     # FIXME: this is only working for the basic material properties.
     @classmethod
     def C20_25(cls, units, **kwargs):
-        if not units:
-            units = u.get_default_units()
-        elif not isinstance(units, UnitRegistry):
-            units = u.get_units(units)
-
         return cls(fck=25 * units.MPa, E=30 * units.GPa, v=0.17, density=2400 * units("kg/m**3"), name="C20/25", **kwargs)
 
 

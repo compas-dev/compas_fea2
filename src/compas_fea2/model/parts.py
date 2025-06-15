@@ -130,6 +130,8 @@ class _Part(FEAData):
             "elements": [element.__data__ for element in self.elements],
             "releases": [release.__data__ for release in self.releases],
             "reference_point": self.reference_point.__data__ if self.reference_point else None,
+            "boundary_mesh": self._boundary_mesh.__data__ if self._boundary_mesh else None,
+            "discretized_boundary_mesh": self._discretized_boundary_mesh.__data__ if self._discretized_boundary_mesh else None,
         }
 
     def to_hdf5_data(self, hdf5_file, mode="a"):
@@ -357,59 +359,103 @@ class _Part(FEAData):
         faces = unique_indices.reshape(self.outer_faces.shape).tolist()
         return Mesh.from_vertices_and_faces(vertices.tolist(), faces)
 
-    def extract_clustered_planes(self, tol: float = 1e-3, angle_tol: float = 2, verbose: bool = False):
+    def extract_clustered_planes(self, tol: float = 1e-3, angle_tol: float = 2.0, verbose: bool = False):
         """Extract unique planes from the part boundary mesh.
+
+        This revised version correctly handles offset comparisons for planes
+        whose normals might be flipped relative to each other.
 
         Parameters
         ----------
         tol : float, optional
-            Tolerance for geometric operations, by default 1e-3.
+            Tolerance for comparing plane offsets, by default 1e-3.
         angle_tol : float, optional
-            Tolerance for normal vector comparison, by default 2.
+            Angular tolerance in degrees for comparing normal vectors, by default 2.0.
         verbose : bool, optional
             If ``True`` print the extracted planes, by default False.
 
         Returns
         -------
         list[:class:`compas.geometry.Plane`]
+            A list of unique COMPAS Plane objects.
         """
-        mesh = self.discretized_boundary_mesh.copy()
-        unique_planes = []
-        plane_data = []
+        # Ensure self.discretized_boundary_mesh is available and is a COMPAS mesh
+        if not hasattr(self, "discretized_boundary_mesh"):
+            # Or handle this error/condition as appropriate for your class
+            print("Error: discretized_boundary_mesh not found.")
+            return []
+
+        mesh = self.discretized_boundary_mesh
+
+        unique_raw_planes = []  # Stores (normal_array, offset_float) for unique planes
+        all_face_plane_data = []  # Stores (normal_array, offset_float) for all face planes
+
+        # 1. Extract normal and offset for all face planes
+        # COMPAS mesh.face_plane(fkey) returns a Plane object.
+        # The normal of a COMPAS plane is a unit vector.
         for fkey in mesh.faces():
-            plane = mesh.face_plane(fkey)
-            normal = np.array(plane.normal)
-            offset = np.dot(normal, plane.point)
-            plane_data.append((normal, offset))
+            plane = mesh.face_plane(fkey)  # compas.geometry.Plane
+            normal = np.array(plane.normal)  # Unit normal vector as numpy array
+            # Offset is the signed distance from origin to the plane along its normal
+            offset = np.dot(normal, np.array(plane.point))
+            all_face_plane_data.append({"normal": normal, "offset": offset, "original_fkey": fkey})
 
-        # Clusterize planes based on angular similarity
-        plane_normals = np.array([p[0] for p in plane_data])
-        plane_offsets = np.array([p[1] for p in plane_data])
-        cos_angle_tol = np.cos(np.radians(angle_tol))
-        for _, (normal, offset) in enumerate(zip(plane_normals, plane_offsets)):
-            is_unique = True
-            for existing_normal, existing_offset in unique_planes:
-                if np.abs(np.dot(normal, existing_normal)) > cos_angle_tol:
-                    if np.abs(offset - existing_offset) < tol:
-                        is_unique = False
-                        break
-            if is_unique:
-                unique_planes.append((normal, offset))
+        # 2. Cluster planes based on angular similarity of normals and proximity of offsets
+        cos_angle_tol = np.cos(np.radians(angle_tol))  # Pre-calculate cosine of angle tolerance
 
-        # Convert unique planes back to COMPAS
-        planes = []
-        for normal, offset in unique_planes:
-            normal_vec = Vector(*normal)
-            point = normal_vec * offset
-            planes.append(Plane(point, normal_vec))
+        for new_plane_data in all_face_plane_data:
+            current_normal = new_plane_data["normal"]
+            current_offset = new_plane_data["offset"]
+            is_considered_unique = True
+
+            for existing_unique_plane in unique_raw_planes:
+                existing_normal = existing_unique_plane["normal"]
+                existing_offset = existing_unique_plane["offset"]
+
+                # Compare normals: check for collinearity (same or opposite direction)
+                # np.dot of two unit vectors is cos(angle between them)
+                dot_product = np.dot(current_normal, existing_normal)
+
+                if np.abs(dot_product) > cos_angle_tol:
+                    # Normals are considered collinear (angle is within +/- angle_tol or 180 +/- angle_tol)
+
+                    # Now, compare offsets considering the relative direction of normals
+                    if dot_product > 0:  # Normals are in roughly the same direction
+                        if np.abs(current_offset - existing_offset) < tol:
+                            is_considered_unique = False
+                            break
+                    else:  # Normals are in roughly opposite directions (dot_product < 0)
+                        # For the same plane, current_offset should be approx. -existing_offset
+                        if np.abs(current_offset + existing_offset) < tol:
+                            is_considered_unique = False
+                            break
+
+            if is_considered_unique:
+                unique_raw_planes.append({"normal": current_normal, "offset": current_offset})
+
+        # 3. Convert unique raw plane data back to COMPAS Plane objects
+        extracted_planes = []
+        for unique_plane_data in unique_raw_planes:
+            normal_vec = Vector(*unique_plane_data["normal"])  # Convert numpy array to COMPAS Vector
+            # Point on the plane: normal_vec scaled by offset (since normal_vec is unit length)
+            point_on_plane = normal_vec * unique_plane_data["offset"]
+            extracted_planes.append(Plane(point_on_plane, normal_vec))
 
         if verbose:
-            num_unique_planes = len(unique_planes)
-            print(f"Minimum number of planes describing the geometry: {num_unique_planes}")
-            for i, (normal, offset) in enumerate(unique_planes, 1):
-                print(f"Plane {i}: Normal = {normal}, Offset = {offset}")
+            num_unique_planes = len(extracted_planes)
+            print(f"Number of unique planes extracted: {num_unique_planes}")
+            for i, plane_obj in enumerate(extracted_planes, 1):
+                # For consistency with original verbose, re-calculate offset for printing if needed
+                # or print directly from plane_obj properties.
+                # The offset here is plane_obj.normal.dot(plane_obj.point)
+                # which should be very close to unique_plane_data['offset'] used for its creation.
+                print(f"Plane {i}: Point = {list(plane_obj.point)}, Normal = {list(plane_obj.normal)}")
+                # To print the offset as calculated before:
+                # norm_arr = unique_raw_planes[i-1]['normal']
+                # offs_val = unique_raw_planes[i-1]['offset']
+                # print(f"Plane {i}: Stored Normal = {list(norm_arr)}, Stored Offset = {offs_val:.6f}")
 
-        return planes
+        return extracted_planes
 
     def extract_submeshes(self, planes: List[Plane], tol: float = 1e-3, normal_tol: float = 2, split=False):
         """Extract submeshes from the part based on the planes provided.
@@ -495,14 +541,19 @@ class _Part(FEAData):
         return [Interface(mesh=mesh) for mesh in submeshes]
 
     @property
-    def bounding_box(self) -> Optional[Box]:
+    def bounding_box(self) -> Box:
         # FIXME: add bounding box for linear elements (bb of the section outer boundary)
         return Box.from_bounding_box(bounding_box([n.xyz for n in self.nodes]))
 
     @property
+    def bb_center(self) -> Point:
+        """The geometric center of the part."""
+        return Point(*centroid_points(self.bounding_box.points))
+
+    @property
     def center(self) -> Point:
         """The geometric center of the part."""
-        return centroid_points(self.bounding_box.points)
+        return Point(*centroid_points(self.points))
 
     @property
     def centroid(self) -> Point:
@@ -510,7 +561,7 @@ class _Part(FEAData):
         self.compute_nodal_masses()
         points = [node.point for node in self.nodes]
         weights = [sum(node.mass) / len(node.mass) for node in self.nodes]
-        return centroid_points_weighted(points, weights)
+        return Point(*centroid_points_weighted(points, weights))
 
     @property
     def bottom_plane(self) -> Plane:
@@ -539,10 +590,6 @@ class _Part(FEAData):
     @property
     def model(self):
         return self._registration
-
-    @property
-    def results(self):
-        return self._results
 
     @property
     def nodes_count(self) -> int:
@@ -574,6 +621,8 @@ class _Part(FEAData):
         """
         for node in self.nodes:
             node.transform(transformation)
+        self._boundary_mesh.transform(transformation) if self._boundary_mesh else None
+        self._discretized_boundary_mesh.transform(transformation) if self._discretized_boundary_mesh else None
 
     def transformed(self, transformation: Transformation) -> "_Part":
         """Return a transformed copy of the part.
@@ -583,7 +632,7 @@ class _Part(FEAData):
         transformation : :class:`compas.geometry.Transformation`
             The transformation to apply.
         """
-        part = self.copy()
+        part: Part = self.copy()
         part.transform(transformation)
         return part
 
@@ -1755,8 +1804,6 @@ class _Part(FEAData):
         bool
             True if the element is on the boundary, False otherwise.
         """
-        from compas.geometry import centroid_points
-
         if element.on_boundary is None:
             # if not self._discretized_boundary_mesh.face_centroid:
             #     centroid_face = {}

@@ -303,7 +303,6 @@ class Stiff(_Material):
 # ==============================================================================
 # non-linear general
 # ==============================================================================
-# @extend_docstring(_Material)
 class ElasticPlastic(ElasticIsotropic):
     """Elastic and plastic, isotropic and homogeneous material.
 

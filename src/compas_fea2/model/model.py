@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 from typing import Set
 from typing import Union
+from typing import Tuple
 
 from compas.datastructures import Graph
 from compas.geometry import Box
@@ -18,6 +19,7 @@ from compas.geometry import Polygon
 from compas.geometry import Transformation
 from compas.geometry import bounding_box
 from compas.geometry import centroid_points
+from compas.geometry import centroid_points_weighted
 from pint import UnitRegistry
 
 import compas_fea2
@@ -107,6 +109,8 @@ class Model(FEAData):
         self._groups: Set[_Group] = set()
         self._problems: Set[Problem] = set()
 
+        self._constants: dict = {"g": None}
+
     @property
     def __data__(self):
         return {
@@ -121,6 +125,7 @@ class Model(FEAData):
             "sections": [section.__data__ for section in self.sections],
             "problems": [problem.__data__ for problem in self.problems],
             "path": str(self.path) if self.path else None,
+            "constants": self._constants,
         }
 
     @classmethod
@@ -161,6 +166,7 @@ class Model(FEAData):
         problem_classes = {cls.__name__: cls for cls in Problem.__subclasses__()}
         model._problems = {problem_classes[problem_data["class"]].__from_data__(problem_data) for problem_data in data.get("problems", [])}
         model._path = Path(data.get("path")) if data.get("path") else None
+        model._constants = data.get("constants")
         return model
 
     @classmethod
@@ -216,6 +222,18 @@ class Model(FEAData):
     @property
     def connectors(self) -> Set[Connector]:
         return self._connectors
+
+    @property
+    def constants(self) -> dict:
+        return self._constants
+
+    @property
+    def g(self) -> float:
+        return self.constants["g"]
+
+    @g.setter
+    def g(self, value):
+        self._constants["g"] = value
 
     @property
     def materials_dict(self) -> dict[Union[_Part, "Model"], list[_Material]]:
@@ -301,11 +319,24 @@ class Model(FEAData):
         return Box.from_bounding_box(bb)
 
     @property
-    def center(self) -> Point:
+    def bb_center(self) -> Point:
         if self.bounding_box:
-            return centroid_points(self.bounding_box.points)
+            return Point(*centroid_points(self.bounding_box.points))
         else:
-            return centroid_points(self.points)
+            raise AttributeError("The model has no bounding box")
+
+    @property
+    def center(self) -> Point:
+        return Point(*centroid_points(self.points))
+
+    @property
+    def centroid(self) -> Point:
+        weights = []
+        points = []
+        for part in self.parts:
+            points.append(part.centroid)
+            weights.append(part.weight)
+        return Point(*centroid_points_weighted(points=points, weights=weights))
 
     @property
     def bottom_plane(self) -> Plane:
@@ -855,7 +886,12 @@ class Model(FEAData):
 
     @get_docstring(_Part)
     @part_method
-    def find_closest_nodes_to_node(self, node: Node, distance: float, number_of_nodes: int = 1, plane: Optional[Plane] = None) -> NodesGroup:
+    def find_closest_nodes_to_node(self, node: Node, number_of_nodes: int = 1, plane: Optional[Plane] = None) -> NodesGroup:
+        pass
+
+    @get_docstring(_Part)
+    @part_method
+    def find_closest_nodes_to_point(self, point: Point, number_of_nodes: int = 1, plane: Optional[Plane] = None) -> NodesGroup:
         pass
 
     @get_docstring(_Part)
@@ -1432,6 +1468,42 @@ class Model(FEAData):
 
         """
         return [self.add_interface(interface) for interface in interfaces]
+
+    def extract_interfaces(self, max_origin_distance=0.01, tol=1e-6) -> list[Tuple[Plane, Plane]]:
+        """Extract interfaces from the model.
+
+        Returns
+        -------
+        list[:class:`compas_fea2.model.Interface`]
+            List of interfaces extracted from the model.
+
+        """
+        from compas.geometry import distance_point_plane_signed
+        import itertools
+        from typing import List
+
+        # --- Nested helper function to check coplanarity ---
+        def _are_two_planes_coplanar(pln1: Plane, pln2: Plane, tol: float) -> bool:
+            """Checks if two COMPAS planes are geometrically the same."""
+            normals_collinear = abs(abs(pln1.normal.dot(pln2.normal)) - 1.0) < tol
+            if not normals_collinear:
+                return False
+            point_on_plane = abs(distance_point_plane_signed(pln1.point, pln2)) < tol
+            return point_on_plane
+
+        list_of_plane_lists = [p.extract_clustered_planes() for p in self.parts]
+        # 1. Flatten the list of lists into a single list of all planes.
+        all_planes_raw: List[Plane] = list(itertools.chain.from_iterable(list_of_plane_lists))
+
+        # 2. Get unique plane instances from the raw list.
+        coplanar_pairs: List[Tuple[Plane, Plane]] = []
+        for p1, p2 in itertools.combinations(all_planes_raw, 2):
+            if _are_two_planes_coplanar(p1, p2, tol):
+                # If planes are coplanar, then check the distance between their origin points
+                if max_origin_distance is None or p1.point.distance_to_point(p2.point) < max_origin_distance:
+                    coplanar_pairs.append((p1, p2))
+
+        return coplanar_pairs
 
     # ==============================================================================
     # Summary

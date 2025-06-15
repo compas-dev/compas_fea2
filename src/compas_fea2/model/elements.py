@@ -206,8 +206,19 @@ class _Element(FEAData):
     def mass(self) -> float:
         return self.volume * self.section.material.density
 
-    def weight(self, g: float) -> float:
-        return self.mass * g
+    @property
+    def g(self) -> float:
+        if self.model:
+            return self.model.g
+        else:
+            return self.g
+
+    @property
+    def weight(self) -> float:
+        if self.model.g:
+            return self.mass * self.g
+        else:
+            raise "Gravity constant not defined"
 
     @property
     def nodal_mass(self) -> List[float]:
@@ -356,9 +367,9 @@ class _Element1D(_Element):
     def plot_section(self):
         self.section.plot()
 
-    def plot_stress_distribution(self, step: "Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):
-        """Plot the stress distribution along the element.
-
+    def plot_stress_distribution(self, step: "Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
+        """ Plot the stress distribution along the element.
+        
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -412,9 +423,9 @@ class _Element1D(_Element):
         r = self.section_forces_result(step)
         return r.forces
 
-    def moments(self, step: "Step") -> "Result":
-        """Get the moments result for the element.
-
+    def moments(self, step: "_Step") -> "Result":  # noqa: F821
+        """ Get the moments result for the element.
+        
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -491,8 +502,7 @@ class Face(FEAData):
         self._nodes = nodes
         self._tag = tag
         self._plane = Plane.from_three_points(*[node.xyz for node in nodes[:3]])  # TODO check when more than 3 nodes
-        self._registration = element
-        self._centroid = centroid_points([node.xyz for node in nodes])
+        self._registration = element  # FIXME: not updated when copying parts
 
     @property
     def __data__(self):
@@ -549,7 +559,7 @@ class Face(FEAData):
 
     @property
     def centroid(self) -> "Point":
-        return self._centroid
+        return centroid_points([node.xyz for node in self.nodes])
 
     @property
     def nodes_key(self) -> List:
@@ -841,7 +851,7 @@ class TetrahedronElement(_Element3D):
         if len(nodes) not in {4, 10}:
             raise ValueError("TetrahedronElement must have either 4 (C3D4) or 10 (C3D10) nodes.")
 
-        self.element_type = "C3D10" if len(nodes) == 10 else "C3D4"
+        # self.element_type = "C3D10" if len(nodes) == 10 else "C3D4"
 
         super().__init__(
             nodes=nodes,

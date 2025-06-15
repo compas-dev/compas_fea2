@@ -591,7 +591,10 @@ class GeneralStep(Step):
         # except ImportError:
         from compas_fea2.problem import ConcentratedLoad
 
-        parts = parts or self.model.parts
+        try:
+            parts = parts or self.model.parts
+        except Exception:
+            raise AttributeError('You need to register the problem to the model first')
         nodes = []
         loads = []
         for part in parts:

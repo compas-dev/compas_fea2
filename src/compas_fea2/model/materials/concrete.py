@@ -42,7 +42,7 @@ class Concrete(_Material):
     """
 
     def __init__(self, *, fck, E=None, v=None, density=None, fr=None, units=None, **kwargs):
-        super(Concrete, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         # Ensure small increment for stress-strain curve
         de = 0.0001
@@ -188,7 +188,7 @@ class ConcreteSmearedCrack(_Material):
     """
 
     def __init__(self, *, E, v, density, fc, ec, ft, et, fr=[1.16, 0.0836], **kwargs):
-        super(ConcreteSmearedCrack, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v
@@ -295,7 +295,7 @@ class ConcreteDamagedPlasticity(_Material):
     """
 
     def __init__(self, *, E, v, density, damage, hardening, stiffening, **kwargs):
-        super(ConcreteDamagedPlasticity, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
         self.E = E
         self.v = v

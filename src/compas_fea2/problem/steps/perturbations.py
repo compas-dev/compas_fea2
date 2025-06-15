@@ -2,7 +2,6 @@ from compas.geometry import Vector
 from compas.geometry import sum_vectors
 
 from compas_fea2.results import ModalAnalysisResult
-from compas_fea2.UI import FEA2Viewer
 
 from .step import Step
 
@@ -15,8 +14,9 @@ class _Perturbation(Step):
     def __init__(self, **kwargs):
         super(_Perturbation, self).__init__(**kwargs)
 
-    def __data__(self):
-        data = super(_Perturbation, self).__data__()
+    @property
+    def __data__(self) -> dict:
+        data = super().__data__
         data.update(
             {
                 "type": self.__class__.__name__,
@@ -126,6 +126,8 @@ class ModalAnalysis(_Perturbation):
             Show the vectors, by default False
 
         """
+        from compas_fea2.UI import FEA2Viewer
+
         viewer = FEA2Viewer(center=self.model.center, scale_model=1)
 
         if show_original:
@@ -145,8 +147,9 @@ class ModalAnalysis(_Perturbation):
         viewer.add_model(self.model, fast=fast, opacity=opacity, show_bcs=show_bcs, **kwargs)
         viewer.show()
 
+    @property
     def __data__(self):
-        data = super(ModalAnalysis, self).__data__()
+        data = super().__data__
         data.update(
             {
                 "modes": self.modes,
@@ -166,8 +169,9 @@ class ComplexEigenValue(_Perturbation):
         super().__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        return super(ComplexEigenValue, self).__data__()
+        return super().__data__
 
     @classmethod
     def __from_data__(cls, data):
@@ -206,8 +210,9 @@ class BucklingAnalysis(_Perturbation):
             algorithhm="Subspace",
         )
 
+    @property
     def __data__(self):
-        data = super(BucklingAnalysis, self).__data__()
+        data = super().__data__
         data.update(
             {
                 "modes": self._modes,
@@ -230,8 +235,9 @@ class LinearStaticPerturbation(_Perturbation):
         super().__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        return super(LinearStaticPerturbation, self).__data__()
+        return super().__data__
 
     @classmethod
     def __from_data__(cls, data):
@@ -245,8 +251,9 @@ class SteadyStateDynamic(_Perturbation):
         super().__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        return super(SteadyStateDynamic, self).__data__()
+        return super().__data__
 
     @classmethod
     def __from_data__(cls, data):
@@ -260,8 +267,9 @@ class SubstructureGeneration(_Perturbation):
         super().__init__(**kwargs)
         raise NotImplementedError
 
+    @property
     def __data__(self):
-        return super(SubstructureGeneration, self).__data__()
+        return super().__data__
 
     @classmethod
     def __from_data__(cls, data):

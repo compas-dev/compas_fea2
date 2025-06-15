@@ -1,4 +1,10 @@
+from typing import TYPE_CHECKING
+from typing import Union
+
 from compas_fea2.base import FEAData
+
+if TYPE_CHECKING:
+    from .elements import BeamElement
 
 
 class _BeamEndRelease(FEAData):
@@ -40,10 +46,19 @@ class _BeamEndRelease(FEAData):
 
     """
 
-    def __init__(self, n: bool = False, v1: bool = False, v2: bool = False, m1: bool = False, m2: bool = False, t: bool = False, **kwargs):
+    def __init__(
+        self,
+        n: bool = False,
+        v1: bool = False,
+        v2: bool = False,
+        m1: bool = False,
+        m2: bool = False,
+        t: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
-        self._element: "BeamElement | None"  # type: ignore
-        self._location: str | None = None
+        self._element: Union["BeamElement", None] = None
+        self._location: Union[str, None] = None
         self.n: bool = n
         self.v1: bool = v1
         self.v2: bool = v2
@@ -52,18 +67,17 @@ class _BeamEndRelease(FEAData):
         self.t: bool = t
 
     @property
-    def element(self) -> "BeamElement | None":  # type: ignore
+    def element(self) -> Union["BeamElement", None]:
         return self._element
 
     @element.setter
-    def element(self, value: "BeamElement"):  # type: ignore
-        import compas_fea2
-        if not isinstance(value, compas_fea2.model.elements.BeamElement):
+    def element(self, value: "BeamElement"):
+        if not isinstance(value, "BeamElement"):
             raise TypeError(f"{value!r} is not a beam element.")
         self._element = value
 
     @property
-    def location(self) -> str | None:
+    def location(self) -> Union[str, None]:
         return self._location
 
     @location.setter

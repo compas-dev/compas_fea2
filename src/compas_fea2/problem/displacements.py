@@ -72,6 +72,7 @@ class GeneralDisplacement(FEAData):
     def components(self):
         return {c: getattr(self, c) for c in ["x", "y", "z", "xx", "yy", "zz"]}
 
+    @property
     def __data__(self):
         return {
             "x": self.x,

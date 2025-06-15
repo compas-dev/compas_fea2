@@ -1,7 +1,7 @@
-from compas_fea2.base import FEAData
+from .material import _Material
 
 
-class Timber(FEAData):
+class Timber(_Material):
     """Base class for Timber material"""
 
     def __init__(self, *, density, **kwargs):
@@ -13,7 +13,7 @@ class Timber(FEAData):
         name : str, optional
             Name of the material.
         """
-        super(Timber, self).__init__(density=density, **kwargs)
+        super().__init__(density=density, **kwargs)
 
     @property
     def __data__(self):

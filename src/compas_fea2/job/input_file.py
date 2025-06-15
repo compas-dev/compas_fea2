@@ -27,7 +27,7 @@ class InputFile(FEAData):
     """
 
     def __init__(self, problem, **kwargs):
-        super(InputFile, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._registration = problem
         self._extension = None
         self.path = None
@@ -47,6 +47,7 @@ class InputFile(FEAData):
     # ==============================================================================
     # General methods
     # ==============================================================================
+
     def write_to_file(self, path=None):
         """Writes the InputFile to a file in a specified location.
 
@@ -76,5 +77,5 @@ class ParametersFile(InputFile):
     """Input file object for Optimizations."""
 
     def __init__(self, **kwargs):
-        super(ParametersFile, self).__init__(**kwargs)
-        raise NotImplementedError()
+        super().__init__(**kwargs)
+        raise NotImplementedError

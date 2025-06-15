@@ -253,7 +253,7 @@ class _Part(FEAData):
 
     @property
     def elements_sorted(self) -> List[_Element]:
-        return self.elments.sorted_by(key=lambda x: x.part_key)
+        return self.elements.sorted_by(key=lambda x: x.part_key)
 
     @property
     def elements_grouped(self) -> Dict[int, List[_Element]]:
@@ -2115,7 +2115,6 @@ class _Part(FEAData):
             If `True` draw all the elements (also the internal ones) of the part
             otherwise just show the boundary faces, by default False.
         """
-
         from compas_fea2.UI.viewer import FEA2Viewer
 
         v = FEA2Viewer(self, scale_factor=scale_factor)

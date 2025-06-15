@@ -1,4 +1,5 @@
 from operator import itemgetter
+from typing import TYPE_CHECKING
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -20,6 +21,15 @@ from compas_fea2.base import FEAData
 from compas_fea2.results import Result
 from compas_fea2.results import ShellStressResult
 from compas_fea2.results import SolidStressResult
+
+if TYPE_CHECKING:
+    from compas_fea2.problem import Step
+
+    from .model import Model
+    from .nodes import Node
+    from .parts import _Part
+    from .sections import _Section
+    from .shapes import Shape
 
 
 class _Element(FEAData):
@@ -75,7 +85,7 @@ class _Element(FEAData):
 
     """
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(**kwargs)
         self._part_key = None
         self._nodes = self._check_nodes(nodes)
@@ -108,11 +118,11 @@ class _Element(FEAData):
         return cls(nodes, section, implementation=data.get("implementation"), rigid=data.get("rigid"))
 
     @property
-    def part(self) -> "_Part":  # noqa: F821
+    def part(self) -> "_Part":
         return self._registration
 
     @property
-    def model(self) -> "Model":  # noqa: F821
+    def model(self) -> "Model":
         return self.part.model
 
     @property
@@ -120,11 +130,11 @@ class _Element(FEAData):
         raise NotImplementedError("The results_cls property must be implemented in the subclass")
 
     @property
-    def nodes(self) -> List["Node"]:  # noqa: F821
+    def nodes(self) -> List["Node"]:
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value: List["Node"]):  # noqa: F821
+    def nodes(self, value: List["Node"]):
         self._nodes = self._check_nodes(value)
 
     @property
@@ -140,11 +150,11 @@ class _Element(FEAData):
         return [node.point for node in self.nodes]
 
     @property
-    def section(self) -> "_Section":  # noqa: F821
+    def section(self) -> "_Section":
         return self._section
 
     @section.setter
-    def section(self, value: "_Section"):  # noqa: F821
+    def section(self, value: "_Section"):
         self._section = value
 
     @property
@@ -163,7 +173,7 @@ class _Element(FEAData):
     def on_boundary(self, value: bool):
         self._on_boundary = value
 
-    def _check_nodes(self, nodes: List["Node"]) -> List["Node"]:  # noqa: F821
+    def _check_nodes(self, nodes: List["Node"]) -> List["Node"]:
         if len(set([node._registration for node in nodes])) != 1:
             raise ValueError("At least one of node is registered to a different part or not registered")
         return nodes
@@ -236,15 +246,15 @@ class MassElement(_Element):
 class _Element0D(_Element):
     """Element with 1 dimension."""
 
-    def __init__(self, nodes: List["Node"], frame: Frame, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], frame: Frame, implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(nodes, section=None, implementation=implementation, rigid=rigid, **kwargs)
         self._frame = frame
         self._ndim = 0
 
     @property
     def __data__(self):
-        data = super().__data__()
-        data["frame"] = self.frame.__data__
+        data = super().__data__
+        data["frame"] = self.frame
         return data
 
 
@@ -258,7 +268,7 @@ class SpringElement(_Element0D):
 
     """
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
 
@@ -271,7 +281,7 @@ class LinkElement(_Element0D):
     use :class:`compas_fea2.model.connectors.RigidLinkConnector`.
     """
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(nodes, section=section, implementation=implementation, rigid=rigid, **kwargs)
 
 
@@ -302,7 +312,7 @@ class _Element1D(_Element):
         The volume of the element.
     """
 
-    def __init__(self, nodes: List["Node"], section: "_Section", frame: Optional[Frame] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", frame: Optional[Frame] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(nodes, section, implementation=implementation, rigid=rigid, **kwargs)
         if not frame:
             raise ValueError("Frame is required for 1D elements")
@@ -343,7 +353,7 @@ class _Element1D(_Element):
         return self._frame
 
     @property
-    def shape(self) -> Optional["Shape"]:  # noqa: F821
+    def shape(self) -> Optional["Shape"]:
         return self._shape
 
     @property
@@ -357,9 +367,9 @@ class _Element1D(_Element):
     def plot_section(self):
         self.section.plot()
 
-    def plot_stress_distribution(self, step: "_Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
-        """Plot the stress distribution along the element.
-
+    def plot_stress_distribution(self, step: "Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
+        """ Plot the stress distribution along the element.
+        
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -380,7 +390,7 @@ class _Element1D(_Element):
         r = step.section_forces_field.get_element_forces(self)
         r.plot_stress_distribution(*args, **kwargs)
 
-    def section_forces_result(self, step: "Step") -> "Result":  # noqa: F821
+    def section_forces_result(self, step: "Step") -> "Result":
         """Get the section forces result for the element.
         Parameters
         ----------
@@ -397,7 +407,7 @@ class _Element1D(_Element):
             raise ValueError("The step does not have a section_forces_field")
         return step.section_forces_field.get_result_at(self)
 
-    def forces(self, step: "Step") -> "Result":  # noqa: F821
+    def forces(self, step: "Step") -> "Result":
         """Get the forces result for the element.
 
         Parameters
@@ -414,8 +424,8 @@ class _Element1D(_Element):
         return r.forces
 
     def moments(self, step: "_Step") -> "Result":  # noqa: F821
-        """Get the moments result for the element.
-
+        """ Get the moments result for the element.
+        
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -444,7 +454,7 @@ class BeamElement(_Element1D):
 class TrussElement(_Element1D):
     """A 1D element that resists axial loads."""
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(nodes, section, frame=[1, 1, 1], implementation=implementation, rigid=rigid, **kwargs)
 
 
@@ -487,7 +497,7 @@ class Face(FEAData):
 
     """
 
-    def __init__(self, nodes: List["Node"], tag: str, element: Optional["_Element"] = None, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], tag: str, element: Optional["_Element"] = None, **kwargs):
         super().__init__(**kwargs)
         self._nodes = nodes
         self._tag = tag
@@ -516,7 +526,7 @@ class Face(FEAData):
         return cls(nodes, data["tag"], element=element)
 
     @property
-    def nodes(self) -> List["Node"]:  # noqa: F821
+    def nodes(self) -> List["Node"]:
         return self._nodes
 
     @property
@@ -532,11 +542,11 @@ class Face(FEAData):
         return self._registration
 
     @property
-    def part(self) -> "_Part":  # noqa: F821
+    def part(self) -> "_Part":
         return self.element.part
 
     @property
-    def model(self) -> "Model":  # noqa: F821
+    def model(self) -> "Model":
         return self.element.model
 
     @property
@@ -588,7 +598,7 @@ class _Element2D(_Element):
         {'s1': (0,1,2), ...}
     """
 
-    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(
             nodes=nodes,
             section=section,
@@ -602,11 +612,11 @@ class _Element2D(_Element):
         self._ndim = 2
 
     @property
-    def nodes(self) -> List["Node"]:  # noqa: F821
+    def nodes(self) -> List["Node"]:
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value: List["Node"]):  # noqa: F821
+    def nodes(self, value: List["Node"]):
         self._nodes = self._check_nodes(value)
         self._faces = self._construct_faces(self._face_indices)
 
@@ -646,7 +656,7 @@ class _Element2D(_Element):
         """
         return [Face(nodes=itemgetter(*indices)(self.nodes), tag=name, element=self) for name, indices in face_indices.items()]
 
-    def stress_results(self, step: "_Step") -> "Result":  # noqa: F821
+    def stress_results(self, step: "Step") -> "Result":
         """Get the stress results for the element.
 
         Parameters
@@ -672,7 +682,7 @@ class ShellElement(_Element2D):
 
     """
 
-    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: Optional["_Section"] = None, implementation: Optional[str] = None, rigid: bool = False, **kwargs):
         super().__init__(
             nodes=nodes,
             section=section,
@@ -714,7 +724,7 @@ class _Element3D(_Element):
 
     """
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):
         super().__init__(
             nodes=nodes,
             section=section,
@@ -735,11 +745,11 @@ class _Element3D(_Element):
         return self._frame
 
     @property
-    def nodes(self) -> List["Node"]:  # noqa: F821
+    def nodes(self) -> List["Node"]:
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value: List["Node"]):  # noqa: F821
+    def nodes(self, value: List["Node"]):
         self._nodes = value
         self._faces = self._construct_faces(self._face_indices)
 
@@ -754,7 +764,7 @@ class _Element3D(_Element):
     @property
     def edges(self):
         seen = set()
-        for _, face in self._faces.itmes():
+        for _, face in self._faces.items():
             for u, v in pairwise(face + face[:1]):
                 if (u, v) not in seen:
                     seen.add((u, v))
@@ -791,7 +801,7 @@ class _Element3D(_Element):
         return self._area
 
     @classmethod
-    def from_polyhedron(cls, polyhedron: Polyhedron, section: "_Section", implementation: Optional[str] = None, **kwargs) -> "_Element3D":  # noqa: F821
+    def from_polyhedron(cls, polyhedron: Polyhedron, section: "_Section", implementation: Optional[str] = None, **kwargs) -> "_Element3D":
         from compas_fea2.model import Node
 
         element = cls([Node(vertex) for vertex in polyhedron.vertices], section, implementation, **kwargs)
@@ -833,8 +843,8 @@ class TetrahedronElement(_Element3D):
 
     def __init__(
         self,
-        nodes: List["Node"],  # noqa: F821
-        section: "_Section",  # noqa: F821
+        nodes: List["Node"],
+        section: "_Section",
         implementation: Optional[str] = None,
         **kwargs,
     ):
@@ -909,7 +919,7 @@ class PentahedronElement(_Element3D):
 class HexahedronElement(_Element3D):
     """A Solid cuboid element with 6 faces (extruded rectangle)."""
 
-    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):  # noqa: F821
+    def __init__(self, nodes: List["Node"], section: "_Section", implementation: Optional[str] = None, **kwargs):
         super().__init__(
             nodes=nodes,
             section=section,

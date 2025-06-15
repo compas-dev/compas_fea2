@@ -85,13 +85,13 @@ class _Group(FEAData):
         """
         return sorted(self._members, key=lambda x: x.key)
 
-    def sorted_by(self, key: Callable[[T], any], reverse: bool = False) -> List[T]:
+    def sorted_by(self, key: Callable[[T], Any], reverse: bool = False) -> List[T]:
         """
         Return the members of the group sorted based on a custom key function.
 
         Parameters
         ----------
-        key : Callable[[T], any]
+        key : Callable[[T], Any]
             A function that extracts a key from a member for sorting.
         reverse : bool, optional
             Whether to sort in descending order. Default is False.
@@ -121,25 +121,21 @@ class _Group(FEAData):
         filtered_members = set(filter(condition, self._members))
         return self.__class__(filtered_members, **kwargs)
 
-    def group_by(self, key: Callable[[T], any]) -> Dict[any, "_Group"]:
+    def group_by(self, key: Callable[[T], Any]) -> Dict[Any, "_Group"]:
         """
         Group members into multiple subgroups based on a key function.
 
         Parameters
         ----------
-        key : Callable[[T], any]
+        key : Callable[[T], Any]
             A function that extracts a key from a member for grouping.
 
         Returns
         -------
-        Dict[any, _Group]
+        Dict[Any, _Group]
             A dictionary where keys are the grouping values and values are `_Group` instances.
         """
         sorted_members = self._members
-        # try:
-        #     sorted_members = sorted(self._members, key=key)
-        # except TypeError:
-        #     sorted_members = sorted(self._members, key=lambda x: x.key)
         grouped_members = {k: set(v) for k, v in groupby(sorted_members, key=key)}
         return {k: self.__class__(v, name=f"{self.name}") for k, v in grouped_members.items()}
 
@@ -307,7 +303,7 @@ class NodesGroup(_Group):
     """
 
     def __init__(self, nodes, **kwargs):
-        super(NodesGroup, self).__init__(members=nodes, **kwargs)
+        super().__init__(members=nodes, **kwargs)
 
     @property
     def __data__(self):
@@ -391,7 +387,7 @@ class ElementsGroup(_Group):
     """
 
     def __init__(self, elements, **kwargs):
-        super(ElementsGroup, self).__init__(members=elements, **kwargs)
+        super().__init__(members=elements, **kwargs)
 
     @property
     def __data__(self):
@@ -483,7 +479,7 @@ class FacesGroup(_Group):
     """
 
     def __init__(self, faces, **kwargs):
-        super(FacesGroup, self).__init__(members=faces, **kwargs)
+        super().__init__(members=faces, **kwargs)
 
     @property
     def __data__(self):
@@ -576,7 +572,7 @@ class PartsGroup(_Group):
     """
 
     def __init__(self, *, parts, **kwargs):
-        super(PartsGroup, self).__init__(members=parts, **kwargs)
+        super().__init__(members=parts, **kwargs)
 
     @property
     def __data__(self):
@@ -637,7 +633,7 @@ class SectionsGroup(_Group):
     """Base class for sections groups."""
 
     def __init__(self, sections, **kwargs):
-        super(SectionsGroup, self).__init__(members=sections, **kwargs)
+        super().__init__(members=sections, **kwargs)
 
     @property
     def sections(self):
@@ -654,7 +650,7 @@ class MaterialsGroup(_Group):
     """Base class for materials groups."""
 
     def __init__(self, materials, **kwargs):
-        super(MaterialsGroup, self).__init__(members=materials, **kwargs)
+        super().__init__(members=materials, **kwargs)
 
     @property
     def materials(self):
@@ -671,7 +667,7 @@ class InterfacesGroup(_Group):
     """Base class for interfaces groups."""
 
     def __init__(self, interfaces, **kwargs):
-        super(InterfacesGroup, self).__init__(members=interfaces, **kwargs)
+        super().__init__(members=interfaces, **kwargs)
 
     @property
     def interfaces(self):
@@ -688,7 +684,7 @@ class BCsGroup(_Group):
     """Base class for boundary conditions groups."""
 
     def __init__(self, bcs, **kwargs):
-        super(BCsGroup, self).__init__(members=bcs, **kwargs)
+        super().__init__(members=bcs, **kwargs)
 
     @property
     def bcs(self):
@@ -705,7 +701,7 @@ class ConnectorsGroup(_Group):
     """Base class for connectors groups."""
 
     def __init__(self, connectors, **kwargs):
-        super(ConnectorsGroup, self).__init__(members=connectors, **kwargs)
+        super().__init__(members=connectors, **kwargs)
 
     @property
     def connectors(self):
@@ -722,7 +718,7 @@ class ConstraintsGroup(_Group):
     """Base class for constraints groups."""
 
     def __init__(self, constraints, **kwargs):
-        super(ConstraintsGroup, self).__init__(members=constraints, **kwargs)
+        super().__init__(members=constraints, **kwargs)
 
     @property
     def constraints(self):
@@ -739,7 +735,7 @@ class ICsGroup(_Group):
     """Base class for initial conditions groups."""
 
     def __init__(self, ics, **kwargs):
-        super(ICsGroup, self).__init__(members=ics, **kwargs)
+        super().__init__(members=ics, **kwargs)
 
     @property
     def ics(self):
@@ -756,7 +752,7 @@ class ReleasesGroup(_Group):
     """Base class for releases groups."""
 
     def __init__(self, releases, **kwargs):
-        super(ReleasesGroup, self).__init__(members=releases, **kwargs)
+        super().__init__(members=releases, **kwargs)
 
     @property
     def releases(self):

@@ -27,10 +27,10 @@ class Connector(FEAData):
 
     """
 
-    def __init__(self, nodes: Union[List[Node], _Group], **kwargs):
+    def __init__(self, nodes: Union[List[Node], NodesGroup], **kwargs):
         super().__init__(**kwargs)
         self._key: Optional[str] = None
-        self._nodes: Optional[List[Node]] = nodes
+        self._nodes: Union[List[Node], NodesGroup] = nodes
 
     @property
     def __data__(self):
@@ -55,7 +55,7 @@ class Connector(FEAData):
         return self._registration
 
     @nodes.setter
-    def nodes(self, nodes: Union[List[Node], _Group]):
+    def nodes(self, nodes: Union[List[Node], NodesGroup]):
         if isinstance(nodes, _Group):
             nodes = nodes._members
         if isinstance(nodes, Node):

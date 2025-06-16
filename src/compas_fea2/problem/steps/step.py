@@ -594,7 +594,7 @@ class GeneralStep(Step):
         try:
             parts = parts or self.model.parts
         except Exception:
-            raise AttributeError('You need to register the problem to the model first')
+            raise AttributeError("You need to register the problem to the model first")
         nodes = []
         loads = []
         for part in parts:

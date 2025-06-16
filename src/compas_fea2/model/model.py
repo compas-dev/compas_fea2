@@ -8,8 +8,8 @@ from itertools import groupby
 from pathlib import Path
 from typing import Optional
 from typing import Set
-from typing import Union
 from typing import Tuple
+from typing import Union
 
 from compas.datastructures import Graph
 from compas.geometry import Box
@@ -1478,9 +1478,10 @@ class Model(FEAData):
             List of interfaces extracted from the model.
 
         """
-        from compas.geometry import distance_point_plane_signed
         import itertools
         from typing import List
+
+        from compas.geometry import distance_point_plane_signed
 
         # --- Nested helper function to check coplanarity ---
         def _are_two_planes_coplanar(pln1: Plane, pln2: Plane, tol: float) -> bool:

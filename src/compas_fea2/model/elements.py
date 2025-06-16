@@ -368,8 +368,8 @@ class _Element1D(_Element):
         self.section.plot()
 
     def plot_stress_distribution(self, step: "Step", end: str = "end_1", nx: int = 100, ny: int = 100, *args, **kwargs):  # noqa: F821
-        """ Plot the stress distribution along the element.
-        
+        """Plot the stress distribution along the element.
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
@@ -424,8 +424,8 @@ class _Element1D(_Element):
         return r.forces
 
     def moments(self, step: "_Step") -> "Result":  # noqa: F821
-        """ Get the moments result for the element.
-        
+        """Get the moments result for the element.
+
         Parameters
         ----------
         step : :class:`compas_fea2.model.Step`
